@@ -254,7 +254,9 @@ CREATE TABLE changelog_entry
     logger_type NUMBER NOT NULL,
     operation VARCHAR2 (128) NULL,
     timestamp DATE NOT NULL,
-    uri NVARCHAR2 (1500) NOT NULL
+    uri NVARCHAR2 (1500) NOT NULL,
+    resource_id NUMBER,
+    is_collection CHAR(1) DEFAULT 'N' NOT NULL
 );
 
 ALTER TABLE changelog_entry

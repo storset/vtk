@@ -615,7 +615,7 @@ public abstract class Resource implements Cloneable {
         dto.setDisplayName(getDisplayName());
         dto.setActiveLocks((lock == null)
             ? new org.vortikal.repository.Lock[] {  }
-            : new org.vortikal.repository.Lock[] { lock.getLockDTO() });
+            : new org.vortikal.repository.Lock[] { lock.getLockDTO(principalManager) });
         dto.setName(name);
         dto.setOwner(principalManager.getPrincipal(owner));
         dto.setSupportedPrivileges(standardPrivilegeDefinition);

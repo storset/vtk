@@ -32,6 +32,7 @@ package org.vortikal.repositoryimpl;
 
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 
 import org.doomdark.uuid.UUIDGenerator;
 
@@ -105,9 +106,10 @@ public class Lock implements Cloneable {
         return timeout;
     }
 
-    public org.vortikal.repository.Lock getLockDTO() {
-        return new org.vortikal.repository.Lock(getLockType(), getDepth(),
-            getUser(), getOwnerInfo(), getTimeout(), getLockToken());
+    public org.vortikal.repository.Lock getLockDTO(PrincipalManager principalManager) {
+        return new org.vortikal.repository.Lock(
+            getLockType(), getDepth(), principalManager.getPrincipal(getUser()),
+            getOwnerInfo(), getTimeout(), getLockToken());
     }
 
     public void authorize(Principal principal, String privilege,

@@ -30,21 +30,23 @@
  */
 package org.vortikal.repository;
 
+import org.vortikal.security.Principal;
+
 
 /**
  * This class encapsulates meta information about a lock.
  */
 public class Lock implements java.io.Serializable, Cloneable {
     // Supported lock types:
-    public final static String LOCKTYPE_EXCLUSIVE_WRITE = "EXCLUSIVE_WRITE";
+    public static final String LOCKTYPE_EXCLUSIVE_WRITE = "EXCLUSIVE_WRITE";
     private String type;
     private String depth;
-    private String user;
+    private Principal user;
     private String ownerInfo;
     private java.util.Date timeout;
     private String token;
 
-    public Lock(String type, String depth, String user, String ownerInfo,
+    public Lock(String type, String depth, Principal user, String ownerInfo,
         java.util.Date timeout, String token) {
         this.type = type;
         this.depth = depth;
@@ -62,7 +64,7 @@ public class Lock implements java.io.Serializable, Cloneable {
         return depth;
     }
 
-    public String getUser() {
+    public Principal getUser() {
         return user;
     }
 

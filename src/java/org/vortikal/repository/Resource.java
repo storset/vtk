@@ -533,6 +533,7 @@ public class Resource implements java.io.Serializable, Cloneable {
      * storing the resource.
      *
      * @param acl the ACL
+     * @see Repository#storeACL
      */
     public void setACL(Ace[] acl) {
         this.acl = acl;

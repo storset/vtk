@@ -142,10 +142,11 @@ public class ResourcePrincipalPermissionAssertion
         } else if (permission.equals("unlock")) {
                 
             if (resource.getActiveLocks().length > 0) {
-                String owner = resource.getActiveLocks()[0].getUser();
+
+                Principal owner = resource.getActiveLocks()[0].getUser();
                 Principal p = securityContext.getPrincipal();
-                    
-                if (p != null && owner.equals(p.getQualifiedName())) {
+
+                if (p != null && p.equals(owner)) {
                     // FIXME: move role concept out of
                     // repositoryimpl and check for root role
                     // here.
@@ -170,19 +171,27 @@ public class ResourcePrincipalPermissionAssertion
                                                              this.principalStore);
                     
             for (int i = 0; i < privileges.length; i++) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Matching permission " + permission +
-                                 " against " + privileges[i].getName());
-                }
-                
+                boolean match = false;
+
                 if (privileges[i].getName().equals(permission)) {
-                    return true;
+                    match = true;
                 }
                 
                 if (permission.equals("read-processed") &&
                     privileges[i].equals("read")) {
+                    match = true;
+                }
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Matching permissions for resource " + resource
+                                 + ": [" + permission + " against "
+                                 + privileges[i].getName() + " = " + match + "]");
+                }
+                
+                if (match) {
                     return true;
                 }
+
             }
         }
         return false;

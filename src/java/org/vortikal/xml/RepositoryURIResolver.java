@@ -118,7 +118,12 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
     
     protected InputStream getInputStream(String path) throws IOException {
         try {
-            String token = SecurityContext.getSecurityContext().getToken();
+            String token = this.token;
+            if (token == null) {
+                if (SecurityContext.getSecurityContext() != null) {
+                    token = SecurityContext.getSecurityContext().getToken();
+                }
+            }
             InputStream inputStream = repository.getInputStream(
                 token, path, this.retrieveForProcessing);
             return inputStream;

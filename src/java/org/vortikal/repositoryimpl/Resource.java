@@ -726,7 +726,7 @@ public abstract class Resource implements Cloneable {
 
             dao.store(this);
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new IOException(e.getMessage());
         } finally {
             dirtyACL = false;

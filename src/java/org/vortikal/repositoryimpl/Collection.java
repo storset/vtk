@@ -252,7 +252,7 @@ public class Collection extends Resource implements Cloneable {
                 aclInheritance, roleManager);
 
         doc.setContentType(src.getContentType());
-        doc.setContentLanguage(src.getContentLanguage());
+        doc.setContentLocale(src.getContentLocale());
         doc.setCharacterEncoding(src.getCharacterEncoding());
         doc.setProperties(src.getPropertyDTOs());
 

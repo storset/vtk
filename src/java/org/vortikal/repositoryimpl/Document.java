@@ -45,9 +45,12 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.repository.ContentTypeHelper;
 
+import java.util.Date;
+import java.util.Locale;
+
 
 public class Document extends Resource implements Cloneable {
-    protected String contentLanguage = "";
+    protected Locale contentLocale = null;
 
     public Document(String uri, String owner, String contentModifiedBy,
         String propertiesModifiedBy, ACL acl, boolean inheritedACL, Lock lock,
@@ -97,18 +100,19 @@ public class Document extends Resource implements Cloneable {
      * @return the language (if it has one, <code>null</code>
      * otherwise)
      */
-    public String getContentLanguage() {
-        return contentLanguage;
+    public Locale getContentLocale() {
+        return contentLocale;
     }
 
     /**
-     * Sets this resource's content language.
+     * Sets this resource's content locale.
      *
-     * @param contentLanguage the language to use
+     * @param contentLocale the language to use
      */
-    public void setContentLanguage(String contentLanguage) {
-        this.contentLanguage = contentLanguage;
+    public void setContentLocale(Locale contentLocale) {
+        this.contentLocale = contentLocale;
     }
+
 
     public Resource retrieve(Principal principal, String path,
         RoleManager roleManager)
@@ -118,7 +122,6 @@ public class Document extends Resource implements Cloneable {
 
             return this;
         }
-
         return null;
     }
 
@@ -182,7 +185,7 @@ public class Document extends Resource implements Cloneable {
         setProperties(dto.getProperties());
 
         /* Specific for documents */
-        setContentLanguage(dto.getContentLanguage());
+        setContentLocale(dto.getContentLocale());
 
         dao.store(this);
     }
@@ -195,7 +198,7 @@ public class Document extends Resource implements Cloneable {
             super.getResourceDTO(principal, principalManager, roleManager);
 
         dto.setContentLength(dao.getContentLength(this));
-        dto.setContentLanguage(getContentLanguage());
+        dto.setContentLocale(getContentLocale());
 
         return dto;
     }

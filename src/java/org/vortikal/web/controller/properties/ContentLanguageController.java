@@ -30,12 +30,13 @@
  */
 package org.vortikal.web.controller.properties;
 
-
+import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -72,8 +73,11 @@ public class ContentLanguageController extends SimpleFormController {
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
+        Locale locale = resource.getContentLocale();
+        String language = (locale != null) ? locale.toString() : null;
+
         ContentLanguageCommand command =
-            new ContentLanguageCommand(resource.getContentLanguage(), possibleLanguages, url);
+            new ContentLanguageCommand(language, possibleLanguages, url);
         return command;
     }
 
@@ -101,11 +105,12 @@ public class ContentLanguageController extends SimpleFormController {
             return;
         }
 
-        resource.setContentLanguage(contentLanguageCommand.getContentLanguage().trim());
+        resource.setContentLocale(
+            LocaleHelper.getLocale(contentLanguageCommand.getContentLanguage()));
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Setting new content type '" +
-                         resource.getContentLanguage() + 
+            logger.debug("Setting new content language '" +
+                         resource.getContentLocale() + 
                          "' for resource " + uri);
         }
         repository.store(token, resource);

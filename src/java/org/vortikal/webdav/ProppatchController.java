@@ -30,17 +30,25 @@
  */
 package org.vortikal.webdav;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import org.springframework.web.servlet.ModelAndView;
 
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
@@ -52,16 +60,9 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Handler for PROPPATCH requests.
@@ -345,7 +346,8 @@ public class ProppatchController extends AbstractWebdavController {
                     logger.debug("setting property 'getcontentlanguage' to '"
                                  + property.getText() + "'");
                 }
-                resource.setContentLanguage(property.getText());
+                Locale locale = LocaleHelper.getLocale(property.getText());
+                resource.setContentLocale(locale);
                 
             } else if (propertyName.equals("getcontenttype")) {
                 if (logger.isDebugEnabled()) {

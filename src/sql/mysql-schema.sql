@@ -21,7 +21,7 @@ CREATE TABLE vortex_resource
     modified_by VARCHAR (64) NOT NULL,
     resource_owner VARCHAR (64) NOT NULL,
     display_name VARCHAR (128) NULL,
-    content_language VARCHAR (64) NOT NULL,
+    content_language VARCHAR (64) NULL,
     content_type VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,
     acl_inherited CHAR(1) DEFAULT 'Y' NOT NULL,
@@ -262,7 +262,7 @@ VALUES (
     'vortex',
     'vortex',
     '/',
-    'unknown',
+    null,
     'application/x-vortex-collection',
     'Y',
     'N'

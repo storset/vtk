@@ -30,16 +30,18 @@
  */
 package org.vortikal.repository;
 
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalStore;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.Locale;
+
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalStore;
+
 
 
 /**
@@ -84,7 +86,7 @@ public class Resource implements java.io.Serializable, Cloneable {
     private String serial = null;
     private String displayName = null;
     private String characterEncoding = null;
-    private String contentLanguage = null;
+    private Locale contentLocale = null;
     private String contentType = null;
     private Property[] properties = null;
 
@@ -371,23 +373,24 @@ public class Resource implements java.io.Serializable, Cloneable {
     }
 
     /**
-     * Gets a resource's content language.
+     * Gets a resource's content locale.
      *
-     * @return the language (if it has one, <code>null</code>
+     * @return the locale (if it has one, <code>null</code>
      * otherwise)
      */
-    public String getContentLanguage() {
-        return contentLanguage;
+    public Locale getContentLocale() {
+        return contentLocale;
     }
 
     /**
-     * Sets this resource's content language.
+     * Sets this resource's content locale. 
      *
      * @param contentLanguage the language to use
      */
-    public void setContentLanguage(String contentLanguage) {
-        this.contentLanguage = contentLanguage;
+    public void setContentLocale(Locale contentLocale) {
+        this.contentLocale = contentLocale;
     }
+
 
     /**
      * Gets a resource's content (MIME) type.
@@ -765,7 +768,7 @@ public class Resource implements java.io.Serializable, Cloneable {
         sb.append(", contentLength = ").append(contentLength);
         sb.append(", serial = ").append(serial);
         sb.append(", displayName = ").append(displayName);
-        sb.append(", contentLanguage = ").append(contentLanguage);
+        sb.append(", contentLocale = ").append(contentLocale);
         sb.append(", contentType = ").append(contentType);
         sb.append(", activeLocks = ").append(activeLocks);
         sb.append(", supportedPrivileges = ").append(supportedPrivileges);

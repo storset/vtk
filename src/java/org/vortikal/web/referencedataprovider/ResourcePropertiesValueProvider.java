@@ -73,7 +73,7 @@ import org.vortikal.web.RequestContext;
  *       maps to standard properties in this manner:
  *       <ul>
  *         <li><code>characterEncoding</code> - {@link Resource#getCharacterEncoding}
- *         <li><code>contentLanguage</code> - {@link Resource#getContentLanguage}
+ *         <li><code>contentLocale</code> - {@link Resource#getContentLocale}
  *         <li><code>contentLastModified</code> - {@link Resource#getContentLastModified}
  *         <li><code>contentLength</code> - {@link Resource#getContentLength}
  *         <li><code>contentModifiedBy</code> - {@link Resource#getContentModifiedBy}
@@ -270,8 +270,8 @@ public class ResourcePropertiesValueProvider
         if ("characterEncoding".equals(propertyName)) {
             return resource.getCharacterEncoding();
             
-        } else if ("contentLanguage".equals(propertyName)) {
-            return resource.getContentLanguage();
+        } else if ("contentLocale".equals(propertyName)) {
+            return resource.getContentLocale();
             
         } else if ("contentLastModified".equals(propertyName)) {
             return resource.getContentLastModified();

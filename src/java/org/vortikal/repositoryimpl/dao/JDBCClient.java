@@ -52,7 +52,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.dbcp.BasicDataSource;
+
 import org.springframework.beans.factory.DisposableBean;
+
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.Collection;
@@ -60,11 +62,13 @@ import org.vortikal.repositoryimpl.Document;
 import org.vortikal.repositoryimpl.Lock;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.URLUtil;
 
 /**
  * This class is going to be a "generic" JDBC database accessor. Currently, only
  * PostgreSQL is supported.
+ *
  */
 public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
@@ -383,8 +387,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             resource.setID(rs.getInt("resource_id"));
 
             if (resource instanceof Document) {
-                ((Document) resource)
-                        .setContentLanguage(rs.getString("content_language"));
+                ((Document) resource).setContentLocale(
+                    LocaleHelper.getLocale(rs.getString("content_language")));
             }
 
             resources.add(resource);
@@ -937,10 +941,11 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         String contentLanguage = null;
 
-        if (r instanceof Document) {
-            contentLanguage = ((Document) r).getContentLanguage();
+        if (r instanceof Document && ((Document) r).getContentLocale() != null) {
+            contentLanguage = ((Document) r).getContentLocale().toString();
         }
 
+        // FIXME: allow null values:
         if ((contentLanguage == null) || contentLanguage.trim().equals("")) {
             contentLanguage = "unknown";
         }
@@ -1579,8 +1584,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             resource.setID(rs.getInt("resource_id"));
 
             if (resource instanceof Document) {
-                ((Document) resource)
-                        .setContentLanguage(rs.getString("content_language"));
+                ((Document) resource).setContentLocale(
+                    LocaleHelper.getLocale(rs.getString("content_language")));
             }
 
             resources.add(resource);

@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -329,9 +330,9 @@ public class PropfindView implements View, InitializingBean {
                 element.addContent(name);
 
             } else if (property.equals("getcontentlanguage")) {
-                String lang = resource.getContentLanguage();
-                if (lang == null || lang.equals("")) return null;
-                element.addContent(lang);
+                Locale locale = resource.getContentLocale();
+                if (locale == null) return null;
+                element.addContent(locale.getLanguage());
 
             } else if (property.equals("getcontentlength")) {
                 if (resource.isCollection()) {

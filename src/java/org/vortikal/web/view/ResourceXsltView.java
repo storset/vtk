@@ -111,6 +111,8 @@ public class ResourceXsltView
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
     private TransformerManager transformerManager = null;
 
+    private LinkConstructor linkConstructor;
+    
 
     public void setTransformerManager(TransformerManager transformerManager)  {
         this.transformerManager = transformerManager;
@@ -174,6 +176,12 @@ public class ResourceXsltView
             "{http://www.uio.no/vortex/xsl-parameters}RequestContext",
             new RequestContext(request));
 
+        if (linkConstructor != null)
+            transformer.setParameter(
+                    "{http://www.uio.no/vortex/xsl-parameters}LinkConstructor",
+                    linkConstructor);
+            
+        
         // do the transformation
         JDOMSource source = new JDOMSource(document);
         source.setSystemId(
@@ -372,4 +380,11 @@ public class ResourceXsltView
             return error;
         }
     }
+
+
+
+    public void setLinkConstructor(LinkConstructor linkConstructor) {
+        this.linkConstructor = linkConstructor;
+    }
+    
 }

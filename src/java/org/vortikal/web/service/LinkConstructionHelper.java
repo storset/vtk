@@ -44,7 +44,7 @@ import org.vortikal.security.Principal;
  * URL constructor. Creates URLs pointing to given services, for
  * specified resources.
  */
-public interface LinkConstructor {
+public interface LinkConstructionHelper {
 
     public String construct(Resource resource, Principal principal,
                                      Map parameters, List assertions, Service service,

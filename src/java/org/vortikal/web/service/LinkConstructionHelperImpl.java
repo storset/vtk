@@ -44,14 +44,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Default implementation of the LinkConstructor interface.
+ * Default implementation of the LinkConstructionHelper interface.
  *
  * TODO: Provide "URL rewrite" hooks that would work with the service
  * mapping framework (e.g. "http://<url>/users/foo --> http://<url>/usersearch?user=foo)
  */
-public class DefaultLinkConstructor implements LinkConstructor {
+public class LinkConstructionHelperImpl implements LinkConstructionHelper {
 
-    private static Log logger = LogFactory.getLog(DefaultLinkConstructor.class);
+    private static Log logger = LogFactory.getLog(LinkConstructionHelperImpl.class);
     
 
 

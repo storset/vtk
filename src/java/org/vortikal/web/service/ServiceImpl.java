@@ -85,7 +85,7 @@ public class ServiceImpl
 
     // Duplicate:
     
-    private LinkConstructor linkConstructor = new DefaultLinkConstructor();
+    private LinkConstructionHelper linkConstructor = new LinkConstructionHelperImpl();
 	
     
     public void setHandler(Object handler) {

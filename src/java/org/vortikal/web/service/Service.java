@@ -32,6 +32,7 @@ package org.vortikal.web.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -50,11 +51,9 @@ import org.springframework.web.servlet.View;
  *       made flexible by having Assertions evaluated without
  *       arguments, instead relying on relevant contexts to be
  *       supplied by way of e.g. thread local.
- *   </li>
  *   <li>In addition to mapping requests, it's also makes it possible
  *       to dynamically construct request URLs to desired services on
  *       any level by looking at the assertions type
- *   </li>
  * </ul>
  * 
  * @see org.vortikal.web.service.ServiceHandlerMapping
@@ -205,5 +204,5 @@ public interface Service {
      * 
      * @return the category of this service
      */
-    public String getCategory();
+    public Set getCategories();
 }

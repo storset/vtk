@@ -327,7 +327,7 @@ public class ProppatchController extends AbstractWebdavController {
         String nameSpace = property.getNamespace().getURI();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Setting prop with namespace: " + nameSpace);
+            logger.debug("Setting property with namespace: " + nameSpace);
         }
 
         

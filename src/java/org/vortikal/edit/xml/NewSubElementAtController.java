@@ -84,23 +84,4 @@ public class NewSubElementAtController extends AbstractXmlEditController {
         return null;
     }
 
-
-
-    protected void setFormActionServiceURL(Map model, EditDocument document) {
-        Resource resource = document.getResource();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-
-        // FIXME: what if ?
-        String serviceURL = null;
-        
-        if (document.getDocumentMode().equals("edit")) {
-            serviceURL = editElementDoneService.constructLink(resource, principal);
-        } else if (document.getDocumentMode().equals("newElementAt")) {
-            serviceURL = newElementAtService.constructLink(resource, principal);
-        }
-
-        if (serviceURL != null)
-            setXsltParameter(model, "formActionServiceURL", serviceURL);
-    }
-
 }

@@ -74,23 +74,22 @@ import org.springframework.web.servlet.mvc.Controller;
 public abstract class AbstractXmlEditController implements Controller {
 
     private Service editElementService;
-    protected Service editElementDoneService;
+    private Service editElementDoneService;
     
-    protected Service newElementAtService;
+    private Service newElementAtService;
 
     private Service editService;
     private Service browseService;
 
     private Service moveElementService;
+    private Service moveElementDoneService;
     private Service deleteElementService;
     private Service newElementService;
 
-    protected Service newSubElementAtService;
-    protected Service deleteSubElementAtService;
-
-    private Service nextService;
-
-
+    private Service newSubElementAtService;
+    private Service deleteSubElementAtService;
+    private Service finishEditingService;
+    
     protected String viewName = "edit";
 
 
@@ -106,34 +105,19 @@ public abstract class AbstractXmlEditController implements Controller {
     public void setNewElementService(Service newElementService) {
         this.newElementService = newElementService;
     }
-    /**
-     * @param newSubElementAtService The newSubElementAtService to set.
-     */
+
     public void setNewSubElementAtService(Service newSubElementAtService) {
         this.newSubElementAtService = newSubElementAtService;
     }
-    /**
-     * @param nextService The nextService to set.
-     */
-    public void setNextService(Service nextService) {
-        this.nextService = nextService;
-    }
-    /**
-     * @param editElementService The editElementService to set.
-     */
+
     public void setEditElementService(Service editElementService) {
         this.editElementService = editElementService;
     }
-    /**
-     * @param editService The editService to set.
-     */
+
     public void setEditService(Service editService) {
         this.editService = editService;
     }
 
-    /**
-     * @param browseService The browseService to set.
-     */
     public void setBrowseService(Service browseService) {
         this.browseService = browseService;
     }
@@ -229,7 +213,7 @@ public abstract class AbstractXmlEditController implements Controller {
         Resource resource = document.getResource();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
-	String token = SecurityContext.getSecurityContext().getToken();
+        String token = SecurityContext.getSecurityContext().getToken();
 
 //        setXsltParameter(model, "RESOURCESURL", null);
 //        setXsltParameter(model, "BROWSEURL", null);
@@ -243,51 +227,47 @@ public abstract class AbstractXmlEditController implements Controller {
         if (principal != null)
             setXsltParameter(model, "USERNAME", principal.getName());
 
-        setFormActionServiceURL(model, document);
+        // The Browse service is optional, must javadoc this
+        if (browseService != null) {
+            try {
+                Resource parentResource = repository.retrieve(token, resource
+                        .getParent(), false);
+                setXsltParameter(model, "BROWSEURL", browseService
+                        .constructLink(parentResource, principal));
+            } catch (AuthorizationException e) {
+                // No browse available for this resource
+            } catch (AuthenticationException e) {
+                // No browse available for this resource
+            } catch (ServiceUnlinkableException e) {
+                // No browse available for this resource
+            }
+        }
+
         setXsltParameter(model, "editServiceURL", 
                 editService.constructLink(resource, principal));
-
-	// The Browse service is optional, must javadoc this
-	if (browseService != null) {
-	   try {
-	      Resource parentResource = repository.retrieve(token, resource.getParent(), false);
-	      setXsltParameter(model, "BROWSEURL", 
-		  browseService.constructLink(parentResource, principal));
-	   } catch (AuthorizationException e) {
-	      // No browse available for this resource
-	   } catch (AuthenticationException e) {
-	      // No browse available for this resource
-	   } catch (ServiceUnlinkableException e) {
-	      // No browse available for this resource
-	   }
-	} 
-	
-        setXsltParameter(model, "editElementServiceURL", 
-                editElementService.constructLink(resource, principal));
-        setXsltParameter(model, "moveElementServiceURL", 
-                moveElementService.constructLink(resource, principal));
-        setXsltParameter(model, "deleteElementServiceURL", 
-                deleteElementService.constructLink(resource, principal));
-        setXsltParameter(model, "newElementAtServiceURL", 
-                newElementAtService.constructLink(resource, principal));
-        setXsltParameter(model, "newElementServiceURL", 
-                newElementService.constructLink(resource, principal));
-        setXsltParameter(model, "newSubElementAtServiceURL", 
+        setXsltParameter(model, "editElementServiceURL", editElementService
+                .constructLink(resource, principal));
+        setXsltParameter(model, "editElementDoneServiceURL", editElementDoneService
+                .constructLink(resource, principal));
+        setXsltParameter(model, "moveElementServiceURL", moveElementService
+                .constructLink(resource, principal));
+        setXsltParameter(model, "moveElementDoneServiceURL", moveElementDoneService
+                .constructLink(resource, principal));
+        setXsltParameter(model, "deleteElementServiceURL", deleteElementService
+                .constructLink(resource, principal));
+        setXsltParameter(model, "newElementAtServiceURL", newElementAtService
+                .constructLink(resource, principal));
+        setXsltParameter(model, "newElementServiceURL", newElementService
+                .constructLink(resource, principal));
+        setXsltParameter(model, "newSubElementAtServiceURL",
                 newSubElementAtService.constructLink(resource, principal));
-        setXsltParameter(model, "deleteSubElementAtServiceURL", 
+        setXsltParameter(model, "deleteSubElementAtServiceURL",
                 deleteSubElementAtService.constructLink(resource, principal));
+        setXsltParameter(model, "finishEditingServiceURL",
+                finishEditingService.constructLink(resource, principal));
 
     }
 
-    protected void setFormActionServiceURL(Map model, EditDocument document) {
-        Resource resource = document.getResource();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-
-        if (nextService != null) 
-            setXsltParameter(model, "formActionServiceURL", 
-                    nextService.constructLink(resource, principal));
-    }
-    
     private String date(String format) {
         Date today = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat(format);
@@ -297,7 +277,7 @@ public abstract class AbstractXmlEditController implements Controller {
     private ModelAndView handleModeError(EditDocument document, HttpServletRequest request) {
         Map model = new HashMap();
         
-        model.put("ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
+        setXsltParameter(model, "ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
         return new ModelAndView("edit", model);
     }
     
@@ -498,4 +478,16 @@ public abstract class AbstractXmlEditController implements Controller {
 	this.viewName = viewName;
     }
 
+    /**
+     * @param moveElementDoneService The moveElementDoneService to set.
+     */
+    public void setMoveElementDoneService(Service moveElementDoneService) {
+        this.moveElementDoneService = moveElementDoneService;
+    }
+    /**
+     * @param finishEditingService The finishEditingService to set.
+     */
+    public void setFinishEditingService(Service finishEditingService) {
+        this.finishEditingService = finishEditingService;
+    }
 }

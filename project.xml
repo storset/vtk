@@ -25,7 +25,7 @@
     <!--connection>scm:svn:svn:svn.berlios.de/vortikal</connection-->
     <!--developerConnection>scm:svn:svn+ssh:svn.berlios.de/svnroot/repos/vortikal</developerConnection-->
     <!--url>http://svn.berlios.de/viewcvs/vortikal/</url-->
-    <developerConnection>scm:svn:svn+ssh:element.uio.no/svnroot/vortikal</developerConnection>
+    <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal</developerConnection>
   </repository>
 
   <siteAddress>shell.berlios.de</siteAddress>

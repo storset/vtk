@@ -30,12 +30,43 @@
  */
 package org.vortikal.web.controller.repository;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import org.vortikal.repository.Repository;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 
-public class CreateDocumentCommandValidator implements Validator {
+
+public class CreateDocumentCommandValidator
+  implements Validator, InitializingBean {
+
+    private static Log logger = LogFactory.getLog(CreateCollectionCommandValidator.class);
+
+    private Repository repository;
+    
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+    
+
+    public void afterPropertiesSet() {
+        if (this.repository == null) {
+            throw new BeanInitializationException(
+                "Property 'repository' not set");
+        }
+
+    }
+    
 
     public boolean supports(Class clazz) {
         return (clazz == CreateDocumentCommand.class);
@@ -60,7 +91,25 @@ public class CreateDocumentCommandValidator implements Validator {
                                "manage.create.document.missing.template",
                                "You must choose a document type");
         }
-    }
 
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+
+        String uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
+        String sourceURI = createDocumentCommand.getSourceURI();
+        String destinationURI = uri;
+        if (!"/".equals(uri)) destinationURI += "/";
+        destinationURI += createDocumentCommand.getName();
+
+        try {
+            if (repository.exists(token, destinationURI)) {
+                errors.rejectValue("name", "manage.create.document.exists",
+                                   "A resource of this name already exists");
+            }
+        } catch (IOException e) {
+            logger.warn("Unable to validate document creation input", e);
+        }
+    }
 
 }

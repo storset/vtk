@@ -483,7 +483,7 @@ public class VortikalServlet extends DispatcherServlet {
         if (handler == null) {
             logError("No error handler configured for " + t.getClass().getName(), req, t);
             throw new ServletException(t);
-        }
+        } 
 
         int statusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         Map model = null;
@@ -539,9 +539,17 @@ public class VortikalServlet extends DispatcherServlet {
             if (errorHandlers[i].getErrorType().isAssignableFrom(t.getClass())) {
                 if (selected == null) {
                     selected = errorHandlers[i];
-                } else if (errorHandlers[i].getErrorType().isAssignableFrom(
-                               selected.getErrorType())) {
+                } else if (selected.getErrorType().isAssignableFrom(
+                               errorHandlers[i].getErrorType())) {
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Error handler: " + errorHandlers[i]
+                                     + " is more specific than the currently "
+                                     + "selected handler: " + selected);
+                    }
+
                     selected = errorHandlers[i];
+
                 }
             }
         }

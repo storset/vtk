@@ -120,8 +120,7 @@ public class MoveController extends AbstractXmlEditController {
                         return new Integer(i1).compareTo(new Integer(i2));
                     }
                 } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException(e.getMessage());
+                    throw new RuntimeException(e);
                 }
             }
 

@@ -70,12 +70,25 @@ public class HostNameDelegatingServlet extends HttpServletBean {
             if (mappings[i].indexOf("=") == -1) {
                 throw new IllegalArgumentException(
                     "Each entry in the hostMappings string must be in the format "
-                    + "'<hostname>=<servlet name>'");
+                    + "'<hostname[:port]>=<servlet name>'");
             }
+
             String hostName = mappings[i].substring(0, mappings[i].indexOf("=")).trim();
+            String primaryMapping = hostName;
+            String secondaryMapping = null;
+
+            if (hostName.indexOf(":") == -1) {
+                primaryMapping = hostName + ":80";
+                secondaryMapping = hostName + ":443";
+            }
+
             String servletName = mappings[i].substring(mappings[i].lastIndexOf("=") + 1).trim();
-            logger.info("Adding mapping: " + hostName + " --> " + servletName);
-            this.hostMap.put(hostName, servletName);
+            logger.info("Adding mapping: " + primaryMapping + " --> " + servletName);
+            this.hostMap.put(primaryMapping, servletName);
+            if (secondaryMapping != null) {
+                logger.info("Adding mapping: " + secondaryMapping + " --> " + servletName);
+                this.hostMap.put(secondaryMapping, servletName);
+            }
         }
     }
 
@@ -83,7 +96,8 @@ public class HostNameDelegatingServlet extends HttpServletBean {
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         String hostName = URLUtil.getHostName(request);
-        String servletName = (String) this.hostMap.get(hostName);
+        String key = hostName + ":" + request.getServerPort();
+        String servletName = (String) this.hostMap.get(key);
         
         if (servletName == null) {
             throw new ServletException(

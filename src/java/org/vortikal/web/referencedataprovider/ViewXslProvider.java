@@ -76,6 +76,7 @@ import org.w3c.dom.NodeList;
  *      <ul>
  *          <li><code>creationTime</code>
  *          <li><code>lastModified</code>
+ *          <li><code>contentLanguage</code>
  *          <li><code>PARENT-COLLECTION</code>
  *          <li><code>CURRENT-URL</code>
  *          <li><code>ADMIN-URL</code> 
@@ -121,13 +122,23 @@ public class ViewXslProvider implements Provider {
 
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
-        
-        Resource resource = repository.retrieve(token, uri, true);
+       
+        /* Getting resource from model instead of repository to get correct parameters
+         for index-files. This shoudn't affect anything else... */
+        Resource resource = null;
+ 
+        if (model != null) {
+            resource = (Resource) model.get("resource");
+        }
 
+        if (resource == null) {
+        		resource = repository.retrieve(token, uri, true);
+        }
         
         try {
             setXsltParameter(model, "creationTime", resource.getCreationTime());
             setXsltParameter(model, "lastModified", resource.getLastModified());
+            setXsltParameter(model, "contentLanguage", resource.getContentLocale());
             setXsltParameter(model, "PARENT-COLLECTION", resource.getParent());
             setXsltParameter(model, "CURRENT-URL", request.getRequestURL());
             setXsltParameter(model, "ADMIN-URL", 

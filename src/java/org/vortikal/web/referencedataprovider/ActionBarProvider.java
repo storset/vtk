@@ -166,9 +166,12 @@ public class ActionBarProvider implements InitializingBean, ApplicationContextAw
             String label = service.getName();
             String description = 
                 springContext.getMessage("actions." + label, label);
-            description = springContext.getMessage(
-                    "actions." + label + "." + resource.getContentType(), 
-                    description);
+            
+            String contentType = resource.getContentType();
+            if (contentType != null && contentType.trim() != "") 
+                description = springContext.getMessage(
+                        "actions." + label + "." + resource.getContentType(), 
+                        description);
 
             actionLabels.add(description);
         }

@@ -35,51 +35,58 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.util.web.URLUtil;
 
 /**
- * @author storset
+ * Assertion that matches on the request hostname.
  *
+ * <p>Configurable properties
+ * <ul>
+ *   <li><code>hostName</code> - the hostname to match. A value of
+ *   <code>*</code> means that any hostname matches.
+ * </ul>
  */
 public class RequestHostNameAssertion extends AssertionSupport
   implements RequestAssertion {
 
     private String hostName;
 	
-    /**
-     * @param hostName
-     */
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
 
-    /**
-     */
     public boolean matches(HttpServletRequest request) {
+        if ("*".equals(this.hostName)) {
+            return true;
+        }
         String reqHostName = URLUtil.getHostName(request);
-        
-        if (hostName.equals(reqHostName)) return true;
-        
-        return false;
+        return this.hostName.equals(reqHostName);
     }
 
+
+    /**
+     * Gets the host name. If the configuration parameter
+     * <code>hostName</code> has a value of <code>*</code>, the
+     * current host's default host name is returned.
+     *
+     */
     public String getHostName() {
+        if ("*".equals(this.hostName)) {
+            return org.vortikal.util.net.NetUtils.guessHostName();
+        }
         return hostName;
     }
 
 
-    /**
-     * @see org.vortikal.web.service.Assertion#conflicts(org.vortikal.web.service.Assertion)
-     */
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestHostNameAssertion) {
-            return ! (this.hostName.equals(
-                          ((RequestHostNameAssertion)assertion).getHostName()));
+            String otherHostName = ((RequestHostNameAssertion)assertion).getHostName();
+            if ("*".equals(this.hostName) || "*".equals(otherHostName)) {
+                return false;
+            }
+            return ! (this.hostName.equals(otherHostName));
         }
         return false;
     }
 
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

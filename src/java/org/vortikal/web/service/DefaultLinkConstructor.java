@@ -129,21 +129,32 @@ public class DefaultLinkConstructor implements LinkConstructor {
         if (requestProtocol == null) requestProtocol = "http";
         if (requestUriPrefix == null) requestUriPrefix = "";
 		
-        String url = requestProtocol + "://" + requestHostName + 
-            ((requestPort != -1) ? ":" + requestPort : "") +
-            requestUriPrefix + URLUtil.urlEncode(resource.getURI());
 
-        if (resource.isCollection() && !resource.getURI().equals("/")) url += "/";
+        StringBuffer url = new StringBuffer();
+        url.append(requestProtocol).append("://");
+        url.append(requestHostName);
+        if (requestPort != -1
+            && ! (("http".equals(requestProtocol) && requestPort == 80)
+                  || ("https".equals(requestProtocol) && requestPort == 443))) {
+            url.append(":").append(requestPort);
+        }
+        url.append(requestUriPrefix);
+        url.append(URLUtil.urlEncode(resource.getURI()));
+        
+
+        if (resource.isCollection() && !resource.getURI().equals("/")) {
+            url.append("/");
+        }
         
         if (!requestParameters.isEmpty()) {
-            url += "?";
+            url.append("?");
             for (Iterator iter = requestParameters.keySet().iterator(); iter.hasNext();) {
                 String name = (String) iter.next();
                 String value = (String) requestParameters.get(name);
 				
-                url += name + "=" + value; 
+                url.append(name).append("=").append(value); 
 					
-                if (iter.hasNext()) url += "&";
+                if (iter.hasNext()) url.append("&");
             }
         }
 		
@@ -151,10 +162,12 @@ public class DefaultLinkConstructor implements LinkConstructor {
             for (Iterator i = parameters.keySet().iterator(); i.hasNext();) {
                 Object key = i.next();
                 Object value = parameters.get(key);
-                if (url.indexOf('?') > 0) {
-                    url += "&" + key + "=" + URLUtil.urlEncode(value.toString());
+                if (url.indexOf("?") > 0) {
+                    url.append("&").append(key).append("=");
+                    url.append(URLUtil.urlEncode(value.toString()));
                 } else {
-                    url += "?" + key + "=" + URLUtil.urlEncode(value.toString());
+                    url.append("?").append(key).append("=");
+                    url.append(URLUtil.urlEncode(value.toString()));
                 }
             }
         }
@@ -165,8 +178,7 @@ public class DefaultLinkConstructor implements LinkConstructor {
                          ";service: " + service.getName() + ")");
         }
 
-
-        return url;
+        return url.toString();
     }
 
 }

@@ -35,21 +35,19 @@ package org.vortikal.web.referencedataprovider;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.OrderComparator;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -142,19 +140,7 @@ public class TabsProvider
             throw new BeanInitializationException("Property 'repository' not set");
         }
 
-        // find all services, and sort out those of category 'category';
-        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                context, Service.class, true, false);
-        
-        List tabServices = new ArrayList(matchingBeans.values());
-        List list = new ArrayList(tabServices);
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
-            if (service.getCategory() == null 
-                || !service.getCategory().equals(category)) 
-                tabServices.remove(service);
-        }
-        Collections.sort(tabServices, new OrderComparator());
+        List tabServices = ServiceCategoryResolver.getServicesOfCategory(context, category);
 
         if (tabServices.isEmpty()) {
             throw new BeanInitializationException(

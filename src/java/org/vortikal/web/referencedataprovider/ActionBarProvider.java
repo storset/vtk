@@ -37,8 +37,13 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -59,13 +64,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  <li><code>repository</code> - the content repository
  *  <li> <code>modelName</code> - the name to use for the submodel generated
  *       (default <code>actions</code>)
- *  <li> <code>actions</code> - a list of the services to build URLs for
- *  <li> <code>actionLabels</code> - a list that mirrors the <code>actions</code>
- *       list, containing the name of the action for each service -
- *       typically, this is what will show up as the link text in a
- *       URL. The strings are looked up using Spring's
- *       internationalization functionality, with the text
- *       <code>actions.</code> prepended to each label.
+ * 	<li><code>category</code> - required String describing the service category 
+ * to look for in the context
  * </ul>
  * 
  * Model data provided:
@@ -78,29 +78,17 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * </ul>
  * 
  */
-public class ActionBarProvider implements InitializingBean, Provider {
+public class ActionBarProvider implements InitializingBean, ApplicationContextAware, Provider {
 
-    private String modelName = "actions";
-    private List actions;
-    private List actionNames;
-    private List actionLabels;
-    private Repository repository = null;
-
-    public void setActions(List actions) {
-        this.actions = actions;
-        actionNames = new ArrayList();
-        for (Iterator iter = actions.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
-            
-            actionNames.add(service.getName());
-        }
-    }
+    private static Log logger = LogFactory.getLog(ActionBarProvider.class);
     
-    public void setActionLabels(List actionLabels) {
-        this.actionLabels = actionLabels;
-    }
-
-
+    private String modelName = "actions";
+    private List actions; 
+    private List actionNames = new ArrayList();
+    private Repository repository;
+    private ApplicationContext context;
+    private String category;
+    
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -112,20 +100,40 @@ public class ActionBarProvider implements InitializingBean, Provider {
 
 
     public void afterPropertiesSet() throws Exception {
-        if (this.actions == null) {
-            throw new BeanInitializationException(
-                "Bean property 'actions' must be set");
-        }
-
-        if (this.actionLabels == null) {
-            throw new BeanInitializationException(
-                "Bean property 'actionLabels' must be set");
-        }
+//        if (this.actions == null) {
+//            throw new BeanInitializationException(
+//                "Bean property 'actions' must be set");
+//        }
+//
+//        if (this.actionLabels == null) {
+//            throw new BeanInitializationException(
+//                "Bean property 'actionLabels' must be set");
+//        }
 
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "Bean property 'repository' must be set");
         }
+        
+        if (this.category == null) {
+            throw new BeanInitializationException(
+            "Bean property 'category' must be set");
+        }
+        
+        List actionServices = ServiceCategoryResolver.getServicesOfCategory(context, category);
+
+        if (actionServices.isEmpty()) {
+            logger.warn("No action bar registering services defined in context. Something might be wrong.");
+        }
+        
+        this.actions = actionServices;
+        
+        for (Iterator iter = actionServices.iterator(); iter.hasNext();) {
+            Service action = (Service) iter.next();
+            actionNames.add(action.getName());
+        }
+        logger.info("Registered actions services in the following order: " 
+                + actionServices);
     }
 
     public void referenceData(Map model, HttpServletRequest request)
@@ -140,7 +148,11 @@ public class ActionBarProvider implements InitializingBean, Provider {
         Resource resource = repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
+        org.springframework.web.servlet.support.RequestContext springContext =
+            new org.springframework.web.servlet.support.RequestContext(request);
+        
         List actionURLs = new ArrayList();
+        List actionLabels = new ArrayList();
         for (Iterator iter = actions.iterator(); iter.hasNext();) {
             Service service = (Service) iter.next();
             
@@ -150,20 +162,31 @@ public class ActionBarProvider implements InitializingBean, Provider {
             } catch (ServiceUnlinkableException ex) {
                 actionURLs.add(null);
             }
-        }
-        org.springframework.web.servlet.support.RequestContext springContext =
-            new org.springframework.web.servlet.support.RequestContext(request);
-        List translatedActionLabels = new ArrayList();
-        for (Iterator iter = actionLabels.iterator(); iter.hasNext();) {
-            String label = (String) iter.next();
-            translatedActionLabels.add(springContext.getMessage("actions." + label, label));
+            
+            String label = service.getName();
+            String description = 
+                springContext.getMessage("actions." + label, label);
+            description = springContext.getMessage(
+                    "actions." + label + "." + resource.getContentType(), 
+                    description);
+
+            actionLabels.add(description);
         }
 
-        
         actionsMap.put("actionNames", actionNames);
         actionsMap.put("actionURLs", actionURLs);
-        actionsMap.put("actionLabels", translatedActionLabels);
+        actionsMap.put("actionLabels", actionLabels);
         model.put(modelName, actionsMap);
     }
 
+    /**
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

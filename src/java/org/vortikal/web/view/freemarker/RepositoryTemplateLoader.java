@@ -39,12 +39,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import freemarker.cache.TemplateLoader;
 
@@ -93,7 +92,7 @@ public class RepositoryTemplateLoader implements TemplateLoader {
         } catch (IOException ex) {
             return -1;
         }
-         
+   
         if (resource == null) return -1;
          
         return resource.getLastModified().getTime();

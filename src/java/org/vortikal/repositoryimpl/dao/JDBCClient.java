@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,6 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
@@ -59,63 +59,73 @@ import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.Document;
 import org.vortikal.repositoryimpl.Lock;
 import org.vortikal.repositoryimpl.Resource;
-import org.vortikal.util.threads.Semaphore;
 import org.vortikal.util.web.URLUtil;
 
 /**
- * This class is going to be a "generic" JDBC database
- * accessor. Currently, only PostgreSQL is supported.
+ * This class is going to be a "generic" JDBC database accessor. Currently, only
+ * PostgreSQL is supported.
  */
-public class JDBCClient extends AbstractDataAccessor 
-    implements ConnectionManager, DisposableBean {
+public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
-    private Semaphore semaphore;
-    private Connection[] connections;
     private String databaseDriver;
+
     private int maxDatabaseConnections = 6;
+
     private String databaseURL;
+
     private String databaseUser;
+
     private String databasePassword;
-    private String databaseDirectory;
+
+    private String repositoryDataDirectory;
+
     private boolean urlEncodeFileNames = false;
 
+    private BasicDataSource pool;
+    
     /**
-     * @param databaseDirectory The databaseDirectory to set.
+     * @param repositoryDataDirectory
+     *            The repositoryDataDirectory to set.
      */
-    public void setDatabaseDirectory(String databaseDirectory) {
-        this.databaseDirectory = databaseDirectory;
+    public void setRepositoryDataDirectory(String repositoryDataDirectory) {
+        this.repositoryDataDirectory = repositoryDataDirectory;
     }
 
     /**
-     * @param databaseDriver The databaseDriver to set.
+     * @param databaseDriver
+     *            The databaseDriver to set.
      */
     public void setDatabaseDriver(String databaseDriver) {
         this.databaseDriver = databaseDriver;
     }
 
     /**
-     * @param databasePassword The databasePassword to set.
+     * @param databasePassword
+     *            The databasePassword to set.
      */
     public void setDatabasePassword(String databasePassword) {
         this.databasePassword = databasePassword;
     }
 
     /**
-     * @param databaseURL The databaseURL to set.
+     * @param databaseURL
+     *            The databaseURL to set.
      */
     public void setDatabaseURL(String databaseURL) {
         this.databaseURL = databaseURL;
     }
 
     /**
-     * @param databaseUser The databaseUser to set.
+     * @param databaseUser
+     *            The databaseUser to set.
      */
     public void setDatabaseUser(String databaseUser) {
         this.databaseUser = databaseUser;
     }
 
     /**
-     * @param maxDatabaseConnections The maxDatabaseConnections to set.
+     * @param maxDatabaseConnections
+     *            The maxDatabaseConnections to set.
      */
     public void setMaxDatabaseConnections(int maxDatabaseConnections) {
         this.maxDatabaseConnections = maxDatabaseConnections;
@@ -125,21 +135,22 @@ public class JDBCClient extends AbstractDataAccessor
         this.urlEncodeFileNames = urlEncodeFileNames;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet()
+            throws Exception {
         super.afterPropertiesSet();
-        
+
         logger.info("Setting up database");
 
-        if (databaseDirectory == null) {
-            throw new IOException("Missing property \"databaseDir\"");
+        if (repositoryDataDirectory == null) {
+            throw new IOException("Missing property \"repositoryDataDirectory\"");
         }
 
-        File root = new File(this.databaseDirectory);
+        File root = new File(this.repositoryDataDirectory);
 
         if (!root.isAbsolute()) {
-            this.databaseDirectory = System.getProperty("vortex.home") +
-                File.separator + databaseDirectory;
-            root = new File(this.databaseDirectory);
+            this.repositoryDataDirectory = System.getProperty("vortex.home") + File.separator
+                    + repositoryDataDirectory;
+            root = new File(this.repositoryDataDirectory);
         }
 
         if (!root.exists()) {
@@ -159,63 +170,40 @@ public class JDBCClient extends AbstractDataAccessor
         }
 
         if (maxDatabaseConnections == 0) {
-            throw new IOException("Missing property " +
-                "\"maxDatabaseConnections\"");
+            throw new IOException("Missing property " + "\"maxDatabaseConnections\"");
         }
 
         if (databaseDriver == null) {
             throw new IOException("Missing property " + "\"databaseDriver\"");
         }
 
-        try {
-            logger.info("Using driver " + databaseDriver);
+        pool = new BasicDataSource();
 
-            Class.forName(databaseDriver);
-        } catch (Exception e) {
-            logger.warn("Couldn't load database driver", e);
-            throw new IOException(e.getMessage());
-        }
-
-        this.semaphore = new Semaphore(maxDatabaseConnections);
-        this.connections = new Connection[maxDatabaseConnections];
-
-        logger.info("Initializing connection pool");
-
-        try {
-            for (int i = 0; i < maxDatabaseConnections; i++) {
-                logger.info("Opening connection " + i);
-
-                Connection conn = DriverManager.getConnection(databaseURL,
-                        databaseUser, databasePassword);
-
-                connections[i] = new ConnectionWrapper(conn, this);
-            }
-        } catch (SQLException e) {
-            logger.warn("Error occurred during initialization", e);
-            throw new IOException(e.getMessage());
-        }
+        logger.info("Using driver " + databaseDriver);
+        pool.setDriverClassName(databaseDriver);
+        pool.setMaxActive(maxDatabaseConnections);
+        pool.setUrl(databaseURL);
+        pool.setUsername(databaseUser);
+        pool.setPassword(databasePassword);
+        pool.setDefaultAutoCommit(false);
     }
 
     /**
      * Gets a connection from the pool with auto commit set to false.
-     *
+     * 
      * @return a <code>Connection</code>
-     * @exception SQLException if an error occurs
+     * @exception SQLException
+     *                if an error occurs
      */
-    public Connection getConnection() throws SQLException {
-        int index = semaphore.down();
-
-        connections[index].setAutoCommit(false);
-
-        return connections[index];
-    }
-
-    public void releaseConnection(Connection conn) throws SQLException {
-        semaphore.up();
+    public Connection getConnection()
+            throws SQLException {
+        Connection conn = pool.getConnection();
+        conn.setAutoCommit(false);     
+        return conn;
     }
 
     private boolean tableExists(Connection conn, String tableName)
-        throws IOException {
+            throws IOException {
         try {
             DatabaseMetaData md = conn.getMetaData();
 
@@ -226,42 +214,38 @@ public class JDBCClient extends AbstractDataAccessor
 
             return exists;
         } catch (SQLException e) {
-            logger.warn("Error occurred while checking for table existance", e);
+            logger.warn("Error occurred while checking for table existance: ", e);
             throw new IOException(e.getMessage());
         }
     }
 
-    public boolean validate() throws IOException {
+    public boolean validate()
+            throws IOException {
         Connection conn = null;
         boolean exists = false;
 
         try {
             conn = getConnection();
-            exists = ((tableExists(conn, "vortex_resource") ||
-                tableExists(conn, "VORTEX_RESOURCE")) &&
-                (tableExists(conn, "parent_child") ||
-                tableExists(conn, "PARENT_CHILD")) &&
-                (tableExists(conn, "lock_type") ||
-                tableExists(conn, "LOCK_TYPE")) &&
-                (tableExists(conn, "vortex_lock") ||
-                tableExists(conn, "VORTEX_LOCK")) &&
-                (tableExists(conn, "action_type") ||
-                tableExists(conn, "ACTION_TYPE")) &&
-                (tableExists(conn, "acl_entry") ||
-                tableExists(conn, "ACL_ENTRY")) &&
-                (tableExists(conn, "extra_prop_entry") ||
-                tableExists(conn, "EXTRA_PROP_ENTRY")));
+            exists = ((tableExists(conn, "vortex_resource") || tableExists(conn,
+                    "VORTEX_RESOURCE"))
+                    && (tableExists(conn, "parent_child") || tableExists(conn,
+                            "PARENT_CHILD"))
+                    && (tableExists(conn, "lock_type") || tableExists(conn, "LOCK_TYPE"))
+                    && (tableExists(conn, "vortex_lock") || tableExists(conn,
+                            "VORTEX_LOCK"))
+                    && (tableExists(conn, "action_type") || tableExists(conn,
+                            "ACTION_TYPE"))
+                    && (tableExists(conn, "acl_entry") || tableExists(conn, "ACL_ENTRY")) && (tableExists(
+                    conn, "extra_prop_entry") || tableExists(conn, "EXTRA_PROP_ENTRY")));
 
             conn.commit();
-            conn.close();
-            conn = null;
 
             if (logger.isDebugEnabled()) {
                 logger.debug(exists ? "All required tables exist"
-                             : "Table(s) are missing");
+                        : "Table(s) are missing");
             }
         } catch (SQLException e) {
-            logger.warn("Error occurred while checking database validity", e);
+            logger.warn("Error occurred while checking database validity: ", e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -277,22 +261,18 @@ public class JDBCClient extends AbstractDataAccessor
         return exists;
     }
 
-    public void destroy() throws IOException {
-        for (int i = 0; i < connections.length; i++) {
-            try {
-                if (this.connections[i] != null) {
-                    logger.info("Closing connection " + i);
-                    this.connections[i].close();
-                    this.connections[i] = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
+    public void destroy()
+            throws IOException {
+        try {
+            pool.close();
+        } catch (SQLException e) {
+            logger.error("Error closing pooled connections:", e);
         }
     }
 
-    public Resource load(String uri) throws IOException {
-        Resource[] result = load(new String[] { uri });
+    public Resource load(String uri)
+            throws IOException {
+        Resource[] result = load(new String[] {uri});
 
         if (result.length == 0) {
             return null;
@@ -302,11 +282,12 @@ public class JDBCClient extends AbstractDataAccessor
             return result[0];
         }
 
-        throw new IOException("Load URI " + uri +
-            ": size of result should be 0 or 1, was " + result.length);
+        throw new IOException("Load URI " + uri
+                + ": size of result should be 0 or 1, was " + result.length);
     }
 
-    public Resource[] load(String[] uris) throws IOException {
+    public Resource[] load(String[] uris)
+            throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("load uris:" + uris[0] + "++");
         }
@@ -317,8 +298,6 @@ public class JDBCClient extends AbstractDataAccessor
             conn = getConnection();
             retVal = load(conn, uris);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             logger.warn("Error occurred while loading resource(s)", e);
             throw new IOException(e.getMessage());
@@ -336,13 +315,8 @@ public class JDBCClient extends AbstractDataAccessor
         return retVal;
     }
 
-
-    
-
-
-
     private Resource[] load(Connection conn, String[] uris)
-        throws SQLException {
+            throws SQLException {
         if (uris.length == 0) {
             return new Resource[0];
         }
@@ -395,10 +369,10 @@ public class JDBCClient extends AbstractDataAccessor
             resource.setCreationTime(rs.getTimestamp("creation_time"));
             resource.setOwner(rs.getString("resource_owner"));
 
-            Date contentLastModified =  //rs.getTimestamp("content_last_modified");
-                new Date(rs.getTimestamp("content_last_modified").getTime());
-            Date propertiesLastModified =  //rs.getTimestamp("properties_last_modified");
-                new Date(rs.getTimestamp("properties_last_modified").getTime());
+            Date contentLastModified = // rs.getTimestamp("content_last_modified");
+            new Date(rs.getTimestamp("content_last_modified").getTime());
+            Date propertiesLastModified = // rs.getTimestamp("properties_last_modified");
+            new Date(rs.getTimestamp("properties_last_modified").getTime());
 
             resource.setContentLastModified(contentLastModified);
             resource.setPropertiesLastModified(propertiesLastModified);
@@ -408,8 +382,8 @@ public class JDBCClient extends AbstractDataAccessor
             resource.setID(rs.getInt("resource_id"));
 
             if (resource instanceof Document) {
-                ((Document) resource).setContentLanguage(rs.getString(
-                        "content_language"));
+                ((Document) resource)
+                        .setContentLanguage(rs.getString("content_language"));
             }
 
             resources.add(resource);
@@ -418,7 +392,7 @@ public class JDBCClient extends AbstractDataAccessor
         rs.close();
         stmt.close();
 
-        Resource[] result = (Resource[]) resources.toArray(new Resource[] {  });
+        Resource[] result = (Resource[]) resources.toArray(new Resource[] {});
 
         loadChildren(conn, result);
         loadACLs(conn, result);
@@ -431,27 +405,23 @@ public class JDBCClient extends AbstractDataAccessor
         return result;
     }
 
-
-
-
-
     /**
      * Loads children for the given resources.
      */
     private void loadChildren(Connection conn, Resource[] resources)
-        throws SQLException {
+            throws SQLException {
         if ((resources == null) || (resources.length == 0)) {
             return;
         }
 
-        String query = "select r.uri, pc.parent_resource_id as parent_id " +
-            "from vortex_resource r inner join parent_child pc " +
-            "on r.resource_id = pc.child_resource_id " +
-            "where pc.parent_resource_id in (";
+        String query = "select r.uri, pc.parent_resource_id as parent_id "
+                + "from vortex_resource r inner join parent_child pc "
+                + "on r.resource_id = pc.child_resource_id "
+                + "where pc.parent_resource_id in (";
 
         for (int i = 0; i < resources.length; i++) {
-            query += ((i < (resources.length - 1))
-            ? (resources[i].getID() + ", ") : (resources[i].getID() + ")"));
+            query += ((i < (resources.length - 1)) ? (resources[i].getID() + ", ")
+                    : (resources[i].getID() + ")"));
         }
 
         Statement stmt = conn.createStatement();
@@ -486,7 +456,7 @@ public class JDBCClient extends AbstractDataAccessor
             String[] children = new String[0];
 
             if (entry != null) {
-                children = (String[]) entry.toArray(new String[] {  });
+                children = (String[]) entry.toArray(new String[] {});
             }
 
             ((Collection) resources[i]).setChildURIs(children);
@@ -494,7 +464,7 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private void loadProperties(Connection conn, Resource[] resources)
-        throws SQLException {
+            throws SQLException {
         if ((resources == null) || (resources.length == 0)) {
             return;
         }
@@ -502,8 +472,8 @@ public class JDBCClient extends AbstractDataAccessor
         String query = "select * from EXTRA_PROP_ENTRY where resource_id in (";
 
         for (int i = 0; i < resources.length; i++) {
-            query += ((i < (resources.length - 1))
-            ? (resources[i].getID() + ", ") : (resources[i].getID() + ")"));
+            query += ((i < (resources.length - 1)) ? (resources[i].getID() + ", ")
+                    : (resources[i].getID() + ")"));
         }
 
         Statement propStmt = conn.createStatement();
@@ -538,8 +508,7 @@ public class JDBCClient extends AbstractDataAccessor
         propStmt.close();
 
         for (int i = 0; i < resources.length; i++) {
-            Map propertyMap = (Map) resourceMap.get(new Integer(
-                        resources[i].getID()));
+            Map propertyMap = (Map) resourceMap.get(new Integer(resources[i].getID()));
 
             if (propertyMap == null) {
                 continue;
@@ -550,14 +519,14 @@ public class JDBCClient extends AbstractDataAccessor
                 String[] prop = (String[]) propertyMap.get(key);
 
                 if (prop != null) {
-                    resources[i].addProperty(prop[namespace], prop[name],
-                        prop[value]);
+                    resources[i].addProperty(prop[namespace], prop[name], prop[value]);
                 }
             }
         }
     }
 
-    public String[] listLockExpired() throws IOException {
+    public String[] listLockExpired()
+            throws IOException {
         Connection conn = null;
         String[] retVal = null;
 
@@ -565,8 +534,6 @@ public class JDBCClient extends AbstractDataAccessor
             conn = getConnection();
             retVal = listLockExpired(conn);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             logger.warn("Error occurred while listing expired locks", e);
             throw new IOException(e.getMessage());
@@ -584,13 +551,14 @@ public class JDBCClient extends AbstractDataAccessor
         return retVal;
     }
 
-    private String[] listLockExpired(Connection conn) throws SQLException {
+    private String[] listLockExpired(Connection conn)
+            throws SQLException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String format = formatter.format(new Date());
 
-        String query = "select r.uri from VORTEX_RESOURCE r, VORTEX_LOCK l " +
-            "where r.resource_id = l.resource_id and " + "l.timeout < '" +
-            format + "'";
+        String query = "select r.uri from VORTEX_RESOURCE r, VORTEX_LOCK l "
+                + "where r.resource_id = l.resource_id and " + "l.timeout < '" + format
+                + "'";
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);
@@ -608,18 +576,17 @@ public class JDBCClient extends AbstractDataAccessor
         rs.close();
         stmt.close();
 
-        return (String[]) resources.toArray(new String[] {  });
+        return (String[]) resources.toArray(new String[] {});
     }
 
-    public void deleteLocks(Resource[] resources) throws IOException {
+    public void deleteLocks(Resource[] resources)
+            throws IOException {
         Connection conn = null;
 
         try {
             conn = getConnection();
             deleteLocks(conn, resources);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             logger.warn("Error occurred while deleting locks", e);
             throw new IOException(e.getMessage());
@@ -636,13 +603,13 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private void deleteLocks(Connection conn, Resource[] resources)
-        throws SQLException {
+            throws SQLException {
         if (resources.length > 0) {
             String query = "delete from VORTEX_LOCK where resource_id in (";
 
             for (int i = 0; i < resources.length; i++) {
-                query += ((i < (resources.length - 1))
-                ? (resources[i].getID() + ", ") : (resources[i].getID() + ")"));
+                query += ((i < (resources.length - 1)) ? (resources[i].getID() + ", ")
+                        : (resources[i].getID() + ")"));
             }
 
             Statement stmt = conn.createStatement();
@@ -652,19 +619,17 @@ public class JDBCClient extends AbstractDataAccessor
         }
     }
 
-    public void addChangeLogEntry(String loggerID, String loggerType,
-        String uri, String operation) throws IOException {
+    public void addChangeLogEntry(String loggerID, String loggerType, String uri,
+            String operation)
+            throws IOException {
         Connection conn = null;
 
         try {
             conn = getConnection();
             addChangeLogEntry(conn, loggerID, loggerType, uri, operation);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
-            logger.warn("Error occurred while adding changelog entry for " +
-                uri, e);
+            logger.warn("Error occurred while adding changelog entry for " + uri, e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -678,13 +643,40 @@ public class JDBCClient extends AbstractDataAccessor
         }
     }
 
-    private void addChangeLogEntry(Connection conn, String loggerID,
-        String loggerType, String uri, String operation)
-        throws SQLException {
-        // Not implemented
+    private void addChangeLogEntry(Connection conn, String loggerID, String loggerType,
+            String uri, String operation)
+            throws SQLException {
+        try {
+            int id = Integer.parseInt(loggerID);
+            int type = Integer.parseInt(loggerType);
+
+            String statement = "INSERT INTO changelog_entry "
+                    + "(changelog_entry_id, logger_id, logger_type, "
+                    + "operation, timestamp, uri) "
+                    + "VALUES (nextval('changelog_entry_seq_pk'), ?, ?, ?, ?, ?)";
+
+            PreparedStatement stmt = (PreparedStatement) conn
+                    .prepareStatement(statement);
+
+//            stmt.setFormOfUse(5, OraclePreparedStatement.FORM_NCHAR);
+
+            stmt.setInt(1, id);
+            stmt.setInt(2, type);
+
+            stmt.setString(3, operation);
+            stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            stmt.setString(5, uri);
+
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (NumberFormatException e) {
+            logger.warn("No changelog entry added! Only numerical types and "
+                    + "IDs are supported by this database backend.");
+        }
     }
 
-    public String[] discoverLocks(Resource directory) throws IOException {
+    public String[] discoverLocks(Resource directory)
+            throws IOException {
         Connection conn = null;
 
         try {
@@ -693,15 +685,12 @@ public class JDBCClient extends AbstractDataAccessor
             if (!(directory instanceof Collection)) {
                 Lock lock = loadLock(conn, directory.getURI());
 
-                return (lock != null) ? new String[] { directory.getURI() }
-                                      : new String[0];
+                return (lock != null) ? new String[] {directory.getURI()} : new String[0];
             }
 
             String[] lockedURIs = discoverLocks(conn, directory);
 
             conn.commit();
-            conn.close();
-            conn = null;
 
             return lockedURIs;
         } catch (SQLException e) {
@@ -720,17 +709,17 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private String[] discoverLocks(Connection conn, Resource directory)
-        throws SQLException {
+            throws SQLException {
         String uri = directory.getURI();
 
         if (!uri.equals("/")) {
             uri += "/";
         }
 
-        String query =
-            "select r.uri, l.* from VORTEX_LOCK l inner join VORTEX_RESOURCE r " +
-            "on l.resource_id = r.resource_id " + "where r.resource_id in (" +
-            "select resource_id from VORTEX_RESOURCE where uri like ?";
+        String query = "select r.uri, l.* from VORTEX_LOCK l inner join VORTEX_RESOURCE r "
+                + "on l.resource_id = r.resource_id "
+                + "where r.resource_id in ("
+                + "select resource_id from VORTEX_RESOURCE where uri like ?";
         PreparedStatement stmt = conn.prepareStatement(query);
 
         stmt.setString(1, uri + "/%");
@@ -744,13 +733,13 @@ public class JDBCClient extends AbstractDataAccessor
             result.add(lockURI);
         }
 
-        return (String[]) result.toArray(new String[] {  });
+        return (String[]) result.toArray(new String[] {});
     }
 
     private Lock loadLock(Connection conn, String uri)
-        throws SQLException {
-        String query = "select * from VORTEX_LOCK where resource_id in (" +
-            "select resource_id from VORTEX_RESOURCE where uri = ?)";
+            throws SQLException {
+        String query = "select * from VORTEX_LOCK where resource_id in ("
+                + "select resource_id from VORTEX_RESOURCE where uri = ?)";
 
         PreparedStatement stmt = conn.prepareStatement(query);
 
@@ -761,9 +750,9 @@ public class JDBCClient extends AbstractDataAccessor
         Lock lock = null;
 
         if (rs.next()) {
-            lock = new Lock(rs.getString("token"), rs.getString("lock_owner"),
-                    rs.getString("lock_owner_info"), rs.getString("depth"),
-                    rs.getDate("timeout"));
+            lock = new Lock(rs.getString("token"), rs.getString("lock_owner"), rs
+                    .getString("lock_owner_info"), rs.getString("depth"), rs
+                    .getDate("timeout"));
         }
 
         rs.close();
@@ -773,14 +762,14 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private Map loadLocks(Connection conn, String[] uris)
-        throws SQLException {
+            throws SQLException {
         if (uris.length == 0) {
             return new HashMap();
         }
 
-        String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r " +
-            "inner join VORTEX_LOCK l on r.resource_id = l.resource_id " +
-            "where r.uri in (";
+        String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
+                + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
+                + "where r.uri in (";
 
         for (int i = 0; i < uris.length; i++) {
             query += ((i < (uris.length - 1)) ? "?, " : "?)");
@@ -796,10 +785,9 @@ public class JDBCClient extends AbstractDataAccessor
         Map result = new HashMap();
 
         while (rs.next()) {
-            Lock lock = new Lock(rs.getString("token"),
-                    rs.getString("lock_owner"),
-                    rs.getString("lock_owner_info"), rs.getString("depth"),
-                    rs.getDate("timeout"));
+            Lock lock = new Lock(rs.getString("token"), rs.getString("lock_owner"), rs
+                    .getString("lock_owner_info"), rs.getString("depth"), rs
+                    .getDate("timeout"));
 
             result.put(rs.getString("uri"), lock);
         }
@@ -810,7 +798,8 @@ public class JDBCClient extends AbstractDataAccessor
         return result;
     }
 
-    public String[] listSubTree(Collection parent) throws IOException {
+    public String[] listSubTree(Collection parent)
+            throws IOException {
         Connection conn = null;
         String[] retVal = null;
 
@@ -818,8 +807,6 @@ public class JDBCClient extends AbstractDataAccessor
             conn = getConnection();
             retVal = listSubTree(conn, parent);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             logger.warn("Error occurred while listing resource tree", e);
             throw new IOException(e.getMessage());
@@ -838,9 +825,9 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private String[] listSubTree(Connection conn, Collection parent)
-        throws SQLException {
+            throws SQLException {
         if (parent.getURI() == null) {
-            return new String[] {  };
+            return new String[] {};
         }
 
         String uri = parent.getURI();
@@ -849,8 +836,8 @@ public class JDBCClient extends AbstractDataAccessor
             uri += "/";
         }
 
-        String query = "select uri from VORTEX_RESOURCE " +
-            "where uri like ? order by uri asc";
+        String query = "select uri from VORTEX_RESOURCE "
+                + "where uri like ? order by uri asc";
 
         PreparedStatement stmt = conn.prepareStatement(query);
 
@@ -869,18 +856,17 @@ public class JDBCClient extends AbstractDataAccessor
         rs.close();
         stmt.close();
 
-        return (String[]) l.toArray(new String[] {  });
+        return (String[]) l.toArray(new String[] {});
     }
 
-    public void store(Resource r) throws IOException {
+    public void store(Resource r)
+            throws IOException {
         Connection conn = null;
 
         try {
             conn = getConnection();
             store(conn, r);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             logger.warn("Error occurred while storing resource " + r.getURI(), e);
             throw new IOException(e.getMessage());
@@ -897,7 +883,7 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private void store(Connection conn, Resource r)
-        throws SQLException, IOException {
+            throws SQLException, IOException {
         String uri = r.getURI();
         String parent = r.getParentURI();
 
@@ -908,8 +894,8 @@ public class JDBCClient extends AbstractDataAccessor
         String displayName = r.getDisplayName();
 
         if ((displayName == null) || displayName.trim().equals("")) {
-            // r.displayname should not return null or "" anymore, but 
-            // clients might mess this up ?             
+            // r.displayname should not return null or "" anymore, but
+            // clients might mess this up ?
             displayName = "shouldn't happen!";
 
             /* displayName = r.getURI(); */
@@ -936,8 +922,7 @@ public class JDBCClient extends AbstractDataAccessor
 
         String propertiesModifiedBy = r.getPropertiesModifiedBy();
 
-        if ((propertiesModifiedBy == null) ||
-                propertiesModifiedBy.trim().equals("")) {
+        if ((propertiesModifiedBy == null) || propertiesModifiedBy.trim().equals("")) {
             throw new SQLException("Field 'propertiesModifiedBy'must be set");
         }
 
@@ -964,15 +949,15 @@ public class JDBCClient extends AbstractDataAccessor
 
         if (existed) {
             // Save the VORTEX_RESOURCE table entry:
-            PreparedStatement stmt = conn.prepareStatement(
-                    "update VORTEX_RESOURCE set " +
-                    "content_last_modified = ?, " +
-                    "properties_last_modified = ?, " +
-                    "content_modified_by = ?, " +
-                    "properties_modified_by = ?, " + "resource_owner = ?, " +
-                    "display_name = ?, " + "content_language = ?, " +
-                    "content_type = ?, " + "character_encoding = ?, " +
-                    "creation_time = ? " + "where uri = ?");
+            PreparedStatement stmt = conn
+                    .prepareStatement("update VORTEX_RESOURCE set "
+                            + "content_last_modified = ?, "
+                            + "properties_last_modified = ?, "
+                            + "content_modified_by = ?, "
+                            + "properties_modified_by = ?, " + "resource_owner = ?, "
+                            + "display_name = ?, " + "content_language = ?, "
+                            + "content_type = ?, " + "character_encoding = ?, "
+                            + "creation_time = ? " + "where uri = ?");
 
             stmt.setTimestamp(1, new Timestamp(contentLastModified.getTime()));
             stmt.setTimestamp(2, new Timestamp(propertiesLastModified.getTime()));
@@ -990,10 +975,10 @@ public class JDBCClient extends AbstractDataAccessor
             stmt.close();
         } else {
             insertResourceEntry(conn, uri, creationTime, contentLastModified,
-                propertiesLastModified, displayName, owner, contentModifiedBy,
-                propertiesModifiedBy, contentLanguage, contentType,
-                characterEncoding,
-                "application/x-vortex-collection".equals(contentType), parent);
+                    propertiesLastModified, displayName, owner, contentModifiedBy,
+                    propertiesModifiedBy, contentLanguage, contentType,
+                    characterEncoding, "application/x-vortex-collection"
+                            .equals(contentType), parent);
         }
 
         // Save the ACL:
@@ -1006,28 +991,26 @@ public class JDBCClient extends AbstractDataAccessor
         storeProperties(conn, r);
     }
 
-    private void insertResourceEntry(Connection conn, String uri,
-        Date creationTime, Date contentLastModified,
-        Date propertiesLastModified, String displayname, String owner,
-        String contentModifiedBy, String propertiesModifiedBy,
-        String contentlanguage, String contenttype, String characterEncoding,
-        boolean isCollection, String parent) throws SQLException, IOException {
-        String statement = "insert into VORTEX_RESOURCE " +
-            "(resource_id, uri, creation_time, content_last_modified, properties_last_modified, " +
-            "content_modified_by, properties_modified_by, " +
-            "resource_owner, display_name, " +
-            "content_language, content_type, character_encoding, is_collection, acl_inherited) " +
-            "values (nextval('vortex_resource_seq_pk'), " +
-            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private void insertResourceEntry(Connection conn, String uri, Date creationTime,
+            Date contentLastModified, Date propertiesLastModified, String displayname,
+            String owner, String contentModifiedBy, String propertiesModifiedBy,
+            String contentlanguage, String contenttype, String characterEncoding,
+            boolean isCollection, String parent)
+            throws SQLException, IOException {
+        String statement = "insert into VORTEX_RESOURCE "
+                + "(resource_id, uri, creation_time, content_last_modified, properties_last_modified, "
+                + "content_modified_by, properties_modified_by, "
+                + "resource_owner, display_name, "
+                + "content_language, content_type, character_encoding, is_collection, acl_inherited) "
+                + "values (nextval('vortex_resource_seq_pk'), "
+                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement stmt = conn.prepareStatement(statement);
 
         stmt.setString(1, uri);
         stmt.setTimestamp(2, new java.sql.Timestamp(creationTime.getTime()));
-        stmt.setTimestamp(3,
-            new java.sql.Timestamp(contentLastModified.getTime()));
-        stmt.setTimestamp(4,
-            new java.sql.Timestamp(propertiesLastModified.getTime()));
+        stmt.setTimestamp(3, new java.sql.Timestamp(contentLastModified.getTime()));
+        stmt.setTimestamp(4, new java.sql.Timestamp(propertiesLastModified.getTime()));
         stmt.setString(5, contentModifiedBy);
         stmt.setString(6, propertiesModifiedBy);
         stmt.setString(7, owner);
@@ -1044,10 +1027,10 @@ public class JDBCClient extends AbstractDataAccessor
         int parentID;
         int childID;
 
-        stmt = conn.prepareStatement("select parent.resource_id as parent_id, " +
-                "child.resource_id as child_id from VORTEX_RESOURCE parent, " +
-                "VORTEX_RESOURCE child " + "where parent.uri = ? " +
-                "and child.uri = ?");
+        stmt = conn.prepareStatement("select parent.resource_id as parent_id, "
+                + "child.resource_id as child_id from VORTEX_RESOURCE parent, "
+                + "VORTEX_RESOURCE child " + "where parent.uri = ? "
+                + "and child.uri = ?");
 
         stmt.setString(1, parent);
         stmt.setString(2, uri);
@@ -1065,9 +1048,9 @@ public class JDBCClient extends AbstractDataAccessor
         rs.close();
         stmt.close();
 
-        stmt = conn.prepareStatement("insert into PARENT_CHILD " +
-                "(parent_child_id, parent_resource_id, child_resource_id) " +
-                "values (nextval('parent_child_seq_pk'), ?, ?)");
+        stmt = conn.prepareStatement("insert into PARENT_CHILD "
+                + "(parent_child_id, parent_resource_id, child_resource_id) "
+                + "values (nextval('parent_child_seq_pk'), ?, ?)");
 
         stmt.setInt(1, parentID);
         stmt.setInt(2, childID);
@@ -1075,8 +1058,8 @@ public class JDBCClient extends AbstractDataAccessor
         stmt.executeUpdate();
         stmt.close();
 
-        String fileName = this.databaseDirectory +
-            ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+        String fileName = this.repositoryDataDirectory
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
 
         if (isCollection) {
             if (logger.isDebugEnabled()) {
@@ -1094,14 +1077,13 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private void storeLock(Connection conn, Resource r)
-        throws SQLException {
+            throws SQLException {
         Lock lock = r.getLock();
 
         if (lock == null) {
             Statement stmt = conn.createStatement();
 
-            stmt.execute("delete from VORTEX_LOCK where resource_id = " +
-                r.getID());
+            stmt.execute("delete from VORTEX_LOCK where resource_id = " + r.getID());
             stmt.close();
         }
 
@@ -1114,17 +1096,16 @@ public class JDBCClient extends AbstractDataAccessor
             String depth = lock.getDepth();
 
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "select * from VORTEX_LOCK where token = '" + lockToken +
-                    "'");
+            ResultSet rs = stmt.executeQuery("select * from VORTEX_LOCK where token = '"
+                    + lockToken + "'");
             boolean exists = rs.next();
 
             rs.close();
             stmt.close();
 
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select lock_type_id from LOCK_TYPE where " +
-                    "name = '" + type + "'");
+            rs = stmt.executeQuery("select lock_type_id from LOCK_TYPE where "
+                    + "name = '" + type + "'");
 
             if (!rs.next()) {
                 rs.close();
@@ -1138,28 +1119,27 @@ public class JDBCClient extends AbstractDataAccessor
             stmt.close();
 
             if (exists) {
-                PreparedStatement updateStmt = conn.prepareStatement(
-                        "update VORTEX_LOCK set " +
-                        "lock_type_id = ?, lock_owner = ?, lock_owner_info = ?, " +
-                        "depth = ?, timeout = ? " + "where token = ?");
+                PreparedStatement updateStmt = conn
+                        .prepareStatement("update VORTEX_LOCK set "
+                                + "lock_type_id = ?, lock_owner = ?, lock_owner_info = ?, "
+                                + "depth = ?, timeout = ? " + "where token = ?");
 
                 updateStmt.setInt(1, lockType);
                 updateStmt.setString(2, user);
                 updateStmt.setString(3, ownerInfo);
                 updateStmt.setString(4, depth);
-                updateStmt.setTimestamp(5,
-                    new java.sql.Timestamp(timeout.getTime()));
+                updateStmt.setTimestamp(5, new java.sql.Timestamp(timeout.getTime()));
                 updateStmt.setString(6, lockToken);
 
                 updateStmt.executeUpdate();
                 updateStmt.close();
             } else {
-                PreparedStatement insertStmt = conn.prepareStatement(
-                        "insert into VORTEX_LOCK " +
-                        "(lock_id, token, resource_id, lock_type_id, lock_owner, " +
-                        "lock_owner_info, depth, timeout) " +
-                        "values (nextval('vortex_lock_seq_pk'), " +
-                        "?, ?, ?, ?, ?, ?, ?)");
+                PreparedStatement insertStmt = conn
+                        .prepareStatement("insert into VORTEX_LOCK "
+                                + "(lock_id, token, resource_id, lock_type_id, lock_owner, "
+                                + "lock_owner_info, depth, timeout) "
+                                + "values (nextval('vortex_lock_seq_pk'), "
+                                + "?, ?, ?, ?, ?, ?, ?)");
 
                 insertStmt.setString(1, lockToken);
                 insertStmt.setInt(2, r.getID());
@@ -1167,8 +1147,7 @@ public class JDBCClient extends AbstractDataAccessor
                 insertStmt.setString(4, user);
                 insertStmt.setString(5, ownerInfo);
                 insertStmt.setString(6, depth);
-                insertStmt.setTimestamp(7,
-                    new java.sql.Timestamp(timeout.getTime()));
+                insertStmt.setTimestamp(7, new java.sql.Timestamp(timeout.getTime()));
 
                 insertStmt.executeUpdate();
                 insertStmt.close();
@@ -1177,11 +1156,11 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private void storeACL(Connection conn, Resource r)
-        throws SQLException {
+            throws SQLException {
         // first, check if existing ACL is inherited:
         Resource existingResource = null;
 
-        Resource[] result = load(conn, new String[] { r.getURI() });
+        Resource[] result = load(conn, new String[] {r.getURI()});
 
         if (result.length != 1) {
             throw new SQLException("Database inconsistency. FIXME.");
@@ -1204,28 +1183,30 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     private void insertACL(Connection conn, Resource r)
-        throws SQLException {
+            throws SQLException {
         Map aclMap = r.getACL().getActionMap();
 
         Set actions = aclMap.keySet();
 
-        /* First, delete any previously defined ACEs for this
-         * resource: */
+        /*
+         * First, delete any previously defined ACEs for this resource:
+         */
         Statement deleteStatement = conn.createStatement();
 
-        deleteStatement.executeUpdate("delete from ACL_ENTRY where " +
-            "resource_id = " + r.getID());
+        deleteStatement.executeUpdate("delete from ACL_ENTRY where " + "resource_id = "
+                + r.getID());
 
         deleteStatement.close();
 
         if (r.getInheritedACL()) {
-            /* The ACL is inherited. Update resource entry to
-             * reflect this situation (and return) */
+            /*
+             * The ACL is inherited. Update resource entry to reflect this
+             * situation (and return)
+             */
             Statement updateStmt = conn.createStatement();
 
-            updateStmt.executeUpdate(
-                "update VORTEX_RESOURCE set acl_inherited = 'Y' " +
-                "where resource_id = " + r.getID());
+            updateStmt.executeUpdate("update VORTEX_RESOURCE set acl_inherited = 'Y' "
+                    + "where resource_id = " + r.getID());
             updateStmt.close();
 
             return;
@@ -1235,36 +1216,36 @@ public class JDBCClient extends AbstractDataAccessor
         for (Iterator i = actions.iterator(); i.hasNext();) {
             String action = (String) i.next();
 
-            for (Iterator j = ((List) aclMap.get(action)).iterator();
-                    j.hasNext();) {
+            for (Iterator j = ((List) aclMap.get(action)).iterator(); j.hasNext();) {
                 ACLPrincipal p = (ACLPrincipal) j.next();
 
                 insertACLEntry(conn, action, r, p);
             }
         }
 
-        /* At this point, we know that the ACL is not
-         * inherited. Update the inheritance flag in the resource
-         * entry: */
+        /*
+         * At this point, we know that the ACL is not inherited. Update the
+         * inheritance flag in the resource entry:
+         */
         Statement updateStmt = conn.createStatement();
 
-        updateStmt.executeUpdate(
-            "update VORTEX_RESOURCE set acl_inherited = 'N' " +
-            "where resource_id = " + r.getID());
+        updateStmt.executeUpdate("update VORTEX_RESOURCE set acl_inherited = 'N' "
+                + "where resource_id = " + r.getID());
         updateStmt.close();
     }
 
-    private void insertACLEntry(Connection conn, String action,
-        Resource resource, ACLPrincipal p) throws SQLException {
+    private void insertACLEntry(Connection conn, String action, Resource resource,
+            ACLPrincipal p)
+            throws SQLException {
         Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("select action_type_id from " +
-                "ACTION_TYPE where name = '" + action + "'");
+        ResultSet rs = stmt.executeQuery("select action_type_id from "
+                + "ACTION_TYPE where name = '" + action + "'");
 
         if (!rs.next()) {
             rs.close();
             stmt.close();
-            throw new SQLException("Database.insertACLEntry(): Unable to " +
-                "find id for action '" + action + "'");
+            throw new SQLException("Database.insertACLEntry(): Unable to "
+                    + "find id for action '" + action + "'");
         }
 
         int actionID = rs.getInt("action_type_id");
@@ -1272,32 +1253,31 @@ public class JDBCClient extends AbstractDataAccessor
         rs.close();
         stmt.close();
 
-        PreparedStatement insertStmt = conn.prepareStatement(
-                "insert into ACL_ENTRY (acl_entry_id, action_type_id, " +
-                "resource_id, user_or_group_name, " +
-                "is_user, granted_by_user_name, granted_date) " +
-                "values (nextval('acl_entry_seq_pk'), ?, ?, ?, ?, ?, ?)");
+        PreparedStatement insertStmt = conn
+                .prepareStatement("insert into ACL_ENTRY (acl_entry_id, action_type_id, "
+                        + "resource_id, user_or_group_name, "
+                        + "is_user, granted_by_user_name, granted_date) "
+                        + "values (nextval('acl_entry_seq_pk'), ?, ?, ?, ?, ?, ?)");
 
         insertStmt.setInt(1, actionID);
         insertStmt.setInt(2, resource.getID());
         insertStmt.setString(3, p.getUrl());
         insertStmt.setString(4, p.isGroup() ? "N" : "Y");
         insertStmt.setString(5, resource.getOwner());
-        insertStmt.setTimestamp(6,
-            new java.sql.Timestamp(System.currentTimeMillis()));
+        insertStmt.setTimestamp(6, new java.sql.Timestamp(System.currentTimeMillis()));
 
         insertStmt.executeUpdate();
         insertStmt.close();
     }
 
     private void storeProperties(Connection conn, Resource r)
-        throws SQLException {
+            throws SQLException {
         Vector properties = r.getProperties();
 
         Statement deleteStatement = conn.createStatement();
 
-        deleteStatement.executeUpdate("delete from EXTRA_PROP_ENTRY where " +
-            "resource_id = '" + r.getID() + "'");
+        deleteStatement.executeUpdate("delete from EXTRA_PROP_ENTRY where "
+                + "resource_id = '" + r.getID() + "'");
 
         deleteStatement.close();
 
@@ -1312,12 +1292,13 @@ public class JDBCClient extends AbstractDataAccessor
         }
     }
 
-    private void insertPropertyEntry(Connection conn, Resource r,
-        String namespace, String name, String value) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement(
-                "insert into EXTRA_PROP_ENTRY (extra_prop_entry_id, resource_id, " +
-                "name_space, name, value) " +
-                "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)");
+    private void insertPropertyEntry(Connection conn, Resource r, String namespace,
+            String name, String value)
+            throws SQLException {
+        PreparedStatement stmt = conn
+                .prepareStatement("insert into EXTRA_PROP_ENTRY (extra_prop_entry_id, resource_id, "
+                        + "name_space, name, value) "
+                        + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)");
 
         stmt.setInt(1, r.getID());
         stmt.setString(2, namespace);
@@ -1328,15 +1309,14 @@ public class JDBCClient extends AbstractDataAccessor
         stmt.close();
     }
 
-    public void delete(Resource resource) throws IOException {
+    public void delete(Resource resource)
+            throws IOException {
         Connection conn = null;
 
         try {
             conn = getConnection();
             delete(conn, resource);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
         } finally {
@@ -1352,10 +1332,10 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     public void delete(Connection conn, Resource resource)
-        throws SQLException {
-        String query = "delete from ACL_ENTRY where resource_id in (" +
-            "select resource_id from VORTEX_RESOURCE " +
-            "where uri like ? or resource_id = ?)";
+            throws SQLException {
+        String query = "delete from ACL_ENTRY where resource_id in ("
+                + "select resource_id from VORTEX_RESOURCE "
+                + "where uri like ? or resource_id = ?)";
         PreparedStatement stmt = conn.prepareStatement(query);
 
         stmt.setString(1, resource.getURI() + "/%");
@@ -1363,45 +1343,45 @@ public class JDBCClient extends AbstractDataAccessor
         stmt.executeUpdate();
         stmt.close();
 
-        query = "delete from VORTEX_LOCK where resource_id in (" +
-            "select resource_id from VORTEX_RESOURCE " +
-            "where uri like ? or resource_id = ?)";
+        query = "delete from VORTEX_LOCK where resource_id in ("
+                + "select resource_id from VORTEX_RESOURCE "
+                + "where uri like ? or resource_id = ?)";
         stmt = conn.prepareStatement(query);
         stmt.setString(1, resource.getURI() + "/%");
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
 
-        query = "delete from PARENT_CHILD where child_resource_id in (" +
-            "select resource_id from VORTEX_RESOURCE " +
-            "where uri like ? or resource_id = ?)";
+        query = "delete from PARENT_CHILD where child_resource_id in ("
+                + "select resource_id from VORTEX_RESOURCE "
+                + "where uri like ? or resource_id = ?)";
         stmt = conn.prepareStatement(query);
         stmt.setString(1, resource.getURI() + "/%");
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
 
-        query = "delete from EXTRA_PROP_ENTRY where resource_id in (" +
-            "select resource_id from VORTEX_RESOURCE " +
-            "where uri like ? or resource_id = ?)";
+        query = "delete from EXTRA_PROP_ENTRY where resource_id in ("
+                + "select resource_id from VORTEX_RESOURCE "
+                + "where uri like ? or resource_id = ?)";
         stmt = conn.prepareStatement(query);
         stmt.setString(1, resource.getURI() + "/%");
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
 
-        query = "delete from VORTEX_RESOURCE where resource_id in (" +
-            "select resource_id from VORTEX_RESOURCE " +
-            "where uri like ? or resource_id = ?)";
+        query = "delete from VORTEX_RESOURCE where resource_id in ("
+                + "select resource_id from VORTEX_RESOURCE "
+                + "where uri like ? or resource_id = ?)";
         stmt = conn.prepareStatement(query);
         stmt.setString(1, resource.getURI() + "/%");
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
 
-        String fileName = this.databaseDirectory +
-            ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                                       : resource.getURI());
+        String fileName = this.repositoryDataDirectory
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
+                        : resource.getURI());
 
         deleteFiles(new File(fileName));
     }
@@ -1423,40 +1403,40 @@ public class JDBCClient extends AbstractDataAccessor
     }
 
     public InputStream getInputStream(Resource resource)
-        throws IOException {
-        String fileName = this.databaseDirectory +
-            ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                                       : resource.getURI());
+            throws IOException {
+        String fileName = this.repositoryDataDirectory
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
+                        : resource.getURI());
 
         return new java.io.FileInputStream(new File(fileName));
     }
 
     public OutputStream getOutputStream(Resource resource)
-        throws IOException {
-        String fileName = this.databaseDirectory +
-            ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                                       : resource.getURI());
+            throws IOException {
+        String fileName = this.repositoryDataDirectory
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
+                        : resource.getURI());
 
         return new java.io.FileOutputStream(new File(fileName));
     }
 
-    public long getContentLength(Resource resource) throws IOException {
-        String fileName = this.databaseDirectory +
-            ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                                       : resource.getURI());
+    public long getContentLength(Resource resource)
+            throws IOException {
+        String fileName = this.repositoryDataDirectory
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
+                        : resource.getURI());
 
         return new File(fileName).length();
     }
 
+    protected void executeACLQuery(Connection conn, Map acls)
+            throws SQLException {
 
-
-    protected void executeACLQuery(Connection conn, Map acls) throws SQLException {
-
-        String query = "select r.uri, a.*, t.namespace as action_namespace, " 
-            + "t.name as action_name from ACL_ENTRY a "
-            + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
-            + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
-            + "where r.uri in (";
+        String query = "select r.uri, a.*, t.namespace as action_namespace, "
+                + "t.name as action_name from ACL_ENTRY a "
+                + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
+                + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
+                + "where r.uri in (";
 
         int n = acls.size();
         for (int i = 0; i < n; i++) {
@@ -1473,7 +1453,7 @@ public class JDBCClient extends AbstractDataAccessor
 
             String uri = rs.getString("uri");
             String action = rs.getString("action_name");
-        
+
             ACL acl = (ACL) acls.get(uri);
 
             if (acl == null) {
@@ -1490,29 +1470,21 @@ public class JDBCClient extends AbstractDataAccessor
                 actionMap.put(action, actionEntry);
             }
 
-            actionEntry.add(new ACLPrincipal(
-                                rs.getString("user_or_group_name"),
-                                rs.getString("is_user").equals("N")));
+            actionEntry.add(new ACLPrincipal(rs.getString("user_or_group_name"), rs
+                    .getString("is_user").equals("N")));
         }
 
         rs.close();
         stmt.close();
     }
 
-
-
-
-
-
     /*
      * New Stuff (implementing DataAccessor.loadChildren())
      * 
      */
 
-
-
-
-    public Resource[] loadChildren(Collection parent) throws IOException {
+    public Resource[] loadChildren(Collection parent)
+            throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("load children:" + parent.getURI());
         }
@@ -1523,11 +1495,8 @@ public class JDBCClient extends AbstractDataAccessor
             conn = getConnection();
             retVal = loadChildren(conn, parent);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
-            logger.warn("Error occurred while loading children: "
-                        + parent.getURI(), e);
+            logger.warn("Error occurred while loading children: " + parent.getURI(), e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -1542,19 +1511,18 @@ public class JDBCClient extends AbstractDataAccessor
 
         return retVal;
     }
-    
 
     private Resource[] loadChildren(Connection conn, Collection parent)
-        throws SQLException {
-        
+            throws SQLException {
+
         Map locks = loadLocksForChildren(conn, parent);
-        
+
         String query = "select r.* from VORTEX_RESOURCE r where r.resource_id in ("
-            + "select child_resource_id from PARENT_CHILD "
-            + "where parent_resource_id = " + parent.getID() + ")";
-        
+                + "select child_resource_id from PARENT_CHILD "
+                + "where parent_resource_id = " + parent.getID() + ")";
+
         PreparedStatement stmt = conn.prepareStatement(query);
-        
+
         ResultSet rs = stmt.executeQuery();
         List resources = new ArrayList();
 
@@ -1589,10 +1557,10 @@ public class JDBCClient extends AbstractDataAccessor
             resource.setCreationTime(rs.getTimestamp("creation_time"));
             resource.setOwner(rs.getString("resource_owner"));
 
-            Date contentLastModified =  //rs.getTimestamp("content_last_modified");
-                new Date(rs.getTimestamp("content_last_modified").getTime());
-            Date propertiesLastModified =  //rs.getTimestamp("properties_last_modified");
-                new Date(rs.getTimestamp("properties_last_modified").getTime());
+            Date contentLastModified = // rs.getTimestamp("content_last_modified");
+            new Date(rs.getTimestamp("content_last_modified").getTime());
+            Date propertiesLastModified = // rs.getTimestamp("properties_last_modified");
+            new Date(rs.getTimestamp("properties_last_modified").getTime());
 
             resource.setContentLastModified(contentLastModified);
             resource.setPropertiesLastModified(propertiesLastModified);
@@ -1602,8 +1570,8 @@ public class JDBCClient extends AbstractDataAccessor
             resource.setID(rs.getInt("resource_id"));
 
             if (resource instanceof Document) {
-                ((Document) resource).setContentLanguage(rs.getString(
-                        "content_language"));
+                ((Document) resource)
+                        .setContentLanguage(rs.getString("content_language"));
             }
 
             resources.add(resource);
@@ -1625,19 +1593,16 @@ public class JDBCClient extends AbstractDataAccessor
         return result;
     }
 
-
-    
-
     private void loadChildrenForChildren(Connection conn, Collection parent,
-                                         Resource[] resources)
-        throws SQLException {
+            Resource[] resources)
+            throws SQLException {
 
         String query = "select r.uri as uri, pc.parent_resource_id as parent_id "
-            + "from vortex_resource r inner join parent_child pc "
-            + "on r.resource_id = pc.child_resource_id "
-            + "and pc.parent_resource_id in "
-            + "(select CHILD_RESOURCE_ID from PARENT_CHILD "
-            + "where parent_resource_id = " + parent.getID() + ")";
+                + "from vortex_resource r inner join parent_child pc "
+                + "on r.resource_id = pc.child_resource_id "
+                + "and pc.parent_resource_id in "
+                + "(select CHILD_RESOURCE_ID from PARENT_CHILD "
+                + "where parent_resource_id = " + parent.getID() + ")";
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);
@@ -1678,12 +1643,9 @@ public class JDBCClient extends AbstractDataAccessor
         }
     }
 
-
-
-    
     protected void loadACLsForChildren(Connection conn, Collection parent,
-                                       Resource[] resources)
-        throws SQLException {
+            Resource[] resources)
+            throws SQLException {
 
         if (resources == null || resources.length == 0) {
             return;
@@ -1691,12 +1653,12 @@ public class JDBCClient extends AbstractDataAccessor
 
         Map acls = new HashMap();
         String[] parentPath = URLUtil.splitUriIncrementally(parent.getURI());
-        for (int i = parentPath.length -1; i >= 0; i--) {
+        for (int i = parentPath.length - 1; i >= 0; i--) {
             if (!acls.containsKey(parentPath[i])) {
                 acls.put(parentPath[i], null);
             }
         }
-            
+
         for (int i = 0; i < resources.length; i++) {
 
             /* Initialize (empty) ACL for resource: */
@@ -1707,20 +1669,19 @@ public class JDBCClient extends AbstractDataAccessor
         if (acls.size() == 0) {
             throw new SQLException("No ancestor path");
         }
-    
 
-        /* Populate the parent ACL map (these are all the ACLs that
-         * will be needed) */
+        /*
+         * Populate the parent ACL map (these are all the ACLs that will be
+         * needed)
+         */
 
-
-        String query = "select r.uri, a.*, t.namespace as action_namespace, " 
-            + "t.name as action_name from ACL_ENTRY a "
-            + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
-            + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
-            + "where r.resource_id in "
-            + "(select child_resource_id from parent_child "
-            + "where parent_resource_id = " + parent.getID() + ") "
-            + "or r.uri in (";
+        String query = "select r.uri, a.*, t.namespace as action_namespace, "
+                + "t.name as action_name from ACL_ENTRY a "
+                + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
+                + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
+                + "where r.resource_id in "
+                + "(select child_resource_id from parent_child "
+                + "where parent_resource_id = " + parent.getID() + ") " + "or r.uri in (";
 
         int n = acls.size();
         for (int i = 0; i < n; i++) {
@@ -1737,7 +1698,7 @@ public class JDBCClient extends AbstractDataAccessor
 
             String uri = rs.getString("uri");
             String action = rs.getString("action_name");
-        
+
             ACL acl = (ACL) acls.get(uri);
 
             if (acl == null) {
@@ -1754,17 +1715,17 @@ public class JDBCClient extends AbstractDataAccessor
                 actionMap.put(action, actionEntry);
             }
 
-            actionEntry.add(new ACLPrincipal(
-                                rs.getString("user_or_group_name"),
-                                rs.getString("is_user").equals("N")));
+            actionEntry.add(new ACLPrincipal(rs.getString("user_or_group_name"), rs
+                    .getString("is_user").equals("N")));
         }
 
         rs.close();
         stmt.close();
 
-
-        /* The ACL map is now populated. Walk trough every resource
-         * and see if there is an ACL entry: */
+        /*
+         * The ACL map is now populated. Walk trough every resource and see if
+         * there is an ACL entry:
+         */
 
         for (int i = 0; i < resources.length; i++) {
 
@@ -1772,20 +1733,18 @@ public class JDBCClient extends AbstractDataAccessor
             ACL acl = null;
 
             if (!resource.getInheritedACL()) {
-            
+
                 if (!acls.containsKey(resource.getURI())) {
-                    throw new SQLException(
-                        "Database inconsistency: resource " +
-                        resource.getURI() + " claims  ACL is inherited, " +
-                        "but no ACL exists");
+                    throw new SQLException("Database inconsistency: resource "
+                            + resource.getURI() + " claims  ACL is inherited, "
+                            + "but no ACL exists");
                 }
-                
+
                 acl = (ACL) acls.get(resource.getURI());
 
             } else {
 
-                String[] path = URLUtil.splitUriIncrementally(
-                    resource.getURI());
+                String[] path = URLUtil.splitUriIncrementally(resource.getURI());
 
                 for (int j = path.length - 2; j >= 0; j--) {
 
@@ -1793,21 +1752,23 @@ public class JDBCClient extends AbstractDataAccessor
 
                     if (found != null) {
                         try {
-                            /* We have to clone the ACL here, because ACLs
-                             * and resources are "doubly linked". */
+                            /*
+                             * We have to clone the ACL here, because ACLs and
+                             * resources are "doubly linked".
+                             */
                             acl = (ACL) found.clone();
                         } catch (CloneNotSupportedException e) {
                             throw new SQLException(e.getMessage());
                         }
 
                         break;
-                    }                
+                    }
                 }
 
                 if (acl == null) {
-                    throw new SQLException("Resource " + resource.getURI() +
-                                           ": no ACL to inherit! At least root " +
-                                           "resource should contain an ACL");
+                    throw new SQLException("Resource " + resource.getURI()
+                            + ": no ACL to inherit! At least root "
+                            + "resource should contain an ACL");
                 }
             }
 
@@ -1815,17 +1776,16 @@ public class JDBCClient extends AbstractDataAccessor
         }
     }
 
-
     private void loadPropertiesForChildren(Connection conn, Collection parent,
-                                         Resource[] resources)
-        throws SQLException {
+            Resource[] resources)
+            throws SQLException {
         if ((resources == null) || (resources.length == 0)) {
             return;
         }
 
         String query = "select * from EXTRA_PROP_ENTRY where resource_id in ("
-            + "select child_resource_id from parent_child "
-            + "where parent_resource_id = " + parent.getID() + ")";
+                + "select child_resource_id from parent_child "
+                + "where parent_resource_id = " + parent.getID() + ")";
 
         Statement propStmt = conn.createStatement();
         ResultSet rs = propStmt.executeQuery(query);
@@ -1859,8 +1819,7 @@ public class JDBCClient extends AbstractDataAccessor
         propStmt.close();
 
         for (int i = 0; i < resources.length; i++) {
-            Map propertyMap = (Map) resourceMap.get(new Integer(
-                        resources[i].getID()));
+            Map propertyMap = (Map) resourceMap.get(new Integer(resources[i].getID()));
 
             if (propertyMap == null) {
                 continue;
@@ -1871,20 +1830,19 @@ public class JDBCClient extends AbstractDataAccessor
                 String[] prop = (String[]) propertyMap.get(key);
 
                 if (prop != null) {
-                    resources[i].addProperty(prop[namespace], prop[name],
-                        prop[value]);
+                    resources[i].addProperty(prop[namespace], prop[name], prop[value]);
                 }
             }
         }
     }
 
     private Map loadLocksForChildren(Connection conn, Collection parent)
-        throws SQLException {
+            throws SQLException {
 
-        String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r " +
-            "inner join VORTEX_LOCK l on r.resource_id = l.resource_id " +
-            "where r.resource_id in (select child_resource_id from parent_child " +
-            "where parent_resource_id = " + parent.getID() + ")";
+        String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
+                + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
+                + "where r.resource_id in (select child_resource_id from parent_child "
+                + "where parent_resource_id = " + parent.getID() + ")";
 
         PreparedStatement stmt = conn.prepareStatement(query);
 
@@ -1892,10 +1850,9 @@ public class JDBCClient extends AbstractDataAccessor
         Map result = new HashMap();
 
         while (rs.next()) {
-            Lock lock = new Lock(rs.getString("token"),
-                    rs.getString("lock_owner"),
-                    rs.getString("lock_owner_info"), rs.getString("depth"),
-                    rs.getDate("timeout"));
+            Lock lock = new Lock(rs.getString("token"), rs.getString("lock_owner"), rs
+                    .getString("lock_owner_info"), rs.getString("depth"), rs
+                    .getDate("timeout"));
 
             result.put(rs.getString("uri"), lock);
         }

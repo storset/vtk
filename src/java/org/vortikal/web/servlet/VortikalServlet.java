@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.servlet;
 
-
-
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,8 +37,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.web.context.WebApplicationContext;
@@ -50,10 +49,10 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
+
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
-import org.vortikal.security.LogoutException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -305,9 +304,6 @@ public class VortikalServlet extends DispatcherServlet {
                                  + "Using challenge " + challenge, ex);
                 }
                 challenge.challenge(request, response);
-
-            } catch (LogoutException ex) {
-                securityInitializer.logout(request, response);
 
             } catch (AuthenticationProcessingException e) {
                 logError(request, e);

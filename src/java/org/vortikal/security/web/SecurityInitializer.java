@@ -193,7 +193,7 @@ public class SecurityInitializer {
      * @throws AuthenticationProcessingException if an underlying
      *  problem prevented the request from being processed
      */
-    public void logout(HttpServletRequest req, HttpServletResponse resp)
+    public void logout(HttpServletRequest req)
             throws AuthenticationProcessingException {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -207,9 +207,7 @@ public class SecurityInitializer {
             AuthenticationHandler handler = this.authenticationHandlers[i];
 
             handler.onLogout(principal);
-
         }
-
     }
 
 }

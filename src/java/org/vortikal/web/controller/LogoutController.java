@@ -33,18 +33,112 @@ package org.vortikal.web.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.security.LogoutException;
+
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.security.web.SecurityInitializer;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 
 
 
+/**
+ * Logs the current principal out from the security context. Does not
+ * return a view, instead redirects to a given service.
+ *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>repository</code> - the content {@link Repository repository}
+ *   <li><code>service</code> - the {@link Service} to redirect to
+ *   <li><code>securityInitializer</code> - the {@link SecurityInitializer}
+ *   <li><code>http10</code> - whether or not to use HTTP/1.0 style
+ *   redirects (302). When set to <code>false</code>, a 303 status
+ *   code is set instead. The default value is <code>true</code>.
+ * </ul>
+ */
 public class LogoutController implements Controller {
+    private Log logger = LogFactory.getLog(this.getClass());
+
+    private boolean http10 = true;
+    private Repository repository = null;
+    private Service service = null;
+    private SecurityInitializer securityInitializer = null;
+
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+    
+    public void setService(Service service) {
+        this.service = service;
+    }
+    
+
+    public void setHttp10(boolean http10) {
+        this.http10 = http10;
+    }
+    
+
+    public void setSecurityInitializer(SecurityInitializer securityInitializer) {
+        this.securityInitializer = securityInitializer;
+    }
+    
+
+    public void afterPropertiesSet() {
+        if (this.repository == null) {
+            throw new BeanInitializationException(
+                "Bean property 'repository' not set");
+        }
+        if (this.service == null) {
+            throw new BeanInitializationException(
+                "Bean property 'service' not set");
+        }
+        if (this.securityInitializer == null) {
+            throw new BeanInitializationException(
+                "Bean property 'securityInitializer' not set");
+        }
+    }
+
+
+
 
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) 
 	throws Exception {
-        throw new LogoutException();
+
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Principal principal = securityContext.getPrincipal();
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Resource resource = this.repository.retrieve(
+            securityContext.getToken(), requestContext.getResourceURI(), true);
+        
+
+        String url = this.service.constructLink(resource, principal);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Constructed redirect URL '" + url
+                         + "' using service " + service);
+        }
+            
+        if (http10) {
+            // send status code 302
+            response.sendRedirect(url);
+        } else {
+            // correct HTTP status code is 303, in particular for POST requests
+            response.setStatus(303);
+            response.setHeader("Location", url);
+        }
+        this.securityInitializer.logout(request);
+        return null;
     }
 
 }

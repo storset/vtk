@@ -37,35 +37,27 @@ package org.vortikal.web.service;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
+ * 
  */
 public abstract class AssertionSupport implements BeanNameAware {
 
     private String beanName;
 
-	/**
-	 * @return Returns the beanName.
-	 */
 	public String getBeanName() {
 		return beanName;
 	}
 	
-	/**
-	 * @param beanName The beanName to set.
-	 */
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
 	}
 
-	/** 
-	 * @see java.lang.Object#toString()
-	 */
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+            StringBuffer sb = new StringBuffer();
 		
-		sb.append(getClass().getName()).append(": ");
-		sb.append("beanName = ").append(this.beanName);
+            sb.append(getClass().getName()).append(": ");
+            sb.append("beanName = ").append(this.beanName);
 		
-		return sb.toString();
+            return sb.toString();
 	}
 
 }

@@ -352,11 +352,10 @@ public class PropfindView implements View, InitializingBean {
                     //element.addContent("application/octet-stream");
                     //element.addContent("httpd/unix-directory");
 
-                } else {
-                    
-                    element.addContent(type);
-                }
-                
+                }   
+               
+                element.addContent(type);
+               
             } else if (property.equals("getetag")) {
                 if (resource.getSerial() == null) {
                     return null;

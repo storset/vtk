@@ -1,6 +1,5 @@
 package org.vortikal.web.referencedataprovider;
 
-import java.io.IOException;
 
 /**
  * Instances of this class stores information about which field in the

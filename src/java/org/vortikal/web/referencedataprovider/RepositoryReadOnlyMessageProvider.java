@@ -30,18 +30,13 @@
  */
 package org.vortikal.web.referencedataprovider;
 
-import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
  * A reference data provider that puts a message in the model if the

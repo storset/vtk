@@ -38,8 +38,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
 
-import org.springframework.web.servlet.View;
-
 /**
  * A service is an abstraction added to the thin web layer in web
  * applications to facilitate two purposes that ordinary web

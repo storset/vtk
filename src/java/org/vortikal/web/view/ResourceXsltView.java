@@ -39,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
@@ -48,22 +49,18 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.support.RequestContext;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
-import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 

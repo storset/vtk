@@ -656,8 +656,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                     + "operation, timestamp, uri, resource_id, is_collection) "
                     + "VALUES (nextval('changelog_entry_seq_pk'), ?, ?, ?, ?, ?, ?, ?)";
 
-            PreparedStatement stmt = (PreparedStatement) conn
-                    .prepareStatement(statement);
+            PreparedStatement stmt = conn.prepareStatement(statement);
 
 //            stmt.setFormOfUse(5, OraclePreparedStatement.FORM_NCHAR);
 

@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.util.net.NetUtils;
 import org.vortikal.util.web.URLUtil;
 
 /**

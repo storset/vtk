@@ -36,10 +36,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-
 import org.jdom.Element;
 import org.springframework.web.servlet.ModelAndView;
 

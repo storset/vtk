@@ -49,7 +49,6 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalStore;
 import org.vortikal.security.PrincipalManager;
 
 

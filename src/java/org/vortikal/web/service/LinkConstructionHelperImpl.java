@@ -30,18 +30,15 @@
  */
 package org.vortikal.web.service;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.util.net.NetUtils;
-import org.vortikal.util.web.URLUtil;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Default implementation of the LinkConstructionHelper interface.

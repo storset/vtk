@@ -235,8 +235,7 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
             logger.debug("Generated breadcrumb path: " + breadCrumb);
         }
 
-        model.put(this.breadcrumbName,
-                  (BreadcrumbElement[]) breadCrumb.toArray((new BreadcrumbElement[0])));
+        model.put(this.breadcrumbName, breadCrumb.toArray((new BreadcrumbElement[0])));
     }
 
 

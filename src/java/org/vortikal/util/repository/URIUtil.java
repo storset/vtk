@@ -30,12 +30,9 @@
  */
 package org.vortikal.util.repository;
 
-import java.util.regex.*;
-
-import org.vortikal.repository.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Resource;
 
 
 /**

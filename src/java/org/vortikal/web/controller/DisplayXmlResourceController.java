@@ -155,7 +155,6 @@ public class DisplayXmlResourceController
         if (childName != null) 
             uri += (uri.equals("/")) ? childName : "/" + childName;
         
-        String token = securityContext.getToken();
         Resource resource = null;
 
         try {

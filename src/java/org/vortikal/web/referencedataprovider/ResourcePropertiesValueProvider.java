@@ -32,18 +32,16 @@ package org.vortikal.web.referencedataprovider;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -187,7 +185,6 @@ public class ResourcePropertiesValueProvider
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        Principal principal = securityContext.getPrincipal();
         Resource resource = repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(),
                                                 true);

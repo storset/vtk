@@ -30,19 +30,15 @@
  */
 package org.vortikal.web.view;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
-
-import org.vortikal.repository.Resource;
-import org.vortikal.util.web.HttpUtil;
-import org.vortikal.web.InvalidModelException;
 
 
 /**

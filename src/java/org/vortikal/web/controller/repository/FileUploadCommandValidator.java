@@ -38,10 +38,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
-import org.vortikal.security.PrincipalStore;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 

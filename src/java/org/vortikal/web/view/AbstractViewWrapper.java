@@ -41,23 +41,23 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.web.servlet.BufferedResponseWrapper;
 
 
 /**
  * Abstract base class for view wrappers. Provides response wrapping
  * for content (and header) manipulation.
- *
- * @version $Id$
  */
 public abstract class AbstractViewWrapper
   extends AbstractReferenceDataProvidingView implements InitializingBean {
 
 
-    /**
-     * The wrapped View object. 
-     *
-     */
+    protected Log logger = LogFactory.getLog(this.getClass());
+
+
     private View wrappedView = null;
 
 
@@ -115,6 +115,10 @@ public abstract class AbstractViewWrapper
         ServletResponse response = wrappedResponse.getResponse();
         ServletOutputStream outStream = response.getOutputStream();
         byte[] content = wrappedResponse.getContentBuffer();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Write response: Content-Length: " + content.length
+                         + ", unspecified content type");
+        }
         response.setContentLength(content.length);
         outStream.write(content);
         outStream.flush();
@@ -127,6 +131,10 @@ public abstract class AbstractViewWrapper
         ServletResponse response = wrappedResponse.getResponse();
         ServletOutputStream outStream = response.getOutputStream();
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Write response: Content-Length: " + content.length
+                         + ", Content-Type: " + contentType);
+        }
         response.setContentType(contentType);
         response.setContentLength(content.length);
         outStream.write(content);

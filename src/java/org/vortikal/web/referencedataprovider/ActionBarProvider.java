@@ -51,6 +51,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceCategoryResolver;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
@@ -98,17 +99,15 @@ public class ActionBarProvider implements InitializingBean, ApplicationContextAw
         this.repository = repository;
     }
 
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     public void afterPropertiesSet() throws Exception {
-//        if (this.actions == null) {
-//            throw new BeanInitializationException(
-//                "Bean property 'actions' must be set");
-//        }
-//
-//        if (this.actionLabels == null) {
-//            throw new BeanInitializationException(
-//                "Bean property 'actionLabels' must be set");
-//        }
 
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -182,14 +181,4 @@ public class ActionBarProvider implements InitializingBean, ApplicationContextAw
         model.put(modelName, actionsMap);
     }
 
-    /**
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    public void setApplicationContext(ApplicationContext context) throws BeansException {
-        this.context = context;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }

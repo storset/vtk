@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.referencedataprovider;
 
-
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,17 +40,20 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceCategoryResolver;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
@@ -69,12 +69,16 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> the content repository</li>
+ *   <li><code>repository</code> - the {@link Repository content repository}
+ *   <li><code>category</code> - the name of this TabsProvider's category
+ *   <li><code>modelName</code> - the name to use for this provider's
+ *   submodel (default is <code>tabs</code>)
  * </ul>
  *
- * <p>Model data published:
+ * <p>Model data published (in submodel of name configurable by
+ * property <code>modelName</code>):
  * <ul>
- * <li><code>tabURLs</code>: an array of the URLs of the tabs</li>
+ * <li><code>tabURLs</code>: an array of the URLs of the tabs
  * <li><code>tabDescriptions</code>: an array of the descriptions of
  *     the tab URLs. These descriptions are interpreted as keys for
  *     message localization, using the following steps:
@@ -92,7 +96,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *       </li>
  *     </ol>
  * </li>
- * <li><code>activeTab</code>: an index pointer to the currently active tab</li>
+ * <li><code>activeTab</code>: an index pointer to the currently active tab
  * </ul>
  * 
  */
@@ -104,24 +108,26 @@ public class TabsProvider
     private Service[] services = null;
     private String category = TabsProvider.class.getName();
     private ApplicationContext context;
+    private String modelName = "tabs";
+    
 
-    /**
-     * Get the <code>Repository</code> value.
-     *
-     * @return a <code>Repository</code>
-     */
-    public final Repository getRepository() {
+    public Repository getRepository() {
         return repository;
     }
 
 
-    /**
-     * Set the <code>Repository</code> value.
-     *
-     * @param newRepository The new Repository value.
-     */
-    public final void setRepository(final Repository newRepository) {
-        this.repository = newRepository;
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+    
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 
@@ -130,17 +136,16 @@ public class TabsProvider
         this.context = applicationContext;
     }
 
-    /**
-     * Describe <code>afterPropertiesSet</code> method here.
-     *
-     * @exception Exception if an error occurs
-     */
     public final void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException("Property 'repository' not set");
         }
 
-        List tabServices = ServiceCategoryResolver.getServicesOfCategory(context, category);
+        if (this.modelName == null) {
+            throw new BeanInitializationException("Property 'modelName' not set");
+        }
+
+        List tabServices = ServiceCategoryResolver.getServicesOfCategory(this.context, this.category);
 
         if (tabServices.isEmpty()) {
             throw new BeanInitializationException(
@@ -160,7 +165,7 @@ public class TabsProvider
         Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
         
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
         List tabURLs = new ArrayList();
@@ -168,17 +173,22 @@ public class TabsProvider
         List accessibleServices = new ArrayList();
         org.springframework.web.servlet.support.RequestContext springContext =
             new org.springframework.web.servlet.support.RequestContext(request);
-        for (int i = 0; i < services.length; i++) {
+        for (int i = 0; i < this.services.length; i++) {
             try {
-                String url = services[i].constructLink(resource, principal);
+                String url = this.services[i].constructLink(resource, principal);
                 tabURLs.add(url);
                 String defaultDescription = springContext.getMessage(
-                    "tabs." + services[i].getName(), services[i].getName());
+                    "tabs." + this.services[i].getName(), this.services[i].getName());
                 String description = springContext.getMessage(
-                    "tabs." + services[i].getName() + "." +
+                    "tabs." + this.services[i].getName() + "." +
                     resource.getContentType(), defaultDescription);
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding tab element [" + description
+                                 + ", " + this.services[i] + "]");
+                }
                 tabDescriptions.add(description);
-                accessibleServices.add(services[i]);
+                accessibleServices.add(this.services[i]);
             } catch (ServiceUnlinkableException e) {
                 // Service was not accessible for this resource, ignore.
             }
@@ -189,38 +199,41 @@ public class TabsProvider
         Service currentService = requestContext.getService();
         int index = 0;
         while (currentService != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Checking for active tab service: " + currentService);
+            }
             if (accessibleServices.contains(currentService)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found active tab service: " + currentService);
+                }
                 index = accessibleServices.indexOf(currentService);
                 break;
             }
             currentService = currentService.getParent();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Proceeding to check parent service: " + currentService);
+            }
         }
 
         Map tabsModel = new HashMap();
         tabsModel.put("tabURLs", tabURLs);
         tabsModel.put("tabDescriptions", tabDescriptions);
         tabsModel.put("activeTab", new Integer(index));
-        model.put("tabs", tabsModel);
+        model.put(this.modelName, tabsModel);
     }
 
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(": [");
-        for (int i = 0; i < services.length; i++) {
-            sb.append(services[i].getName());
-            if (i < services.length - 1) sb.append(", ");
+        for (int i = 0; i < this.services.length; i++) {
+            sb.append(this.services[i].getName());
+            if (i < this.services.length - 1) sb.append(", ");
         }
         sb.append("]");
         return sb.toString();
     }
     
 
-    /**
-     * @param category The category to set.
-     */
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }
 

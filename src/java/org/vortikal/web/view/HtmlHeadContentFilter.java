@@ -39,6 +39,14 @@ import java.util.regex.Pattern;
  * <code>&lt;head&gt;</code> element of the original content. An
  * example of such use is to include CSS stylesheet references in the
  * HTML output from another view.
+ * <p>This filter also removes meta elements declaring charset
+ * and title-elements from the original html, by default.
+
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>removeTitles</code> - default <code>true</code></li>
+ *   <li><code>removeCharsets</code> - default <code>true</code></li>
+ * </ul>
  */
 public class HtmlHeadContentFilter
   extends AbstractViewProcessingTextContentFilter {
@@ -52,7 +60,13 @@ public class HtmlHeadContentFilter
                                 + "(\\s*</\\s*meta\\s*>)?)",
                                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
+    private static Pattern TITLE_REGEXP =
+		Pattern.compile("<\\s*title[^>]*>[^<]*(</\\s*title\\s*>)?",
+                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
+    private boolean removeTitles = true;
+    private boolean removeCharsets = true;
+        
     protected String processInternal(String content, String head) throws Exception {
 
         // Get the head content to look for a charset meta element there.
@@ -63,30 +77,40 @@ public class HtmlHeadContentFilter
             if (debug && logger.isDebugEnabled()) {
                 logger.debug("found head content: \n" + headContent);
             }
+        } else {
+            // No head found, nothing to do
+            return content;
         }
 
-        // Look for charset meta element in head.
-        if (headContent != null) {
-            // Looks for a meta element which declares a charset.
-            Matcher charsetMatcher = CHARACTER_ENCODING__REGEXP.matcher(headContent);
-	
-            String newHeadContent = "";
-            if (charsetMatcher.find(0)) {
-                if (debug && logger.isDebugEnabled()) {
-                    logger.debug("found charset content, will remove");
-                }
-                newHeadContent = headMatcher.group(1) + head +
-                    charsetMatcher.replaceAll("") + headMatcher.group(3);
-            } else {
-                newHeadContent = headMatcher.group(1) + head +
-                    headMatcher.group(2) + headMatcher.group(3);
-            }
-            if (debug && logger.isDebugEnabled()) {
-                logger.debug("New head content:\n" + newHeadContent);
-            }
-            return headMatcher.replaceFirst(newHeadContent);
+        
+        // Looks for title element
+        Matcher titleMatcher = TITLE_REGEXP.matcher(headContent);
+            
+        if (removeTitles && titleMatcher.find(0)) {
+            headContent = titleMatcher.replaceAll("");
         }
-        return content;
+            
+        String newHeadContent = "";
+
+        	// Looks for a meta element which declares a charset.
+        Matcher charsetMatcher = CHARACTER_ENCODING__REGEXP.matcher(headContent);
+	
+        if (removeCharsets && charsetMatcher.find(0)) {
+            if (debug && logger.isDebugEnabled()) {
+                logger.debug("found charset content, will remove");
+            }
+            newHeadContent = headMatcher.group(1) + head +
+            charsetMatcher.replaceAll("") + headMatcher.group(3);
+        } else {
+            newHeadContent = headMatcher.group(1) + head +
+            headContent + headMatcher.group(3);
+        }
+            
+        if (debug && logger.isDebugEnabled()) {
+            logger.debug("New head content:\n" + newHeadContent);
+        }
+        
+        return headMatcher.replaceFirst(newHeadContent);
     }
     
     

@@ -117,7 +117,7 @@ public class CreateResourceFromResourceController implements Controller,
     	    InputStream in = new ByteArrayInputStream(outStream.toByteArray());
     	    
     	    // Setting DAV-properties for webedit and transform-view til yes
-    	    Property[] p = new Property[2];
+    	    Property[] p = new Property[3];
 
     	    p[0] = new Property();
     	    p[0].setNamespace("http://www.uio.no/vortex/custom-properties");
@@ -128,6 +128,11 @@ public class CreateResourceFromResourceController implements Controller,
     	    p[1].setNamespace("http://www.uio.no/vortex/custom-properties");
     	    p[1].setName("transform-view");
     	    p[1].setValue("yes");
+    	    
+    	    p[2] = new Property();
+    	    p[2].setNamespace("http://www.uio.no/vortex/custom-properties");
+    	    p[2].setName("visual-profile");
+    	    p[2].setValue("yes");
 
     	 	Resource newResource = repository.createDocument(token, newResourceUri);
     	    newResource.setProperties(p);

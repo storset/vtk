@@ -57,6 +57,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  <li> <code>service</code> - the service used to construct the URL
  *  <li> <code>matchAssertions</code> - whether to require that all
  *       assertions must match when constructing links (default is false)
+ *  <li> <code>urlName</code> - the name to use for the url in the submodel
  * </ul>
  * 
  * <p>Model data provided:
@@ -73,7 +74,7 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
     private Service service = null;
     private Repository repository = null;
     private boolean matchAssertions = false;
-
+    private String urlName = "url";
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
@@ -92,6 +93,10 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
 
     public void setMatchAssertions(boolean matchAssertions) {
         this.matchAssertions = matchAssertions;
+    }
+
+    public void setUrlName (String urlName) {
+        this.urlName = urlName;
     }
     
 
@@ -122,14 +127,20 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
         Resource resource = repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(),
                                                 true);
-        Map urlMap = new HashMap();
+
+        Map urlMap = (Map) model.get(this.modelName);
+
+        if (urlMap == null) {
+            urlMap = new HashMap();
+        }
+
         String url = null;
         try {
             url = this.service.constructLink(resource, principal,
                                              this.matchAssertions);
-            urlMap.put("url", url);
+            urlMap.put(urlName, url);
         } catch (ServiceUnlinkableException ex) {
-            urlMap.put("url", null);
+            urlMap.put(urlName, null);
         }
         model.put(modelName, urlMap);
     }

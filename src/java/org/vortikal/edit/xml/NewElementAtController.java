@@ -77,6 +77,11 @@ public class NewElementAtController extends AbstractXmlEditController {
                     request.getParameter("name") : document.getNewElementName();
             String path = request.getParameter("at");
 
+            if (path == null) {
+                setXsltParameter(model,"ERRORMESSAGE", "NEW_ELEMENT_AT_MISSING_PATH_PARAMETER");
+                return new ModelAndView(viewName, model);
+            }
+
             Element element = new Element(elementName);
             document.putElementByPath(path, element);
             documentDefinition.buildElement(element);

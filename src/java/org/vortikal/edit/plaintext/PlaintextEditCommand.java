@@ -30,32 +30,17 @@
  */
 package org.vortikal.edit.plaintext;
 
+import org.vortikal.web.controller.AbstractSaveCancelCommand;
+
 
 /**
  * Command object containing the plain text edit form elements.
  */
-public class PlaintextEditCommand {
+public class PlaintextEditCommand extends AbstractSaveCancelCommand {
 
     private String content;
-    private String submitURL = null;
     private boolean html = false;
     
-    /**
-     * @return Returns the html.
-     */
-    public boolean isHtml() {
-        return html;
-    }
-    
-    /**
-     * @param html The html to set.
-     */
-    public void setHtml(boolean html) {
-        this.html = html;
-    }
-
-
-
     /**
      * Creates a new <code>PlaintextEditCommand</code> instance.
      *
@@ -63,47 +48,28 @@ public class PlaintextEditCommand {
      * @param submitURL the URL to submit to.
      */
     public PlaintextEditCommand(String content, String submitURL) {
+        super(submitURL);
         this.content = content;
-        this.submitURL = submitURL;
     }
 
+
+    public boolean isHtml() {
+        return html;
+    }
     
 
-    /**
-     * Gets the value of owner.
-     *
-     * @return the value of owner
-     */
+    public void setHtml(boolean html) {
+        this.html = html;
+    }
+
+
     public String getContent() {
         return this.content;
     }
 
-    /**
-     * Sets the value of owner.
-     *
-     * @param owner Value to assign to this.owner
-     */
-    public void setContent(String owner)  {
-        this.content = owner;
-    }
-    
-    
-    /**
-     * Gets the value of submitURL.
-     *
-     * @return the value of submitURL
-     */
-    public String getSubmitURL() {
-        return this.submitURL;
-    }
 
-    /**
-     * Sets the value of submitURL.
-     *
-     * @param submitURL Value to assign to this.submitURL
-     */
-    public void setSubmitURL(String submitURL)  {
-        this.submitURL = submitURL;
+    public void setContent(String content)  {
+        this.content = content;
     }
 }
 

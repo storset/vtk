@@ -36,9 +36,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Repository;
@@ -49,30 +64,29 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-
-
-
-
 /**
  * Controller that handles editing of plaintext resource content.
  *
- * @version $Id$
+ * <p><a name="config">Configurable properties</a>
+ * (and those defined by {@link SimpleFormController superclass}):
+ * <ul>
+ *   <li><code>repository</code> - the content {@link Repository
+ *   repository} (required)
+ *   <li><code>cancelView</code> - the {@link String view name} to return
+ *   when user (required) cancels the operation
+ *   <li><code>lockTimeoutSeconds</code> - the number of seconds for
+ *   which to request lock timeouts on every request (default is 300)
+ * </ul>
  */
-public class PlaintextEditController extends SimpleFormController {
+public class PlaintextEditController extends SimpleFormController
+  implements InitializingBean {
 
     private static final int MAX_XML_DECLARATION_SIZE = 500;
 
     private static Log logger = LogFactory.getLog(
         PlaintextEditController.class);
     
+    private String cancelView = null;
     private Repository repository = null;
     private int lockTimeoutSeconds = 300;
     
@@ -94,6 +108,31 @@ public class PlaintextEditController extends SimpleFormController {
      */
     public void setLockTimeoutMinutes(int lockTimeoutSeconds) {
         this.lockTimeoutSeconds = lockTimeoutSeconds;
+    }
+    
+
+    /**
+     * Sets the cancel view name (will be returned when user cancelles
+     * the edit operation).
+     *
+     * @param cancelView the view name to set.
+     */
+    public void setCancelView(String cancelView) {
+        this.cancelView = cancelView;
+    }
+    
+
+
+    public void afterPropertiesSet() {
+        if (this.repository == null) {
+            throw new BeanInitializationException(
+                "Bean property 'repository' must be set");
+        }
+        if (this.cancelView == null) {
+            throw new BeanInitializationException(
+                "Bean property 'cancelView' must be set");
+        }
+
     }
     
 
@@ -125,6 +164,29 @@ public class PlaintextEditController extends SimpleFormController {
     }
 
 
+
+    protected ModelAndView onSubmit(Object command, BindException errors)
+        throws Exception {
+
+        PlaintextEditCommand plaintextEditCommand =
+            (PlaintextEditCommand) command;
+
+        if (plaintextEditCommand.getCancelAction() == null) {
+            return super.onSubmit(command, errors);
+        }
+        
+        // The user has selected "cancel". Unlock resource, return the
+        // cancelView.
+
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String uri = requestContext.getResourceURI();
+        repository.unlock(token, uri, null);
+        
+        return new ModelAndView(this.cancelView);    
+    }
+    
 
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -232,19 +294,20 @@ public class PlaintextEditController extends SimpleFormController {
             int read = reader.read(chars, 0, len);
 
             String string = new String(chars, 0, read);
-            java.util.regex.Matcher m = charsetPattern.matcher(string);
+            Matcher m = charsetPattern.matcher(string);
 
             if (m.matches()) {
                 if (logger.isDebugEnabled())
                     logger.debug("Regexp match in XML declaration for pattern "
                                  + charsetPattern.pattern());
                 characterEncoding = m.group(1);
+            } else {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("No regexp match in XML declaration for pattern "
+                                 + charsetPattern.pattern());
             }
-
-            if (logger.isDebugEnabled())
-                logger.debug("No regexp match in XML declaration for pattern "
-                             + charsetPattern.pattern());
-
+            
             try {
                 Charset.forName(characterEncoding);
             } catch (Exception e) {
@@ -255,7 +318,9 @@ public class PlaintextEditController extends SimpleFormController {
                 characterEncoding = "utf-8";
             }
         } catch (IOException e) {
-            
+            logger.warn("Unexpected IO exception while performing "
+                        + "XML charset regexp matching on resource "
+                        + resource, e);
         }
 
         return characterEncoding;

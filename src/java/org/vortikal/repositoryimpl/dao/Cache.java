@@ -391,8 +391,8 @@ public class Cache implements DataAccessor {
     }
 
     public void addChangeLogEntry(String loggerID, String loggerType,
-        String uri, String operation) throws IOException {
-        wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation);
+        String uri, String operation, int resourceId, boolean collection) throws IOException {
+        wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation, resourceId, collection);
     }
 
     /**

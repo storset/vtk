@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
 
 

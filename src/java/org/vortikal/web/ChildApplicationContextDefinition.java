@@ -30,22 +30,16 @@
  */
 package org.vortikal.web;
 
-
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.servlet.ServletContext;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.AbstractXmlApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
@@ -107,11 +101,16 @@ public class ChildApplicationContextDefinition
 
         private String configLocation = null;
 
+        private WebApplicationContext parentWebApplicationContext = null;
+
 
         public ChildApplicationContext(String configLocation,
                                        ApplicationContext parent) {
             super(parent);
             this.configLocation = configLocation;
+
+            findParentWebApplicationContext(parent);
+
             refresh();
         }
         
@@ -123,12 +122,11 @@ public class ChildApplicationContextDefinition
 
         public Resource getResourceByPath(String path) {
 
-            boolean inWebApplicationContext =
-                (this.getParent() instanceof WebApplicationContext);
+            boolean inWebApplicationContext = (parentWebApplicationContext != null);
             
             if (inWebApplicationContext && path.startsWith("/")) {
                 ServletContext servletContext =
-                    ((WebApplicationContext) this.getParent()).getServletContext();
+                    this.parentWebApplicationContext.getServletContext();
                 return new ServletContextResource(servletContext, path);
             }
 
@@ -136,11 +134,9 @@ public class ChildApplicationContextDefinition
                 if (!inWebApplicationContext) {
                     throw new IllegalStateException(
                         "Cannot load resources of type '"
-                        + SERVLET_CONTEXT_JAR_URL_PREFIX + "' when parent context "
-                        + "is not a WebApplicationContext");
+                        + SERVLET_CONTEXT_JAR_URL_PREFIX + "' when no ancestor context "
+                        + "is a WebApplicationContext");
                 }
-
-                WebApplicationContext parent = (WebApplicationContext) this.getParent();
 
                 // Resolve the servlet resource to a file:// resource
                 String contextPath = path.substring(SERVLET_CONTEXT_JAR_URL_PREFIX.length(),
@@ -161,6 +157,21 @@ public class ChildApplicationContextDefinition
             }
             return super.getResourceByPath(path);
         }
+
+
+        private void findParentWebApplicationContext(ApplicationContext parent) {
+            if (parent == null) {
+                return;
+            }
+            
+            if (parent instanceof WebApplicationContext) {
+                parentWebApplicationContext = (WebApplicationContext) parent;
+                return;
+            }
+
+            findParentWebApplicationContext(parent.getParent());
+        }
+
     }
     
 }

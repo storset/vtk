@@ -198,14 +198,14 @@ public class ServiceImpl
         // Look up services that are of category <code>this.getName()</code>
         List childServices = ServiceCategoryResolver.getServicesOfCategory(
             this.applicationContext, this.getName());
+        Collections.sort(childServices, new OrderComparator());
+
         for (Iterator iter = childServices.iterator(); iter.hasNext();) {
             Object o = iter.next();
             if (!this.services.contains(o)) {
                 this.services.add(o);
             }
         }
-
-        Collections.sort(this.services, new OrderComparator());
 
         for (Iterator iter = this.services.iterator(); iter.hasNext();) {
             Object o = iter.next();

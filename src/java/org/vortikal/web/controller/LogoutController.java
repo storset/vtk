@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.controller;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -64,7 +66,7 @@ import org.vortikal.web.service.Service;
  *   code is set instead. The default value is <code>true</code>.
  * </ul>
  */
-public class LogoutController implements Controller {
+public class LogoutController implements Controller, InitializingBean {
     private Log logger = LogFactory.getLog(this.getClass());
 
     private boolean http10 = true;

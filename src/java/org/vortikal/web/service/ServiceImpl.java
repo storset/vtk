@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.service;
 
-
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,6 +39,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,15 +47,34 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
+
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
 
 
-
-
 /**
- *  Default implementation of the Service interface.
+ * Default implementation of the Service interface.
+ *
+ * <p>Configurable properties:
+ * <ul>
+ *   <lI><code>services</code> a list of {@link ServiceImpl} objects:
+ *   explicit definition of child services
+ *   <li><code>assertions</code> - a list of {@link Assertion
+ *   assertions}; the conditions that must hold for this service to
+ *   match
+ *   <li><code>handler</code> - a {@link Controller} that is executed
+ *   when this service matches (see {@link ServiceHandlerMapping}).
+ *   <li><code>handlerInterceptors</code> - list of
+ *   {@link org.springframework.web.servlet.HandlerInterceptor
+ *   interceptors} that are executed prior to (around) the controller
+ *   invocation.
+ *   <li><code>order</code> - integer specifying the order of this
+ *   service (see {@link Ordered}). Default is
+ *   <code>Integer.MAX_VALUE</code> (unordered).
+ *   <li><code>categories</code> - a {@link Set} of strings denoting
+ *   the set of categories this service is a member of.
+ * </ul>
  *
  */
 public class ServiceImpl
@@ -74,7 +91,6 @@ public class ServiceImpl
     private List handlerInterceptors;
     private int order = Integer.MAX_VALUE; // Same as non ordered;
     private Set categories = null;
-    private String childCategory = null;
     private ApplicationContext applicationContext;
     
 
@@ -97,11 +113,6 @@ public class ServiceImpl
         this.services = services;
     }
 
-
-    public void setChildCategory(String childCategory) {
-        this.childCategory = childCategory;
-    }
-    
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -184,30 +195,13 @@ public class ServiceImpl
     
     public void afterPropertiesSet() throws Exception {
 
-//         Set services = new TreeSet(new OrderComparator());
-//         services.addAll(this.services);
-        
-//         // Look up children as specified by this child category
-//          if (this.childCategory != null && !"".equals(this.childCategory.trim())) {
-//              List childServices = ServiceCategoryResolver.getServicesOfCategory(
-//                  this.applicationContext, this.childCategory);
-//              services.addAll(childServices);
-//          }
-
-//         if (this.childCategory != null && this.services.size() > 0) {
-//             throw new BeanInitializationException(
-//                 "Cannot both specify 'childCategory' and 'services'");
-//         }
-
-
-        if (this.childCategory != null) {
-            List childServices = ServiceCategoryResolver.getServicesOfCategory(
-                this.applicationContext, this.childCategory);
-            for (Iterator iter = childServices.iterator(); iter.hasNext();) {
-                Object o = iter.next();
-                if (!this.services.contains(o)) {
-                    this.services.add(o);
-                }
+        // Look up services that are of category <code>this.getName()</code>
+        List childServices = ServiceCategoryResolver.getServicesOfCategory(
+            this.applicationContext, this.getName());
+        for (Iterator iter = childServices.iterator(); iter.hasNext();) {
+            Object o = iter.next();
+            if (!this.services.contains(o)) {
+                this.services.add(o);
             }
         }
 
@@ -232,26 +226,6 @@ public class ServiceImpl
             validateAssertions(child);
             child.setParent(this);
         }
-        
-        // Look up children as specified by this child category
-//         if (this.childCategory != null && !"".equals(this.childCategory.trim())) {
-//             List childServices = 
-//         }
-
-        
-//         if (this.extendsService != null) {
-//             if (this.parent != null) {
-//                 throw new BeanInitializationException(
-//                     "A service cannot be specified as both an "
-//                     + "extending service and hooked up as a child "
-//                     + "of another service ");
-//             }
-
-//             int index = Math.max(this.order, 0);
-//             index = Math.min(index, extendsService.services.size() - 1);
-//             extendsService.services.add(index, this);
-//             this.setParent(extendsService);
-//         }
     }
 
     

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="test.xsd">
+  <spraak>bokmaal</spraak>
+  <tittel>
+    <emnekode>KRU1200</emnekode>
+    <emnenavn>Teori og metode</emnenavn>
+    <aar>2003</aar>
+    <semester>vår</semester>
+  </tittel>
+  <grupper>
+    <gruppe>foo</gruppe>
+    <gruppe>bar</gruppe>
+  </grupper>
+  <attributeTest1 type="1">Heading 1</attributeTest1>
+  <attributeTest2 id="01010122222">
+      <firstname>Even</firstname>
+      <lastname>Halvorsen</lastname>
+  </attributeTest2>
+  <attributeTest3 type="lala">
+    <tekstblokk>whee</tekstblokk>
+  </attributeTest3>
+  <overskrift>
+  	<overskrifttekst>Lala</overskrifttekst>
+  	<overskrifttype>2</overskrifttype>
+  </overskrift>
+  <unboundedChoiceTest>
+      <brukergruppe>teletubbies</brukergruppe>
+  </unboundedChoiceTest>
+  <pensumpunkt>
+  	<forfattere>Lala</forfattere>
+  </pensumpunkt>
+  <fritekst>
+    <tekstblokk>* Masterkopi tilgjengelig i instituttets ekspedisjon</tekstblokk>
+  </fritekst>
+    <testEnumeration type="Marihuana"><tjall>Hashish</tjall></testEnumeration>
+
+</test>

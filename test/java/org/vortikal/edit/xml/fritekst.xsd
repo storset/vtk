@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" 
+    schemaLocation="http://xml.uio.no/xsd/xml.xsd" />
+
+    <xsd:element name="onlyFritekst" type="OnlyFritekst"/>
+
+    <xsd:complexType name="OnlyFritekst">
+      <xsd:sequence>
+        <xsd:element name="ingress" type="Fritekst" />
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="fritekst" type="Fritekst" />
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Fritekst">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <elementType>UNBOUNDED_ELEMENT</elementType>
+	        <structuredText>org.vortikal.util.text.DefaultStructuredText</structuredText>
+            </xsd:appinfo>
+        </xsd:annotation>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="tekstblokk" type="Tekstblokk">
+          <xsd:annotation>
+            <xsd:appinfo>plaintext</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="utheving" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>emphasize</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="vektet" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>weight</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="avsnitt" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>paragraph</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="linjeskift" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>newline</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="lenke" type="Lenke">
+          <xsd:annotation>
+            <xsd:appinfo>link</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="liste" type="Liste">
+          <xsd:annotation>
+            <xsd:appinfo>list</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="FritekstWithAttribute">
+      <xsd:annotation>
+            <xsd:appinfo>
+                <elementType>UNBOUNDED_ELEMENT</elementType>
+	        <structuredText>org.vortikal.util.text.DefaultStructuredText</structuredText>
+            </xsd:appinfo>
+      </xsd:annotation>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="tekstblokk" type="Tekstblokk">
+          <xsd:annotation>
+            <xsd:appinfo>plaintext</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="utheving" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>emphasize</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="vektet" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>weight</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="avsnitt" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>paragraph</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="linjeskift" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>newline</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="lenke" type="Lenke">
+          <xsd:annotation>
+            <xsd:appinfo>link</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="liste" type="Liste">
+          <xsd:annotation>
+            <xsd:appinfo>list</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+        <xsd:attribute name="type" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:complexType name="Tekstblokk">
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:string">
+          <xsd:attribute ref="xml:space" />
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Lenke">
+      <xsd:sequence>
+        <xsd:element name="lenketekst" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>url-description</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="url" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>url</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Liste">
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="listepunkt" type="Listepunkt">
+          <xsd:annotation>
+            <xsd:appinfo>listitem</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Listepunkt">
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="utheving" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>emphasize</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="vektet" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>weight</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="tekstblokk" type="Tekstblokk">
+          <xsd:annotation>
+            <xsd:appinfo>plaintext</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="lenke" type="Lenke">
+          <xsd:annotation>
+            <xsd:appinfo>link</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:complexType>
+    
+  </xsd:schema>

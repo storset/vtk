@@ -1,0 +1,238 @@
+/* Copyright (c) 2004, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.web.referencedataprovider;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.util.web.URLUtil;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
+
+
+/**
+ * Creates model data for a breadcrumb (list of URLs from the root
+ * resource to the current).
+ * 
+ * <p>Description: creates an array of {@link BreadcrumbElement}
+ * objects, which is the "breadcrumb trail" from the root resource
+ * down to the collection containing the current resource.
+ * 
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>repository</code> - the content repository
+ *   <li><code>service</code> - the service for which to construct breadcrumb URLs
+ *   <li><code>breadcrumbName</code> - the name to publish the
+ *   breadcrumb under (default <code>breadcrumb</code>
+ *   <li><code>ignoreProperty</code> - a resource property specified
+ *   as <code>namespace:name</code> specifying whether to not include
+ *   a given resource in the breadcrumb data model. Resources are
+ *   ignored when the property exists.
+ *   <li><code>titleOverrideProperties</code> - a {@link String[]} of fully
+ *   qualified property names specifying properties that override the
+ *   names of the resources in the breadcrumb when present. If such a
+ *   property is present on a resource, the value of that property is
+ *   used as the {@link BreadcrumbElement#getTitle title} of the
+ *   breadcrumb element.
+ * </ul>
+ *
+ * <p>Model data published:
+ * <ul>
+ * <li><code>breadcrumb</code> (or, if the property
+ * <code>breadcrumbName</code> is specified, the value of that
+ * property): a {@link BreadcrumbElement[]} constituting the
+ * breadcrumb.
+ * </ul>
+ */
+public class BreadCrumbProvider implements Provider, InitializingBean {
+
+    private static Log logger = LogFactory.getLog(BreadCrumbProvider.class);
+    private Repository repository = null;
+    private Service service = null;
+    private String breadcrumbName = "breadcrumb";
+    private String ignoreProperty = null;
+    private String ignorePropertyNamespace = null;
+    private String ignorePropertyName = null;
+    private String[] titleOverrideProperties = null;
+    
+
+    public final Repository getRepository() {
+        return repository;
+    }
+
+
+    public final void setRepository(final Repository newRepository) {
+        this.repository = newRepository;
+    }
+
+    
+    public void setService(Service service) {
+        this.service = service;
+    }
+    
+
+    public void setBreadcrumbName(String breadcrumbName) {
+        this.breadcrumbName = breadcrumbName;
+    }
+    
+
+    public void setIgnoreProperty(String ignoreProperty) {
+        this.ignoreProperty = ignoreProperty;
+    }
+
+
+    public void setTitleOverrideProperties(String[] titleOverrideProperties) {
+        this.titleOverrideProperties = titleOverrideProperties;
+    }
+    
+    
+    public final void afterPropertiesSet() throws Exception {
+        if (repository == null) {
+            throw new BeanInitializationException(
+                "Property 'repository' not set");
+        }
+        if (service == null) {
+            throw new BeanInitializationException(
+                "Property 'service' not set");
+        }
+        if (breadcrumbName == null) {
+            throw new BeanInitializationException(
+                "Property 'breadcrumbName' cannot be null");
+        }
+        if (this.ignoreProperty != null) {
+            if (this.ignoreProperty.indexOf(":") == -1) {
+                throw new BeanInitializationException(
+                    "Bad property name: " + this.ignoreProperty);
+            }
+            this.ignorePropertyNamespace = this.ignoreProperty.substring(
+                0, this.ignoreProperty.indexOf(":"));
+            this.ignorePropertyName = this.ignoreProperty.substring(
+                this.ignoreProperty.indexOf(":") + 1);
+        }
+        if (this.titleOverrideProperties != null) {
+            for (int i = 0; i < this.titleOverrideProperties.length; i++) {
+                if (this.titleOverrideProperties[i].indexOf("") == -1) {
+                    throw new BeanInitializationException(
+                        "Title override property " + this.titleOverrideProperties[i]
+                        + "is not a fully qualified property name");
+                }
+            }
+        }
+    }
+
+
+    public void referenceData(Map model, HttpServletRequest request) {
+        
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
+        Principal principal = securityContext.getPrincipal();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String uri = requestContext.getResourceURI();
+
+        String[] path = URLUtil.splitUri(uri);
+        String[] incrementalPath = URLUtil.splitUriIncrementally(uri);
+        
+        List breadCrumb = new ArrayList();
+
+        try {
+            for (int i = 0; i < path.length - 1; i++) {
+                Resource r = repository.retrieve(token, incrementalPath[i], true);
+
+                boolean ignore = checkIgnore(r);
+                if (ignore) {
+                    continue;
+                }
+                String title = getTitle(r);
+                String url = service.constructLink(r, principal, false);
+
+                breadCrumb.add(new BreadcrumbElement(url, title));
+            }
+
+        } catch (Exception e) {
+            logger.warn("Unable to generate breadcrumb path", e);
+        }
+        model.put(this.breadcrumbName,
+                  (BreadcrumbElement[]) breadCrumb.toArray((new BreadcrumbElement[0])));
+
+    }
+
+
+    private boolean checkIgnore(Resource resource) {
+        if (this.ignoreProperty != null) {
+            Property p = resource.getProperty(this.ignorePropertyNamespace,
+                                              this.ignorePropertyName);
+            if (p != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
+    private String getTitle(Resource resource) {
+        if (this.titleOverrideProperties != null
+            && this.titleOverrideProperties.length > 0) {
+
+            // Check titleOverrideProperties in correct order
+            for (int i = 0; i < this.titleOverrideProperties.length; i++) {
+
+                // FIXME: (name, namespace) should be computed once,
+                // on initialization:
+                String namespace = this.titleOverrideProperties[i].substring(
+                    0, this.titleOverrideProperties[i].indexOf(":"));
+                String name = this.titleOverrideProperties[i].substring(
+                this.titleOverrideProperties[i].indexOf(":") + 1);
+
+                Property property = resource.getProperty(namespace, name);
+                if (property != null && property.getValue() != null) {
+                    return property.getValue();
+                }
+            }
+        }
+        return resource.getName();
+    }
+    
+
+}
+

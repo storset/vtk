@@ -1,0 +1,32 @@
+Her er de lokale endringene jeg har gjort, så får vi se om du gidder å
+diffe dem inn i kodebasen:
+
+Disse gjør det som XSLBeanProvider eller hva den het gjorde med sti:
+
+  M    src/java/org/vortikal/web/referencedataprovider/BreadCrumbProvider.java
+  ?    src/java/org/vortikal/web/referencedataprovider/BreadcrumbElement.java
+
+
+Her har jeg lagt til en toString():
+
+  M    src/java/org/vortikal/web/view/AbstractViewProcessingTextContentFilter.java
+
+
+Her har jeg lagt til en getWrappedView(), uvisst av hvilken grunn:
+
+  M    src/java/org/vortikal/web/view/AbstractViewWrapper.java
+
+
+Her har jeg lagt til en toString():
+
+  M    src/java/org/vortikal/web/view/FilteringViewWrapper.java
+
+
+Her blir exception fra ErrorListner propagert videre:
+
+  M    src/java/org/vortikal/web/view/ResourceXsltView.java
+
+
+Her er lagt til den FIXME-kommentaren vi gjorde sammen:
+
+  M    src/java/org/vortikal/xml/AbstractPathBasedURIResolver.java

@@ -1,0 +1,43 @@
+<project
+   xmlns:j="jelly:core"
+   xmlns:maven="jelly:maven"
+   xmlns:ant="jelly:ant">
+
+  <!--
+    Intercept java:compile, add version info to the
+    org/vortikal/util/FRAMEWORK_VERSION properties file.
+  -->
+   <postGoal name="java:compile">
+     <j:new var="now" className="java.util.Date"/> 
+     <j:new var="formatter" className="java.text.SimpleDateFormat">
+       <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+     </j:new>
+     <j:invoke var="build.date" on="${formatter}" method="format"> 
+       <j:arg value="${now}"/> 
+     </j:invoke> 
+     <j:invokeStatic var="inetaddr" className="java.net.InetAddress" method="getLocalHost"/>
+     <j:invoke var="host" method="getHostName" on="${inetaddr}" />
+     <j:set var="ver.file" value="${maven.build.dest}/org/vortikal/util/FRAMEWORK_VERSION"/>
+     <echo file="${ver.file}">
+       framework.version = ${pom.currentVersion}
+       build.date = ${build.date}
+       build.host = ${host}
+     </echo>
+   </postGoal>
+
+
+  <!--
+    In order to include sandbox sources, this pregoal is needed. It
+    will make sure classes in the directory ${sandbox.src.dir} are
+    compiled, given the variable ${sandbox.include} is set to 'true',
+    in either the project.properties file or the build.properties file
+    in the user's home directory.
+  -->
+   <preGoal name="java:compile">
+     <j:if test="${sandbox.include}">
+      <ant:path id="sandbox.src.set" location="${sandbox.src.dir}"/>
+      <maven:addPath id="maven.compile.src.set" refid="sandbox.src.set"/>
+     </j:if>
+   </preGoal>
+
+</project>

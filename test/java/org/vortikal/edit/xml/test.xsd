@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://xml.uio.no/xsd/xml.xsd" />
+    <xsd:annotation>
+        <xsd:appinfo>
+            <edit>
+                <xsl>/test-edit.xsl</xsl>
+                <buttonframe>/test-buttons.html</buttonframe>
+            </edit>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:include schemaLocation="fritekst.xsd" />
+    <xsd:include schemaLocation="typedefs.xsd" />
+
+    <xsd:element name="test" type="Test"/>
+    
+
+    <xsd:complexType name="Grupper">
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="gruppe" type="xsd:string"/>
+      </xsd:choice>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="Test">
+      <xsd:sequence>
+        <xsd:element name="spraak" type="xsd:string" minOccurs="0" />
+        <xsd:element name="tittel" type="Tittel" />
+        <xsd:element name="grupper" type="Grupper"/>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element name="attributeTest1" type="AttributeTest1" />
+          <xsd:element name="attributeTest2" type="AttributeTest2" />
+          <xsd:element name="attributeTest3" type="FritekstWithAttribute" />
+          <xsd:element name="testEnumeration" type="TestEnumeration" />
+          <xsd:element name="overskrift" type="Overskrift" />
+          <xsd:element name="fritekst" type="Fritekst" />
+          <xsd:element name="unboundedChoiceTest" type="UnboundedChoiceTest" />
+          <xsd:element name="pensumpunkt" type="Pensumpunkt" />
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Tittel">
+      <xsd:sequence>
+        <xsd:element name="emnekode" type="xsd:string" />
+        <xsd:element name="emnenavn" type="xsd:string" />
+        <xsd:element name="aar" type="xsd:string" />
+        <xsd:element name="semester" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+    
+    <!-- Test elements like 
+         <heading type="1">Heading 1</heading> 
+    -->
+    <xsd:complexType name="AttributeTest1">
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:string">
+          <xsd:attribute name="type" type="xsd:string" />
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+
+    <!-- Test elements like 
+         <person id="01014411111">
+           <firstname>Even</firstname>
+           <lastname>Halvorsen</lastname>
+         </person> 
+    -->
+    <xsd:complexType name="AttributeTest2">
+      <xsd:sequence>
+        <xsd:element name="firstname" type="xsd:string" />
+        <xsd:element name="lastname" type="xsd:string" />
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:string" />
+    </xsd:complexType>
+
+
+  <xsd:complexType name="UnboundedChoiceTest">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="brukergruppe" type="xsd:string" />
+    </xsd:choice>
+  </xsd:complexType>
+
+    <xsd:complexType name="Overskrift">
+      <xsd:sequence>
+        <xsd:element name="overskrifttekst" type="xsd:string" />
+        <xsd:element name="overskrifttype" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="Pensumpunkt">
+      <xsd:sequence>
+        <xsd:element name="forfattere" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="pensumpunkttittel" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="utgittaar" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="utgiver" type="xsd:string" minOccurs="0" />
+        <xsd:element name="isbn" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="kommentar" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="lenkenavn" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="lenkeadresse" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="bibsys" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="fulltekst" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
+
+
+
+
+
+
+
+
+
+

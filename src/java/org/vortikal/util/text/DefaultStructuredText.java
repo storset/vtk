@@ -1,0 +1,597 @@
+/* Copyright (c) 2004, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.util.text;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+/**
+ * Structured text parser and generator.
+ * 
+ * @version $Id: DefaultStructuredText.java,v 1.1 2004/03/29 16:29:02 storset
+ *          Exp $
+ */
+public final class DefaultStructuredText implements StructuredText {
+
+    private String LINE_SEPARATOR = "\n";
+
+    protected String LIST_START = LINE_SEPARATOR + "- ";
+
+    protected String LIST_CLOSE = LINE_SEPARATOR;
+
+    protected String PARAGRAPH_START = LINE_SEPARATOR + LINE_SEPARATOR;
+
+    protected String EMPHASIZE_START = "*";
+
+    protected String EMPHASIZE_CLOSE = "*";
+
+    protected String WEIGHT_START = "_";
+
+    protected String WEIGHT_CLOSE = "_";
+
+    protected Map tagNames = new HashMap();
+
+    private boolean includeNewlines = false;
+
+    private void initTagNames() {
+        tagNames.put("root", "structuredtext");
+        tagNames.put("plaintext", "text");
+        tagNames.put("emphasize", "emphasize");
+        tagNames.put("weight", "weight");
+        tagNames.put("link", "link");
+        tagNames.put("url", "url");
+        tagNames.put("url-description", "description");
+        tagNames.put("list", "list");
+        tagNames.put("listitem", "listitem");
+        tagNames.put("paragraph", "paragraph");
+        tagNames.put("newline", "br");
+    }
+
+    public Set getTagNames() {
+        return tagNames.keySet();
+    }
+
+    public DefaultStructuredText() {
+        initTagNames();
+    }
+
+    public void setTextMappings(Map customMappings) {
+        tagNames = customMappings;
+    }
+
+    private String lookupTag(String tagName) {
+        String tag = (String) tagNames.get(tagName);
+        if (tag == null) {
+            tag = tagName;
+        }
+        return tag;
+    }
+
+    private String reverseLookupTag(String mappedTag) {
+        for (Iterator i = tagNames.keySet().iterator(); i.hasNext();) {
+            String tagName = (String) i.next();
+            if (((String) tagNames.get(tagName)).equals(mappedTag)) { return tagName; }
+        }
+        return mappedTag;
+    }
+
+    /**
+     * Toggle conversion of single new line characters (to <code>&lt;br&gt;</code>
+     * by default) on/off
+     * 
+     * @param preserve
+     */
+    public void setIncludeNewlines(boolean preserve) {
+        this.includeNewlines = preserve;
+    }
+
+    public Element parseStructuredText(String structuredText) {
+        String workText = structuredText;
+
+        workText = workText.replaceAll("\r\n", "\n");
+        workText = workText.replaceAll("\r", "\n");
+        Element root = new Element(lookupTag("root"));
+
+        // split text into blocks, paragraphs, list items, etc.
+        root = splitText(workText, root);
+
+        // split list items as well
+        for (Iterator i = root.getChildren(lookupTag("listitem")).iterator(); i
+                .hasNext();) {
+            Element child = (Element) i.next();
+            String childText = child.getText();
+
+            child.setText(null);
+            splitText(childText, child);
+        }
+
+        Element newElement = groupListItems(root);
+        return newElement;
+    }
+
+    /*
+     * Places list items under a common parent ("list") element
+     */
+    private Element groupListItems(Element element) {
+        Element root = new Element(element.getName());
+        List children = element.getChildren();
+        ArrayList newChildren = new ArrayList();
+        for (Iterator i = children.iterator(); i.hasNext();) {
+            Element child = (Element) ((Element) i.next()).clone();
+            if (!child.getName().equals(lookupTag("listitem"))) {
+                newChildren.add(child);
+            } else {
+                Element listElement = new Element(lookupTag("list"));
+                listElement.addContent((Element) child.clone());
+                Element followingElement = null;
+                while (i.hasNext()) {
+                    Element nextElement = (Element) ((Element) i.next())
+                            .clone();
+                    if (nextElement.getName().equals(lookupTag("listitem"))) {
+                        listElement.addContent(nextElement);
+                    } else {
+                        followingElement = nextElement;
+                        break;
+                    }
+                }
+                newChildren.add(listElement);
+                if (followingElement != null) {
+                    newChildren.add(followingElement);
+                }
+            }
+        }
+        root.setContent(newChildren);
+        return root;
+    }
+
+    /**
+     * Generates structured text from an element
+     */
+    public String parseElement(Element element) {
+        String text = regenerateText(element);
+        return text;
+    }
+
+    /**
+     * Generate structured text from an XML structure.
+     * 
+     * @param element
+     *            the root <code>Element</code> of the XML structure
+     * @return a <code>String</code> containing the structured text
+     */
+    protected String regenerateText(Element element) {
+
+        StringBuffer buffer = new StringBuffer();
+
+        for (Iterator i = element.getChildren().iterator(); i.hasNext();) {
+
+            Element child = (Element) i.next();
+            String tagName = reverseLookupTag(child.getName());
+
+            if (tagName.equals("plaintext")) {
+
+                buffer.append(child.getText());
+
+            } else if (tagName.equals("emphasize")) {
+
+                buffer.append(EMPHASIZE_START + child.getText()
+                        + EMPHASIZE_CLOSE);
+
+            } else if (tagName.equals("weight")) {
+
+                buffer.append(WEIGHT_START + child.getText() + WEIGHT_CLOSE);
+
+            } else if (tagName.equals("link")) {
+
+                String url = child.getChild(lookupTag("url")).getText();
+                String description = child.getChild(
+                        lookupTag("url-description")).getText();
+                buffer.append("\"" + description + "\":" + url);
+
+            } else if (tagName.equals("paragraph")) {
+
+                buffer.append("\n\n");
+
+            } else if (tagName.equals("newline")) {
+
+                buffer.append("\n");
+
+            } else if (tagName.equals("list")) {
+
+                for (Iterator items = child.getChildren().iterator(); items
+                        .hasNext();) {
+
+                    Element listItem = (Element) items.next();
+                    if (buffer.length() > 0
+                            && buffer.charAt(buffer.length() - 1) != '\n'
+                            && buffer.charAt(buffer.length() - 2) != '\n') {
+                        buffer.append("\n");
+                    }
+                    buffer.append("- " + regenerateText(listItem));
+                }
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Splits structured text into an XML structure.
+     * 
+     * @param structuredText
+     *            the <code>String</code> to be parsed
+     * @param rootElement
+     *            the parent <code>Element</code> of the generated elements
+     * @return the XML structure
+     */
+    protected Element splitText(String structuredText, Element rootElement) {
+
+        int pos = 0;
+        while (pos < structuredText.length()) {
+            int nextPos = pos;
+
+            if (listAtPos(structuredText, pos)) {
+                nextPos = parseListItem(structuredText, pos, rootElement);
+            } else if (paragraphAtPos(structuredText, pos)) {
+                nextPos = parseParagraph(structuredText, pos, rootElement);
+            } else if (emphasizeAtPos(structuredText, pos)) {
+                nextPos = parseEmphasize(structuredText, pos, rootElement);
+            } else if (weightAtPos(structuredText, pos)) {
+                nextPos = parseWeighted(structuredText, pos, rootElement);
+            } else if (linkAtPos(structuredText, pos)) {
+                nextPos = parseLink(structuredText, pos, rootElement);
+            } else if (newlineAtPos(structuredText, pos)) {
+                nextPos = parseNewline(structuredText, pos, rootElement);
+            } else {
+                nextPos = parsePlainText(structuredText, pos, rootElement);
+            }
+            pos = nextPos;
+        }
+        return rootElement;
+    }
+
+    protected int parseListItem(String structuredText, int pos,
+            Element rootElement) {
+
+        int startPos = (pos == 0) ? pos + "- ".length() : pos
+                + LIST_START.length();
+
+        int nextPos = structuredText.indexOf(LIST_CLOSE, startPos);
+        String itemText;
+        if (nextPos < 0) {
+            nextPos = structuredText.length();
+            itemText = structuredText.substring(startPos, nextPos);
+        } else {
+            itemText = structuredText.substring(startPos, nextPos);
+        }
+
+        if (paragraphAtPos(structuredText, pos - PARAGRAPH_START.length())
+                && includeNewlines) {
+
+            // add a newline element before the list
+            rootElement.addContent(new Element(lookupTag("newline")));
+        }
+        Element element = new Element(lookupTag("listitem"));
+        element.addContent(itemText);
+        rootElement.addContent(element);
+        return nextPos;
+    }
+
+    protected int parseParagraph(String structuredText, int pos,
+            Element rootElement) {
+
+        rootElement.addContent(new Element(lookupTag("paragraph")));
+        // Fix this in case of LINE_SEPARATOR.length() > 1 (e.g. '\r\n').
+        int nextPos = pos + PARAGRAPH_START.length() - 1;
+        if (paragraphAtPos(structuredText, nextPos + 1)) { return nextPos + 1; }
+        if (!listAtPos(structuredText, nextPos)) {
+            nextPos++;
+        }
+        return nextPos;
+    }
+
+    protected int parseNewline(String structuredText, int pos,
+            Element rootElement) {
+
+        rootElement.addContent(new Element(lookupTag("newline")));
+        int nextPos = pos + LINE_SEPARATOR.length();
+        if (listAtPos(structuredText, pos)) {
+            nextPos = nextPos - LINE_SEPARATOR.length();
+        }
+        return nextPos;
+    }
+
+    protected int parseEmphasize(String structuredText, int pos,
+            Element rootElement) {
+
+        int nextPos = structuredText.indexOf(EMPHASIZE_CLOSE, pos
+                + EMPHASIZE_START.length()) + 1;
+        String emphasizedText = structuredText.substring(pos
+                + EMPHASIZE_START.length(), nextPos - 1);
+
+        Element element = new Element(lookupTag("emphasize"));
+        element.addContent(emphasizedText);
+        rootElement.addContent(element);
+        return nextPos;
+    }
+
+    protected int parseWeighted(String structuredText, int pos,
+            Element rootElement) {
+
+        int nextPos = structuredText.indexOf(WEIGHT_CLOSE, pos
+                + WEIGHT_START.length()) + 1;
+        String weightedText = structuredText.substring(pos
+                + WEIGHT_START.length(), nextPos - 1);
+
+        Element element = new Element(lookupTag("weight"));
+        element.addContent(weightedText);
+        rootElement.addContent(element);
+        return nextPos;
+    }
+
+    protected int parseLink(String structuredText, int pos, Element rootElement) {
+
+        String description = structuredText.substring(pos + 1, structuredText
+                .indexOf("\":", pos));
+        int urlEnd = pos + description.length() + 2;
+        while (urlEnd < structuredText.length()
+                && structuredText.indexOf(" ", urlEnd) != urlEnd
+                && structuredText.indexOf(LINE_SEPARATOR, urlEnd) != urlEnd
+                && structuredText.indexOf(". ", urlEnd) != urlEnd
+                && structuredText.indexOf(", ", urlEnd) != urlEnd
+                && structuredText.indexOf("; ", urlEnd) != urlEnd) {
+            urlEnd++;
+        }
+        String url = structuredText.substring(structuredText
+                .indexOf("\":", pos) + 2, urlEnd);
+        Element link = new Element(lookupTag("link"));
+        Element e = new Element(lookupTag("url-description"));
+        e.addContent(description);
+        link.addContent(e);
+        e = new Element(lookupTag("url"));
+        e.addContent(url);
+        link.addContent(e);
+        rootElement.addContent(link);
+        return urlEnd;
+    }
+
+    protected int parsePlainText(String structuredText, int pos,
+            Element rootElement) {
+
+        int nextPos = nextSpecialToken(structuredText, pos);
+        if (nextPos > pos) {
+            String text = structuredText.substring(pos, nextPos);
+
+            if (!includeNewlines) {
+                text = stripNewlines(text);
+            }
+            Element textElement = new Element(lookupTag("plaintext"));
+            textElement.addContent(text);
+            rootElement.addContent(textElement);
+            if (text.trim().length() == 0) {
+                // make sure elements containing only whitespace are not
+                // treated as empty elements
+                Attribute preserveSpace = new Attribute("space", "preserve",
+                        Namespace.XML_NAMESPACE);
+                textElement.setAttribute(preserveSpace);
+            }
+        }
+        return nextPos;
+    }
+
+    /*
+     * Strips away leading and trailing newlines
+     */
+    protected String stripNewlines(String text) {
+        String textCopy = text;
+        while (textCopy.startsWith("\n")) {
+            textCopy = textCopy.substring(1, textCopy.length());
+        }
+
+        while (textCopy.endsWith("\n")) {
+            textCopy = textCopy.substring(0, textCopy.length() - 1);
+
+        }
+        return textCopy;
+    }
+
+    protected int nextSpecialToken(String text, int pos) {
+        int nextPos = pos;
+        while (true) {
+            if (nextPos == text.length()) break;
+            if (listAtPos(text, nextPos) || paragraphAtPos(text, nextPos)
+                    || emphasizeAtPos(text, nextPos)
+                    || weightAtPos(text, nextPos) || linkAtPos(text, nextPos)
+                    || newlineAtPos(text, nextPos)) {
+                break;
+            }
+            nextPos++;
+        }
+        return nextPos;
+    }
+
+    protected boolean listAtPos(String text, int pos) {
+        if (pos == 0) { return text.indexOf("- ", pos) == pos; }
+        return (text.indexOf(LIST_START, pos) == pos);
+    }
+
+    protected boolean paragraphAtPos(String text, int pos) {
+        return (text.indexOf(PARAGRAPH_START, pos) == pos);
+    }
+
+    protected boolean newlineAtPos(String text, int pos) {
+        if (!includeNewlines) { return false; }
+        if (paragraphAtPos(text, pos)) { return false; }
+        return text.indexOf(LINE_SEPARATOR, pos) == pos;
+    }
+
+    protected boolean emphasizeAtPos(String text, int pos) {
+        if (text.indexOf(EMPHASIZE_START, pos) != pos) return false;
+        int termPos = text.indexOf(EMPHASIZE_CLOSE, pos
+                + EMPHASIZE_CLOSE.length());
+        if (termPos > 0) {
+            for (int i = pos; i < termPos; i++) {
+                if (listAtPos(text, i) || paragraphAtPos(text, i)
+                        || newlineAtPos(text, i) || linkAtPos(text, i)
+                        || weightAtPos(text, i)) { return false; }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean weightAtPos(String text, int pos) {
+        if (text.indexOf(WEIGHT_START, pos) != pos) return false;
+        int termPos = text
+                .indexOf(WEIGHT_CLOSE, pos + EMPHASIZE_CLOSE.length());
+        if (termPos > 0) {
+            for (int i = pos + 1; i < termPos; i++) {
+                if (listAtPos(text, i) || paragraphAtPos(text, i)
+                        || newlineAtPos(text, i) || linkAtPos(text, i)
+                        || emphasizeAtPos(text, i)) { return false; }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean linkAtPos(String text, int pos) {
+        // links look like: "description":http://url-of-something
+        if (text.indexOf("\"", pos) != pos) return false;
+
+        int testPos = text.indexOf("\":", pos + "\"".length());
+        if (testPos > 0) {
+
+            // Check that the " at pos is the closest one to ":
+            int intermediatePos = text.indexOf("\"", pos + "\"".length());
+            if (intermediatePos != testPos) return false;
+
+            for (int i = pos; i < testPos; i++) {
+                if (listAtPos(text, i) || newlineAtPos(text, i)) { return false; }
+            }
+            if (testPos == text.length() - 1) return false;
+            if (text.charAt(testPos + "\":".length()) == ' '
+                    || text.indexOf(LINE_SEPARATOR, pos + "\":".length()) == pos
+                            + "\":".length()) { return false; }
+            return true;
+        }
+        return false;
+    }
+
+    public static void dumpXML(Element element, PrintStream out) {
+        try {
+            Format format = Format.getPrettyFormat();
+
+            XMLOutputter xmlOutputter = new XMLOutputter();
+            xmlOutputter.setFormat(format);
+
+            //        	XMLOutputter xmlOutputter = new XMLOutputter(" ", true);
+            //            xmlOutputter.setTextNormalize(true);
+            String xml = xmlOutputter.outputString(element);
+            out.println(xml);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void dumpXML(Document doc, PrintStream out) {
+        try {
+            Format format = Format.getPrettyFormat();
+
+            XMLOutputter xmlOutputter = new XMLOutputter();
+            xmlOutputter.setFormat(format);
+
+            //            XMLOutputter xmlOutputter = new XMLOutputter(" ", true);
+            //            xmlOutputter.setTextNormalize(true);
+            String xml = xmlOutputter.outputString(doc);
+            out.println(xml);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        try {
+
+            DefaultStructuredText parser = new DefaultStructuredText();
+
+            if (args.length < 1) {
+
+                System.out.println("Usage: " + parser.getClass().getName()
+                        + " <textfile>");
+                return;
+            }
+
+            File textFile = new File(args[0]);
+
+            if (!textFile.exists()) {
+
+                System.out.println("No such file: " + textFile.getName());
+                return;
+            }
+
+            parser.setIncludeNewlines(true);
+
+            char[] buffer = new char[(int) textFile.length()];
+            FileReader reader = new FileReader(textFile);
+            reader.read(buffer);
+
+            String text = new String(buffer);
+            Element root = parser.parseStructuredText(text);
+            Document doc = new Document(root);
+
+            DefaultStructuredText.dumpXML(doc, System.out);
+
+            String txt = parser.parseElement(root);
+            System.out.println("Converted back: ");
+            System.out.println(txt);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+}

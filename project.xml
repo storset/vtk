@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+  <!-- the version of maven's project object model -->
+  <pomVersion>3</pomVersion>
+
+  <id>vortikal</id>
+  <name>Vortikal</name>
+  <groupId>vortikal</groupId>
+  <currentVersion>SNAPSHOT</currentVersion>
+  
+  <organization>
+    <name>University of Oslo, USIT</name>
+    <url>http://www.usit.uio.no/</url>
+    <logo>/images/uio.gif</logo>
+  </organization>
+  
+  <inceptionYear>2004</inceptionYear>
+  <package>org.vortikal</package>
+  <logo></logo>
+  <shortDescription>The Vortikal Web Framework</shortDescription>
+  <url>http://vortikal.berlios.de</url>
+
+  <repository>
+    <connection>scm:svn:svn:svn.berlios.de/vortikal</connection>
+    <developerConnection>scm:svn:svn+ssh:svn.berlios.de/svnroot/repos/vortikal</developerConnection>
+    <url>http://svn.berlios.de/viewcvs/vortikal/</url>
+  </repository>
+
+  <siteAddress>shell.berlios.de</siteAddress>
+  <siteDirectory>/home/groups/vortikal/htdocs/maven-site</siteDirectory>
+
+  <mailingLists>
+    <mailingList>
+      <name>Vortikal Announce List</name>
+      <subscribe>https://lists.berlios.de/mailman/listinfo/vortikal-announce</subscribe>
+      <unsubscribe>https://lists.berlios.de/mailman/listinfo/vortikal-announce</unsubscribe>
+      <archive>https://lists.berlios.de/pipermail/vortikal-announce</archive>
+    </mailingList>
+    <mailingList>
+      <name>Vortikal Users List</name>
+      <subscribe>https://lists.berlios.de/mailman/listinfo/vortikal-users</subscribe>
+      <unsubscribe>https://lists.berlios.de/mailman/listinfo/vortikal-users</unsubscribe>
+      <archive>https://lists.berlios.de/pipermail/vortikal-users</archive>
+    </mailingList>
+    <mailingList>
+      <name>Vortikal Developers List</name>
+      <subscribe>https://lists.berlios.de/mailman/listinfo/vortikal-devel</subscribe>
+      <unsubscribe>https://lists.berlios.de/mailman/listinfo/vortikal-devel</unsubscribe>
+      <archive>https://lists.berlios.de/pipermail/vortikal-devel</archive>
+    </mailingList>
+    <mailingList>
+      <name>Vortikal Subversion List</name>
+      <subscribe>https://lists.berlios.de/mailman/listinfo/vortikal-svn</subscribe>
+      <unsubscribe>https://lists.berlios.de/mailman/listinfo/vortikal-svn</unsubscribe>
+      <archive>https://lists.berlios.de/pipermail/vortikal-svn</archive>
+    </mailingList>
+  </mailingLists>
+
+  <developers>
+  </developers>
+
+
+  <dependencies>
+    <dependency>
+      <id>log4j</id>
+      <version>1.2.8</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>aopalliance</id>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>oro</id>
+      <version>2.0.7</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>spring</id>
+      <groupId>springframework</groupId>
+      <version>1.1.2-pre</version>
+      <!--version>cvs-2004-09-16</version-->
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>spring-mock</id>
+      <groupId>springframework</groupId>
+      <version>1.0.3-pre</version>
+    </dependency>
+    <dependency>
+      <id>commons-logging</id>
+      <version>1.0.3</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-fileupload</id>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-codec</id>
+      <version>1.3</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>aopalliance</id>
+      <version>1.0</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>oro</id>
+      <version>2.0.8</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+    </dependency>
+    <dependency>
+      <id>jug</id>
+      <version>1.0.1</version>
+      <url>http://www.doomdark.org/doomdark/proj/jug/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jdom</id>
+      <version>b10</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jaxen</id>
+      <version>1.1-beta-4</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>saxpath</id>
+      <version>1.0-FCS</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <id>freemarker</id>
+      <version>2.3</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>xerces</id>
+      <version >2.4.0</version >
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+   <dependency>
+     <id >xml-apis</id >
+     <version >2.0.2</version >
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+   <dependency>
+     <id>xalan</id>
+     <version>2.5.1</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency >
+   <!--
+     <dependency>
+     <id>saxon</id>
+     <version>6.5.3</version>
+     <properties>
+     <war.bundle>true</war.bundle>
+     </properties>
+     </dependency >
+   -->
+   <!-- BeanShell: -->
+   <dependency>
+     <id>bsh</id>
+     <version>2.0b1</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+
+   <!-- Groovy: -->
+   <dependency>
+     <id>groovy</id>
+     <version>all-1.0-beta-7</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+   <dependency>
+     <id>asm</id>
+     <version>1.4.2</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+
+   <!-- Quartz job scheduling-->
+   <dependency>
+     <id>quartz</id>
+     <version>1.4.2</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+
+
+   <!-- backend deps -->
+   <dependency>
+     <id>concurrent</id>
+     <version>1.0</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+   <dependency>
+     <id>lucene</id>
+     <version>1.3</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+   <!--
+   <dependency>
+     <id>oracle+ojdbc14</id>
+     <version>10.1.0.2.0</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+     <url>http://intra.usit.uio.no/web/maven/oracle/jars/oracle-ojdbc14-10.1.0.2.0.jar</url>
+   </dependency>
+   <dependency>
+     <id>oracle+ojdbc14</id>
+     <version>9.2.0.1</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+   -->
+   <dependency>
+     <id>postgresql</id>
+     <version>7.4.1-jdbc3</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+   <dependency>
+     <id>hsqldb</id>
+     <version>1.7.1</version>
+     <properties>
+       <war.bundle>true</war.bundle>
+     </properties>
+   </dependency>
+ </dependencies> 
+ 
+
+
+ <!-- build information for the project -->
+
+ <build>
+   <sourceDirectory>src/java</sourceDirectory>
+   <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
+
+   <integrationUnitTestSourceDirectory/>
+
+   <!-- Unit test classes -->
+   <unitTest>
+     <includes>
+       <include>**/*Test.java</include>
+       <include>**/*TestSuite.java</include>
+     </includes>
+     <resources>
+       <resource>
+         <directory>${pom.build.unitTestSourceDirectory}</directory>
+         <includes>
+           <include>**/*.xml</include>
+           <include>**/*.xsd</include>
+           <include>log4j.properties</include>
+         </includes>
+       </resource>
+     </resources>
+
+   </unitTest>
+
+   <!-- J A R  R E S O U R C E S -->
+   <!-- Resources that are packaged up inside the JAR file -->
+   <resources>
+     <resource>
+       <!-- Include the MIME type helper file in the jar under
+            '/org/vortikal/repositoryimpl'. -->
+       <directory>src/java/org/vortikal/repositoryimpl</directory>
+       <targetPath>org/vortikal/repositoryimpl</targetPath>
+       <includes>
+         <include>mime.properties</include>
+       </includes>
+     </resource>
+     <resource>
+       <!-- Include Language bundles in the jar under '/'. -->
+       <directory>src/i18n</directory>
+       <targetPath>/</targetPath>
+       <includes>
+         <include>*.properties</include>
+       </includes>
+     </resource>
+     <resource>
+       <!-- Include FreeMarker templates in the jar under '/ftl'. -->
+
+       <!--
+         TODO: should move 'src/webapp/WEB-INF/ftl' to 'src/ftl', to
+         avoid duplication of ftl files in webapps.
+       -->
+       <directory>src/webapp/WEB-INF/ftl</directory>
+       <targetPath>/ftl</targetPath>
+       <includes>
+         <include>**/*.ftl</include>
+       </includes>
+     </resource>
+   </resources>
+ </build>
+
+ <reports>
+   <report>maven-changelog-plugin</report>
+   <report>maven-changes-plugin</report>
+   <report>maven-developer-activity-plugin</report>
+   <report>maven-file-activity-plugin</report>
+   <report>maven-license-plugin</report>
+   <!-- report>maven-statcvs-plugin</report -->
+   <!-- report>maven-checkstyle-plugin</report -->
+   <report>maven-javadoc-plugin</report>
+   <report>maven-jxr-plugin</report>
+   <report>maven-junit-report-plugin</report>
+   <!--report>maven-clover-plugin</report-->
+   <report>maven-tasklist-plugin</report>
+   <report>maven-jdepend-plugin</report>
+ </reports>
+
+</project>

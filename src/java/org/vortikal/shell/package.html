@@ -1,0 +1,97 @@
+<html>
+<head>
+  <title>
+    Shell like management interfaces
+  </title>
+</head>
+<body>
+
+  Provides a command based management interface to the system.
+
+  <h3>Shell like management interfaces</h3>
+
+    This package contains scripting and shell interfaces to the
+    system. Such interfaces can be useful for tasks such as
+    management, debugging, etc, as they have complete access to the
+    bean factory of Spring. The scripting objects must be hooked up
+    into Spring as beans themselves. Currently, support for <a
+    href="http://www.beanshell.org" target="_top">BeanShell</a> and <a
+    href="http://groovy.codehaus.org/" target="_top">Groovy</a> has
+    been added. 
+
+  <h3>Operation</h3>
+
+    The scripting objects consist of three components: an interpreter
+    (a subclass of {@link org.vortikal.shell.ShellSupport
+    ShellSupport}), a command reader (an instance of {@link
+    org.vortikal.shell.CommandReader CommandReader}), and a {@link
+    java.io.PrintStream PrintStream} (for outputting results of
+    evaluations). As soon as the shell has been initialized, it enters
+    an "read-eval-print" loop in a separate thread. The relationships
+    between the different components are shown below:
+
+    <pre>
+      ----------------
+     |                |  1. read command
+     | CommandReader  |--------------
+     |                |              |
+      ----------------            -------------
+                                 |             |  2. evaluate
+                                 | Interpreter |
+                                 |             |
+      ----------------            -------------
+     |                |              |
+     | PrintStream    |--------------
+     |                |  3. print result
+      ----------------
+    </pre>
+
+    The command reader and the PrintStream are configurable properties
+    of the ShellSupport class, allowing for commands to be read from
+    various sources such as sockets, pipes, files, etc. The default
+    implementation uses the console for input and System.out for
+    output.
+
+  <h3>Init files</h3>
+
+    The ShellSupport class (and consequently its subclasses) supports
+    setting an <code>initFiles</code> property. Setting this property
+    to a list of resources will cause the shell to evaluate each one
+    on startup. This may be useful for making custom functions,
+    scripts, etc. available to the interpreter. The init files are
+    located using the Spring framework's <code>ResourceLoader</code>
+    framework, and supports <code>classpath:</code> type locators in
+    addition to standard URLs.
+
+  <h3>Bindings</h3>
+
+  The bean context is provided as a binding in the interpreter, under
+  the name <code>context</code>. This allows scripts script to operate
+  on other beans, e.g.
+  <pre>
+    repository = context.getBean();
+    repository.move(...);
+    ...
+    etc.
+  </pre>
+  
+
+  <h3>Example</h3>
+
+    A very simple Spring XML configuration of a BeanShell interpreter,
+    reading from and writing to the console, and having an init script
+    called <code>foo.bsh</code> somewhere in the classpath, would be:
+
+    <pre>
+      &lt;bean id="console" class="org.vortikal.shell.BeanShellManager"&gt; 
+          &lt;property name="initFile"&gt;
+              &lt;value&gt;classpath:foo.bsh&lt;/value&gt;
+          &lt;/property&gt;
+      &lt;/bean&gt;
+    </pre>
+    Note: when using interpreters reading from the console
+    (System.in), only one instance may be created (obviously).
+
+
+
+</body>

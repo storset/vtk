@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" 
+    schemaLocation="http://xml.uio.no/xsd/xml.xsd" />
+
+    <xsd:complexType name="TestEnumeration">
+      <xsd:sequence>
+        <xsd:element name="tjall" type="Tjall" />
+      </xsd:sequence>
+      <xsd:attribute name="type" type="Tjall" />
+    </xsd:complexType>
+
+      <xsd:simpleType name="Tjall">
+          <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="Hashish"/>
+              <xsd:enumeration value="Marihuana"/>
+          </xsd:restriction>
+      </xsd:simpleType>
+
+  </xsd:schema>

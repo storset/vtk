@@ -29,7 +29,8 @@
   </repository>
 
   <siteAddress>shell.berlios.de</siteAddress>
-  <siteDirectory>/home/groups/vortikal/htdocs/maven-site</siteDirectory>
+  <siteDirectory>/home/groups/vortikal/htdocs/maven-sites/vortikal-${pom.currentVersion}</siteDirectory>
+
 
   <mailingLists>
     <mailingList>

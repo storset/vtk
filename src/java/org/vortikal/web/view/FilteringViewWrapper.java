@@ -111,7 +111,11 @@ public class FilteringViewWrapper extends AbstractViewWrapper {
         
 
         String characterEncoding = null;
-        String contentType = bufferedResponse.getContentType().trim();
+        String contentType = bufferedResponse.getContentType();
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+        contentType = contentType.trim();
         if (contentType.indexOf("charset") != -1 && contentType.indexOf(";") != -1) {
             contentType = contentType.substring(0, contentType.indexOf(";"));
             characterEncoding = bufferedResponse.getCharacterEncoding();

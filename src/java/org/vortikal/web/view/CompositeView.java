@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.view;
 
-
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -49,8 +46,6 @@ import org.springframework.web.servlet.View;
 import org.vortikal.web.referencedataprovider.Provider;
 import org.vortikal.web.servlet.BufferedResponse;
 
-
-
 /**
  * View implementation that takes a list of other views, concatenating
  * their output. The content type and character encoding can either be
@@ -58,25 +53,35 @@ import org.vortikal.web.servlet.BufferedResponse;
  * content type of the last view in the chain takes precedence. The
  * HTTP status code set is always that of the last view.
  *
+ * <p>Configurable properties (in addition to those defined by the {@link
+ *  AbstractReferenceDataProvidingWithChildrenView superclass}):
+ * <ul>
+ *   <li><code>viewList</code> - the array of {@link View views} to
+ *   invoke (in sequence)
+ * </ul>
+ * 
  * <p>TODO: what about other headers (Last-Modified, etc.)?
  *
- * <p>Configurable properties
- * <ul>
- *   <li>viewList - the list of views to run</li>
- *   <li>referenceDataProviders - list of reference data providers</li>
- * </ul>
  */
-public class CompositeView extends AbstractReferenceDataProvidingWithChildrenView implements InitializingBean {
+public class CompositeView
+  extends AbstractReferenceDataProvidingWithChildrenView
+  implements InitializingBean {
 
     private View[] views = null;
     private String contentType = null;
-    private Provider[] referenceDataProviders = null;
-    
-    public void setReferenceDataProviders(Provider[] referenceDataProviders) {
-        this.referenceDataProviders = referenceDataProviders;
-    }
 
-    public void afterPropertiesSet() {
+
+    public View[] getViews() {
+        return views;
+    }
+    
+
+    public void setViews(View[] views) {
+        this.views = views;
+    }
+    
+    
+    public void afterPropertiesSet() {        
         if (this.views == null) {
             throw new BeanInitializationException(
                 "Bean property 'viewList' must be set");
@@ -91,6 +96,7 @@ public class CompositeView extends AbstractReferenceDataProvidingWithChildrenVie
         
         int sc = HttpServletResponse.SC_OK;
         String contentType = null;
+
         for (int i = 0; i < views.length; i++) {
             BufferedResponse bufferedResponse = new BufferedResponse();
             views[i].render(model, request, bufferedResponse);
@@ -122,14 +128,4 @@ public class CompositeView extends AbstractReferenceDataProvidingWithChildrenVie
         }
     }
 
-    public View[] getViews() {
-        return views;
-    }
-    
-
-    public void setViews(View[] views) {
-        this.views = views;
-    }
-    
-    
 }

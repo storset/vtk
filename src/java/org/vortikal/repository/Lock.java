@@ -41,16 +41,16 @@ public class Lock implements java.io.Serializable, Cloneable {
     public static final String LOCKTYPE_EXCLUSIVE_WRITE = "EXCLUSIVE_WRITE";
     private String type;
     private String depth;
-    private Principal user;
+    private Principal principal;
     private String ownerInfo;
     private java.util.Date timeout;
     private String token;
 
-    public Lock(String type, String depth, Principal user, String ownerInfo,
+    public Lock(String type, String depth, Principal principal, String ownerInfo,
         java.util.Date timeout, String token) {
         this.type = type;
         this.depth = depth;
-        this.user = user;
+        this.principal = principal;
         this.ownerInfo = ownerInfo;
         this.timeout = timeout;
         this.token = token;
@@ -64,10 +64,17 @@ public class Lock implements java.io.Serializable, Cloneable {
         return depth;
     }
 
-    public Principal getUser() {
-        return user;
+    /** 
+     * @deprecated
+     */
+    public String getUser() {
+        return principal.getQualifiedName();
     }
 
+    public Principal getPrincipal() {
+        return principal;
+    }
+    
     public String getOwnerInfo() {
         return ownerInfo;
     }

@@ -143,7 +143,7 @@ public class ResourcePrincipalPermissionAssertion
                 
             if (resource.getActiveLocks().length > 0) {
 
-                Principal owner = resource.getActiveLocks()[0].getUser();
+                Principal owner = resource.getActiveLocks()[0].getPrincipal();
                 Principal p = securityContext.getPrincipal();
 
                 if (p != null && p.equals(owner)) {

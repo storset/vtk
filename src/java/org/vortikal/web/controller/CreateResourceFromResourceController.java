@@ -61,7 +61,7 @@ import org.vortikal.xml.TransformerManager;
  * Controller that creates a resource from another resource.
  * TODO: Make this generic
  * 
-  * <p>Configurable properties:
+ * <p>Configurable properties:
  * <ul>
  *   <li><code>repository</code> - the repository is required</li>
  *   <li><code>resourceName</code> - Create new resource with this name</li>

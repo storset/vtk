@@ -173,7 +173,7 @@ public abstract class AbstractXmlEditController implements Controller {
                 repository.retrieve(token, uri, false);
             Lock[] locks = resource.getActiveLocks();
             if (locks == null
-                || (locks.length > 0 && !locks[0].getUser().equals(principal.getQualifiedName()))) {
+                || (locks.length > 0 && !locks[0].getPrincipal().equals(principal))) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Stored xml edit session data is out of date.");
                 }

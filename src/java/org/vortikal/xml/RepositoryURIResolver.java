@@ -99,7 +99,9 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
         throws IOException {
         String token = this.token;
         if (token == null) {
-            token = SecurityContext.getSecurityContext().getToken();
+            if (SecurityContext.getSecurityContext() != null) {
+                token = SecurityContext.getSecurityContext().getToken();
+            }
         }
 
         try {

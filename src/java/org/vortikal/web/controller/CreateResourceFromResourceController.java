@@ -100,7 +100,7 @@ public class CreateResourceFromResourceController implements Controller,
 
         boolean exists = repository.exists(token, newResourceUri);
         if (exists) {
-            model.put("error", "STATUS_DOCUMENT_EXISTS");
+            model.put("createResourceError", "STATUS_DOCUMENT_EXISTS");
             return new ModelAndView(errorView, model);
         }
             

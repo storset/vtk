@@ -114,4 +114,16 @@ public class HtmlHeadContentFilter
     }
     
     
+    /**
+     * @param removeCharsets The removeCharsets to set.
+     */
+    public void setRemoveCharsets(boolean removeCharsets) {
+        this.removeCharsets = removeCharsets;
+    }
+    /**
+     * @param removeTitles The removeTitles to set.
+     */
+    public void setRemoveTitles(boolean removeTitles) {
+        this.removeTitles = removeTitles;
+    }
 }

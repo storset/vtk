@@ -41,13 +41,16 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
 /**
- * Model builder that provides configured metadata based on the resource url. 
+ * Model builder that provides configured metadata based on the resource url.
+ * To get the correct URI, the model is first searched for an object of type
+ * <code>org.vortikal.repository.Resource</code> and key <code>resource</code>.
+ * If no such object exists in the model, the URI is retrieved from the
+ * RequestContext.
  */
 
 public class ConfiguredMetadataProvider implements Provider {
@@ -63,14 +66,23 @@ public class ConfiguredMetadataProvider implements Provider {
     }
 
     public void referenceData(Map model, HttpServletRequest request) {
-
-    	    Map configuredMetadataModel = new LinkedHashMap();	 	       
- 
-    	    SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Map configuredMetadataModel = new LinkedHashMap();	 	       
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+
+        String uri = "";
+        Resource resource = null;
+
+        if (model != null) {
+            resource = (Resource) model.get("resource");
+        }
+
+        if (resource != null) {
+            uri = resource.getURI();
+        } else {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            uri = requestContext.getResourceURI();
+        }
 
         String[] path = URLUtil.splitUri(uri);
         String[] incrementalPath = URLUtil.splitUriIncrementally(uri);
@@ -79,40 +91,41 @@ public class ConfiguredMetadataProvider implements Provider {
         
         try {
             for (int i = path.length - 2; i >= 0; i--) {	
-            	   Resource r = repository.retrieve(token, incrementalPath[i], true);
-
+                logger.debug("URI: " + incrementalPath[i]);
+                Resource r = repository.retrieve(token, incrementalPath[i], true);
+                
                 // "Tema" is obligatory for UHTML	
                 Property tema = r.getProperty("http://www.uio.no/visuell-profil","tema");
                 
-                	if (tema != null) {
-                		logger.debug("Fant tema: " + tema.getValue());
-                		Property enhet_id = r.getProperty("http://www.uio.no/visuell-profil","enhet.id");
-                		Property redaksjon_navn = r.getProperty("http://www.uio.no/visuell-profil","redaksjon.navn");
-                		Property redaksjon_vev = r.getProperty("http://www.uio.no/visuell-profil","redaksjon.vev");
-                		Property redaksjon_epost = r.getProperty("http://www.uio.no/visuell-profil","redaksjon.epost");
-                		
-                		configuredMetadataModel.put("tema", tema.getValue());
-                		
-                		if (enhet_id != null) {
-                			configuredMetadataModel.put("enhet_id", enhet_id.getValue());
-                		}
-                		if (redaksjon_navn != null) {
-                			configuredMetadataModel.put("redaksjon_navn", redaksjon_navn.getValue());
-                		}
-                   	if (redaksjon_vev != null) {
-                			configuredMetadataModel.put("redaksjon_vev", redaksjon_vev.getValue());
-                		}
-                   	if (redaksjon_epost != null) {
-            			configuredMetadataModel.put("redaksjon_epost", redaksjon_epost.getValue());
-                   	}	
-                   	
-                		break;
-                		}
-                	}		
-            }	
+                if (tema != null) {
+                    logger.debug("Fant tema: " + tema.getValue());
+                    Property enhet_id = r.getProperty("http://www.uio.no/visuell-profil","enhet.id");
+                    Property redaksjon_navn = r.getProperty("http://www.uio.no/visuell-profil","redaksjon.navn");
+                    Property redaksjon_vev = r.getProperty("http://www.uio.no/visuell-profil","redaksjon.vev");
+                    Property redaksjon_epost = r.getProperty("http://www.uio.no/visuell-profil","redaksjon.epost");
+                    
+                    configuredMetadataModel.put("tema", tema.getValue());
+                    
+                    if (enhet_id != null) {
+                        configuredMetadataModel.put("enhet_id", enhet_id.getValue());
+                    }
+                    if (redaksjon_navn != null) {
+                        configuredMetadataModel.put("redaksjon_navn", redaksjon_navn.getValue());
+                    }
+                    if (redaksjon_vev != null) {
+                        configuredMetadataModel.put("redaksjon_vev", redaksjon_vev.getValue());
+                    }
+                    if (redaksjon_epost != null) {
+                        configuredMetadataModel.put("redaksjon_epost", redaksjon_epost.getValue());
+                    }	
+                    
+                    break;
+                }
+            }		
+        }	
         catch (Exception e) {
-        		logger.warn("Unable to get possible metadata from ancestor(s) ", e);
-        	}
+            logger.warn("Unable to get possible metadata from ancestor(s) ", e);
+        }
         
         model.put("configuredMetadata", configuredMetadataModel);
     }

@@ -56,7 +56,11 @@ import org.vortikal.web.service.Service;
  *   whether to retrieve resources using the
  *   <code>forProcessing</code> flag set to <code>false</code> or
  *   false. The default is <code>true</code>.
- *   <li><code>modelName</code> - the name to use for the submodel
+ *   <li><code>resolveToIndexFile</code> - boolean indicating if the 
+ *   provider should use the resource from the model provided 
+ *   (<code>true</true>), or get it from the repository through the 
+ *   ResourceContext. Default is <code>false</code>.  
+ * 	 <li><code>modelName</code> - the name to use for the submodel
  *   (default is <code>resourceContext</code>).
  * </ul>
  * 
@@ -73,6 +77,7 @@ public class ResourceContextProvider implements InitializingBean, Provider {
 
     private Repository repository = null;
     private boolean retrieveForProcessing = false;
+    private boolean resolveToIndexFile = false;
     private String modelName = "resourceContext";
     
     
@@ -85,7 +90,12 @@ public class ResourceContextProvider implements InitializingBean, Provider {
         this.retrieveForProcessing = retrieveForProcessing;
     }
     
-
+    
+	public void setResolveToIndexFile(boolean resolveToIndexFile) {
+		this.resolveToIndexFile = resolveToIndexFile;
+	}
+	
+	
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -115,13 +125,20 @@ public class ResourceContextProvider implements InitializingBean, Provider {
         Principal principal = securityContext.getPrincipal();
 
         Resource resource = null;
-        try {
-            resource = repository.retrieve(
-                securityContext.getToken(), requestContext.getResourceURI(),
-                this.retrieveForProcessing);
+        
+        if (model != null && resolveToIndexFile) {
+            resource = (Resource) model.get("resource");
+        }
 
-        } catch (RepositoryException e) { }
-
+        if (resource == null) {
+        	   try {
+        	   	    resource = repository.retrieve(
+        	   	    securityContext.getToken(), requestContext.getResourceURI(),
+			    this.retrieveForProcessing);
+       
+        	   } catch (RepositoryException e) { }
+        }
+        	   
         resourceContextModel.put("principal", principal);
         resourceContextModel.put("currentResource", resource);
         resourceContextModel.put("currentURI", requestContext.getResourceURI());

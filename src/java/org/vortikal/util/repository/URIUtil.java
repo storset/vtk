@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 26.jul.2004
- *
- */
 package org.vortikal.util.repository;
 
 import java.util.regex.*;
@@ -42,16 +38,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-/** 
+/**
+ * General resource path utilities.
  */
 public class URIUtil {
 
 
-	private static Log logger = LogFactory.getLog("org.vortikal.util.repository.URIUtil");
+    private static Log logger = LogFactory.getLog("org.vortikal.util.repository.URIUtil");
+
     
-    /** Makes an absolute path of <code>path</code> relative to <code>resource</code>.
-     * If resource is a collection, the path is relative to this resource, 
-     * otherwise to the parent of the resource.  
+    /**
+     * Makes an absolute path of <code>path</code> relative to
+     * <code>resource</code>.  If resource is a collection, the path
+     * is relative to this resource, otherwise to the parent of the
+     * resource.
      * @param path
      * @param resource
      * @return the absolute path
@@ -61,8 +61,8 @@ public class URIUtil {
         if (path.startsWith("/")) return path;
 
         if (resource == null) {
-            throw new IllegalArgumentException("The relative path '" + 
-                    path + "' cannot be resolved with a null resource");
+            throw new IllegalArgumentException(
+                "The relative path '" + path + "' cannot be resolved with a null resource");
         };
 
         if (resource.isCollection()) { 
@@ -88,10 +88,10 @@ public class URIUtil {
      */
     public static String expandPath(String uri) throws InvalidURIException {
 
-		// Test to check that start of URI is legal path (e.g. UNIX '/', WINDOWS 'C:')
-		// [using string test and regex checking]
-		if ( !uri.startsWith("/") && (!uri.substring(0,2).matches("[c-zA-Z]:")) ) {
-			System.out.print("URI cannot be relative.");            
+        // Test to check that start of URI is legal path (e.g. UNIX '/', WINDOWS 'C:')
+        // [using string test and regex checking]
+        if ( !uri.startsWith("/") && (!uri.substring(0,2).matches("[c-zA-Z]:")) ) {
+            System.out.print("URI cannot be relative.");            
         }
 
         if (uri.startsWith("/../")) {

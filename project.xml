@@ -256,6 +256,8 @@
      </properties>
    </dependency>
    -->
+
+   <!--
    <dependency>
      <id>postgresql</id>
      <version>7.4.1-jdbc3</version>
@@ -270,6 +272,8 @@
        <war.bundle>true</war.bundle>
      </properties>
    </dependency>
+   -->
+   
  </dependencies> 
  
 

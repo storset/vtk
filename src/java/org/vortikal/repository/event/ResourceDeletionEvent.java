@@ -32,16 +32,28 @@ package org.vortikal.repository.event;
 
 import org.vortikal.repository.Repository;
 
-
 public class ResourceDeletionEvent extends RepositoryEvent {
     private String uri = null;
+    private int resourceId;
+    private boolean collection;
 
-    public ResourceDeletionEvent(Repository source, String uri) {
+    public ResourceDeletionEvent(Repository source, String uri, int resourceId,
+                                 boolean collection) {
         super(source);
         this.uri = uri;
+        this.resourceId = resourceId;
+        this.collection = collection;
     }
 
     public String getURI() {
         return this.uri;
+    }
+
+    public int getResourceId() {
+        return this.resourceId;
+    }
+    
+    public boolean isCollection() {
+        return this.collection;
     }
 }

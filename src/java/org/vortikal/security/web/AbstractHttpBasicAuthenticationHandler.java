@@ -32,6 +32,7 @@ package org.vortikal.security.web;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,40 +53,73 @@ import org.vortikal.util.cache.SimpleCache;
 
 
 /**
+ * Abstract base class for performing HTTP/Basic
+ * authentication. Subclasses normally only need to override the
+ * {@link #authenticateInternal(Principal, String)} method.
+ * 
  * <p>Configurable properties:
  * <ul>
- * 	 <li><code>principalManager</code> - required
- * 	 <li><code>challenge</code> - required
- *  	 <li><code>recognizedDomains</code> - a {@link Set} specifying the
- *   recognized principal domains. If this property is not specified, 
- * 	 all domains are matched.
-
+ *   <li><code>principalManager</code> - a {@link PrincipalManager} (required)
+ *   <li><code>challenge</code> - an {@link
+ *   HttpBasicAuthenticationChallenge authentication challenge}
+ *   (required)
+ *   <li><code>recognizedDomains</code> - a {@link Set} specifying the
+ *     recognized principal {@link Principal#getDomain domains}. If
+ *     this property is not specified, all domains are matched.
+ *   <li><code>cache</code> - simple {@link SimpleCache cache} to
+ *   allow for clients that don't send cookies (optional)
+ *   <li><code>excludedPrincipals</code> - a {@link Set} of principal
+ *     names to actively exclude when matching authentication
+ *     requests. If the principal in an authentication request is
+ *     present in this set, the authentication request is treated as if
+ *     it were not recognized, even though it normally would.
+ *  </ul>
  */
 public abstract class AbstractHttpBasicAuthenticationHandler 
 	implements AuthenticationHandler, InitializingBean {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    private SimpleCache cache;
-    private Set recognizedDomains;
+    /* Simple cache to allow for clients that don't send cookies */
+    private SimpleCache cache = null;
+    private Set recognizedDomains = null;
+    private Set excludedPrincipals = new HashSet();
 
     protected HttpBasicAuthenticationChallenge challenge;
     protected PrincipalManager principalManager;
   
-
-    
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet() {
-        if (principalManager == null)
-            throw new BeanInitializationException("Property 'principalManager' must be set");
-        if (challenge == null)
-            throw new BeanInitializationException("Property 'challenge' must be set with object " +
-            		"of type " + HttpBasicAuthenticationChallenge.class.getName());
+    public void setCache(SimpleCache cache) {
+        this.cache = cache;
     }
     
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+
+    public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
+        this.challenge = challenge;
+    }
     
+    public void setRecognizedDomains(Set recognizedDomains) {
+        this.recognizedDomains = recognizedDomains;
+    }
+
+    public void setExcludedPrincipals(Set excludedPrincipals) {
+        this.excludedPrincipals = excludedPrincipals;
+    }
+    
+    public void afterPropertiesSet() {
+        if (this.principalManager == null) {
+            throw new BeanInitializationException(
+                "Property 'principalManager' must be set");
+        }
+        
+        if (this.challenge == null) {
+            throw new BeanInitializationException(
+                "Property 'challenge' must be set");
+        }
+    }
+
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)
     throws AuthenticationProcessingException {
 
@@ -97,21 +131,24 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         Principal principal = null;
         
         try {
-            principal = principalManager.getPrincipal(username);
+            principal = this.principalManager.getPrincipal(username);
         } catch (InvalidPrincipalException e) {
             return false;
         }
         
-        if (recognizedDomains == null || recognizedDomains.contains(principal.getDomain()))
+        if (this.excludedPrincipals != null
+            && this.excludedPrincipals.contains(principal.getQualifiedName())) {
+            return false;
+        }
+
+        if (this.recognizedDomains == null
+            || this.recognizedDomains.contains(principal.getDomain()))
             return true;
     
         return false;
     }
 
 
-    
-
-    
     public Principal authenticate(HttpServletRequest request)
         throws AuthenticationProcessingException, AuthenticationException {
         String username = getUserName(request);
@@ -126,10 +163,8 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         }
 
         if (cache != null) {
-            /* Simple cache to allow for clients that don't send cookies */
-        
             Principal cachedPrincipal = (Principal) 
-                cache.get(md5sum(principal.getQualifiedName() + password));
+                this.cache.get(md5sum(principal.getQualifiedName() + password));
         
             if (cachedPrincipal != null) {
                 if (logger.isDebugEnabled())
@@ -172,9 +207,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     public abstract void authenticateInternal(Principal principal, String password)
         throws AuthenticationProcessingException, AuthenticationException;
     
-    /**
-     * @see org.vortikal.security.web.AuthenticationHandler#getAuthenticationChallenge()
-     */
+
     public AuthenticationChallenge getAuthenticationChallenge() {
         return challenge;
     }
@@ -240,22 +273,5 @@ public abstract class AbstractHttpBasicAuthenticationHandler
             throw new IllegalStateException(
                 "MD5 digest not available in JVM");
         }
-    }
-
-
-    public void setCache(SimpleCache cache) {
-        this.cache = cache;
-    }
-    
-    public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
-        this.challenge = challenge;
-    }
-    
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-
-    public void setRecognizedDomains(Set recognizedDomains) {
-        this.recognizedDomains = recognizedDomains;
     }
 }

@@ -1,0 +1,30 @@
+<document>
+  <properties>
+    <!--author email="user@company.com">John Doe</author-->
+    <title>Vortikal Project</title>
+  </properties>
+  <!-- Optional HEAD element, which is copied as is into the XHTML <head> element -->
+  <!--
+  <head>
+    <meta ... />
+  </head>
+  -->
+  <body>
+    <!-- The body of the document contains a number of sections -->
+    <section name="Introduction">
+
+      <!-- Within sections, any XHTML can be used -->
+      <p>This is the maven-generated site for the Vortikal
+      project. Not much documentation here yet, aside from the
+      standard maven reports.</p>
+      
+      <!-- in addition to XHTML, any number of subsections can be within a section -->
+      <!--
+      <subsection name="subsection 1">
+        <p>Subsection!</p>
+      </subsection>
+      -->
+    </section>
+
+  </body>
+</document>

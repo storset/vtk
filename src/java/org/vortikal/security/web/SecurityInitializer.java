@@ -79,9 +79,23 @@ public class SecurityInitializer {
             SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
         
         if (token != null) {
-            SecurityContext.setSecurityContext(
-                    new SecurityContext(token, tokenManager.getPrincipal(token)));
-            return true;
+            Principal principal = tokenManager.getPrincipal(token);
+            if (principal == null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                        "Invalid token '" + token + "' in request session, "
+                        + "will proceed to check authentication");
+                }
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                        "Found valid token '" + token + "', principal " + principal
+                        + " in request session, setting security context");
+                }
+                SecurityContext.setSecurityContext(
+                    new SecurityContext(token, principal));
+                return true;
+            }
         }
         
         AuthenticationHandler handler = null;
@@ -99,8 +113,10 @@ public class SecurityInitializer {
                 try {
                     Principal principal = handler.authenticate(req);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Got principal: " + principal
-                                     + " from authentication handler ");
+                        logger.debug(
+                            "Successfully authenticated principal: " + principal
+                            + " using authentication handler " + handler + ". "
+                            + "Setting security context.");
                     }
                     
                     token = tokenManager.newToken(principal);

@@ -79,8 +79,8 @@ import org.vortikal.web.service.Service;
  *   as <code>namespace:name</code> specifying whether to not include
  *   a given resource in the breadcrumb data model. Resources are
  *   ignored when the property exists.
- *   <li><code>titleOverrideProperties</code> - a {@link String[]} of
- *   fully qualified property names (<code>namespace:name</code>)
+ *   <li><code>titleOverrideProperties</code> - a {@link String} array
+ *   of fully qualified property names (<code>namespace:name</code>)
  *   specifying properties that override the names of the resources in
  *   the breadcrumb when present. If such a property is present on a
  *   resource, the value of that property is used as the {@link
@@ -93,7 +93,7 @@ import org.vortikal.web.service.Service;
  * <ul>
  * <li><code>breadcrumb</code> (or, if the property
  * <code>breadcrumbName</code> is specified, the value of that
- * property): a {@link BreadcrumbElement[]} constituting the
+ * property): a {@link BreadcrumbElement} array constituting the
  * breadcrumb.
  * </ul>
  */

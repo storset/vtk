@@ -32,8 +32,8 @@ package org.vortikal.repository;
 
 
 /**
- * Exception indicating that a resource is read-only. This MAY also
- * indicate that the entire repository is operating in read-only mode.
+ * Exception indicating that a resource is read-only because
+ * the repository is operating in read-only mode.
  */
-public class ReadOnlyException extends RepositoryException {
+public class ReadOnlyException extends AuthorizationException {
 }

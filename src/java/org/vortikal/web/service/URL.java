@@ -47,7 +47,7 @@ public class URL {
 
     private String protocol = null;
     private String host = null;
-    private int port = 80;
+    private Integer port = null;
     //private String authority = null;
     //private String userInfo = null;
     private String path = null;
@@ -69,13 +69,9 @@ public class URL {
         this.protocol = protocol.trim();
         this.host = host.trim();
         this.path = path;
-        if ("http".equals(this.protocol)) {
-            this.port = 80;
-        } else {
-            this.port = 443;
-        }
     }
     
+
     public String getProtocol() {
         return this.protocol;
     }
@@ -96,20 +92,22 @@ public class URL {
 
     public void setHost(String host) {
         if (host == null || "".equals(host.trim())) {
-            throw new IllegalArgumentException("Invalid hostname: '" + host + "'");
+            throw new IllegalArgumentException(
+                "Invalid hostname: '" + host + "'");
         }
         this.host = host;
     }
     
 
-    public int getPort() {
+    public Integer getPort() {
         return this.port;
     }
     
 
-    public void setPort(int port) {
-        if (port <= 0) {
-            throw new IllegalArgumentException("Invalid port number: " + port);
+    public void setPort(Integer port) {
+        if (port != null && port.intValue() <= 0) {
+            throw new IllegalArgumentException(
+                "Invalid port number: " + port.intValue());
         }
         this.port = port;
     }
@@ -153,9 +151,11 @@ public class URL {
         
         url.append(this.protocol).append("://");
         url.append(this.host);
-        if (!(this.port == 80 && "http".equals(this.protocol)
-              || (this.port == 443 && "https".equals(this.protocol)))) {
-            url.append(":").append(this.port);
+        if (this.port != null) {
+            if (!(this.port.intValue()  == 80 && "http".equals(this.protocol)
+                  || (this.port.intValue() == 443 && "https".equals(this.protocol)))) {
+                url.append(":").append(this.port.intValue());
+            }
         }
         url.append(URLUtil.urlEncode(this.path));
                 

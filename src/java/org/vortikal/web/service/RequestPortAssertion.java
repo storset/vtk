@@ -68,7 +68,7 @@ public class RequestPortAssertion
 
 
     public void processURL(URL url, Resource resource, Principal principal) {
-        url.setPort(this.port);
+        url.setPort(new Integer(this.port));
     }
     
 

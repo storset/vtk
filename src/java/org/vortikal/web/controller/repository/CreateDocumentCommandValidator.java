@@ -30,27 +30,13 @@
  */
 package org.vortikal.web.controller.repository;
 
-import org.vortikal.security.PrincipalStore;
-
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-/**
- */
-public class CreateDocumentCommandValidator
-  implements Validator, InitializingBean {
 
-    private PrincipalStore principalStore;
-    
-    /**
-     * @param principalStore The principalStore to set.
-     */
-    public void setPrincipalStore(PrincipalStore principalStore) {
-        this.principalStore = principalStore;
-    }
-    
+
+public class CreateDocumentCommandValidator implements Validator {
+
     public boolean supports(Class clazz) {
         return (clazz == CreateDocumentCommand.class);
 
@@ -76,11 +62,5 @@ public class CreateDocumentCommandValidator
         }
     }
 
-    public void afterPropertiesSet() throws Exception {
-        if (principalStore == null) {
-            throw new BeanInitializationException(
-                "Property 'principalStore' cannot be null");
-        }
-    }
 
 }

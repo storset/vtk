@@ -12,7 +12,7 @@
   <organization>
     <name>University of Oslo, USIT</name>
     <url>http://www.usit.uio.no/</url>
-    <logo>/images/uio.gif</logo>
+    <logo>misc/uio.gif</logo>
   </organization>
   
   <inceptionYear>2004</inceptionYear>
@@ -29,7 +29,8 @@
   </repository>
 
   <siteAddress>shell.berlios.de</siteAddress>
-  <siteDirectory>/home/groups/vortikal/htdocs/maven-site</siteDirectory>
+  <siteDirectory>/home/groups/vortikal/htdocs/maven-sites/vortikal-${pom.currentVersion}</siteDirectory>
+
 
   <mailingLists>
     <mailingList>
@@ -295,6 +296,7 @@
    </dependency>
    -->
    
+
  </dependencies> 
  
 

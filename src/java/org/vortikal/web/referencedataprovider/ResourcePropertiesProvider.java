@@ -55,40 +55,48 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * Model builder that provides the list of properties set on a
  * resource, and edit links to them.  The information is made
- * available in the model as a submodel of the name
- * <code>resourceProperties</code>.
+ * available in the model as a submodel with a configurable name
+ * (default <code>resourceProperties</code>).
  * 
  * Configurable properties:
  * <ul>
- *  <li>repository - the repository is required
- *  <li>editPropertyService - service for editing the properties for a resource
- *  <li>propertyDescriptors - list of
- *      <code>PropertyEditDescriptor</code> objects describing the selected
+ *  <li><code>modelName</code> - the name to use for the
+ *  submodel. Default is <code>resourceProperties</code>.
+ *  <li><code>repository</code> - the {@link Repository content
+ *  repository}
+ *  <li><code>editPropertyService</code> - {@link Service} for editing
+ *  the properties for a resource
+ *  <li><code>propertyDescriptors</code> - list of {@link
+ *      EnumerationPropertyDescriptor} objects describing the selected
  *      properties of interest
  * </ul>
  * 
  * Model data provided:
  * <ul>
- *   <li>propertyDescriptors - the list of <code>PropertyEditDescriptor</code> objects
- *   <li>propertyValues - list of property values corresponding to the
- *       indexes in <code>propertyDescriptors</code>
- *   <li>editPropertiesServiceURLs - edit links for each property (enumeration edit)
+ *   <li><code>propertyDescriptors</code> - the list of {@link
+ *   EnumerationPropertyDescriptor} objects that is configured
+ *   <li><code>propertyValues</code> - list of property values
+ *       corresponding to the indexes in
+ *       <code>propertyDescriptors</code>
+ *   <li><code>editPropertiesServiceURLs</code> - edit links for each
+ *   property 
  * </ul>
  */
-public class ResourcePropertiesProvider
-  implements Provider, InitializingBean {
+public class ResourcePropertiesProvider implements Provider, InitializingBean {
 
     private static Log logger = LogFactory.getLog(
         ResourcePropertiesProvider.class);
 
+    private String modelName = "resourceProperties";
     private Repository repository;
     private Service editPropertyService;
     private EnumerationPropertyDescriptor[] propertyDescriptors = null;
 
     
-    /**
-     * @param repository The repository to set.
-     */
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -106,6 +114,10 @@ public class ResourcePropertiesProvider
 
 
     public void afterPropertiesSet() {
+        if (this.modelName == null) {
+            throw new BeanInitializationException(
+                "Bean property 'modelName' not set");
+        }
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "Bean property 'repository' not set");
@@ -165,14 +177,13 @@ public class ResourcePropertiesProvider
             }
         }
 
-        resourcePropertiesModel.put("propertyDescriptors", applicablePropertyDescriptors);
+        resourcePropertiesModel.put("propertyDescriptors",
+                                    applicablePropertyDescriptors);
         resourcePropertiesModel.put("propertyValues", propertyValues);
-        resourcePropertiesModel.put("editPropertiesServiceURLs", editPropertiesServiceURLs);
-
-        model.put("resourceProperties", resourcePropertiesModel);
+        resourcePropertiesModel.put("editPropertiesServiceURLs",
+                                    editPropertiesServiceURLs);
+        model.put(this.modelName, resourcePropertiesModel);
     }
-
-
     
 }
 

@@ -32,6 +32,7 @@ package org.vortikal.edit.plaintext;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -200,9 +201,14 @@ public class PlaintextEditController extends SimpleFormController
         Resource resource = repository.retrieve(token, uri, false);
 
         String characterEncoding = resource.getCharacterEncoding();
+
         if (characterEncoding == null) {
-            if ("text/xml".equals(resource.getContentType())) {
+
+            if ("text/xml".equals(resource.getContentType())
+                || "application/xml".equals(resource.getContentType())) {
+
                 characterEncoding = getXMLCharacterEncoding(resource, token);
+
             } else if ("text/plain".equals(resource.getContentType())) {
                 characterEncoding = "iso-8859-1";
             }
@@ -211,13 +217,13 @@ public class PlaintextEditController extends SimpleFormController
             logger.debug("Character encoding for document "
                          + resource + " resolved to: " + characterEncoding);
 
+        String content = plaintextEditCommand.getContent();
+
         repository.storeContent(token, uri, 
-                new ByteArrayInputStream(
-                    plaintextEditCommand.getContent().getBytes(
-                        characterEncoding)));
+                new ByteArrayInputStream(content.getBytes(characterEncoding)));
     }
     
-
+    
 
     private String getResourceContent(Resource resource, String token)
         throws IOException {
@@ -237,9 +243,19 @@ public class PlaintextEditController extends SimpleFormController
     private String getXMLContent(Resource resource, String token)
         throws IOException {
         SAXBuilder builder = new SAXBuilder();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int n = 0;
+        byte[] buf = new byte[1024];
+        InputStream in = repository.getInputStream(token, resource.getURI(), false);
+        while ((n = in.read(buf)) > 0) {
+            out.write(buf, 0, n);
+        }
+        in.close();
+
         try {
-            Document doc = builder.build(
-                repository.getInputStream(token, resource.getURI(), false));
+            
+            Document doc = builder.build(new ByteArrayInputStream(out.toByteArray()));
+
             //Format format = Format.getPrettyFormat();
             Format format = Format.getRawFormat();
             XMLOutputter xmlOutputter = new XMLOutputter(format);
@@ -247,8 +263,23 @@ public class PlaintextEditController extends SimpleFormController
             return xml;
         
         } catch (JDOMException e) {
-            throw new IOException("Unable to build document from resource " 
-                                  + resource + ": " + e.getMessage());
+
+            // Parsing the XML content did not work, so return the
+            // content converted to a string in a "best-effort"
+            // fashion:
+            String characterEncoding = "utf-8";
+            if (resource.getCharacterEncoding() != null) {
+                characterEncoding = resource.getCharacterEncoding();
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                    "Unable to build DOM tree for resource " 
+                    + resource + ": " + e.getMessage() + ", converting "
+                    + "byte stream to string using character encoding "
+                    + characterEncoding);
+            }
+            return new String(out.toByteArray(), characterEncoding);
         }
     }
     
@@ -281,7 +312,6 @@ public class PlaintextEditController extends SimpleFormController
         InputStream inStream = null;
         String characterEncoding = "utf-8";
       
-
         try {
             if (logger.isDebugEnabled())
                 logger.debug("Opening document " + resource.getURI());

@@ -28,17 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author storset
- *
+ * Assertion type that matches on {@link HttpServletRequest requests}.
  */
 public interface RequestAssertion extends Assertion {
 

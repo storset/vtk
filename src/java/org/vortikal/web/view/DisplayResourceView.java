@@ -49,24 +49,41 @@ import org.vortikal.web.InvalidModelException;
  * "Web server" behaving view. Writes the contents of a
  * resource to the client.
  *
+ * <p><a name="config">Configurable properties</a>
+ * (and those defined by {@link AbstractReferenceDataProvidingView superclass}):
+ * <ul>
+ *   <li><code>includeLastModifiedHeader</code> - boolean deciding
+ *   whether to set the <code>Last-Modified</code> response
+ *   header. Default value is <code>true</code>.
+ * </ul>
+ *
  * <p>Requires the following data to be present in the model:
  * <ul>
- *   <li>resource - the resource object being requested (of class
- *   org.vortikal.repository.Resource)
- *   <li>resourceStream - the content input stream to write to the
- *   client (java.io.InputStream)
+ *   <li><code>resource</code> - the {@link Resource} object requested
+ *   <li><code>resourceStream</code> - the content {@link InputStream} to write to the
+ *   client 
  * </ul>
  * 
  * <p>Sets the following HTTP headers, based on metadata in the
  * resource:
  * <ul>
- *   <li>Content-Type
- *   <li>Content-Length
- *   <li>Last-Modified
+ *   <li><code>Content-Type</code>
+ *   <li><code>Content-Length</code>
+ *   <li><code>Last-Modified</code> if the configuration property
+ *   <code>includeLastModifiedHeader</code> is set to
+ *   <code>true</code> (the default).
  * </ul>
  *
  */
 public class DisplayResourceView extends AbstractReferenceDataProvidingView {
+
+    private boolean includeLastModifiedHeader = true;
+    
+
+
+    public void setIncludeLastModifiedHeader(boolean includeLastModifiedHeader) {
+        this.includeLastModifiedHeader = includeLastModifiedHeader;
+    }
 
 
 
@@ -104,8 +121,10 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
             response.setHeader("Content-Type", resource.getContentType());
         }
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
-        response.setHeader("Last-Modified", 
-                HttpUtil.getHttpDateString(resource.getLastModified()));
+        if (this.includeLastModifiedHeader) {
+            response.setHeader("Last-Modified", 
+                               HttpUtil.getHttpDateString(resource.getLastModified()));
+        }
         response.setStatus(HttpServletResponse.SC_OK);
   
         OutputStream out = null;

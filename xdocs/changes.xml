@@ -11,6 +11,17 @@
     <release version="SNAPSHOT" date="in SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="storset" type="add">
+        Added LinkConstructor as an optional parameter to xsl
+        transformation with ResourceXsltView. This makes it possible
+        to create links from within xsl.
+      </action>
+
+      <action dev="storset" type="fix">
+        Refactored/bug fixed getAbsolutePath() in
+        AbstractPathBasedURIResolver. Not extensively tested.
+      </action>
+
       <action dev="gormap" type="update">
         It is now possible for services to 'hook into' another service
         trough a new category-based lookup system, avoiding the need

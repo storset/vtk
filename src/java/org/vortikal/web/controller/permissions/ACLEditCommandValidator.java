@@ -62,32 +62,32 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
     public void validate(Object command, Errors errors) {
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
-        if (editCommand.getCancelAction() != null) return;
+        // Don't validate on cancel/save
+        if (editCommand.getCancelAction() != null 
+                || editCommand.getSaveAction() != null) 
+            return;
         
         if (editCommand.getAddUserAction() != null) {
             String userName = editCommand.getUserName();
 
-            if (userName == null || userName.trim().equals(""))
+            if (userName == null || userName.trim().equals("")) {
                 errors.rejectValue("userName", "permissions.user.missing.value",
                                    "You must type a value");
-
-            else {
-                Principal principal = null;
+            } else {
                 try { 
-                    principal = principalManager.getPrincipal(userName);	
+                    Principal principal = principalManager.getPrincipal(userName);	
+
+                    if (!principalManager.validatePrincipal(principal))
+                        errors.rejectValue("userName", "permissions.user.wrong.value", 
+                                new Object[] {userName}, "User '" + userName
+                                + "' does not exist");
+
                 } catch (InvalidPrincipalException e) {
                     errors.rejectValue("userName", "permissions.user.wrong.value", 
                             new Object[] {userName}, "User '" + userName
                                        + "' is illegal");
-                    return;
                 }
-                
-                if (!principalManager.validatePrincipal(principal))
-                    errors.rejectValue("userName", "permissions.user.wrong.value", 
-                            new Object[] {userName}, "User '" + userName
-                            + "' does not exist");
             }
-            
             
         } else if (editCommand.getAddGroupAction() != null) {
             String groupName = editCommand.getGroupName();
@@ -104,6 +104,9 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
         }
     }
 
+    /**
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     public void afterPropertiesSet() throws Exception {
         if (principalManager == null) {
             throw new BeanInitializationException(

@@ -170,6 +170,22 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     || request.getParameter("removeGroupAction") != null));
     }
     
+    
+
+    /** Override to reset actions in case of errors.
+     * 
+     * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+     */
+    protected ModelAndView processFormSubmission(HttpServletRequest arg0, HttpServletResponse arg1, Object command, BindException errors) throws Exception {
+        if (errors.hasErrors()) {
+            ACLEditCommand editCommand = (ACLEditCommand) command;
+            editCommand.setAddGroupAction(null);
+            editCommand.setAddUserAction(null);
+            editCommand.setRemoveUserAction(null);
+            editCommand.setRemoveGroupAction(null);
+        }
+        return super.processFormSubmission(arg0, arg1, command, errors);
+    }
 
 
     protected ModelAndView onSubmit(HttpServletRequest request,
@@ -186,10 +202,12 @@ public class ACLEditController extends SimpleFormController implements Initializ
         String token = securityContext.getToken();
         Resource resource = repository.retrieve(token, uri, false);
 
+        // did the user cancel?
         if (editCommand.getCancelAction() != null) {
             return new ModelAndView(getSuccessView());
         }
         
+        // Setting or unsetting dav:authenticated 
         if (!AclUtil.hasPrivilege(editCommand.getEditedACL(),
                                   "dav:authenticated", privilege)) {
 
@@ -218,6 +236,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
         }
         
+        // Has the user asked to save?
+        if (editCommand.getSaveAction() != null) {
+            repository.storeACL(token, uri, editCommand.getEditedACL());
+            return new ModelAndView(getSuccessView());
+        }
+
+        // doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
             Principal principal = principalManager.getPrincipal(editCommand.getUserName());
             String qualifiedName = principal.getQualifiedName();
@@ -267,10 +292,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),
                                 this.getCommandName()));
-
-        } else if (editCommand.getSaveAction() != null) {
-            repository.storeACL(token, uri, editCommand.getEditedACL());
-            return new ModelAndView(getSuccessView());
 
         } else {
             return new ModelAndView(getSuccessView());

@@ -30,6 +30,7 @@
  */
 package org.vortikal.security;
 
+import org.vortikal.security.web.AuthenticationHandler;
 
 
 /**
@@ -65,9 +66,11 @@ public interface TokenManager {
      * after a successful authentication operation).
      *
      * @param principal The {@link Principal} to register
+     * @param authenticationhandler the handler through which this
+     * principal was authenticated.
      * @return the created token for the principal
      */
-    public String newToken(Principal principal);
+    public String newToken(Principal principal, AuthenticationHandler authenticationHandler);
 
 
 
@@ -82,7 +85,22 @@ public interface TokenManager {
 
     
     /**
+     * Gets the authentication handler that authenticated the
+     * principal identified by this token.
+     *
+     * @param token a the security token
+     * @return an authentication handler, or <code>null</code> if the
+     * token does not map to an authenticated principal, or the
+     * principal was authenticated using a different method.
+     */
+    public AuthenticationHandler getAuthenticationHandler(String token);
+    
+
+
+    /**
      * TODO: should be removed?
      */
     public String getTrustedToken();
+
+
 }

@@ -36,16 +36,11 @@ import org.vortikal.web.service.Service;
 
 /**
  * Request context. Lives troughout one request, and contains the
- * current service, the requested URI, and if retrievable, the
- * requested resource. The request context can be obtained from
- * application code in the following way:
+ * current {@link Service} and the requested resource URI. The request
+ * context can be obtained from application code in the following way:
  *
  * <pre>RequestContext requestContext = RequestContext.getRequestContext();</pre>
  *
- * TODO: add a <code>reload()</code> method, to be used in cases where
- * application code modifies the current resource?
- * 
- * @version $Id$
  */
 public class RequestContext {
 
@@ -69,7 +64,11 @@ public class RequestContext {
     }
     
     /**
-     * @return Returns the service.
+     * Gets the current {@link Service} that this request executes
+     * under.
+     * 
+     * @return the service, or <code>null</code> if there is no
+     * current service.
      */
     public Service getService() {
         return service;
@@ -77,6 +76,9 @@ public class RequestContext {
 
 
     /**
+     * Gets the {@link Resource#getURI URI} that the current request
+     * maps to.
+     * 
      * @return Returns URI of the requested resource.
      */
     public String getResourceURI() {
@@ -87,9 +89,10 @@ public class RequestContext {
     
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getName());
-        sb.append(": ");
+        sb.append(": [");
         sb.append("resourceURI = ").append(this.resourceURI);
-        sb.append(",service = ").append(this.service.getName());
+        sb.append(", service = ").append(this.service.getName());
+        sb.append("]");
         return sb.toString();
     }
     

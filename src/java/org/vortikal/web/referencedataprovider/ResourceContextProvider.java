@@ -38,6 +38,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -45,9 +46,8 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 /**
- * Standard resource context model builder. Creates a model map
- * 'resourceContext' with "standard" model data for the current
- * resource.
+ * Standard resource context model builder. Creates a model map with
+ *  "standard" model data for the current resource.
  *
  * <p>Configurable properties:
  * <ul>
@@ -56,6 +56,8 @@ import org.vortikal.web.service.Service;
  *   whether to retrieve resources using the
  *   <code>forProcessing</code> flag set to <code>false</code> or
  *   false. The default is <code>true</code>.
+ *   <li><code>modelName</code> - the name to use for the submodel
+ *   (default is <code>resourceContext</code>).
  * </ul>
  * 
  * <p>Model data provided:
@@ -63,16 +65,17 @@ import org.vortikal.web.service.Service;
  *   <li><code>principal</code> - the current principal
  *   <li><code>currentServiceName</code> - the name of the current
  *   service
+ *   <li><code>currentURI</code> - the URI of the requested resource
  *   <li><code>currentResource</code> - the requested resource
  * </ul>
  */
 public class ResourceContextProvider implements InitializingBean, Provider {
 
-
     private Repository repository = null;
     private boolean retrieveForProcessing = false;
+    private String modelName = "resourceContext";
     
-
+    
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -83,33 +86,48 @@ public class ResourceContextProvider implements InitializingBean, Provider {
     }
     
 
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+    
+
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "Bean property 'repository' must be set");
+        }
+        if (this.modelName == null) {
+            throw new BeanInitializationException(
+                "Bean property 'modelName' must be set");
         }
     }
 
     
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
+
         Map resourceContextModel = new HashMap();
-        model.put("resourceContext", resourceContextModel);
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
+        Service currentService = requestContext.getService();
         
         Principal principal = securityContext.getPrincipal();
+
+        Resource resource = null;
+        try {
+            resource = repository.retrieve(
+                securityContext.getToken(), requestContext.getResourceURI(),
+                this.retrieveForProcessing);
+
+        } catch (RepositoryException e) { }
+
         resourceContextModel.put("principal", principal);
-        
-        Resource resource = repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(),
-            this.retrieveForProcessing);
         resourceContextModel.put("currentResource", resource);
-        
-        Service currentService = RequestContext.getRequestContext().getService();
+        resourceContextModel.put("currentURI", requestContext.getResourceURI());
         resourceContextModel.put("currentServiceName", currentService.getName());
         
+        model.put(this.modelName, resourceContextModel);
     }
 
 }

@@ -33,6 +33,7 @@ package org.vortikal.web.view;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,6 +57,12 @@ import org.vortikal.web.InvalidModelException;
  *   header. Default value is <code>true</code>.
  *   <li><code>includeExpiresHeader</code> - boolean deciding whether
  *   to attempt to set the <code>Expires</code> HTTP header
+ *   <li><code>includeContentLanguageHeader</code> - whether or not to
+ *   to attempt to set the <code>Content-Language</code> HTTP header
+ *   to that of the resource (default <code>true</code>.)
+ *   <li><code>streamBufferSize</code> - (int) the size of the buffer
+ *   used when executing the (read from resource, write to response)
+ *   loop. The default value is <code>5000</code>.
  * </ul>
  *
  * <p>Requires the following data to be present in the model:
@@ -83,15 +90,35 @@ import org.vortikal.web.InvalidModelException;
  *   property <code>includeExpiresHeader</code> is <code>false</code>,
  *   or it is set, but the <code>expires-sec</code> resource property
  *   (see above) is not set or is not an integer.
+ *   <li><code>Content-Language</code> if the configuration property
+ *   <code>includeContentLanguageHeader</code> is <code>true</code>
+ *   and the resource has a content locale defined. (Note: a
+ *   limitation in the Spring framework (<code>setLocale()</code> is
+ *   always called on every response with the value of the resolved
+ *   request locale) causes this view to always set this header. In
+ *   cases where the resource has no content locale set, or this view
+ *   is not configured to include the header, the value of the header
+ *   is empty.
  * </ul>
  *
  */
 public class DisplayResourceView extends AbstractReferenceDataProvidingView {
 
+    private int streamBufferSize = 5000;
+
     private boolean includeLastModifiedHeader = true;
     private boolean includeExpiresHeader = true;
+    private boolean includeContentLanguageHeader = true;
     
 
+    public void setStreamBufferSize(int streamBufferSize) {
+        if (streamBufferSize <= 0) {
+            throw new IllegalArgumentException(
+                "The value of streamBufferSize must be a positive integer");
+        }
+        this.streamBufferSize = streamBufferSize;
+    }
+    
 
     public void setIncludeLastModifiedHeader(boolean includeLastModifiedHeader) {
         this.includeLastModifiedHeader = includeLastModifiedHeader;
@@ -103,6 +130,10 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
     }
     
 
+    public void setIncludeContentLanguageHeader(boolean includeContentLanguageHeader) {
+        this.includeContentLanguageHeader = includeContentLanguageHeader;
+    }
+    
 
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
@@ -143,6 +174,24 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
             logger.debug("Setting header Content-Type: " + contentType);
         }
         response.setHeader("Content-Type", contentType);
+
+        // Fix for Spring's DispatcherServlet's behavior (always sets
+        // the response's locale to that of the request).
+        response.setHeader("Content-Language", "");
+
+        if (this.includeContentLanguageHeader) {
+            Locale locale = resource.getContentLocale();
+            if (locale != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Setting header Content-Language: " + locale.getLanguage());
+                }
+                response.setHeader("Content-Language", locale.getLanguage());
+            }
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting header Content-Length: " + resource.getContentLength());
+        }
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
         if (this.includeExpiresHeader) {
             
@@ -158,7 +207,7 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
                     response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Setting header expires: " + 
+                        logger.debug("Setting header Expires: " + 
                                      HttpUtil.getHttpDateString(expires));
                     }
 
@@ -174,20 +223,35 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
         }
         
         if (this.includeLastModifiedHeader) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting header Last-Modified: "
+                             + HttpUtil.getHttpDateString(resource.getLastModified()));
+            }
             response.setHeader("Last-Modified", 
                                HttpUtil.getHttpDateString(resource.getLastModified()));
+        }
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting HTTP status code: " + HttpServletResponse.SC_OK);
         }
         response.setStatus(HttpServletResponse.SC_OK);
   
         OutputStream out = null;
+        int bytesWritten = 0;
         try {
             out = response.getOutputStream();
-            byte[] buffer = new byte[5000];
+            byte[] buffer = new byte[this.streamBufferSize];
             int n = 0;
-            while (((n = inStream.read(buffer, 0, 5000)) > 0)) {
+            while (((n = inStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
                 out.write(buffer, 0, n);
+                bytesWritten += n;
             }
         } finally {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Wrote a total of " + bytesWritten
+                             + " bytes to response");
+            }
+
             if (out != null) {
                 out.flush();
                 out.close();

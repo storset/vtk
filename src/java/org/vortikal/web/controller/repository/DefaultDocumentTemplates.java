@@ -37,15 +37,39 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.repository.ContentTypeHelper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 
+
+/**
+ * Default implementation of the {@link DocumentTemplates document
+ * template listing} interface. Loads a set of (text-based) documents
+ * from a configured collection in the repository, possibly recursing
+ * to find templates in child collections.
+ *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>repository</code> - the {@link Repository content
+ *   repository}
+ *   <li><code>trustedToken</code> - the token to use for resource
+ *   retrieval
+ *   <li><code>templatesCollection</code> - the URI of the top level
+ *   document templates collection
+ *   <li><code>parseTopTemplates</code> - whether to include templates
+ *   on the top level
+ *   <li><code>parseCategoryTemplates</code> - whether to recurse into
+ *   subdirectories
+ * </ul>
+ *
+ */
 public class DefaultDocumentTemplates implements DocumentTemplates, InitializingBean {
 
     private static Log logger = LogFactory.getLog(DefaultDocumentTemplates.class);
@@ -54,33 +78,24 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     private Repository repository = null;
     private String trustedToken = null;
 
+    private Map topTemplates;
+    private Map categoryTemplates;
+    
     private boolean parseTopTemplates = true;
     private boolean parseCategoryTemplates = true;
     
-    /**
-     * @param parseCategoryTemplates The parseCategoryTemplates to set.
-     */
     public void setParseCategoryTemplates(boolean parseCategoryTemplates) {
         this.parseCategoryTemplates = parseCategoryTemplates;
     }
     
-    /**
-     * @param parseTopTemplates The parseTopTemplates to set.
-     */
     public void setParseTopTemplates(boolean parseTopTemplates) {
         this.parseTopTemplates = parseTopTemplates;
     }
-    
-    private Map topTemplates;
-    private Map categoryTemplates;
     
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    /**
-     * @param trustedToken The trustedToken to set.
-     */
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }
@@ -89,32 +104,94 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         this.templatesCollection = templatesCollection;
     }
     
+    public Map getTopTemplates() throws IOException {
+        return this.topTemplates;
+    }
+
+
+    public Map getCategoryTemplates() throws IOException {
+        return this.categoryTemplates;
+    }
+
+
     public void afterPropertiesSet() throws Exception {
         if (repository == null) {
             throw new BeanInitializationException(
                 "Required bean property 'repository' not set.");
         }
 
-        if (templatesCollection == null) {
+        if (this.templatesCollection == null) {
             logger.warn("Required bean property 'templatesCollection' not set. " +
                         "Unable to supply document templates to create document service.");
         } else {
-            if (parseTopTemplates) topTemplates = findTopTemplates();
-            if (parseCategoryTemplates) categoryTemplates = findCategoryTemplates();
-        }
 
+            loadTemplates();
+        }
     }
 
-    private Map findTopTemplates() throws IOException {
-        Resource[] templates = repository.listChildren(trustedToken, templatesCollection, true);
 
+    public void refresh() throws IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Refreshing document templates list");
+        }
+
+        if (this.templatesCollection == null) {
+            return;
+        }
+
+        loadTemplates();
+    }
+    
+
+    private void loadTemplates() {
+        try {
+            Resource templatesCollectionResource = this.repository.retrieve(
+                this.trustedToken, this.templatesCollection, true);
+            
+            if (!templatesCollectionResource.isCollection()) {
+                logger.warn("Resource specified as 'templatesCollection': "
+                            + this.templatesCollection + " is not a collection resource. "
+                            + "Unable to load templates.");
+                return;
+            }
+
+            Map topTemplates = null;
+            Map categoryTemplates = null;
+
+            if (this.parseTopTemplates) {
+                topTemplates = findTopTemplates();
+            }
+            
+            if (this.parseCategoryTemplates) {
+                categoryTemplates = findCategoryTemplates();
+            }
+
+            this.topTemplates = topTemplates;
+            this.categoryTemplates = categoryTemplates;
+
+        } catch (Throwable t) {
+            logger.warn(
+                "Error loading document templates [templatesCollection = "
+                + this.templatesCollection + ", parseTopTemplates = "
+                + this.parseTopTemplates + ", parseCategoryTemplates = "
+                + this.parseCategoryTemplates + "]", t);
+        }
+    }
+    
+
+
+    private Map findTopTemplates() throws IOException {
         Map topTemplates = new HashMap();
-        
+
+        Resource[] templates = this.repository.listChildren(
+            this.trustedToken, this.templatesCollection, true);
+
         for (int i = 0; i < templates.length; i++) {
             Resource child = templates[i];
             if (!child.isCollection()) {
                 String contentType = child.getContentType();
-                if (contentType.startsWith("text")) {
+                if (ContentTypeHelper.isTextContentType(contentType)) {
                     topTemplates.put(child.getName(), child.getURI());
                 }
             }
@@ -135,9 +212,14 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
             sortedMap.put(topTemplates.get(key), key);
         }
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("Loaded " + sortedMap.size() + " toplevel templates");
+        }
+
         return sortedMap;
 
     }
+
 
     private Map findCategoryTemplates() throws IOException {
         Resource[] templates = repository.listChildren(trustedToken, templatesCollection, true);
@@ -171,8 +253,13 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         }
         if (categories.size() < 1) return null;
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("Loaded " + categories.size() + " category templates");
+        }
+
         return categories;
     }
+
 
     private void findTemplatesRecursively(Resource parent, Map templates) 
         throws IOException{
@@ -189,16 +276,6 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
                 findTemplatesRecursively(child, templates);
             }
         }
-    }
-
-
-    public Map getTopTemplates() throws IOException {
-        return topTemplates;
-    }
-
-
-    public Map getCategoryTemplates() throws IOException {
-        return categoryTemplates;
     }
 
 

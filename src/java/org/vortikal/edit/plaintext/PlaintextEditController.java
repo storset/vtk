@@ -62,6 +62,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
+import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -159,8 +161,10 @@ public class PlaintextEditController extends SimpleFormController
         PlaintextEditCommand command =
             new PlaintextEditCommand(content, url);
 
-        if (resource.getContentType().startsWith("text/html"))
+        if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
             command.setHtml(true);
+        }
+        
         return command;
     }
 
@@ -204,12 +208,17 @@ public class PlaintextEditController extends SimpleFormController
 
         if (characterEncoding == null) {
 
-            if ("text/xml".equals(resource.getContentType())
-                || "application/xml".equals(resource.getContentType())) {
+            if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
 
                 characterEncoding = getXMLCharacterEncoding(resource, token);
 
-            } else if ("text/plain".equals(resource.getContentType())) {
+            } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
+
+                characterEncoding = HtmlUtil.getCharacterEncodingFromBody(
+                    plaintextEditCommand.getContent().getBytes("iso-8859-1"));
+            } 
+
+            if (characterEncoding == null) {
                 characterEncoding = "iso-8859-1";
             }
         }
@@ -232,10 +241,13 @@ public class PlaintextEditController extends SimpleFormController
         // read it as a plain stream, regardless of whether it is an
         // XML resource. Otherwise, let the XML parser handle the job,
         // BOTH on "model building" and on form submits.
-        if (resource.getContentType().startsWith("text/xml")
-            || resource.getContentType().startsWith("application/xml")) {
-            return getXMLContent(resource, token);
+        if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
+            return getXMLContent(resource, token);            
+
+        } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
+            return getHTMLContent(resource, token);
         }
+
         return getPlainTextContent(resource, token);
     }
     
@@ -284,6 +296,19 @@ public class PlaintextEditController extends SimpleFormController
     }
     
 
+    private String getHTMLContent(Resource resource, String token)
+        throws IOException {
+        InputStream is = repository.getInputStream(
+            token, resource.getURI(), false);
+        byte[] bytes = StreamUtil.readInputStream(is);
+        String encoding = resource.getCharacterEncoding();
+        if (encoding == null) encoding = HtmlUtil.getCharacterEncodingFromBody(bytes);
+        if (encoding == null) encoding = "iso-8859-1";
+        String content = new String(bytes, encoding);
+        return content;
+    }
+    
+
 
     private String getPlainTextContent(Resource resource, String token)
         throws IOException {
@@ -299,6 +324,8 @@ public class PlaintextEditController extends SimpleFormController
 
 
 
+
+    
 
     private String getXMLCharacterEncoding(Resource resource, String token)
         throws IOException {

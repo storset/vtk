@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<document>
+
+  <properties>
+    <title>Page title</title>
+  </properties>
+
+  <body>
+
+    <release version="SNAPSHOT" date="in SVN">
+      <!-- add 'action' entries here, newest on top: -->
+
+      <action dev="gormap" type="update">
+        Improved character encoding for HTML documents in plaintext
+        editing component. Now checks actual HTML content for meta
+        tags if no character encoding is set on the resource itself.
+      </action>
+    </release>
+
+    <release version="0.1" date="2005-03-08">
+      <action dev="gormap" type="update">
+        Initial release
+      </action>
+    </release>
+
+  </body>
+
+</document>

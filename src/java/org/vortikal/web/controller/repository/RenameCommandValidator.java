@@ -46,9 +46,9 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 
-public class FileUploadCommandValidator implements Validator, InitializingBean {
+public class RenameCommandValidator implements Validator, InitializingBean {
 
-    private static Log logger = LogFactory.getLog(FileUploadCommandValidator.class);
+    private static Log logger = LogFactory.getLog(RenameCommandValidator.class);
 
     private Repository repository = null;
 
@@ -66,7 +66,7 @@ public class FileUploadCommandValidator implements Validator, InitializingBean {
 
 
     public boolean supports(Class clazz) {
-        return (clazz == FileUploadCommand.class);
+        return (clazz == RenameCommand.class);
     }
 
 
@@ -77,48 +77,31 @@ public class FileUploadCommandValidator implements Validator, InitializingBean {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        FileUploadCommand fileUploadCommand =
-            (FileUploadCommand) command;
-        if (fileUploadCommand.getCancel() != null) return;
+        RenameCommand renameCommand =
+            (RenameCommand) command;
+        if (renameCommand.getCancel() != null) return;
 
-        // let's see if there's content there
-        MultipartFile file = fileUploadCommand.getFile();
-
-        if (file == null) {
-            logger.info("The user didn't upload anything");
-            //FIXME: what to do?
-            // hmm, that's strange, the user did not upload anything
+        String name = renameCommand.getName();
+        if (null == name || "".equals(name.trim())) {
+                errors.rejectValue("name",
+                                   "manage.rename.invalid.name",
+                                   "The name is not valid for this resource");
+                renameCommand.setName(uri.substring(uri.lastIndexOf("/") + 1));
         }
 
-        String name = file.getOriginalFilename();
-
-        name = FileUploadController.stripWindowsPath(name);
-
-        if (name == null || name.trim().equals("")) {
-
-            // FIXME: shouldn't be here
-            return;
-        }
-
-        String itemURI = uri.equals("/") ? "/" + name : uri + "/" + name;
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Uploaded resource will be: " + itemURI);
-        }
+        String newURI = (uri.equals("/")) ? uri + name
+            : uri.substring(0, uri.lastIndexOf("/") + 1) + name;
 
         try {
-            boolean exists = repository.exists(token, itemURI);
+            boolean exists = repository.exists(token, newURI);
             if (exists) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Uploaded file already existed.");
-                }
-                errors.rejectValue("file",
-                                   "manage.upload.resource.exists",
+                errors.rejectValue("name",
+                                   "manage.rename.resource.exists",
                                    "A resource with this name already exists");
             }
-            
+
         } catch (Exception e) {
-            logger.warn("Unable to validate file upload input", e);
+            logger.warn("Unable to validate resource rename input", e);
         }
     }
 

@@ -31,22 +31,23 @@
 package org.vortikal.web.controller.repository;
 
 
+
+
+
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Service;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 
 
 
@@ -94,7 +95,7 @@ public class RenameController extends SimpleFormController {
                 logger.debug("Not setting new name for resource " + uri);
             }
             rename.setDone(true);
-            new ModelAndView(getSuccessView());
+            return new ModelAndView(getSuccessView());
         }
 
         Resource resource = repository.retrieve(token, uri, false);
@@ -102,22 +103,26 @@ public class RenameController extends SimpleFormController {
 
         Map model = null;
         
-        if (!name.equals(rename.getName())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting new name '" + rename.getName()
-                             + "' for resource " + uri);
+        try {
+            if (!name.equals(rename.getName())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Setting new name '" + rename.getName()
+                                 + "' for resource " + uri);
+                }
+                String newUri = uri.substring(0, uri.lastIndexOf("/") + 1 ) + rename.getName();
+                repository.move(token, uri, newUri, false);
+                Resource newResource = repository.retrieve(token, newUri, false);
+                model = new HashMap();
+                model.put("resource", newResource);
             }
-            String newUri = uri.substring(0, uri.lastIndexOf("/") + 1 ) + rename.getName();
-            repository.move(token, uri, newUri, false);
-            Resource newResource = repository.retrieve(token, newUri, false);
-            model = new HashMap();
-            model.put("resource", newResource);
+            rename.setDone(true);
+            return new ModelAndView(getSuccessView(), model);
+
+        } catch (IllegalOperationException e) {
+            errors.rejectValue("name", "manage.rename.invalid.name",
+                               "The name is not valid for this resource");
+            return new ModelAndView(getFormView(), errors.getModel());
         }
-        rename.setDone(true);
-
-
-        
-        return new ModelAndView(getSuccessView(), model);
     }
 
     

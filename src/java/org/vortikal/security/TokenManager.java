@@ -66,7 +66,7 @@ public interface TokenManager {
      * after a successful authentication operation).
      *
      * @param principal The {@link Principal} to register
-     * @param authenticationhandler the handler through which this
+     * @param authenticationHandler the handler through which this
      * principal was authenticated.
      * @return the created token for the principal
      */

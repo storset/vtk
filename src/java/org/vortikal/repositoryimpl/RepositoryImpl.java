@@ -598,8 +598,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 token, principal);
 
             Resource r = dao.load(destUri);
-            ResourceDeletionEvent deletionEvent = new ResourceDeletionEvent(this,
-                    srcUri);
+            //ResourceDeletionEvent deletionEvent = new ResourceDeletionEvent(this,
+            //        srcUri);
+            ResourceDeletionEvent deletionEvent = new ResourceDeletionEvent(this, srcUri,
+                   src.getID(), src instanceof Collection);
 
             context.publishEvent(deletionEvent);
 
@@ -678,7 +680,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         r.delete(principal, roleManager);
         OperationLog.success("delete(" + uri + ")", token, principal);
 
-        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri);
+        //ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri);
+        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), 
+                                                                r instanceof Collection);
 
         context.publishEvent(event);
     }

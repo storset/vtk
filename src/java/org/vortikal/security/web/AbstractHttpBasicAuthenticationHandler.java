@@ -154,9 +154,17 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     }
     
 
-    public void onLogout(Principal principal) throws AuthenticationProcessingException {
+    public boolean isLogoutSupported() {
+        return false;
+    }
+
+
+    public boolean logout(Principal principal, HttpServletRequest req,
+                          HttpServletResponse resp)
+        throws AuthenticationProcessingException {
         // FIXME: redirect user to page explaining how to exit the browser? 
         // Can't do nothing
+        return false;
     }
     
 

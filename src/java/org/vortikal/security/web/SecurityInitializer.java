@@ -119,7 +119,7 @@ public class SecurityInitializer {
                             + "Setting security context.");
                     }
                     
-                    token = tokenManager.newToken(principal);
+                    token = tokenManager.newToken(principal, handler);
                     SecurityContext securityContext = 
                         new SecurityContext(token, tokenManager.getPrincipal(token));
                         
@@ -181,33 +181,73 @@ public class SecurityInitializer {
         return sb.toString();
     }
 
-    public void setAuthenticationHandlers(AuthenticationHandler[] authenticationHandlers) {
+    public void setAuthenticationHandlers(
+        AuthenticationHandler[] authenticationHandlers) {
         this.authenticationHandlers = authenticationHandlers;
     }
     
     /**
-     * Logs out the client from the authentication system.
+     * Logs out the client from the authentication system. Clears the
+     * {@link SeurityContext}, removes the principal from the {@link
+     * TokenManager} and invalidates the request {@link
+     * javax.servlet.http.HttpSession session}. Finally, calls the
+     * authentication handler's {@link AuthenticationHandler#logout
+     * logout} method.
      * 
      * @param req the request
      * @param resp the response
+     * @return the return value of the authentication handler's
+     * <code>logout()</code> method.
      * @throws AuthenticationProcessingException if an underlying
      *  problem prevented the request from being processed
+     * @see AuthenticationHandler#logout
      */
-    public void logout(HttpServletRequest req)
+    public boolean logout(HttpServletRequest req, HttpServletResponse resp)
             throws AuthenticationProcessingException {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Principal principal = securityContext.getPrincipal();
-        if (principal == null) return;
+        if (principal == null) return false;
+
+        AuthenticationHandler handler = tokenManager.getAuthenticationHandler(
+            securityContext.getToken());
+
+        // FIXME: what if handler.isLogoutSupported() == false?
+        boolean result = handler.logout(principal, req, resp);
+
         tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
         req.getSession().invalidate();
 
-        for (int i = 0; i < this.authenticationHandlers.length; i++) {
-            AuthenticationHandler handler = this.authenticationHandlers[i];
+        return result;
+        
+        
+        
+//         for (int i = 0; i < this.authenticationHandlers.length; i++) {
+//             AuthenticationHandler handler = this.authenticationHandlers[i];
 
-            handler.onLogout(principal);
-        }
+//             handler.logout(principal, req, resp);
+//         }
     }
 
+
+//     public void old_logout(HttpServletRequest req)
+//             throws AuthenticationProcessingException {
+
+//         SecurityContext securityContext = SecurityContext.getSecurityContext();
+//         Principal principal = securityContext.getPrincipal();
+//         if (principal == null) return;
+//         tokenManager.removeToken(securityContext.getToken());
+
+
+//         SecurityContext.setSecurityContext(null);
+//         req.getSession().invalidate();
+
+//         for (int i = 0; i < this.authenticationHandlers.length; i++) {
+//             AuthenticationHandler handler = this.authenticationHandlers[i];
+
+//             handler.onLogout(principal);
+//         }
+//     }
 }
+

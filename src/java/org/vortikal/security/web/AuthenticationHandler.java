@@ -42,7 +42,7 @@ import org.vortikal.security.Principal;
 
 /**
  * Authentication request handler interface.  Instances of this
- * interface are invoked by the Vortex servlet in two stages:
+ * interface are invoked by the dispatcher servlet in two stages:
  * <ol>
  *   <li>To decide whether the request is recognized as an
  *       authentication request
@@ -52,9 +52,6 @@ import org.vortikal.security.Principal;
  * Implementors of this interface must supply an authentication 
  * challenge that is used when authentication is required. In addition, they 
  * should provide a way of logging out authenticated users, if possible. 
- * This is enforced by 
- * 
- * $Id: $
  */
 public interface AuthenticationHandler {
 
@@ -76,8 +73,8 @@ public interface AuthenticationHandler {
      * @return principal if the request processing should proceed
      * @throws AuthenticationProcessingException if an underlying problem
      * prevented the request from being processed
-     * @throws AuthenticationException if the request wasn't
-     * authenticated
+     * @throws AuthenticationException if the request was not
+     * successfully authenticated
      */
     public Principal authenticate(HttpServletRequest req)
         throws AuthenticationProcessingException, AuthenticationException;
@@ -103,16 +100,36 @@ public interface AuthenticationHandler {
 
 
     /**
-     * Log out the client from the authentication system.
+     * Indicates whether logging out is supported by this
+     * authentication handler.
      *
-     * @param principal a <code>Principal</code> value
+     * @return <code>true</code> if this authentication handler
+     * supports the logout operation, <code>false</code> otherwise.
+     */
+    public boolean isLogoutSupported();
+    
+    
+
+
+    /**
+     * Log out the client from the authentication system. Some handler
+     * implementations may want to write to the servlet response
+     * (perform a redirect, etc.), and some do not. This is indicated
+     * using the return value of this method.
+     *
+     * @param principal the <code>Principal</code> to log out
+     * @return <code>true</code> if the response has been written to
+     * and further request processing should stop, <code>false</code>
+     * otherwise.
      * @exception AuthenticationProcessingException if an error occurs
      */
-    public void onLogout(Principal principal)
+    public boolean logout(Principal principal, HttpServletRequest req,
+                          HttpServletResponse resp)
         throws AuthenticationProcessingException;
 
     /**
-     * @return Returns the authenticationChallenge.
+     * Gets the authentication challenge to present to the client.
+     * @return the authentication challenge.
      */
     public AuthenticationChallenge getAuthenticationChallenge();
 

@@ -59,8 +59,9 @@ import org.vortikal.web.service.Service;
  * <p>Configurable properties:
  * <ul>
  *   <li><code>repository</code> - the content {@link Repository repository}
- *   <li><code>service</code> - the {@link Service} to redirect to
  *   <li><code>securityInitializer</code> - the {@link SecurityInitializer}
+ *   <li><code>service</code> - the {@link Service} to redirect to if
+ *   the security initializer did not handle the request itself.
  *   <li><code>http10</code> - whether or not to use HTTP/1.0 style
  *   redirects (302). When set to <code>false</code>, a 303 status
  *   code is set instead. The default value is <code>true</code>.
@@ -124,6 +125,15 @@ public class LogoutController implements Controller, InitializingBean {
             securityContext.getToken(), requestContext.getResourceURI(), true);
         
 
+        if (this.securityInitializer.logout(request, response)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Logout response was written by "
+                             + "security initializer, returning");
+            }
+
+            return null;
+        }
+        
         String url = this.service.constructLink(resource, principal);
 
         if (logger.isDebugEnabled()) {
@@ -139,7 +149,6 @@ public class LogoutController implements Controller, InitializingBean {
             response.setStatus(303);
             response.setHeader("Location", url);
         }
-        this.securityInitializer.logout(request);
         return null;
     }
 

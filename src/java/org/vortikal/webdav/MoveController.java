@@ -122,7 +122,7 @@ public class MoveController extends AbstractWebdavController {
 
             if (existed) {
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                          new Integer(HttpServletResponse.SC_CREATED));
+                          new Integer(HttpServletResponse.SC_NO_CONTENT));
             } else {
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                           new Integer(HttpServletResponse.SC_CREATED));

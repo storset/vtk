@@ -620,13 +620,13 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
     public void addChangeLogEntry(String loggerID, String loggerType, String uri,
-            String operation)
+            String operation, int resourceId, boolean collection)
             throws IOException {
         Connection conn = null;
 
         try {
             conn = getConnection();
-            addChangeLogEntry(conn, loggerID, loggerType, uri, operation);
+            addChangeLogEntry(conn, loggerID, loggerType, uri, operation, resourceId, collection);
             conn.commit();
         } catch (SQLException e) {
             logger.warn("Error occurred while adding changelog entry for " + uri, e);
@@ -644,7 +644,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
     private void addChangeLogEntry(Connection conn, String loggerID, String loggerType,
-            String uri, String operation)
+            String uri, String operation, int resourceId, boolean collection)
             throws SQLException {
         try {
             int id = Integer.parseInt(loggerID);
@@ -652,8 +652,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             String statement = "INSERT INTO changelog_entry "
                     + "(changelog_entry_id, logger_id, logger_type, "
-                    + "operation, timestamp, uri) "
-                    + "VALUES (nextval('changelog_entry_seq_pk'), ?, ?, ?, ?, ?)";
+                    + "operation, timestamp, uri, resource_id, is_collection) "
+                    + "VALUES (nextval('changelog_entry_seq_pk'), ?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement stmt = (PreparedStatement) conn
                     .prepareStatement(statement);
@@ -662,11 +662,19 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             stmt.setInt(1, id);
             stmt.setInt(2, type);
-
             stmt.setString(3, operation);
             stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
             stmt.setString(5, uri);
 
+            // resourceId of -1 indicates that resourceId should be set to SQL NULL
+            if (resourceId == -1) {
+                stmt.setNull(6, java.sql.Types.NUMERIC);
+            } else {
+                stmt.setInt(6, resourceId);
+            }
+            
+            stmt.setString(7, collection ? "Y" : "N");
+            
             stmt.executeUpdate();
             stmt.close();
         } catch (NumberFormatException e) {

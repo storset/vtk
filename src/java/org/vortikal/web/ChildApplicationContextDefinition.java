@@ -38,11 +38,11 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
 
 
@@ -95,7 +95,7 @@ public class ChildApplicationContextDefinition
     }
 
 
-    private class ChildApplicationContext extends AbstractXmlApplicationContext {
+    private class ChildApplicationContext extends XmlWebApplicationContext {
         
         public static final String SERVLET_CONTEXT_JAR_URL_PREFIX = "servletjar:";
 
@@ -106,11 +106,14 @@ public class ChildApplicationContextDefinition
 
         public ChildApplicationContext(String configLocation,
                                        ApplicationContext parent) {
-            super(parent);
             this.configLocation = configLocation;
 
             findParentWebApplicationContext(parent);
+            if (parentWebApplicationContext != null) {
+                setServletContext(parentWebApplicationContext.getServletContext());
+            }
 
+            setParent(parent);
             refresh();
         }
         
@@ -155,6 +158,11 @@ public class ChildApplicationContextDefinition
                     throw new RuntimeException("Unable to load resource '" + path + "'", e);
                 }
             }
+            if (inWebApplicationContext) {
+                return new ServletContextResource(
+                    this.parentWebApplicationContext.getServletContext(), path);
+            }
+
             return super.getResourceByPath(path);
         }
 

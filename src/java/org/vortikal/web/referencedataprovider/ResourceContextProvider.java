@@ -51,16 +51,21 @@ import org.vortikal.web.service.Service;
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
+ *   <li><code>repository</code> - the {@link Repository content
+ *   repository}
  *   <li><code>retrieveForProcessing</code> - boolean indicating
  *   whether to retrieve resources using the
  *   <code>forProcessing</code> flag set to <code>false</code> or
  *   false. The default is <code>true</code>.
- *   <li><code>resolveToIndexFile</code> - boolean indicating if the 
- *   provider should use the resource from the model provided 
- *   (<code>true</true>), or get it from the repository through the 
- *   ResourceContext. Default is <code>false</code>.  
- * 	 <li><code>modelName</code> - the name to use for the submodel
+ *   <li><code>getResourceFromModel</code> - boolean indicating if the
+ *   provider should use the resource from the model provided
+ *   (<code>true</code>), or get it from the repository from the URI
+ *   specified in the RequestContext. Default is <code>false</code>.
+ *   <li><code>resourceFromModelKey</code> (only applicable when
+ *   <code>getResourceFromModel</code> is <code>true</code>) - the key
+ *   to use when looking up the resource from the model. Default is
+ *   <code>resource</code>.
+ *   <li><code>modelName</code> - the name to use for the submodel
  *   (default is <code>resourceContext</code>).
  * </ul>
  * 
@@ -77,7 +82,8 @@ public class ResourceContextProvider implements InitializingBean, Provider {
 
     private Repository repository = null;
     private boolean retrieveForProcessing = false;
-    private boolean resolveToIndexFile = false;
+    private boolean getResourceFromModel = false;
+    private String resourceFromModelKey = "resource";
     private String modelName = "resourceContext";
     
     
@@ -91,11 +97,16 @@ public class ResourceContextProvider implements InitializingBean, Provider {
     }
     
     
-	public void setResolveToIndexFile(boolean resolveToIndexFile) {
-		this.resolveToIndexFile = resolveToIndexFile;
-	}
+    public void setGetResourceFromModel(boolean getResourceFromModel) {
+        this.getResourceFromModel = getResourceFromModel;
+    }
 	
 	
+    public void setResourceFromModelKey(String resourceFromModelKey) {
+        this.resourceFromModelKey = resourceFromModelKey;
+    }
+    
+
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -109,6 +120,11 @@ public class ResourceContextProvider implements InitializingBean, Provider {
         if (this.modelName == null) {
             throw new BeanInitializationException(
                 "Bean property 'modelName' must be set");
+        }
+        if (this.getResourceFromModel && null == this.resourceFromModelKey) {
+            throw new BeanInitializationException(
+                "Bean property 'resourceFromModelKey' cannot be null when "
+                + "'getResourceFromModel' is set");
         }
     }
 
@@ -126,17 +142,17 @@ public class ResourceContextProvider implements InitializingBean, Provider {
 
         Resource resource = null;
         
-        if (model != null && resolveToIndexFile) {
-            resource = (Resource) model.get("resource");
+        if (model != null && this.getResourceFromModel) {
+            resource = (Resource) model.get(this.resourceFromModelKey);
         }
 
         if (resource == null) {
-        	   try {
-        	   	    resource = repository.retrieve(
-        	   	    securityContext.getToken(), requestContext.getResourceURI(),
-			    this.retrieveForProcessing);
+            try {
+                resource = repository.retrieve(
+                    securityContext.getToken(), requestContext.getResourceURI(),
+                    this.retrieveForProcessing);
        
-        	   } catch (RepositoryException e) { }
+            } catch (RepositoryException e) { }
         }
         	   
         resourceContextModel.put("principal", principal);

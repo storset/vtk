@@ -90,7 +90,7 @@ public interface DataAccessor {
 
     /* Used externally to report a resource modification */
     public void addChangeLogEntry(String loggerID, String recordType,
-        String uri, String operation) throws IOException;
+        String uri, String operation, int resourceId, boolean collection) throws IOException;
 
     /**
      * Proposed new methods: copy(), move().  These are currently

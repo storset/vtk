@@ -43,28 +43,16 @@ import org.vortikal.security.Principal;
  * Assertion on the URL protocol fragment.
  * Legal values are <code>http</code> and <code>https</code>.
  *
- * <p>In addition to only matching on a given protocol, this assertion
- * can be configured to require a match only on the set of URIs
- * matching a given regular expression. This is useful for requiring
- * that certain subtrees are constricted to using the https protocol,
- * for example.
- *
  * <p>Configurable properties:
  * <ul>
  *   <lI><code>protocol</code> - the name of the protocol. Legal
  *   values are <code>http</code> and <code>https</code>.
- *   <li><code>uriPattern</code> - a regexp constraining the set of
- *   resources that this assertion applies to. If set, this regexp has
- *   to match in order for this assertion to even <emph>attempt</emph>
- *   to match the request protocol. Default value for this property is
- *   <code>null</code>.
  * </ul>
  */
 public class RequestProtocolAssertion extends AssertionSupport
   implements RequestAssertion {
 	
     private String protocol = null;
-    private Pattern uriPattern = null;
 	
 
     public String getProtocol() {
@@ -82,24 +70,7 @@ public class RequestProtocolAssertion extends AssertionSupport
     }
 
 
-    public void setUriPattern(String uriPattern) {
-        if (uriPattern == null) throw new IllegalArgumentException(
-            "Property 'uriPattern' cannot be null");
-    
-        this.uriPattern = Pattern.compile(uriPattern);
-    }
-    
-
     public boolean matches(HttpServletRequest request) {
-
-        if (this.uriPattern != null) {
-            Matcher m = this.uriPattern.matcher(request.getRequestURI());
-            if (!m.find()) {
-                // According to the regular expression, this request
-                // should not be affected by the assertion:
-                return true;
-            }
-        }
 
         if ("http".equals(protocol))
             return !request.isSecure();
@@ -118,18 +89,6 @@ public class RequestProtocolAssertion extends AssertionSupport
 
 
     public void processURL(URL url, Resource resource, Principal principal) {
-        if (this.uriPattern != null) {
-            String uri = resource.getURI();
-            if (resource.isCollection()) {
-                uri += "/";
-            }
-            Matcher m = this.uriPattern.matcher(uri);
-            if (!m.find()) {
-                // According to the regular expression, this resource
-                // should not be affected by the assertion:
-                return;
-            }
-        }
         url.setProtocol(this.protocol);
     }
     
@@ -139,9 +98,6 @@ public class RequestProtocolAssertion extends AssertionSupport
 		
         sb.append(super.toString());
         sb.append("; protocol = ").append(this.protocol);
-        if (this.uriPattern != null) {
-            sb.append("; uriPattern = " + this.uriPattern.pattern());
-        }
 
         return sb.toString();
     }

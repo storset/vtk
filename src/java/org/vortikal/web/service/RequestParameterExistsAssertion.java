@@ -61,10 +61,7 @@ public class RequestParameterExistsAssertion extends AssertionSupport
     }
 	
     public boolean matches(HttpServletRequest request) {
-        if (this.invert) {
-            return ! request.getParameterMap().containsKey(this.parameterName);
-        }
-        return ! request.getParameterMap().containsKey(this.parameterName);
+        return (invert != request.getParameterMap().containsKey(this.parameterName));
     }
 	
 

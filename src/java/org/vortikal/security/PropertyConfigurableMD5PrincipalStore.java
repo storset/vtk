@@ -43,9 +43,9 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * An implementation of MD5PasswordPrincipalManager that stores its
  * user and group information in-memory.
- *
  */
-public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincipalStore, InitializingBean {
+public class PropertyConfigurableMD5PrincipalStore
+  implements MD5PasswordPrincipalStore, InitializingBean {
 
     private Map principals;
     private Map groups;
@@ -146,27 +146,26 @@ public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincip
      */
     public void afterPropertiesSet() throws Exception {
         if (domain == null)
-            throw new BeanInitializationException("Property 'domain' must be set");
+            throw new BeanInitializationException(
+                "Property 'domain' must be set");
     }
 
 
 
-    /**
-     * @see org.vortikal.security.MD5PasswordPrincipalStore#authenticate(org.vortikal.security.Principal, java.lang.String)
-     */
-    public void authenticate(Principal principal, String password) throws AuthenticationException {
+    public void authenticate(Principal principal, String password)
+        throws AuthenticationException {
         
-        String hash = getMD5HashString(principal.getName());
+        String hash = getMD5HashString(principal.getQualifiedName());
         String clientHash = 
-            md5sum(principal.getName() + ":" + realm + ":" + password); 
+            md5sum(principal.getQualifiedName() + ":" + realm + ":" + password); 
 
         if (hash == null || !hash.equals(clientHash)) {
             throw new AuthenticationException(
-                "Authentication failed for principal " + principal.getQualifiedName() + ", " + 
-                "wrong credentials.");
+                "Authentication failed for principal " + principal.getQualifiedName()
+                + ", " + "wrong credentials.");
         }
-
     }
+
 
     protected String md5sum(String str) {
         try {

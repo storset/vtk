@@ -54,7 +54,8 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * <code>EditResourcePropertyController</code> property editor, which
  * allows only a set of predefined values.
  *
- * Configurable properties (in addition to those defined by the superclass):
+ * <p>Configurable properties (in addition to those defined by the {@link
+ * SimpleFormController superclass}):
  * <ul>
  *  <li>repository - the repository is required
  * </ul>

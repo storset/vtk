@@ -41,11 +41,30 @@ public class BreadcrumbElement {
         this.title = title;
     }
     
+    /**
+     * Gets the URL of this breadcrumb element.
+     *
+     * @return the URL, or <code>null</code> if for some reason the
+     * URL generation has been prevented.
+     */
     public String getURL() {
         return this.url;
     }
 
+    /**
+     * Gets the title of the breadcrumb element.
+     *
+     * @return the title.
+     */
     public String getTitle() {
         return this.title;
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [").append(this.title).append(",").append(this.url);
+        sb.append("]");
+        return sb.toString();
+    }
+    
 }

@@ -31,8 +31,10 @@
 package org.vortikal.web.referencedataprovider;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -65,16 +67,26 @@ import org.vortikal.web.service.Service;
  *   <li><code>service</code> - the service for which to construct breadcrumb URLs
  *   <li><code>breadcrumbName</code> - the name to publish the
  *   breadcrumb under (default <code>breadcrumb</code>
+ *   <li><code>useDisplayNames</code> - a boolean indicating whether
+ *   to use the resource's <code>displayname</code> property (rather
+ *   than the default <code>name</code>) as breadcrumb element
+ *   titles. Default is <code>false</code>
+ *   <li><code>skippedURLs</code> - a list of resource URIs for which
+ *   to skip URL generation. That is, {@link BreadcrumbElement#getURL}
+ *   will return <code>null</code> for the resources included in this
+ *   list.
  *   <li><code>ignoreProperty</code> - a resource property specified
  *   as <code>namespace:name</code> specifying whether to not include
  *   a given resource in the breadcrumb data model. Resources are
  *   ignored when the property exists.
- *   <li><code>titleOverrideProperties</code> - a {@link String[]} of fully
- *   qualified property names specifying properties that override the
- *   names of the resources in the breadcrumb when present. If such a
- *   property is present on a resource, the value of that property is
- *   used as the {@link BreadcrumbElement#getTitle title} of the
- *   breadcrumb element.
+ *   <li><code>titleOverrideProperties</code> - a {@link String[]} of
+ *   fully qualified property names (<code>namespace:name</code>)
+ *   specifying properties that override the names of the resources in
+ *   the breadcrumb when present. If such a property is present on a
+ *   resource, the value of that property is used as the {@link
+ *   BreadcrumbElement#getTitle title} of the breadcrumb
+ *   element. Note: this setting overrides the
+ *   <code>useDisplayNames</code> property.
  * </ul>
  *
  * <p>Model data published:
@@ -91,10 +103,16 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
     private Repository repository = null;
     private Service service = null;
     private String breadcrumbName = "breadcrumb";
+    private boolean useDisplayNames = false;
     private String ignoreProperty = null;
     private String ignorePropertyNamespace = null;
     private String ignorePropertyName = null;
     private String[] titleOverrideProperties = null;
+    private String[] titleOverrideNamespaces = null;
+    private String[] titleOverrideNames = null;
+    private String[] skippedURLs = null;
+    private Set skippedURLSet = null;
+    
     
 
     public final Repository getRepository() {
@@ -117,6 +135,11 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
     }
     
 
+    public void setUseDisplayNames(boolean useDisplayNames) {
+        this.useDisplayNames = useDisplayNames;
+    }
+    
+
     public void setIgnoreProperty(String ignoreProperty) {
         this.ignoreProperty = ignoreProperty;
     }
@@ -127,6 +150,11 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
     }
     
     
+    public void setSkippedURLs(String[] skippedURLs) {
+        this.skippedURLs = skippedURLs;
+    }
+    
+
     public final void afterPropertiesSet() throws Exception {
         if (repository == null) {
             throw new BeanInitializationException(
@@ -158,6 +186,14 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
                         + "is not a fully qualified property name");
                 }
             }
+            initTitleOverrideProperties();
+        }
+
+        if (this.skippedURLs != null) {
+            this.skippedURLSet = new HashSet();
+            for (int i = 0; i < this.skippedURLs.length; i++) {
+                this.skippedURLSet.add(this.skippedURLs[i]);
+            }
         }
     }
 
@@ -184,7 +220,10 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
                     continue;
                 }
                 String title = getTitle(r);
-                String url = service.constructLink(r, principal, false);
+                String url = null;
+                if (!this.skippedURLSet.contains(incrementalPath[i])) {
+                    url = service.constructLink(r, principal, false);
+                }
 
                 breadCrumb.add(new BreadcrumbElement(url, title));
             }
@@ -192,6 +231,11 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
         } catch (Exception e) {
             logger.warn("Unable to generate breadcrumb path", e);
         }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Generated breadcrumb path: " + breadCrumb);
+        }
+
+
         model.put(this.breadcrumbName,
                   (BreadcrumbElement[]) breadCrumb.toArray((new BreadcrumbElement[0])));
 
@@ -217,20 +261,36 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
             // Check titleOverrideProperties in correct order
             for (int i = 0; i < this.titleOverrideProperties.length; i++) {
 
-                // FIXME: (name, namespace) should be computed once,
-                // on initialization:
-                String namespace = this.titleOverrideProperties[i].substring(
-                    0, this.titleOverrideProperties[i].indexOf(":"));
-                String name = this.titleOverrideProperties[i].substring(
-                this.titleOverrideProperties[i].indexOf(":") + 1);
-
+                String namespace = this.titleOverrideNamespaces[i];
+                String name = this.titleOverrideNames[i];
+                
                 Property property = resource.getProperty(namespace, name);
                 if (property != null && property.getValue() != null) {
                     return property.getValue();
                 }
             }
         }
-        return resource.getName();
+        return (this.useDisplayNames) ?
+            resource.getDisplayName() : resource.getName();
+    }
+    
+
+    private void initTitleOverrideProperties() {
+
+        this.titleOverrideNamespaces = new String[this.titleOverrideProperties.length];
+        this.titleOverrideNames = new String[this.titleOverrideProperties.length];
+
+        
+        for (int i = 0; i < this.titleOverrideProperties.length; i++) {
+
+            String namespace = this.titleOverrideProperties[i].substring(
+                    0, this.titleOverrideProperties[i].lastIndexOf(":"));
+            String name = this.titleOverrideProperties[i].substring(
+                this.titleOverrideProperties[i].lastIndexOf(":") + 1);
+
+            this.titleOverrideNamespaces[i] = namespace;
+            this.titleOverrideNames[i] = name;
+        }
     }
     
 

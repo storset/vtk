@@ -74,11 +74,11 @@ public class DeleteController extends AbstractXmlEditController {
         Map model = new HashMap();
 
         if (mode.equals("default")) {
-            Enumeration enum = request.getParameterNames();
+            Enumeration enumeration = request.getParameterNames();
 
             Vector v = new Vector();
-            while (enum.hasMoreElements()) {
-                String param = (String) enum.nextElement();
+            while (enumeration.hasMoreElements()) {
+                String param = (String) enumeration.nextElement();
                 if (param.matches("\\d+(\\.\\d+)*")) {
                     if (logger.isDebugEnabled())
                         logger.debug("Marking element " + param
@@ -102,9 +102,9 @@ public class DeleteController extends AbstractXmlEditController {
             if ("true".equals(con)) {
 
                 /* Delete elements */
-                Enumeration enum = document.getElements().elements();
-                while (enum.hasMoreElements()) {
-                    Element e = (Element) enum.nextElement();
+                Enumeration enumeration = document.getElements().elements();
+                while (enumeration.hasMoreElements()) {
+                    Element e = (Element) enumeration.nextElement();
                     e.detach();
                 }
 

@@ -310,11 +310,11 @@ public class EditDocument extends Document {
 
     public void resetElements(Vector vector) {
         // FIXME: lag denne! brukes under og fra edithandler!
-        Enumeration enum = vector.elements();
+        Enumeration enumeration = vector.elements();
         HashMap removalSet = new HashMap();
 
-        while (enum.hasMoreElements()) {
-            Object ob = enum.nextElement();
+        while (enumeration.hasMoreElements()) {
+            Object ob = enumeration.nextElement();
 
             Element elem = (Element) ob;//enum.nextElement();
             logger.debug("Resetting element " + elem.getName());

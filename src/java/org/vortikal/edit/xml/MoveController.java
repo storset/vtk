@@ -66,10 +66,10 @@ public class MoveController extends AbstractXmlEditController {
         String mode = document.getDocumentMode();
 
         if (mode.equals("default")) {
-            Enumeration enum = request.getParameterNames();
+            Enumeration enumeration = request.getParameterNames();
             Vector v = new Vector();
-            while (enum.hasMoreElements()) {
-                String s = (String) enum.nextElement();
+            while (enumeration.hasMoreElements()) {
+                String s = (String) enumeration.nextElement();
                 if (s.matches("\\d+(\\.\\d+)*")) {
                     v.add(s);
                     logger.debug("Marking element " + s + " for moving");

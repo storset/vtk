@@ -107,12 +107,12 @@ public class MoveItController extends AbstractXmlEditController {
                 }
 
                 /* actually insert the elements: */
-                Enumeration enum = document.getElements().elements();
+                Enumeration enumeration = document.getElements().elements();
                 List turnedElements = new ArrayList();
 
                 /* Flip the elements (must be reversed) */
-                while (enum.hasMoreElements()) {
-                    turnedElements.add(0, enum.nextElement());
+                while (enumeration.hasMoreElements()) {
+                    turnedElements.add(0, enumeration.nextElement());
                 }
                   
                 List l =   currentElement.getChildren();
@@ -126,9 +126,9 @@ public class MoveItController extends AbstractXmlEditController {
                     document.resetElements(new Vector(clone.getChildren()));
                 }
 
-                enum = document.getElements().elements();
-                while (enum.hasMoreElements()) {
-                    Element elem = (Element)enum.nextElement();
+                enumeration = document.getElements().elements();
+                while (enumeration.hasMoreElements()) {
+                    Element elem = (Element)enumeration.nextElement();
                     elem.detach();
                     l.remove(elem);
                 }

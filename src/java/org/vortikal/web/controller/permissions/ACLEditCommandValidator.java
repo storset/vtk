@@ -61,6 +61,8 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
     public void validate(Object command, Errors errors) {
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
+        if (editCommand.getCancelAction() != null) return;
+        
         if (editCommand.getAddUserAction() != null) {
             String userName = editCommand.getUserName();
 

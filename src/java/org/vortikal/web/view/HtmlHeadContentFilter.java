@@ -99,11 +99,11 @@ public class HtmlHeadContentFilter
             if (debug && logger.isDebugEnabled()) {
                 logger.debug("found charset content, will remove");
             }
-            newHeadContent = headMatcher.group(1) + head +
-            charsetMatcher.replaceAll("") + headMatcher.group(3);
+            newHeadContent = headMatcher.group(1) +
+            charsetMatcher.replaceAll("") +  head + headMatcher.group(3);
         } else {
-            newHeadContent = headMatcher.group(1) + head +
-            headContent + headMatcher.group(3);
+            newHeadContent = headMatcher.group(1) + 
+            headContent + head + headMatcher.group(3);
         }
             
         if (debug && logger.isDebugEnabled()) {

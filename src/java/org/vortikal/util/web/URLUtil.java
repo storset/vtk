@@ -255,6 +255,13 @@ public class URLUtil {
     }
 
 
+
+    /**
+     * Gets the host name from the HTTP request.
+     *
+     * @param request a <code>HttpServletRequest</code> value
+     * @return a <code>String</code>
+     */
     public static String getHostName(HttpServletRequest request) {
         StringBuffer url = request.getRequestURL();
 

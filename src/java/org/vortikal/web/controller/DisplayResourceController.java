@@ -66,7 +66,7 @@ import org.vortikal.web.RequestContext;
  *       retrieved instead of the requested resource</li>
  *   <li><code>streamToString</code> - set this to true if you
  *       want to provide the resource as resourceString model data
- *       instead of resourceStream if it's content type matches 'text/*' 
+ *       instead of resourceStream if the content type is text based 
  *   <li><code>viewName</code> - name of the returned view. The
  *       default value is <code>displayResource</code></li>
  *   <li><code>unsupportedResourceView</code> - name of returned view if

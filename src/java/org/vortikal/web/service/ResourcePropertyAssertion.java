@@ -28,27 +28,62 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 
 /**
+ * Assertion for matching on whether the current resource has a
+ * property with a given name, namespace and value.
  *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>namespace</code> - the {@link Property#getNamespace
+ *   namespace} of the property to match
+ *   <li><code>namespace</code> - the {@link Property#getName name} of
+ *   the property to match
+ *   <li><code>namespace</code> - the {@link Property#getValue value}
+ *   of the property to match
+ * </ul>
  */
-public class ResourcePropertyAssertion extends AssertionSupport implements ResourceAssertion {
+public class ResourcePropertyAssertion
+  extends AssertionSupport implements ResourceAssertion {
 
     private String namespace;
     private String name;
     private String value;
         
-    /* 
-     * @see org.vortikal.web.Condition#matches(javax.servlet.http.HttpServletRequest)
-     */
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    
+    
+    public String getName() {
+        return name;
+    }
+
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+
+    public String getValue() {
+        return value;
+    }
+
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+
     public boolean matches(Resource resource) {
 
         if (resource != null) {
@@ -61,74 +96,29 @@ public class ResourcePropertyAssertion extends AssertionSupport implements Resou
     }
 
 
-    /**
-     * @param name The name to set.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    
-    /**
-     * @param namespace The namespace to set.
-     */
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-    
-    
-	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-	/**
-	 * @return Returns the namespace.
-	 */
-	public String getNamespace() {
-		return namespace;
-	}
-	/**
-	 * @return Returns the value.
-	 */
-	public String getValue() {
-		return value;
-	}
-    /**
-     * @param value The value to set.
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-
     public boolean conflicts(Assertion assertion) {
-		if (assertion instanceof ResourcePropertyAssertion) {
+        if (assertion instanceof ResourcePropertyAssertion) {
 
-			ResourcePropertyAssertion other = (ResourcePropertyAssertion) assertion;
+            ResourcePropertyAssertion other = (ResourcePropertyAssertion) assertion;
 			
-			if (this.namespace.equals(other.getNamespace()) && 
-					this.name.equals(other.getName())) {
+            if (this.namespace.equals(other.getNamespace()) && 
+                this.name.equals(other.getName())) {
 				
-				return ! this.value.equals(other.getValue());
-			}
-		}
-		return false;
-	}
+                return ! this.value.equals(other.getValue());
+            }
+        }
+        return false;
+    }
 
-	/** 
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
 		
-		sb.append(super.toString());
-		sb.append("; namespace = ").append(this.namespace);
-		sb.append("; name = ").append(this.name);
-		sb.append("; value = ").append(this.value);
+        sb.append(super.toString());
+        sb.append("; namespace = ").append(this.namespace);
+        sb.append("; name = ").append(this.name);
+        sb.append("; value = ").append(this.value);
 
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
 }

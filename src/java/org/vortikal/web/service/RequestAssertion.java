@@ -37,9 +37,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface RequestAssertion extends Assertion {
 
-	/**
-	 * @return wether the request matches this assertion.
-	 */
-	public boolean matches(HttpServletRequest request);
+    /**
+     * @return wether the request matches this assertion.
+     */
+    public boolean matches(HttpServletRequest request);
 
 }

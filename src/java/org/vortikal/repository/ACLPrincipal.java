@@ -35,6 +35,9 @@ package org.vortikal.repository;
  * This class encapsulates meta information about a principal.
  */
 public class ACLPrincipal implements java.io.Serializable, Cloneable {
+
+    private static final long serialVersionUID = 3256442486766581047L;
+
     /**
      * Indicates that this ACLPrincipal represents a named user or
      * group identified by a URL.

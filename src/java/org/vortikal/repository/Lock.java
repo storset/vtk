@@ -37,6 +37,9 @@ import org.vortikal.security.Principal;
  * This class encapsulates meta information about a lock.
  */
 public class Lock implements java.io.Serializable, Cloneable {
+
+    private static final long serialVersionUID = 3546639889186633783L;
+    
     // Supported lock types:
     public static final String LOCKTYPE_EXCLUSIVE_WRITE = "EXCLUSIVE_WRITE";
     private String type;

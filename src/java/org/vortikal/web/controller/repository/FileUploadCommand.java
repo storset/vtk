@@ -37,8 +37,7 @@ import org.vortikal.web.controller.AbstractSaveCancelCommand;
 public class FileUploadCommand extends AbstractSaveCancelCommand {
 
     private MultipartFile file;
-    private String cancel;
-    
+
     public FileUploadCommand(String submitURL) {
         super(submitURL);
     }

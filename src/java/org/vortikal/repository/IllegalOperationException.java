@@ -31,6 +31,9 @@
 package org.vortikal.repository;
 
 public class IllegalOperationException extends RepositoryException {
+
+    private static final long serialVersionUID = 4048797857660024374L;
+
     public IllegalOperationException() {
         super();
     }

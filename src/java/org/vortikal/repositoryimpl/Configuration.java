@@ -31,6 +31,9 @@
 package org.vortikal.repositoryimpl;
 
 public class Configuration implements org.vortikal.repository.Configuration {
+
+    private static final long serialVersionUID = 3257845497912964918L;
+    
     private boolean readOnly = false;
 
     public Configuration(boolean readOnly) {

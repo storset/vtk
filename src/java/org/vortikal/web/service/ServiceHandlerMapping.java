@@ -35,13 +35,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.web.RequestContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+import org.vortikal.web.RequestContext;
 
 
 
@@ -54,8 +51,6 @@ import org.springframework.web.servlet.HandlerMapping;
  * the correct handler based on the current service).
  */
 public class ServiceHandlerMapping implements HandlerMapping {
-
-    private static Log logger = LogFactory.getLog(ServiceHandlerMapping.class);
 
     /**
      * Look up a handler for the given request, falling back to the default

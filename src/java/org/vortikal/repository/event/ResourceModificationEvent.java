@@ -35,6 +35,9 @@ import org.vortikal.repository.Resource;
 
 
 public class ResourceModificationEvent extends RepositoryEvent {
+
+    private static final long serialVersionUID = 3256721797029441585L;
+    
     private Resource resource = null;
     private Resource original = null;
 

@@ -39,6 +39,9 @@ package org.vortikal.repository;
  * the interpretation and processing of properties.
  */
 public class Property implements java.io.Serializable, Cloneable {
+
+    private static final long serialVersionUID = 3762531209208410417L;
+    
     private String namespace = null;
     private String name = null;
     private String value = null;

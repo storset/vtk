@@ -34,18 +34,15 @@ package org.vortikal.web.controller.properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
 /**
@@ -65,14 +62,10 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * such as 'displayName', 'owner', etc. Must have a protected
  * namespace.
  * 
- * @version $Id$
  */
 public class SetResourcePropertyController
   extends SimpleFormController implements InitializingBean {
 
-
-    private static Log logger = LogFactory.getLog(SetResourcePropertyController.class);
-    
     private Repository repository = null;
     
     public void setRepository(Repository repository) {

@@ -31,4 +31,7 @@
 package org.vortikal.repository;
 
 public class ResourceOverwriteException extends RepositoryException {
+
+    private static final long serialVersionUID = 3906087841133049657L;
+
 }

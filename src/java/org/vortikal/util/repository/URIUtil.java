@@ -30,8 +30,6 @@
  */
 package org.vortikal.util.repository;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Resource;
 
 
@@ -39,10 +37,6 @@ import org.vortikal.repository.Resource;
  * General resource path utilities.
  */
 public class URIUtil {
-
-
-    private static Log logger = LogFactory.getLog("org.vortikal.util.repository.URIUtil");
-
     
     /**
      * Makes an absolute path of <code>path</code> relative to

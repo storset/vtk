@@ -37,8 +37,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
@@ -72,8 +70,6 @@ public class DisplayStaticResourceController implements Controller {
 
     public static final String DEFAULT_VIEW_NAME = "displayResource";
     
-    private static Log logger = LogFactory.getLog(DisplayStaticResourceController.class);
-
     private Repository repository;
     private String resourceURI;
     private String viewName = DEFAULT_VIEW_NAME;

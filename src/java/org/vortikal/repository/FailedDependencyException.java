@@ -36,6 +36,9 @@ import java.util.Map;
 
 
 public class FailedDependencyException extends RepositoryException {
+
+    private static final long serialVersionUID = 3978703995533539378L;
+
     private Map map;
 
     public FailedDependencyException() {

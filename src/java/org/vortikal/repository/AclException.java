@@ -37,6 +37,9 @@ package org.vortikal.repository;
  *
  */
 public class AclException extends RepositoryException {
+
+    private static final long serialVersionUID = 3258134635094358064L;
+
     /**
      * Indicates that the operation in question is in violation of an
      * ACL restriction. This status code may be used in cases where

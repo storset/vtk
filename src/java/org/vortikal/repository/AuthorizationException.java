@@ -31,6 +31,9 @@
 package org.vortikal.repository;
 
 public class AuthorizationException extends RepositoryException {
+
+    private static final long serialVersionUID = 3544958753087567668L;
+
     public AuthorizationException() {
     }
 

@@ -36,6 +36,9 @@ import org.vortikal.repository.Resource;
 
 
 public class ACLModificationEvent extends RepositoryEvent {
+
+    private static final long serialVersionUID = 3761971570608191029L;
+    
     private Resource resource = null;
     private Resource original = null;
     private Ace[] acl = null;

@@ -37,9 +37,6 @@ public class ResourcePropertyCommand extends AbstractSaveCancelCommand {
     private String namespace;
     private String name;
     private String value;
-    private boolean done = false;
-    private String cancel;
-
 
     public ResourcePropertyCommand(String namespace, String name,
                                    String value, String submitURL) {

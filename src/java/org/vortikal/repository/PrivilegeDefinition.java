@@ -35,6 +35,9 @@ package org.vortikal.repository;
  * This class represents the privileges supported on a resource.
  */
 public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
+    
+    private static final long serialVersionUID = 3257289140717237808L;
+
     public static final String STANDARD_NAMESPACE = "dav";
     public static final String READ = "read";
     public static final String WRITE = "write";

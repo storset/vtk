@@ -39,6 +39,8 @@ package org.vortikal.edit.xml;
  */
 public class EditException extends RuntimeException {
     
+    private static final long serialVersionUID = 3257847696919311409L;
+
     private String url = null;
 
 

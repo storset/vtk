@@ -69,6 +69,8 @@ import org.jdom.output.XMLOutputter;
  */
 public class EditDocument extends Document {
 
+    private static final long serialVersionUID = 3256719598073361459L;
+
     private static Log logger = LogFactory.getLog(EditDocument.class);
 
     private ProcessingInstruction pi = null;

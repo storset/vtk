@@ -33,6 +33,9 @@ package org.vortikal.repository.event;
 import org.vortikal.repository.Repository;
 
 public class ResourceDeletionEvent extends RepositoryEvent {
+
+    private static final long serialVersionUID = 4121138047560921652L;
+    
     private String uri = null;
     private int resourceId;
     private boolean collection;

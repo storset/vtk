@@ -66,6 +66,9 @@ import org.vortikal.security.PrincipalStore;
  * may still choose to ignore some of these properties.
  */
 public class Resource implements java.io.Serializable, Cloneable {
+    
+    private static final long serialVersionUID = 3257286937366050105L;
+
     private boolean overrideLiveProperties = false;
     private String uri = null;
     private Date creationTime = null;

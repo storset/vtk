@@ -37,6 +37,9 @@ package org.vortikal.repository;
  *
  */
 public class Ace implements java.io.Serializable, Cloneable {
+    
+    private static final long serialVersionUID = 3257003246219572275L;
+
     private ACLPrincipal principal = null;
     private Privilege[] privileges = new Privilege[] {  };
     private boolean granted = true;

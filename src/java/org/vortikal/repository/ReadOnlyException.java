@@ -36,4 +36,7 @@ package org.vortikal.repository;
  * the repository is operating in read-only mode.
  */
 public class ReadOnlyException extends AuthorizationException {
+
+    private static final long serialVersionUID = 3256721775537502004L;
+
 }

@@ -34,8 +34,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
@@ -65,7 +63,6 @@ import org.vortikal.web.service.Service;
  */
 public class BrowseUrlProvider implements Provider, InitializingBean {
 
-    private static Log logger = LogFactory.getLog(BrowseUrlProvider.class);
     private Repository repository = null;
 
     private Service viewService;

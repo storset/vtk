@@ -36,6 +36,9 @@ package org.vortikal.repository;
  * of access control lists (ACLs).
  */
 public class AclRestrictions implements java.io.Serializable, Cloneable {
+
+    private static final long serialVersionUID = 3256720680303997238L;
+    
     // ACL restrictions:
     private boolean grantOnly = false;
     private boolean noInvert = false;

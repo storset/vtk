@@ -35,6 +35,9 @@ package org.vortikal.repository;
  * This class encapsulates meta information about a privilege.
  */
 public class Privilege implements java.io.Serializable, Cloneable {
+    
+    private static final long serialVersionUID = 3978429109086926897L;
+
     private String name = null;
     private String namespace = PrivilegeDefinition.STANDARD_NAMESPACE;
 

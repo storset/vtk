@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Locale;
 
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
@@ -44,9 +45,6 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.repository.ContentTypeHelper;
-
-import java.util.Date;
-import java.util.Locale;
 
 
 public class Document extends Resource implements Cloneable {

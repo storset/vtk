@@ -35,9 +35,11 @@ package org.vortikal.repository;
  * Indicates that a requested resource does not exist in the
  * repository.
  *
- * @version $Id$
  */
 public class ResourceNotFoundException extends RepositoryException {
+
+    private static final long serialVersionUID = 3689351018110399794L;
+    
     private String uri = null;
 
     public ResourceNotFoundException(String uri) {

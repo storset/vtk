@@ -33,22 +33,17 @@ package org.vortikal.web.controller.repository;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-
 
 
 public class CreateCollectionController extends SimpleFormController {
 
-    private static Log logger = LogFactory.getLog(CreateCollectionController.class);
-    
     private Repository repository = null;
     
     

@@ -31,4 +31,7 @@
 package org.vortikal.repository;
 
 public class ResourceLockedException extends RepositoryException {
+
+    private static final long serialVersionUID = 4048791247588439601L;
+
 }

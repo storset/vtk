@@ -36,7 +36,8 @@ package org.vortikal.repository;
  * those exceptions that are thrown while performing repository
  * operations.
  */
-public class RepositoryException extends RuntimeException {
+public abstract class RepositoryException extends RuntimeException {
+
     public RepositoryException() {
         super();
     }

@@ -196,6 +196,37 @@ ALTER TABLE extra_prop_entry
     REFERENCES vortex_resource (resource_id)
 ;
 
+----------------------------------------------------------------------
+-- changelog_entry
+-----------------------------------------------------------------------------
+DROP SEQUENCE changelog_entry_seq_pk;
+
+CREATE SEQUENCE changelog_entry_seq_pk INCREMENT BY 1 START WITH 1000;
+
+DROP TABLE changelog_entry;
+
+/* The attribute 'uri' can't be longer that 1578 chars (OS-dependent?).     */
+/* If bigger -> "ORA-01450: maximum key length exceeded" (caused by index). */
+/* Since combined index '(uri, changelog_entry_id)' -> 1500 chars.          */
+
+CREATE TABLE changelog_entry
+(
+    changelog_entry_id int NOT NULL,
+    logger_id int NOT NULL,
+    logger_type int NOT NULL,
+    operation VARCHAR (128) NULL,
+    timestamp TIMESTAMP NOT NULL,
+    uri VARCHAR (1500) NOT NULL
+);
+
+ALTER TABLE changelog_entry
+   ADD CONSTRAINT changelog_entry_PK
+PRIMARY KEY (changelog_entry_id);
+
+DROP INDEX changelog_entry_index1;
+
+CREATE UNIQUE INDEX changelog_entry_index1
+   ON changelog_entry (uri, changelog_entry_id);
 
 
 -----------------------------------------------------------------------------
@@ -233,9 +264,9 @@ VALUES (
     current_timestamp,
     current_timestamp,
     current_timestamp,
-    'vortex',
-    'vortex',
-    'vortex',
+    'vortex@localhost',
+    'vortex@localhost',
+    'vortex@localhost',
     '/',
     'unknown',
     'application/x-vortex-collection',
@@ -261,7 +292,7 @@ VALUES (
     1,
     'dav:authenticated',
     'Y',
-    'vortex',
+    'vortex@localhost',
     current_timestamp
 );    
 
@@ -282,7 +313,7 @@ VALUES (
     4,
     'dav:all',
     'Y',
-    'vortex',
+    'vortex@localhost',
     current_timestamp
 );    
 
@@ -303,7 +334,7 @@ VALUES (
     1,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     current_timestamp
 );    
 
@@ -323,7 +354,7 @@ VALUES (
     2,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     current_timestamp
 );    
 
@@ -343,6 +374,6 @@ VALUES (
     3,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     current_timestamp
 );    

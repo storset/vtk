@@ -2,22 +2,64 @@
 
 <document>
   <properties>
-    <title>Page title</title>
+    <title>Changelog</title>
   </properties>
   <body>
-    <release version="0.1.1" date="2005-04-01">
-      <!-- add 'action' entries here, newest on top: -->
 
-      <action dev="gormap" type="fix">Fixed crash in HtmlHeadContentFilter HTML head elements containing the '$' character.</action>
-      <action dev="gormap" type="add">Added RequestURIRegexpWrappingAssertion, for selectively applying assertions based on regular expression matching on the request URI. One use case for such an assertion is to require that certain subtrees in the URI space are only accessible through https.</action>
-      <action dev="storset" type="add">Added LinkConstructor as an optional parameter to xsl transformation with ResourceXsltView. This makes it possible to create links from within xsl.</action>
-      <action dev="storset" type="fix">Refactored/bug fixed getAbsolutePath() in AbstractPathBasedURIResolver. Not extensively tested.</action>
-      <action dev="gormap" type="update">It is now possible for services to 'hook into' another service trough a new category-based lookup system, avoiding the need to explicitly refer to child services from an existing service. (As a consequence, services may now belong to more than one category.)</action>
-      <action dev="gormap" type="update">Added refresh functionality to the document templates listing component for creating new documents.</action>
-      <action dev="gormap" type="update">Improved character encoding for HTML documents in plaintext editing component. Now checks actual HTML content for meta tags if no character encoding is set on the resource itself.</action>
+    <release version="SNAPSHOT" date="In SVN">
+      <!-- add 'action' entries here, newest on top: -->
     </release>
+
+    <release version="0.1.1" date="2005-04-01">
+
+      <action dev="gormap" type="fix">
+        Fixed crash in HtmlHeadContentFilter HTML head elements
+        containing the '$' character.
+      </action>
+
+      <action dev="gormap" type="add">
+        Added RequestURIRegexpWrappingAssertion, for selectively
+        applying assertions based on regular expression matching on
+        the request URI. One use case for such an assertion is to
+        require that certain subtrees in the URI space are only
+        accessible through https.
+      </action>
+
+      <action dev="storset" type="add">
+        Added LinkConstructor as an optional parameter to xsl
+        transformation with ResourceXsltView. This makes it possible
+        to create links from within xsl.
+      </action>
+
+      <action dev="storset" type="fix">
+        Refactored/bug fixed getAbsolutePath() in
+        AbstractPathBasedURIResolver. Not extensively tested.
+      </action>
+
+      <action dev="gormap" type="update">
+        It is now possible for services to 'hook into' another service
+        trough a new category-based lookup system, avoiding the need
+        to explicitly refer to child services from an existing
+        service. (As a consequence, services may now belong to more
+        than one category.)
+      </action>
+
+      <action dev="gormap" type="update">
+        Added refresh functionality to the document templates listing
+        component for creating new documents.
+      </action>
+
+      <action dev="gormap" type="update">
+        Improved character encoding for HTML documents in plaintext
+        editing component. Now checks actual HTML content for meta
+        tags if no character encoding is set on the resource itself.
+      </action>
+
+    </release>
+
     <release version="0.1" date="2005-03-08">
       <action dev="gormap" type="update">Initial release</action>
     </release>
+
   </body>
 </document>

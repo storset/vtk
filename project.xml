@@ -7,7 +7,7 @@
   <id>vortikal</id>
   <name>Vortikal</name>
   <groupId>vortikal</groupId>
-  <currentVersion>0.1.1</currentVersion>
+  <currentVersion>SNAPSHOT</currentVersion>
   <organization>
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
@@ -27,6 +27,7 @@
   </repository>
   <siteAddress>shell.berlios.de</siteAddress>
   <siteDirectory>/home/groups/vortikal/htdocs/maven-sites/vortikal-${pom.currentVersion}</siteDirectory>
+
   <mailingLists>
     <mailingList>
       <name>Vortikal Announce List</name>
@@ -54,6 +55,7 @@
     </mailingList>
   </mailingLists>
   <developers></developers>
+
   <dependencies>
     <dependency>
       <id>commons-dbcp</id>

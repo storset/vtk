@@ -111,7 +111,7 @@ public class ConfiguredMetadataProvider implements Provider {
                 	}		
             }	
         catch (Exception e) {
-        		
+        		logger.warn("Unable to get possible metadata from ancestor(s) ", e);
         	}
         
         model.put("configuredMetadata", configuredMetadataModel);

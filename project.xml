@@ -10,9 +10,9 @@
   <currentVersion>SNAPSHOT</currentVersion>
   
   <organization>
-    <name>University of Oslo, USIT</name>
-    <url>http://www.usit.uio.no/</url>
-    <logo>misc/uio.gif</logo>
+    <name>Vortikal Project</name>
+    <url>http://vortikal.berlios.de/</url>
+    <logo>/images/vortikal.jpg</logo>
   </organization>
   
   <inceptionYear>2004</inceptionYear>
@@ -296,7 +296,6 @@
    </dependency>
    -->
    
-
  </dependencies> 
  
 

@@ -104,22 +104,28 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
                 "(expected an InputStream object having key 'resourceStream')");
         }
 
+        String contentType = resource.getContentType();
+        
         if ("text/html".equals(resource.getContentType()) &&
             resource.getCharacterEncoding() == null) {
             // FIXME: to prevent some servlet containers (resin) from
             // trying to be "smart" and append "charset=iso-8859-1" to
             // the Content-Type header when no character encoding has
             // been specified. According to RFC 2616, sec. 4.2,
-            // preceding the header value with amount of LWS is
-            // perfectly legal, although a single space is preferred.
-            response.setHeader("Content-Type", " " + resource.getContentType());
+            // preceding the header value with arbitrary amount of LWS
+            // is perfectly legal, although a single space is
+            // preferred.
+            contentType = " " + resource.getContentType();
         } else if (resource.getContentType().startsWith("text/") &&
                    resource.getCharacterEncoding() != null) {
-            response.setHeader("Content-Type", resource.getContentType() +
-                               ";charset=" + resource.getCharacterEncoding());
-        } else {
-            response.setHeader("Content-Type", resource.getContentType());
+            contentType = resource.getContentType() + ";charset="
+                + resource.getCharacterEncoding();
         }
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting header Content-Type: " + contentType);
+        }
+        response.setHeader("Content-Type", contentType);
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
         if (this.includeLastModifiedHeader) {
             response.setHeader("Last-Modified", 

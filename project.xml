@@ -194,16 +194,8 @@
      <properties>
        <war.bundle>true</war.bundle>
      </properties>
-   </dependency >
-   <!--
-     <dependency>
-     <id>saxon</id>
-     <version>6.5.3</version>
-     <properties>
-     <war.bundle>true</war.bundle>
-     </properties>
-     </dependency >
-   -->
+   </dependency>
+
    <!-- BeanShell: -->
    <dependency>
      <id>bsh</id>
@@ -216,14 +208,7 @@
    <!-- Groovy: -->
    <dependency>
      <id>groovy</id>
-     <version>all-1.0-beta-7</version>
-     <properties>
-       <war.bundle>true</war.bundle>
-     </properties>
-   </dependency>
-   <dependency>
-     <id>asm</id>
-     <version>1.4.2</version>
+     <version>all-1.0-beta-9</version>
      <properties>
        <war.bundle>true</war.bundle>
      </properties>

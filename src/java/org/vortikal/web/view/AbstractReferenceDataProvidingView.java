@@ -34,21 +34,15 @@ import org.vortikal.web.referencedataprovider.Provider;
 
 import org.springframework.web.servlet.view.AbstractView;
 
-public abstract class AbstractReferenceDataProvidingView extends AbstractView implements
-        ReferenceDataProviding {
+public abstract class AbstractReferenceDataProvidingView
+  extends AbstractView implements ReferenceDataProviding {
 
     private Provider[] referenceDataProviders;
     
-    /**
-     * @see org.vortikal.web.view.ReferenceDataProviding#getReferenceDataProviders()
-     */
     public Provider[] getReferenceDataProviders() {
         return referenceDataProviders;
     }
 
-    /**
-     * @param referenceDataProviders The referenceDataProviders to set.
-     */
     public void setReferenceDataProviders(Provider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }

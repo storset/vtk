@@ -55,7 +55,7 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  *  {@link AbstractViewWrapper superclass}):
  * <ul>
  *   <li><code>contentFilters</code> - an array of {@link
- *   ContentFilter content filters} to apply to the textual content
+ *   TextContentFilter content filters} to apply to the textual content
  *   that was the result of the wrapped view invocation.
  *   <li><code>guessCharacterEncodingFromContent</code> (boolean) -
  *   whether to check (HTML) body contents for character encoding, if

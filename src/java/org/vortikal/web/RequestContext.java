@@ -76,8 +76,8 @@ public class RequestContext {
 
 
     /**
-     * Gets the {@link Resource#getURI URI} that the current request
-     * maps to.
+     * Gets the {@link org.vortikal.repository.Resource#getURI URI}
+     * that the current request maps to.
      * 
      * @return Returns URI of the requested resource.
      */

@@ -94,9 +94,8 @@ import org.vortikal.web.service.Service;
  * <p>After context initialization, the servlet calls
  * <code>super.doService()</code>, in the standard DispatcherServlet
  * fashion. It explicitly catches exceptions of type {@link
- * AuthenticationException} and {@link LogoutException} that may occur
- * in application code, the former one triggering an authentication
- * challenge, the latter a logout action.
+ * AuthenticationException}, triggering an authentication challenge
+ * presentation to the client.
  *
  * <p>Finally, the security context and request context are destroyed.
  */
@@ -266,6 +265,7 @@ public class VortikalServlet extends DispatcherServlet {
     protected final void service(HttpServletRequest request,
                                  HttpServletResponse response) 
         throws ServletException, IOException {
+        
 
         long startTime = System.currentTimeMillis();
         Throwable failureCause = null;

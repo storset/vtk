@@ -56,8 +56,8 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * <code>configLocation</code>.
  *
  * <p>The syntax for the config locations is the default set supported
- * by {@link DefaultResourceLoader}. In addition, when executing in a
- * web application context, the syntax
+ * by {@link org.springframework.core.io.DefaultResourceLoader}. In
+ * addition, when executing in a web application context, the syntax
  * <code>servletjar:servletResourceJarPath!entry</code> is supported,
  * which means "get XML bean definition file <code>entry</code> which
  * is located in the web application at

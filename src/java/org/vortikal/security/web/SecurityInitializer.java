@@ -188,7 +188,7 @@ public class SecurityInitializer {
     
     /**
      * Logs out the client from the authentication system. Clears the
-     * {@link SeurityContext}, removes the principal from the {@link
+     * {@link SecurityContext}, removes the principal from the {@link
      * TokenManager} and invalidates the request {@link
      * javax.servlet.http.HttpSession session}. Finally, calls the
      * authentication handler's {@link AuthenticationHandler#logout

@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.View;
 import org.vortikal.web.referencedataprovider.Provider;
 
-public abstract class AbstractReferenceDataProvidingWithChildrenView extends
-        AbstractReferenceDataProvidingView {
+public abstract class AbstractReferenceDataProvidingWithChildrenView
+  extends AbstractReferenceDataProvidingView {
 
     /**
      * Gets the set of reference data providers. The list returned is the union

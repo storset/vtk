@@ -69,8 +69,6 @@ import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * Abstract superclass for the XML edit controllers.
- *
- * @version $Id$
  */
 public abstract class AbstractXmlEditController implements Controller {
 
@@ -93,16 +91,25 @@ public abstract class AbstractXmlEditController implements Controller {
     
     protected String viewName = "edit";
 
+    protected Log logger = LogFactory.getLog(this.getClass());
+    
+    public final Namespace XSI_NAMESPACE = 
+        Namespace.getNamespace("xsi",
+                               "http://www.w3.org/2001/XMLSchema-instance");
 
-    /**
-     * @param deleteSubElementAtService The deleteSubElementAtService to set.
-     */
+    public final String PROPERTY_NAMESPACE =
+        "http://www.uio.no/vortex/custom-properties";
+
+    public final String EDIT_PROPERTY = "web-edit";
+
+    protected Repository repository;
+    private TransformerManager transformerManager;
+
+
     public void setDeleteSubElementAtService(Service deleteSubElementAtService) {
         this.deleteSubElementAtService = deleteSubElementAtService;
     }
-    /**
-     * @param newElementService The newElementService to set.
-     */
+
     public void setNewElementService(Service newElementService) {
         this.newElementService = newElementService;
     }
@@ -123,37 +130,43 @@ public abstract class AbstractXmlEditController implements Controller {
         this.browseService = browseService;
     }
     
-    protected Log logger = LogFactory.getLog(this.getClass());
-    
-    public final Namespace XSI_NAMESPACE = 
-        Namespace.getNamespace("xsi",
-                               "http://www.w3.org/2001/XMLSchema-instance");
-
-    public final String PROPERTY_NAMESPACE =
-        "http://www.uio.no/vortex/custom-properties";
-
-    public final String EDIT_PROPERTY = "web-edit";
-
-    protected Repository repository;
-    private TransformerManager transformerManager;
-    
-    /**
-     * @param transformerManager The transformerManager to set.
-     */
     public void setTransformerManager(TransformerManager transformerManager) {
         this.transformerManager = transformerManager;
     }
-    
-    /**
-     * @param repository The repository to set.
-     */
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
-    /**
-     * @see org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     */
+    public void setDeleteElementService(Service deleteElementService) {
+        this.deleteElementService = deleteElementService;
+    }
+
+    public void setMoveElementService(Service moveElementService) {
+        this.moveElementService = moveElementService;
+    }
+
+    public void setNewElementAtService(Service newElementAtService) {
+        this.newElementAtService = newElementAtService;
+    }
+
+    public void setEditElementDoneService(Service editElementDoneService) {
+        this.editElementDoneService = editElementDoneService;
+    }
+
+    public void setViewName(final String viewName){
+	this.viewName = viewName;
+    }
+
+    public void setMoveElementDoneService(Service moveElementDoneService) {
+        this.moveElementDoneService = moveElementDoneService;
+    }
+
+    public void setFinishEditingService(Service finishEditingService) {
+        this.finishEditingService = finishEditingService;
+    }
+
+
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) 
         throws Exception {
         
@@ -447,49 +460,5 @@ public abstract class AbstractXmlEditController implements Controller {
             model.put("xsltParameters", parameters);
         }
         parameters.put(key, value);
-    }
-    /**
-     * @param deleteElementService The deleteElementService to set.
-     */
-    public void setDeleteElementService(Service deleteElementService) {
-        this.deleteElementService = deleteElementService;
-    }
-    /**
-     * @param moveElementService The moveElementService to set.
-     */
-    public void setMoveElementService(Service moveElementService) {
-        this.moveElementService = moveElementService;
-    }
-    /**
-     * @param newElementAtService The newElementAtService to set.
-     */
-    public void setNewElementAtService(Service newElementAtService) {
-        this.newElementAtService = newElementAtService;
-    }
-    /**
-     * @param editElementDoneService The editElementDoneService to set.
-     */
-    public void setEditElementDoneService(Service editElementDoneService) {
-        this.editElementDoneService = editElementDoneService;
-    }
-
-    /**
-     * @param viewName viewName as String
-     */
-    public void setViewName(final String viewName){
-	this.viewName = viewName;
-    }
-
-    /**
-     * @param moveElementDoneService The moveElementDoneService to set.
-     */
-    public void setMoveElementDoneService(Service moveElementDoneService) {
-        this.moveElementDoneService = moveElementDoneService;
-    }
-    /**
-     * @param finishEditingService The finishEditingService to set.
-     */
-    public void setFinishEditingService(Service finishEditingService) {
-        this.finishEditingService = finishEditingService;
     }
 }

@@ -38,6 +38,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 
 import org.springframework.beans.factory.BeanInitializationException;
@@ -129,6 +130,8 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
             return inputStream;
         } catch (RepositoryException e) {
             return null;
-        } 
+        } catch (AuthenticationException e) {
+            return null;
+        }
     }
 }

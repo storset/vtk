@@ -30,24 +30,25 @@
  */
 package org.vortikal.web.controller.permissions;
 
-import org.vortikal.security.PrincipalStore;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.vortikal.security.InvalidPrincipalException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 
 /**
  */
 public class ACLEditCommandValidator implements Validator, InitializingBean {
 
-    private PrincipalStore principalStore;
+    private PrincipalManager principalManager;
     
     /**
-     * @param principalStore The principalStore to set.
+     * @param principalManager The principalManager to set.
      */
-    public void setPrincipalStore(PrincipalStore principalStore) {
-        this.principalStore = principalStore;
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
     
     /**
@@ -70,11 +71,24 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                 errors.rejectValue("userName", "permissions.user.missing.value",
                                    "You must type a value");
 
-            else if (!principalStore.validatePrincipal(userName))
-                errors.rejectValue("userName", "permissions.user.wrong.value", 
-                        new Object[] {userName}, "User '" + userName
-                                   + "' does not exist");
-
+            else {
+                Principal principal = null;
+                try { 
+                    principal = principalManager.getPrincipal(userName);	
+                } catch (InvalidPrincipalException e) {
+                    errors.rejectValue("userName", "permissions.user.wrong.value", 
+                            new Object[] {userName}, "User '" + userName
+                                       + "' is illegal");
+                    return;
+                }
+                
+                if (!principalManager.validatePrincipal(principal))
+                    errors.rejectValue("userName", "permissions.user.wrong.value", 
+                            new Object[] {userName}, "User '" + userName
+                            + "' does not exist");
+            }
+            
+            
         } else if (editCommand.getAddGroupAction() != null) {
             String groupName = editCommand.getGroupName();
 
@@ -83,7 +97,7 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                                    "permissions.group.missing.value",
                                    "You must type a value");
 
-            else if (!principalStore.validateGroup(groupName))
+            else if (!principalManager.validateGroup(groupName))
                 errors.rejectValue("groupName", "permissions.group.wrong.value",
                         new Object[] {groupName}, "Group '" + groupName
                                    + "' does not exist");
@@ -91,9 +105,9 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (principalStore == null) {
+        if (principalManager == null) {
             throw new BeanInitializationException(
-                "Property 'principalStore' cannot be null");
+                "Property 'principalManager' cannot be null");
         }
     }
 

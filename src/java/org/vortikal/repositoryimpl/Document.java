@@ -52,9 +52,9 @@ public class Document extends Resource implements Cloneable {
 
     public Document(String uri, String owner, String contentModifiedBy,
         String propertiesModifiedBy, ACL acl, boolean inheritedACL, Lock lock,
-        DataAccessor dao, PrincipalStore principalStore) {
+        DataAccessor dao, PrincipalManager principalManager) {
         super(uri, owner, contentModifiedBy, propertiesModifiedBy, acl,
-            inheritedACL, lock, dao, principalStore);
+            inheritedACL, lock, dao, principalManager);
     }
 
     public InputStream getInputStream(Principal principal, String privilege,
@@ -89,7 +89,7 @@ public class Document extends Resource implements Cloneable {
         Lock lock = (this.lock == null) ? null : (Lock) this.lock.clone();
 
         return new Document(uri, owner, contentModifiedBy,
-            propertiesModifiedBy, acl, inheritedACL, lock, dao, principalStore);
+            propertiesModifiedBy, acl, inheritedACL, lock, dao, principalManager);
     }
 
     /**

@@ -40,6 +40,7 @@ import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PrincipalStore;
@@ -155,7 +156,7 @@ public abstract class Resource implements Cloneable {
     protected Date contentLastModified = null;
     protected Date propertiesLastModified = null;
     protected String name;
-    protected PrincipalStore principalStore;
+    protected PrincipalManager principalManager;
     protected String displayName = "";
     protected String contentType = "";
     protected String characterEncoding = null;
@@ -164,7 +165,7 @@ public abstract class Resource implements Cloneable {
 
     public Resource(String uri, String owner, String contentModifiedBy,
         String propertiesModifiedBy, ACL acl, boolean inheritedACL, Lock lock,
-        DataAccessor dao, PrincipalStore principalStore) {
+        DataAccessor dao, PrincipalManager principalManager) {
         this.uri = uri;
         this.owner = owner;
         this.contentModifiedBy = contentModifiedBy;
@@ -181,7 +182,7 @@ public abstract class Resource implements Cloneable {
         }
 
         this.owner = owner;
-        this.principalStore = principalStore;
+        this.principalManager = principalManager;
         acl.setResource(this);
     }
 
@@ -682,7 +683,17 @@ public abstract class Resource implements Cloneable {
                 "resource " + this.uri);
         }
 
-        if (!principalStore.validatePrincipal(owner)) {
+        Principal principal2 = null;
+        
+        try {
+            principal2 = principalManager.getPrincipal(owner);
+        } catch (InvalidPrincipalException e) {
+            throw new IllegalOperationException(
+                    "Unable to set owner of resource " + this.uri +
+                    ": invalid owner: '" + owner + "'");
+        }
+        
+        if (!principalManager.validatePrincipal(principal2)) {
             throw new IllegalOperationException(
                 "Unable to set owner of resource " + this.uri +
                 ": invalid owner: '" + owner + "'");

@@ -30,8 +30,13 @@
  */
 package org.vortikal.security;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 
 
 
@@ -40,12 +45,14 @@ import java.util.Map;
  * user and group information in-memory.
  *
  */
-public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincipalStore {
+public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincipalStore, InitializingBean {
 
-    private Map principals = null;
-    private Map groups = null;
+    private Map principals;
+    private Map groups;
     private String realm;
+    private String domain;
 
+    
     /**
      * Sets the principal map. The map is assumed to contain entries
      * of type <code>(username, md5hash)</code>, and
@@ -71,8 +78,11 @@ public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincip
     
 
 
-    public boolean validatePrincipal(String name) {
-        return this.principals.containsKey(name);
+    public boolean validatePrincipal(Principal principal) {
+        if (principal == null) return false;
+        if (!domain.equals(principal.getDomain())) return false;
+
+        return this.principals.containsKey(principal.getName());
     }
     
 
@@ -82,6 +92,10 @@ public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincip
     }
     
 
+    /**
+     * @see org.vortikal.security.MD5PasswordPrincipalStore#getMD5HashString(java.lang.String)
+     * @deprecated
+     */
     public String getMD5HashString(String principal) {
         return (String) this.principals.get(principal);
     }
@@ -103,23 +117,71 @@ public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincip
         }
 
         List members = (List) this.groups.get(groupName);
-        return members.contains(principal.getQualifiedName());
+        return members.contains(principal.getName());
     }
 
 
 
     /**
      * @see org.vortikal.security.MD5PasswordPrincipalStore#getRealm()
+     * @deprecated
      */
     public String getRealm() {
         return realm;
     }
     
     
-    /**
-     * @param realm The realm to set.
-     */
     public void setRealm(String realm) {
         this.realm = realm;
+    }
+
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    
+    /**
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet() throws Exception {
+        if (domain == null)
+            throw new BeanInitializationException("Property 'domain' must be set");
+    }
+
+
+
+    /**
+     * @see org.vortikal.security.MD5PasswordPrincipalStore#authenticate(org.vortikal.security.Principal, java.lang.String)
+     */
+    public void authenticate(Principal principal, String password) throws AuthenticationException {
+        
+        String hash = getMD5HashString(principal.getName());
+        String clientHash = 
+            md5sum(principal.getName() + ":" + realm + ":" + password); 
+
+        if (hash == null || !hash.equals(clientHash)) {
+            throw new AuthenticationException(
+                "Authentication failed for principal " + principal.getQualifiedName() + ", " + 
+                "wrong credentials.");
+        }
+
+    }
+
+    protected String md5sum(String str) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(str.getBytes());
+            StringBuffer result = new StringBuffer(2 * digest.length);
+            for (int i = 0; i < digest.length; ++i) {
+                int k = digest[i] & 0xFF;
+                if (k < 0x10) result.append('0');
+                result.append(Integer.toHexString(k));
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(
+                "MD5 digest not available in JVM");
+        }
     }
 }

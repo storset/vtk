@@ -190,7 +190,7 @@ public class SecurityInitializer {
         for (int i = 0; i < this.authenticationHandlers.length; i++) {
             AuthenticationHandler handler = this.authenticationHandlers[i];
 
-            handler.logout(principal);
+            handler.onLogout(principal);
 
         }
 

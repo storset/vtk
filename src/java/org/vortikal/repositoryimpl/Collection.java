@@ -58,9 +58,9 @@ public class Collection extends Resource implements Cloneable {
 
     public Collection(String uri, String owner, String contentModifiedBy,
         String propertiesModifiedBy, ACL acl, boolean inheritedACL, Lock lock,
-        DataAccessor dao, PrincipalStore principalStore, String[] childURIs) {
+        DataAccessor dao, PrincipalManager principalManager, String[] childURIs) {
         super(uri, owner, contentModifiedBy, propertiesModifiedBy, acl,
-            inheritedACL, lock, dao, principalStore);
+            inheritedACL, lock, dao, principalManager);
         this.childURIs = childURIs;
         setContentType("application/x-vortex-collection");
     }
@@ -73,7 +73,7 @@ public class Collection extends Resource implements Cloneable {
         System.arraycopy(childURIs, 0, clonedChildURIs, 0, childURIs.length);
 
         return new Collection(uri, owner, contentModifiedBy,
-            propertiesModifiedBy, acl, inheritedACL, lock, dao, principalStore,
+            propertiesModifiedBy, acl, inheritedACL, lock, dao, principalManager,
             clonedChildURIs);
     }
 
@@ -110,7 +110,7 @@ public class Collection extends Resource implements Cloneable {
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
         return create(principal, principal, path,
-            new ACL(new HashMap(), principalStore), true, roleManager);
+            new ACL(new HashMap(), principalManager), true, roleManager);
     }
 
     public Resource create(Principal principal, Principal owner, String path,
@@ -132,8 +132,8 @@ public class Collection extends Resource implements Cloneable {
         }
 
         Resource r = new Document(path, owner.getQualifiedName(), principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(new HashMap(), principalStore),
-                true, null, dao, principalStore);
+                principal.getQualifiedName(), new ACL(new HashMap(), principalManager),
+                true, null, dao, principalManager);
 
         Date now = new Date();
 
@@ -171,7 +171,7 @@ public class Collection extends Resource implements Cloneable {
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
         return createCollection(principal, principal.getQualifiedName(), path,
-            new ACL(new HashMap(), principalStore), true, roleManager);
+            new ACL(new HashMap(), principalManager), true, roleManager);
     }
 
     /**
@@ -184,8 +184,8 @@ public class Collection extends Resource implements Cloneable {
         authorize(principal, PrivilegeDefinition.WRITE, roleManager);
 
         Resource r = new Collection(path, owner, principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(new HashMap(), principalStore),
-                true, null, dao, principalStore, new String[] {  });
+                principal.getQualifiedName(), new ACL(new HashMap(), principalManager),
+                true, null, dao, principalManager, new String[] {  });
 
         Date now = new Date();
 
@@ -218,7 +218,7 @@ public class Collection extends Resource implements Cloneable {
         }
 
         ACL acl = (!preserveACL || resource.getInheritedACL())
-            ? new ACL(new HashMap(), principalStore) : resource.getACL();
+            ? new ACL(new HashMap(), principalManager) : resource.getACL();
 
         boolean aclInheritance = (!preserveACL || resource.getInheritedACL());
 

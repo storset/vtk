@@ -163,7 +163,14 @@ public abstract class AbstractPathBasedURIResolver
                 logger.debug("Resolved URI '" + path + "' from [href = '" +
                              href + "', base = '" + base + "']");
             }
-            StreamSource streamSource = new StreamSource(inStream);
+            
+            StreamSource streamSource = null;
+            
+            if (inStream != null)
+                streamSource = new StreamSource(inStream);
+            else 
+                streamSource = new StreamSource();
+            
             streamSource.setSystemId(PROTOCOL_PREFIX + path);
             return streamSource;
                 

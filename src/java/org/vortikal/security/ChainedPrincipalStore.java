@@ -77,21 +77,21 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     }
 
 
-    public boolean validatePrincipal(String name)
+    public boolean validatePrincipal(Principal principal)
         throws AuthenticationProcessingException {
 
         for (Iterator i = managers.iterator(); i.hasNext();) {
             PrincipalStore manager = (PrincipalStore) i.next();
-            if (manager.validatePrincipal(name)) {
+            if (manager.validatePrincipal(principal)) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Validated principal '" + name
+                    logger.debug("Validated principal '" + principal.getQualifiedName()
                                  + "' using manager " + manager);
                 }
                 return true;
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Invalid principal '" + name + "'");
+            logger.debug("Principal '" + principal.getQualifiedName() + "' doesn't exist");
         }
         return false;
     }

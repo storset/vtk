@@ -47,7 +47,9 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PrincipalStore;
 
 import org.apache.commons.logging.Log;
@@ -65,9 +67,9 @@ public class ACL implements Cloneable {
 
     private Resource resource;
 
-    private PrincipalStore principalManager;
+    private PrincipalManager principalManager;
 
-    public ACL(PrincipalStore principalManager) {
+    public ACL(PrincipalManager principalManager) {
         if (principalManager == null) {
             throw new IllegalArgumentException(
                 "principalManager cannot be null");
@@ -76,7 +78,7 @@ public class ACL implements Cloneable {
         this.principalManager = principalManager;
     }
 
-    public ACL(Map actionLists, PrincipalStore principalManager) {
+    public ACL(Map actionLists, PrincipalManager principalManager) {
         if (principalManager == null) {
             throw new IllegalArgumentException(
                 "principalManager cannot be null");
@@ -151,7 +153,7 @@ public class ACL implements Cloneable {
          * */
 
         // FIXME!!! read-processed må godta read også!
-        // foreløpig ligger read-processed ikke under read, men flatt!
+        // forel¿pig ligger read-processed ikke under read, men flatt!
         // Condition 1:
         if (userMatch(principalList, "dav:all")) {
             return;
@@ -406,7 +408,14 @@ public class ACL implements Cloneable {
                 boolean validPrincipal = false;
 
                 if (principal.isUser()) {
-                    validPrincipal = principalManager.validatePrincipal(principal.getURL());
+                    Principal p = null;
+                    try {
+                        p = principalManager.getPrincipal(principal.getURL());
+                    } catch (InvalidPrincipalException e) {
+                        throw new AclException("Invalid principal '" 
+                                + principal.getURL() + "' in ACL");
+                    }
+                    validPrincipal = principalManager.validatePrincipal(p);
                 } else {
                     validPrincipal = principalManager.validateGroup(principal.getURL());
                 }

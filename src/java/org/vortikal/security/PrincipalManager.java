@@ -31,7 +31,7 @@
 package org.vortikal.security;
 
 
-public interface PrincipalManager {
+public interface PrincipalManager extends PrincipalStore {
 
     /**
      * Gets a principal object. Principals should be instantiated from
@@ -39,6 +39,8 @@ public interface PrincipalManager {
      *
      * @param id a (possibly fully qualified) principal name
      * @return a principal object
+     * @throws InvalidPrincipalException when the id is an invalid principal identifier.
+     * 
      */
     public Principal getPrincipal(String id);
     

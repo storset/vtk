@@ -42,11 +42,11 @@ public interface PrincipalStore {
     /**
      * Validates the existence of a given principal.
      *
-     * @param name the name of the principal
+     * @param principal - the pincipal to validate
      * @return <code>true</code> if the principal exists,
      * <code>false</code> otherwise.
      */
-    public boolean validatePrincipal(String name)
+    public boolean validatePrincipal(Principal principal)
         throws AuthenticationProcessingException;
 
 

@@ -46,9 +46,25 @@ public interface MD5PasswordPrincipalStore extends PrincipalStore {
      * @param principal the name of the principal
      * @return the requested hash, or <code>null</code> if the
      * principal does not exist in this principal store.
+     * @deprecated
      */
     public String getMD5HashString(String principal)
         throws AuthenticationProcessingException;
     
+    /**
+     * @return
+     * @throws AuthenticationProcessingException
+     * @deprecated
+     */
     public String getRealm() throws AuthenticationProcessingException;
+
+    /**
+     * @param principal
+     * @param password
+     * @throws AuthenticationException if the principal isn't authenticated
+     */
+    public void authenticate(Principal principal, String password)
+    		throws AuthenticationException;
+    
+    
 }

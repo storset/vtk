@@ -51,7 +51,6 @@ class PrincipalImpl implements Principal, java.io.Serializable {
     
 
     public boolean equals(Object another) {
-        // FIXME PLEASE!
         if (another instanceof Principal) {
             String anotherName = ((Principal)another).getQualifiedName();
             if ((getQualifiedName() == null &&  anotherName == null) || 
@@ -64,6 +63,7 @@ class PrincipalImpl implements Principal, java.io.Serializable {
     
 
     public int hashCode() {
+        // FIXME PLEASE!
         return name.hashCode();
     }
     
@@ -100,6 +100,16 @@ class PrincipalImpl implements Principal, java.io.Serializable {
         }
         return this.qualifiedName.compareTo(
             ((Principal) o).getQualifiedName());
+    }
+
+
+    /*
+     * @see org.vortikal.security.Principal#getUnqualifiedName()
+     */
+    public String getUnqualifiedName() {
+        if (domain == null) return name;
+        //FIXME: principalmanager's delimiter shouldn't be here!
+        return qualifiedName.substring(0, qualifiedName.indexOf("@"));
     }
     
 }

@@ -41,7 +41,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.Resource;
-import org.vortikal.security.PrincipalStore;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.web.URLUtil;
 
 
@@ -50,17 +50,17 @@ public abstract class AbstractDataAccessor
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    protected PrincipalStore principalStore = null;
+    protected PrincipalManager principalManager = null;
     
-    public final void setPrincipalStore(PrincipalStore principalStore) {
-        this.principalStore = principalStore;
+    public final void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
     
     public void afterPropertiesSet() throws Exception {
 
-        if (this.principalStore == null) {
+        if (this.principalManager == null) {
             throw new BeanInitializationException(
-                "Property `principalStore' not set");
+                "Property `principalManager' not set");
         }
     }
     
@@ -86,7 +86,7 @@ public abstract class AbstractDataAccessor
             }
 
             /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL(new HashMap(), principalStore);
+            ACL acl = new ACL(new HashMap(), principalManager);
             resources[i].setACL(acl);
         
         }

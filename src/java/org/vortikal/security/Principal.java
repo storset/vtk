@@ -38,11 +38,19 @@ public interface Principal extends Comparable {
     
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.
-     * @return the name of the principal
+     * @return If the domain equals the principalManager's defaultDomain
+     * it returns the unqualified name, otherwise it returns the qualified name
      */
     public String getName();
 
-
+    /**
+     * Gets the unqualified name of the principal, stripped of domain
+     * 
+     * @return the fully qualified name of the principal
+     */
+    public String getUnqualifiedName();
+    
+    
     /**
      * Gets the fully qualified name of the principal. If domain is
      * null, just the user name, otherwise 'user@domain'

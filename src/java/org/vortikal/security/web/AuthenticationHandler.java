@@ -49,11 +49,12 @@ import org.vortikal.security.Principal;
  *   <li>To perform the authentication (if the request was recognized)
  * </ol>
  *
- * In addition, implementors of this interface must provide a way of
- * logging out authenticated users, and an authentication challenge
- * that is used when authentication is required.
+ * Implementors of this interface must supply an authentication 
+ * challenge that is used when authentication is required. In addition, they 
+ * should provide a way of logging out authenticated users, if possible. 
+ * This is enforced by 
  * 
- * $Id: AuthenticationHandler.java 42 2004-05-05 19:16:53Z gormap $
+ * $Id: $
  */
 public interface AuthenticationHandler {
 
@@ -107,7 +108,7 @@ public interface AuthenticationHandler {
      * @param principal a <code>Principal</code> value
      * @exception AuthenticationProcessingException if an error occurs
      */
-    public void logout(Principal principal)
+    public void onLogout(Principal principal)
         throws AuthenticationProcessingException;
 
     /**

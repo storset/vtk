@@ -30,6 +30,8 @@
  */
 package org.vortikal.security;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.ACLPrincipal;
 import java.util.Map;
 
@@ -52,21 +54,21 @@ import java.util.Map;
  *   acessed using the {@link Principal#getURL} method.
  * </ul>
  */
-public class PrincipalManagerImpl implements PrincipalManager {
+public class PrincipalManagerImpl implements PrincipalManager, InitializingBean {
 
     private String delimiter = "@";
-    private String defaultDomain = null;
-    private Map domainURLMap = null;
-    
+    private String defaultDomain;
+    private Map domainURLMap;
+    private PrincipalStore principalStore;
     
     public void setDefaultDomain(String defaultDomain) {
         if (defaultDomain != null) {
             if ("".equals(defaultDomain.trim())) {
-                throw new IllegalArgumentException(
+                throw new InvalidPrincipalException(
                     "Invalid domain: " + defaultDomain);
             }
             if (defaultDomain.indexOf(this.delimiter) != -1) {
-                throw new IllegalArgumentException(
+                throw new InvalidPrincipalException(
                     "Invalid domain: " + defaultDomain + ": "
                     + "must not contain delimiter: '" + this.delimiter + "'");
             }
@@ -82,9 +84,14 @@ public class PrincipalManagerImpl implements PrincipalManager {
 
     public Principal getPrincipal(String id) {
         if (id == null) {
-            throw new IllegalArgumentException("Invalid principal id: " + id);
+            throw new InvalidPrincipalException("Tried to get null principal");
         }
 
+        id = id.trim();
+        
+        if (id.equals(""))
+            throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
+        
         // FIXME: merge org.vortikal.repository.ACLPrincipal and
         // org.vortikal.security.Principal to avoid hacks like this:
         if (id.startsWith("dav:")) {
@@ -92,18 +99,18 @@ public class PrincipalManagerImpl implements PrincipalManager {
         }
 
         if (id.startsWith(this.delimiter)) {
-            throw new IllegalArgumentException(
+            throw new InvalidPrincipalException(
                 "Invalid principal id: " + id + ": "
                 + "must not start with delimiter: '" + this.delimiter + "'");
         }
         if (id.endsWith(this.delimiter)) {
-            throw new IllegalArgumentException(
+            throw new InvalidPrincipalException(
                 "Invalid principal id: " + id + ": "
                 + "must not end with delimiter: '" + this.delimiter + "'");
         }
 
         if (id.indexOf(this.delimiter) != id.lastIndexOf(this.delimiter)) {
-            throw new IllegalArgumentException(
+            throw new InvalidPrincipalException(
                 "Invalid principal id: " + id + ": "
                 + "must not contain more that one delimiter: '"
                 + this.delimiter + "'");
@@ -157,8 +164,56 @@ public class PrincipalManagerImpl implements PrincipalManager {
 
             return new PrincipalImpl(id, id, null, null);
         }
-        throw new IllegalArgumentException("Invalid principal: " + id);
+        throw new InvalidPrincipalException("Invalid principal: " + id);
+    }
+
+
+    /**
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet() throws Exception {
+
+        if (principalStore == null)
+            throw new BeanInitializationException("Property 'principalStore' must be set");
     }
     
 
+    /**
+     * @param principalStore The principalStore to set.
+     */
+    public void setPrincipalStore(PrincipalStore principalStore) {
+        this.principalStore = principalStore;
+    }
+
+
+    /**
+     * @see org.vortikal.security.PrincipalStore#validatePrincipal(org.vortikal.security.Principal)
+     */
+    public boolean validatePrincipal(Principal principal) throws AuthenticationProcessingException {
+        return principalStore.validatePrincipal(principal);
+    }
+
+
+    /**
+     * @see org.vortikal.security.PrincipalStore#validateGroup(java.lang.String)
+     */
+    public boolean validateGroup(String groupName) throws AuthenticationProcessingException {
+        return principalStore.validateGroup(groupName);
+    }
+
+
+    /**
+     * @see org.vortikal.security.PrincipalStore#resolveGroup(java.lang.String)
+     */
+    public String[] resolveGroup(String groupName) throws AuthenticationProcessingException {
+        return principalStore.resolveGroup(groupName);
+    }
+
+
+    /**
+     * @see org.vortikal.security.PrincipalStore#isMember(org.vortikal.security.Principal, java.lang.String)
+     */
+    public boolean isMember(Principal principal, String groupName) {
+        return principalStore.isMember(principal, groupName);
+    }
 }

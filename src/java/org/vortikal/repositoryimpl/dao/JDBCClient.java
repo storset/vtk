@@ -370,7 +370,7 @@ public class JDBCClient extends AbstractDataAccessor
             String contentModifiedBy = rs.getString("content_modified_by");
             String propertiesModifiedBy = rs.getString("properties_modified_by");
             boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL(new HashMap(), principalStore);
+            ACL acl = new ACL(new HashMap(), principalManager);
 
             Lock lock = null;
 
@@ -385,11 +385,11 @@ public class JDBCClient extends AbstractDataAccessor
 
                 resource = new Collection(uri, owner, contentModifiedBy,
                         propertiesModifiedBy, acl, inherited, lock, this,
-                        principalStore, children);
+                        principalManager, children);
             } else {
                 resource = new Document(uri, owner, contentModifiedBy,
                         propertiesModifiedBy, acl, inherited, lock, this,
-                        principalStore);
+                        principalManager);
             }
 
             resource.setCreationTime(rs.getTimestamp("creation_time"));
@@ -1478,7 +1478,7 @@ public class JDBCClient extends AbstractDataAccessor
 
             if (acl == null) {
 
-                acl = new ACL(new HashMap(), principalStore);
+                acl = new ACL(new HashMap(), principalManager);
                 acls.put(uri, acl);
             }
 
@@ -1564,7 +1564,7 @@ public class JDBCClient extends AbstractDataAccessor
             String contentModifiedBy = rs.getString("content_modified_by");
             String propertiesModifiedBy = rs.getString("properties_modified_by");
             boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL(new HashMap(), principalStore);
+            ACL acl = new ACL(new HashMap(), principalManager);
 
             Lock lock = null;
 
@@ -1579,11 +1579,11 @@ public class JDBCClient extends AbstractDataAccessor
 
                 resource = new Collection(uri, owner, contentModifiedBy,
                         propertiesModifiedBy, acl, inherited, lock, this,
-                        principalStore, children);
+                        principalManager, children);
             } else {
                 resource = new Document(uri, owner, contentModifiedBy,
                         propertiesModifiedBy, acl, inherited, lock, this,
-                        principalStore);
+                        principalManager);
             }
 
             resource.setCreationTime(rs.getTimestamp("creation_time"));
@@ -1700,7 +1700,7 @@ public class JDBCClient extends AbstractDataAccessor
         for (int i = 0; i < resources.length; i++) {
 
             /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL(new HashMap(), principalStore);
+            ACL acl = new ACL(new HashMap(), principalManager);
             resources[i].setACL(acl);
         }
 
@@ -1742,7 +1742,7 @@ public class JDBCClient extends AbstractDataAccessor
 
             if (acl == null) {
 
-                acl = new ACL(new HashMap(), principalStore);
+                acl = new ACL(new HashMap(), principalManager);
                 acls.put(uri, acl);
             }
 

@@ -33,6 +33,7 @@ package org.vortikal.web.servlet;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -126,13 +127,25 @@ public class VortikalServlet extends DispatcherServlet {
     private ErrorHandler[] errorHandlers = new ErrorHandler[0];
     private long requests = 0;
     
+    public void init(ServletConfig config) throws ServletException {
+        String threadName = Thread.currentThread().getName();
+        try {
+            Thread.currentThread().setName(config.getServletName());
+            super.init(config);
+        } finally {
+            Thread.currentThread().setName(threadName);
+        }
+    }
+    
+
     /**
      * Overridden method, invoked after any bean properties have been set and the
      * WebApplicationContext and BeanFactory for this namespace is available.
      * <p>Delegates to <code>super</code>, then calls 
      * <code>initContextInitializers()</code>.
      */
-    protected void initFrameworkServlet() throws ServletException, BeansException {
+    protected void initFrameworkServlet()
+        throws ServletException, BeansException {
         super.initFrameworkServlet();
         initSecurityInitializer();
         initRequestContextInitializer();

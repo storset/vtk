@@ -33,6 +33,7 @@ package org.vortikal.repository;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalStore;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -580,6 +581,31 @@ public class Resource implements java.io.Serializable, Cloneable {
         this.properties = properties;
     }
 
+
+
+    /**
+     * Utility method for retrieving a set of properties of a given
+     * namespace.
+     *
+     * @param namespace the namespace of the properties
+     * @return the set of properties having the given namespace, or
+     * an empty array if no such properties exist for this resource.
+     */
+    public Property[] getPropertiesByNamespace(String namespace) {
+
+        List propertiesList = new ArrayList();
+        
+        for (int i = 0; i < this.properties.length; i++) {
+            if (this.properties[i].getNamespace().equals(namespace)) {
+                propertiesList.add(this.properties[i]);
+            }
+        }
+
+        return (Property[]) propertiesList.toArray(new Property[0]);
+        
+    }
+    
+
     /**
      * Utility method for retrieving a property.
      *
@@ -589,10 +615,10 @@ public class Resource implements java.io.Serializable, Cloneable {
      * <code>null</code> if no such propery exists for this resource.
      */
     public Property getProperty(String namespace, String name) {
-        for (int i = 0; i < properties.length; i++) {
-            if (properties[i].getNamespace().equals(namespace) &&
-                    properties[i].getName().equals(name)) {
-                return properties[i];
+        for (int i = 0; i < this.properties.length; i++) {
+            if (this.properties[i].getNamespace().equals(namespace) &&
+                    this.properties[i].getName().equals(name)) {
+                return this.properties[i];
             }
         }
 

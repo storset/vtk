@@ -46,7 +46,10 @@ public class ContentTypeHelper {
         return contentType != null && contentType.startsWith("text/plain");
     }
 
-
+    
+    /**
+     * TODO: See "XML Media Types" [RFC2376]
+     */
     public static boolean isXMLContentType(String contentType) {
         return (contentType != null) &&
             (contentType.startsWith("text/xml")

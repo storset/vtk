@@ -4,9 +4,9 @@
 <web-app>
   <servlet id="vortikalServlet"> 
     <servlet-name>vortikal</servlet-name>
-	<servlet-class>org.vortikal.web.servlet.VortikalServlet</servlet-class>
-	<load-on-startup>1</load-on-startup>
-    	<init-param>
+    <servlet-class>org.vortikal.web.servlet.VortikalServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <init-param>
       <param-name>contextConfigLocation</param-name>
       <param-value>classpath:view.xml,classpath:vortikal.xml,classpath:service.xml,classpath:controllers.xml</param-value>
     </init-param>

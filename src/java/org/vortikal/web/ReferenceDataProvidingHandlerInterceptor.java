@@ -73,6 +73,10 @@ public class ReferenceDataProvidingHandlerInterceptor implements HandlerIntercep
                               Object handler,
                               ModelAndView modelAndView) throws Exception {
         
+        if (modelAndView == null) {
+            return;
+        }
+
         Map model = modelAndView.getModel();
 
         if (model == null) {

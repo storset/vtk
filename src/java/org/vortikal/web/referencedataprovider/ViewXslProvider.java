@@ -80,7 +80,7 @@ import org.w3c.dom.NodeList;
  *          <li><code>CURRENT-URL</code>
  *          <li><code>ADMIN-URL</code> 
  *          <li>If the configuration property
- *            <code>supplyRequestParameters</code> is <code>true</code>,
+ *            <code>supplyRequestParameters</code> is <code>true</code> (default),
  *            <code>requestParameters</code> is supplied, which is a
  *            node list with elements like:<br> 
  *            <code>&lt;parameter name="requestParameterName"&gt;requestParameterValue&lt;/parameter&gt;</code>

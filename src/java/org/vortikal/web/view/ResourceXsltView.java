@@ -181,7 +181,7 @@ public class ResourceXsltView
             transformer.setParameter(
                     PARAMETER_NAMESPACE + "LinkConstructor",
                     linkConstructor);
-            
+
         
         // do the transformation
         JDOMSource source = new JDOMSource(document);

@@ -66,65 +66,34 @@ import org.vortikal.web.servlet.BufferedResponse;
  *   <li>referenceDataProviders - list of reference data providers</li>
  * </ul>
  */
-public class CompositeView implements View, ReferenceDataProviding,
-                                      InitializingBean {
+public class CompositeView extends AbstractReferenceDataProvidingWithChildrenView implements InitializingBean {
 
-    private View[] viewList = null;
+    private View[] views = null;
     private String contentType = null;
     private Provider[] referenceDataProviders = null;
-    
-    public void setViewList(View[] viewList) {
-        this.viewList = viewList;
-    }
     
     public void setReferenceDataProviders(Provider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }
-    
 
     public void afterPropertiesSet() {
-        if (this.viewList == null) {
+        if (this.views == null) {
             throw new BeanInitializationException(
                 "Bean property 'viewList' must be set");
         }
     }
     
     
-    /**
-     * Gets the set of reference data providers. The list returned is
-     * the union of the providers set on this view and all providers
-     * for the list of views.
-     */
-    public Provider[] getReferenceDataProviders() {
-        Set providers = new HashSet();
-        if (this.referenceDataProviders != null) {
-            providers.addAll(Arrays.asList(this.referenceDataProviders));
-                        
-        }
-        for (int i = 0; i < viewList.length; i++) {
-            if (viewList[i] instanceof ReferenceDataProviding) {
-                Provider[] providerList =
-                    ((ReferenceDataProviding) viewList[i]).getReferenceDataProviders();
-                if (providerList != null && providerList.length > 0) {
-                    providers.addAll(
-                        Arrays.asList(providerList));
-                }
-            }
-        }
-        return (Provider[]) providers.toArray(new Provider[0]);
-    }
-
-
-    public void render(Map model, HttpServletRequest request,
+    public void renderMergedOutputModel(Map model, HttpServletRequest request,
                            HttpServletResponse response) throws Exception {
 
         ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
         
         int sc = HttpServletResponse.SC_OK;
         String contentType = null;
-        for (int i = 0; i < viewList.length; i++) {
+        for (int i = 0; i < views.length; i++) {
             BufferedResponse bufferedResponse = new BufferedResponse();
-            viewList[i].render(model, request, bufferedResponse);
+            views[i].render(model, request, bufferedResponse);
             bufferStream.write(bufferedResponse.getContentBuffer());
             sc = bufferedResponse.getStatus();
             contentType = bufferedResponse.getContentType();
@@ -152,5 +121,15 @@ public class CompositeView implements View, ReferenceDataProviding,
             }
         }
     }
+
+    public View[] getViews() {
+        return views;
+    }
+    
+
+    public void setViews(View[] views) {
+        this.views = views;
+    }
+    
     
 }

@@ -263,6 +263,8 @@ public class VortikalServlet extends DispatcherServlet {
      * lastModified in service.  Handle this request, publishing an
      * event regardless of the outcome.  The actual event handling is
      * performed by the doService() method in DispatcherServlet.
+     * 
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected final void service(HttpServletRequest request,
                                  HttpServletResponse response) 
@@ -346,6 +348,8 @@ public class VortikalServlet extends DispatcherServlet {
                                     .getSessionId(request),
                             getUsernameForRequest(request), failureCause));
         }
+        
+        
     }
 
         
@@ -600,5 +604,7 @@ public class VortikalServlet extends DispatcherServlet {
         }
         return selected;
     }
+    
+    
     
 }

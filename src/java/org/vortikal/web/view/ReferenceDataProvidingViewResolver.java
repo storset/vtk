@@ -28,11 +28,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web;
+package org.vortikal.web.view;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,20 +50,16 @@ import org.vortikal.web.view.ReferenceDataProviding;
 /**
  * TODO: This must be documented.
  */
-public class MappingViewResolver implements ViewResolver {
+public abstract class ReferenceDataProvidingViewResolver implements ViewResolver {
 
-    private static Log logger = LogFactory.getLog(MappingViewResolver.class);
+    private static Log logger = LogFactory.getLog(ReferenceDataProvidingViewResolver.class);
 
-    private Map views;
-    
-    public View resolveViewName(String viewName, Locale locale)
-        throws Exception {
-        View view = (View) views.get(viewName);
+    /**
+     * @see org.springframework.web.servlet.ViewResolver#resolveViewName(java.lang.String, java.util.Locale)
+     */
+    public View resolveViewName(String viewName, Locale locale) throws Exception {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Matched view for viewName '" + viewName
-                         + "' is: " + view);
-        }
+        View view = getView(viewName);
 
         if (view != null && (view instanceof ReferenceDataProviding)) {
             Provider[] providers =
@@ -70,17 +70,56 @@ public class MappingViewResolver implements ViewResolver {
                     logger.debug("Found reference data providers for view " 
                                  + viewName + ": " + Arrays.asList(providers));
                 }
-                return new ReferenceDataProvidingView(view, providers);
+                return new ProviderRunningView(view, providers);
             }
         }
 
         return view;
     }
 
+    protected abstract View getView(String viewName);
+    
     /**
-     * @param views The views to set.
+     * Wrapper class for the resolved view, running the <code>providers</code>
+     * before the wrapped view is run (and the necessary model is available)
      */
-    public void setViews(Map views) {
-        this.views = views;
+    public class ProviderRunningView implements View {
+
+        private Provider[] providers;
+        private View view;
+
+        /**
+         * @param view - the view to eventually run
+         * @param providers - the set of reference data providers for this
+         * view
+         */
+        public ProviderRunningView(View view, Provider[] providers) {
+            if (view == null) throw new IllegalArgumentException(
+                "The wrapped view cannot be null");
+
+            this.view = view;
+            this.providers = providers;
+        }
+        
+
+        /**
+         * @see org.springframework.web.servlet.View#render(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+         */
+        public void render(Map model, HttpServletRequest request,
+                           HttpServletResponse response) throws Exception {
+
+            if (providers != null && providers.length > 0) {
+                if (model == null) model = new HashMap();
+
+                for (int i = 0; i < providers.length; i++) {
+                    Provider provider = providers[i];
+                    if (logger.isDebugEnabled()) 
+                        logger.debug("Invoking reference data provider '" + 
+                                provider + "'");
+                    provider.referenceData(model, request);
+                }
+            }
+            view.render(model, request, response);
+        }
     }
 }

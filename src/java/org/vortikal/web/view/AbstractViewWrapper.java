@@ -52,7 +52,7 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  * for content (and header) manipulation.
  */
 public abstract class AbstractViewWrapper
-  extends AbstractReferenceDataProvidingView implements InitializingBean {
+  extends AbstractReferenceDataProvidingWithChildrenView implements InitializingBean {
 
 
     protected Log logger = LogFactory.getLog(this.getClass());
@@ -70,6 +70,9 @@ public abstract class AbstractViewWrapper
         return this.wrappedView;
     }
     
+    public View[] getViews() {
+        return new View[] {this.wrappedView};
+    }
 
 
     public void afterPropertiesSet() throws Exception {

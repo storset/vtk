@@ -34,8 +34,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
 
 
@@ -48,20 +46,47 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  * other views.
  *
  * <p>The Content-Type header written to the response is the same as
- * that of the original response.
+ * that of the original response, with a possible modification of the
+ * <code>charset</code> parameter (see below).
+ *
+
+ * <p>Configurable properties (in addition to those defined by the
+ *  {@link AbstractViewWrapper superclass}):
+ * <ul>
+ *   <li><code>contentFilters</code> - an array of {@link
+ *   ContentFilter content filters} to apply to the textual content
+ *   that was the result of the wrapped view invocation.
+ *   <li><code>guessCharacterEncodingFromContent</code> (boolean) -
+ *   whether to check (HTML) body contents for character encoding, if
+ *   it was not specified by the <code>Content-Type</code> header of
+ *   the wrapped view. Default is <code>false</code>.
+ *   <li><code>appendCharacterEncodingToContentType</code> (boolean)
+ *   - if set to <code>false</code>, no <code>charset</code> parameter
+ *   will be added to the <code>Content-Type</code> header set by this
+ *   view. Default is <code>true</code>.
+ * </ul>
  * 
  * @see TextContentFilter
  */
 public class FilteringViewWrapper extends AbstractViewWrapper {
 
-    private Log logger = LogFactory.getLog(this.getClass());
-
     private TextContentFilter[] contentFilters;
-
-
+    public boolean guessCharacterEncodingFromContent = false;
+    private boolean appendCharacterEncodingToContentType = true;
+    
     
     public void setContentFilters(TextContentFilter[] contentFilters) {
         this.contentFilters = contentFilters;
+    }
+    
+    public void setGuessCharacterEncodingFromContent(
+        boolean guessCharacterEncodingFromContent) {
+        this.guessCharacterEncodingFromContent = guessCharacterEncodingFromContent;
+    }
+    
+    public void setAppendCharacterEncodingToContentType(
+        boolean appendCharacterEncodingToContentType) {
+        this.appendCharacterEncodingToContentType = appendCharacterEncodingToContentType;
     }
     
 
@@ -73,16 +98,35 @@ public class FilteringViewWrapper extends AbstractViewWrapper {
     public void postRender(Map model, HttpServletRequest request,
                            BufferedResponseWrapper bufferedResponse) throws Exception {
 
-        String content = new String(bufferedResponse.getContentBuffer(), 
-                bufferedResponse.getCharacterEncoding());
-        
-        String contentType = bufferedResponse.getContentType();
-        if (contentType.startsWith("text/")
-            && contentType.indexOf("charset") == -1) {
-
-            contentType = contentType + ";charset="
-                + bufferedResponse.getCharacterEncoding();
+        if (logger.isDebugEnabled()) {
+            logger.debug("About to process buffered content, content type: "
+                         + bufferedResponse.getContentType()
+                         + ", character encoding: " +
+                         bufferedResponse.getCharacterEncoding());
         }
+
+        byte[] contentBuffer = bufferedResponse.getContentBuffer();
+        
+
+        String characterEncoding = null;
+        String contentType = bufferedResponse.getContentType().trim();
+        if (contentType.indexOf("charset") != -1 && contentType.indexOf(";") != -1) {
+            contentType = contentType.substring(0, contentType.indexOf(";"));
+            characterEncoding = bufferedResponse.getCharacterEncoding();
+        } else if (this.guessCharacterEncodingFromContent) {
+            characterEncoding = HtmlUtil.getCharacterEncodingFromBody(contentBuffer);
+        }
+
+        if (characterEncoding == null) {
+            characterEncoding = bufferedResponse.getCharacterEncoding();
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Reading buffered content using character encoding "
+                         + characterEncoding);
+        }
+
+        String content = new String(contentBuffer, characterEncoding);
 
         if (contentFilters != null) {
             for (int i = 0; i < contentFilters.length; i++) {
@@ -93,9 +137,17 @@ public class FilteringViewWrapper extends AbstractViewWrapper {
                 }
             }
         }
-        writeResponse(content.getBytes("utf-8"), bufferedResponse, contentType);
+
+        if (this.appendCharacterEncodingToContentType &&
+            (contentType.startsWith("text/") || contentType.startsWith("application/xml"))) {
+
+            contentType = contentType + ";charset=" + characterEncoding;
+        }
+
+        writeResponse(content.getBytes(characterEncoding), bufferedResponse, contentType);
     }
     
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(": [");
@@ -105,5 +157,4 @@ public class FilteringViewWrapper extends AbstractViewWrapper {
         return sb.toString();
     }
     
-
 }

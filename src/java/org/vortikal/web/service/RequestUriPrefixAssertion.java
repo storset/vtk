@@ -28,68 +28,68 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+
+
 /**
+ * Assertion that matches when the request URI starts with a specified prefix.
  */
-public class RequestUriPrefixAssertion extends AssertionSupport implements RequestAssertion {
+public class RequestUriPrefixAssertion
+  extends AssertionSupport implements RequestAssertion {
 
-	private String prefix;
+    private String prefix;
 	
-	/**
-	 * @return Returns the prefix.
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    public String getPrefix() {
+        return this.prefix;
+    }
 	
-	/**
-	 * @param prefix The prefix to set.
-	 */
-	public void setPrefix(String prefix) {
-            if (prefix == null) throw new IllegalArgumentException(
-                "Prefix not specified, is null");
+    public void setPrefix(String prefix) {
+        if (this.prefix == null) throw new IllegalArgumentException(
+            "Prefix not specified, is null");
 
-            if (!prefix.startsWith("/")) throw new IllegalArgumentException(
-                "Prefix must start with a '/' character");
+        if (!this.prefix.startsWith("/")) throw new IllegalArgumentException(
+            "Prefix must start with a '/' character");
 
-            if (prefix.endsWith("/")) throw new IllegalArgumentException(
-                "Prefix must not end with a '/' character");
+        if (this.prefix.endsWith("/")) throw new IllegalArgumentException(
+            "Prefix must not end with a '/' character");
 
-            this.prefix = prefix;
-	}
+        this.prefix = prefix;
+    }
     
 
-	public boolean matches(HttpServletRequest request) {
-            return request.getRequestURI().startsWith(prefix);
-	}
+    public boolean matches(HttpServletRequest request) {
+        return request.getRequestURI().startsWith(this.prefix);
+    }
 
 
-	public boolean conflicts(Assertion assertion) {
-		if (assertion instanceof RequestUriPrefixAssertion) {
-			return ! (this.prefix.equals(
-					((RequestUriPrefixAssertion)assertion).getPrefix()));
-		}
-		return false;
-	}
+    public boolean conflicts(Assertion assertion) {
+        if (assertion instanceof RequestUriPrefixAssertion) {
+            return ! (this.prefix.equals(
+                          ((RequestUriPrefixAssertion)assertion).getPrefix()));
+        }
+        return false;
+    }
 
 
-    /** 
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+    public void processURL(URL url, Resource resource, Principal principal) {
+        String path = url.getPath();
+        url.setPath(this.prefix + path);
+    }
+    
+
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
 		
-		sb.append(super.toString());
-		sb.append("; prefix = ").append(this.prefix);
+        sb.append(super.toString());
+        sb.append("; prefix = ").append(this.prefix);
 
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
 }

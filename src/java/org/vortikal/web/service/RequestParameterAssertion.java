@@ -30,7 +30,13 @@
  */
 package org.vortikal.web.service;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+
 
 /**
  * Assertion that matches on request (parameter, value) pairs.
@@ -74,6 +80,16 @@ public class RequestParameterAssertion extends AssertionSupport
         return false;
     }
 
+
+    public void processURL(URL url, Resource resource, Principal principal) {
+        Map query = url.getQuery();
+        if (query == null) {
+            query = new LinkedHashMap();
+        }
+        query.put(this.parameterName, this.parameterValue);
+        url.setQuery(query);
+    }
+    
 
     public String toString() {
         StringBuffer sb = new StringBuffer();

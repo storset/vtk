@@ -30,18 +30,62 @@
  */
 package org.vortikal.web.service;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+
+
 
 /**
  * Assertion on the URL protocol fragment.
  * Legal values are <code>http</code> and <code>https</code>.
+ *
+ * <p>In addition to only matching on a given protocol, this assertion
+ * can be configured to require a match only on the set of URIs
+ * matching a given regular expression. This is useful for requiring
+ * that certain subtrees are constricted to using the https protocol,
+ * for example.
  */
 public class RequestProtocolAssertion extends AssertionSupport
   implements RequestAssertion {
 	
     private String protocol;
+    private Pattern uriPattern = null;
 	
+
+    public String getProtocol() {
+        return this.protocol;
+    }
+    
+
+    public void setProtocol(String protocol) {
+        if ("http".equals(protocol) || "https".equals(protocol)) {
+            this.protocol = protocol;
+        } else {
+            throw new IllegalArgumentException(
+                "Only http and https are supported protocols");
+        }
+    }
+
+    public void setUriPattern(String uriPattern) {
+        if (uriPattern == null) throw new IllegalArgumentException(
+            "Property 'uriPattern' cannot be null");
+    
+        this.uriPattern = Pattern.compile(uriPattern);
+    }
+    
+
     public boolean matches(HttpServletRequest request) {
+
+        if (this.uriPattern != null) {
+            Matcher m = this.uriPattern.matcher(request.getRequestURI());
+            if (!m.find()) {
+                return true;
+            }
+        }
 
         if ("http".equals(protocol))
             return !request.isSecure();
@@ -49,23 +93,7 @@ public class RequestProtocolAssertion extends AssertionSupport
         return request.isSecure();
     }
 
-    /**
-     * @return Returns the protocol.
-     */
-    public String getProtocol() {
-        return protocol;
-    }
 
-
-    /**
-     * @param protocol The protocol to set.
-     */
-    public void setProtocol(String protocol) {
-        if ("http".equals(protocol) || "https".equals(protocol)) 
-            this.protocol = protocol;
-        else 
-            throw new IllegalArgumentException("Only http and https are supported protocols");
-    }
 
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestProtocolAssertion) {
@@ -76,14 +104,21 @@ public class RequestProtocolAssertion extends AssertionSupport
     }
 
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
+
+    public void processURL(URL url, Resource resource, Principal principal) {
+        url.setProtocol(this.protocol);
+    }
+    
+
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
         sb.append("; protocol = ").append(this.protocol);
+        if (this.uriPattern != null) {
+            sb.append("; uriPattern = " + this.uriPattern.pattern());
+        }
 
         return sb.toString();
     }

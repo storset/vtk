@@ -28,59 +28,57 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+
+
 /**
+ * Assertion matching on request port numbers.
  */
-public class RequestPortAssertion extends AssertionSupport implements RequestAssertion {
+public class RequestPortAssertion
+  extends AssertionSupport implements RequestAssertion {
 
-	private int port = -1;
+    private int port = -1;
 	
-	/**
-	 * @param port The port to set.
-	 */
-	public void setPort(int port) {
-		if (port <= 0) throw new IllegalArgumentException(
-					"Server port number must be a positive integer");
+    public void setPort(int port) {
+        if (port <= 0) throw new IllegalArgumentException(
+            "Server port number must be a positive integer");
 		
-		this.port = port;
-	}
+        this.port = port;
+    }
 	
-	/**
-	 * @return Returns the port.
-	 */
-	public int getPort() {
-		return port;
-	}
+    public int getPort() {
+        return port;
+    }
 	
-	public boolean matches(HttpServletRequest request) {
-		return port == request.getServerPort();
-	}
+    public boolean matches(HttpServletRequest request) {
+        return port == request.getServerPort();
+    }
 
-	public boolean conflicts(Assertion assertion) {
-		if (assertion instanceof RequestPortAssertion) {
-			return (this.port  != ((RequestPortAssertion)assertion).getPort());
-		}
-		return false;
-	}
+    public boolean conflicts(Assertion assertion) {
+        if (assertion instanceof RequestPortAssertion) {
+            return (this.port  != ((RequestPortAssertion)assertion).getPort());
+        }
+        return false;
+    }
 
 
-    /** 
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+    public void processURL(URL url, Resource resource, Principal principal) {
+        url.setPort(this.port);
+    }
+    
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
 		
-		sb.append(super.toString());
-		sb.append("; port = ").append(this.port);
+        sb.append(super.toString());
+        sb.append("; port = ").append(this.port);
 
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
 }

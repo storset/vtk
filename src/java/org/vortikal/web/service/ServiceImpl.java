@@ -59,7 +59,6 @@ import org.vortikal.security.web.AuthenticationChallenge;
 /**
  *  Default implementation of the Service interface.
  *
- *  TODO: Evaluate experimental method 'setParentService()'
  */
 public class ServiceImpl
   implements Service, BeanNameAware, InitializingBean, Ordered, ApplicationContextAware {
@@ -79,9 +78,6 @@ public class ServiceImpl
     private ApplicationContext applicationContext;
     
 
-    // Experimental:
-//     private ServiceImpl extendsService = null;
-    
 
     // Duplicate:
     
@@ -122,18 +118,6 @@ public class ServiceImpl
 	
 
 
-    /**
-     * Hooks a service into another service, without having to specify
-     * this service as a child of the other.
-     *
-     * TODO: evaluate the service tree specification.
-     *
-     * @param service a <code>ServiceImpl</code> value
-     */
-//     public void setExtendsService(ServiceImpl service) {
-//         this.extendsService = service;
-//     }
-    
 
     /**
      * Mapping the tree

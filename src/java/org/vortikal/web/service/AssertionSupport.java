@@ -32,25 +32,47 @@ package org.vortikal.web.service;
 
 import org.springframework.beans.factory.BeanNameAware;
 
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+
+
+/**
+ * Abstract base class for assertions. Is bean name aware and contains
+ * an empty <code>processURL()</code> implementation.
+ */
 public abstract class AssertionSupport implements BeanNameAware {
 
     private String beanName;
 
-	public String getBeanName() {
-		return beanName;
-	}
+    public String getBeanName() {
+        return beanName;
+    }
 	
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 
-	public String toString() {
-            StringBuffer sb = new StringBuffer();
-		
-            sb.append(getClass().getName()).append(": ");
-            sb.append("beanName = ").append(this.beanName);
-		
-            return sb.toString();
-	}
+    /**
+     * Empty implementation. Subclasses should override this method
+     * when they would affect the URL construction mechanism in any
+     * way.
+     *
+     * @param url the URL being constructed.
+     * @param resource the resource for which the URL is being constructed.
+     * @param principal the principal constructing the URL
+     */
+    public void processURL(URL url, Resource resource, Principal principal) {
+        
+    }
+    
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append(getClass().getName()).append(": ");
+        sb.append("beanName = ").append(this.beanName);
+        
+        return sb.toString();
+    }
 
 }

@@ -32,6 +32,7 @@ package org.vortikal.web.service;
 
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.LocaleResolver;
@@ -44,29 +45,21 @@ import org.springframework.web.servlet.LocaleResolver;
  *
  * <p>Configurable properties:
  * <ul>
- *    <li>locale - a <code>java.util.Locale</code> to match
- *    <li>localeResolver - a
- *        <code>org.springframework.web.servlet.i18n.LocaleResolver</code>
+ *    <li><code>locale</code> - a {@link Locale} to match
+ *    <li><code>localeResolver</code> - a {@link LocaleResolver}
  *        that determines the request locale.
- *    <li>invert - a boolean indicating whether to perform an inverted
+ *    <li><code>invert</code> - a boolean indicating whether to perform an inverted
  *        match. Default is false.
  * </ul>
- *
- * @version $Id$
  */
-public class RequestLocaleMatchAssertion implements RequestAssertion,
-                                                    InitializingBean {
+public class RequestLocaleMatchAssertion extends AssertionSupport
+  implements RequestAssertion, InitializingBean {
     
     private Locale locale;
     private LocaleResolver localeResolver;
     private boolean invert = false;
     
 
-    /**
-     * Sets the value of locale
-     *
-     * @param locale Value to assign to this.locale
-     */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
@@ -77,22 +70,12 @@ public class RequestLocaleMatchAssertion implements RequestAssertion,
     }
 
 
-    /**
-     * Sets the value of invert
-     *
-     * @param invert Value to assign to this.invert
-     */
     public void setInvert(boolean invert) {
         this.invert = invert;
     }
 
 
 
-    /**
-     * Describe <code>afterPropertiesSet</code> method here.
-     *
-     * @exception Exception if an error occurs
-     */
     public void afterPropertiesSet() throws Exception {
         if (this.locale == null) {
             throw new BeanInitializationException(
@@ -148,6 +131,7 @@ public class RequestLocaleMatchAssertion implements RequestAssertion,
         return true;
     }
     
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
@@ -156,6 +140,5 @@ public class RequestLocaleMatchAssertion implements RequestAssertion,
         sb.append("; invert = ").append(this.invert);
         return sb.toString();
     }
-    
     
 }

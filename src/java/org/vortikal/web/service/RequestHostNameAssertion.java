@@ -32,6 +32,9 @@ package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.util.net.NetUtils;
 import org.vortikal.util.web.URLUtil;
 
 /**
@@ -60,6 +63,11 @@ public class RequestHostNameAssertion extends AssertionSupport
         return this.hostName.equals(reqHostName);
     }
 
+
+    public void processURL(URL url, Resource resource, Principal principal) {
+        url.setHost(this.getHostName());
+    }
+    
 
     /**
      * Gets the host name. If the configuration parameter

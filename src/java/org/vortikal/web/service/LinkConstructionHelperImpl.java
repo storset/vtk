@@ -59,126 +59,67 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
                             Map parameters, List assertions, Service service,
                             boolean matchAssertions) {
 
-        String requestProtocol = null;
-        String requestHostName = null;
-        int requestPort = -1;
-        Map requestParameters = new HashMap();
-        String requestUriPrefix = null;
+        String path = resource.getURI();
+        if (resource.isCollection()) {
+            path += "/";
+        }
+        URL urlObject = new URL("http", NetUtils.guessHostName(), path);
+        for (Iterator i = assertions.iterator(); i.hasNext();) {
+            Assertion assertion = (Assertion) i.next();
 
-        for (Iterator iter = assertions.iterator(); iter.hasNext();) {
-            Assertion assertion = (Assertion) iter.next();
-
-            if (assertion instanceof RequestHostNameAssertion) {
-                requestHostName = ((RequestHostNameAssertion) assertion)
-                    .getHostName();
-
-            } else if (assertion instanceof RequestParameterAssertion) {
-                RequestParameterAssertion parameterAssertion = 
-                    (RequestParameterAssertion) assertion;
-                String parameterName = parameterAssertion.getParameterName();
-                String parameterValue = parameterAssertion.getParameterValue();
-                requestParameters.put(parameterName, parameterValue);
-
-            } else if (assertion instanceof RequestPortAssertion) {
-                requestPort = ((RequestPortAssertion) assertion).getPort();
-
-            } else if (assertion instanceof RequestProtocolAssertion) {
-                requestProtocol = ((RequestProtocolAssertion) assertion).getProtocol();
-
-            } else if (assertion instanceof RequestUriPrefixAssertion) {
-                requestUriPrefix = ((RequestUriPrefixAssertion) assertion)
-                    .getPrefix();
-
-            } else if (assertion instanceof ResourceAssertion) {
-                boolean match = (matchAssertions) ? 
-                    ((ResourceAssertion) assertion) .matches(resource) : true;
-                if (match == false) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Unable to construct link to resource: "
-                                     + resource + ";principal: " + principal
-                                     + ";service: " + service.getName() + ": "
-                                     + "Unmatched assertion: " + assertion);
-                    }
-
-                    throw new ServiceUnlinkableException(
-                        "Service " + service.getName() + " cannot be applied to resource "
-                        + resource.getURI() + ". Assertion " + assertion
-                        + "false for resource.");
-                }
-
-            } else if (assertion instanceof PrincipalAssertion) {
-                boolean match = (matchAssertions) ? 
-                    ((PrincipalAssertion) assertion) .matches(principal) : true;
-                if (match == false) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Unable to construct link to resource: "
-                                     + resource + ";principal: " + principal
-                                     + ";service: " + service.getName() + ": "
-                                     + "Unmatched assertion: " + assertion);
-                    }
-
-                    throw new ServiceUnlinkableException(
-                        "Service " + service.getName() + " cannot be applied to principal "
-                        + principal + ". Assertion " + assertion
-                        + "false for principal.");
-                }
+            if (matchAssertions) {
+                matchAssertion(service, assertion, resource, principal);
             }
-        }
-		
-        if (requestHostName == null) requestHostName = NetUtils.guessHostName();
-        if (requestProtocol == null) requestProtocol = "http";
-        if (requestUriPrefix == null) requestUriPrefix = "";
-		
 
-        StringBuffer url = new StringBuffer();
-        url.append(requestProtocol).append("://");
-        url.append(requestHostName);
-        if (requestPort != -1
-            && ! (("http".equals(requestProtocol) && requestPort == 80)
-                  || ("https".equals(requestProtocol) && requestPort == 443))) {
-            url.append(":").append(requestPort);
+            assertion.processURL(urlObject, resource, principal);
         }
-        url.append(requestUriPrefix);
-        url.append(URLUtil.urlEncode(resource.getURI()));
-        
 
-        if (resource.isCollection() && !resource.getURI().equals("/")) {
-            url.append("/");
-        }
-        
-        if (!requestParameters.isEmpty()) {
-            url.append("?");
-            for (Iterator iter = requestParameters.keySet().iterator(); iter.hasNext();) {
-                String name = (String) iter.next();
-                String value = (String) requestParameters.get(name);
-				
-                url.append(name).append("=").append(value); 
-					
-                if (iter.hasNext()) url.append("&");
-            }
-        }
-		
-        if (parameters != null && parameters.size() > 0) {
-            for (Iterator i = parameters.keySet().iterator(); i.hasNext();) {
-                Object key = i.next();
-                Object value = parameters.get(key);
-                if (url.indexOf("?") > 0) {
-                    url.append("&").append(key).append("=");
-                    url.append(URLUtil.urlEncode(value.toString()));
-                } else {
-                    url.append("?").append(key).append("=");
-                    url.append(URLUtil.urlEncode(value.toString()));
-                }
-            }
-        }
+        String url = urlObject.toString();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Constructed URL: '" + url + "' (from resource: " +
                          resource + ";principal: " + principal +
                          ";service: " + service.getName() + ")");
         }
+        return url;
+    }
 
-        return url.toString();
+
+    private void matchAssertion(Service service, Assertion assertion,
+                                   Resource resource, Principal principal)
+        throws ServiceUnlinkableException {
+        
+        if (assertion instanceof ResourceAssertion) {
+            boolean match = ((ResourceAssertion) assertion).matches(resource);
+            if (match == false) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Unable to construct link to resource: "
+                                 + resource + ";principal: " + principal
+                                 + ";service: " + service.getName() + ": "
+                                 + "Unmatched assertion: " + assertion);
+                }
+
+                throw new ServiceUnlinkableException(
+                    "Service " + service.getName() + " cannot be applied to resource "
+                    + resource.getURI() + ". Assertion " + assertion
+                    + "false for resource.");
+            }
+        } else if (assertion instanceof PrincipalAssertion) {
+            boolean match = ((PrincipalAssertion) assertion).matches(principal);
+            if (match == false) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Unable to construct link to resource: "
+                                 + resource + ";principal: " + principal
+                                 + ";service: " + service.getName() + ": "
+                                 + "Unmatched assertion: " + assertion);
+                }
+
+                throw new ServiceUnlinkableException(
+                    "Service " + service.getName() + " cannot be applied to principal "
+                    + principal + ". Assertion " + assertion
+                    + "false for principal.");
+            }
+        }
     }
 
 }

@@ -201,7 +201,9 @@ public abstract class AbstractPathBasedURIResolver
             
         String uri = href;
         
-        logger.error( "--> KS: " + base + " / " + uri );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "--> KS: " + base + " / " + uri );
+        }
 
         if (uri.indexOf("../") == 0) {			
             uri = URIUtil.expandPath(base + "/" + uri);

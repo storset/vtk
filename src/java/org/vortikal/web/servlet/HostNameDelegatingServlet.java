@@ -48,6 +48,8 @@ import org.vortikal.util.web.URLUtil;
 
 public class HostNameDelegatingServlet extends HttpServletBean {
 
+    private static final long serialVersionUID = 3689067326964052024L;
+
     private Log logger = LogFactory.getLog(this.getClass());
     private Map hostMap = null;
     private ServletContext servletContext = null;

@@ -35,6 +35,8 @@ package org.vortikal.webdav;
  */
 public class InvalidRequestException extends RuntimeException {
 
+    private static final long serialVersionUID = 3544668464905009464L;
+
     public InvalidRequestException(String message) {
         super(message);
     }

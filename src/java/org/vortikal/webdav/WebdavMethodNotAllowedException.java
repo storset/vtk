@@ -33,6 +33,7 @@ package org.vortikal.webdav;
 
 public class WebdavMethodNotAllowedException extends RuntimeException {
 
+    private static final long serialVersionUID = 3617853096865315127L;
 
     public WebdavMethodNotAllowedException() {
         super();

@@ -5,23 +5,17 @@ package org.vortikal.security;
  */
 public class InvalidPrincipalException extends RuntimeException {
 
-    /**
-     * @param arg0
-     */
-    public InvalidPrincipalException(String arg0) {
-        super(arg0);
+    private static final long serialVersionUID = 3257004350076368948L;
+
+    public InvalidPrincipalException(String message) {
+        super(message);
     }
-    /**
-     * @param arg0
-     * @param arg1
-     */
-    public InvalidPrincipalException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+
+    public InvalidPrincipalException(String message, Throwable throwable) {
+        super(message, throwable);
     }
-    /**
-     * @param arg0
-     */
-    public InvalidPrincipalException(Throwable arg0) {
-        super(arg0);
+
+    public InvalidPrincipalException(Throwable throwable) {
+        super(throwable);
     }
 }

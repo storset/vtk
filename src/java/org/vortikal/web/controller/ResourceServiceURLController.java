@@ -32,17 +32,14 @@ package org.vortikal.web.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -73,8 +70,6 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
 
     public static final String DEFAULT_VIEW_NAME = "resourceReference";
     
-    private static Log logger = LogFactory.getLog(ResourceServiceURLController.class);
-
     private Service service = null;
     private String viewName = DEFAULT_VIEW_NAME;
     private Repository repository = null;

@@ -33,6 +33,8 @@ package org.vortikal.util.repository;
 
 public class InvalidURIException extends RuntimeException {
 
+    private static final long serialVersionUID = 3834588824788480312L;
+
     public InvalidURIException(String msg) {
         super(msg);
     }

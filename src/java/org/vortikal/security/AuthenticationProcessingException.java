@@ -39,6 +39,8 @@ package org.vortikal.security;
  */
 public class AuthenticationProcessingException extends RuntimeException {
 
+    private static final long serialVersionUID = 3616731556450940471L;
+
     public AuthenticationProcessingException() {
         super();
     }

@@ -35,9 +35,10 @@ package org.vortikal.util.text;
 /**
  * General exception for StructuredText parsing.
  *
- * @version $Id: StructuredTextException.java 42 2004-05-05 19:16:53Z gormap $
  */
 public class StructuredTextException extends RuntimeException {
+
+    private static final long serialVersionUID = 3258413911098472759L;
 
     public StructuredTextException(String msg) {
         super(msg);

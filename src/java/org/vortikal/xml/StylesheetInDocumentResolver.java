@@ -33,12 +33,8 @@ package org.vortikal.xml;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.ProcessingInstruction;
-
 import org.vortikal.repository.Resource;
 
 
@@ -47,9 +43,6 @@ import org.vortikal.repository.Resource;
  * "xml-stylesheet" processing instructions in XML documents.
  */
 public class StylesheetInDocumentResolver implements StylesheetReferenceResolver {
-
-    private static Log logger = LogFactory.getLog(StylesheetInDocumentResolver.class);
-    
 
     public String getStylesheetIdentifier(Resource resource, Document document) {
         String stylesheetURL = getStylesheetURLFromDocument(document);

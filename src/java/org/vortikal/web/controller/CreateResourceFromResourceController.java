@@ -42,8 +42,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
@@ -81,8 +79,6 @@ import org.vortikal.xml.TransformerManager;
  */
 public class CreateResourceFromResourceController implements Controller,
         InitializingBean {
-
-    private static Log logger = LogFactory.getLog(CreateResourceFromResourceController.class);
 
     private Repository repository;
     private String resourceName;

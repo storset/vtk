@@ -101,6 +101,8 @@ import org.vortikal.web.service.Service;
  */
 public class VortikalServlet extends DispatcherServlet {
 
+    private static final long serialVersionUID = 3256718498477715769L;
+
     /**	Method name for GET request */
     private static final String METHOD_GET = "GET";
 

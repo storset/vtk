@@ -34,6 +34,8 @@ package org.vortikal.xml;
 
 public class StylesheetCompilationException extends RuntimeException {
 
+    private static final long serialVersionUID = 3256443607719687220L;
+
     public StylesheetCompilationException(String msg) {
         super(msg);
     }

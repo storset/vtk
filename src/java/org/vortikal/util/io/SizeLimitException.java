@@ -36,6 +36,8 @@ import java.io.IOException;
 
 public class SizeLimitException extends IOException {
 
+    private static final long serialVersionUID = 3257563992838123570L;
+
     public SizeLimitException() {
         super();
     }

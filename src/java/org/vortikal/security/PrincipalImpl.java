@@ -36,6 +36,8 @@ package org.vortikal.security;
  */
 class PrincipalImpl implements Principal, java.io.Serializable {
 
+    private static final long serialVersionUID = 3257848766467092530L;
+
     private String name = null;
     private String qualifiedName = null;
     private String domain = null;

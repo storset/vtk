@@ -34,6 +34,8 @@ package org.vortikal.webdav;
 
 public class WebdavConflictException extends RuntimeException {
 
+    private static final long serialVersionUID = 4048794546139575347L;
+
     public WebdavConflictException(String message) {
         super(message);
     }

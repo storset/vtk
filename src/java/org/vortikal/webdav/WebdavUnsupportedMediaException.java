@@ -33,6 +33,9 @@ package org.vortikal.webdav;
 
 public class WebdavUnsupportedMediaException extends RuntimeException {
 
+    private static final long serialVersionUID = 3258134639456499509L;
+
+
     public WebdavUnsupportedMediaException() {
         super();
     }

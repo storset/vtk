@@ -34,6 +34,8 @@ package org.vortikal.web;
 // FIXME: use more standardized modelExceptionhandling
 public class InvalidModelException extends RuntimeException {
 
+    private static final long serialVersionUID = 3689910669512618289L;
+
     public InvalidModelException(String message) {
         super(message);
     }

@@ -43,15 +43,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.repository.Lock;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.HttpUtil;
-import org.vortikal.web.InvalidModelException;
-import org.vortikal.web.service.Service;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
@@ -64,6 +55,14 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+import org.vortikal.repository.Lock;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.service.Service;
 
 
 /**

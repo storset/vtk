@@ -210,45 +210,45 @@ public abstract class AbstractPathBasedURIResolver
     }
     
 
-    private String getAbsolutePathOld(String href, String base) {
-
-        // FIXME: handle href and base independently
-
-        if (href.matches(".+://.+")) {
-            return null;
-        }
-        
-        if (!href.startsWith("/") && base != null && !base.startsWith(PROTOCOL_PREFIX)) {
-            return null;
-        }
-
-        if (base != null && base.startsWith(PROTOCOL_PREFIX)) {
-            base = base.substring(PROTOCOL_PREFIX.length());
-            base = base.substring(0, base.lastIndexOf("/"));
-        }
-            
-        String uri = href;
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug( "--> KS: " + base + " / " + uri );
-        }
-
-        if (uri.indexOf("../") == 0) {			
-            uri = URIUtil.expandPath(base + "/" + uri);
-        } else if (uri.indexOf("../") > 0) {
-            if (!uri.startsWith("/")) {
-                // Handle 'relative/path/../' type URIs:
-                uri = (base.equals("/")) ?
-                    base + uri :
-                    base + "/" + uri;
-            }
-            uri = URIUtil.expandPath(uri);
-        } else if (!uri.startsWith("/")) {
-            uri = (base.endsWith("/")) ? base + uri : base + "/" + uri;
-        }
-
-        return uri;
-    }
+//    private String getAbsolutePathOld(String href, String base) {
+//
+//        // FIXME: handle href and base independently
+//
+//        if (href.matches(".+://.+")) {
+//            return null;
+//        }
+//        
+//        if (!href.startsWith("/") && base != null && !base.startsWith(PROTOCOL_PREFIX)) {
+//            return null;
+//        }
+//
+//        if (base != null && base.startsWith(PROTOCOL_PREFIX)) {
+//            base = base.substring(PROTOCOL_PREFIX.length());
+//            base = base.substring(0, base.lastIndexOf("/"));
+//        }
+//            
+//        String uri = href;
+//        
+//        if (logger.isDebugEnabled()) {
+//            logger.debug( "--> KS: " + base + " / " + uri );
+//        }
+//
+//        if (uri.indexOf("../") == 0) {			
+//            uri = URIUtil.expandPath(base + "/" + uri);
+//        } else if (uri.indexOf("../") > 0) {
+//            if (!uri.startsWith("/")) {
+//                // Handle 'relative/path/../' type URIs:
+//                uri = (base.equals("/")) ?
+//                    base + uri :
+//                    base + "/" + uri;
+//            }
+//            uri = URIUtil.expandPath(uri);
+//        } else if (!uri.startsWith("/")) {
+//            uri = (base.endsWith("/")) ? base + uri : base + "/" + uri;
+//        }
+//
+//        return uri;
+//    }
     
 
     private String addPrefix(String uri) {

@@ -33,6 +33,8 @@ package org.vortikal.web.controller.repository;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
+
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -77,6 +79,8 @@ public class CreateDocumentController extends SimpleFormController
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
+        Map topTemplates = documentTemplates.getTopTemplates();
+        Map categories = documentTemplates.getCategoryTemplates();
         
         Resource resource = repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
@@ -84,6 +88,26 @@ public class CreateDocumentController extends SimpleFormController
          
         CreateDocumentCommand command =
             new CreateDocumentCommand(url);
+
+        Map m = null;
+
+        // Setting default value for CreateDocument dialog
+
+        if (topTemplates != null) {
+            m = topTemplates;
+        } else if (categories != null) {
+            Iterator i = categories.keySet().iterator();
+            
+            if (i.hasNext()) m = (Map) categories.get(i.next());
+        }
+
+        if (m != null) {
+            Iterator i = m.keySet().iterator(); 
+
+            if (i.hasNext()) {
+                command.setSourceURI((String) i.next());
+            }
+        }
         
         return command;
     }

@@ -321,6 +321,12 @@ public class VortikalServlet extends DispatcherServlet {
                                  + request + ", service " + service + ". "
                                  + "Using challenge " + challenge, ex);
                 }
+                if (challenge == null) {
+                    throw new ServletException(
+                        "Authentication challenge for service " + service
+                        + " (or any of its ancestors) is not specified.");
+                }
+
                 challenge.challenge(request, response);
 
             } catch (AuthenticationProcessingException e) {

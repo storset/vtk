@@ -30,23 +30,45 @@
  */
 package org.vortikal.web;
 
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import javax.servlet.ServletContext;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.UrlResource;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.ServletContextResource;
 
 
 
 /**
- * Utility class for creating child application contexts using regular
- * bean definitions.
+ * Utility class for creating child application contexts using a
+ * bean definition.
  *
- * This class creates an application context as a child of the current
- * context by instantiating a {@link ClassPathXmlApplicationContext}
- * with the current application context as its parent. The child
- * contexts reads its bean definitions from a location specified by
- * the <code>configLocation</code> bean property.
+ * <p>This class creates an application context as a child of the
+ * current context. An XML bean definition is read from a location
+ * specified by the configuration property
+ * <code>configLocation</code>.
+ *
+ * <p>The syntax for the config locations is the default set supported
+ * by {@link DefaultResourceLoader}. In addition, when executing in a
+ * web application context, the syntax
+ * <code>servletjar:servletResourceJarPath!entry</code> is supported,
+ * which means "get XML bean definition file <code>entry</code> which
+ * is located in the web application at
+ * <code>servletResourceJarPath</code>. Example:
+ * <code>servletjar:/WEB-INF/lib/foo.jar!/beans/bar.xml</code>
  */
 public class ChildApplicationContextDefinition
   implements ApplicationContextAware, InitializingBean {
@@ -75,7 +97,70 @@ public class ChildApplicationContextDefinition
             throw new BeanInitializationException(
                 "Bean property 'configLocation' must be set");
         }
-        new ClassPathXmlApplicationContext(new String[] {this.configLocation},
-                                           this.applicationContext);
+        new ChildApplicationContext(this.configLocation, this.applicationContext);
     }
+
+
+    private class ChildApplicationContext extends AbstractXmlApplicationContext {
+        
+        public static final String SERVLET_CONTEXT_JAR_URL_PREFIX = "servletjar:";
+
+        private String configLocation = null;
+
+
+        public ChildApplicationContext(String configLocation,
+                                       ApplicationContext parent) {
+            super(parent);
+            this.configLocation = configLocation;
+            refresh();
+        }
+        
+
+        public String[] getConfigLocations() {
+            return new String[] {this.configLocation};
+        }
+
+
+        public Resource getResourceByPath(String path) {
+
+            boolean inWebApplicationContext =
+                (this.getParent() instanceof WebApplicationContext);
+            
+            if (inWebApplicationContext && path.startsWith("/")) {
+                ServletContext servletContext =
+                    ((WebApplicationContext) this.getParent()).getServletContext();
+                return new ServletContextResource(servletContext, path);
+            }
+
+            if (path.startsWith(SERVLET_CONTEXT_JAR_URL_PREFIX)) {
+                if (!inWebApplicationContext) {
+                    throw new IllegalStateException(
+                        "Cannot load resources of type '"
+                        + SERVLET_CONTEXT_JAR_URL_PREFIX + "' when parent context "
+                        + "is not a WebApplicationContext");
+                }
+
+                WebApplicationContext parent = (WebApplicationContext) this.getParent();
+
+                // Resolve the servlet resource to a file:// resource
+                String contextPath = path.substring(SERVLET_CONTEXT_JAR_URL_PREFIX.length(),
+                                                    path.lastIndexOf("!"));
+                String entry = path.substring(path.lastIndexOf("!") + 1);
+                Resource resource = getResource(contextPath);
+
+                try {
+                    // Convert the file:// URL to a jar: URL:
+                    URL resourceURL = resource.getURL();
+
+                    URL url = new URL("jar:" + resourceURL.toExternalForm() + "!" + entry);
+                    return new UrlResource(url);
+
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to load resource '" + path + "'", e);
+                }
+            }
+            return super.getResourceByPath(path);
+        }
+    }
+    
 }

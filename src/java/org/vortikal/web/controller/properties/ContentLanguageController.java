@@ -49,11 +49,19 @@ public class ContentLanguageController extends SimpleFormController {
     private static Log logger = LogFactory.getLog(ContentLanguageController.class);
     
     private Repository repository = null;
-    
+    private String[] possibleLanguages;
     
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
+    
+	public void setPossibleLanguages(String[] possibleLanguages) {
+		this.possibleLanguages = possibleLanguages;
+	}
+	
+	public String[] getPossibleLanguages() {
+		return possibleLanguages;
+	}
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -65,7 +73,7 @@ public class ContentLanguageController extends SimpleFormController {
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
         ContentLanguageCommand command =
-            new ContentLanguageCommand(resource.getContentLanguage(), url);
+            new ContentLanguageCommand(resource.getContentLanguage(), possibleLanguages, url);
         return command;
     }
 
@@ -104,6 +112,5 @@ public class ContentLanguageController extends SimpleFormController {
         contentLanguageCommand.setDone(true);
     }
     
-
 }
 

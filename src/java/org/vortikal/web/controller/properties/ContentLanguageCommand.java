@@ -37,11 +37,12 @@ import org.vortikal.web.controller.AbstractSaveCancelCommand;
 public class ContentLanguageCommand extends AbstractSaveCancelCommand {
 
     private String contentLanguage;
-    
+    private String[] possibleLanguages;
 
-    public ContentLanguageCommand(String contentLanguage, String submitURL) {
+    public ContentLanguageCommand(String contentLanguage, String[] possibleLanguages, String submitURL) {
         super(submitURL);
         this.contentLanguage = contentLanguage;
+        this.possibleLanguages = possibleLanguages;
     }
 
     
@@ -64,5 +65,12 @@ public class ContentLanguageCommand extends AbstractSaveCancelCommand {
         this.contentLanguage = contentLanguage;
     }
 
+	public String[] getPossibleLanguages() {
+		return possibleLanguages;
+	}
+	
+	public void setPossibleLanguages(String[] possibleLanguages) {
+		this.possibleLanguages = possibleLanguages;
+	}
 }
 

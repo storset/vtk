@@ -59,7 +59,8 @@ import org.vortikal.web.RequestContext;
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the repository is required</li>
+ *   <li><code>repository</code> - the {@link Repository content
+ *       repository}</li>
  *   <li><code>childName</code> - if childName is set and the current
  *       resource is a collection, the child resource of that name is
  *       retrieved instead of the requested resource</li>
@@ -73,20 +74,26 @@ import org.vortikal.web.RequestContext;
  *   <li><code>unsupportedResourceTypes</code> - list of content types that should return
  *       <code>unsupportedResourceView</code>. Default is 
  *       <code>application/x-vortex-collection</code> 
- *   <li><code>displayProcessed</code> - weither the resource should be retrieved
+ *   <li><code>displayProcessed</code> - wether the resource should be retrieved
  *       for processing (uio:readProcessed) or for raw access (dav:read). Defaults 
  *       to false.
+ *   <li><code>ignoreLastModified</code> - wether or not to ignore the
+ *       resource's <code>lastModified</code> value. Setting this
+ *       property to <code>true</code> means that the resource content
+ *       cannot be cached by the client. Default is
+ *       <code>false</code>.
  * </ul>
  * </p>
  *
  * <p>Model data provided:
  * <ul>
- *   <li><code>resource</code> - the resource object</li>
- *   <li><code>resourceStream</code> - the input stream of the
+ *   <li><code>resource</code> - the {@link Resource} object</li>
+ *   <li><code>resourceStream</code> - the {@link InputStream} of the
  *       resource. (Note: be sure to couple this controller with a
  *       view that closes this stream)</li>
- *   <li><code>resourceString</code> - a string representation of the resource
- *       if <code>streamToString</code> is set and it's a text resource.
+ *   <li><code>resourceString</code> - a {@link String} representation
+ *       of the resource if <code>streamToString</code> is set and
+ *       it's a text resource.
  * </ul>
  */
 public class DisplayResourceController 
@@ -105,6 +112,7 @@ public class DisplayResourceController
     private String unsupportedResourceView = "HTTP_STATUS_NOT_FOUND";
     private Set unsupportedResourceTypes ;
     private boolean streamToString = false;
+    private boolean ignoreLastModified = false;
     
     /**
      * @param childName The childName to set.
@@ -124,6 +132,11 @@ public class DisplayResourceController
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+    
+
+    public void setIgnoreLastModified(boolean ignoreLastModified) {
+        this.ignoreLastModified = ignoreLastModified;
     }
     
 
@@ -185,6 +198,11 @@ public class DisplayResourceController
 
 
     public long getLastModified(HttpServletRequest request) {
+
+        if (this.ignoreLastModified) {
+            return -1;
+        }
+
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();

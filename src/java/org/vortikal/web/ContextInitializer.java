@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 15.jul.2004
- *
- */
 package org.vortikal.web;
 
 import javax.servlet.http.HttpServletRequest;

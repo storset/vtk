@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -58,34 +59,50 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.support.RequestContext;
 
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
+import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 
+
+
 /**
- * XSLT transformation view. Supports transformation of both input
- * streams and JDOM documents. Uses <code>TransformerManager</code> to
- * obtain XSL stylesheets.
+ * XSLT transformation view. Supports transformation of both {@link
+ * InputStream input streams} and JDOM {@link Document
+ * documents}. Uses {@link TransformerManager} to obtain XSL
+ * stylesheets.
  *
  * <p> The transformation works as follows:
  * <ul>
- * <li> First, the model is examined for a JDOM document having key
- * <code>jdomDocument</code>. If this object exists, it is used as the
- * XML document in the transformation.
- * <li> Secondly, if the model contains an <code>InputStream</code>
- * having key <code>resourceStream</code>, a JDOM document is built
- * from that stream and used in the transformation.
- * <li> The model is also required to contain a
- * <code>org.vortikal.repository.Resource</code> object of key
- * <code>resource</code>, used for metadata information and URI
+ * <li> First, the model is examined for a JDOM {@link Document}
+ * having key <code>jdomDocument</code>. If this object exists, it is
+ * used as the XML document in the transformation.
+ * <li> Secondly, if the model contains an {@link InputStream} having
+ * key <code>resourceStream</code>, a JDOM document is built from that
+ * stream and used in the transformation.
+ * <li> The model is also required to contain a {@link Resource}object
+ * of key <code>resource</code>, used for metadata information and URI
  * resolving.
- * <li>If the model contains a <code>java.util.Map</code> of key
+ * <li>If the model contains a {@link Map} of key
  * <code>xsltParameters</code>, the (key, value) pairs of that map are
  * set as parameters for the transformer.
  * <!--li> If the transformation fails for some reason, the raw XML
  * stream is written to the response.
  * </ul-->
+ *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>transformerManager</code> - the {@link
+ *   TransformerManager} to use for obtaining stylesheets
+ * </ul>
+ *
+ * <p>Sets the following HTTP headers:
+ * <ul>
+ *   <li><code>Content-Type</code>
+ * </ul>
  * 
  */
 public class ResourceXsltView
@@ -95,20 +112,11 @@ public class ResourceXsltView
     private TransformerManager transformerManager = null;
 
 
- 
-
-    /**
-     * Sets the value of transformerManager
-     *
-     * @param transformerManager Value to assign to this.transformerManager
-     */
     public void setTransformerManager(TransformerManager transformerManager)  {
         this.transformerManager = transformerManager;
     }
 
 
-
-    
     public final void afterPropertiesSet() throws Exception {
         if (transformerManager == null) {
             throw new BeanInitializationException(
@@ -190,11 +198,37 @@ public class ResourceXsltView
             }
             response.setContentType(contentType);
             response.setHeader("Content-Length", "" + resultBuffer.toByteArray().length);
-            if (resource.getProperty(
+            
+            Property expiresProperty = resource.getProperty(
                     "http://www.uio.no/vortex/custom-properties", 
-                    "expires-sec") == null) {
+                    "expires-sec");
+            if (expiresProperty != null && expiresProperty.getValue() != null) {
+
+                try {
+                    long expiresMilliseconds = new Long(
+                        expiresProperty.getValue().trim()).longValue() * 1000;
+                    Date expires = new Date(new Date().getTime() + expiresMilliseconds);
+                    response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Setting header expires: " + 
+                                     HttpUtil.getHttpDateString(expires));
+                    }
+
+                } catch (NumberFormatException e) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
+                            "Resource " + resource + "has malformed " +
+                            "\"expires-sec\" property: " + expiresProperty.getValue()
+                            + ". No Expires header set.");
+                    }
+                }
+
+            } else {
+
                 response.setHeader("Cache-Control", "no-cache");
             }
+
             byte[] buffer = new byte[5000];
             int n = 0;
             while (((n = resultStream.read(buffer, 0, 5000)) > 0)) {

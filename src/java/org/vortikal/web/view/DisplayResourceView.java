@@ -32,17 +32,15 @@ package org.vortikal.web.view;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
-
-
-
 
 
 /**
@@ -55,6 +53,8 @@ import org.vortikal.web.InvalidModelException;
  *   <li><code>includeLastModifiedHeader</code> - boolean deciding
  *   whether to set the <code>Last-Modified</code> response
  *   header. Default value is <code>true</code>.
+ *   <li><code>includeExpiresHeader</code> - boolean deciding whether
+ *   to attempt to set the <code>Expires</code> HTTP header
  * </ul>
  *
  * <p>Requires the following data to be present in the model:
@@ -72,12 +72,23 @@ import org.vortikal.web.InvalidModelException;
  *   <li><code>Last-Modified</code> if the configuration property
  *   <code>includeLastModifiedHeader</code> is set to
  *   <code>true</code> (the default).
+ *   <li><code>Expires</code> if the configuration property
+ *   <code>includeExpiresHeader</code> is set to
+ *   <code>true</code>, and the resource has a property
+ *   <code>http://www.uio.no/vortex/custom-properties:expires-sec</code>
+ *   set to an integer. The value of the header is the
+ *   value of the property.
+ *   <li><code>Cache-Control: no-cache</code> if the configuration
+ *   property <code>includeExpiresHeader</code> is <code>false</code>,
+ *   or it is set, but the <code>expires-sec</code> resource property
+ *   (see above) is not set or is not an integer.
  * </ul>
  *
  */
 public class DisplayResourceView extends AbstractReferenceDataProvidingView {
 
     private boolean includeLastModifiedHeader = true;
+    private boolean includeExpiresHeader = true;
     
 
 
@@ -85,6 +96,11 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
         this.includeLastModifiedHeader = includeLastModifiedHeader;
     }
 
+
+    public void setIncludeExpiresHeader(boolean includeExpiresHeader) {
+        this.includeExpiresHeader = includeExpiresHeader;
+    }
+    
 
 
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
@@ -127,6 +143,35 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
         }
         response.setHeader("Content-Type", contentType);
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
+        if (this.includeExpiresHeader) {
+            
+            Property expiresProperty = resource.getProperty(
+                "http://www.uio.no/vortex/custom-properties", 
+                "expires-sec");
+            if (expiresProperty != null && expiresProperty.getValue() != null) {
+
+                try {
+                    long expiresMilliseconds = new Long(
+                        expiresProperty.getValue().trim()).longValue() * 1000;
+                    Date expires = new Date(new Date().getTime() + expiresMilliseconds);
+                    response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Setting header expires: " + 
+                                     HttpUtil.getHttpDateString(expires));
+                    }
+
+                } catch (NumberFormatException e) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
+                            "Resource " + resource + "has malformed " +
+                            "\"expires-sec\" property: " + expiresProperty.getValue()
+                            + ". No Expires header set.");
+                    }
+                }
+            }
+        }
+        
         if (this.includeLastModifiedHeader) {
             response.setHeader("Last-Modified", 
                                HttpUtil.getHttpDateString(resource.getLastModified()));

@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -86,7 +87,8 @@ public class CharacterEncodingController extends SimpleFormController {
         }
         
         Resource resource = repository.retrieve(token, uri, false);
-        if (!resource.getContentType().startsWith("text/")) {
+
+        if (!ContentTypeHelper.isTextContentType(resource.getContentType())) {
             encodingCommand.setDone(true);
             return;
         }

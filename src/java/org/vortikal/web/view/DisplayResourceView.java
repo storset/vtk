@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
 
@@ -122,7 +123,7 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
 
         String contentType = resource.getContentType();
         
-        if ("text/html".equals(resource.getContentType()) &&
+        if (ContentTypeHelper.isHTMLContentType(resource.getContentType()) &&
             resource.getCharacterEncoding() == null) {
             // FIXME: to prevent some servlet containers (resin) from
             // trying to be "smart" and append "charset=iso-8859-1" to
@@ -132,8 +133,8 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
             // is perfectly legal, although a single space is
             // preferred.
             contentType = " " + resource.getContentType();
-        } else if (resource.getContentType().startsWith("text/") &&
-                   resource.getCharacterEncoding() != null) {
+        } else if (ContentTypeHelper.isTextContentType(resource.getContentType())
+                   && resource.getCharacterEncoding() != null) {
             contentType = resource.getContentType() + ";charset="
                 + resource.getCharacterEncoding();
         }

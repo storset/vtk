@@ -43,13 +43,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.repository.AuthorizationException;
+import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
@@ -319,7 +320,7 @@ public abstract class AbstractXmlEditController implements Controller {
         
         
         /* The resource has to be an XML document */
-        if (!"text/xml".equals(resource.getContentType())) {
+        if (! ContentTypeHelper.isXMLContentType(resource.getContentType())) {
             throw new RuntimeException("Resource is not an xml document");
         }
 

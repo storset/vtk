@@ -59,6 +59,7 @@ import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.Document;
 import org.vortikal.repositoryimpl.Lock;
 import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.web.URLUtil;
 
 /**
@@ -912,7 +913,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         String contentType = r.getContentType();
         String characterEncoding = r.getCharacterEncoding();
 
-        if ((contentType == null) || !contentType.startsWith("text/")) {
+
+        if ((contentType == null) || !ContentTypeHelper.isTextContentType(contentType)) {
             characterEncoding = null;
         }
 

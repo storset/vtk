@@ -39,6 +39,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PrincipalStore;
+import org.vortikal.util.repository.ContentTypeHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -158,8 +159,9 @@ public class Document extends Resource implements Cloneable {
 
         setCharacterEncoding(null);
 
-        if ((contentType != null) && contentType.startsWith("text/") &&
-                (dto.getCharacterEncoding() != null)) {
+
+        if ((contentType != null) && ContentTypeHelper.isTextContentType(contentType) &&
+            (dto.getCharacterEncoding() != null)) {
             try {
                 /* Force checking of encoding */
                 new String(new byte[0], dto.getCharacterEncoding());

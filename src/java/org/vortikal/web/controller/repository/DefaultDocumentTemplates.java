@@ -39,6 +39,7 @@ import java.util.Set;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.repository.ContentTypeHelper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -181,7 +182,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
             Resource child = children[i];
             if (!child.isCollection()) {
                 String contentType = child.getContentType();
-                if (contentType.startsWith("text/")) {
+                if (ContentTypeHelper.isTextContentType(contentType)) {
                     templates.put(child.getName(), child.getURI());
                 }
             } else {

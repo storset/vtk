@@ -74,6 +74,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private static Log logger = LogFactory.getLog(RepositoryImpl.class);
     public static final int MAX_URI_LENGTH = 1500;
     private boolean readOnly = false;
+    private boolean cleanupLocksWhenReadOnly = false;
     private ApplicationContext context = null;
 
     private DataAccessor dao;
@@ -90,7 +91,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     /* The CMS API implementation */
     public org.vortikal.repository.Configuration getConfiguration()
         throws IOException {
-        return new Configuration(readOnly);
+        return new Configuration(this.readOnly);
     }
 
     public void setConfiguration(String token,
@@ -219,7 +220,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            if (readOnly &&
+            if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
                 OperationLog.failure("create(" + uri + ")", "read-only", token,
                     principal);
@@ -301,7 +302,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             r.authorize(principal, PrivilegeDefinition.WRITE, roleManager);
             r.lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
 
-            if (readOnly &&
+            if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
                 OperationLog.failure("createCollection(" + uri + ")",
                     "read-only", token, principal);
@@ -411,7 +412,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         destCollection.lockAuthorize(principal, PrivilegeDefinition.WRITE,
             roleManager);
 
-        if (readOnly &&
+        if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
             OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
                 "read-only", token, principal);
@@ -581,7 +582,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            if (readOnly &&
+            if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
                 OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
                     "read-only", token, principal);
@@ -667,7 +668,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         parentCollection.lockAuthorize(principal, PrivilegeDefinition.WRITE,
             roleManager);
 
-        if (readOnly &&
+        if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
             OperationLog.failure("delete(" + uri + ")", "read-only", token,
                 principal);
@@ -735,7 +736,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                                                 + depth);
         }
 
-        if (readOnly &&
+        if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
             OperationLog.failure("lock(" + uri + ")", "read-only", token,
                 principal);
@@ -786,7 +787,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (readOnly &&
+        if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
             OperationLog.failure("unlock(" + uri + ")", "read-only", token,
                 principal);
@@ -895,7 +896,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (readOnly &&
+        if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
             OperationLog.failure("store(" + uri + ")", "read-only", token,
                 principal);
@@ -991,7 +992,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IOException("Collections have no output stream");
         }
 
-        if (readOnly &&
+        if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
             OperationLog.failure("storeContent(" + uri + ")", "read-only",
                 token, principal);
@@ -1092,7 +1093,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             r.authorize(principal, PrivilegeDefinition.WRITE_ACL, roleManager);
 
-            if (readOnly &&
+            if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
                 OperationLog.failure("storeACL(" + uri + ")", "read-only",
                     token, principal);
@@ -1216,7 +1217,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
     /**
      * Cleans up expired locks. Gets called periodically from the
-     * maintenance thread.
+     * maintenance thread. When in read-only mode, locks will only get
+     * cleaned up when the property 'cleanupLocksWhenReadOnly' is set
+     * to <code>true</code>.
      *
      * @exception IOException if an error occurs
      */
@@ -1236,40 +1239,37 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             expired[i] = r;
         }
 
-        dao.deleteLocks(expired);
+        if (this.readOnly && !this.cleanupLocksWhenReadOnly) {
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                    "Repository is read-only, will not expire locks for resources "
+                    + Arrays.asList(expiredUris));
+            } 
+        } else {
+            dao.deleteLocks(expired);
+        }
     }
 
-    /**
-     * @param dao The dao to set.
-     */
     public void setDao(DataAccessor dao) {
         this.dao = dao;
     }
 
-    /**
-     * @param readOnly The readOnly to set.
-     */
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
 
-    /**
-     * @param roleManager The roleManager to set.
-     */
+    public void setCleanupLocksWhenReadOnly(boolean cleanupLocksWhenReadOnly) {
+        this.cleanupLocksWhenReadOnly = cleanupLocksWhenReadOnly;
+    }
+
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
     }
 
-    /**
-     * @return Returns the id.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * @param id The id to set.
-     */
     public void setId(String id) {
         this.id = id;
     }

@@ -223,7 +223,7 @@ ALTER TABLE changelog_entry
    ADD CONSTRAINT changelog_entry_PK
 PRIMARY KEY (changelog_entry_id);
 
-DROP INDEX changelog_entry_index1;
+/* DROP INDEX changelog_entry_index1; */
 
 CREATE UNIQUE INDEX changelog_entry_index1
    ON changelog_entry (uri, changelog_entry_id);

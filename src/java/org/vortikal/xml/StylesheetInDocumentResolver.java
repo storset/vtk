@@ -28,41 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 26.jul.2004
- *
- */
 package org.vortikal.xml;
 
 import java.util.Iterator;
 import java.util.List;
 
-import org.vortikal.repository.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
 import org.jdom.ProcessingInstruction;
 
+import org.vortikal.repository.Resource;
+
 
 /**
+ * Stylesgeet resolver that gets XSLT stylesheets from
+ * "xml-stylesheet" processing instructions in XML documents.
  */
 public class StylesheetInDocumentResolver implements StylesheetReferenceResolver {
-
-
 
     private static Log logger = LogFactory.getLog(StylesheetInDocumentResolver.class);
     
 
-
-    /**
-     * @see org.vortikal.xml.StylesheetReferenceResolver#getStylesheetIdentifier(org.vortikal.repository.Resource, org.jdom.Document)
-     */
     public String getStylesheetIdentifier(Resource resource, Document document) {
         String stylesheetURL = getStylesheetURLFromDocument(document);
         return stylesheetURL;
     }
-
 
 
     private String getStylesheetURLFromDocument(Document doc) {
@@ -87,6 +79,5 @@ public class StylesheetInDocumentResolver implements StylesheetReferenceResolver
         }
         return null;
     }
-
 
 }

@@ -33,8 +33,7 @@ package org.vortikal.web.service;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author storset
- *
+ * Assertion that matches on request (parameter, value) pairs.
  */
 public class RequestParameterAssertion extends AssertionSupport
   implements RequestAssertion {
@@ -42,28 +41,18 @@ public class RequestParameterAssertion extends AssertionSupport
     private String parameterName = "";
     private String parameterValue = "";
 	
-    /**
-     * @param parameterName
-     */
     public void setParameterName(String parameterName) {
         this.parameterName = parameterName;
     }
 	
-    /**
-     * @param parameterValue
-     */
     public void setParameterValue(String parameterValue) {
         this.parameterValue = parameterValue;
     }
 	
-    /* 
-     */
     public boolean matches(HttpServletRequest request) {
         return parameterValue.equals(request.getParameter(parameterName)); 
     }
 	
-    /* 
-     */
     public String getParameterName() {
         return parameterName;
     }
@@ -86,9 +75,6 @@ public class RequestParameterAssertion extends AssertionSupport
     }
 
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

@@ -114,17 +114,11 @@ public class DisplayResourceController
     private boolean streamToString = false;
     private boolean ignoreLastModified = false;
     
-    /**
-     * @param childName The childName to set.
-     */
     public void setChildName(String childName) {
         this.childName = childName;
     }
 
 
-    /**
-     * @param repository The repository to set.
-     */
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -248,9 +242,6 @@ public class DisplayResourceController
     }
 
 
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     public void afterPropertiesSet() throws Exception {
         if (unsupportedResourceTypes == null) {
             unsupportedResourceTypes = new HashSet();

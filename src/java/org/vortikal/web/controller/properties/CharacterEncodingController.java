@@ -45,6 +45,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
+/**
+ * Controller for setting the <code>characterEncoding</code> property
+ * on resources.
+ */
 public class CharacterEncodingController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(CharacterEncodingController.class);

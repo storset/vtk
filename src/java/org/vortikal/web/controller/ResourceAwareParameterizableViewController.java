@@ -45,8 +45,6 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
  * Controller that retrieves the requested resource from the
  * repository (in order to cause exceptions) before returning the
  * configured view.
- *
- * @version $Id$
  */
 public class ResourceAwareParameterizableViewController
   extends ParameterizableViewController {

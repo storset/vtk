@@ -34,6 +34,9 @@ import org.vortikal.web.referencedataprovider.Provider;
 
 import org.springframework.web.servlet.view.AbstractView;
 
+/**
+ * Abstract utility superclass for reference providing views. 
+ */
 public abstract class AbstractReferenceDataProvidingView
   extends AbstractView implements ReferenceDataProviding {
 

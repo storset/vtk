@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import org.springframework.beans.factory.BeanInitializationException;
@@ -44,7 +40,8 @@ import org.vortikal.security.roles.RoleManager;
 /**
  *
  */
-public class ResourceOwnerAssertion extends AssertionSupport implements ResourceAssertion, InitializingBean {
+public class ResourceOwnerAssertion
+  extends AssertionSupport implements ResourceAssertion, InitializingBean {
 
     private RoleManager roleManager;
 
@@ -53,7 +50,8 @@ public class ResourceOwnerAssertion extends AssertionSupport implements Resource
         
         if (principal == null) return false;
         
-        return resource.getOwner().equals(principal) || roleManager.hasRole(principal.getQualifiedName(),RoleManager.ROOT);
+        return resource.getOwner().equals(principal)
+            || roleManager.hasRole(principal.getQualifiedName(),RoleManager.ROOT);
     }
 
 
@@ -62,18 +60,13 @@ public class ResourceOwnerAssertion extends AssertionSupport implements Resource
 	}
 
 
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     public void afterPropertiesSet() throws Exception {
 
         if (roleManager == null) 
-            throw new BeanInitializationException("Property 'roleManager' must be set");
+            throw new BeanInitializationException(
+                "Property 'roleManager' must be set");
     }
 
-    /**
-     * @param roleManager The roleManager to set.
-     */
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
     }

@@ -388,7 +388,7 @@ public class Resource implements java.io.Serializable, Cloneable {
     /**
      * Sets this resource's content locale. 
      *
-     * @param contentLanguage the language to use
+     * @param contentLocale the locale to use
      */
     public void setContentLocale(Locale contentLocale) {
         this.contentLocale = contentLocale;

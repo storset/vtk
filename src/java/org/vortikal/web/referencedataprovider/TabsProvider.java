@@ -62,9 +62,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * the current service is a child of the tab service or not.
  *
  * <p>The tabs provider looks up all services in the application
- * context that are of a given {@link
- * org.vortikal.web.service.Service#getCategory() category} on
- * startup, using these services as tab services. Currently, the
+ * context that are of a given {@link Service#getCategories category}
+ * on startup, using these services as tab services. Currently, the
  * category must be the fully qualified name of this class.
  *
  * <p>Configurable properties:

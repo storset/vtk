@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 04.aug.2004
- *
- */
 package org.vortikal.web.view.freemarker;
 
 import java.io.IOException;
@@ -49,6 +45,8 @@ import freemarker.cache.TemplateLoader;
 
 
 /**
+ * Template loader that retrieves Freemarker templates from the {@link
+ * Repository content repository}.
  */
 public class RepositoryTemplateLoader implements TemplateLoader {
 

@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import java.util.regex.Matcher;
@@ -48,9 +44,6 @@ public class ResourceURIRegexpAssertion extends AssertionSupport
     private Pattern pattern = null;
 
 
-    /**
-     * @param pattern The pattern to set.
-     */
     public void setPattern(String pattern) {
         if (pattern == null) throw new IllegalArgumentException(
             "Property 'pattern' cannot be null");
@@ -73,9 +66,6 @@ public class ResourceURIRegexpAssertion extends AssertionSupport
         return false;
     }
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

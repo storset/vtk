@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
@@ -39,26 +35,23 @@ import org.vortikal.repository.Resource;
 /**
  *
  */
-public class ResourceIsCollectionAssertion extends AssertionSupport implements ResourceAssertion {
+public class ResourceIsCollectionAssertion
+  extends AssertionSupport implements ResourceAssertion {
 
     public boolean matches(Resource resource) {
         return (resource != null && resource.isCollection());
     }
     
     public boolean conflicts(Assertion assertion) {
-		return false;
-	}
+        return false;
+    }
 
-    /** 
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
 		
-		sb.append(super.toString());
+        sb.append(super.toString());
 		
-		return sb.toString();
-	}
-
-
+        return sb.toString();
+    }
 }

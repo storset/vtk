@@ -63,7 +63,8 @@ import org.vortikal.security.web.AuthenticationChallenge;
  *   <li><code>assertions</code> - a list of {@link Assertion
  *   assertions}; the conditions that must hold for this service to
  *   match
- *   <li><code>handler</code> - a {@link Controller} that is executed
+ *   <li><code>handler</code> - a {@link
+ *   org.springframework.web.servlet.mvc.Controller} that is executed
  *   when this service matches (see {@link ServiceHandlerMapping}).
  *   <li><code>handlerInterceptors</code> - list of
  *   {@link org.springframework.web.servlet.HandlerInterceptor

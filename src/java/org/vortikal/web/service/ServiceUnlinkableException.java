@@ -28,30 +28,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 package org.vortikal.web.service;
 
+/**
+ * Exception indicating that URL cannot be constructed for a service
+ * under the current assertion configuration.
+ *
+ */
 public class ServiceUnlinkableException extends RuntimeException {
 
-	/**
-     * 
-     */
     private static final long serialVersionUID = 4121133632317896496L;
 
-    /**
-	 * 
-	 */
-	public ServiceUnlinkableException() {
-		super();
-	}
+    public ServiceUnlinkableException() {
+        super();
+    }
 
-	public ServiceUnlinkableException(String message) {
-		super(message);
-	}
+    public ServiceUnlinkableException(String message) {
+        super(message);
+    }
 
 }

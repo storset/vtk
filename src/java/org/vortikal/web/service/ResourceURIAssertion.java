@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
@@ -39,22 +35,17 @@ import org.vortikal.repository.Resource;
 /**
  *
  */
-public class ResourceURIAssertion extends AssertionSupport implements ResourceAssertion {
+public class ResourceURIAssertion
+  extends AssertionSupport implements ResourceAssertion {
 
     private String uri = "";
     private boolean inverted = false;
     
 
-    /**
-     * @return Returns the uri.
-     */
     public String getUri() {
         return uri;
     }
 
-    /**
-     * @param uri The uri to set.
-     */
     public void setUri(String uri) {
         if (uri == null) throw new IllegalArgumentException(
             "Property 'uri' cannot be null");
@@ -62,20 +53,10 @@ public class ResourceURIAssertion extends AssertionSupport implements ResourceAs
         this.uri = uri;
     }
     
-    /**
-     * Gets the value of inverted
-     *
-     * @return the value of inverted
-     */
     public boolean isInverted() {
         return this.inverted;
     }
 
-    /**
-     * Sets the value of inverted
-     *
-     * @param inverted Value to assign to this.inverted
-     */
     public void setInverted(boolean inverted)  {
         this.inverted = inverted;
     }
@@ -102,9 +83,6 @@ public class ResourceURIAssertion extends AssertionSupport implements ResourceAs
         return false;
     }
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

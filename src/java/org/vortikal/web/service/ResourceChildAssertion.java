@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
@@ -39,16 +35,12 @@ import org.vortikal.repository.Resource;
 /**
  *
  */
-public class ResourceChildAssertion extends AssertionSupport implements ResourceAssertion {
+public class ResourceChildAssertion
+  extends AssertionSupport implements ResourceAssertion {
 
     private String childName;
 
 
-    
-
-    /**
-     * @param childName The childName to set.
-     */
     public void setChildName(String childName) {
         if (childName == null) throw new IllegalArgumentException(
             "Property 'childName' cannot be null");
@@ -73,9 +65,6 @@ public class ResourceChildAssertion extends AssertionSupport implements Resource
     }
 
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

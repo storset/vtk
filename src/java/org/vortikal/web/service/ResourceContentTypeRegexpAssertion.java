@@ -28,10 +28,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import java.util.regex.Matcher;
@@ -42,7 +38,8 @@ import org.vortikal.repository.Resource;
 /**
  *
  */
-public class ResourceContentTypeRegexpAssertion extends AssertionSupport implements ResourceAssertion {
+public class ResourceContentTypeRegexpAssertion
+  extends AssertionSupport implements ResourceAssertion {
 
     private Pattern pattern = null;
 
@@ -76,9 +73,6 @@ public class ResourceContentTypeRegexpAssertion extends AssertionSupport impleme
     }
 
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

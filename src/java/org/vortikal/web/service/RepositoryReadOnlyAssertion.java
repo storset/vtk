@@ -44,7 +44,7 @@ import org.vortikal.repository.Repository;
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the {@link Rrpository content
+ *   <li><code>repository</code> - the {@link Repository content
  *   repository} (required)
  *   <li><code>invert</code> - a boolean telling whether to return the
  *   inverted result when matching. Default is <code>false</code>.

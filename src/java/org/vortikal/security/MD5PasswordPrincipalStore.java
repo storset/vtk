@@ -52,7 +52,6 @@ public interface MD5PasswordPrincipalStore extends PrincipalStore {
         throws AuthenticationProcessingException;
     
     /**
-     * @return
      * @throws AuthenticationProcessingException
      * @deprecated
      */

@@ -31,23 +31,22 @@
 package org.vortikal.web.service;
 
 
-import org.vortikal.repository.Privilege;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalStore;
-import org.vortikal.security.SecurityContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.SecurityContext;
 
 
 /**
  * Assert that the current user has the permission 'permission' on the
  * current resource.
  *
- * FIXME: replace store with manager!
  * Properties:
  * 
  * <ul>
@@ -68,7 +67,7 @@ import org.springframework.beans.factory.InitializingBean;
  *       required. An AuthenticationException will be thrown on matching
  *       if there is no principal.
  *   </li>
- *   <li>principalStore (required)
+ *   <li>principalManager (required)
  *   </li>
  * </ul>
  */
@@ -80,7 +79,7 @@ public class ResourcePrincipalPermissionAssertion
     
     private String permission;
     private boolean requiresAuthentication = false;
-    private PrincipalStore principalStore;
+    private PrincipalManager principalManager;
     
     
     /**
@@ -96,8 +95,8 @@ public class ResourcePrincipalPermissionAssertion
     }
 
 
-    public void setPrincipalStore(PrincipalStore principalStore) {
-        this.principalStore = principalStore;
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
     
 
@@ -121,7 +120,7 @@ public class ResourcePrincipalPermissionAssertion
         if (permission.equals("parent-write")) {
                 
             Privilege[] parentPrivilegeSet = resource.getParentPrivilegeSet(
-                securityContext.getPrincipal(), this.principalStore);
+                securityContext.getPrincipal(), this.principalManager);
                 
             for (int i = 0; i < parentPrivilegeSet.length; i++) {
 
@@ -160,7 +159,7 @@ public class ResourcePrincipalPermissionAssertion
                 
             if (resource.getActiveLocks().length == 0) {
                 Privilege[] privilegeSet = resource.getPrivilegeSet(
-                    securityContext.getPrincipal(), this.principalStore);
+                    securityContext.getPrincipal(), this.principalManager);
                 for (int i = 0; i < privilegeSet.length; i++) {
                     if (privilegeSet[i].getName().equals("write"))
                         return true;
@@ -170,7 +169,7 @@ public class ResourcePrincipalPermissionAssertion
         } else {
                     
             Privilege[] privileges = resource.getPrivilegeSet(securityContext.getPrincipal(),
-                                                             this.principalStore);
+                                                             this.principalManager);
                     
             for (int i = 0; i < privileges.length; i++) {
                 boolean match = false;
@@ -218,9 +217,9 @@ public class ResourcePrincipalPermissionAssertion
                 "be set to one of; 'read', read-processed', 'write', " +
                 "'write-acl', 'parent-write', 'unlock' or 'lock'");
         }
-        if (this.principalStore == null) {
+        if (this.principalManager == null) {
             throw new BeanInitializationException(
-                "Property 'principalStore' must be set");
+                "Property 'principalManager' must be set");
         }
     }
 

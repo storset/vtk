@@ -200,13 +200,18 @@ public class VortikalServlet extends DispatcherServlet {
     }
     
     
-    /** This method duplicates the HTTP last modified checking done in
+    /**
+     * This method duplicates the HTTP last modified checking done in
      * the servlet specs implementation of service() in
      * HttpServlet. We are overriding service(), so we need to supply
      * this functionality ourselves.
+     *
+     * @return <code>true</code> if the request should continue, or
+     * <code>false</code> if a "304 Not Modified" status has been sent
+     * to the client and the request processing should stop.
      */
-    private void checkLastModified(HttpServletRequest request,
-                                   HttpServletResponse response) {
+    private boolean checkLastModified(HttpServletRequest request,
+                                      HttpServletResponse response) {
         
         // Last modified checking:
         String method = request.getMethod();
@@ -227,7 +232,7 @@ public class VortikalServlet extends DispatcherServlet {
                         + request.getRequestURI()
                         + " because content didn't change since last request");
                     }
-                    return;
+                    return false;
                 }
             }
         } else if (method.equals(METHOD_HEAD)) {
@@ -235,6 +240,7 @@ public class VortikalServlet extends DispatcherServlet {
             maybeSetLastModified(response, lastModified);
         }
 
+        return true;
     }
     
     /**
@@ -282,10 +288,11 @@ public class VortikalServlet extends DispatcherServlet {
                     requestContextInitializer.createContext(request);
                 }
                 
-                checkLastModified(request, response);
-
-                super.doService(request, response);
-
+                if (checkLastModified(request, response)) {
+                    
+                    super.doService(request, response);
+                }
+                
 
             } catch (AuthenticationException ex) {
                 Service service = RequestContext.getRequestContext()

@@ -668,7 +668,7 @@ public abstract class Resource implements Cloneable {
         throws AuthorizationException, IllegalOperationException, IOException {
         if ((owner == null) || owner.trim().equals("")) {
             throw new IllegalOperationException(
-                "Unable to set owner of resource " + this.uri +
+                "Unable to set owner of resource " + this +
                 ": invalid owner: '" + owner + "'");
         }
 

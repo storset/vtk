@@ -31,7 +31,9 @@
 package org.vortikal.repositoryimpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -45,18 +47,20 @@ import java.util.List;
 public class RoleManager {
     public static final int ROOT = 0;
     public static final int READ_EVERYTHING = 1;
-    private List rootRole = new ArrayList();
-    private List readEverythingRole = new ArrayList();
+    private Set rootRole = new HashSet();
+    private Set readEverythingRole = new HashSet();
+
+
 
     public boolean hasRole(String principalName, int role) {
         if ((role != ROOT) && (role != READ_EVERYTHING)) {
-            throw new IllegalArgumentException("Unknown role");
+            throw new IllegalArgumentException("Unknown role: " + role);
         }
 
         switch (role) {
         case ROOT:
             return rootRole.contains(principalName);
-
+            
         case READ_EVERYTHING:
             return readEverythingRole.contains(principalName);
 
@@ -65,9 +69,10 @@ public class RoleManager {
         }
     }
 
+
     public List listPrincipals(int role) {
         if ((role != ROOT) && (role != READ_EVERYTHING)) {
-            throw new IllegalArgumentException("Unknown role");
+            throw new IllegalArgumentException("Unknown role: " + role);
         }
 
         switch (role) {
@@ -82,17 +87,13 @@ public class RoleManager {
         }
     }
 
-    /**
-     * @param readEverythingRole The readEverythingRole to set.
-     */
-    public void setReadEverythingRole(List readEverythingRole) {
+
+    public void setReadEverythingRole(Set readEverythingRole) {
         this.readEverythingRole = readEverythingRole;
     }
 
-    /**
-     * @param rootRole The rootRole to set.
-     */
-    public void setRootRole(List rootRole) {
+
+    public void setRootRole(Set rootRole) {
         this.rootRole = rootRole;
     }
 }

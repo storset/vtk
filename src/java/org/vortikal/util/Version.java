@@ -32,19 +32,23 @@ package org.vortikal.util;
 
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
+import java.util.Date;
 
 
 
 /**
  * Class representing the current version of the framework.
- * @version $Id: Version.java,v 1.5 2004/03/16 20:27:08 storset Exp $
  */
 public class Version {
 
+    public final static String BUILD_DATE_PARSE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
     /* Retrieved from the FRAMEWORK_VERSION file in the class path: */
-    private static String buildDate = "unknown";
+    private static Date buildDate = new Date(0);
     private static String buildHost = "unknown";
+    private static String versionControlID = "$Id$";
 
     /* Picked up from META-INF/MANIFEST.MF */
     private static String frameworkVersion = "unknown";
@@ -56,7 +60,6 @@ public class Version {
     /**
      * See <a href="http://java.sun.com/j2se/1.3/docs/guide/versioning/spec/VersioningSpecification.html#PackageVersionSpecification">Java Package Version Specification</a>
      */
-
     static {
         
         Package p = Version.class.getPackage();
@@ -80,8 +83,16 @@ public class Version {
         }
         
         if (props.containsKey("build.date")) {
-            // TODO: parse date instead
-            buildDate = props.getProperty("build.date");
+
+            String dateStr = props.getProperty("build.date");
+            try {
+                SimpleDateFormat df = new SimpleDateFormat(BUILD_DATE_PARSE_FORMAT);
+                buildDate = df.parse(dateStr);
+            } catch (java.text.ParseException e) {
+                System.out.println(
+                    "Error parsing build date using format \""
+                    + BUILD_DATE_PARSE_FORMAT + "\": " + e.getMessage());
+            }
         }
         
         if (props.containsKey("build.host")) {
@@ -108,7 +119,7 @@ public class Version {
     }
 
 
-    public static final String getBuildDate() {
+    public static final Date getBuildDate() {
         return buildDate;
     }
     

@@ -1,30 +1,8 @@
 <project
    xmlns:j="jelly:core"
+   xmlns:u="jelly:util"
    xmlns:maven="jelly:maven"
    xmlns:ant="jelly:ant">
-
-  <!--
-    Intercept java:compile, add version info to the
-    org/vortikal/util/FRAMEWORK_VERSION properties file.
-  -->
-   <postGoal name="java:compile">
-     <j:new var="now" className="java.util.Date"/> 
-     <j:new var="formatter" className="java.text.SimpleDateFormat">
-       <j:arg value="yyyy-MM-dd HH:mm:ss"/>
-     </j:new>
-     <j:invoke var="build.date" on="${formatter}" method="format"> 
-       <j:arg value="${now}"/> 
-     </j:invoke> 
-     <j:invokeStatic var="inetaddr" className="java.net.InetAddress" method="getLocalHost"/>
-     <j:invoke var="host" method="getHostName" on="${inetaddr}" />
-     <j:set var="ver.file" value="${maven.build.dest}/org/vortikal/util/FRAMEWORK_VERSION"/>
-     <echo file="${ver.file}">
-       framework.version = ${pom.currentVersion}
-       build.date = ${build.date}
-       build.host = ${host}
-     </echo>
-   </postGoal>
-
 
   <!--
     In order to include sandbox sources, this pregoal is needed. It
@@ -39,5 +17,36 @@
       <maven:addPath id="maven.compile.src.set" refid="sandbox.src.set"/>
      </j:if>
    </preGoal>
+
+
+
+  <!--
+    Intercept java:compile, add version info to the
+    org/vortikal/util/FRAMEWORK_VERSION properties file.
+  -->
+   <postGoal name="java:compile">
+     <j:new var="now" className="java.util.Date"/> 
+     <j:invokeStatic var="utc" className="java.util.TimeZone" method="getTimeZone">
+       <j:arg value="UTC"/>
+     </j:invokeStatic>
+     <j:new var="formatter" className="java.text.SimpleDateFormat">
+       <j:arg value="yyyy-MM-dd'T'HH:mm:ss'Z'"/>
+     </j:new>
+     <j:invoke on="${formatter}" method="setTimeZone">
+       <j:arg value="${utc}" />
+     </j:invoke>
+     <j:invoke var="build.date" on="${formatter}" method="format"> 
+       <j:arg value="${now}"/> 
+     </j:invoke> 
+     <j:invokeStatic var="inetaddr" className="java.net.InetAddress" method="getLocalHost"/>
+     <j:invoke var="host" method="getHostName" on="${inetaddr}" />
+     <j:set var="ver.file" value="${maven.build.dest}/org/vortikal/util/FRAMEWORK_VERSION"/>
+     <echo file="${ver.file}">
+       framework.version = ${pom.currentVersion}
+       build.date = ${build.date}
+       build.host = ${host}
+     </echo>
+   </postGoal>
+
 
 </project>

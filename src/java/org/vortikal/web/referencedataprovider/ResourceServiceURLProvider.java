@@ -47,10 +47,10 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
  * URL (link) reference data provider. Puts a URL to the requested
- * resource that is constructed using a configured service in the
- * model.
+ * resource that is constructed using a configured service in a
+ * submodel.
  * 
- * Configurable properties:
+ * <p>Configurable properties:
  * <ul>
  *  <li> <code>repository</code> - the content repository
  *  <li> <code>modelName</code> - the name to use for the submodel generated
@@ -59,10 +59,11 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *       assertions must match when constructing links (default is false)
  * </ul>
  * 
- * Model data provided:
+ * <p>Model data provided:
  * <ul>
- *   <li>url - the URL of the resource. If it could not be constructed
- *       for some reason, <code>null</code> is supplied as the value.</li>
+ *   <li><code>url</code> - the URL of the resource. If it could not
+ *       be constructed for some reason, <code>null</code> is supplied
+ *       as the value.</li>
  * </ul>
  * 
  */
@@ -121,7 +122,6 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
         Resource resource = repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(),
                                                 true);
-
         Map urlMap = new HashMap();
         String url = null;
         try {
@@ -133,5 +133,4 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
         }
         model.put(modelName, urlMap);
     }
-
 }

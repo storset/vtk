@@ -34,13 +34,20 @@
  */
 package org.vortikal.util.repository;
 
+import java.util.regex.*;
+
 import org.vortikal.repository.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /** 
  */
 public class URIUtil {
 
+
+	private static Log logger = LogFactory.getLog("org.vortikal.util.repository.URIUtil");
     
     /** Makes an absolute path of <code>path</code> relative to <code>resource</code>.
      * If resource is a collection, the path is relative to this resource, 
@@ -81,8 +88,10 @@ public class URIUtil {
      */
     public static String expandPath(String uri) throws InvalidURIException {
 
-        if (!uri.startsWith("/")) {
-            throw new IllegalArgumentException("URI cannot be relative.");
+		// Test to check that start of URI is legal path (e.g. UNIX '/', WINDOWS 'C:')
+		// [using string test and regex checking]
+		if ( !uri.startsWith("/") && (!uri.substring(0,2).matches("[c-zA-Z]:")) ) {
+			System.out.print("URI cannot be relative.");            
         }
 
         if (uri.startsWith("/../")) {

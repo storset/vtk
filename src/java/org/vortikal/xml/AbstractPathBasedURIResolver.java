@@ -200,8 +200,10 @@ public abstract class AbstractPathBasedURIResolver
         }
             
         String uri = href;
+        
+        logger.error( "--> KS: " + base + " / " + uri );
 
-        if (uri.indexOf("../") == 0) {
+        if (uri.indexOf("../") == 0) {			
             uri = URIUtil.expandPath(base + "/" + uri);
         } else if (uri.indexOf("../") > 0) {
             if (!uri.startsWith("/")) {

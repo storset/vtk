@@ -149,11 +149,11 @@ public class FileUploadController extends SimpleFormController {
     }
 
     /**
-     * Attempts to extract only the file name from a Windows style pathname, by
-     * stripping away everything up to and including the last backslash in the
-     * path.
+     * Attempts to extract only the file name from a Windows style
+     * pathname, by stripping away everything up to and including the
+     * last backslash in the path.
      */
-    private String stripWindowsPath(String fileName) {
+    static String stripWindowsPath(String fileName) {
 
         if (fileName == null || fileName.trim().equals("")) {
             return fileName;

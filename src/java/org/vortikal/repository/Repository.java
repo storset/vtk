@@ -217,7 +217,8 @@ public interface Repository {
      * @return a <code>Resource</code> representing metadata about
      * the newly created collection
      * @exception IllegalOperationException if the resource identified
-     * by the URI alredy exists in the repository
+     * by the URI alredy exists in the repository, or if an invalid
+     * URI is supplied
      * @exception AuthorizationException if an authenticated user
      * is not authorized to create the resource
      * @exception AuthenticationException if the resource demands

@@ -82,6 +82,7 @@ public class RequestContextInitializer
     public void createContext(HttpServletRequest request) throws Exception {
         String uri = getResourceURI(request);
         Resource resource = null;
+
         try {
             resource = repository.retrieve(trustedToken, uri, false);
             

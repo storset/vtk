@@ -137,14 +137,20 @@ public class DefaultErrorHandler implements ErrorHandler, InitializingBean {
             // Silently ignore
         }
 
-        org.springframework.web.servlet.support.RequestContext ctx =
-            new org.springframework.web.servlet.support.RequestContext(request);
+        org.springframework.web.servlet.support.RequestContext ctx = null;
+        try {
+            ctx = new org.springframework.web.servlet.support.RequestContext(request);
+        } catch (Throwable t) {
+            
+        }
         
         String errorClassName = error.getClass().getName();
-        String errorMessage = ctx.getMessage(errorClassName, errorClassName);
+        String errorMessage = (ctx == null) ? errorClassName
+            : ctx.getMessage(errorClassName, errorClassName);
         
         if (errorClassName.equals(errorMessage)) {
-            errorMessage = ctx.getMessage(DEFAULT_ERROR_CODE, DEFAULT_ERROR_DESCRIPTION);
+            errorMessage = (ctx == null) ? error.getMessage()
+                : ctx.getMessage(DEFAULT_ERROR_CODE, DEFAULT_ERROR_DESCRIPTION);
         }
 
         Map errorModel = new HashMap();

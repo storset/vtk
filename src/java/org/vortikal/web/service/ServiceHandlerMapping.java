@@ -64,7 +64,18 @@ public class ServiceHandlerMapping implements HandlerMapping {
      * @return the looked up handler instance, or the default handler
      */
     public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-        Service service = RequestContext.getRequestContext().getService();
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext == null) {
+            throw new IllegalStateException(
+                "Unable to perform handler mapping: no request context available.");
+        }
+        
+        Service service = requestContext.getService();
+        if (service == null) {
+            throw new IllegalStateException(
+                "Unable to perform handler mapping: no service available.");
+        }
 
         Object handler = getController(service);
 

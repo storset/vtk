@@ -31,6 +31,8 @@
 package org.vortikal.web.servlet;
 
 
+
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,17 +40,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.RequestHandledEvent;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
@@ -57,9 +58,10 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.SecurityInitializer;
+import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.ErrorHandler;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.RepositoryContextInitializer;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
 import org.vortikal.web.service.Service;
 
@@ -279,10 +281,11 @@ public class VortikalServlet extends DispatcherServlet {
                 if (requestContextInitializer != null) {
                     requestContextInitializer.createContext(request);
                 }
-
+                
                 checkLastModified(request, response);
 
                 super.doService(request, response);
+
 
             } catch (AuthenticationException ex) {
                 Service service = RequestContext.getRequestContext()
@@ -456,6 +459,7 @@ public class VortikalServlet extends DispatcherServlet {
         sb.append("method: [").append(httpMethod).append("], ");
         sb.append("request parameters: [").append(params).append("], ");
         sb.append("user agent: [").append(req.getHeader("User-Agent")).append("], ");
+        sb.append("host: [").append(URLUtil.getHostName(req)).append("], ");
         sb.append("remote host: [").append(req.getRemoteHost()).append("]");
 
         errorLogger.error(sb.toString(), t);
@@ -478,6 +482,26 @@ public class VortikalServlet extends DispatcherServlet {
      */
     private void handleError(HttpServletRequest req, HttpServletResponse resp,
                              Throwable t) throws ServletException {
+
+        WebApplicationContext springContext = null;
+        try {
+            springContext = RequestContextUtils.getWebApplicationContext(req);
+        } catch (Throwable x) { }
+
+        if (springContext == null) {
+            // When there no Spring WebApplicationContext is found, we
+            // cannot trust our regular error handling mechanism to
+            // work. In most cases this is caused by the request
+            // context initialization failing due to the content
+            // repository being unavailable for some reason (i.e. JDBC
+            // errors, etc.). The safest thing to do here is to log
+            // the error and throw a ServletException and let the
+            // container handle it.
+            logError(req, t);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new ServletException(t);
+        }
+
         ErrorHandler handler = resolveErrorHandler(t);
         if (handler == null) {
             logError("No error handler configured for " + t.getClass().getName(), req, t);
@@ -493,6 +517,7 @@ public class VortikalServlet extends DispatcherServlet {
             statusCode = handler.getHttpStatusCode(req, resp, t);
 
         } catch (Throwable errorHandlerException) {
+            errorHandlerException.initCause(t);
             logError("Caught exception while performing error handling",
                      req, errorHandlerException);
             throw new ServletException(errorHandlerException);
@@ -506,6 +531,7 @@ public class VortikalServlet extends DispatcherServlet {
         resp.setStatus(statusCode);
         
         try {
+
             if (logger.isDebugEnabled()) {
                 logger.debug(
                     "Performed error handling using handler " + handler + ". "
@@ -513,7 +539,9 @@ public class VortikalServlet extends DispatcherServlet {
                     + "error model using view " + view);
             }
             view.render(model, req, resp);
+            
         } catch (Exception e){
+            e.initCause(t);
             throw new ServletException("Error while rendering error view", e);
         }
     }

@@ -205,16 +205,25 @@ public class RequestContextInitializer
 
                 boolean match = true;
 
-                if (assertion instanceof RequestAssertion && 
-                    !((RequestAssertion)assertion).matches(request))
-                    match = false;
-                else if (assertion instanceof ResourceAssertion && 
-                         !((ResourceAssertion)assertion).matches(resource))
-                    match = false;
-                else if (assertion instanceof PrincipalAssertion && 
-                         !((PrincipalAssertion)assertion).matches(securityContext.getPrincipal()))
-                    match = false;
-                
+                if (assertion instanceof RequestAssertion) {
+
+                    if (!((RequestAssertion)assertion).matches(request))
+                        match = false;
+
+                } else if (assertion instanceof ResourceAssertion) {
+
+                    if (!((ResourceAssertion)assertion).matches(resource))
+                        match = false;
+
+                } else if (assertion instanceof PrincipalAssertion) {
+
+                    if (!((PrincipalAssertion)assertion).matches(securityContext.getPrincipal()))
+                        match = false;
+                } else {
+                    logger.warn("Unsupported assertion: " + assertion +
+                                 " for service " + service);
+                }
+
                 if (logger.isDebugEnabled()) {
                     if (match) {
                         logger.debug("Matched assertion: " + assertion +
@@ -229,6 +238,7 @@ public class RequestContextInitializer
         } catch (AuthenticationException e) {
             RequestContext.setRequestContext(
                 new RequestContext(service, requestContext.getResourceURI()));
+            throw(e);
         }
 
         if (logger.isDebugEnabled()) {

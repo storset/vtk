@@ -53,7 +53,7 @@ public class Version {
     /* Picked up from META-INF/MANIFEST.MF */
     private static String frameworkVersion = "unknown";
     private static String buildVendor = "unknown";
-    private static String frameworkTitle = "Vortex Application Framework";
+    private static String frameworkTitle = "Vortikal Web Application Framework";
 
 
 
@@ -103,8 +103,12 @@ public class Version {
             buildVendor = p.getImplementationVendor();
         }
 
-        if (p.getImplementationTitle() != null) {
-            frameworkTitle = p.getImplementationTitle();
+//         if (p.getImplementationTitle() != null) {
+//             frameworkTitle = p.getImplementationTitle();
+//         }
+        
+        if (p.getSpecificationTitle() != null) {
+            frameworkTitle = p.getSpecificationTitle();
         }
         
         if (p.getImplementationVersion() != null) {
@@ -114,28 +118,66 @@ public class Version {
 
 
 
+    /**
+     * Gets the current version of the framework.
+     *
+     * @return the current version, or <code>"unknown"</code> if no
+     * version information is available.
+     */
     public static final String getVersion() {
         return frameworkVersion;
     }
 
 
+    /**
+     * Gets the build date of the framework.
+     *
+     * @return the build date, or the date
+     * <code>1970-01-01T01:00:00</code> if no such information is
+     * available.
+     */
     public static final Date getBuildDate() {
         return buildDate;
     }
     
 
+    /**
+     * Gets the name of the host on which the framework was built.
+     *
+     * @return the host name, or <code>"unknown"</code> if no such
+     * information is available.
+     */
     public static final String getBuildHost() {
         return buildHost;
     }
 
     
+    /**
+     * Gets the build vendor.
+     */
     public static final String getBuildVendor() {
         return buildVendor;
     }
 
 
+    /**
+     * Gets the title of the framework.
+     */
     public static final String getFrameworkTitle() {
         return frameworkTitle;
+    }
+    
+
+    /**
+     * Gets the ID as provided by the version control system. Examples
+     * of this include a CVS tag, or a Subversion global revision
+     * number. This information should only be used to track different
+     * development versions.
+     *
+     * @return the ID of the version control system.
+     */
+    public static final String getVersionControlID() {
+        return versionControlID;
     }
     
 }

@@ -89,6 +89,11 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         AuthenticationException, ResourceLockedException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
+        if (ctx == null) {
+            return repository.retrieve(token, uri, forProcessing);
+        }
+
+        
         Resource r = null;
         Throwable t = null;
 
@@ -143,7 +148,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         IllegalOperationException, ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }
         repository.store(token, resource);
     }
 
@@ -153,7 +160,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         IllegalOperationException, ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }
         repository.storeContent(token, uri, byteStream);
     }
 
@@ -171,7 +180,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }        
         return repository.createDocument(token, uri);
     }
 
@@ -190,7 +201,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         ResourceNotFoundException, ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }        
         repository.copy(token, srcUri, destUri, depth, overwrite, preserveACL);
     }
 
@@ -202,7 +215,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         ResourceNotFoundException, ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }
         repository.move(token, srcUri, destUri, overwrite);
     }
 
@@ -213,7 +228,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }
         repository.delete(token, uri);
     }
 
@@ -221,8 +238,8 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         throws AuthorizationException, AuthenticationException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        if (ctx.getResourceHit(token, uri, true) != null
-            || ctx.getResourceHit(token, uri, false) != null) {
+        if (ctx != null && (ctx.getResourceHit(token, uri, true) != null
+                            || ctx.getResourceHit(token, uri, false) != null)) {
             return true;
         }
         return repository.exists(token, uri);
@@ -236,7 +253,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }
         return repository.lock(token, uri, lockType, ownerInfo,
                                depth, requestedTimoutSeconds);
     }
@@ -247,7 +266,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }
         repository.unlock(token, uri, lockToken);
     }
 
@@ -263,7 +284,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
-        ctx.clear();
+        if (ctx != null) {
+            ctx.clear();
+        }
         repository.storeACL(token, uri, acl);
     }
 

@@ -185,5 +185,12 @@ public class DefaultErrorHandler implements ErrorHandler, InitializingBean {
         }
     }
     
-
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName()).append(": [");
+        sb.append("errorView = ").append(this.errorView).append(",");
+        sb.append("errorType = ").append(this.errorType.getName()).append("]");
+        return sb.toString();
+    }
+    
 }

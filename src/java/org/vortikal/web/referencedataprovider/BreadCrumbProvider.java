@@ -114,7 +114,6 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
     private Set skippedURLSet = null;
     
     
-
     public final Repository getRepository() {
         return repository;
     }
@@ -221,7 +220,8 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
                 }
                 String title = getTitle(r);
                 String url = null;
-                if (!this.skippedURLSet.contains(incrementalPath[i])) {
+                if (this.skippedURLSet == null
+                    || !this.skippedURLSet.contains(incrementalPath[i])) {
                     url = service.constructLink(r, principal, false);
                 }
 
@@ -235,10 +235,8 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
             logger.debug("Generated breadcrumb path: " + breadCrumb);
         }
 
-
         model.put(this.breadcrumbName,
                   (BreadcrumbElement[]) breadCrumb.toArray((new BreadcrumbElement[0])));
-
     }
 
 

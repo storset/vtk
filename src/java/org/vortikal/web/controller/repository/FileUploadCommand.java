@@ -35,6 +35,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 
+/**
+ * TODO: extend org.vortikal.web.controller.AbstractSaveCancelCommand?
+ *
+ */
 public class FileUploadCommand {
 
     private String submitURL = null;

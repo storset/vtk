@@ -33,6 +33,10 @@ package org.vortikal.web.controller.repository;
 
 
 
+/**
+ * TODO: extend org.vortikal.web.controller.AbstractSaveCancelCommand?
+ *
+ */
 public class CreateCollectionCommand {
 
     private String submitURL = null;

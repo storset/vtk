@@ -38,13 +38,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import org.vortikal.repository.Ace;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
@@ -64,7 +61,6 @@ import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.PrincipalStore;
 import org.vortikal.security.TokenManager;
 
 

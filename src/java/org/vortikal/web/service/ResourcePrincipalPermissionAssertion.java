@@ -45,7 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Assert that the current user has the permission 'permission' on the current resource
- * 
+ * FIXME: replace store with manager!
  * Properties:
  * 
  * <ul>

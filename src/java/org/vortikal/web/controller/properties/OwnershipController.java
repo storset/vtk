@@ -85,7 +85,7 @@ public class OwnershipController extends SimpleFormController implements Initial
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
         OwnershipCommand command =
-            new OwnershipCommand(resource.getOwner().getQualifiedName(), url);
+            new OwnershipCommand(resource.getOwner().getName(), url);
         return command;
     }
 

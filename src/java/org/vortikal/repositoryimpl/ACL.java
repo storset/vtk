@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Ace;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
@@ -50,10 +52,6 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.PrincipalStore;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 public class ACL implements Cloneable {
@@ -592,7 +590,12 @@ public class ACL implements Cloneable {
             String principalName = null;
 
             if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_URL) {
-                principalName = principal.getURL().trim();
+                //TODO: document behaviour where name = name@defaultdomain
+                if (principal.isUser())
+                    principalName = principalManager.getPrincipal(
+                            principal.getURL().trim()).getQualifiedName();
+                else 
+                    principalName = principal.getURL().trim();
             } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_ALL) {
                 principalName = "dav:all";
             } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_OWNER) {

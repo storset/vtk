@@ -82,7 +82,7 @@ public class PropertyConfigurableMD5PrincipalStore
         if (principal == null) return false;
         if (!domain.equals(principal.getDomain())) return false;
 
-        return this.principals.containsKey(principal.getName());
+        return this.principals.containsKey(principal.getQualifiedName());
     }
     
 
@@ -117,7 +117,7 @@ public class PropertyConfigurableMD5PrincipalStore
         }
 
         List members = (List) this.groups.get(groupName);
-        return members.contains(principal.getName());
+        return members.contains(principal.getQualifiedName());
     }
 
 

@@ -180,6 +180,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
         
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
+
+        
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         Resource resource = repository.retrieve(token, uri, false);
@@ -217,9 +219,14 @@ public class ACLEditController extends SimpleFormController implements Initializ
         }
         
         if (editCommand.getRemoveUserAction() != null) {
+            Principal principal = principalManager.getPrincipal(editCommand.getUserName());
+            String qualifiedName = principal.getQualifiedName();
 
+            System.out.println("Qualifiedname: " + qualifiedName);
+            System.out.println("Input: " + editCommand.getUserName());
+            
             Ace[] newACL = AclUtil.withdrawPrivilegeFromACL(
-                editCommand.getEditedACL(), editCommand.getUserName(),
+                editCommand.getEditedACL(), qualifiedName,
                 this.privilege);
             editCommand.setEditedACL(newACL);
             return showForm(request, response, new BindException(
@@ -236,9 +243,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
                                 this.getCommandName()));
             
         } else if (editCommand.getAddUserAction() != null) {
+            Principal principal = principalManager.getPrincipal(editCommand.getUserName());
+            String qualifiedName = principal.getQualifiedName();
+            System.out.println("Qualifiedname: " + qualifiedName);
+            System.out.println("Input: " + editCommand.getUserName());
+            
             Ace[] newACL = AclUtil.addPrivilegeToACL(
-                resource, editCommand.getEditedACL(),
-                editCommand.getUserName(), this.privilege, true);
+                resource, editCommand.getEditedACL(), qualifiedName, this.privilege, true);
             editCommand.setEditedACL(newACL);
             ModelAndView mv =  showForm(
                 request, response, new BindException(

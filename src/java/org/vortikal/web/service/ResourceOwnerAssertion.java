@@ -34,56 +34,47 @@
  */
 package org.vortikal.web.service;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
+import org.vortikal.repositoryimpl.RoleManager;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
 
 /**
  *
  */
-public class ResourceOwnerAssertion extends AssertionSupport implements ResourceAssertion {
+public class ResourceOwnerAssertion extends AssertionSupport implements ResourceAssertion, InitializingBean {
 
-    private String owner = "";
-
-
-	/**
-	 * @return Returns the owner.
-	 */
-	public String getOwner() {
-		return owner;
-	}
-
-	
-	public void setOwner(String owner) {
-        if (owner == null) throw new IllegalArgumentException(
-            "Property 'owner' cannot be null");
-        
-        this.owner = owner;
-    }
-    
+    private RoleManager roleManager;
 
     public boolean matches(Resource resource) {
-        return owner.equals(resource.getOwner());
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        
+        if (principal == null) return false;
+        
+        return resource.getOwner().equals(principal) || roleManager.hasRole(principal.getQualifiedName(),RoleManager.ROOT);
     }
 
 
     public boolean conflicts(Assertion assertion) {
-		if (assertion instanceof ResourceOwnerAssertion) {
-			return ! (this.owner.equals(
-					((ResourceOwnerAssertion)assertion).getOwner()));
-		}
 		return false;
 	}
 
 
-	/** 
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append(super.toString());
-		sb.append("; owner = ").append(this.owner);
+    /**
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet() throws Exception {
 
-		return sb.toString();
-	}
+        if (roleManager == null) 
+            throw new BeanInitializationException("Property 'roleManager' must be set");
+    }
 
+    /**
+     * @param roleManager The roleManager to set.
+     */
+    public void setRoleManager(RoleManager roleManager) {
+        this.roleManager = roleManager;
+    }
 }

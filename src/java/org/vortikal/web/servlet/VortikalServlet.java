@@ -303,7 +303,6 @@ public class VortikalServlet extends DispatcherServlet {
                 logError(request, e);
                 throw new ServletException("Fatal authentication processing error", e);
             } catch (Throwable t) {
-                t.printStackTrace();
                 failureCause = t;
                 handleError(request, response, t);
             }

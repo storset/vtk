@@ -48,15 +48,25 @@ import org.vortikal.web.view.ReferenceDataProviding;
 
 
 /**
- * TODO: This must be documented.
+ * A reference data providing view resolver. This is an abstract
+ * implementation of {@link ViewResolver} that in addition to
+ * resolving views also invokes {@link Provider reference data
+ * provider} instances that may manipulate the MVC model object before
+ * the view is rendered.
+ *
+ * <p>Subclasses must implement the {@link #getView} method to
+ * actually resolve a view.
+ *
+ * @see Provider
+ *
+ * FIXME: The functionality in this class (invoking reference data
+ * providers) should really be placed elsewhere. (At least it should
+ * not be performed in the view resolving stage.)
  */
 public abstract class ReferenceDataProvidingViewResolver implements ViewResolver {
 
     private static Log logger = LogFactory.getLog(ReferenceDataProvidingViewResolver.class);
 
-    /**
-     * @see org.springframework.web.servlet.ViewResolver#resolveViewName(java.lang.String, java.util.Locale)
-     */
     public View resolveViewName(String viewName, Locale locale) throws Exception {
 
         View view = getView(viewName);
@@ -72,18 +82,32 @@ public abstract class ReferenceDataProvidingViewResolver implements ViewResolver
                 }
                 return new ProviderRunningView(view, providers);
             }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found no reference data providers for view " 
+                             + viewName);
+            }
         }
 
         return view;
     }
 
+
+    /**
+     * Actually resolves the view. Must be implemented by subclasses.
+     *
+     * @param viewName a the name of the view.
+     * @return the resolved view.
+     */
     protected abstract View getView(String viewName);
     
+
+
     /**
      * Wrapper class for the resolved view, running the <code>providers</code>
      * before the wrapped view is run (and the necessary model is available)
      */
-    public class ProviderRunningView implements View {
+    private class ProviderRunningView implements View {
 
         private Provider[] providers;
         private View view;
@@ -102,9 +126,6 @@ public abstract class ReferenceDataProvidingViewResolver implements ViewResolver
         }
         
 
-        /**
-         * @see org.springframework.web.servlet.View#render(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-         */
         public void render(Map model, HttpServletRequest request,
                            HttpServletResponse response) throws Exception {
 

@@ -341,7 +341,7 @@ public class Collection extends Resource implements Cloneable {
             lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
         }
 
-        if (!this.owner.equals(dto.getOwner())) {
+        if (!this.owner.equals(dto.getOwner().getQualifiedName())) {
             /* Attempt to take ownership, only the owner of a parent
              * resource may do that, so do it in a secure manner: */
             setOwner(principal, dto, dto.getOwner().getQualifiedName(), roleManager);

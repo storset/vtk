@@ -97,13 +97,13 @@ public class PropertyConfigurableMD5PrincipalStore implements MD5PasswordPrincip
     }
 
 
-    public boolean isMember(String principal, String groupName) {
+    public boolean isMember(Principal principal, String groupName) {
         if (!this.groups.containsKey(groupName)) {
             return false;
         }
 
         List members = (List) this.groups.get(groupName);
-        return members.contains(principal);
+        return members.contains(principal.getQualifiedName());
     }
 
 

@@ -82,7 +82,7 @@ public interface PrincipalStore {
      * @return true if the group exists and the given principal is a
      * member of that group, false otherwise.
      */
-    public boolean isMember(String principal, String groupName);
+    public boolean isMember(Principal principal, String groupName);
     
 
 }

@@ -172,7 +172,7 @@ public class Document extends Resource implements Cloneable {
 
         setDisplayName(dto.getDisplayName());
 
-        if (!this.owner.equals(dto.getOwner())) {
+        if (!this.owner.equals(dto.getOwner().getQualifiedName())) {
             /* Attempt to delegate ownership, only the owner of
              * a resource may do it (or root ...) */
             setOwner(principal, dto, dto.getOwner().getQualifiedName(), roleManager);

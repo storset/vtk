@@ -135,7 +135,7 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     }
     
 
-    public boolean isMember(String principal, String groupName)
+    public boolean isMember(Principal principal, String groupName)
         throws AuthenticationProcessingException {
 
         GroupItem item = (GroupItem) cache.get(principal);

@@ -333,7 +333,7 @@ public class ACL implements Cloneable {
             ACLPrincipal p = (ACLPrincipal) i.next();
 
             if (p.isGroup()) {
-                if (principalManager.isMember(principal.getQualifiedName(), p.getUrl())) {
+                if (principalManager.isMember(principal, p.getUrl())) {
                     return true;
                 }
             }

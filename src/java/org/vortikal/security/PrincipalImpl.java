@@ -53,7 +53,7 @@ class PrincipalImpl implements Principal, java.io.Serializable {
         if (another instanceof Principal) {
             String anotherName = ((Principal)another).getQualifiedName();
             if ((getQualifiedName() == null &&  anotherName == null) || 
-                (getQualifiedName() != null && getName().equals(anotherName))) {
+                (getQualifiedName() != null && getQualifiedName().equals(anotherName))) {
                 return true;
             }
         }   

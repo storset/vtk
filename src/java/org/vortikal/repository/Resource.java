@@ -815,7 +815,7 @@ public class Resource implements java.io.Serializable, Cloneable {
                     }
                 } else {
                     if ((principal != null) && acl[i].isGranted() &&
-                        principalStore.isMember(principal.getQualifiedName(),
+                        principalStore.isMember(principal,
                                                 p.getURL())) {
                         privileges.addAll(Arrays.asList(acl[i].getPrivileges()));
                     }

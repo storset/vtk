@@ -44,8 +44,8 @@ import java.util.regex.Pattern;
 
  * <p>Configurable properties:
  * <ul>
- *   <li><code>removeTitles</code> - default <code>true</code></li>
- *   <li><code>removeCharsets</code> - default <code>true</code></li>
+ *   <li><code>removeTitles</code> - default <code>true</code>
+ *   <li><code>removeCharsets</code> - default <code>true</code>
  * </ul>
  */
 public class HtmlHeadContentFilter
@@ -83,7 +83,7 @@ public class HtmlHeadContentFilter
         }
 
         
-        // Looks for title element
+        // Look for title element
         Matcher titleMatcher = TITLE_REGEXP.matcher(headContent);
             
         if (removeTitles && titleMatcher.find(0)) {
@@ -92,7 +92,7 @@ public class HtmlHeadContentFilter
             
         String newHeadContent = "";
 
-        	// Looks for a meta element which declares a charset.
+        // Look for a meta element which declares a charset.
         Matcher charsetMatcher = CHARACTER_ENCODING__REGEXP.matcher(headContent);
 	
         if (removeCharsets && charsetMatcher.find(0)) {
@@ -110,19 +110,15 @@ public class HtmlHeadContentFilter
             logger.debug("New head content:\n" + newHeadContent);
         }
         
-        return headMatcher.replaceFirst(newHeadContent);
+        return content.substring(0, headMatcher.start())
+            + newHeadContent + content.substring(headMatcher.end());
     }
     
     
-    /**
-     * @param removeCharsets The removeCharsets to set.
-     */
     public void setRemoveCharsets(boolean removeCharsets) {
         this.removeCharsets = removeCharsets;
     }
-    /**
-     * @param removeTitles The removeTitles to set.
-     */
+
     public void setRemoveTitles(boolean removeTitles) {
         this.removeTitles = removeTitles;
     }

@@ -11,6 +11,14 @@
     <release version="SNAPSHOT" date="in SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="gormap" type="add">
+        Added RequestURIRegexpWrappingAssertion, for selectively
+        applying assertions based on regular expression matching on
+        the request URI. One use case for such an assertion is to
+        require that certain subtrees in the URI space are only
+        accessible through https.
+      </action>
+
       <action dev="storset" type="add">
         Added LinkConstructor as an optional parameter to xsl
         transformation with ResourceXsltView. This makes it possible

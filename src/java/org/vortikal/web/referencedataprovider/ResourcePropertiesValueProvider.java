@@ -30,8 +30,12 @@
  */
 package org.vortikal.web.referencedataprovider;
 
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,9 +47,6 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
  * Resource property value reference data provider. Takes a list of
  * resource property namespaces and names, and puts their values in
@@ -55,7 +56,15 @@ import org.apache.commons.logging.Log;
  * <p>Configurable properties:
  * <ul>
  *  <li> <code>repository</code> - the content {@link Repository}
- *  <li> <code>modelNames</code> - array of the names to use for the submodels generated
+ *  <li> <code>modelNames</code> - a {@link Map} from {@link
+ *      Property#getNamespace namespaces} to submodel names that are
+ *      generated. For every namespace in the <code>properties</code>
+ *      configuration property there must exist a mapping in this map,
+ *      including the namespace for the standard properties
+ *      (<code>null</code>). For example, the mapping
+ *      <code>(http://foo.bar/baaz, title)</code> will cause all
+ *      specified properties of that namespace to be published into
+ *      the submodel <code>title</code>.
  *  <li> <code>properties</code> - array of
  *       <code>namespace:name</code> {@link String strings} of the
  *       resource properties whose values will be put in the model. If
@@ -80,16 +89,20 @@ import org.apache.commons.logging.Log;
  *         <li><code>uri</code> - {@link Resource#getURI}
  *         <li><code>isCollection</code> - {@link Resource#isCollection}
  *       </ul>
- *  <li><code>localizationKeys</code> - array of the names of
- *      localization keys. If such a key is specified for a property,
- *      instead of providing the regular value in the model, a
- *      localized message with the specified key and the value as
- *      parameter (with the default being the value itself) is looked
- *      up and provided in the model.  For example, if
- *      <code>namespace</code> is <code>null</code>, <code>name</code>
- *      is <code>displayName</code> and <code>localizationKey</code>
- *      is <code>foo.bar</code>, the value provided in the model will
- *      be (in pseudo-code):
+ *       A namespace followed by <code>:*</code> is interpreted as a
+ *       shorthand notation for "all properties of the
+ *       namespace". When this notation is used, all properties of
+ *       that namespace are supplied in the model.
+ *  <li><code>localizationKeys</code> - a map from property
+ *      <code>namespace:name</code> (or only <code>name</code> in case
+ *      of standard properties) strings to localization keys. If such
+ *      a mapping exists for a property, instead of providing the
+ *      regular value in the model, a localized message with the
+ *      specified key and the value as parameter (with the default
+ *      being the value itself) is looked up and provided in the
+ *      model.  For example, if the mapping <code>(displayName,
+ *      foo.bar)</code> is specified, the value provided in the model
+ *      will be (in pseudo-code):
  *      <code>getLocalizedMessage(resource.getProperty("displayName").getValue(),
  *      value)</code>.
  * </ul>
@@ -103,9 +116,11 @@ import org.apache.commons.logging.Log;
  * </ul>
  * 
  */
-public class ResourcePropertiesValueProvider implements Provider, InitializingBean {
+public class ResourcePropertiesValueProvider 
+  implements Provider, InitializingBean {
 
-    private static Log logger = LogFactory.getLog(ResourcePropertiesValueProvider.class);
+    private static Log logger =
+        LogFactory.getLog(ResourcePropertiesValueProvider.class);
 
     private Repository repository = null;
     private String[] properties = null;
@@ -113,8 +128,8 @@ public class ResourcePropertiesValueProvider implements Provider, InitializingBe
     private String[] namespaces = null;
     private String[] names = null;
 
-    private String[] localizationKeys = null;
-    private String[] modelNames = null;
+    private Map localizationKeys = null;
+    private Map modelNames = null;
 
 
 
@@ -123,7 +138,7 @@ public class ResourcePropertiesValueProvider implements Provider, InitializingBe
     }
     
 
-    public void setModelNames(String[] modelNames) {
+    public void setModelNames(Map modelNames) {
         this.modelNames = modelNames;
     }
     
@@ -133,7 +148,7 @@ public class ResourcePropertiesValueProvider implements Provider, InitializingBe
     }
     
 
-    public void setLocalizationKeys(String[] localizationKeys) {
+    public void setLocalizationKeys(Map localizationKeys) {
         this.localizationKeys = localizationKeys;
     }
     
@@ -152,20 +167,16 @@ public class ResourcePropertiesValueProvider implements Provider, InitializingBe
                 "Bean property 'properties' must be set");
         }
 
-        if (this.modelNames.length != this.properties.length) {
-            throw new BeanInitializationException(
-                "Properties 'modelNames' and 'properties' "
-                + "must be of the same size");
-        }
-
-        if (this.localizationKeys != null
-            && this.localizationKeys.length != this.properties.length) {
-            throw new BeanInitializationException(
-                "Property 'localizationKeys' must be of the same size "
-                + "as 'properties' and 'modelNames'");
-        }
-
         splitProperties();
+
+        for (int i = 0; i < this.namespaces.length; i++) {
+            if (!this.modelNames.containsKey(this.namespaces[i])) {
+                throw new BeanInitializationException(
+                    "The 'modelNames' bean property does not contain "
+                    + "an entry for resource property namespace '"
+                    + this.namespaces[i] + "'");
+            }
+        }
     }
     
 
@@ -180,43 +191,84 @@ public class ResourcePropertiesValueProvider implements Provider, InitializingBe
         Resource resource = repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(),
                                                 true);
+
         for (int i = 0; i < this.properties.length; i++) {
 
-            Object value = null;
-            
-            if (this.namespaces[i] != null) {
+            String subModelKey = (String) this.modelNames.get(this.namespaces[i]);
+            Map subModel = (Map) model.get(subModelKey);
+            if (subModel == null) {
+                subModel = new HashMap();
+                model.put(subModelKey, subModel);
+            }
 
-                Property property = resource.getProperty(this.namespaces[i], this.names[i]);
-                if (property != null) {
-                    value = property.getValue();
+            if (this.namespaces[i] != null && "*".equals(this.names[i])) {
+
+                Property[] expandedProps = resource.getPropertiesByNamespace(this.namespaces[i]);
+                for (int j = 0; j < expandedProps.length; j++) {
+                    
+                    subModel.put(expandedProps[j].getName(),
+                                 maybeLocalizeValue(expandedProps[j].getNamespace(),
+                                                    expandedProps[j].getName(),
+                                                    expandedProps[j].getValue(),
+                                                    request));
                 }
-            
+
             } else {
-                value = getStandardPropertyValue(resource, this.names[i]);
-            }
 
-            if (value != null && this.localizationKeys != null && this.localizationKeys[i] != null) {
-                org.springframework.web.servlet.support.RequestContext springContext =
-                    new org.springframework.web.servlet.support.RequestContext(request);
-                value = springContext.getMessage(this.localizationKeys[i],
-                                                 new Object[] {value},
-                                                 value.toString());
+                Object value = null;
+                if (this.namespaces[i] == null) {
+                    value = getStandardPropertyValue(resource, this.names[i]);
+                } else {
+                    Property property = resource.getProperty(this.namespaces[i], this.names[i]);
+                    if (property != null) {
+                        value = property.getValue();
+                    }
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Got resource property: '" + this.namespaces[i]
+                                 + ":" + this.names[i] + "' = " + value);
+                }
+                value = maybeLocalizeValue(this.namespaces[i], this.names[i],
+                                           value, request);
+                subModel.put(this.names[i], value);
             }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug(
-                    "Publishing resource property: (" + this.namespaces[i] + ": "
-                    + this.names[i] + ")" + " with value '" + value + "' "
-                    + "in model as '" + this.modelNames[i] + "'");
-            }
-
-        
-            model.put(this.modelNames[i], value);
         }
     }
+    
 
+    private Object maybeLocalizeValue(String namespace, String name,
+                                      Object value, HttpServletRequest request) {
+        if (this.localizationKeys == null) {
+            return value;
+        }
 
-    private Object getStandardPropertyValue(Resource resource, String propertyName) {
+        if (value == null) {
+            return value;
+        }
+
+        String key = name;
+        if (namespace != null) {
+            key = namespace + ":" + key;
+        }
+
+        // Look up real key from localizationKeys:
+        key = (String) this.localizationKeys.get(key);
+        if (key == null) {
+            return value;
+        }
+
+        org.springframework.web.servlet.support.RequestContext springContext =
+            new org.springframework.web.servlet.support.RequestContext(request);
+                
+        value = springContext.getMessage(key, new Object[] {value},
+                                         value.toString());
+        
+        return value;
+    }
+    
+
+    private Object getStandardPropertyValue(Resource resource,
+                                            String propertyName) {
 
         if ("characterEncoding".equals(propertyName)) {
             return resource.getCharacterEncoding();

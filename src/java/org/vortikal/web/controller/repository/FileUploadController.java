@@ -84,7 +84,7 @@ public class FileUploadController extends SimpleFormController {
         // cast the bean
         FileUploadCommand fileUploadCommand = (FileUploadCommand) command;
 
-        if (fileUploadCommand.getCancel() != null) {
+        if (fileUploadCommand.getCancelAction() != null) {
             fileUploadCommand.setDone(true);
             return;
         }

@@ -100,7 +100,7 @@ public class OwnershipController extends SimpleFormController implements Initial
         OwnershipCommand ownershipCommand =
             (OwnershipCommand) command;
 
-        if (ownershipCommand.getCancel() != null) {
+        if (ownershipCommand.getCancelAction() != null) {
             ownershipCommand.setDone(true);
             return;
         }

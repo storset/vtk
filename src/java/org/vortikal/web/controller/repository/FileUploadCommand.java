@@ -31,40 +31,19 @@
 package org.vortikal.web.controller.repository;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 
-
-
-/**
- * TODO: extend org.vortikal.web.controller.AbstractSaveCancelCommand?
- *
- */
-public class FileUploadCommand {
-
-    private String submitURL = null;
-    private boolean done = false;
+public class FileUploadCommand extends AbstractSaveCancelCommand {
 
     private MultipartFile file;
     private String cancel;
     
-    /**
-     * Gets the value of cancel
-     *
-     * @return the value of cancel
-     */
-    public String getCancel() {
-        return this.cancel;
+    public FileUploadCommand(String submitURL) {
+        super(submitURL);
     }
 
-    /**
-     * Sets the value of cancel
-     *
-     * @param cancel Value to assign to this.cancel
-     */
-    public void setCancel(String cancel)  {
-        this.cancel = cancel;
-    }
-    
+        
     public void setFile(MultipartFile file) {
         this.file = file;
     }
@@ -73,42 +52,5 @@ public class FileUploadCommand {
         return file;
     }
 
-    public FileUploadCommand(String submitURL) {
-        this.submitURL = submitURL;
-    }
-
-        
-    /**
-     * Gets the value of submitURL
-     *
-     * @return the value of submitURL
-     */
-    public String getSubmitURL() {
-        return this.submitURL;
-    }
-
-    /**
-     * Sets the value of submitURL
-     *
-     * @param submitURL Value to assign to this.submitURL
-     */
-    public void setSubmitURL(String submitURL)  {
-        this.submitURL = submitURL;
-    }
-
-
-    /**
-     * @return Returns the done.
-     */
-    public boolean isDone() {
-        return done;
-    }
-    
-    /**
-     * @param done The done to set.
-     */
-    public void setDone(boolean done) {
-        this.done = done;
-    }
 }
 

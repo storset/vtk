@@ -51,9 +51,6 @@ public class CreateDocumentCommandValidator
         this.principalStore = principalStore;
     }
     
-    /**
-     * @see org.springframework.validation.Validator#supports(java.lang.Class)
-     */
     public boolean supports(Class clazz) {
         return (clazz == CreateDocumentCommand.class);
 
@@ -63,7 +60,7 @@ public class CreateDocumentCommandValidator
         CreateDocumentCommand createDocumentCommand =
             (CreateDocumentCommand) command;
 
-        if (createDocumentCommand.getCancel() != null) return;
+        if (createDocumentCommand.getCancelAction() != null) return;
         
         if (createDocumentCommand.getName() == null
             || createDocumentCommand.getName().trim().equals("")) {

@@ -132,7 +132,7 @@ public class CreateDocumentController extends SimpleFormController
         
         CreateDocumentCommand createDocumentCommand =
             (CreateDocumentCommand) command;
-        if (createDocumentCommand.getCancel() != null) {
+        if (createDocumentCommand.getCancelAction() != null) {
             createDocumentCommand.setDone(true);
             return;
         }

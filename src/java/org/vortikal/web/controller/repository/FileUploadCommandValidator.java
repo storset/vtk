@@ -79,7 +79,7 @@ public class FileUploadCommandValidator implements Validator, InitializingBean {
 
         FileUploadCommand fileUploadCommand =
             (FileUploadCommand) command;
-        if (fileUploadCommand.getCancel() != null) return;
+        if (fileUploadCommand.getCancelAction() != null) return;
 
         // let's see if there's content there
         MultipartFile file = fileUploadCommand.getFile();

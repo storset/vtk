@@ -30,80 +30,20 @@
  */
 package org.vortikal.web.controller.repository;
 
+import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 
+public class CreateDocumentCommand extends AbstractSaveCancelCommand {
 
-/**
- * TODO: extend org.vortikal.web.controller.AbstractSaveCancelCommand?
- *
- */
-public class CreateDocumentCommand {
-
-    private String submitURL = null;
-    private String cancel;
-    private boolean done = false;
     private String name = null;
     private String sourceURI = null;
     
     
     public CreateDocumentCommand(String submitURL) {
-        this.submitURL = submitURL;
+        super(submitURL);
     }
 
     
-
-    /**
-     * Gets the value of cancel
-     *
-     * @return the value of cancel
-     */
-    public String getCancel() {
-        return this.cancel;
-    }
-
-    /**
-     * Sets the value of cancel
-     *
-     * @param cancel Value to assign to this.cancel
-     */
-    public void setCancel(String cancel)  {
-        this.cancel = cancel;
-    }
-
-
-    /**
-     * Gets the value of submitURL
-     *
-     * @return the value of submitURL
-     */
-    public String getSubmitURL() {
-        return this.submitURL;
-    }
-
-    /**
-     * Sets the value of submitURL
-     *
-     * @param submitURL Value to assign to this.submitURL
-     */
-    public void setSubmitURL(String submitURL)  {
-        this.submitURL = submitURL;
-    }
-
-
-    /**
-     * @return Returns the done.
-     */
-    public boolean isDone() {
-        return done;
-    }
-    
-    /**
-     * @param done The done to set.
-     */
-    public void setDone(boolean done) {
-        this.done = done;
-    }
-
 
     /**
      * Gets the value of name

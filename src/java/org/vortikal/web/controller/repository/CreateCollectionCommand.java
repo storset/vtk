@@ -30,76 +30,14 @@
  */
 package org.vortikal.web.controller.repository;
 
+import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
+public class CreateCollectionCommand extends AbstractSaveCancelCommand {
 
-
-/**
- * TODO: extend org.vortikal.web.controller.AbstractSaveCancelCommand?
- *
- */
-public class CreateCollectionCommand {
-
-    private String submitURL = null;
-    private boolean done = false;
-    private String cancel;
     private String name = null;
     
-    /**
-     * Gets the value of cancel
-     *
-     * @return the value of cancel
-     */
-    public String getCancel() {
-        return this.cancel;
-    }
-
-    /**
-     * Sets the value of cancel
-     *
-     * @param cancel Value to assign to this.cancel
-     */
-    public void setCancel(String cancel)  {
-        this.cancel = cancel;
-    }
-
-
     public CreateCollectionCommand(String submitURL) {
-        this.submitURL = submitURL;
-    }
-
-    
-
-    /**
-     * Gets the value of submitURL
-     *
-     * @return the value of submitURL
-     */
-    public String getSubmitURL() {
-        return this.submitURL;
-    }
-
-    /**
-     * Sets the value of submitURL
-     *
-     * @param submitURL Value to assign to this.submitURL
-     */
-    public void setSubmitURL(String submitURL)  {
-        this.submitURL = submitURL;
-    }
-
-
-    /**
-     * @return Returns the done.
-     */
-    public boolean isDone() {
-        return done;
-    }
-    
-    /**
-     * @param done The done to set.
-     */
-    public void setDone(boolean done) {
-        this.done = done;
+        super(submitURL);
     }
 
 
@@ -111,6 +49,7 @@ public class CreateCollectionCommand {
     public String getName() {
         return this.name;
     }
+
 
     /**
      * Sets the value of name

@@ -30,40 +30,19 @@
  */
 package org.vortikal.web.controller.properties;
 
+import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 
-
-public class OwnershipCommand {
+public class OwnershipCommand extends AbstractSaveCancelCommand {
 
     private String owner;
-    private String submitURL = null;
-    private boolean done = false;
-    private String cancel;
-    
-    /**
-     * Gets the value of cancel
-     *
-     * @return the value of cancel
-     */
-    public String getCancel() {
-        return this.cancel;
-    }
 
-    /**
-     * Sets the value of cancel
-     *
-     * @param cancel Value to assign to this.cancel
-     */
-    public void setCancel(String cancel)  {
-        this.cancel = cancel;
-    }
 
     public OwnershipCommand(String owner, String submitURL) {
+        super(submitURL);
         this.owner = owner;
-        this.submitURL = submitURL;
     }
 
-    
 
     /**
      * Gets the value of owner
@@ -81,40 +60,6 @@ public class OwnershipCommand {
      */
     public void setOwner(String owner)  {
         this.owner = owner;
-    }
-    
-    
-    /**
-     * Gets the value of submitURL
-     *
-     * @return the value of submitURL
-     */
-    public String getSubmitURL() {
-        return this.submitURL;
-    }
-
-    /**
-     * Sets the value of submitURL
-     *
-     * @param submitURL Value to assign to this.submitURL
-     */
-    public void setSubmitURL(String submitURL)  {
-        this.submitURL = submitURL;
-    }
-
-
-    /**
-     * @return Returns the done.
-     */
-    public boolean isDone() {
-        return done;
-    }
-    
-    /**
-     * @param done The done to set.
-     */
-    public void setDone(boolean done) {
-        this.done = done;
     }
 }
 

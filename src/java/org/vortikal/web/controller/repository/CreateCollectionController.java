@@ -77,7 +77,7 @@ public class CreateCollectionController extends SimpleFormController {
         
         CreateCollectionCommand createCollectionCommand =
             (CreateCollectionCommand) command;
-        if (createCollectionCommand.getCancel() != null) {
+        if (createCollectionCommand.getCancelAction() != null) {
             createCollectionCommand.setDone(true);
             return;
         }

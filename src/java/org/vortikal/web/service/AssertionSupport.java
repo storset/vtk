@@ -28,17 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import org.springframework.beans.factory.BeanNameAware;
 
-/**
- * 
- */
 public abstract class AssertionSupport implements BeanNameAware {
 
     private String beanName;

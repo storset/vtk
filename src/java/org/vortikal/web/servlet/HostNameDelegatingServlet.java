@@ -103,7 +103,7 @@ public class HostNameDelegatingServlet extends HttpServletBean {
         
         if (servletName == null) {
             throw new ServletException(
-                "No servlet mapping for host name '" + hostName + "'");
+                "No servlet mapping for request '" + key + "'");
         }
         
         RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);

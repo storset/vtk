@@ -62,6 +62,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.TokenManager;
+import org.vortikal.security.roles.RoleManager;
 
 
 

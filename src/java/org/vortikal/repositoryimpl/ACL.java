@@ -52,6 +52,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.roles.RoleManager;
 
 
 public class ACL implements Cloneable {
@@ -150,8 +151,8 @@ public class ACL implements Cloneable {
          *    is a group identifier and the user is a member of that group
          * */
 
-        // FIXME!!! read-processed må godta read også!
-        // forel¿pig ligger read-processed ikke under read, men flatt!
+        // FIXME!!! read-processed mï¿½ godta read ogsï¿½!
+        // forelï¿½pig ligger read-processed ikke under read, men flatt!
         // Condition 1:
         if (userMatch(principalList, "dav:all")) {
             return;

@@ -122,6 +122,7 @@ public class VortikalServlet extends DispatcherServlet {
     private Log logger = LogFactory.getLog(this.getClass().getName());
     private Log requestLogger = LogFactory.getLog(this.getClass().getName() + ".Request");
     private Log errorLogger = LogFactory.getLog(this.getClass().getName() + ".Error");
+
     private SecurityInitializer securityInitializer;
     private RepositoryContextInitializer repositoryContextInitializer;
     private RequestContextInitializer requestContextInitializer;

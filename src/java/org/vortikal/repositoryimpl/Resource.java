@@ -53,6 +53,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.roles.RoleManager;
 
 
 public abstract class Resource implements Cloneable {

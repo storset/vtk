@@ -37,9 +37,9 @@ package org.vortikal.web.service;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.RoleManager;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.security.roles.RoleManager;
 
 /**
  *

@@ -12,6 +12,19 @@
       <!-- add 'action' entries here, newest on top: -->
 
       <action dev="gormap" type="update">
+        It is now possible for services to 'hook into' another service
+        trough a new category-based lookup system, avoiding the need
+        to explicitly refer to child services from an existing
+        service. (As a consequence, services may now belong to more
+        than one category.)
+      </action>
+
+      <action dev="gormap" type="update">
+        Added refresh functionality to the document templates listing
+        component for creating new documents.
+      </action>
+
+      <action dev="gormap" type="update">
         Improved character encoding for HTML documents in plaintext
         editing component. Now checks actual HTML content for meta
         tags if no character encoding is set on the resource itself.

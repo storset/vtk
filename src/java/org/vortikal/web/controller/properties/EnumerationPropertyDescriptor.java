@@ -79,10 +79,11 @@ public class EnumerationPropertyDescriptor implements InitializingBean {
                 "Bean property 'name' not set");
         }
 
-        if (this.values == null) {
-            throw new BeanInitializationException(
-                "Bean property 'values' not set");
-        }
+//         if (this.values == null) {
+//             throw new BeanInitializationException(
+//                 "Bean property 'values' not set");
+//         }
+
     }
     
 

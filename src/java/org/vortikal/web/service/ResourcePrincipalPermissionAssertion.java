@@ -71,7 +71,7 @@ import org.springframework.beans.factory.InitializingBean;
  * </ul>
  */
 public class ResourcePrincipalPermissionAssertion
-  implements ResourceAssertion, InitializingBean {
+  extends AssertionSupport implements ResourceAssertion, InitializingBean {
 
     private static Log logger = LogFactory.getLog(
             ResourcePrincipalPermissionAssertion.class);
@@ -89,9 +89,6 @@ public class ResourcePrincipalPermissionAssertion
     }
     
 
-    /**
-     * @param permission The permission to set.
-     */
     public void setPermission(String permission) {
         this.permission = permission;
     }
@@ -102,9 +99,6 @@ public class ResourcePrincipalPermissionAssertion
     }
     
 
-    /**
-     * @see org.vortikal.web.service.ResourceAssertion#matches(org.vortikal.repository.Resource)
-     */
     public boolean matches(Resource resource) {
 
 
@@ -114,7 +108,13 @@ public class ResourcePrincipalPermissionAssertion
         if (requiresAuthentication && token == null)
             throw new AuthenticationException();
         
-        if (resource == null) return false;
+        if (resource == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Resource is null, match = false");
+            }
+            return false;
+        }
+        
 
         if (permission.equals("parent-write")) {
                 
@@ -197,17 +197,11 @@ public class ResourcePrincipalPermissionAssertion
         return false;
     }
 
-    /**
-     * @see org.vortikal.web.service.Assertion#conflicts(org.vortikal.web.service.Assertion)
-     */
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
 
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     public void afterPropertiesSet() throws Exception {
         if (this.permission == null || !(
                 this.permission.equals("read") ||
@@ -231,11 +225,10 @@ public class ResourcePrincipalPermissionAssertion
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-		
         sb.append(super.toString());
-        sb.append("; permission = ").append(this.permission);
-        sb.append("; requiresAuthentication = ").append(this.requiresAuthentication);
-
+        sb.append("[permission = ").append(this.permission);
+        sb.append("; requiresAuthentication = ");
+        sb.append(this.requiresAuthentication).append("]");
         return sb.toString();
     }
 }

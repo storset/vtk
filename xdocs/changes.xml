@@ -11,6 +11,11 @@
     <release version="SNAPSHOT" date="in SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="gormap" type="fix">
+        Fixed crash in HtmlHeadContentFilter HTML head
+        elements containing the '$' character.
+      </action>
+
       <action dev="gormap" type="add">
         Added RequestURIRegexpWrappingAssertion, for selectively
         applying assertions based on regular expression matching on

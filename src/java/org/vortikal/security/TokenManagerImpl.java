@@ -38,6 +38,7 @@ import org.doomdark.uuid.UUIDGenerator;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.cache.SimpleCacheImpl;
 
@@ -68,18 +69,38 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         if (trustedToken != null && trustedToken.equals(token) && trustedPrincipal != null)
             return trustedPrincipal;
         
-        return (Principal) cache.get(token);
+        PrincipalItem item = (PrincipalItem) cache.get(token);
+        if (item == null) {
+            return null;
+        }
+        return item.getPrincipal();
     }
 
-    public String newToken(Principal principal) {
+
+    public AuthenticationHandler getAuthenticationHandler(String token) {
+        if (trustedToken != null && trustedToken.equals(token) && trustedPrincipal != null)
+            return null;
+        
+        PrincipalItem item = (PrincipalItem) cache.get(token);
+        if (item == null) {
+            return null;
+        }
+        return item.getAuthenticationHandler();
+    }
+    
+
+
+    public String newToken(Principal principal,
+                           AuthenticationHandler authenticationHandler) {
         String token = generateID();
-        cache.put(token, principal);
+        PrincipalItem item = new PrincipalItem(principal, authenticationHandler);
+        cache.put(token, item);
         return token;
     }
 
     public void removeToken(String token) {
 
-        Principal item = (Principal) cache.get(token);
+        PrincipalItem item = (PrincipalItem) cache.get(token);
         if (item == null) {
             throw new IllegalArgumentException(
                     "Tried to remove unexisting token: " + token);
@@ -145,10 +166,33 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         return uuid;
     }
  
-    /**
-     * @param cache The cache to set.
-     */
     public void setCache(SimpleCache cache) {
         this.cache = cache;
     }
+
+
+
+    /**
+     * Class holding (Principal, AuthenticationHandler) pairs.
+     */
+    private class PrincipalItem {
+        private Principal principal = null;
+        private AuthenticationHandler authenticationHandler = null;
+
+        public PrincipalItem(Principal principal,
+                             AuthenticationHandler authenticationHandler) {
+            this.principal = principal;
+            this.authenticationHandler = authenticationHandler;
+        }
+
+
+        public Principal getPrincipal() {
+            return this.principal;
+        }
+
+        public AuthenticationHandler getAuthenticationHandler() {
+            return this.authenticationHandler;
+        }
+    }
+    
 }

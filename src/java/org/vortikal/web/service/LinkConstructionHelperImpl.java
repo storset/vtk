@@ -64,6 +64,8 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
             path += "/";
         }
         URL urlObject = new URL("http", NetUtils.guessHostName(), path);
+        urlObject.setQuery(parameters);
+
         for (Iterator i = assertions.iterator(); i.hasNext();) {
             Assertion assertion = (Assertion) i.next();
 
@@ -73,7 +75,7 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
 
             assertion.processURL(urlObject, resource, principal);
         }
-
+        
         String url = urlObject.toString();
 
         if (logger.isDebugEnabled()) {

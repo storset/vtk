@@ -145,6 +145,9 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     
 
     private void loadTemplates() {
+
+        if (!parseCategoryTemplates && !parseTopTemplates) return;
+        
         try {
             Resource templatesCollectionResource = this.repository.retrieve(
                 this.trustedToken, this.templatesCollection, true);

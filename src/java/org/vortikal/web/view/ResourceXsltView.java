@@ -97,6 +97,8 @@ import org.vortikal.xml.TransformerManager;
  * <ul>
  *   <li><code>transformerManager</code> - the {@link
  *   TransformerManager} to use for obtaining stylesheets
+ *   <li><code>linkConstructor</code> - optional {@link
+ *   LinkConstructor} to supply to the the transformer
  * </ul>
  *
  * <p>Sets the following HTTP headers:
@@ -109,6 +111,8 @@ public class ResourceXsltView
   extends AbstractReferenceDataProvidingView  implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
+
+    private static String PARAMETER_NAMESPACE = "{http://www.uio.no/vortex/xsl-parameters}";
     private TransformerManager transformerManager = null;
 
     private LinkConstructor linkConstructor;
@@ -173,12 +177,12 @@ public class ResourceXsltView
         transformer.setErrorListener(err);
         setParameters(model, transformer);
         transformer.setParameter(
-            "{http://www.uio.no/vortex/xsl-parameters}RequestContext",
+            PARAMETER_NAMESPACE + "RequestContext",
             new RequestContext(request));
 
         if (linkConstructor != null)
             transformer.setParameter(
-                    "{http://www.uio.no/vortex/xsl-parameters}LinkConstructor",
+                    PARAMETER_NAMESPACE + "LinkConstructor",
                     linkConstructor);
             
         

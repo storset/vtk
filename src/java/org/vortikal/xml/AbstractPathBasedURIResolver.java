@@ -181,8 +181,36 @@ public abstract class AbstractPathBasedURIResolver
         }
     }
 
-
     private String getAbsolutePath(String href, String base) {
+
+        String uri = null;
+        
+        if (href.startsWith("/")) {
+            // hrefs starting with '/' don't care about base
+            uri = href;
+
+        } else if (href.matches(".+://.+") || base == null || !base.startsWith(PROTOCOL_PREFIX)) {
+            // Fully qualified hrefs isn't handled.
+            // Relative hrefs need to be resolved relative to a base with protocol 'PROTOCOL_PREFIX'
+            return null;
+        
+        } else {
+
+            // Strip protocol and the name of the base resource    
+            base = base.substring(PROTOCOL_PREFIX.length());
+            base = base.substring(0, base.lastIndexOf("/") + 1);
+            
+            uri = base + href;
+        }
+        
+        if (uri.indexOf("../") > -1) {
+            uri = URIUtil.expandPath(uri);
+        }
+        return uri;
+    }
+    
+
+    private String getAbsolutePathOld(String href, String base) {
 
         // FIXME: handle href and base independently
 

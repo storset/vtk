@@ -222,6 +222,7 @@ public abstract class AbstractXmlEditController implements Controller {
         setXsltParameter(model, "DAY", date("dd"));
         setXsltParameter(model, "MONTH", date("MM"));
         setXsltParameter(model, "YEAR", date("yyyy"));
+        setXsltParameter(model, "TIMESTAMP", date("yyMMddHHmmss"));
         setXsltParameter(model, "CMSURL", resource.getURI());
         setXsltParameter(model,"applicationMode", "edit");
         if (principal != null)

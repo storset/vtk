@@ -36,15 +36,17 @@ package org.vortikal.security;
  */
 class PrincipalImpl implements Principal, java.io.Serializable {
 
-    private String name;
-    private String qualifiedName;
-    private String domain;
-    
+    private String name = null;
+    private String qualifiedName = null;
+    private String domain = null;
+    private String url = null;
 
-    public PrincipalImpl(String name, String qualifiedName, String domain) {
+    public PrincipalImpl(String name, String qualifiedName,
+                         String domain, String url) {
         this.name = name;
         this.qualifiedName = qualifiedName;
         this.domain = domain;
+        this.url = url;
     }
     
 
@@ -76,6 +78,10 @@ class PrincipalImpl implements Principal, java.io.Serializable {
 
     public String getDomain() {
         return this.domain;
+    }
+    
+    public String getURL() {
+        return this.url;
     }
     
 

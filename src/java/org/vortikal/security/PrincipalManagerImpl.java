@@ -31,12 +31,33 @@
 package org.vortikal.security;
 
 import org.vortikal.repository.ACLPrincipal;
+import java.util.Map;
 
 
+/**
+ * A simple principal manager implementation.
+ *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>defaultDomain</code> - a {@link String} specifying the
+ *   domain to append to unqualified principal names. If this
+ *   property is not specified, the behavior will be as if no domains
+ *   exist at all.
+ *   <li><code>domainURLMap</code> - a map of (<code>domain,
+ *   URL-pattern</code>) entries. The domain corresponds to a
+ *   principal {@link Principal#getDomain domain}, and the URL pattern
+ *   is a string in which the sequence <code>%u</code> is substituted
+ *   with the principal's (short) {@link Principal#getName name},
+ *   thereby forming a unique URL for each principal. This URL can be
+ *   acessed using the {@link Principal#getURL} method.
+ * </ul>
+ */
 public class PrincipalManagerImpl implements PrincipalManager {
 
     private String delimiter = "@";
     private String defaultDomain = null;
+    private Map domainURLMap = null;
+    
     
     public void setDefaultDomain(String defaultDomain) {
         if (defaultDomain != null) {
@@ -51,6 +72,11 @@ public class PrincipalManagerImpl implements PrincipalManager {
             }
             this.defaultDomain = defaultDomain;
         }
+    }
+    
+
+    public void setDomainURLMap(Map domainURLMap) {
+        this.domainURLMap = domainURLMap;
     }
     
 
@@ -109,7 +135,16 @@ public class PrincipalManagerImpl implements PrincipalManager {
             qualifiedName = name + this.delimiter + domain;
         }
 
-        return new PrincipalImpl(name, qualifiedName, domain);
+        String url = null;
+        if (domain != null && this.domainURLMap != null) {
+            String pattern = (String) this.domainURLMap.get(domain);
+            if (pattern != null) {
+                url = pattern.replaceAll("%u", name);
+            }
+        }
+
+
+        return new PrincipalImpl(name, qualifiedName, domain, url);
     }
 
     private Principal getSystemPrincipal(String id) {
@@ -120,7 +155,7 @@ public class PrincipalManagerImpl implements PrincipalManager {
             || ACLPrincipal.NAME_DAV_SELF.equals(id)
             || ACLPrincipal.NAME_DAV_OWNER.equals(id))  {
 
-            return new PrincipalImpl(id, id, null);
+            return new PrincipalImpl(id, id, null, null);
         }
         throw new IllegalArgumentException("Invalid principal: " + id);
     }

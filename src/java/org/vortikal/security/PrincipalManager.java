@@ -33,6 +33,13 @@ package org.vortikal.security;
 
 public interface PrincipalManager {
 
+    /**
+     * Gets a principal object. Principals should be instantiated from
+     * application code using this method exclusively.
+     *
+     * @param id a (possibly fully qualified) principal name
+     * @return a principal object
+     */
     public Principal getPrincipal(String id);
     
 }

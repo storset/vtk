@@ -123,12 +123,14 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
         if (this.trustedUsername != null) {
             this.trustedToken = generateID();
-            this.trustedPrincipal = new PrincipalImpl(trustedUsername, trustedUsername, null);
+            this.trustedPrincipal = new PrincipalImpl(
+                trustedUsername, trustedUsername, null, null);
         }
 
         if (rootUsername != null) {
             rootToken = generateID();
-            rootPrincipal = new PrincipalImpl(rootUsername, rootUsername, null);
+            rootPrincipal = new PrincipalImpl(
+                rootUsername, rootUsername, null, null);
         }
 
         if (cache == null) {

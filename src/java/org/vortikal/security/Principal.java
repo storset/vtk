@@ -65,6 +65,6 @@ public interface Principal extends Comparable {
      * If the user has a unique URL, this is it. May be <code>null</code>.
      *
      */
-//     public String getURL();
+    public String getURL();
 
 }

@@ -64,6 +64,9 @@ import org.w3c.dom.NodeList;
  *   <li><code>supplyRequestParameters</code> - default
  *     <code>true</code> - supply request parameters as a node list to
  *     xsl processing
+ *   <li><code>matchAdminServiceAssertions</code> - default 
+ *     <code>false</code> - determines whether all assertions must
+ *     match in order for the admin link to be constructed
  * </ul>
  * 
  * <p>Model data provided:
@@ -91,6 +94,8 @@ public class ViewXslProvider implements Provider {
     private Repository repository;
     private Service adminService;
     private boolean supplyRequestParameters = true;
+    
+    private boolean matchAdminServiceAssertions = false;
     
     /**
      * @param adminService The adminService to set.
@@ -126,7 +131,7 @@ public class ViewXslProvider implements Provider {
             setXsltParameter(model, "PARENT-COLLECTION", resource.getParent());
             setXsltParameter(model, "CURRENT-URL", request.getRequestURL());
             setXsltParameter(model, "ADMIN-URL", 
-                             adminService.constructLink(resource,principal));
+                             adminService.constructLink(resource,principal, matchAdminServiceAssertions));
 
 
             if (supplyRequestParameters) {
@@ -176,4 +181,11 @@ public class ViewXslProvider implements Provider {
         this.supplyRequestParameters = supplyRequestParameters;
     }
 
+	/**
+	 * @param matchAdminServiceAssertions The matchAdminServiceAssertions to set.
+	 */
+	public void setMatchAdminServiceAssertions(
+			boolean matchAdminServiceAssertions) {
+		this.matchAdminServiceAssertions = matchAdminServiceAssertions;
+	}
 }

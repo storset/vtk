@@ -208,7 +208,7 @@
    <!-- Groovy: -->
    <dependency>
      <id>groovy</id>
-     <version>all-1.0-beta-9</version>
+     <version>all-1.0-beta-10</version>
      <properties>
        <war.bundle>true</war.bundle>
      </properties>

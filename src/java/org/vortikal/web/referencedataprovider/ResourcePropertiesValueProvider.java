@@ -59,7 +59,7 @@ import org.vortikal.web.RequestContext;
  *      generated. For every namespace in the <code>properties</code>
  *      configuration property there must exist a mapping in this map,
  *      including the namespace for the standard properties
- *      (<code>null</code>). For example, the mapping
+ *      (<code>null</code> or <code>""</code>). For example, the mapping
  *      <code>(http://foo.bar/baaz, title)</code> will cause all
  *      specified properties of that namespace to be published into
  *      the submodel <code>title</code>.
@@ -168,7 +168,16 @@ public class ResourcePropertiesValueProvider
         splitProperties();
 
         for (int i = 0; i < this.namespaces.length; i++) {
-            if (!this.modelNames.containsKey(this.namespaces[i])) {
+
+            boolean exists;
+            
+            if (this.namespaces[i] == null) {
+                exists = this.modelNames.containsKey(null) || this.modelNames.containsKey("");
+            } else {
+                exists = this.modelNames.containsKey(this.namespaces[i]);
+            }
+
+            if (!exists) {
                 throw new BeanInitializationException(
                     "The 'modelNames' bean property does not contain "
                     + "an entry for resource property namespace '"
@@ -192,6 +201,10 @@ public class ResourcePropertiesValueProvider
         for (int i = 0; i < this.properties.length; i++) {
 
             String subModelKey = (String) this.modelNames.get(this.namespaces[i]);
+            if (subModelKey == null && this.namespaces[i] == null) {
+                subModelKey = (String) this.modelNames.get("");
+            }
+
             Map subModel = (Map) model.get(subModelKey);
             if (subModel == null) {
                 subModel = new HashMap();

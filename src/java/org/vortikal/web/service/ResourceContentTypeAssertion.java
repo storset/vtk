@@ -28,18 +28,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Created on 05.jul.2004
- *
- */
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
 
 /**
+ * Matches on resource content types. The content type specified must
+ * be an exact match.
  *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>contentType</code> - the content type to match.
+ * </ul>
+ *
+ * @see ResourceContentTypeRegexpAssertion
  */
-public class ResourceContentTypeAssertion extends AssertionSupport implements ResourceAssertion {
+public class ResourceContentTypeAssertion
+  extends AssertionSupport implements ResourceAssertion {
 
     private String contentType = "";
 
@@ -71,9 +76,6 @@ public class ResourceContentTypeAssertion extends AssertionSupport implements Re
     }
 
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

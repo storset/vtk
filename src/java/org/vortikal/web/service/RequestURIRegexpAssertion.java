@@ -32,32 +32,37 @@ package org.vortikal.web.service;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Assertion that does regular expression matches on the requested
  * URI.
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>pattern</code> - a the {@link Pattern regular
+ *     expression} to match.
+ * </ul>
  */
 public class RequestURIRegexpAssertion extends AssertionSupport
-  implements RequestAssertion {
+  implements RequestAssertion, InitializingBean {
 
     private Pattern pattern = null;
 
 
-    /**
-     * @param pattern The pattern to set.
-     */
     public void setPattern(String pattern) {
-        if (pattern == null) throw new IllegalArgumentException(
-            "Property 'pattern' cannot be null");
-    
         this.pattern = Pattern.compile(pattern);
     }
     
 
+    public void afterPropertiesSet() {
+        if (pattern == null) throw new IllegalArgumentException(
+            "Property 'pattern' cannot be null");
+    }
+    
+
     public boolean matches(HttpServletRequest request) {
-        // TODO: fixme
         Matcher m = pattern.matcher(request.getRequestURI());
         return m.find();
     }
@@ -67,9 +72,7 @@ public class RequestURIRegexpAssertion extends AssertionSupport
         return false;
     }
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		

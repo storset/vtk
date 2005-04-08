@@ -41,6 +41,23 @@ import org.springframework.web.servlet.mvc.Controller;
 
 
 
+/**
+ * Controller that puts a redirect URL in the model and returns a
+ * configurable view name.
+ *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>viewName</code> - the name of the view to return
+ *   (default is <code>redirect</code>)
+ * </ul>
+ *
+ * <p>Model data provided:
+ * <ul>
+ *   <li><code>redirectURL</code> - currently the requested URL (TODO:
+ *   what is the purpose of this entry?)
+ * </ul>
+ *
+ */
 public class RedirectController implements Controller {
 
     public static final String DEFAULT_VIEW_NAME = "redirect";

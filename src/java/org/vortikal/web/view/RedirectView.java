@@ -41,22 +41,24 @@ import org.vortikal.web.InvalidModelException;
 /**
  * Simple HTTP Redirect view.
  * 
- * <p>Expects a model property "redirectURL", containing the URL string to redirect to.
- * Optional property 'http10' can be switched to <code>false</code> to send 303 instead 
- * of 302 as HTTP status code.
+ * <p>Expects a model property "redirectURL", containing the URL
+ * string to redirect to.  Optional property 'http10' can be switched
+ * to <code>false</code> to send 303 instead of 302 as HTTP status
+ * code.
  * 
  * @see org.vortikal.web.referencedataprovider.RedirectProvider
- * @version $Id$
  */
 public class RedirectView  extends AbstractReferenceDataProvidingView {
 
     private boolean http10 = true;
     
     /**
-     * @throws InvalidModelException ({@link InvalidModelException}) if expected model data 'redirectURL' is missing
-     * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @throws InvalidModelException ({@link InvalidModelException})
+     * if expected model data 'redirectURL' is missing
      */
-    protected void renderMergedOutputModel(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected void renderMergedOutputModel(
+        Map model, HttpServletRequest request,
+        HttpServletResponse response) throws Exception {
 
         String url = (String) model.get(
             "redirectURL");

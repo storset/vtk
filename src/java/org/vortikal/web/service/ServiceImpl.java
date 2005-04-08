@@ -202,9 +202,16 @@ public class ServiceImpl
         Collections.sort(childServices, new OrderComparator());
 
         for (Iterator iter = childServices.iterator(); iter.hasNext();) {
-            Object o = iter.next();
-            if (!this.services.contains(o)) {
-                this.services.add(o);
+            ServiceImpl child = (ServiceImpl) iter.next();
+            if (!this.services.contains(child)) {
+                
+                if (child.getOrder() == Integer.MAX_VALUE) {
+                    this.services.add(child);
+                } else {
+                    int index = Math.max(child.getOrder(), 0);
+                    index = Math.min(index, this.services.size() - 1);
+                    this.services.add(index, child);
+                }
             }
         }
 
@@ -217,9 +224,9 @@ public class ServiceImpl
                     "'s child services )");
             }
             ServiceImpl child = (ServiceImpl) o;
-            if (!services.contains(child)) {
-                services.add(child);
-            }
+//             if (!services.contains(child)) {
+//                 services.add(child);
+//             }
             if (logger.isDebugEnabled()) {
                 logger.debug("Initializing child service: " + child.getName());
             }

@@ -30,14 +30,16 @@
  */
 package org.vortikal.security;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.doomdark.uuid.UUIDGenerator;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.cache.SimpleCacheImpl;
@@ -54,20 +56,26 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     private static Log logger = LogFactory.getLog(TokenManagerImpl.class);
 
-    private PrincipalManager principalManager = null;
-    private String trustedUsername = null;
-    private String trustedToken = null;
-    private Principal trustedPrincipal = null;
-    private String rootUsername = null;
-    private String rootToken = null;
-    private Principal rootPrincipal = null;
+//    private PrincipalManager principalManager = null;
+//    private String trustedUsername = null;
+//    private String trustedToken = null;
+//    private Principal trustedPrincipal = null;
+//    private String rootUsername = null;
+//    private String rootToken = null;
+//    private Principal rootPrincipal = null;
     private SimpleCache cache = null;
+    
+    private Map registeredPrincipals = new HashMap();
+    private List defaultPrincipals = null;
     
 
     public Principal getPrincipal(String token) {
 
-        if (trustedToken != null && trustedToken.equals(token) && trustedPrincipal != null)
-            return trustedPrincipal;
+        if (registeredPrincipals.containsKey(token))
+            return (Principal)registeredPrincipals.get(token);
+        
+//        if (trustedToken != null && trustedToken.equals(token) && trustedPrincipal != null)
+//            return trustedPrincipal;
         
         PrincipalItem item = (PrincipalItem) cache.get(token);
         if (item == null) {
@@ -78,8 +86,11 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
 
     public AuthenticationHandler getAuthenticationHandler(String token) {
-        if (trustedToken != null && trustedToken.equals(token) && trustedPrincipal != null)
+        if (registeredPrincipals.containsKey(token))
             return null;
+        
+//        if (trustedToken != null && trustedToken.equals(token) && trustedPrincipal != null)
+//            return null;
         
         PrincipalItem item = (PrincipalItem) cache.get(token);
         if (item == null) {
@@ -108,52 +119,70 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         cache.remove(token);
     }
 
-
-    public String getTrustedToken() {
-        return trustedToken;
+    public String getRegisteredToken(Principal principal) {
+        if (registeredPrincipals.containsValue(principal)) {
+            for (Iterator iter = registeredPrincipals.keySet().iterator(); iter.hasNext();) {
+                String token = (String) iter.next();
+                if (registeredPrincipals.get(token).equals(principal))
+                        return token;
+            }
+        }
+        return null;
     }
+
+//    public String getTrustedToken() {
+//        return trustedToken;
+//    }
+//    
+//
+//    public String getRootToken() {
+//        return rootToken;
+//    }
     
-
-    public String getRootToken() {
-        return rootToken;
-    }
     
-    
-    public void setTrustedUsername(String trustedUsername) {
-        this.trustedUsername = trustedUsername;
-    }
+//    public void setTrustedUsername(String trustedUsername) {
+//        this.trustedUsername = trustedUsername;
+//    }
+//
+//    public void setRootUsername(String rootUsername) {
+//        this.rootUsername = rootUsername;
+//    }
 
-    public void setRootUsername(String rootUsername) {
-        this.rootUsername = rootUsername;
-    }
-
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
+//    public void setPrincipalManager(PrincipalManager principalManager) {
+//        this.principalManager = principalManager;
+//    }
     
 
     public void afterPropertiesSet() throws Exception {
 
-        if (this.principalManager == null
-            && (this.trustedUsername != null || this.rootUsername != null)) {
-            throw new BeanInitializationException(
-                "The 'trustedUsername' or 'rootUsername' bean properties require the "
-                + "'principalManager' property to be set also. Otherwise, "
-                + "trusted tokens cannot be generated.");
-        }
+//        if (this.principalManager == null
+//            && (this.trustedUsername != null || this.rootUsername != null)) {
+//            throw new BeanInitializationException(
+//                "The 'trustedUsername' or 'rootUsername' bean properties require the "
+//                + "'principalManager' property to be set also. Otherwise, "
+//                + "trusted tokens cannot be generated.");
+//        }
 
-        if (this.trustedUsername != null) {
-            this.trustedToken = generateID();
-            this.trustedPrincipal = new PrincipalImpl(
-                trustedUsername, trustedUsername, null, null);
+//        if (this.trustedUsername != null) {
+//            this.trustedToken = generateID();
+//            this.trustedPrincipal = new PrincipalImpl(
+//                trustedUsername, trustedUsername, null, null);
+//        }
+//
+//        if (rootUsername != null) {
+//            rootToken = generateID();
+//            rootPrincipal = new PrincipalImpl(
+//                rootUsername, rootUsername, null, null);
+//        }
+        
+        if (defaultPrincipals != null) {
+            for (Iterator iter = defaultPrincipals.iterator(); iter.hasNext();) {
+                Principal principal = (Principal) iter.next();
+                String token = generateID();
+                registeredPrincipals.put(token,principal);
+            }
         }
-
-        if (rootUsername != null) {
-            rootToken = generateID();
-            rootPrincipal = new PrincipalImpl(
-                rootUsername, rootUsername, null, null);
-        }
-
+        
         if (cache == null) {
             logger.info("No SimpleCache supplied, instantiating default");
             cache = new SimpleCacheImpl();    
@@ -194,5 +223,15 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
             return this.authenticationHandler;
         }
     }
+
+
+
+    public void setDefaultPrincipals(List defaultPrincipals) {
+        this.defaultPrincipals = defaultPrincipals;
+    }
+    
+
+
+
     
 }

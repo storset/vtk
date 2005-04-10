@@ -96,11 +96,12 @@ public interface TokenManager {
     public AuthenticationHandler getAuthenticationHandler(String token);
     
 
-
+    public String getRegisteredToken(Principal principal);
+    
     /**
      * TODO: should be removed?
      */
-    public String getTrustedToken();
+//    public String getTrustedToken();
 
 
 }

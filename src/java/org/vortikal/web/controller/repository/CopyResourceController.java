@@ -32,6 +32,7 @@ import org.vortikal.web.RequestContext;
  *      Otherwise use the current security context.
  * 	 <li><code>successView</code> - default is 'redirect'
  * 	 <li><code>errorView</code> - default is 'admin'
+ *  
  * </ul>
  * </p>
  *

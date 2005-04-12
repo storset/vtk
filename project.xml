@@ -102,7 +102,7 @@
     <dependency>
       <id>spring</id>
       <groupId>springframework</groupId>
-      <version>1.1.2-pre</version>
+      <version>1.2-RC1-custom</version>
       <!--version>cvs-2004-09-16</version-->
 
       <properties>
@@ -163,7 +163,7 @@
     </dependency>
     <dependency>
       <id>jdom</id>
-      <version>b10</version>
+      <version>1.0</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -184,7 +184,7 @@
     </dependency>
     <dependency>
       <id>freemarker</id>
-      <version>2.3</version>
+      <version>2.3.2</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

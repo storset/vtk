@@ -39,9 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import org.vortikal.repository.Configuration;
-import org.vortikal.repository.Lock;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 

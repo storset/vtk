@@ -95,17 +95,7 @@
     <dependency>
       <id>spring</id>
       <groupId>springframework</groupId>
-      <version>1.2-RC1-custom</version>
-      <!--version>cvs-2004-09-16</version-->
-
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>spring-mock</id>
-      <groupId>springframework</groupId>
-      <version>1.0.3-pre</version>
+      <version>1.2-rc2</version>
     </dependency>
     <dependency>
       <id>commons-logging</id>

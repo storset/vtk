@@ -30,105 +30,65 @@
  */
 package org.vortikal.web.service;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 
 /**
- * Assertion for matching on whether the current resource has a
- * property with a given name, namespace and value.
  *
- * <p>Configurable properties:
- * <ul>
- *   <li><code>namespace</code> - the {@link Property#getNamespace
- *   namespace} of the property to match
- *   <li><code>namespace</code> - the {@link Property#getName name} of
- *   the property to match
- *   <li><code>namespace</code> - the {@link Property#getValue value}
- *   of the property to match
- * </ul>
  */
-public class ResourcePropertyAssertion
+public class ResourcePropertyRegexpAssertion
   extends AssertionSupport implements ResourceAssertion {
 
     private String namespace;
     private String name;
-    private String value;
-    private boolean invert = false;
-    
+    private Pattern pattern = null;
+
     public void setName(String name) {
         this.name = name;
     }
     
-    
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
+
+    public void setPattern(String pattern) {
+        if (pattern == null) throw new IllegalArgumentException(
+            "Property 'pattern' cannot be null");
+    
+        this.pattern = Pattern.compile(pattern);
+    }
     
     
-    public String getName() {
-        return name;
-    }
-
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-
-    public String getValue() {
-        return value;
-    }
-
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-
     public boolean matches(Resource resource) {
-
         if (resource != null) {
             Property property = resource.getProperty(namespace, name);
 
-            if (property != null && value.equals(property.getValue())) return !invert;
-        }
-        
-        return invert;
-    }
-
-
-    public boolean conflicts(Assertion assertion) {
-        if (assertion instanceof ResourcePropertyAssertion) {
-
-            ResourcePropertyAssertion other = (ResourcePropertyAssertion) assertion;
-			
-            if (this.namespace.equals(other.getNamespace()) && 
-                this.name.equals(other.getName())) {
-				
-                if (!this.invert && !other.invert)
-                    return ! this.value.equals(other.getValue());
-                else if (this.invert != other.invert)
-                    return this.value.equals(other.getValue());
+            if (property != null) {
+                Matcher m = pattern.matcher(property.getValue());
+                return m.matches();
             }
         }
+        
         return false;
     }
+    
+
+    public boolean conflicts(Assertion assertion) {
+        // FIXME: ?
+        return false;
+    }
+
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; namespace = ").append(this.namespace);
-        sb.append("; name = ").append(this.name);
-        sb.append("; value = ").append(this.value);
-
+        sb.append("; pattern = ").append(pattern.pattern());
+		
         return sb.toString();
     }
-
-
-    public void setInvert(boolean invert) {
-        this.invert = invert;
-    }
-    
 
 }

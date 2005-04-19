@@ -137,6 +137,16 @@ public class RequestContextInitializer
     }
     
     public void afterPropertiesSet() {
+        if (trustedToken == null) {
+            throw new BeanInitializationException(
+                "Required property 'trustedToken' not set");
+        }
+
+        if (repository == null) {
+            throw new BeanInitializationException(
+                "Required property 'repository' not set");
+        }
+
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 context, Service.class, true, false);
         
@@ -158,20 +168,27 @@ public class RequestContextInitializer
         logger.info("Registered service tree root services in the following order: " 
                 + rootServices);
         
-        if (trustedToken == null) {
-            throw new BeanInitializationException(
-                "Required property 'trustedToken' not set");
-        }
-
-        if (repository == null) {
-            throw new BeanInitializationException(
-                "Required property 'repository' not set");
+        if (logger.isDebugEnabled()) {
+            logger.debug(printServiceTree());
         }
     }
     
 
+    private StringBuffer printServiceTree() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("\nService tree:\n");
+        printServiceList(rootServices, buffer, "->");
+        return buffer;
+    }
 
-
+    private void printServiceList(List services, StringBuffer buffer, String indent) {
+        for (Iterator iter = services.iterator(); iter.hasNext();) {
+            Service service = (Service) iter.next();
+            buffer.append(indent + service.getName() + "\n");
+            printServiceList(service.getChildren(), buffer, "  " + indent);
+        }
+    }
+    
     /**
      * Resolves a request recursively to a service and creates the
      * request context.
@@ -193,7 +210,7 @@ public class RequestContextInitializer
                                    Resource resource) {
 		
         if (logger.isDebugEnabled()) {
-            logger.debug("Matching for service " + service +
+            logger.debug("Matching for service " + service.getName() +
                          ", having assertions: " + service.getAssertions());
         }
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -221,16 +238,16 @@ public class RequestContextInitializer
                         match = false;
                 } else {
                     logger.warn("Unsupported assertion: " + assertion +
-                                 " for service " + service);
+                                 " for service " + service.getName());
                 }
 
                 if (logger.isDebugEnabled()) {
                     if (match) {
                         logger.debug("Matched assertion: " + assertion +
-                                     " for service " + service);
+                                     " for service " + service.getName());
                     } else {
                         logger.debug("Unmatched assertion: " + assertion +
-                                     " for service " + service);
+                                     " for service " + service.getName());
                     }
                 }
                 if (!match) return false;
@@ -242,7 +259,7 @@ public class RequestContextInitializer
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Currently matched service: " + service +
+            logger.debug("Currently matched service: " + service.getName() +
                          ", will check for child services: " + service.getChildren());
         }
 
@@ -253,7 +270,7 @@ public class RequestContextInitializer
         }
         
         if (logger.isInfoEnabled()) {
-            logger.info("Service matching produced result: " + service);
+            logger.info("Service matching produced result: " + service.getName());
         }
 
         RequestContext.setRequestContext(

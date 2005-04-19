@@ -39,7 +39,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,7 +46,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -201,8 +199,8 @@ public class ServiceImpl
             this.applicationContext, this.getName());
         Collections.sort(childServices, new OrderComparator());
 
-        for (Iterator iter = childServices.iterator(); iter.hasNext();) {
-            ServiceImpl child = (ServiceImpl) iter.next();
+        for (int i = childServices.size() - 1; i > -1; i--) {
+            ServiceImpl child = (ServiceImpl)childServices.get(i);
             if (!this.services.contains(child)) {
                 
                 if (child.getOrder() == Integer.MAX_VALUE) {

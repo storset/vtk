@@ -125,8 +125,6 @@ public class EditResourcePropertyController extends SimpleFormController
                                            parameters);
          
         String[] possibleValues = descriptor.getValues();
-        org.springframework.web.servlet.support.RequestContext rc =
-            new org.springframework.web.servlet.support.RequestContext(request);
         ResourceEnumerationPropertyCommand command =
             new ResourceEnumerationPropertyCommand(namespace, name, value,
                                                    possibleValues,

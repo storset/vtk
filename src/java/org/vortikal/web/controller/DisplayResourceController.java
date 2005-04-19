@@ -110,7 +110,7 @@ public class DisplayResourceController
     private String childName;
     private String viewName = DEFAULT_VIEW_NAME;
     private String unsupportedResourceView = "HTTP_STATUS_NOT_FOUND";
-    private Set unsupportedResourceTypes ;
+    private Set unsupportedResourceTypes = null;
     private boolean streamToString = false;
     private boolean ignoreLastModified = false;
     
@@ -133,6 +133,28 @@ public class DisplayResourceController
         this.ignoreLastModified = ignoreLastModified;
     }
     
+
+    public void setUnsupportedResourceTypes(Set unsupportedResourceTypes) {
+        this.unsupportedResourceTypes = unsupportedResourceTypes;
+    }
+    
+
+    public void setStreamToString(boolean streamToString) {
+        this.streamToString = streamToString;
+    }
+
+
+    public void setDisplayProcessed(boolean displayProcessed) {
+        this.displayProcessed = displayProcessed;
+    }
+
+
+    public void afterPropertiesSet() throws Exception {
+        if (unsupportedResourceTypes == null) {
+            unsupportedResourceTypes = new HashSet();
+        }
+    }
+
 
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -157,16 +179,19 @@ public class DisplayResourceController
 
         model.put("resource", resource);
 
-        InputStream stream = repository.getInputStream(token, uri, true);
 
-        if (!streamToString || !resource.getContentType().startsWith("text/")) {
-            model.put("resourceStream", stream);
-            return new ModelAndView(this.viewName, model);
-        }
+        if (!resource.isCollection()) {
+
+            InputStream stream = repository.getInputStream(token, uri, true);
+
+            if (!streamToString || !resource.getContentType().startsWith("text/")) {
+                model.put("resourceStream", stream);
+                return new ModelAndView(this.viewName, model);
+            }
 
             
-        // Provide as string instead of stream
-        String characterEncoding = resource.getCharacterEncoding();
+            // Provide as string instead of stream
+            String characterEncoding = resource.getCharacterEncoding();
             if (characterEncoding == null) {
                 characterEncoding = defaultCharacterEncoding;
             }
@@ -187,7 +212,8 @@ public class DisplayResourceController
                                         characterEncoding);
             model.put("resourceString", content);
         
-            return new ModelAndView(this.viewName, model);
+        }
+        return new ModelAndView(this.viewName, model);
     }
 
 
@@ -233,19 +259,4 @@ public class DisplayResourceController
         return resource.getLastModified().getTime();
     }
 
-    public void setStreamToString(boolean streamToString) {
-        this.streamToString = streamToString;
-    }
-
-    public void setDisplayProcessed(boolean displayProcessed) {
-        this.displayProcessed = displayProcessed;
-    }
-
-
-    public void afterPropertiesSet() throws Exception {
-        if (unsupportedResourceTypes == null) {
-            unsupportedResourceTypes = new HashSet();
-            unsupportedResourceTypes.add("application/x-vortex-collection");
-        }
-    }
 }

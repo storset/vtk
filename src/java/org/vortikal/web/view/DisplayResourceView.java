@@ -239,13 +239,22 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
         OutputStream out = null;
         int bytesWritten = 0;
         try {
-            out = response.getOutputStream();
-            byte[] buffer = new byte[this.streamBufferSize];
-            int n = 0;
-            while (((n = inStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
-                out.write(buffer, 0, n);
-                bytesWritten += n;
+            if ("HEAD".equals(request.getMethod())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Request is HEAD, not writing content");
+                }
+                response.flushBuffer();
+            } else {
+
+                out = response.getOutputStream();
+                byte[] buffer = new byte[this.streamBufferSize];
+                int n = 0;
+                while (((n = inStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
+                    out.write(buffer, 0, n);
+                    bytesWritten += n;
+                }
             }
+
         } finally {
             if (logger.isDebugEnabled()) {
                 logger.debug("Wrote a total of " + bytesWritten

@@ -8,6 +8,12 @@
 
     <release version="SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
+
+      <action dev="gormap" type="add">
+        Implemented HTTP HEAD handling, both for FreeMarkerView and
+        DisplayResourceView.
+      </action>
+
     </release>
 
     <release version="0.1.1" date="2005-04-01">

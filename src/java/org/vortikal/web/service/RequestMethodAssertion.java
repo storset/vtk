@@ -30,57 +30,111 @@
  */
 package org.vortikal.web.service;
 
+import java.util.Iterator;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
 /**
+ * Assertion that matches on HTTP method(s).
+ *
+ * <p>Configurable properties:
+ * <ul>
+ *   <li><code>method</code> - the HTTP method to match
+ *   <li><code>methods</code> - alternatively, a {@link Set set} of
+ *   HTTP methods can be specified. Note that these configuration
+ *   properties are "mutually exclusive", they cannot both be
+ *   specified.
+ * </ul>
  *
  */
 public class RequestMethodAssertion extends AssertionSupport
-  implements RequestAssertion {
+  implements RequestAssertion, InitializingBean {
 
-    private String method;
+    private String method = null;
+    private Set methods = null;
+    
 	
-    /**
-     * @param method
-     */
     public void setMethod(String method) {
         this.method = method;
     }
 	
-    /* 
-     */
+    public void setMethods(Set methods) {
+        this.methods = methods;
+    }
+    
     public String getMethod() {
-        return method;
+        return this.method;
     }
 
-    /* 
-     */
+    public Set getMethods() {
+        return this.methods;
+    }
+
+    public void afterPropertiesSet() {
+        if (this.method != null && this.methods != null) {
+            throw new BeanInitializationException(
+                "Bean properties 'method' and 'methods' cannot both be set");
+        }
+
+        if (this.method == null && this.methods == null) {
+            throw new BeanInitializationException(
+                "Either bean property 'method' or 'methods' must be set");
+        }
+    }
+    
+
     public boolean matches(HttpServletRequest request) {
         String reqMethod = request.getMethod();
 
-        if (reqMethod.equals(method)) return true;
-        
-        return false;
+        if (this.methods != null) {
+            return this.methods.contains(reqMethod);
+        }
+        return reqMethod.equals(this.method);
     }
+
 
     public boolean conflicts(Assertion assertion) {
-        if (assertion instanceof RequestMethodAssertion) {
-            return ! (this.method.equals(
-                          ((RequestMethodAssertion)assertion).getMethod()));
+        if (!(assertion instanceof RequestMethodAssertion)) {
+            return false;
         }
-        return false;
+
+        RequestMethodAssertion other = (RequestMethodAssertion) assertion;
+
+        if (this.method != null) {
+            if (other.getMethods() != null) {
+                return other.getMethods().contains(this.method);
+            } 
+            return !this.method.equals(other.getMethod());
+        }
+
+        if (other.getMethod() != null) {
+            return !this.methods.contains(other.getMethod());
+        }
+
+        boolean intersect = false;
+        for (Iterator i = other.getMethods().iterator(); i.hasNext();) {
+            String method = (String) i.next();
+            if (this.methods.contains(method)) {
+                intersect = true;
+                break;
+            }
+        }
+        return !intersect;
     }
 
 
-    /** 
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; method = ").append(this.method);
-
+        if (this.methods != null) {
+            sb.append("; methods = ").append(this.methods);
+        } else {
+            sb.append("; method = ").append(this.method);
+        }
         return sb.toString();
     }
 

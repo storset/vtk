@@ -30,17 +30,21 @@
  */
 package org.vortikal.web.view.freemarker;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.vortikal.web.referencedataprovider.Provider;
-import org.vortikal.web.view.ReferenceDataProviding;
-
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.support.RequestContextUtils;
+
+import org.vortikal.web.referencedataprovider.Provider;
+import org.vortikal.web.servlet.BufferedResponseWrapper;
+import org.vortikal.web.view.ReferenceDataProviding;
 
 
 /**
@@ -49,10 +53,16 @@ import freemarker.template.TemplateException;
  * is used to wrap the model object before rendering, making
  * controllers independent of the view technology.
  *
- * <p>This view supports setting the bean property
- * <code>debug</code>. When set to <code>true</code>, an entry in the
- * model will be added with key <code>dumpedModel</code>, containing
- * the string dump of the original model.
+ * <p>When the request method is <code>HEAD</code>, only headers is
+ * written to the response.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>debug</code> - a boolean indicating debug mode. When
+ *   set to <code>true</code>, an entry in the model will be added
+ *   with key <code>dumpedModel</code>, containing a string dump of
+ *   the original model.
+ * </ul>
  */
 public class FreeMarkerView
   extends org.springframework.web.servlet.view.freemarker.FreeMarkerView 
@@ -64,6 +74,32 @@ public class FreeMarkerView
     public void setDebug(boolean debug)  {
         this.debug = debug;
     }
+
+    protected void doRender(Map model, HttpServletRequest request,
+                            HttpServletResponse response) throws Exception {
+        BufferedResponseWrapper wrapper = new BufferedResponseWrapper(response);
+        super.doRender(model, request, wrapper);
+
+        ServletOutputStream outStream = response.getOutputStream();
+        byte[] content = wrapper.getContentBuffer();
+        response.setContentLength(content.length);
+        if ("HEAD".equals(request.getMethod())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Request is HEAD, not writing content");
+            }
+            response.flushBuffer();
+            return;
+        }
+
+        outStream.write(content);
+        outStream.flush();
+        outStream.close();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Wrote " + content.length + " bytes to response");
+        }
+    }
+
 
     protected void processTemplate(Template template, Map model,
                                    HttpServletResponse response)
@@ -77,21 +113,15 @@ public class FreeMarkerView
         super.processTemplate(template, model, response);
     }
 
-    public String toString() {
-        return this.getClass().getName() + ":" + this.getUrl();
-    }
-
-    /**
-     * @see org.vortikal.web.view.ReferenceDataProviding#getReferenceDataProviders()
-     */
     public Provider[] getReferenceDataProviders() {
         return referenceDataProviders;
     }
 
-    /**
-     * @param referenceDataProviders The referenceDataProviders to set.
-     */
     public void setReferenceDataProviders(Provider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
+    }
+
+    public String toString() {
+        return this.getClass().getName() + ":" + this.getUrl();
     }
 }

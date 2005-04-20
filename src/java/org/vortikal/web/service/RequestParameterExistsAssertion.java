@@ -30,7 +30,13 @@
  */
 package org.vortikal.web.service;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 
 /**
@@ -45,7 +51,7 @@ import javax.servlet.http.HttpServletRequest;
  * </ul>
  *
  */
-public class RequestParameterExistsAssertion extends AbstractRequestAssertion {
+public class RequestParameterExistsAssertion implements Assertion {
 
     private String parameterName = null;
     private boolean invert = false;
@@ -59,11 +65,6 @@ public class RequestParameterExistsAssertion extends AbstractRequestAssertion {
         this.invert = invert;
     }
 	
-    public boolean matches(HttpServletRequest request) {
-        return (invert != request.getParameterMap().containsKey(this.parameterName));
-    }
-	
-
     public String getParameterName() {
         return parameterName;
     }
@@ -103,5 +104,21 @@ public class RequestParameterExistsAssertion extends AbstractRequestAssertion {
         sb.append("; invert = ").append(this.invert);
 
         return sb.toString();
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        Map query = url.getQuery();
+        if (query == null) {
+            query = new LinkedHashMap();
+        }
+        if (!query.containsKey(this.parameterName)) {
+            query.put(this.parameterName, "");
+            url.setQuery(query);
+        }
+        return true;
+    }
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        return (invert != request.getParameterMap().containsKey(this.parameterName));
     }
 }

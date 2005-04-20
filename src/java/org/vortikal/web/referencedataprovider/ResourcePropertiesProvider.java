@@ -151,7 +151,7 @@ public class ResourcePropertiesProvider implements Provider, InitializingBean {
         List applicablePropertyDescriptors = new ArrayList();
         
         for (int i = 0; i < propertyDescriptors.length; i++) {
-            if (!propertyDescriptors[i].isApplicableProperty(resource)) {
+            if (!propertyDescriptors[i].isApplicableProperty(resource, securityContext.getPrincipal())) {
                 continue;
             }
             applicablePropertyDescriptors.add(propertyDescriptors[i]);

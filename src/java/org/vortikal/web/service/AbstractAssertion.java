@@ -30,13 +30,34 @@
  */
 package org.vortikal.web.service;
 
-import org.vortikal.security.Principal;
+import org.springframework.beans.factory.BeanNameAware;
+
 
 /**
- * Assertion interface for matching on principals.
+ * Abstract base class for assertions. Is bean name aware and contains
+ * an empty <code>processURL()</code> implementation.
  */
-public interface PrincipalAssertion extends Assertion {
+public abstract class AbstractAssertion implements Assertion, BeanNameAware {
 
-	public boolean matches(Principal principal);
+    private String beanName;
+
+    public String getBeanName() {
+        return beanName;
+    }
 	
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
+    
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append(getClass().getName()).append(": ");
+        sb.append("beanName = ").append(this.beanName);
+        
+        return sb.toString();
+    }
+
 }

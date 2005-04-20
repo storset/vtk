@@ -49,13 +49,13 @@ import org.vortikal.security.Principal;
  *   </li>
  * </ul>
  */
-public class IsAuthenticatedAssertion extends AbstractPrincipalAssertion {
+public class IsAuthenticatedAssertion extends AbstractRepositoryAssertion {
 
 
     private boolean requiresAuthentication = false;
     private boolean invert = false;
     
-    public boolean matches(Principal principal) {
+    public boolean matches(Resource resource, Principal principal) {
         
         
         if (requiresAuthentication && principal == null)
@@ -65,10 +65,6 @@ public class IsAuthenticatedAssertion extends AbstractPrincipalAssertion {
             return invert;
 
         return !invert;
-    }
-
-    public void processURL(URL url, Resource resource, Principal principal) {
-        // Nothing to do
     }
 
     public boolean conflicts(Assertion assertion) {
@@ -90,7 +86,6 @@ public class IsAuthenticatedAssertion extends AbstractPrincipalAssertion {
 
     public void setRequiresAuthentication(boolean requiresAuthentication) {
         this.requiresAuthentication = requiresAuthentication;
-    }
-    
+    }    
 
 }

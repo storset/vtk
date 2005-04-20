@@ -31,17 +31,14 @@
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  *
  */
 public class ResourceIsCollectionAssertion
-  extends AbstractResourceAssertion {
+  extends AbstractRepositoryAssertion {
 
-    public boolean matches(Resource resource) {
-        return (resource != null && resource.isCollection());
-    }
-    
     public boolean conflicts(Assertion assertion) {
         return false;
     }
@@ -53,5 +50,9 @@ public class ResourceIsCollectionAssertion
         sb.append(super.toString());
 		
         return sb.toString();
+    }
+
+    public boolean matches(Resource resource, Principal principal) {
+        return (resource != null && resource.isCollection());
     }
 }

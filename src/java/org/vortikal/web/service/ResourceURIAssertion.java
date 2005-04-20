@@ -31,12 +31,13 @@
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  *
  */
 public class ResourceURIAssertion
-  extends AbstractResourceAssertion {
+  extends AbstractRepositoryAssertion {
 
     private String uri = "";
     private boolean inverted = false;
@@ -62,13 +63,6 @@ public class ResourceURIAssertion
     }
 
 
-    public boolean matches(Resource resource) {
-        if (this.inverted) {
-            return ! uri.equals(resource.getURI());
-        }
-        return uri.equals(resource.getURI());
-    }
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourceURIAssertion) {
             ResourceURIAssertion other = (ResourceURIAssertion) assertion;
@@ -93,6 +87,13 @@ public class ResourceURIAssertion
             sb.append("; URI = ").append(this.uri);
         }
         return sb.toString();
+    }
+
+    public boolean matches(Resource resource, Principal principal) {
+        if (this.inverted) {
+            return ! uri.equals(resource.getURI());
+        }
+        return uri.equals(resource.getURI());
     }
 
 }

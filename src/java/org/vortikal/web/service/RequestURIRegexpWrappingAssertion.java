@@ -58,11 +58,11 @@ import org.vortikal.security.Principal;
  *   applies to the URL construction phase.
  * </ul>
  */
-public class RequestURIRegexpWrappingAssertion extends AbstractRequestAssertion
-  implements InitializingBean {
+public class RequestURIRegexpWrappingAssertion 
+  implements Assertion, InitializingBean {
 	
     private Pattern uriPattern = null;
-    private RequestAssertion wrappedAssertion = null;
+    private Assertion wrappedAssertion = null;
 
 
     public void setUriPattern(String uriPattern) {
@@ -73,7 +73,7 @@ public class RequestURIRegexpWrappingAssertion extends AbstractRequestAssertion
     }
     
 
-    public void setWrappedAssertion(RequestAssertion wrappedAssertion) {
+    public void setWrappedAssertion(Assertion wrappedAssertion) {
         this.wrappedAssertion = wrappedAssertion;
     }
     
@@ -95,8 +95,32 @@ public class RequestURIRegexpWrappingAssertion extends AbstractRequestAssertion
     }
 
 
-    public boolean matches(HttpServletRequest request) {
-        
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+		
+        sb.append(super.toString());
+        sb.append("; uriPattern = " + this.uriPattern.pattern());
+        sb.append("; [wrappedAssertion = " + this.wrappedAssertion);
+        sb.append("]");
+        return sb.toString();
+    }
+
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        if (this.uriPattern != null) {
+            Matcher m = this.uriPattern.matcher(url.getPath());
+            if (!m.find()) {
+                // According to the regular expression, this URL
+                // should not be affected by the assertion:
+                return true;
+            }
+        }
+
+        return this.wrappedAssertion.processURL(url, resource, principal, match);
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         if (this.uriPattern != null) {
             Matcher m = this.uriPattern.matcher(request.getRequestURI());
             if (!m.find()) {
@@ -106,32 +130,7 @@ public class RequestURIRegexpWrappingAssertion extends AbstractRequestAssertion
             }
         }
 
-        return wrappedAssertion.matches(request);
-    }
-
-
-    public void processURL(URL url, Resource resource, Principal principal) {
-        if (this.uriPattern != null) {
-            Matcher m = this.uriPattern.matcher(url.getPath());
-            if (!m.find()) {
-                // According to the regular expression, this URL
-                // should not be affected by the assertion:
-                return;
-            }
-        }
-
-        this.wrappedAssertion.processURL(url, resource, principal);
-    }
-    
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; uriPattern = " + this.uriPattern.pattern());
-        sb.append("; [wrappedAssertion = " + this.wrappedAssertion);
-        sb.append("]");
-        return sb.toString();
+        return wrappedAssertion.matches(request, resource, principal);
     }
 
 }

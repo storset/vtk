@@ -31,18 +31,17 @@
 package org.vortikal.web.controller.properties;
 
 
-import org.vortikal.repository.Resource;
-import org.vortikal.web.service.ResourceAssertion;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.web.service.RepositoryAssertion;
 
 
 /**
  * Descriptor class for editing properties that can have a distinct
  * set of values.
  *
- * @version $Id$
  */
 public class EnumerationPropertyDescriptor implements InitializingBean {
 
@@ -50,14 +49,14 @@ public class EnumerationPropertyDescriptor implements InitializingBean {
     private String name = null;
     private String[] values = null;
     private String defaultValue = null;
-    private ResourceAssertion[] assertions = null;
+    private RepositoryAssertion[] assertions = null;
     
-    public boolean isApplicableProperty(Resource resource) {
+    public boolean isApplicableProperty(Resource resource, Principal principal) {
         if (assertions == null)
             return true;
 
         for (int i = 0; i < assertions.length; i++) {
-            if (!assertions[i].matches(resource)) {
+            if (!assertions[i].matches(resource, principal)) {
                 return false;
             }
         }
@@ -168,11 +167,11 @@ public class EnumerationPropertyDescriptor implements InitializingBean {
         this.defaultValue = defaultValue;
     }
 
-    public ResourceAssertion[] getAssertions() {
+    public RepositoryAssertion[] getAssertions() {
         return this.assertions;
     }
 
-    public void setAssertions(ResourceAssertion[] assertions) {
+    public void setAssertions(RepositoryAssertion[] assertions) {
         this.assertions = assertions;
     }
     

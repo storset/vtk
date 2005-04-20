@@ -33,7 +33,6 @@ package org.vortikal.web.service;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 
 /**
  * This assertion returns <code>true</code> if the resource has no
@@ -41,25 +40,7 @@ import org.vortikal.security.SecurityContext;
  * principal from the SecurityContext.
  */
 public class ResourceNotLockedAssertion
-  extends AbstractResourceAssertion {
-
-    public boolean matches(Resource resource) {
-        Principal principalLockedBy = null;
-        Lock locks[] = resource.getActiveLocks();
-
-        if (locks.length > 0) {
-            principalLockedBy = locks[0].getPrincipal();
-        } else
-            return true;
-
-        Principal principal = SecurityContext.getSecurityContext()
-            .getPrincipal();
-
-        if (principal == null)
-            return false;
-
-        return (principal.equals(principalLockedBy));
-    }
+  extends AbstractRepositoryAssertion {
 
     public boolean conflicts(Assertion assertion) {
         return false;
@@ -71,6 +52,21 @@ public class ResourceNotLockedAssertion
         sb.append(super.toString());
 
         return sb.toString();
+    }
+
+    public boolean matches(Resource resource, Principal principal) {
+        Principal principalLockedBy = null;
+        Lock locks[] = resource.getActiveLocks();
+
+        if (locks.length > 0) {
+            principalLockedBy = locks[0].getPrincipal();
+        } else
+            return true;
+
+        if (principal == null)
+            return false;
+
+        return (principal.equals(principalLockedBy));
     }
 
 }

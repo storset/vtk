@@ -31,11 +31,12 @@
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  *
  */
-public class ResourceChildAssertion extends AbstractResourceAssertion {
+public class ResourceChildAssertion extends AbstractRepositoryAssertion {
 
     private String childName;
 
@@ -46,19 +47,6 @@ public class ResourceChildAssertion extends AbstractResourceAssertion {
         this.childName = childName;
     }
 	
-    public boolean matches(Resource resource) {
-        String[] childURIs = resource.getChildURIs();
-        
-        for (int i = 0; i < childURIs.length; i++) {
-            String childURI = childURIs[i];
-            if (childURI.substring(childURI.lastIndexOf("/") + 1).equals(childName)) 
-                return true;
-        }
-        
-        return false;
-    }
-
-
     public boolean conflicts(Assertion assertion) {
         return false;
     }
@@ -71,6 +59,18 @@ public class ResourceChildAssertion extends AbstractResourceAssertion {
         sb.append("; childName = ").append(this.childName);
 
         return sb.toString();
+    }
+
+    public boolean matches(Resource resource, Principal principal) {
+        String[] childURIs = resource.getChildURIs();
+        
+        for (int i = 0; i < childURIs.length; i++) {
+            String childURI = childURIs[i];
+            if (childURI.substring(childURI.lastIndexOf("/") + 1).equals(childName)) 
+                return true;
+        }
+        
+        return false;
     }
 
 }

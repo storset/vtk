@@ -35,10 +35,13 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+
 /**
  * Assertion for regular expression matching on the resource content type.
  */
-public class RequestContentTypeRegexpAssertion extends AbstractRequestAssertion {
+public class RequestContentTypeRegexpAssertion implements Assertion {
 
     private Pattern pattern = null;
 
@@ -54,7 +57,7 @@ public class RequestContentTypeRegexpAssertion extends AbstractRequestAssertion 
     }
     
 
-    public boolean matches(HttpServletRequest request) {
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         // TODO: fixme
         String contentType = request.getContentType();
         
@@ -79,6 +82,11 @@ public class RequestContentTypeRegexpAssertion extends AbstractRequestAssertion 
         sb.append("; pattern = ").append(pattern.pattern());
 		
         return sb.toString();
+    }
+
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        return true;
     }
 
 }

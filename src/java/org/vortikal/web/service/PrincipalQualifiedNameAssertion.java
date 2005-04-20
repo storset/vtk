@@ -3,7 +3,7 @@ package org.vortikal.web.service;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
-public class PrincipalQualifiedNameAssertion extends AbstractPrincipalAssertion {
+public class PrincipalQualifiedNameAssertion extends AbstractRepositoryAssertion {
 
     private String username;
     private boolean equals = true;
@@ -20,7 +20,7 @@ public class PrincipalQualifiedNameAssertion extends AbstractPrincipalAssertion 
     /** 
      * @see org.vortikal.web.service.PrincipalAssertion#matches(org.vortikal.security.Principal)
      */
-    public boolean matches(Principal principal) {
+    public boolean matches(Resource resource, Principal principal) {
         if (principal != null) {
            
             boolean match = username.equals(principal.getQualifiedName());
@@ -49,10 +49,6 @@ public class PrincipalQualifiedNameAssertion extends AbstractPrincipalAssertion 
         return false;
     }
     
-    public void processURL(URL url, Resource resource, Principal principal) {
-        // nothing to do
-    }
-
     public boolean isEquals() {
         return equals;
     }
@@ -61,6 +57,5 @@ public class PrincipalQualifiedNameAssertion extends AbstractPrincipalAssertion 
     public void setEquals(boolean equals) {
         this.equals = equals;
     }
-    
 
 }

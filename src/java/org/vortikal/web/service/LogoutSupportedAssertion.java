@@ -34,14 +34,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 
+import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.TokenManager;
 import org.vortikal.security.web.AuthenticationHandler;
 
 
-public class LogoutSupportedAssertion extends AbstractPrincipalAssertion {
+public class LogoutSupportedAssertion extends AbstractRepositoryAssertion implements InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
     
@@ -61,7 +63,7 @@ public class LogoutSupportedAssertion extends AbstractPrincipalAssertion {
     }
     
 
-    public boolean matches(Principal principal) {
+    public boolean matches(Resource resource, Principal principal) {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 

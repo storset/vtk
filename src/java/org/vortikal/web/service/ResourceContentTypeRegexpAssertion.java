@@ -34,12 +34,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  *
  */
 public class ResourceContentTypeRegexpAssertion
-  extends AbstractResourceAssertion {
+  extends AbstractRepositoryAssertion {
 
     private Pattern pattern = null;
 
@@ -55,15 +56,6 @@ public class ResourceContentTypeRegexpAssertion
     }
     
     
-    public boolean matches(Resource resource) {
-        if (resource != null && resource.getContentType() != null) {
-            Matcher m = pattern.matcher(resource.getContentType());
-            return m.matches();
-        }
-        return false;
-    }
-    
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourceContentTypeRegexpAssertion) {
             Matcher m = pattern.matcher(((ResourceContentTypeAssertion) assertion).getContentType());
@@ -80,6 +72,15 @@ public class ResourceContentTypeRegexpAssertion
         sb.append("; pattern = ").append(pattern.pattern());
 		
         return sb.toString();
+    }
+
+
+    public boolean matches(Resource resource, Principal principal) {
+        if (resource != null && resource.getContentType() != null) {
+            Matcher m = pattern.matcher(resource.getContentType());
+            return m.matches();
+        }
+        return false;
     }
 
 }

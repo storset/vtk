@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.LocaleResolver;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 
 
@@ -52,8 +54,8 @@ import org.springframework.web.servlet.LocaleResolver;
  *        match. Default is false.
  * </ul>
  */
-public class RequestLocaleMatchAssertion extends AbstractRequestAssertion
-  implements InitializingBean {
+public class RequestLocaleMatchAssertion
+  implements Assertion, InitializingBean {
     
     private Locale locale;
     private LocaleResolver localeResolver;
@@ -106,17 +108,6 @@ public class RequestLocaleMatchAssertion extends AbstractRequestAssertion
 
 
 
-    public boolean matches(HttpServletRequest request) {
-        Locale locale = localeResolver.resolveLocale(request);
-        boolean match = match(locale);
-        if (invert) {
-            return !match;
-        }
-        return match;
-    }
-    
-
-
     private boolean match(Locale locale) {
         
         if (!this.locale.getLanguage().equals(locale.getLanguage())) {
@@ -139,6 +130,21 @@ public class RequestLocaleMatchAssertion extends AbstractRequestAssertion
         sb.append("; locale = ").append(this.locale);
         sb.append("; invert = ").append(this.invert);
         return sb.toString();
+    }
+
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        return true;
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        Locale locale = localeResolver.resolveLocale(request);
+        boolean match = match(locale);
+        if (invert) {
+            return !match;
+        }
+        return match;
     }
     
 }

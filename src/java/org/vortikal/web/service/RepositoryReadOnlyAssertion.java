@@ -31,12 +31,12 @@
 package org.vortikal.web.service;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  * Assertion for matching on whether the {@link Repository content
@@ -56,7 +56,7 @@ import org.vortikal.repository.Repository;
  * @see Repository#getConfiguration
  */
 public class RepositoryReadOnlyAssertion
-    extends AbstractRequestAssertion implements InitializingBean {
+    extends AbstractRepositoryAssertion implements InitializingBean {
     
     private Repository repository = null;
     private boolean invert = false;
@@ -88,7 +88,7 @@ public class RepositoryReadOnlyAssertion
     }
     
 
-    public boolean matches(HttpServletRequest request) {
+    public boolean matches(Resource resource, Principal principal) {
         try {
             if (this.invert) {
                 return !this.repository.getConfiguration().isReadOnly();

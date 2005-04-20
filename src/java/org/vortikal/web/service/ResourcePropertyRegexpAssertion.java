@@ -35,12 +35,13 @@ import java.util.regex.Pattern;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  *
  */
 public class ResourcePropertyRegexpAssertion
-  extends AbstractResourceAssertion {
+  extends AbstractRepositoryAssertion {
 
     private String namespace;
     private String name;
@@ -62,20 +63,6 @@ public class ResourcePropertyRegexpAssertion
     }
     
     
-    public boolean matches(Resource resource) {
-        if (resource != null) {
-            Property property = resource.getProperty(namespace, name);
-
-            if (property != null) {
-                Matcher m = pattern.matcher(property.getValue());
-                return m.matches();
-            }
-        }
-        
-        return false;
-    }
-    
-
     public boolean conflicts(Assertion assertion) {
         // FIXME: ?
         return false;
@@ -89,6 +76,19 @@ public class ResourcePropertyRegexpAssertion
         sb.append("; pattern = ").append(pattern.pattern());
 		
         return sb.toString();
+    }
+
+    public boolean matches(Resource resource, Principal principal) {
+        if (resource != null) {
+            Property property = resource.getProperty(namespace, name);
+
+            if (property != null) {
+                Matcher m = pattern.matcher(property.getValue());
+                return m.matches();
+            }
+        }
+        
+        return false;
     }
 
 }

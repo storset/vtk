@@ -47,7 +47,7 @@ import org.vortikal.security.Principal;
  *   values are <code>http</code> and <code>https</code>.
  * </ul>
  */
-public class RequestProtocolAssertion extends AbstractRequestAssertion {
+public class RequestProtocolAssertion implements Assertion {
 	
     private String protocol = null;
 	
@@ -67,15 +67,6 @@ public class RequestProtocolAssertion extends AbstractRequestAssertion {
     }
 
 
-    public boolean matches(HttpServletRequest request) {
-
-        if ("http".equals(protocol))
-            return !request.isSecure();
-		
-        return request.isSecure();
-    }
-
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestProtocolAssertion) {
             return ! (this.protocol.equals(
@@ -85,11 +76,6 @@ public class RequestProtocolAssertion extends AbstractRequestAssertion {
     }
 
 
-    public void processURL(URL url, Resource resource, Principal principal) {
-        url.setProtocol(this.protocol);
-    }
-    
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
@@ -97,6 +83,20 @@ public class RequestProtocolAssertion extends AbstractRequestAssertion {
         sb.append("; protocol = ").append(this.protocol);
 
         return sb.toString();
+    }
+
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        url.setProtocol(this.protocol);
+        return true;
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        if ("http".equals(protocol))
+            return !request.isSecure();
+        
+        return request.isSecure();
     }
 
 }

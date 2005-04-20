@@ -64,8 +64,13 @@ public interface Assertion {
      * @param principal the authenticated principal for which the URL
      * is being constructed
      */
-    public void processURL(URL url, Resource resource, Principal principal);
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match);
 
+
+    /**
+     * @return wether the request matches this assertion.
+     */
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal);
 
 
     /**
@@ -77,11 +82,6 @@ public interface Assertion {
      * incompatible, <code>false</code> otherwise.
      */
     public boolean conflicts(Assertion assertion);
-
-    /**
-     * @return wether the request matches this assertion.
-     */
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal);
 
 
 }

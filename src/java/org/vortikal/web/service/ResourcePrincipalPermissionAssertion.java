@@ -34,10 +34,8 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
@@ -45,7 +43,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.security.roles.RoleManager;
 
 
@@ -83,7 +80,7 @@ import org.vortikal.security.roles.RoleManager;
  * </ul>
  */
 public class ResourcePrincipalPermissionAssertion
-  extends AbstractResourceAssertion implements InitializingBean {
+  extends AbstractRepositoryAssertion implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(
             ResourcePrincipalPermissionAssertion.class);
@@ -171,43 +168,6 @@ public class ResourcePrincipalPermissionAssertion
         sb.append("; requiresAuthentication = ");
         sb.append(this.requiresAuthentication).append("]");
         return sb.toString();
-    }
-
-
-    public boolean matches(Resource resource) {
-
-        if (resource == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Resource is null, match = false");
-            }
-            return false;
-        }
-
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
-
-        if (this.requiresAuthentication && token == null)
-            throw new AuthenticationException();
-        
-        Lock lock = (resource.getActiveLocks().length > 0) ?
-            resource.getActiveLocks()[0] : null;
-        
-        if (this.permission.equals("parent-write")) {
-
-            return checkParentWritePermission(resource, lock, principal);
-            
-        } else if (this.permission.equals("unlock")) {
-                
-            return checkUnlockPermission(resource, lock, principal);
-
-        } else if (this.permission.equals("lock")) {
-                
-            return checkLockPermission(resource, lock, principal);
-        } 
-
-
-        return checkACLPermission(resource, lock, principal);
     }
 
 
@@ -363,6 +323,38 @@ public class ResourcePrincipalPermissionAssertion
         return (principal != null
                 && this.roleManager.hasRole(
                     principal.getQualifiedName(), RoleManager.ROOT));
+    }
+
+
+    public boolean matches(Resource resource, Principal principal) {
+        if (resource == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Resource is null, match = false");
+            }
+            return false;
+        }
+
+        if (this.requiresAuthentication && principal == null)
+            throw new AuthenticationException();
+        
+        Lock lock = (resource.getActiveLocks().length > 0) ?
+            resource.getActiveLocks()[0] : null;
+        
+        if (this.permission.equals("parent-write")) {
+
+            return checkParentWritePermission(resource, lock, principal);
+            
+        } else if (this.permission.equals("unlock")) {
+                
+            return checkUnlockPermission(resource, lock, principal);
+
+        } else if (this.permission.equals("lock")) {
+                
+            return checkLockPermission(resource, lock, principal);
+        } 
+
+
+        return checkACLPermission(resource, lock, principal);
     }
     
 }

@@ -40,7 +40,7 @@ import org.vortikal.security.Principal;
  * Assertion matching on request port numbers.
  */
 public class RequestPortAssertion
-  extends AbstractRequestAssertion {
+  implements Assertion {
 
     private int port = -1;
 	
@@ -55,10 +55,6 @@ public class RequestPortAssertion
         return port;
     }
 	
-    public boolean matches(HttpServletRequest request) {
-        return port == request.getServerPort();
-    }
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestPortAssertion) {
             return (this.port  != ((RequestPortAssertion)assertion).getPort());
@@ -67,11 +63,6 @@ public class RequestPortAssertion
     }
 
 
-    public void processURL(URL url, Resource resource, Principal principal) {
-        url.setPort(new Integer(this.port));
-    }
-    
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
@@ -79,6 +70,15 @@ public class RequestPortAssertion
         sb.append("; port = ").append(this.port);
 
         return sb.toString();
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        url.setPort(new Integer(this.port));
+        return true;
+    }
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        return port == request.getServerPort();
     }
 
 }

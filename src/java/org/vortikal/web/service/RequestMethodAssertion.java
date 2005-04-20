@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  * Assertion that matches on HTTP method(s).
@@ -50,8 +52,8 @@ import org.springframework.beans.factory.InitializingBean;
  * </ul>
  *
  */
-public class RequestMethodAssertion extends AbstractRequestAssertion
-  implements InitializingBean {
+public class RequestMethodAssertion 
+  implements Assertion, InitializingBean {
 
     private String method = null;
     private Set methods = null;
@@ -85,16 +87,6 @@ public class RequestMethodAssertion extends AbstractRequestAssertion
         }
     }
     
-
-    public boolean matches(HttpServletRequest request) {
-        String reqMethod = request.getMethod();
-
-        if (this.methods != null) {
-            return this.methods.contains(reqMethod);
-        }
-        return reqMethod.equals(this.method);
-    }
-
 
     public boolean conflicts(Assertion assertion) {
         if (!(assertion instanceof RequestMethodAssertion)) {
@@ -136,6 +128,19 @@ public class RequestMethodAssertion extends AbstractRequestAssertion
             sb.append("; method = ").append(this.method);
         }
         return sb.toString();
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        return true;
+    }
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        String reqMethod = request.getMethod();
+
+        if (this.methods != null) {
+            return this.methods.contains(reqMethod);
+        }
+        return reqMethod.equals(this.method);
     }
 
 }

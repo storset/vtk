@@ -35,8 +35,11 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
+ * FIXME: should match on processurl?
  * Assertion that does regular expression matches on the requested
  * URI.
  * <p>Configurable properties:
@@ -45,8 +48,8 @@ import org.springframework.beans.factory.InitializingBean;
  *     expression} to match.
  * </ul>
  */
-public class RequestURIRegexpAssertion extends AbstractRequestAssertion
-  implements InitializingBean {
+public class RequestURIRegexpAssertion
+  implements Assertion, InitializingBean {
 
     private Pattern pattern = null;
 
@@ -62,12 +65,6 @@ public class RequestURIRegexpAssertion extends AbstractRequestAssertion
     }
     
 
-    public boolean matches(HttpServletRequest request) {
-        Matcher m = pattern.matcher(request.getRequestURI());
-        return m.find();
-    }
-
-
     public boolean conflicts(Assertion assertion) {
         return false;
     }
@@ -80,6 +77,17 @@ public class RequestURIRegexpAssertion extends AbstractRequestAssertion
         sb.append("; pattern = ").append(pattern.pattern());
 		
         return sb.toString();
+    }
+
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        return true;
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        Matcher m = pattern.matcher(request.getRequestURI());
+        return m.find();
     }
 
 }

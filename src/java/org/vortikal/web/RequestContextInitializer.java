@@ -57,9 +57,6 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.service.Assertion;
-import org.vortikal.web.service.PrincipalAssertion;
-import org.vortikal.web.service.RequestAssertion;
-import org.vortikal.web.service.ResourceAssertion;
 import org.vortikal.web.service.Service;
 
 /**
@@ -224,14 +221,6 @@ public class RequestContextInitializer
 
                 if (!assertion.matches(request,resource,securityContext.getPrincipal()))
                     match = false;
-
-                // FIXME: don't care about this!?
-                if (!(assertion instanceof RequestAssertion || 
-                        assertion instanceof ResourceAssertion ||
-                        assertion instanceof PrincipalAssertion)) {
-                    logger.warn("assertion of unknown type: " + assertion +
-                                 " for service " + service.getName());
-                }
 
                 if (logger.isDebugEnabled()) {
                     if (match) {

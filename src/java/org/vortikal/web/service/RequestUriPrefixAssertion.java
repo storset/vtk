@@ -37,10 +37,11 @@ import org.vortikal.security.Principal;
 
 
 /**
+ * FIXME: should be resourceuri?
  * Assertion that matches when the request URI starts with a specified prefix.
  */
 public class RequestUriPrefixAssertion
-  extends AbstractRequestAssertion {
+  implements Assertion {
 
     private String prefix;
 	
@@ -62,11 +63,6 @@ public class RequestUriPrefixAssertion
     }
     
 
-    public boolean matches(HttpServletRequest request) {
-        return request.getRequestURI().startsWith(this.prefix);
-    }
-
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestUriPrefixAssertion) {
             return ! (this.prefix.equals(
@@ -76,13 +72,6 @@ public class RequestUriPrefixAssertion
     }
 
 
-    public void processURL(URL url, Resource resource, Principal principal) {
-        String path = url.getPath();
-        url.setPath(this.prefix + path);
-    }
-    
-
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
@@ -90,6 +79,16 @@ public class RequestUriPrefixAssertion
         sb.append("; prefix = ").append(this.prefix);
 
         return sb.toString();
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        String path = url.getPath();
+        url.setPath(this.prefix + path);
+        return true;
+    }
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        return request.getRequestURI().startsWith(this.prefix);
     }
 
 }

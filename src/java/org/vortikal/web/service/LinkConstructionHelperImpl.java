@@ -67,31 +67,7 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
 
         for (Iterator i = assertions.iterator(); i.hasNext();) {
             Assertion assertion = (Assertion) i.next();
-
-            if (matchAssertions && !(assertion instanceof RequestAssertion)) {
-                matchAssertion(service, assertion, resource, principal);
-            }
-
-            assertion.processURL(urlObject, resource, principal);
-        }
-        
-        String url = urlObject.toString();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Constructed URL: '" + url + "' (from resource: " +
-                         resource + ";principal: " + principal +
-                         ";service: " + service.getName() + ")");
-        }
-        return url;
-    }
-
-
-    private void matchAssertion(Service service, Assertion assertion,
-                                   Resource resource, Principal principal)
-        throws ServiceUnlinkableException {
-        
-        if (assertion instanceof ResourceAssertion) {
-            boolean match = ((ResourceAssertion) assertion).matches(resource);
+            boolean match = assertion.processURL(urlObject, resource, principal, matchAssertions);
             if (match == false) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Unable to construct link to resource: "
@@ -105,22 +81,18 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
                     + resource.getURI() + ". Assertion " + assertion
                     + "false for resource.");
             }
-        } else if (assertion instanceof PrincipalAssertion) {
-            boolean match = ((PrincipalAssertion) assertion).matches(principal);
-            if (match == false) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Unable to construct link to resource: "
-                                 + resource + ";principal: " + principal
-                                 + ";service: " + service.getName() + ": "
-                                 + "Unmatched assertion: " + assertion);
-                }
-
-                throw new ServiceUnlinkableException(
-                    "Service " + service.getName() + " cannot be applied to principal "
-                    + principal + ". Assertion " + assertion
-                    + "false for principal.");
-            }
         }
+        
+        String url = urlObject.toString();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Constructed URL: '" + url + "' (from resource: " +
+                         resource + ";principal: " + principal +
+                         ";service: " + service.getName() + ")");
+        }
+        return url;
     }
+
+
 
 }

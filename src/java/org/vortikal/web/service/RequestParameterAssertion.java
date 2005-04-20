@@ -41,7 +41,7 @@ import org.vortikal.security.Principal;
 /**
  * Assertion that matches on request (parameter, value) pairs.
  */
-public class RequestParameterAssertion extends AbstractRequestAssertion {
+public class RequestParameterAssertion implements Assertion {
 
     private String parameterName = "";
     private String parameterValue = "";
@@ -52,10 +52,6 @@ public class RequestParameterAssertion extends AbstractRequestAssertion {
 	
     public void setParameterValue(String parameterValue) {
         this.parameterValue = parameterValue;
-    }
-	
-    public boolean matches(HttpServletRequest request) {
-        return parameterValue.equals(request.getParameter(parameterName)); 
     }
 	
     public String getParameterName() {
@@ -80,16 +76,6 @@ public class RequestParameterAssertion extends AbstractRequestAssertion {
     }
 
 
-    public void processURL(URL url, Resource resource, Principal principal) {
-        Map query = url.getQuery();
-        if (query == null) {
-            query = new LinkedHashMap();
-        }
-        query.put(this.parameterName, this.parameterValue);
-        url.setQuery(query);
-    }
-    
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
@@ -98,5 +84,19 @@ public class RequestParameterAssertion extends AbstractRequestAssertion {
         sb.append("; parameterValue = ").append(this.parameterValue);
 
         return sb.toString();
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        Map query = url.getQuery();
+        if (query == null) {
+            query = new LinkedHashMap();
+        }
+        query.put(this.parameterName, this.parameterValue);
+        url.setQuery(query);
+        return true;
+    }
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        return parameterValue.equals(request.getParameter(parameterName)); 
     }
 }

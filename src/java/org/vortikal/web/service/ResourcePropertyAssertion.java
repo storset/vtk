@@ -32,6 +32,7 @@ package org.vortikal.web.service;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  * Assertion for matching on whether the current resource has a
@@ -48,7 +49,7 @@ import org.vortikal.repository.Resource;
  * </ul>
  */
 public class ResourcePropertyAssertion
-  extends AbstractResourceAssertion {
+  extends AbstractRepositoryAssertion {
 
     private String namespace;
     private String name;
@@ -85,18 +86,6 @@ public class ResourcePropertyAssertion
     }
 
 
-    public boolean matches(Resource resource) {
-
-        if (resource != null) {
-            Property property = resource.getProperty(namespace, name);
-
-            if (property != null && value.equals(property.getValue())) return !invert;
-        }
-        
-        return invert;
-    }
-
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourcePropertyAssertion) {
 
@@ -128,6 +117,18 @@ public class ResourcePropertyAssertion
 
     public void setInvert(boolean invert) {
         this.invert = invert;
+    }
+
+
+    public boolean matches(Resource resource, Principal principal) {
+
+        if (resource != null) {
+            Property property = resource.getProperty(namespace, name);
+
+            if (property != null && value.equals(property.getValue())) return !invert;
+        }
+        
+        return invert;
     }
     
 

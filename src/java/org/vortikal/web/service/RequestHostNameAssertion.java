@@ -45,7 +45,7 @@ import org.vortikal.util.web.URLUtil;
  *   <code>*</code> means that any hostname matches.
  * </ul>
  */
-public class RequestHostNameAssertion extends AbstractRequestAssertion {
+public class RequestHostNameAssertion implements Assertion {
 
     private String hostName;
 	
@@ -53,19 +53,6 @@ public class RequestHostNameAssertion extends AbstractRequestAssertion {
         this.hostName = hostName;
     }
 
-    public boolean matches(HttpServletRequest request) {
-        if ("*".equals(this.hostName)) {
-            return true;
-        }
-        String reqHostName = URLUtil.getHostName(request);
-        return this.hostName.equals(reqHostName);
-    }
-
-
-    public void processURL(URL url, Resource resource, Principal principal) {
-        url.setHost(this.getHostName());
-    }
-    
 
     /**
      * Gets the host name. If the configuration parameter
@@ -100,6 +87,19 @@ public class RequestHostNameAssertion extends AbstractRequestAssertion {
         sb.append("; hostName = ").append(this.hostName);
 
         return sb.toString();
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        url.setHost(this.getHostName());
+        return true;
+    }
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        if ("*".equals(this.hostName)) {
+            return true;
+        }
+        String reqHostName = URLUtil.getHostName(request);
+        return this.hostName.equals(reqHostName);
     }
 
 

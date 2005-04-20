@@ -34,26 +34,15 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.security.roles.RoleManager;
 
 /**
  *
  */
 public class ResourceOwnerAssertion
-  extends AbstractResourceAssertion implements InitializingBean {
+  extends AbstractRepositoryAssertion implements InitializingBean {
 
     private RoleManager roleManager;
-
-    public boolean matches(Resource resource) {
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        
-        if (principal == null) return false;
-        
-        return resource.getOwner().equals(principal)
-            || roleManager.hasRole(principal.getQualifiedName(),RoleManager.ROOT);
-    }
-
 
     public boolean conflicts(Assertion assertion) {
 		return false;
@@ -69,5 +58,14 @@ public class ResourceOwnerAssertion
 
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
+    }
+
+
+    public boolean matches(Resource resource, Principal principal) {
+
+        if (principal == null) return false;
+        
+        return resource.getOwner().equals(principal)
+            || roleManager.hasRole(principal.getQualifiedName(),RoleManager.ROOT);
     }
 }

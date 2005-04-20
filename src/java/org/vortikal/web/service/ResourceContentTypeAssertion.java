@@ -31,6 +31,7 @@
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 
 /**
  * Matches on resource content types. The content type specified must
@@ -44,7 +45,7 @@ import org.vortikal.repository.Resource;
  * @see ResourceContentTypeRegexpAssertion
  */
 public class ResourceContentTypeAssertion
-  extends AbstractResourceAssertion {
+  extends AbstractRepositoryAssertion {
 
     private String contentType = "";
 
@@ -58,12 +59,6 @@ public class ResourceContentTypeAssertion
     
     public String getContentType() {
         return contentType;
-    }
-    
-
-    public boolean matches(Resource resource) {
-        return resource != null &&
-            contentType.equals(resource.getContentType());
     }
     
 
@@ -83,6 +78,11 @@ public class ResourceContentTypeAssertion
         sb.append("; contentType = ").append(this.contentType);
 		
         return sb.toString();
+    }
+
+    public boolean matches(Resource resource, Principal principal) {
+        return resource != null &&
+        contentType.equals(resource.getContentType());
     }
 
 }

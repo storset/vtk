@@ -32,16 +32,14 @@ package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+
 /**
  * Assertion that matches on requests that have no query string.
+ * FIXME: dangerous to rely on conflicts on specific class!
  */
-public class RequestEmptyQueryStringAssertion extends AbstractRequestAssertion {
-
-	
-    public boolean matches(HttpServletRequest request) {
-        return request.getQueryString() == null;
-    }
-	
+public class RequestEmptyQueryStringAssertion implements Assertion {
 
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestParameterAssertion) {
@@ -53,5 +51,15 @@ public class RequestEmptyQueryStringAssertion extends AbstractRequestAssertion {
 
     public String toString() {
         return super.toString();
+    }
+
+
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        return true;
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        return request.getQueryString() == null;
     }
 }

@@ -111,10 +111,10 @@ public class RequestParameterExistsAssertion implements Assertion {
         if (query == null) {
             query = new LinkedHashMap();
         }
-        if (!query.containsKey(this.parameterName)) {
+        if (!invert && !query.containsKey(this.parameterName)) {
             query.put(this.parameterName, "");
             url.setQuery(query);
-        }
+        } 
         return true;
     }
 

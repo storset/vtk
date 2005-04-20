@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
@@ -76,6 +78,10 @@ public interface Assertion {
      */
     public boolean conflicts(Assertion assertion);
 
-    
+    /**
+     * @return wether the request matches this assertion.
+     */
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal);
+
 
 }

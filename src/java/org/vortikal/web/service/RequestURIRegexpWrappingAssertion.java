@@ -58,8 +58,8 @@ import org.vortikal.security.Principal;
  *   applies to the URL construction phase.
  * </ul>
  */
-public class RequestURIRegexpWrappingAssertion extends AssertionSupport
-  implements RequestAssertion, InitializingBean {
+public class RequestURIRegexpWrappingAssertion extends AbstractRequestAssertion
+  implements InitializingBean {
 	
     private Pattern uriPattern = null;
     private RequestAssertion wrappedAssertion = null;

@@ -45,8 +45,8 @@ import org.springframework.beans.factory.InitializingBean;
  *     expression} to match.
  * </ul>
  */
-public class RequestURIRegexpAssertion extends AssertionSupport
-  implements RequestAssertion, InitializingBean {
+public class RequestURIRegexpAssertion extends AbstractRequestAssertion
+  implements InitializingBean {
 
     private Pattern pattern = null;
 

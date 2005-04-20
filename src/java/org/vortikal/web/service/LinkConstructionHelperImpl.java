@@ -43,6 +43,8 @@ import org.vortikal.util.net.NetUtils;
 /**
  * Default implementation of the LinkConstructionHelper interface.
  *
+ * FIXME: refactor for new match method?
+ *
  * TODO: Provide "URL rewrite" hooks that would work with the service
  * mapping framework (e.g. "http://<url>/users/foo --> http://<url>/usersearch?user=foo)
  */
@@ -66,7 +68,7 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
         for (Iterator i = assertions.iterator(); i.hasNext();) {
             Assertion assertion = (Assertion) i.next();
 
-            if (matchAssertions) {
+            if (matchAssertions && !(assertion instanceof RequestAssertion)) {
                 matchAssertion(service, assertion, resource, principal);
             }
 

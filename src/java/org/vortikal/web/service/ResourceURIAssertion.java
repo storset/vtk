@@ -36,7 +36,7 @@ import org.vortikal.repository.Resource;
  *
  */
 public class ResourceURIAssertion
-  extends AssertionSupport implements ResourceAssertion {
+  extends AbstractResourceAssertion {
 
     private String uri = "";
     private boolean inverted = false;

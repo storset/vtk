@@ -41,7 +41,7 @@ import org.vortikal.security.roles.RoleManager;
  *
  */
 public class ResourceOwnerAssertion
-  extends AssertionSupport implements ResourceAssertion, InitializingBean {
+  extends AbstractResourceAssertion implements InitializingBean {
 
     private RoleManager roleManager;
 

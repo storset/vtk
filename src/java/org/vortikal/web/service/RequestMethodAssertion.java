@@ -50,8 +50,8 @@ import org.springframework.beans.factory.InitializingBean;
  * </ul>
  *
  */
-public class RequestMethodAssertion extends AssertionSupport
-  implements RequestAssertion, InitializingBean {
+public class RequestMethodAssertion extends AbstractRequestAssertion
+  implements InitializingBean {
 
     private String method = null;
     private Set methods = null;

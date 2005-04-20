@@ -39,7 +39,7 @@ import org.vortikal.repository.Resource;
  *
  */
 public class ResourceContentTypeRegexpAssertion
-  extends AssertionSupport implements ResourceAssertion {
+  extends AbstractResourceAssertion {
 
     private Pattern pattern = null;
 

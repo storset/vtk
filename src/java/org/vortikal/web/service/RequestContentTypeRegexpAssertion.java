@@ -38,8 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Assertion for regular expression matching on the resource content type.
  */
-public class RequestContentTypeRegexpAssertion extends AssertionSupport
-  implements RequestAssertion {
+public class RequestContentTypeRegexpAssertion extends AbstractRequestAssertion {
 
     private Pattern pattern = null;
 

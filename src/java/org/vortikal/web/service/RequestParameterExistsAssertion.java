@@ -45,8 +45,7 @@ import javax.servlet.http.HttpServletRequest;
  * </ul>
  *
  */
-public class RequestParameterExistsAssertion extends AssertionSupport
-  implements RequestAssertion {
+public class RequestParameterExistsAssertion extends AbstractRequestAssertion {
 
     private String parameterName = null;
     private boolean invert = false;

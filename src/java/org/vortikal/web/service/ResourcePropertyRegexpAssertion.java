@@ -40,7 +40,7 @@ import org.vortikal.repository.Resource;
  *
  */
 public class ResourcePropertyRegexpAssertion
-  extends AssertionSupport implements ResourceAssertion {
+  extends AbstractResourceAssertion {
 
     private String namespace;
     private String name;

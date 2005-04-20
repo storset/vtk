@@ -49,7 +49,7 @@ import org.vortikal.security.Principal;
  *   </li>
  * </ul>
  */
-public class IsAuthenticatedAssertion implements PrincipalAssertion {
+public class IsAuthenticatedAssertion extends AbstractPrincipalAssertion {
 
 
     private boolean requiresAuthentication = false;

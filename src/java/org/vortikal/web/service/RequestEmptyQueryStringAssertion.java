@@ -35,8 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Assertion that matches on requests that have no query string.
  */
-public class RequestEmptyQueryStringAssertion extends AssertionSupport
-  implements RequestAssertion {
+public class RequestEmptyQueryStringAssertion extends AbstractRequestAssertion {
 
 	
     public boolean matches(HttpServletRequest request) {

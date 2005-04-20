@@ -38,8 +38,7 @@ import org.vortikal.repository.Resource;
 /**
  *
  */
-public class ResourceURIRegexpAssertion extends AssertionSupport
-  implements ResourceAssertion {
+public class ResourceURIRegexpAssertion extends AbstractResourceAssertion {
 
     private Pattern pattern = null;
 

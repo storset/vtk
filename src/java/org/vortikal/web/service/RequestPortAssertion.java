@@ -40,7 +40,7 @@ import org.vortikal.security.Principal;
  * Assertion matching on request port numbers.
  */
 public class RequestPortAssertion
-  extends AssertionSupport implements RequestAssertion {
+  extends AbstractRequestAssertion {
 
     private int port = -1;
 	

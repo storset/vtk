@@ -52,8 +52,8 @@ import org.springframework.web.servlet.LocaleResolver;
  *        match. Default is false.
  * </ul>
  */
-public class RequestLocaleMatchAssertion extends AssertionSupport
-  implements RequestAssertion, InitializingBean {
+public class RequestLocaleMatchAssertion extends AbstractRequestAssertion
+  implements InitializingBean {
     
     private Locale locale;
     private LocaleResolver localeResolver;

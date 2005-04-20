@@ -222,22 +222,14 @@ public class RequestContextInitializer
 
                 boolean match = true;
 
-                if (assertion instanceof RequestAssertion) {
+                if (!assertion.matches(request,resource,securityContext.getPrincipal()))
+                    match = false;
 
-                    if (!((RequestAssertion)assertion).matches(request))
-                        match = false;
-
-                } else if (assertion instanceof ResourceAssertion) {
-
-                    if (!((ResourceAssertion)assertion).matches(resource))
-                        match = false;
-
-                } else if (assertion instanceof PrincipalAssertion) {
-
-                    if (!((PrincipalAssertion)assertion).matches(securityContext.getPrincipal()))
-                        match = false;
-                } else {
-                    logger.warn("Unsupported assertion: " + assertion +
+                // FIXME: don't care about this!?
+                if (!(assertion instanceof RequestAssertion || 
+                        assertion instanceof ResourceAssertion ||
+                        assertion instanceof PrincipalAssertion)) {
+                    logger.warn("assertion of unknown type: " + assertion +
                                  " for service " + service.getName());
                 }
 

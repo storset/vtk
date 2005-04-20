@@ -41,8 +41,7 @@ import org.vortikal.security.Principal;
 /**
  * Assertion that matches on request (parameter, value) pairs.
  */
-public class RequestParameterAssertion extends AssertionSupport
-  implements RequestAssertion {
+public class RequestParameterAssertion extends AbstractRequestAssertion {
 
     private String parameterName = "";
     private String parameterValue = "";

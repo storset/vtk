@@ -47,8 +47,7 @@ import org.vortikal.security.Principal;
  *   values are <code>http</code> and <code>https</code>.
  * </ul>
  */
-public class RequestProtocolAssertion extends AssertionSupport
-  implements RequestAssertion {
+public class RequestProtocolAssertion extends AbstractRequestAssertion {
 	
     private String protocol = null;
 	

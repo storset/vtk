@@ -41,8 +41,7 @@ import org.vortikal.security.TokenManager;
 import org.vortikal.security.web.AuthenticationHandler;
 
 
-public class LogoutSupportedAssertion extends AssertionSupport
-  implements PrincipalAssertion {
+public class LogoutSupportedAssertion extends AbstractPrincipalAssertion {
 
     private Log logger = LogFactory.getLog(this.getClass());
     

@@ -56,7 +56,7 @@ import org.vortikal.repository.Repository;
  * @see Repository#getConfiguration
  */
 public class RepositoryReadOnlyAssertion
-    extends AssertionSupport implements InitializingBean, RequestAssertion {
+    extends AbstractRequestAssertion implements InitializingBean {
     
     private Repository repository = null;
     private boolean invert = false;

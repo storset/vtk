@@ -35,8 +35,7 @@ import org.vortikal.repository.Resource;
 /**
  *
  */
-public class ResourceChildAssertion
-  extends AssertionSupport implements ResourceAssertion {
+public class ResourceChildAssertion extends AbstractResourceAssertion {
 
     private String childName;
 

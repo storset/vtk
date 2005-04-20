@@ -45,8 +45,7 @@ import org.vortikal.util.web.URLUtil;
  *   <code>*</code> means that any hostname matches.
  * </ul>
  */
-public class RequestHostNameAssertion extends AssertionSupport
-  implements RequestAssertion {
+public class RequestHostNameAssertion extends AbstractRequestAssertion {
 
     private String hostName;
 	

@@ -3,7 +3,7 @@ package org.vortikal.web.service;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
-public class PrincipalQualifiedNameAssertion implements PrincipalAssertion {
+public class PrincipalQualifiedNameAssertion extends AbstractPrincipalAssertion {
 
     private String username;
     private boolean equals = true;

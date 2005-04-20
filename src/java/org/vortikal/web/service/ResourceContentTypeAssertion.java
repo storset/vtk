@@ -44,7 +44,7 @@ import org.vortikal.repository.Resource;
  * @see ResourceContentTypeRegexpAssertion
  */
 public class ResourceContentTypeAssertion
-  extends AssertionSupport implements ResourceAssertion {
+  extends AbstractResourceAssertion {
 
     private String contentType = "";
 

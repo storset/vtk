@@ -36,7 +36,7 @@ import org.vortikal.repository.Resource;
  *
  */
 public class ResourceIsCollectionAssertion
-  extends AssertionSupport implements ResourceAssertion {
+  extends AbstractResourceAssertion {
 
     public boolean matches(Resource resource) {
         return (resource != null && resource.isCollection());

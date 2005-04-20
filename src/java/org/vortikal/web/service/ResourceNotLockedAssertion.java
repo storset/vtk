@@ -41,7 +41,7 @@ import org.vortikal.security.SecurityContext;
  * principal from the SecurityContext.
  */
 public class ResourceNotLockedAssertion
-  extends AssertionSupport implements ResourceAssertion {
+  extends AbstractResourceAssertion {
 
     public boolean matches(Resource resource) {
         Principal principalLockedBy = null;

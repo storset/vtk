@@ -40,7 +40,7 @@ import org.vortikal.security.Principal;
  * Assertion that matches when the request URI starts with a specified prefix.
  */
 public class RequestUriPrefixAssertion
-  extends AssertionSupport implements RequestAssertion {
+  extends AbstractRequestAssertion {
 
     private String prefix;
 	

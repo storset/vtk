@@ -83,7 +83,7 @@ import org.vortikal.security.roles.RoleManager;
  * </ul>
  */
 public class ResourcePrincipalPermissionAssertion
-  extends AssertionSupport implements ResourceAssertion, InitializingBean {
+  extends AbstractResourceAssertion implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(
             ResourcePrincipalPermissionAssertion.class);

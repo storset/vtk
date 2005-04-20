@@ -77,7 +77,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * <p>Model data published (in submodel of name configurable by
  * property <code>modelName</code>):
  * <ul>
- * <li><code>tabURLs</code>: an array of the URLs of the tabs
+ * <li><code>tabURLs</code>: an array of the URLs of the tabs</li>
  * <li><code>tabDescriptions</code>: an array of the descriptions of
  *     the tab URLs. These descriptions are interpreted as keys for
  *     message localization, using the following steps:
@@ -95,7 +95,9 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *       </li>
  *     </ol>
  * </li>
- * <li><code>activeTab</code>: an index pointer to the currently active tab
+ * <li><code>activeTab</code>: an index pointer to the currently active tab</li>
+ * <li><code>serviceNames</code>: an array containing the name of the service the tab represents. 
+ * Used to add css-classes on each tab.</li> 
  * </ul>
  * 
  */
@@ -170,6 +172,8 @@ public class TabsProvider
         List tabURLs = new ArrayList();
         List tabDescriptions = new ArrayList();
         List accessibleServices = new ArrayList();
+        List serviceNames = new ArrayList();
+        
         org.springframework.web.servlet.support.RequestContext springContext =
             new org.springframework.web.servlet.support.RequestContext(request);
         for (int i = 0; i < this.services.length; i++) {
@@ -188,6 +192,7 @@ public class TabsProvider
                 }
                 tabDescriptions.add(description);
                 accessibleServices.add(this.services[i]);
+                serviceNames.add(this.services[i].getName());
             } catch (ServiceUnlinkableException e) {
                 // Service was not accessible for this resource, ignore.
             }
@@ -217,6 +222,7 @@ public class TabsProvider
         Map tabsModel = new HashMap();
         tabsModel.put("tabURLs", tabURLs);
         tabsModel.put("tabDescriptions", tabDescriptions);
+        tabsModel.put("serviceNames", serviceNames);
         tabsModel.put("activeTab", new Integer(index));
         model.put(this.modelName, tabsModel);
     }

@@ -34,25 +34,47 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 /**
+ * Assertion that matches on resources being collections or not. If
+ * the current resource is a collection, the assertion matches,
+ * otherwise not.
  *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>invert</code> - a boolean controlling whether or not to
+ *   invert the match. Default is <code>false</code>.
+ * </ul>
  */
 public class ResourceIsCollectionAssertion
   extends AbstractRepositoryAssertion {
 
+    private boolean invert = false;
+
     public boolean conflicts(Assertion assertion) {
-        return false;
+        if (!(assertion instanceof ResourceIsCollectionAssertion)) {
+            return false;
+        }
+        ResourceIsCollectionAssertion other = (ResourceIsCollectionAssertion) assertion;
+        if (this.invert == other.invert) {
+            return false;
+        }
+        return true;
     }
 
+    public void setInvert(boolean invert) {
+        this.invert = invert;
+    }
+    
+
+    public boolean matches(Resource resource, Principal principal) {
+        if (this.invert) {
+            return (resource != null && !resource.isCollection());
+        }
+        return (resource != null && resource.isCollection());
+    }
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-		
         sb.append(super.toString());
-		
         return sb.toString();
-    }
-
-    public boolean matches(Resource resource, Principal principal) {
-        return (resource != null && resource.isCollection());
     }
 }

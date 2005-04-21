@@ -217,7 +217,8 @@ public class Ace implements java.io.Serializable, Cloneable {
             return false;
         }
 
-        if (!this.inheritedFrom.equals(other.inheritedFrom)) {
+        if (!(this.inheritedFrom == null && other.inheritedFrom == null)
+            && !(this.inheritedFrom.equals(other.inheritedFrom))) {
             return false;
         }
 

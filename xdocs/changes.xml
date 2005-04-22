@@ -9,6 +9,12 @@
     <release version="SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="storset" type="add">
+        Added a new MessageSource implementation that looks up other
+        message sources in the application context and delegates
+        lookups to them.
+      </action>
+
       <action dev="gormap" type="add">
         Implemented HTTP HEAD handling, both for FreeMarkerView and
         DisplayResourceView.

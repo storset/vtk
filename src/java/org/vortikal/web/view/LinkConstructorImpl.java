@@ -44,6 +44,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -68,15 +69,25 @@ public class LinkConstructorImpl implements LinkConstructor,
 		Resource resource = null;
 		Map parameters = null;
 
+        String currentUri = RequestContext.getRequestContext().getResourceURI();
+        
 		if (resourceURI == null || resourceURI.equals(""))
-			resourceURI = RequestContext.getRequestContext().getResourceURI();
+			resourceURI = currentUri;
 		
 		if (serviceName == null || serviceName.equals(""))
 			service = RequestContext.getRequestContext().getService();
-		
+
+        
 		try {
             
-			resource = repository.retrieve(token, resourceURI, true);
+            resourceURI = URIUtil.makeAbsoluteURI(resourceURI, repository.retrieve(token, currentUri, true));
+            resourceURI = URIUtil.expandPath(resourceURI);
+            if (resourceURI.endsWith("..")) {
+                resourceURI = resourceURI.substring(0, resourceURI.lastIndexOf("/"));
+                resourceURI = resourceURI.substring(0, resourceURI.lastIndexOf("/"));
+            }
+            
+            resource = repository.retrieve(token, resourceURI, true);
 
 			if (service == null) {
 				service = getService(serviceName);

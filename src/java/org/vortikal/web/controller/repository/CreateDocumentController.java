@@ -150,5 +150,6 @@ public class CreateDocumentController extends SimpleFormController
     public void setDocumentTemplates(DocumentTemplates documentTemplates) {
         this.documentTemplates = documentTemplates;
     }
+
 }
 

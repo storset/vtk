@@ -16,6 +16,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.web.RequestContext;
 
 /**
  * @author Eirik Meland (eirik.meland@usit.uio.no)
@@ -54,21 +55,30 @@ public class PropertyIncrementer implements InitializingBean {
             throw new BeanInitializationException("Failed to init bean (missing property)");
         }
         
-        incrementProperty();
     }
 
     /**
      * TODO write javadoc
      * @throws IOException
      */
-    synchronized private void incrementProperty()
+    synchronized public String incrementProperty()
             throws IOException {
         // get Resource
-        Resource resource = getResource(_resourceURI, _token);
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        if (!"/".equals(uri)) uri += "/";
+        uri += _resourceURI;
+        Resource resource = getResource(uri, _token);
         
         // read property
         Property p = resource.getProperty(_namespace, _propertyName);
 
+        if (p == null) {
+            p = new Property();
+            p.setNamespace(_namespace);
+            p.setName(_propertyName);
+            p.setValue("0");
+        }
+        
         // check that property is a number
         int propValue = Integer.parseInt(p.getValue());
         
@@ -81,6 +91,7 @@ public class PropertyIncrementer implements InitializingBean {
 
         resource.setProperty(p);
         storeResource(resource);
+        return Integer.toString(propValue);
     }
 
     /**

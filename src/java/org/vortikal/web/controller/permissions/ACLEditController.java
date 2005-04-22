@@ -270,8 +270,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         } else if (editCommand.getAddUserAction() != null) {
             Principal principal = principalManager.getPrincipal(editCommand.getUserName());
             String qualifiedName = principal.getQualifiedName();
-            System.out.println("Qualifiedname: " + qualifiedName);
-            System.out.println("Input: " + editCommand.getUserName());
             
             Ace[] newACL = AclUtil.addPrivilegeToACL(
                 resource, editCommand.getEditedACL(), qualifiedName, this.privilege, true);

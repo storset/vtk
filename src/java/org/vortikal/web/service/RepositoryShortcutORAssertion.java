@@ -3,6 +3,7 @@
  */
 package org.vortikal.web.service;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,14 +18,14 @@ import org.vortikal.security.Principal;
  */
 public class RepositoryShortcutORAssertion extends AbstractRepositoryAssertion implements InitializingBean {
 
-    private List _assertions = null;
+    private List _assertions = new ArrayList();
 
     /** 
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet()
             throws Exception {
-        if (_assertions == null) {
+        if (_assertions.size() == 0) {
             throw new BeanInitializationException("No assertions provided");
         }
     }

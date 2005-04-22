@@ -207,7 +207,7 @@ public class ServiceImpl
                     this.services.add(child);
                 } else {
                     int index = Math.max(child.getOrder(), 0);
-                    index = Math.min(index, this.services.size() - 1);
+                    index = Math.min(index, this.services.size());
                     this.services.add(index, child);
                 }
             }

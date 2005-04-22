@@ -275,7 +275,7 @@
 
   <build>
     <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
+    <!--unitTestSourceDirectory>test/java</unitTestSourceDirectory-->
     <integrationUnitTestSourceDirectory/>
     <!-- Unit test classes -->
 

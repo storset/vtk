@@ -57,7 +57,7 @@ public class ResourceContentTypeRegexpAssertion
     
     
     public boolean conflicts(Assertion assertion) {
-        if (assertion instanceof ResourceContentTypeRegexpAssertion) {
+        if (assertion instanceof ResourceContentTypeAssertion) {
             Matcher m = pattern.matcher(((ResourceContentTypeAssertion) assertion).getContentType());
             return ! m.matches();
         }

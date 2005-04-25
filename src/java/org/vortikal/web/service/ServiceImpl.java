@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
@@ -46,7 +44,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
-import org.springframework.core.Ordered;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -80,8 +77,6 @@ import org.vortikal.security.web.AuthenticationChallenge;
 public class ServiceImpl
   implements Service, BeanNameAware, InitializingBean, ApplicationContextAware {
 
-    private static Log logger = LogFactory.getLog(ServiceImpl.class);
-    
     private AuthenticationChallenge authenticationChallenge;
     private Object handler;
     private List assertions = new ArrayList();
@@ -195,10 +190,6 @@ public class ServiceImpl
     
     public void afterPropertiesSet() throws Exception {
 
-//        if (this.parent == null) {
-//            this.parent = getUnknownParent();
-//        }
-
         // Look up services that are of category <code>this.getName()</code>
         List childServices = getUnknownServiceChildren();
 
@@ -226,12 +217,6 @@ public class ServiceImpl
             }
 
             ServiceImpl child = (ServiceImpl) o;
-//             if (!services.contains(child)) {
-//                 services.add(child);
-//             }
-//            if (logger.isDebugEnabled()) {
-//                logger.debug("Initializing child service: " + child.getName());
-//            }
 
             validateAssertions(child);
             child.setParent(this);

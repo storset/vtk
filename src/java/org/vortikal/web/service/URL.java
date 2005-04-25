@@ -30,7 +30,13 @@
  */
 package org.vortikal.web.service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.web.URLUtil;
 import java.util.Iterator;
 
@@ -45,13 +51,18 @@ import java.util.Iterator;
  */
 public class URL {
 
+    private static Log logger = LogFactory.getLog(URL.class);
+    
     private String protocol = null;
     private String host = null;
     private Integer port = null;
     //private String authority = null;
     //private String userInfo = null;
     private String path = null;
-    private Map query = null;
+
+    private List parameterNames = new ArrayList();
+    private List parameterValues = new ArrayList();
+
     private String ref = null;
     
 
@@ -126,16 +137,18 @@ public class URL {
     }
     
     
-    public Map getQuery() {
-        return this.query;
+    public void addParameter(String name, String value) {
+        logger.warn("Adding parameter: " + name + "=" + value);
+        this.parameterNames.add(name);
+        this.parameterValues.add(value);
     }
     
-
-    public void setQuery(Map query) {
-        this.query = query;
+    public String getParameter(String parameterName) {
+        if (parameterNames.contains(parameterName))
+            return (String)this.parameterValues.get(parameterNames.indexOf(parameterName));
+        return null;
     }
     
-
     public String getRef() {
         return this.ref;
     }
@@ -159,12 +172,19 @@ public class URL {
         }
         url.append(URLUtil.urlEncode(this.path));
                 
-        if (this.query != null && !this.query.isEmpty()) {
+        if (!this.parameterNames.isEmpty()) {
+            Map parameters = new LinkedHashMap();
+            
+            for (int i = 0; i < parameterNames.size(); i++) {
+                logger.warn("Setting parameter: " + parameterNames.get(i) + "=" + parameterValues.get(i));
+                parameters.put(parameterNames.get(i), parameterValues.get(i));
+            }
+
             url.append("?");
-            for (Iterator iter = this.query.keySet().iterator(); iter.hasNext();) {
-                String name = (String) iter.next();
-                Object value = this.query.get(name);
-                url.append(name).append("=").append(value);
+
+            for (Iterator iter = parameters.entrySet().iterator(); iter.hasNext();) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                url.append(entry.getKey()).append("=").append(entry.getValue());
                 if (iter.hasNext()) url.append("&");
             }
         }

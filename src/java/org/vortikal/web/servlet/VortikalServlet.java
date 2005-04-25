@@ -265,7 +265,6 @@ public class VortikalServlet extends DispatcherServlet {
      * event regardless of the outcome.  The actual event handling is
      * performed by the doService() method in DispatcherServlet.
      * 
-     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected final void service(HttpServletRequest request,
                                  HttpServletResponse response) 
@@ -327,15 +326,24 @@ public class VortikalServlet extends DispatcherServlet {
                         + " (or any of its ancestors) is not specified.");
                 }
 
-                challenge.challenge(request, response);
+                try {
+                    challenge.challenge(request, response);
+                } catch (AuthenticationProcessingException e) {
+                    logError(request, e);
+                    throw new ServletException(
+                        "Fatal processing error while performing " +
+                        "authentication challenge", e);
+                }
 
-            } catch (AuthenticationProcessingException e) {
-                logError(request, e);
-                throw new ServletException("Fatal authentication processing error", e);
             } catch (Throwable t) {
                 failureCause = t;
                 handleError(request, response, t);
             }
+
+        } catch (AuthenticationProcessingException e) {
+            logError(request, e);
+            throw new ServletException(
+                "Fatal processing error while performing authentication", e);
 
         } finally {
 

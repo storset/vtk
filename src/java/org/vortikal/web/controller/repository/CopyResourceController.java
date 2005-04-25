@@ -71,8 +71,12 @@ public class CopyResourceController implements Controller,
             Resource template = repository.retrieve(token, templateUri,false);
             name = template.getName();
         }
-        
-        String newResourceUri = uri + "/" + name;
+
+        // ensure the uri won't start with '//'
+        String newResourceUri = "/" + name;
+        if (! uri.equals("/")) {
+            newResourceUri = uri + newResourceUri;
+        }
 
         boolean exists = repository.exists(token, newResourceUri);
 

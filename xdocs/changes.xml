@@ -9,6 +9,16 @@
     <release version="SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="storset" type="update">
+        Factored out services' ability to 'categorize' their parent
+        into a specific parent property
+      </action>
+
+      <action dev="storset" type="update">
+        Factored out services' Categorizable functionality into its
+        own interface
+      </action>
+
       <action dev="storset" type="add">
         Added a new MessageSource implementation that looks up other
         message sources in the application context and delegates

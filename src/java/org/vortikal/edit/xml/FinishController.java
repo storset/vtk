@@ -43,13 +43,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class FinishController extends AbstractXmlEditController {
 
-    /**
-     * @see org.vortikal.edit.xml.AbstractXmlEditController#handleRequestInternal(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse,
-     *      org.vortikal.edit.xml.EditDocument,
-     *      org.vortikal.edit.xml.SchemaDocumentDefinition)
-     */
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response, EditDocument document, SchemaDocumentDefinition documentDefinition) {
+    private String viewName = "redirect";
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+    
+
+    protected ModelAndView handleRequestInternal(
+        HttpServletRequest request, HttpServletResponse response,
+        EditDocument document,
+        SchemaDocumentDefinition documentDefinition) {
         
         String uri = RequestContext.getRequestContext().getResourceURI();
         
@@ -64,7 +68,7 @@ public class FinishController extends AbstractXmlEditController {
 
         request.getSession().removeAttribute(sessionID);
 
-        return new ModelAndView("redirect");
+        return new ModelAndView(viewName);
     }
     
 

@@ -32,8 +32,8 @@ package org.vortikal.web.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.springframework.core.Ordered;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -57,7 +57,7 @@ import org.vortikal.security.web.AuthenticationChallenge;
  * @see org.vortikal.web.service.ServiceHandlerMapping
  *  
  */
-public interface Service {
+public interface Service extends  Ordered, Categorizable {
 
     /**
      * Gets this service's list of assertions.
@@ -74,7 +74,6 @@ public interface Service {
      * @return a <code>List</code> of Service objects.
      */
     public List getChildren();
-
 
     /**
      * Gets this service's controller, if it has one.
@@ -195,12 +194,4 @@ public interface Service {
      */
     public AuthenticationChallenge getAuthenticationChallenge();
 
-
-    /**
-     * Gets this service's category. Categories are used to classify
-     * and group services together. 
-     * 
-     * @return the category of this service
-     */
-    public Set getCategories();
 }

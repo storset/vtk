@@ -39,6 +39,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
@@ -77,7 +78,7 @@ import org.vortikal.security.web.AuthenticationChallenge;
  *
  */
 public class ServiceImpl
-  implements Service, BeanNameAware, InitializingBean, Ordered, ApplicationContextAware {
+  implements Service, BeanNameAware, InitializingBean, ApplicationContextAware {
 
     private static Log logger = LogFactory.getLog(ServiceImpl.class);
     
@@ -132,8 +133,8 @@ public class ServiceImpl
     /**
      * Mapping the tree
      **/
-    protected void setParent(Service parent) throws BeanInitializationException {
-        if (this.parent != null) 
+    public void setParent(Service parent) throws BeanInitializationException {
+        if (this.parent != null && this.parent != parent) 
             throw new BeanInitializationException(
                 "Service " + getName() +  "has at least two parents ("
                 + parent.getName() + " and" + this.parent.getName() + ")");
@@ -194,13 +195,15 @@ public class ServiceImpl
     
     public void afterPropertiesSet() throws Exception {
 
+//        if (this.parent == null) {
+//            this.parent = getUnknownParent();
+//        }
+
         // Look up services that are of category <code>this.getName()</code>
-        List childServices = ServiceCategoryResolver.getServicesOfCategory(
-            this.applicationContext, this.getName());
-        Collections.sort(childServices, new OrderComparator());
+        List childServices = getUnknownServiceChildren();
 
         for (int i = childServices.size() - 1; i > -1; i--) {
-            ServiceImpl child = (ServiceImpl)childServices.get(i);
+            Service child = (Service)childServices.get(i);
             if (!this.services.contains(child)) {
                 
                 if (child.getOrder() == Integer.MAX_VALUE) {
@@ -221,13 +224,14 @@ public class ServiceImpl
                     "is supported ( check " + getName() +
                     "'s child services )");
             }
+
             ServiceImpl child = (ServiceImpl) o;
 //             if (!services.contains(child)) {
 //                 services.add(child);
 //             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Initializing child service: " + child.getName());
-            }
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Initializing child service: " + child.getName());
+//            }
 
             validateAssertions(child);
             child.setParent(this);
@@ -304,4 +308,36 @@ public class ServiceImpl
     public void setCategories(Set categories) {
         this.categories = categories;
     }
+  
+//    private Service getUnknownParent() {
+//        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+//                applicationContext, Service.class, true, false);
+//
+//        List allServices = new ArrayList(matchingBeans.values());
+//        List list = new ArrayList(allServices);
+//        for (Iterator iter = list.iterator(); iter.hasNext();) {
+//            Service service = (Service) iter.next();
+//            if (service.getChildren().contains(this))
+//                return service;
+//        }
+//        return null;
+//    }
+    
+    private List getUnknownServiceChildren() {
+        // find all services, and sort out those of category 'category';
+        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+            applicationContext, Service.class, true, false);
+    
+        List allServices = new ArrayList(matchingBeans.values());
+        List list = new ArrayList(allServices);
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+            Service service = (Service) iter.next();
+            if (service.getParent() != this) 
+                allServices.remove(service);
+
+        }
+        Collections.sort(allServices, new OrderComparator());
+        return allServices;
+    }
+
 }

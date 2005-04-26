@@ -189,10 +189,14 @@ public class TabsProvider
                 String description = springContext.getMessage(
                     "tabs." + this.services[i].getName() + "." +
                     resource.getContentType(), defaultDescription);
-                description = springContext.getMessage(
-                        "tabs." + this.services[i].getName() + "." +
-                        resource.getContentType() + "." + 
-                        resource.getProperty(Property.LOCAL_NAMESPACE, "resource-type").getValue(), description);
+
+                Property resourceType = resource.getProperty(Property.LOCAL_NAMESPACE, "resource-type");
+                if (resourceType != null) {
+                    description = springContext.getMessage(
+                            "tabs." + this.services[i].getName() + "." +
+                            resource.getContentType() + "." + 
+                            resourceType.getValue(), description);
+                }
                 if (logger.isDebugEnabled()) {
                     logger.debug("Adding tab element [" + description
                                  + ", " + this.services[i] + "]");

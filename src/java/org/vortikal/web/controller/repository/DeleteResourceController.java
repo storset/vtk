@@ -48,7 +48,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class DeleteResourceController extends AbstractController {
 
-    public static final String DEFAULT_VIEW_NAME = "redirect";
+    public static final String DEFAULT_VIEW_NAME = "redirectToManage";
 
     private Repository repository;
     private String viewName = DEFAULT_VIEW_NAME;

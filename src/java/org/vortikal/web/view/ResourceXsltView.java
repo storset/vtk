@@ -209,7 +209,7 @@ public class ResourceXsltView
             response.setHeader("Content-Length", "" + resultBuffer.toByteArray().length);
             
             Property expiresProperty = resource.getProperty(
-                    "http://www.uio.no/vortex/custom-properties", 
+                    Property.LOCAL_NAMESPACE, 
                     "expires-sec");
             if (expiresProperty != null && expiresProperty.getValue() != null) {
 

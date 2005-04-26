@@ -64,11 +64,13 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
         }
         URL urlObject = new URL("http", NetUtils.guessHostName(), path);
         if (parameters != null) {
-            for (Iterator iter = parameters.entrySet().iterator(); iter
-                    .hasNext();) {
+            for (Iterator iter = parameters.entrySet().iterator(); iter.hasNext();) {
                 Map.Entry entry = (Map.Entry) iter.next();
-                urlObject.addParameter((String) entry.getKey(), (String) entry
-                        .getValue());
+
+                String key = entry.getKey().toString();
+                String value = entry.getValue().toString();
+                
+                urlObject.addParameter(key, value);
             }
         }
         //urlObject.setQuery(parameters);

@@ -45,9 +45,6 @@ public class Constants {
         Namespace.getNamespace("xsi",
                                "http://www.w3.org/2001/XMLSchema-instance");
 
-    public final String PROPERTY_NAMESPACE =
-        "http://www.uio.no/vortex/custom-properties";
-
     public final String TRANSFORM_PROPERTY = "transform-view";
 
 }

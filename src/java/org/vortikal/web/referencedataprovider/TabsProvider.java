@@ -47,6 +47,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -83,10 +84,13 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *     message localization, using the following steps:
  *     <ol>
  *       <li>A message key is constructed as follows:
- *           <code>tabs.[serviceName].[contentType]</code> where
+ *           <code>tabs.[serviceName].[contentType].[resourceType]</code> where
  *           <code>[serviceName]</code> is the name of the service and
  *           <code>[contentType]</code> is the MIME type of the
  *           resource. A lookup attempt is made using this key.
+ *           <code>[resourceType]</code> is the property 'resource-type'
+ *           in the namespace 'http://www.uio.no/vortex/custom-properties', and it is appended
+ *           only if it exists. 
  *       </li>
  *       <li>If that lookup does not produce a message, the
  *           <code>.[contentType]</code> suffix is removed from the
@@ -185,7 +189,10 @@ public class TabsProvider
                 String description = springContext.getMessage(
                     "tabs." + this.services[i].getName() + "." +
                     resource.getContentType(), defaultDescription);
-
+                description = springContext.getMessage(
+                        "tabs." + this.services[i].getName() + "." +
+                        resource.getContentType() + "." + 
+                        resource.getProperty(Property.LOCAL_NAMESPACE, "resource-type").getValue(), description);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Adding tab element [" + description
                                  + ", " + this.services[i] + "]");

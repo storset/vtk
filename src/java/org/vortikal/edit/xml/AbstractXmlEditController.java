@@ -45,6 +45,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -96,9 +97,6 @@ public abstract class AbstractXmlEditController implements Controller {
     public final Namespace XSI_NAMESPACE = 
         Namespace.getNamespace("xsi",
                                "http://www.w3.org/2001/XMLSchema-instance");
-
-    public final String PROPERTY_NAMESPACE =
-        "http://www.uio.no/vortex/custom-properties";
 
     public final String EDIT_PROPERTY = "web-edit";
 
@@ -339,7 +337,7 @@ public abstract class AbstractXmlEditController implements Controller {
 
         /* The property web-edit should be 'true' or 'yes' */
         String webEdit = 
-            resource.getProperty(PROPERTY_NAMESPACE, EDIT_PROPERTY).getValue();
+            resource.getProperty(Property.LOCAL_NAMESPACE, EDIT_PROPERTY).getValue();
 
         if (webEdit == null || !(webEdit.equals("true") || webEdit.equals("yes"))) {
             throw new RuntimeException("Xml resource is not set to web editable");

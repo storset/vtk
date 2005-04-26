@@ -40,6 +40,8 @@ package org.vortikal.repository;
  */
 public class Property implements java.io.Serializable, Cloneable {
 
+    public static final String LOCAL_NAMESPACE = "http://www.uio.no/vortex/custom-properties";
+    
     private static final long serialVersionUID = 3762531209208410417L;
     
     private String namespace = null;

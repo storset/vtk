@@ -196,7 +196,7 @@ public class DisplayResourceView extends AbstractReferenceDataProvidingView {
         if (this.includeExpiresHeader) {
             
             Property expiresProperty = resource.getProperty(
-                "http://www.uio.no/vortex/custom-properties", 
+                Property.LOCAL_NAMESPACE, 
                 "expires-sec");
             if (expiresProperty != null && expiresProperty.getValue() != null) {
 

@@ -16,7 +16,7 @@ import org.vortikal.security.Principal;
 /**
  * @author Eirik Meland (eirik.meland@usit.uio.no)
  */
-public class RepositoryShortcutORAssertion extends AbstractRepositoryAssertion implements InitializingBean {
+public class RepositoryShortcutOrAssertion extends AbstractRepositoryAssertion implements InitializingBean {
 
     private List _assertions = new ArrayList();
 

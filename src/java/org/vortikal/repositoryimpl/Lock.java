@@ -132,7 +132,7 @@ public class Lock implements Cloneable {
     }
 
     public Object clone() {
-        return new Lock(lockToken, user, ownerInfo, depth,
-            (Date) timeout.clone());
+        return new Lock(this.lockToken, this.user, this.ownerInfo, this.depth,
+            (Date) this.timeout.clone());
     }
 }

@@ -712,7 +712,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
     public String lock(String token, String uri, String lockType,
-        String ownerInfo, String depth, int requestedTimeoutSeconds)
+            String ownerInfo, String depth, int requestedTimeoutSeconds, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 
             ResourceLockedException, IllegalOperationException, 
@@ -748,15 +748,30 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ReadOnlyException();
         }
 
+        if (lockToken != null) {
+            if (r.getLock() == null) {
+                throw new IllegalOperationException(
+                    "Invalid lock refresh request: lock token '" + lockToken
+                    + "' does not exists on resource " + r.getURI());
+            }
+            if (!r.getLock().getLockToken().equals(lockToken)) {
+                throw new IllegalOperationException(
+                    "Invalid lock refresh request: lock token '" + lockToken
+                    + "' does not match existing lock token on resource " + r.getURI());
+            }
+        }
+
+
         try {
             r.lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
 
-            String lockToken = r.lock(principal, ownerInfo, depth,
-                    requestedTimeoutSeconds, roleManager);
+            String newLockToken = r.lock(principal, ownerInfo, depth,
+                                      requestedTimeoutSeconds, roleManager,
+                                      (lockToken != null));
 
             OperationLog.success("lock(" + uri + ")", token, principal);
 
-            return lockToken;
+            return newLockToken;
         } catch (AuthorizationException e) {
             OperationLog.failure("lock(" + uri + ")", "permission denied",
                 token, principal);

@@ -93,4 +93,18 @@ public class Lock implements java.io.Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append("[");
+        sb.append("type = ").append(this.type);
+        sb.append(", depth =").append(this.depth);
+        sb.append(", principal = ").append(this.principal);
+        sb.append(", ownerInfo = ").append(this.ownerInfo);
+        sb.append(", timeout = ").append(this.timeout);
+        sb.append(", token = ").append(this.token);
+        sb.append("]");
+        return sb.toString();
+    }
+    
 }

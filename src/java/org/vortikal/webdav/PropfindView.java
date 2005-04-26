@@ -53,9 +53,11 @@ import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
@@ -262,6 +264,12 @@ public class PropfindView implements View, InitializingBean {
             }
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Found properties: " + foundProperties.getChildren()
+                         + ", unknown properties: " + unknownProperties.getChildren());
+        }
+
+
         if (foundProperties.getChildren().size() > 0) {
 
             Element propStatElement = new Element("propstat", WebdavConstants.DAV_NAMESPACE);
@@ -448,11 +456,15 @@ public class PropfindView implements View, InitializingBean {
                 System.currentTimeMillis();
             
             if (timeout < 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Lock's timeout was: " + lock.getTimeout()
+                                 + ", (has already timed out) ");
+                }
                 return null;
             }
             
-            //String timeoutStr = "Second-" + (timeout / 1000);
-            String timeoutStr = "Second-410000000";
+            String timeoutStr = "Second-" + (timeout / 1000);
+            //String timeoutStr = "Second-410000000";
 
             activeLock.addContent((Element)
                 new Element("timeout", WebdavConstants.DAV_NAMESPACE).addContent(
@@ -468,7 +480,7 @@ public class PropfindView implements View, InitializingBean {
                     (Element) new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(
                         lock.getLockToken())));
          
-            lockDiscovery.addContent(activeLock);
+           lockDiscovery.addContent(activeLock);
         }
 
         return lockDiscovery;

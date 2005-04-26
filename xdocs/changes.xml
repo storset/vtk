@@ -9,6 +9,17 @@
     <release version="SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="gormap" type="fix">
+        Fixed lock discovery functionality in XML edit component
+        (re-locking previously failed due to a bug)
+      </action>
+
+      <action dev="gormap" type="fix">
+        WebDAV now returns the correct lock timeout on 'lockdiscovery'
+        PROPFIND request. Fixes some issues with Microsoft Office and
+        lock refreshing.
+      </action>
+
       <action dev="storset" type="update">
         Factored out services' ability to 'categorize' their parent
         into a specific parent property

@@ -246,7 +246,8 @@ public class RequestLocalRepository implements InitializingBean, Repository {
     }
 
     public String lock(String token, String uri, String lockType,
-                       String ownerInfo, String depth, int requestedTimoutSeconds)
+                       String ownerInfo, String depth, int requestedTimoutSeconds,
+                       String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, FailedDependencyException, 
         ResourceLockedException, IllegalOperationException, 
@@ -257,7 +258,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
             ctx.clear();
         }
         return repository.lock(token, uri, lockType, ownerInfo,
-                               depth, requestedTimoutSeconds);
+                               depth, requestedTimoutSeconds, lockToken);
     }
 
     public void unlock(String token, String uri, String lockToken)

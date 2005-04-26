@@ -88,50 +88,26 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private BasicDataSource pool;
     
-    /**
-     * @param repositoryDataDirectory
-     *            The repositoryDataDirectory to set.
-     */
     public void setRepositoryDataDirectory(String repositoryDataDirectory) {
         this.repositoryDataDirectory = repositoryDataDirectory;
     }
 
-    /**
-     * @param databaseDriver
-     *            The databaseDriver to set.
-     */
     public void setDatabaseDriver(String databaseDriver) {
         this.databaseDriver = databaseDriver;
     }
 
-    /**
-     * @param databasePassword
-     *            The databasePassword to set.
-     */
     public void setDatabasePassword(String databasePassword) {
         this.databasePassword = databasePassword;
     }
 
-    /**
-     * @param databaseURL
-     *            The databaseURL to set.
-     */
     public void setDatabaseURL(String databaseURL) {
         this.databaseURL = databaseURL;
     }
 
-    /**
-     * @param databaseUser
-     *            The databaseUser to set.
-     */
     public void setDatabaseUser(String databaseUser) {
         this.databaseUser = databaseUser;
     }
 
-    /**
-     * @param maxDatabaseConnections
-     *            The maxDatabaseConnections to set.
-     */
     public void setMaxDatabaseConnections(int maxDatabaseConnections) {
         this.maxDatabaseConnections = maxDatabaseConnections;
     }
@@ -662,8 +638,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             PreparedStatement stmt = conn.prepareStatement(statement);
 
-//            stmt.setFormOfUse(5, OraclePreparedStatement.FORM_NCHAR);
-
             stmt.setInt(1, id);
             stmt.setInt(2, type);
             stmt.setString(3, operation);
@@ -763,8 +737,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         if (rs.next()) {
             lock = new Lock(rs.getString("token"), rs.getString("lock_owner"), rs
-                    .getString("lock_owner_info"), rs.getString("depth"), rs
-                    .getDate("timeout"));
+                    .getString("lock_owner_info"), rs.getString("depth"), 
+                    new Date(rs.getTimestamp("timeout").getTime()));
         }
 
         rs.close();
@@ -797,9 +771,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         Map result = new HashMap();
 
         while (rs.next()) {
-            Lock lock = new Lock(rs.getString("token"), rs.getString("lock_owner"), rs
-                    .getString("lock_owner_info"), rs.getString("depth"), rs
-                    .getDate("timeout"));
+            Lock lock = new Lock(
+                rs.getString("token"), rs.getString("lock_owner"),
+                rs.getString("lock_owner_info"), rs.getString("depth"),
+                new Date(rs.getTimestamp("timeout").getTime()));
 
             result.put(rs.getString("uri"), lock);
         }
@@ -1864,9 +1839,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         Map result = new HashMap();
 
         while (rs.next()) {
-            Lock lock = new Lock(rs.getString("token"), rs.getString("lock_owner"), rs
-                    .getString("lock_owner_info"), rs.getString("depth"), rs
-                    .getDate("timeout"));
+            Lock lock = new Lock(
+                rs.getString("token"), rs.getString("lock_owner"),
+                rs.getString("lock_owner_info"), rs.getString("depth"),
+                new Date(rs.getTimestamp("timeout").getTime()));
 
             result.put(rs.getString("uri"), lock);
         }

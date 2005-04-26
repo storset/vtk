@@ -30,20 +30,23 @@
  */
 package org.vortikal.webdav;
 
+
+
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
 import org.springframework.web.servlet.ModelAndView;
-
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
@@ -54,6 +57,9 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.webdav.AbstractWebdavController.StateToken;
+import org.vortikal.webdav.AbstractWebdavController.UriState;
+import org.vortikal.security.AuthenticationException;
 
 
 /**
@@ -78,39 +84,70 @@ public class LockController extends AbstractWebdavController {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         Map model = new HashMap();
+
+        if (securityContext.getPrincipal() == null) {
+            throw new AuthenticationException(
+                "A principal is required to lock resources");
+        }
+
         try {
             
-            org.jdom.Document requestBody = parseRequestBody(request);
-            validateRequest(requestBody);
-            
             String type = Lock.LOCKTYPE_EXCLUSIVE_WRITE;
-
+            String lockToken = null;
+            String refreshLockToken = null;
+            String ownerInfo = securityContext.getPrincipal().toString();
             String depth = request.getHeader("Depth");
             if (depth == null) {
                 depth = "infinity";
             }
             depth = depth.toLowerCase();
-            
-            String ownerInfo = getLockOwner(requestBody);
-            boolean exists = repository.exists(token, uri);
-
-            // FIXME: get requested timeout from lock request
-            //int timeout = 30 * 60;
             int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));;
 
-            if (!exists) {
+            if ("0".equals(request.getHeader("Content-Length"))) {
+                UriState uriState = parseIfHeader(request, uri);
+                List tokens = uriState.getTokens();
+                if (tokens.size() == 1) {
+                    refreshLockToken = ((StateToken) tokens.get(0)).getValue();
+                }
+            } else {
+                Document requestBody = parseRequestBody(request);
+                validateRequest(requestBody);
+                String suppliedOwnerInfo = getLockOwner(requestBody);
+                if (suppliedOwnerInfo != null) {
+                    ownerInfo = suppliedOwnerInfo;
+                }
+            }
+
+            boolean existed = repository.exists(token, uri);
+
+            if (!existed) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Creating null resource");
                 }
                 repository.createDocument(token, uri);
             }
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Atttempting to lock " + uri + " with timeout: "
-                             + timeout + " seconds, " + "depth: " + depth);
+            if (existed && refreshLockToken != null) {
+                Resource lockedResource = repository.retrieve(
+                    token, uri, false);
+                if (lockedResource.getActiveLocks().length == 1) {
+                    String existingToken = lockedResource.getActiveLocks()[0].getLockToken();
+                    if (refreshLockToken.equals(existingToken)) {
+                        lockToken = refreshLockToken;
+                    }
+                }
             }
 
-            repository.lock(token, uri, type, ownerInfo, depth, timeout);
+
+            if (logger.isDebugEnabled()) {
+                String msg = "Atttempting to lock " + uri + " with timeout: "
+                    + timeout + " seconds, " + "depth: " + depth;
+                if (lockToken != null)
+                    msg += " (refreshing with token: " + lockToken + ")";
+                logger.debug(msg);
+            }
+
+            repository.lock(token, uri, type, ownerInfo, depth, timeout, lockToken);
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Locking " + uri + " succeeded");
@@ -192,8 +229,8 @@ public class LockController extends AbstractWebdavController {
      * @exception InvalidRequestException if the body does not contain
      * valid XML
      */
-    protected org.jdom.Document parseRequestBody(
-        HttpServletRequest request) throws InvalidRequestException {
+    protected Document parseRequestBody(HttpServletRequest request)
+        throws InvalidRequestException {
         try {
             SAXBuilder builder = new SAXBuilder();
             org.jdom.Document requestBody = builder.build(
@@ -217,7 +254,7 @@ public class LockController extends AbstractWebdavController {
      * @param requestBody the <code>org.jdom.Document</code> to check
      * @exception InvalidRequestException if the request is not valid
      */
-    public void validateRequest(org.jdom.Document requestBody)
+    public void validateRequest(Document requestBody)
         throws InvalidRequestException {
         requestBody.getRootElement();
     }
@@ -232,7 +269,7 @@ public class LockController extends AbstractWebdavController {
      * <code>org.jdom.Document</code> tree (is assumed to be valid)
      * @return the lock scope as a <code>String</code>
      */
-    protected String getLockScope(org.jdom.Document requestBody) {
+    protected String getLockScope(Document requestBody) {
         Element lockInfo = requestBody.getRootElement();
         Element lockScope = lockInfo.getChild("lockscope", WebdavConstants.DAV_NAMESPACE);
         String scope = ((Element) lockScope.getChildren().get(0)).getName();
@@ -240,7 +277,7 @@ public class LockController extends AbstractWebdavController {
     }
    
 
-    protected String getLockType(org.jdom.Document requestBody) {
+    protected String getLockType(Document requestBody) {
         Element lockInfo = requestBody.getRootElement();
         Element lockType = lockInfo.getChild("locktype", WebdavConstants.DAV_NAMESPACE);
         String type = ((Element) lockType.getChildren().get(0)).getName();
@@ -248,13 +285,13 @@ public class LockController extends AbstractWebdavController {
     }
 
 
-    protected String getLockOwner(org.jdom.Document requestBody) {
+    protected String getLockOwner(Document requestBody) {
         Element lockInfo = requestBody.getRootElement();
         Element lockOwner = lockInfo.getChild("owner", WebdavConstants.DAV_NAMESPACE);
         String owner = "";
 
         if (lockOwner == null) {
-            return "unknown";
+            return null;
         }
         
 

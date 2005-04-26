@@ -151,7 +151,7 @@ public class PlaintextEditController extends SimpleFormController
         
         String type = Lock.LOCKTYPE_EXCLUSIVE_WRITE;
         repository.lock(token, uri, type, principal.getQualifiedName(), "0",
-                        this.lockTimeoutSeconds);
+                        this.lockTimeoutSeconds, null);
 
         Resource resource = repository.retrieve(token, uri, false);
 

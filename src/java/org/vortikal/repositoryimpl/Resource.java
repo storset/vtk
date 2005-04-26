@@ -263,25 +263,37 @@ public abstract class Resource implements Cloneable {
      * @exception IOException if an error occurs
      */
     public String lock(Principal principal, String ownerInfo, String depth,
-        int desiredTimeoutSeconds, RoleManager roleManager)
+                       int desiredTimeoutSeconds, RoleManager roleManager, boolean refresh)
         throws AuthenticationException, AuthorizationException, 
             ResourceLockedException, IOException {
         authorize(principal,
             org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
 
-        if (lock != null) {
+        if (this.lock != null) {
             lockAuthorize(principal,
                 org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
-            lock = null;
-            dao.store(this);
+            if (!refresh) {
+                this.lock = null;
+                dao.store(this);
+            }
         }
 
-        setLock(new Lock(principal, ownerInfo, depth,
+        if (this.lock == null) {
+            this.lock = new Lock(principal, ownerInfo, depth,
                 new Date(System.currentTimeMillis() +
-                    (desiredTimeoutSeconds * 1000))));
-        dao.store(this);
+                         (desiredTimeoutSeconds * 1000)));
+        } else {
+            this.lock = new Lock(
+                this.lock.getLockToken(), principal.getQualifiedName(),
+                ownerInfo, depth, 
+                new Date(System.currentTimeMillis() + (desiredTimeoutSeconds * 1000)));
+        }
 
-        return getLock().getLockToken();
+//         setLock(new Lock(principal, ownerInfo, depth,
+//                 new Date(System.currentTimeMillis() +
+//                     (desiredTimeoutSeconds * 1000))));
+        dao.store(this);
+        return this.lock.getLockToken();
     }
 
     public void unlock(Principal principal, String lockToken,

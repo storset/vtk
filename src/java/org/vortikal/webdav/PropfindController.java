@@ -69,6 +69,13 @@ import org.vortikal.web.RequestContext;
  * Analyzes the propfind body and puts the list of requested resources
  * in the model.
  *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>maxRequestSize</code> - the maximum number of bytes the
+ *   request size may consist of before it is considered invalid. The
+ *   default value is <code>40000</code>.
+ * </ul>
+ *
  * <p>View names returned:
  * <ul>
  *   <li>PROPFIND - in successful cases
@@ -98,7 +105,7 @@ import org.vortikal.web.RequestContext;
 public class PropfindController extends AbstractWebdavController {
 
 
-    Long maxRequestSize = new Long(40000);
+    private long maxRequestSize = 40000;
 
     /**
      * Sets the maximum number of bytes allowed in request body. This
@@ -107,7 +114,7 @@ public class PropfindController extends AbstractWebdavController {
      *
      * @param newSize a <code>Long</code> value
      */
-    public void setMaxRequestSize(Long newSize) {
+    public void setMaxRequestSize(long newSize) {
         this.maxRequestSize = newSize;
     }
 
@@ -398,7 +405,7 @@ public class PropfindController extends AbstractWebdavController {
         try {
             Document requestBody = builder.build(
                 new BoundedInputStream(
-                    request.getInputStream(), this.maxRequestSize.longValue()));
+                    request.getInputStream(), this.maxRequestSize));
             return requestBody;
 
         } catch (JDOMException e) {

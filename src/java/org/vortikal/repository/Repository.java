@@ -393,6 +393,10 @@ public interface Repository {
      * resource should be locked or not. Legal values are
      * <code>0</code> or <code>infinity</code>
      * @param requestedTimoutSeconds the timeout period wanted (in seconds)
+     * @param lockToken - if <code>null</code>, the a new lock is
+     * obtained, otherwise it is interpreted as a lock refresh request
+     * (the resource must be locked by the same principal and the lock
+     * token must match the existing one).
      * @return a string representing the lock token obtained
      * @exception ResourceNotFoundException if the resource identified
      * by <code>uri</code> does not exists
@@ -413,7 +417,7 @@ public interface Repository {
      * @exception IOException if an I/O error occurs
      */
     public String lock(String token, String uri, String lockType,
-        String ownerInfo, String depth, int requestedTimoutSeconds)
+            String ownerInfo, String depth, int requestedTimoutSeconds, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 
             ResourceLockedException, IllegalOperationException, 

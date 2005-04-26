@@ -104,6 +104,7 @@ public class EditDocument extends Document {
 
 
 
+
     public static EditDocument createEditDocument(Repository repository)
         throws JDOMException, IOException {
 
@@ -115,7 +116,7 @@ public class EditDocument extends Document {
         String uri = requestContext.getResourceURI();
         
         String type = Lock.LOCKTYPE_EXCLUSIVE_WRITE;
-        repository.lock(token, uri, type, principal.getQualifiedName(), "0", 5 * 60);
+        repository.lock(token, uri, type, principal.getQualifiedName(), "0", 5 * 60, null);
 
         Resource resource = repository.retrieve(token, uri, false);
         

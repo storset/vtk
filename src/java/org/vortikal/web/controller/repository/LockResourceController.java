@@ -89,7 +89,7 @@ public class LockResourceController extends AbstractController {
         if (resource.getActiveLocks().length == 0) {
             repository.lock(token, uri, Lock.LOCKTYPE_EXCLUSIVE_WRITE,
                             securityContext.getPrincipal().getQualifiedName(), "0",
-                            this.requestedTimeoutSeconds);
+                            this.requestedTimeoutSeconds, null);
         }
         
         return new ModelAndView(viewName);

@@ -138,7 +138,9 @@ public class URL {
     
     
     public void addParameter(String name, String value) {
-        logger.warn("Adding parameter: " + name + "=" + value);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Adding parameter: " + name + "=" + value);
+        }
         this.parameterNames.add(name);
         this.parameterValues.add(value);
     }
@@ -176,7 +178,10 @@ public class URL {
             Map parameters = new LinkedHashMap();
             
             for (int i = 0; i < parameterNames.size(); i++) {
-                logger.warn("Setting parameter: " + parameterNames.get(i) + "=" + parameterValues.get(i));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Setting parameter: " + parameterNames.get(i) + "="
+                                + parameterValues.get(i));
+                }
                 parameters.put(parameterNames.get(i), parameterValues.get(i));
             }
 

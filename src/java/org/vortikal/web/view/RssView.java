@@ -7,12 +7,23 @@
 package org.vortikal.web.view;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
+
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.io.SyndFeedOutput;
 
 /**
  * @author Kristian
@@ -22,86 +33,98 @@ import org.springframework.web.servlet.View;
  */
 public class RssView implements View {
 
-    /* (non-Javadoc)
+    /**
+     * Map 'model' contains a list of TavleIndexHolder objects containing the data used for the RSS feed 
      * @see org.springframework.web.servlet.View#render(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void render(Map model, HttpServletRequest req, HttpServletResponse resp) throws Exception {
         // TODO Auto-generated method stub
         
         PrintWriter writer = resp.getWriter();
-        writer.print("test");
-        writer.close();
         
-        /*
+        //String s = (String) model.get("test");
+        //writer.print(s);
+        //writer.print( model.get("documents"));
+        //writer.close();
+    
         // Genererer og skriver ut RSS-fila
         try {
             SyndFeed feed = new SyndFeedImpl();
+         
+            // Set format and feed header info (title, link, description)
             feed.setFeedType("rss_1.0");
-            feed.setPublishedDate(new NSTimestamp());
-            feed.setTitle(cleanAndCodeUTF8(lokalKonto.getDelNavn()));
-            feed.setLink(cleanAndCodeUTF8(avisUrl));
-            feed.setDescription(cleanAndCodeUTF8(lokalKonto.getDelNavn()
-                + " - nettavis på universitetet i Oslo"));
+            feed.setTitle("NoticeboardRSS");
+            feed.setLink("http://www.uio.no/NoticeBoard");
+            feed.setDescription("RSS feed for UiO-tavler");
+            
+            // Created and add list of entries  
+            // (Each entry is set with a title, link, published date and a description) 
+            // ( -> Description can be plain text or HTML) 
+            List rssEntries = new ArrayList();
+            SyndEntry entry;
+            SyndContent description;
 
-            NSArray artiklerTilRSS =
-Artikkel.nyesteArtiklerForKonto(lokalKonto, 15, getEC());
-            Artikkel enArtikkel;
-            List syndEntries = new ArrayList();
-            SyndEntry syndEntry;
-            SyndContent syndDescription;
-            String description;
+            /*
+     entry = new SyndEntryImpl();
+     entry.setTitle("ROME v1.0");
+     entry.setLink("http://wiki.java.net/bin/view/Javawsxml/Rome01");
+     entry.setPublishedDate(DATE_PARSER.parse("2004-06-08"));
+     description = new SyndContentImpl();
+     description.setType("text/plain"); // or ("text/html")
+     description.setValue("Initial release of ROME");
+     entry.setDescription(description);
+     entries.add(entry);
+             */
+            
+            
+            // Add list with entries to the SyndFeed bean.
+            feed.setEntries(rssEntries);
+            
+            /*
+            // To write a syndication feed XML document using ROME:
+            SyndFeed feed = ...;
+            Writer writer = ...;
 
-            for (int i = 0; i < artiklerTilRSS.count(); i++) {
-                enArtikkel = (Artikkel) artiklerTilRSS.objectAtIndex(i);
-                syndEntry = new SyndEntryImpl();
-
-syndEntry.setTitle(cleanAndCodeUTF8(localStripHTML(enArtikkel.getKorttittel())));
-
-syndEntry.setLink(cleanAndCodeUTF8(enArtikkel.fullUrlTilArtikkel(context())));
-                syndEntry.setPublishedDate(enArtikkel.getPublisertDato());
-                syndDescription = new SyndContentImpl();
-                syndDescription.setType("text/plain");
-                description =
-cleanAndCodeUTF8(localStripHTML(enArtikkel.getPresentasjon()));
-                // Maks lovlige lengde for description er 500 tegn.
-                if (description != null && description.length() > 500) {
-                    syndDescription.setValue(description.substring(0, 500));
-                } else {
-                    syndDescription.setValue(description);
-                }
-                syndEntry.setDescription(syndDescription);
-                syndEntries.add(syndEntry);
-            }
-
-            feed.setEntries(syndEntries);
-
-            FileWriter fileWriter = new FileWriter(filnavn);
             SyndFeedOutput output = new SyndFeedOutput();
-            output.output(feed, fileWriter);
-            fileWriter.close();
+            output.output(feed,writer);
+            writer.close();
+            */
 
-            //Endrer rettighetene slik at filen er lesbar for alle
-            String chmod = Application.systemUtil.pathOfProgram("chmod")
-+ " go+r " + filnavn;
-            Runtime.getRuntime().exec(chmod);
-        } catch (Exception exception) {
-            // Hvis noe går galt, dropper jeg rett og slett å skrive fila. Det er enklt å få gjort dette senere likevel
-            System.out.println("Exception ved skriving av RSS-fil!!");
-            System.out.println("Filnavn: " + filnavn);
-            System.out.println("Exception:\n" + exception.toString());
-        }
-    }
+            // DUMMY ENTRY:
+            Date testDate = new Date();
+            testDate.setYear(2005);
+            testDate.setMonth(4);
+            testDate.setDate(6);
+            // TEST !!!
+            entry = new SyndEntryImpl();
+            entry.setTitle("TestEntry 0.1");
+            entry.setLink("http://www.itavisen.no");
+            entry.setPublishedDate(testDate);
+            description = new SyndContentImpl();
+            description.setType("text/plain");
+            description.setValue("Initial release of ROME");
+            entry.setDescription(description);
+            
+            rssEntries.add(entry);
 
+            SyndFeedOutput output = new SyndFeedOutput();
+            output.output(feed,writer);
+            
+            writer.close();
 
-    
-    // Erstatter CP1252-spesialtegn og deretter koder til UTF-8.
-    private String cleanAndCodeUTF8(String s) throws
-UnsupportedEncodingException {
+       
+        } catch (Exception e) {}
+    } // end of render()
+
+    /**
+     * Method to replace CP1252-special characters and re-code to UTF-8
+     * @param  string
+     * @return UTF-8 encoded string
+     */
+    /*
+    private String cleanAndCodeUTF8(String s) throws Exception {
         String iso_8859_1 = no.uio.util.TextUtil.cp1252ToISO_8859_1(s);
         return new String(iso_8859_1.getBytes("UTF-8"));
-    }
+    }*/
         
-  */      
-    }
-
-}
+} // end class RssView

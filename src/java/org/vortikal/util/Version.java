@@ -39,27 +39,24 @@ import java.util.Date;
 
 
 /**
- * Class representing the current version of the framework.
+ * Class providing information on the current version of the
+ * framework.
  */
 public class Version {
 
-    public final static String BUILD_DATE_PARSE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    public static final String BUILD_DATE_PARSE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     /* Retrieved from the FRAMEWORK_VERSION file in the class path: */
     private static Date buildDate = new Date(0);
     private static String buildHost = "unknown";
     private static String versionControlID = "$Id$";
-
-    /* Picked up from META-INF/MANIFEST.MF */
     private static String frameworkVersion = "unknown";
     private static String buildVendor = "unknown";
+    private static String vendorURL = "unknown";
     private static String frameworkTitle = "Vortikal Web Application Framework";
 
 
 
-    /**
-     * See <a href="http://java.sun.com/j2se/1.3/docs/guide/versioning/spec/VersioningSpecification.html#PackageVersionSpecification">Java Package Version Specification</a>
-     */
     static {
         
         Package p = Version.class.getPackage();
@@ -99,20 +96,20 @@ public class Version {
             buildHost = props.getProperty("build.host");
         }
 
-        if (p.getImplementationVendor() != null) {
-            buildVendor = p.getImplementationVendor();
+        if (props.containsKey("vendor.name")) {
+            buildVendor = props.getProperty("vendor.name");
         }
 
-//         if (p.getImplementationTitle() != null) {
-//             frameworkTitle = p.getImplementationTitle();
-//         }
-        
-        if (p.getSpecificationTitle() != null) {
-            frameworkTitle = p.getSpecificationTitle();
+        if (props.containsKey("vendor.url")) {
+            vendorURL = props.getProperty("vendor.url");
+        }
+
+        if (props.containsKey("framework.title")) {
+            frameworkTitle = props.getProperty("framework.title");
         }
         
-        if (p.getImplementationVersion() != null) {
-            frameworkVersion = p.getImplementationVersion();
+        if (props.containsKey("framework.version")) {
+            frameworkVersion = props.getProperty("framework.version");
         }
     }
 
@@ -157,6 +154,14 @@ public class Version {
      */
     public static final String getBuildVendor() {
         return buildVendor;
+    }
+
+
+    /**
+     * Gets the vendor URL.
+     */
+    public static final String getVendorURL() {
+        return vendorURL;
     }
 
 

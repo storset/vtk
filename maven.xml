@@ -42,9 +42,12 @@
      <j:invoke var="host" method="getHostName" on="${inetaddr}" />
      <j:set var="ver.file" value="${maven.build.dest}/org/vortikal/util/FRAMEWORK_VERSION"/>
      <echo file="${ver.file}">
+       framework.title = ${pom.shortDescription}
        framework.version = ${pom.currentVersion}
        build.date = ${build.date}
        build.host = ${host}
+       vendor.name = ${pom.organization.name}
+       vendor.url = ${pom.organization.url}
      </echo>
    </postGoal>
 

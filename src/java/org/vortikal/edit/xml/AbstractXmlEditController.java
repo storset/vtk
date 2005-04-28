@@ -332,7 +332,7 @@ public abstract class AbstractXmlEditController implements Controller {
         
         /* The resource has to be an XML document */
         if (! ContentTypeHelper.isXMLContentType(resource.getContentType())) {
-            throw new RuntimeException("Resource is not an xml document");
+            throw new XMLEditException("Resource is not an xml document");
         }
 
         /* The property web-edit should be 'true' or 'yes' */
@@ -340,7 +340,7 @@ public abstract class AbstractXmlEditController implements Controller {
             resource.getProperty(Property.LOCAL_NAMESPACE, EDIT_PROPERTY).getValue();
 
         if (webEdit == null || !(webEdit.equals("true") || webEdit.equals("yes"))) {
-            throw new RuntimeException("Xml resource is not set to web editable");
+            throw new XMLEditException("Xml resource is not set to web editable");
         }
         
         /* Try to build document */
@@ -348,9 +348,9 @@ public abstract class AbstractXmlEditController implements Controller {
             document = EditDocument.createEditDocument(repository);
         } catch (JDOMException e) {
             // FIXME: error handling?
-            throw new RuntimeException("Document build failure", e);
+            throw new XMLEditException("Document build failure", e);
         } catch (IOException e) {
-            throw new RuntimeException("Document build failure", e);
+            throw new XMLEditException("Document build failure", e);
         } 
         
         
@@ -362,7 +362,7 @@ public abstract class AbstractXmlEditController implements Controller {
             schemaURL = getSchemaReference(document);
             
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid schema URI", e);
+            throw new XMLEditException("Invalid schema URI", e);
         }
         
 
@@ -370,23 +370,23 @@ public abstract class AbstractXmlEditController implements Controller {
         try {
 
             if (schemaURL == null || schemaURL.toString().trim().equals("")) {
-                throw new RuntimeException("XML document is uneditable, schema reference is missing");
+                throw new XMLEditException("XML document is uneditable, schema reference is missing");
             }
 
             documentDefinition = 
                 new SchemaDocumentDefinition(docType, schemaURL);
         } catch (JDOMException e) {
-            throw new RuntimeException("Schema build failure for schema '" + schemaURL + "'", e);
+            throw new XMLEditException("Schema build failure for schema '" + schemaURL + "'", e);
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid schema uri '" + schemaURL + "'", e);
+            throw new XMLEditException("Invalid schema uri '" + schemaURL + "'", e);
         } catch (IOException e) {
-            throw new RuntimeException("Schema build failure for schema '" + schemaURL + "'", e);
+            throw new XMLEditException("Schema build failure for schema '" + schemaURL + "'", e);
         }
 
         /* Locate the edit XSL for this document type */
         String relativePath = documentDefinition.getXSLPath();
         if (relativePath == null || relativePath.trim().equals("")) {
-            throw new RuntimeException("Edit XSL path not defined in schema '" + schemaURL + "'");
+            throw new XMLEditException("Edit XSL path not defined in schema '" + schemaURL + "'");
         }
         
         
@@ -394,13 +394,13 @@ public abstract class AbstractXmlEditController implements Controller {
             transformerManager.getTransformer(resource, document);
         } catch (IOException e) {
             // FIXME: error handling
-            throw new RuntimeException("Unable to compile edit stylesheets for document '" + uri + "'", e);
+            throw new XMLEditException("Unable to compile edit stylesheets for document '" + uri + "'", e);
         } catch (TransformerConfigurationException e) {
             // FIXME: error handling
-            throw new RuntimeException("Unable to compile edit stylesheets for document '" + uri + "'", e);
+            throw new XMLEditException("Unable to compile edit stylesheets for document '" + uri + "'", e);
         } catch (StylesheetCompilationException e) {
             // FIXME: error handling
-            throw new RuntimeException("Unable to compile edit stylesheets for document '" + uri + "'", e);
+            throw new XMLEditException("Unable to compile edit stylesheets for document '" + uri + "'", e);
         }
 
         sessionMap.put(EditDocument.class.getName(), document);

@@ -120,7 +120,10 @@ public class MoveController extends AbstractXmlEditController {
                         return new Integer(i1).compareTo(new Integer(i2));
                     }
                 } catch (NumberFormatException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalArgumentException(
+                        "Unable to compare objects "
+                        + o1 + ", " + o2 + ": paths must must consist "
+                        + "of numbers, separated by dots");
                 }
             }
 

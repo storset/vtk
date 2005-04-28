@@ -148,7 +148,7 @@ public class SchemaDocumentDefinition {
                     || location.matches("[a-zA-Z]:.*")) {
 
                 // Unsupported URL (i.e. a file path, etc. is specified)
-                throw new RuntimeException("Unable to include schema "
+                throw new XMLEditException("Unable to include schema "
                         + location + " (referenced from " + currentURL + "). "
                         + "Only relative URLs or 'file:' and 'http[s]:' "
                         + "type URLs are supported.");
@@ -192,7 +192,7 @@ public class SchemaDocumentDefinition {
                             .getChildren(schemaElementType, XSD_NAMESPACE);
 
                     if (findInElementList(schemaElementName, currentSchemaExistingChildren) != null) { 
-                        throw new RuntimeException("The included schema " + includeURL + 
+                        throw new XMLEditException("The included schema " + includeURL + 
                                 " contains a conflicting element of type " + schemaElementType + 
                                 " with name " + schemaElementName);
                     }
@@ -344,7 +344,7 @@ public class SchemaDocumentDefinition {
 
         if (child.getName().equals("choice")) return UNBOUNDED_CHOICE_ELEMENT;
 
-        throw new RuntimeException(
+        throw new XMLEditException(
             "Unable to determine type of element " + element.getName());
     }
 
@@ -367,7 +367,7 @@ public class SchemaDocumentDefinition {
                 Element e = (Element) iter.next();
                 if (docType.equals(e.getAttributeValue("name"))) { return e; }
             }
-            throw new RuntimeException(
+            throw new XMLEditException(
                     "The schema does not contain an element definition of docType "
                             + docType);
         }
@@ -385,7 +385,7 @@ public class SchemaDocumentDefinition {
                                 descendant.getAttributeValue("name"))) { return descendant; }
             }
         }
-        throw new RuntimeException(
+        throw new XMLEditException(
                 "The schema does not contain an element definition for element "
                         + element.getName());
     }
@@ -452,7 +452,7 @@ public class SchemaDocumentDefinition {
             logger.error("Unable to instantiate StructuredText for element: " 
                     + element.getName(), e);
 
-            throw new RuntimeException(
+            throw new XMLEditException(
                     "Couldn't instatiate StructuredText instance for element: " 
                     + element.getName(), e);
         }
@@ -471,7 +471,7 @@ public class SchemaDocumentDefinition {
         StructuredText structuredText = getStructuredText(element);
 
         if (structuredText == null) 
-            throw new RuntimeException("Asked to parse element as unbounded, " +
+            throw new XMLEditException("Asked to parse element as unbounded, " +
                     "but unable to find StructuredText implementation for " +
                     "element '" + element.getName() + "'");
         structuredText.setTextMappings(getTextMappings(element));
@@ -495,7 +495,7 @@ public class SchemaDocumentDefinition {
         StructuredText structuredText = getStructuredText(element);
 
         if (structuredText == null) 
-            throw new RuntimeException("Asked to generate element as unbounded, " +
+            throw new XMLEditException("Asked to generate element as unbounded, " +
                     "but unable to find StructuredText implementation for " +
                     "element '" + element.getName() + "'");
          structuredText.setTextMappings(getTextMappings(element));
@@ -543,7 +543,7 @@ public class SchemaDocumentDefinition {
         if (SEQUENCE_ELEMENT.equals(type)) {
             String typeName = elementDef.getAttributeValue("type");
 
-            if (typeName == null) { throw new RuntimeException(
+            if (typeName == null) { throw new XMLEditException(
                     "The definition of element " + element.getName()
                             + " is illegal. The element definition "
                             + elementDef + " with name attribute "
@@ -567,7 +567,7 @@ public class SchemaDocumentDefinition {
                 || UNBOUNDED_ELEMENT.equals(type)) {
 
         } else {
-            throw new RuntimeException("element " + element.getName()
+            throw new XMLEditException("element " + element.getName()
                     + " doesn't have the required xsd:appinfo definition");
         }
         buildAttributes(element);
@@ -587,7 +587,8 @@ public class SchemaDocumentDefinition {
 
         String typeName = elementDef.getAttributeValue("type");
 
-        if (typeName == null) { throw new RuntimeException(
+        if (typeName == null) {
+            throw new XMLEditException(
                 "The definition of element " + element.getName()
                         + " is illegal. The element definition " + elementDef
                         + " with name attribute "

@@ -236,13 +236,14 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-    
-    <dependency>
-      <id>rome</id>
-      <version>0.5</version>
-    </dependency> 
-    
-    <!--
+
+<!--    
+   <dependency>
+     <id>rome</id>
+     <version>0.5</version>
+   </dependency> 
+-->
+   <!--
    <dependency>
      <id>oracle+ojdbc14</id>
      <version>10.1.0.2.0</version>

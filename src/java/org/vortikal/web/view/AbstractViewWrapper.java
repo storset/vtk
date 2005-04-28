@@ -50,19 +50,38 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
 /**
  * Abstract base class for view wrappers. Provides response wrapping
  * for content (and header) manipulation.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <lI><code>wrappedView</code> - the {@link View view} to wrap
+ *   around.
+ *   <li><code>propagateExceptions</code> a boolean specifying whether
+ *   or not to let runtime exceptions that occur while rendering the
+ *   wrapped view propagate all the way up to the caller. When set to
+ *   <code>false</code>, all exceptions are caught and re-thrown
+ *   wrapped inside a {@link ViewWrapperException}. The default value
+ *   is <code>true</code>.
+ * </ul>
  */
 public abstract class AbstractViewWrapper
   extends AbstractReferenceDataProvidingWithChildrenView implements InitializingBean {
 
-
+    /**
+     * A protected logger instance, available to subclasses.
+     */
     protected Log logger = LogFactory.getLog(this.getClass());
 
-
     private View wrappedView = null;
-
+    private boolean propagateExceptions = true;
+    
 
     public void setWrappedView(View wrappedView) {
         this.wrappedView = wrappedView;
+    }
+    
+
+    public void setPropagateExceptions(boolean propagateExceptions) {
+        this.propagateExceptions = propagateExceptions;
     }
     
 
@@ -100,7 +119,21 @@ public abstract class AbstractViewWrapper
         BufferedResponseWrapper wrappedResponse = new BufferedResponseWrapper(response);
 
         preRender(model, request, wrappedResponse);
-        wrappedView.render(model, request, wrappedResponse);
+
+        if (this.propagateExceptions) {
+
+            this.wrappedView.render(model, request, wrappedResponse);
+
+        } else {
+
+            try {
+                this.wrappedView.render(model, request, wrappedResponse);
+            } catch (Throwable t) {
+                throw new ViewWrapperException(
+                    "An error occurred while rendering the wrapped view",
+                    t, model, this.wrappedView);
+            }
+        }
         postRender(model, request, wrappedResponse);
     }
     

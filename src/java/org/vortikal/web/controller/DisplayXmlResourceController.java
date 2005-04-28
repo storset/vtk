@@ -65,25 +65,29 @@ import org.vortikal.xml.TransformerManager;
  * 
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
- *   <li><code>transformerManager</code> - the XSLT stylesheet manager
- *       (required)
+ *   <li><code>repository</code> - the content {@link Repository
+ *   repository}
+ *   <li><code>transformerManager</code> - the XSLT {@link
+ *   TransformerManager transformer manager}
  *   <li><code>childName</code> - if this optional property is set, it
- *     is appended to the current resource URI when retrieving the
- *     resource to display. This is typically used when displaying
- *     index resources (i.e. <code>childName = 'index.xml'</code>, for
- *     instance).
+ *   is appended to the current resource URI when retrieving the
+ *   resource to display. This is typically used when displaying
+ *   index resources (i.e. <code>childName = 'index.xml'</code>, for
+ *   instance).
  *   <li><code>handleLastModified</code> - whether to return the real
- *       last modified value of the resource, or <code>-1</code> (the
- *       default)
+ *   last modified value of the resource, or <code>-1</code> (the
+ *   default)
+ *   <li><code>ignoreXMLErrors</code> - whether or not to catch
+ *   document build failures. Default is <code>false</code>.
  * </ul>
  *
  * <p>Model data provided:
  * <ul>
- *   <li><code>resource</code> - the
- *   <code>org.vortikal.repository.Resource</code></li>
- *   <li><code>jdomDocument</code> - the <code>org.jdom.Document</code>
- *       representation of the resource.</li>
+ *   <li><code>resource</code> - the {@link Resource} being displayed
+ *   <li><code>jdomDocument</code> - the {@link org.jdom.Document}
+ *   representation of the resource. If <code>ignoreXMLErrors</code>
+ *   is <code>true</code> and there is an error building the document,
+ *   this entry will NOT get placed in the model.
  * </ul>
  *
  */
@@ -99,6 +103,7 @@ public class DisplayXmlResourceController
     private String childName;
     private String viewName = DEFAULT_VIEW_NAME;
     private boolean handleLastModified = false;
+    private boolean ignoreXMLErrors = false;
     
 
     public void setChildName(String childName) {
@@ -126,17 +131,19 @@ public class DisplayXmlResourceController
     }
     
 
-    /**
-     * Describe <code>afterPropertiesSet</code> method here.
-     *
-     * @exception Exception if an error occurs
-     */
+    public void setIgnoreXMLErrors(boolean ignoreXMLErrors) {
+        this.ignoreXMLErrors = ignoreXMLErrors;
+    }
+    
+
     public void afterPropertiesSet() throws Exception {
         if (repository == null) {
-            throw new BeanInitializationException("Property 'repository' not set");
+            throw new BeanInitializationException(
+                "JavaBean property 'repository' not set");
         }
         if (transformerManager == null) {
-            throw new BeanInitializationException("Property 'transformerManager' not set");
+            throw new BeanInitializationException(
+                "JavaBean property 'transformerManager' not set");
         }
     }
 
@@ -202,6 +209,7 @@ public class DisplayXmlResourceController
             throw new IllegalStateException(
                 "Unable to display collections");
         }
+        model.put("resource", resource);
         	
         InputStream stream = repository.getInputStream(token, uri, true);
         
@@ -213,26 +221,21 @@ public class DisplayXmlResourceController
             document = builder.build(stream);
             document.setBaseURI(uri);
             
-        } catch (Exception e) {            
-            // FIXME: error handling
-            throw new ServletException(
-                "Unable to build JDOM document from input stream", e);
-        }            
-
-        try {
-            transformerManager.getTransformer(resource, document);
-        } catch (IOException e) {
-            // FIXME: error handling
-        } catch (TransformerConfigurationException e) {
-            // FIXME: error handling
-        } catch (StylesheetCompilationException e) {
-            // FIXME: error handling
+        } catch (Exception e) {
+            if (!this.ignoreXMLErrors) {
+                e.fillInStackTrace();
+                throw e;
+            }
         }
 
-        model.put("resource", resource);
-        model.put("jdomDocument", document);
-               
-        return new ModelAndView(viewName, model);
+        if (document != null) {
+
+            if (!this.ignoreXMLErrors) {
+                transformerManager.getTransformer(resource, document);
+            }
+            model.put("jdomDocument", document);
+        }
+        return new ModelAndView(this.viewName, model);
     }
 
 }

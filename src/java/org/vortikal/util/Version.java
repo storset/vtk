@@ -73,7 +73,7 @@ public class Version {
         try {
             props.load(is);
         } catch (Throwable t) {
-            System.out.println("Error reading META-INF/FRAMEWORK_VERSION: " +
+            System.out.println("Error reading version information: " +
                                t.getMessage());
             t.printStackTrace();
         }

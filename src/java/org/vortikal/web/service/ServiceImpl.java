@@ -163,6 +163,23 @@ public class ServiceImpl
     }
 	
 
+    public boolean isDescendantOf(Service service) {
+        if (service == null) {
+            throw new IllegalArgumentException("Services cannot be null");
+        }
+
+        Service s = this.parent;
+
+        while (s != null) {
+            if (s == service) {
+                return true;
+            }
+            s = s.getParent();
+        }
+        return false;
+    }
+
+
     public String constructLink(Resource resource, Principal principal) {
         return constructLink(resource, principal, null, true);
     }

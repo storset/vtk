@@ -102,6 +102,18 @@ public interface Service extends  Ordered, Categorizable {
     public Service getParent();
 	
 
+
+    /**
+     * Checks whether this service is a descendant of another service.
+     *
+     * @param service - the service in question
+     * @return <code>true</code> if this service is a descendant of
+     * the other service, <code>false</code> otherwise.
+     */
+    public boolean isDescendantOf(Service service);
+       
+
+
     /**
      * Constructs a link (URL) for this service to a given resource
      * and a principal.

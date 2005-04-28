@@ -32,11 +32,7 @@ package org.vortikal.web.view;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
 import org.vortikal.web.referencedataprovider.Provider;
@@ -51,10 +47,6 @@ public abstract class AbstractReferenceDataProvidingWithChildrenView
      */
     public Provider[] getReferenceDataProviders() {
         Set providers = new HashSet();
-        if (super.getReferenceDataProviders() != null) {
-            providers.addAll(Arrays.asList(super.getReferenceDataProviders()));
-
-        }
 
         View[] viewList = getViews();
 
@@ -67,6 +59,11 @@ public abstract class AbstractReferenceDataProvidingWithChildrenView
                 }
             }
         }
+
+        if (super.getReferenceDataProviders() != null) {
+            providers.addAll(Arrays.asList(super.getReferenceDataProviders()));
+        }
+
         return (Provider[]) providers.toArray(new Provider[0]);
     }
 

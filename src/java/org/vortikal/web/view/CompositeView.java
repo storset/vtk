@@ -32,10 +32,7 @@ package org.vortikal.web.view;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
-import org.vortikal.web.referencedataprovider.Provider;
 import org.vortikal.web.servlet.BufferedResponse;
 
 /**

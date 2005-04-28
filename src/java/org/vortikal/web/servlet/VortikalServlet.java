@@ -364,7 +364,6 @@ public class VortikalServlet extends DispatcherServlet {
                             getUsernameForRequest(request), failureCause));
         }
         
-        
     }
 
         
@@ -585,41 +584,80 @@ public class VortikalServlet extends DispatcherServlet {
     
     
     /**
-     * Looks up an error handler based on the class of the error.
-     *
+     * Resolves an error handler based on the throwable's class and
+     * the current service.
+     * 
      * @param t the error to resolve an error handler for
      * @return an error handler, or <code>null</code> if no error
      * handler could be resolved.
      */
     private ErrorHandler resolveErrorHandler(Throwable t) {
+        Service currentService = null;
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext != null) {
+            currentService = requestContext.getService();
+        }
+
         ErrorHandler selected = null;
+
         for (int i = 0; i < errorHandlers.length; i++) {
+
+            ErrorHandler candidate = errorHandlers[i];
+
             if (logger.isDebugEnabled()) {
                 logger.debug(
-                    "Testing error " + t.getClass() + " against " +
-                    errorHandlers[i].getErrorType().getName() + ":" +
-                    errorHandlers[i].getErrorType().isAssignableFrom(t.getClass()));
+                    "Testing error [" + t.getClass() + ", " + currentService
+                    + "] against error handler " + candidate);
             }
-            if (errorHandlers[i].getErrorType().isAssignableFrom(t.getClass())) {
-                if (selected == null) {
-                    selected = errorHandlers[i];
-                } else if (selected.getErrorType().isAssignableFrom(
-                               errorHandlers[i].getErrorType())) {
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Error handler: " + errorHandlers[i]
-                                     + " is more specific than the currently "
-                                     + "selected handler: " + selected);
-                    }
+            if (!candidate.getErrorType().isAssignableFrom(t.getClass())) {
+                continue;
+            }
+            
+            if ((candidate.getService() != null && currentService == null)
+                || (candidate.getService() != null && currentService != null
+                    && !(currentService == candidate.getService() ||
+                         currentService.isDescendantOf(candidate.getService())))) {
 
-                    selected = errorHandlers[i];
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                        "Candidate handler " + candidate + " requires the "
+                        + "current service to be " + candidate.getService() 
+                        + " or a descendant. Current service was " + currentService);
+                }
+                continue;
+            }
 
+            if (selected == null &&
+                (candidate.getService() == null ||
+                 (currentService != null && candidate.getService() != null
+                  && (currentService == candidate.getService()
+                      ||currentService.isDescendantOf(candidate.getService()))))) {
+
+                selected = candidate;
+
+            } else if (!selected.getErrorType().equals(candidate.getErrorType())
+                       && selected.getErrorType().isAssignableFrom(
+                           candidate.getErrorType())) {
+                
+                selected = candidate;
+
+            } else if (candidate.getService() != null &&
+                       candidate.getService().isDescendantOf(selected.getService())) {
+
+                selected = candidate;
+            }
+
+            if (selected != null && selected == candidate) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Setting new currently matched error handler: "
+                                 + candidate);
                 }
             }
         }
+
         return selected;
     }
-    
-    
+
     
 }

@@ -30,48 +30,50 @@
  */
 package org.vortikal.web;
 
-
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.web.referencedataprovider.Provider;
-
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+
+import org.vortikal.web.referencedataprovider.Provider;
+import org.vortikal.web.service.Service;
 
 
 /**
  * Default error handler.
  *
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
  *   <li>errorView - a <code>View</code> for rendering the error model
- *   <li>errorType - a <code>Throwable</code> deciding the type(s) of
- *       errors that are handled by this class
- *   <li>modelBuilders - a list of <code>ModelBuilder</code> objects,
- *       invoked on the error model. Note: some (or all) of these may
- *       crash during invocation, so this list should be a
- *       conservative set of model builders, that should at least not
- *       be operating on the repository.
- *   <li>statusCodeMappings - a <code>Map</code> that maps between
- *       error class names and HTTP status codes,
- *       e.g. <code>java.lang.Throwable --> 500</code> (internal
- *       server error).
+ *   <li>errorType - a {@link Throwable} deciding the type(s) of
+ *   errors that are handled by this class
+ *   <li>service - the {@link Service} (if any) for which this error
+ *   handler is applicable
+ *   <li>modelBuilders - a list of {@link ModelBuilder} objects,
+ *   invoked on the error model. Note: some (or all) of these may
+ *   crash during invocation, so this list should be a
+ *   conservative set of model builders, that should at least not
+ *   be operating on the repository.
+ *   <li>statusCodeMappings - a {@link Map} that maps between
+ *   error class names and HTTP status codes,
+ *   e.g. <code>java.lang.Throwable --&gt; 500</code> (internal
+ *   server error).
  * </ul>
  *
  * <p>Model data provided:
  * <ul>
- *   <li><code>exception</code> - a <code>Throwable</code> - the error
+ *   <li><code>exception</code> - a {@link Throwable} - the error
  *   that occurred
  *   <li><code>errorDescription</code> - a localized error description
  * </ul>
  *
  */
-public class DefaultErrorHandler implements ErrorHandler, InitializingBean {
+public class DefaultErrorHandler implements ErrorHandler, BeanNameAware, InitializingBean {
     
     public static final String DEFAULT_ERROR_CODE = "error.default";
     public static final String DEFAULT_ERROR_DESCRIPTION = "Internal server error";
@@ -80,10 +82,17 @@ public class DefaultErrorHandler implements ErrorHandler, InitializingBean {
     public static final String ERROR_MODEL_EXCEPTION_KEY = "exception";
     public static final String ERROR_MODEL_ERROR_DESCRIPTION_KEY = "errorDescription";
     
+    private String beanName = null;
     private View errorView = null;
     private Class errorType = Throwable.class;
+    private Service service = null;
     private Provider[] providers = new Provider[0];
     private Map statusCodeMappings = new HashMap();
+    
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 
     public void setErrorView(View errorView) {
         this.errorView = errorView;
@@ -95,6 +104,14 @@ public class DefaultErrorHandler implements ErrorHandler, InitializingBean {
 
     public Class getErrorType() {
         return errorType;
+    }
+    
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public Service getService() {
+        return this.service;
     }
     
     public void setReferenceDataProviders(Provider[] providers) {
@@ -193,8 +210,9 @@ public class DefaultErrorHandler implements ErrorHandler, InitializingBean {
     
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(": [");
-        sb.append("errorView = ").append(this.errorView).append(",");
+        sb.append(this.getClass().getName()).append(":").append(this.beanName);
+        sb.append(": [");
+        sb.append("errorView = ").append(this.errorView).append(", ");
         sb.append("errorType = ").append(this.errorType.getName()).append("]");
         return sb.toString();
     }

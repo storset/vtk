@@ -31,24 +31,56 @@
 package org.vortikal.web;
 
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
 
+import org.vortikal.web.service.Service;
 
+
+/**
+ * Interface for error handlers. Error handlers are selected based on
+ * two criteria, matched in the following order:
+ * 
+ * <ol>
+ *   <li>The error {@link #getErrorType type}. This specifies the
+ *   class of exceptions handled by the error handler. More specific
+ *   exception (sub) classes take precedence over less specific
+ *   ones. For example, given that the error in question is a
+ *   <code>java.io.IOException</code> an error handler specifying that
+ *   class will get selected over a handler specifying
+ *   <code>java.lang.Throwable</code>.
+ *   <li>The {@link #getService service}. This specifies the set
+ *   of {@link services} for which the error handler is
+ *   applicable. Error handlers with more specific services
+ *   (descendants) take precedence over less specific ones. If
+ *   <code>null</code> is specified, it is interpreted as "match any
+ *   service".
+ * </ol>
+ *
+ */
 public interface ErrorHandler {
 
     
     /**
      * Gets the class of exceptions handled by this error handler. The
-     * class returned must be a <code>Throwable</code> (or a subclass).
+     * class returned must be a {@link Throwable} (or a subclass).
      *
-     * @return a <code>Class</code> 
+     * @return the exception class
      */
     public Class getErrorType();
 
+
+    /**
+     * Gets the {@link Service} (if any) for which this error handler
+     * is applicable.
+     * 
+     * @return the service, or <code>null</code> if this error handler
+     * is not service context sensitive.
+     */
+    public Service getService();
+    
 
     /**
      * Creates a model for the error handler view.

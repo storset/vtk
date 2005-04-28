@@ -41,17 +41,17 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  */
-public class DeleteResourceController extends AbstractController {
-
-    public static final String DEFAULT_VIEW_NAME = "redirectToManage";
+public class DeleteResourceController extends AbstractController implements InitializingBean {
 
     private Repository repository;
-    private String viewName = DEFAULT_VIEW_NAME;
+    private String viewName;
     
     /**
      * @param repository The repository to set.
@@ -78,6 +78,11 @@ public class DeleteResourceController extends AbstractController {
         Map model = new HashMap();
         model.put("resource", parent);
         return new ModelAndView(viewName, model);
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        if (viewName == null)
+            throw new BeanInitializationException("Property 'viewName' must be set");
     }
 
 }

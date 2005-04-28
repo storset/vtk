@@ -26,33 +26,21 @@ import org.vortikal.web.RequestContext;
  * <p>Configurable properties:
  * <ul>
  *   <li><code>repository</code> - the repository is required</li>
- *   <li><code>resourceName</code> - If this is is specified, create new resource with this name.
- *      Otherwise, use copied resource name</li>
- *   <li><code>templateUri</code> - required - Uri of the resource to copy. 
- *   <li><code>trustedToken</code> - If specified, use this token to copy. 
- *      Otherwise use the current security context.
- * 	 <li><code>successView</code> - default is 'redirect'
- * 	 <li><code>errorView</code> - default is 'admin'
+ * 	 <li><code>viewName</code> - required - likely to be a redirect to the parent
  *  
  * </ul>
  * </p>
  *
  * <p>Model data provided:
  * <ul>
- *   <li><code>resource</code> - the resource to redirect to on success
- * 	 <li><code>error</code> - error message on error
+ *   <li><code>resource</code> - the parent of the resources
  * </ul>
  */
 public class DuplicateResourceController implements Controller,
         InitializingBean {
     
-    private Log logger = LogFactory.getLog(CopyResourceController.class);
-    private String trustedToken;
     private Repository repository;
-    private String resourceName;
-    private String templateUri;
-    private String errorView = "admin";
-    private String successView = "redirectToManage";
+    private String viewName;
     
     
     public ModelAndView handleRequest(HttpServletRequest req,
@@ -62,9 +50,7 @@ public class DuplicateResourceController implements Controller,
 
         String uri = RequestContext.getRequestContext().getResourceURI();
         
-        String token = trustedToken;
-        if (token == null)
-            token = SecurityContext.getSecurityContext().getToken();
+        String token = SecurityContext.getSecurityContext().getToken();
 
         Resource resource = repository.retrieve(token, uri, false);
         
@@ -95,39 +81,23 @@ public class DuplicateResourceController implements Controller,
             
         model.put("resource", parent);
         
-        return new ModelAndView(successView, model);
+        return new ModelAndView(viewName, model);
     }
 
     public void afterPropertiesSet() throws Exception {
 
         if (repository == null) 
             throw new BeanInitializationException("Property 'repository' required");
+        if (viewName == null)
+            throw new BeanInitializationException("Property 'viewName' required");
     }
     
-    public void setErrorView(String errorView) {
-        this.errorView = errorView;
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public void setSuccessView(String successView) {
-        this.successView = successView;
-    }
-
-    public void setTrustedToken(String trustedToken) {
-        this.trustedToken = trustedToken;
-    }
-
-    public void setTemplateUri(String templateUri) {
-        this.templateUri = templateUri;
-    }
-    
-    
 
 }

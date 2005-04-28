@@ -9,6 +9,13 @@
     <release version="SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="gormap" type="add">
+        Added the ability to associate error handlers with a service
+        tree. When a service is specified for an error handler, the
+        handler is not selected unless the service of the request is
+        the same as or a descendant of the specified service.
+      </action>
+
       <action dev="gormap" type="fix">
         Fixed lock discovery functionality in XML edit component
         (re-locking previously failed due to a bug)

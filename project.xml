@@ -7,7 +7,7 @@
   <id>vortikal</id>
   <name>Vortikal</name>
   <groupId>vortikal</groupId>
-  <currentVersion>0.1.2-SNAPSHOT</currentVersion>
+  <currentVersion>0.1.2</currentVersion>
   <organization>
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
@@ -27,7 +27,6 @@
   </repository>
   <siteAddress>shell.berlios.de</siteAddress>
   <siteDirectory>/home/groups/vortikal/htdocs/maven-sites/vortikal-${pom.currentVersion}</siteDirectory>
-
   <mailingLists>
     <mailingList>
       <name>Vortikal Announce List</name>
@@ -54,8 +53,7 @@
       <archive>https://lists.berlios.de/pipermail/vortikal-svn</archive>
     </mailingList>
   </mailingLists>
-  <developers></developers>
-
+  <developers/>
   <dependencies>
     <dependency>
       <id>commons-dbcp</id>
@@ -236,14 +234,13 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-
-<!--    
+    <!--    
    <dependency>
      <id>rome</id>
      <version>0.5</version>
    </dependency> 
 -->
-   <!--
+    <!--
    <dependency>
      <id>oracle+ojdbc14</id>
      <version>10.1.0.2.0</version>
@@ -283,6 +280,7 @@
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <!--unitTestSourceDirectory>test/java</unitTestSourceDirectory-->
+
     <integrationUnitTestSourceDirectory/>
     <!-- Unit test classes -->
 
@@ -345,10 +343,12 @@
     <report>maven-changes-plugin</report>
     <!--report>maven-developer-activity-plugin</report-->
     <!--report>maven-file-activity-plugin</report-->
+
     <report>maven-license-plugin</report>
     <!-- report>maven-statcvs-plugin</report -->
     <!-- report>maven-checkstyle-plugin</report -->
     <!--report>maven-javadoc-plugin</report-->
+
     <report>maven-jxr-plugin</report>
     <!--report>maven-junit-report-plugin</report-->
     <!--report>maven-clover-plugin</report-->
@@ -356,7 +356,6 @@
     <report>maven-tasklist-plugin</report>
     <report>maven-jdepend-plugin</report>
   </reports>
-
   <versions>
     <version>
       <id>0.1</id>
@@ -367,6 +366,11 @@
       <id>0.1.1</id>
       <name>0.1.1</name>
       <tag>release-0.1.1</tag>
+    </version>
+    <version>
+      <id>0.1.2</id>
+      <name>0.1.2</name>
+      <tag>release-0.1.2</tag>
     </version>
   </versions>
 </project>

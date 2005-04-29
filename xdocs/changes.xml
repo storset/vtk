@@ -6,8 +6,12 @@
   </properties>
   <body>
 
-    <release version="SNAPSHOT" date="In SVN">
+    <release version="0.1.3-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
+      
+    </release>
+
+    <release version="0.1.2" date="2005-04-29">
 
       <action dev="gormap" type="add">
         Added the ability to associate error handlers with a service

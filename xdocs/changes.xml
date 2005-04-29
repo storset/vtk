@@ -6,7 +6,8 @@
   </properties>
   <body>
 
-    <release version="SNAPSHOT" date="In SVN">
+
+    <release version="0.1.2" date="2005-04-29">
       <!-- add 'action' entries here, newest on top: -->
 
       <action dev="gormap" type="add">

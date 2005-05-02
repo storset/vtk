@@ -122,24 +122,11 @@ public class HttpUtil {
         SimpleDateFormat formatter =
             new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
                                  java.util.Locale.US);
-
         formatter.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-
         return formatter.format(date);
     }
 
 
-    public static Date getHttpDate(String dateString) {
-        
-        SimpleDateFormat formatter =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-                                 java.util.Locale.US);
-
-        formatter.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-
-        return formatter.parse(dateString, new java.text.ParsePosition(0));
-    }
-    
     
     /**
      * Gets the MIME type part from a header possibly containing a

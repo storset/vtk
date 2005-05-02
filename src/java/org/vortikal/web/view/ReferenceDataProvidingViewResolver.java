@@ -142,5 +142,13 @@ public abstract class ReferenceDataProvidingViewResolver implements ViewResolver
             }
             view.render(model, request, response);
         }
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(this.getClass().toString()).append(":" );
+            sb.append("view = ").append(this.view.toString());
+            return sb.toString();
+        }
+        
     }
 }

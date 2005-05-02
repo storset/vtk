@@ -10,6 +10,11 @@
       <!-- add 'action' entries here, newest on top: -->
 
       <action dev="gormap" type="update">
+        The correct timezone (UTC) is now used when returning the
+        WebDAV 'creationdate' property.
+      </action>
+      
+      <action dev="gormap" type="update">
         Modification timestamps on collections are now correctly
         updated when creating child resources.
       </action>

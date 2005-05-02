@@ -40,12 +40,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -96,7 +96,6 @@ public class PropfindView implements View, InitializingBean {
                 "in order to construct URLs to WebDAV resources.");
         }
     }
-    
 
 
 
@@ -215,7 +214,6 @@ public class PropfindView implements View, InitializingBean {
 
 
 
-
     /**
      * Builds a DAV 'response' XML element from data in a
      * <code>Resource</code>.
@@ -298,8 +296,6 @@ public class PropfindView implements View, InitializingBean {
 
    
 
-
-
     /**
      * Translates DAV property names to appropriate method calls on a
      * <code>Resource</code> object and returns JDOM elements
@@ -330,7 +326,6 @@ public class PropfindView implements View, InitializingBean {
             if (property.equals("creationdate")) {
                 element.addContent(formatCreationTime(
                                        resource.getCreationTime()));
-                //element.addContent(getHttpDate(resource.getCreationTime()));
             
             } else if (property.equals("displayname")) {
                 String name = resource.getDisplayName();
@@ -357,7 +352,6 @@ public class PropfindView implements View, InitializingBean {
                 if (resource.isCollection()) {
 
                     return null;
-                    //element.addContent("application/octet-stream");
                     //element.addContent("httpd/unix-directory");
 
                 }   
@@ -371,7 +365,7 @@ public class PropfindView implements View, InitializingBean {
                 element.addContent(resource.getSerial());
 
             } else if (property.equals("getlastmodified")) {
-                element.addContent(getHttpDate(resource.getLastModified()));
+                element.addContent(HttpUtil.getHttpDateString(resource.getLastModified()));
 
             } else if (property.equals("lockdiscovery")) {
                 element = buildLockDiscoveryElement(resource);
@@ -398,9 +392,7 @@ public class PropfindView implements View, InitializingBean {
 
         } else {
 
-            Property customProperty = findNamedProperty(
-                resource, namespace.getURI(), property);
-
+            Property customProperty = resource.getProperty(namespace.getURI(), property);
             if (customProperty == null) {
                 return null;
             }
@@ -464,14 +456,9 @@ public class PropfindView implements View, InitializingBean {
             }
             
             String timeoutStr = "Second-" + (timeout / 1000);
-            //String timeoutStr = "Second-410000000";
 
             activeLock.addContent((Element)
                 new Element("timeout", WebdavConstants.DAV_NAMESPACE).addContent(
-                    /*lock.getTimeout()*/ // Not implemented
-                    /*"Infinite"*/            // MS fails
-                    /*"Second-4100000000"*/   // Cadaver fails
-                    /*"Second-410000000"*/        // Works..
                     timeoutStr
                 ));
 
@@ -578,37 +565,13 @@ public class PropfindView implements View, InitializingBean {
     }
    
 
-    protected Property findNamedProperty(Resource resource,
-                                            String namespace, String name) {
-
-        Property[] properties = resource.getProperties();
-        
-        for (int i = 0; i < properties.length; i++) {
-            if (properties[i].getNamespace().equals(namespace) &&
-                properties[i].getName().equals(name)) {
-                return properties[i];
-            }
-        }
-        return null;
-    }
-    
-
-
-     private String getHttpDate(Date date) {
-         // example: Fri, 15 Nov 2002 16:08:02 CET
-         SimpleDateFormat formatter =
-             new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss zzz",
-                                  java.util.Locale.US);
-         return formatter.format(date);
-     }
-
-
 
     private String formatCreationTime(Date date) {
         /* example: 1970-01-01T12:00:00Z */
 
         SimpleDateFormat formatter =
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
         return formatter.format(date);
     }
 
@@ -674,7 +637,5 @@ public class PropfindView implements View, InitializingBean {
                          new Element("all", WebdavConstants.DAV_NAMESPACE)));
         return e;
     }
-    
-   
 
 }

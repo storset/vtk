@@ -159,6 +159,11 @@ public class Collection extends Resource implements Cloneable {
 
         addChildURI(r.getURI());
 
+        // Update timestamps:
+        setContentLastModified(new Date());
+        setPropertiesLastModified(new Date());
+        dao.store(this);
+
         return r;
     }
 
@@ -202,6 +207,11 @@ public class Collection extends Resource implements Cloneable {
         }
 
         addChildURI(r.getURI());
+
+        // Update timestamps:
+        setContentLastModified(new Date());
+        setPropertiesLastModified(new Date());
+        dao.store(this);
 
         return r;
     }

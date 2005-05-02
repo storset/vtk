@@ -8,6 +8,11 @@
 
     <release version="0.1.3-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
+
+      <action dev="gormap" type="update">
+        Modification timestamps on collections are now correctly
+        updated when creating child resources.
+      </action>
       
     </release>
 

@@ -64,6 +64,10 @@ import org.vortikal.security.roles.RoleManager;
  *       <li><code>write</code>
  *       <li><code>write-acl</code>
  *       <li><code>parent-write</code> - write permission on the resource's parent
+ *       <li><code>delete</code> - delete permission on the resource
+ *           (same as <code>parent-write</code> with the additional
+ *           condition that the resource is not locked by another
+ *           principal
  *       <li><code>unlock</code> - will be true only if a resource is locked and
  *           lock owner is the current principal
  *       <li><code>lock</code> - <code>true</code> if the resource is not locked and the current
@@ -130,12 +134,13 @@ public class ResourcePrincipalPermissionAssertion
                 this.permission.equals("read-processed") ||
                 this.permission.equals("write-acl") ||
                 this.permission.equals("parent-write") ||
+                this.permission.equals("delete") ||
                 this.permission.equals("unlock") ||
                 this.permission.equals("lock"))) {
             throw new BeanInitializationException(
                 "Property 'permission' must " +
                 "be set to one of; 'read', read-processed', 'write', " +
-                "'write-acl', 'parent-write', 'unlock' or 'lock'");
+                "'write-acl', 'parent-write', 'delete', 'unlock' or 'lock'");
         }
         if (this.principalManager == null) {
             throw new BeanInitializationException(
@@ -176,6 +181,9 @@ public class ResourcePrincipalPermissionAssertion
         if (!"/".equals(resource.getURI())) {
 
             try {
+
+                // If parent resource is locked by another principal, we fail:
+
                 Resource parent = this.repository.retrieve(this.trustedToken,
                                                            resource.getParent(), true);
                 Lock parentLock = (parent.getActiveLocks().length > 0) ?
@@ -219,6 +227,17 @@ public class ResourcePrincipalPermissionAssertion
         return false;
     }
     
+
+
+    private boolean checkDeletePermission(Resource resource, Lock lock,
+                                          Principal principal) {
+        if (lock != null && ! lock.getPrincipal().equals(principal)) {
+            return false;
+        }
+        return checkParentWritePermission(resource, lock, principal);
+    } 
+    
+
 
     private boolean checkUnlockPermission(Resource resource, Lock lock,
                                           Principal principal) {
@@ -343,6 +362,10 @@ public class ResourcePrincipalPermissionAssertion
         if (this.permission.equals("parent-write")) {
 
             return checkParentWritePermission(resource, lock, principal);
+
+        } else if (this.permission.equals("delete")) {
+
+            return checkDeletePermission(resource, lock, principal);
             
         } else if (this.permission.equals("unlock")) {
                 

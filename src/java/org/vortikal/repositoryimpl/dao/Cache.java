@@ -60,23 +60,6 @@ public class Cache implements DataAccessor {
     private int removeItems;
     private Items items = new Items();
 
-    //    public Cache(DataAccessor wrappedAccessor, int size) {
-    //        logger = Logger.getLogger(this.getClass());
-    //        this.wrappedAccessor = wrappedAccessor;
-    //        lockManager = new LockManager();
-    //
-    //        if (size <= 0) {
-    //            throw new RuntimeException("Cache size must be a positive number");
-    //        }
-    //        
-    //        this.maxItems = size;
-    //        removeItems = (int)(((float)size) * 0.1);
-    //        if (removeItems == 0) {
-    //            removeItems = 1;
-    //        }        
-    //
-    //        items = new Items();
-    //    }
     public boolean validate() throws IOException {
         return wrappedAccessor.validate();
     }
@@ -92,11 +75,17 @@ public class Cache implements DataAccessor {
         for (int i = 0; i < uris.length; i++) {
             Resource r = items.get(uris[i]);
 
-            if (r == null) {
+            boolean lockTimedOut =
+                (r != null && r.getLock() != null
+                 && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
+
+            if (logger.isDebugEnabled() && lockTimedOut) {
+                logger.debug("Dropping cached copy of " + r.getURI() + " (lock timed out)");
+            }
+
+            if (r == null || lockTimedOut) {
                 notFound.add(uris[i]);
             } else {
-                //              if (logger.isDebugEnabled()) logger.debug("hit: " + uris[i]);
-                //              items.hit(uris[i]);
                 found.add(r);
             }
         }
@@ -141,13 +130,19 @@ public class Cache implements DataAccessor {
         String[] uris = parent.getChildURIs();
 
         for (int i = 0; i < uris.length; i++) {
-            Resource r = items.get(uris[i]);
 
-            if (r == null) {
+            Resource r = items.get(uris[i]);
+            boolean lockTimedOut =
+                (r != null && r.getLock() != null
+                 && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
+
+            if (logger.isDebugEnabled() && lockTimedOut) {
+                logger.debug("Dropping cached copy of " + r.getURI() + " (lock timed out)");
+            }
+
+            if (r == null || lockTimedOut) {
                 notFound.add(uris[i]);
             } else {
-                //              if (logger.isDebugEnabled()) logger.debug("hit: " + uris[i]);
-                //              items.hit(uris[i]);
                 found.add(r);
             }
         }
@@ -199,10 +194,16 @@ public class Cache implements DataAccessor {
 
         Resource r = items.get(uri);
 
-        if (r != null) {
-            //             if (logger.isDebugEnabled())
-            //                logger.debug("hit: " + uri);
-            //             items.hit(uri);
+        boolean lockTimedOut =
+            (r != null && r.getLock() != null
+             && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
+
+        if (logger.isDebugEnabled() && lockTimedOut) {
+            logger.debug("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
+        }
+
+
+        if (r != null && ! lockTimedOut) {
             return r;
         }
 
@@ -211,8 +212,11 @@ public class Cache implements DataAccessor {
         try {
             r = items.get(uri);
 
-            if (r != null) {
-                //                items.hit(uri);
+            lockTimedOut =
+                (r != null && r.getLock() != null
+                 && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
+
+            if (r != null && ! lockTimedOut) {
                 return r;
             }
 
@@ -392,7 +396,8 @@ public class Cache implements DataAccessor {
 
     public void addChangeLogEntry(String loggerID, String loggerType,
         String uri, String operation, int resourceId, boolean collection) throws IOException {
-        wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation, resourceId, collection);
+        wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation,
+                                          resourceId, collection);
     }
 
     /**

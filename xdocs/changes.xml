@@ -9,6 +9,11 @@
     <release version="0.1.3-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="gormap" type="fix">
+        Locks that have expired, but have not yet been removed by the
+        lock-cleaning thread are not loaded anymore.
+      </action>
+      
       <action dev="gormap" type="update">
         The correct timezone (UTC) is now used when returning the
         WebDAV 'creationdate' property.

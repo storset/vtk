@@ -42,31 +42,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Controller for requests that have no specified editing action.
- *
- * @version $Id$
  */
 public class DefaultController extends AbstractXmlEditController {
     
     /**
-     * @see org.vortikal.edit.xml.AbstractXmlEditController#handleRequestInternal(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse,
-     *      org.vortikal.edit.xml.EditDocument,
-     *      org.vortikal.edit.xml.SchemaDocumentDefinition)
+     * Just returns a ModelAndView with no regard to what mode the
+     * edited document is currently in.
      */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, 
-            HttpServletResponse response, 
-            EditDocument document, 
-            SchemaDocumentDefinition documentDefinition) {
-	
-        
-        String mode = document.getDocumentMode();
-
-          Map model = new HashMap();
-          
-          if (mode.equals("default")) {
-              return new ModelAndView(viewName, model);
-          } 
-          
-          return null;
+                                                 HttpServletResponse response, 
+                                                 EditDocument document, 
+                                                 SchemaDocumentDefinition documentDefinition) {
+        Map model = new HashMap();
+        return new ModelAndView(this.viewName, model);
     }
 }

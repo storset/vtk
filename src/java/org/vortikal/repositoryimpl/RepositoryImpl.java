@@ -495,9 +495,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (src instanceof Collection) {
             ((Collection) src).recursiveLockAuthorize(principal,
-                PrivilegeDefinition.READ, roleManager);
+                PrivilegeDefinition.WRITE, roleManager);
         } else {
-            src.lockAuthorize(principal, PrivilegeDefinition.READ, roleManager);
+            src.lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
         }
 
         String srcParent = srcUri;

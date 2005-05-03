@@ -776,7 +776,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 
-            result.put(rs.getString("uri"), lock);
+            if (lock.getTimeout().getTime() > System.currentTimeMillis()) {
+                result.put(rs.getString("uri"), lock);
+            }
         }
 
         rs.close();
@@ -1844,7 +1846,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 
-            result.put(rs.getString("uri"), lock);
+            if (lock.getTimeout().getTime() > System.currentTimeMillis()) {
+                result.put(rs.getString("uri"), lock);
+            }
         }
 
         rs.close();

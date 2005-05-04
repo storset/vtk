@@ -7,7 +7,7 @@
   <id>vortikal</id>
   <name>Vortikal</name>
   <groupId>vortikal</groupId>
-  <currentVersion>0.1.3-SNAPSHOT</currentVersion>
+  <currentVersion>0.1.3</currentVersion>
   <organization>
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
@@ -347,8 +347,8 @@
     <report>maven-license-plugin</report>
     <!-- report>maven-statcvs-plugin</report -->
     <!-- report>maven-checkstyle-plugin</report -->
-    <report>maven-javadoc-plugin</report>
 
+    <report>maven-javadoc-plugin</report>
     <report>maven-jxr-plugin</report>
     <!--report>maven-junit-report-plugin</report-->
     <!--report>maven-clover-plugin</report-->
@@ -371,6 +371,11 @@
       <id>0.1.2</id>
       <name>0.1.2</name>
       <tag>release-0.1.2</tag>
+    </version>
+    <version>
+      <id>0.1.3</id>
+      <name>0.1.3</name>
+      <tag>release-0.1.3</tag>
     </version>
   </versions>
 </project>

@@ -51,5 +51,17 @@
      </echo>
    </postGoal>
 
+  <goal name="etags"
+    prereqs="etags:java"
+    description="generates TAGS files for spring-beans and
+    java classes">
+  </goal>
+  
+  <goal name="etags:java"
+    description="Generate TAGS file for java classes">
+    <ant:exec dir="${maven.src.dir}/java" executable="etags" os="Linux">
+      <ant:arg line="--recurse=yes" />
+    </ant:exec>
+  </goal>
 
 </project>

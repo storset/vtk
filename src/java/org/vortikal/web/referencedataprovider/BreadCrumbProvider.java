@@ -210,12 +210,11 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
         
         List breadCrumb = new ArrayList();
 
-        try {
-            for (int i = 0; i < path.length - 1; i++) {
+        for (int i = 0; i < path.length - 1; i++) {
+            try {
                 Resource r = repository.retrieve(token, incrementalPath[i], true);
 
-                boolean ignore = checkIgnore(r);
-                if (ignore) {
+                if (checkIgnore(r)) {
                     continue;
                 }
                 String title = getTitle(r);
@@ -224,13 +223,13 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
                     || !this.skippedURLSet.contains(incrementalPath[i])) {
                     url = service.constructLink(r, principal, false);
                 }
-
                 breadCrumb.add(new BreadcrumbElement(url, title));
+            } catch (Exception e) {
+                breadCrumb.add(new BreadcrumbElement(null, path[i]));
+                logger.warn("Unable to generate breadcrumb path element " + incrementalPath[i], e);
             }
-
-        } catch (Exception e) {
-            logger.warn("Unable to generate breadcrumb path", e);
         }
+
         if (logger.isDebugEnabled()) {
             logger.debug("Generated breadcrumb path: " + breadCrumb);
         }

@@ -98,10 +98,4 @@ public interface TokenManager {
 
     public String getRegisteredToken(Principal principal);
     
-    /**
-     * TODO: should be removed?
-     */
-//    public String getTrustedToken();
-
-
 }

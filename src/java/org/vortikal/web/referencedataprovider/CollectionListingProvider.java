@@ -38,13 +38,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourceSorter;
@@ -266,6 +267,8 @@ public class CollectionListingProvider implements Provider {
                 Resource parent = repository.retrieve(token, resource.getParent(), true);
                 parentURL = browsingService.constructLink(parent, principal);
             } catch (RepositoryException e) {
+                // Ignore
+            } catch (AuthenticationException e) {
                 // Ignore
             } catch (ServiceUnlinkableException e) {
                 // Ignore

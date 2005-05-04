@@ -64,7 +64,6 @@ public class CreateDocumentController extends SimpleFormController
                 "Required bean property 'documentTemplates' not set.");
         }
 
-        // FIXME: ensure existance of templatesCollection?
     }
     
 

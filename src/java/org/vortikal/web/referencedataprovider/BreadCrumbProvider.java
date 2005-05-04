@@ -173,9 +173,9 @@ public class BreadCrumbProvider implements Provider, InitializingBean {
                     "Bad property name: " + this.ignoreProperty);
             }
             this.ignorePropertyNamespace = this.ignoreProperty.substring(
-                0, this.ignoreProperty.indexOf(":"));
+                0, this.ignoreProperty.lastIndexOf(":"));
             this.ignorePropertyName = this.ignoreProperty.substring(
-                this.ignoreProperty.indexOf(":") + 1);
+                this.ignoreProperty.lastIndexOf(":") + 1);
         }
         if (this.titleOverrideProperties != null) {
             for (int i = 0; i < this.titleOverrideProperties.length; i++) {

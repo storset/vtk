@@ -52,6 +52,8 @@ public class DeleteResourceController extends AbstractController implements Init
 
     private Repository repository;
     private String viewName;
+   
+    private String trustedToken;
     
     /**
      * @param repository The repository to set.
@@ -67,10 +69,14 @@ public class DeleteResourceController extends AbstractController implements Init
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+
+        String token = trustedToken;
+        if (token == null) {
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            token = securityContext.getToken();
+        }
         
         String uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
         Resource resource = repository.retrieve(token, uri, false);
         repository.delete(token, uri);
     
@@ -84,5 +90,10 @@ public class DeleteResourceController extends AbstractController implements Init
         if (viewName == null)
             throw new BeanInitializationException("Property 'viewName' must be set");
     }
+
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
+    }
+    
 
 }

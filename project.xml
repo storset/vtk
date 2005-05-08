@@ -229,7 +229,7 @@
     </dependency>
     <dependency>
       <id>lucene</id>
-      <version>1.3</version>
+      <version>1.4.3</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

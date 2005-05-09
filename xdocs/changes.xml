@@ -9,6 +9,18 @@
     <release version="0.1.4-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="gormap" type="update">
+        Improved error logging for dispatcher servlet
+      </action>
+
+      <action dev="gormap" type="update">
+        Parameterized lock timeouts for XML edit controllers
+      </action>
+
+      <action dev="gormap" type="update">
+        Fix for illegal (expired) session states
+      </action>
+
     </release>
 
     <release version="0.1.3" date="2005-05-04">

@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +80,8 @@ public class Cache implements DataAccessor {
                 (r != null && r.getLock() != null
                  && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
 
-            if (logger.isDebugEnabled() && lockTimedOut) {
-                logger.debug("Dropping cached copy of " + r.getURI() + " (lock timed out)");
+            if (logger.isInfoEnabled() && lockTimedOut) {
+                logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
             }
 
             if (r == null || lockTimedOut) {
@@ -103,7 +104,15 @@ public class Cache implements DataAccessor {
                 logger.debug("Loading " + loadSet.length + " resources");
             }
 
+            long startTime = System.currentTimeMillis();
+
             Resource[] resources = wrappedAccessor.load(loadSet);
+
+            long processingTime = System.currentTimeMillis() - startTime;
+
+            if (processingTime > 30000 && logger.isWarnEnabled()) {
+                logger.warn("Loading resources took " + processingTime + " ms: " + Arrays.asList(loadSet));
+            }
 
             for (int i = 0; i < resources.length; i++) {
                 resources[i].setDataAccessor(this);
@@ -136,8 +145,8 @@ public class Cache implements DataAccessor {
                 (r != null && r.getLock() != null
                  && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
 
-            if (logger.isDebugEnabled() && lockTimedOut) {
-                logger.debug("Dropping cached copy of " + r.getURI() + " (lock timed out)");
+            if (logger.isInfoEnabled() && lockTimedOut) {
+                logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
             }
 
             if (r == null || lockTimedOut) {
@@ -162,7 +171,15 @@ public class Cache implements DataAccessor {
                 logger.debug("Loading " + uris.length + " resources");
             }
 
+            long startTime = System.currentTimeMillis();
+
             resources = wrappedAccessor.loadChildren(parent);
+
+            long processingTime = System.currentTimeMillis() - startTime;
+
+            if (processingTime > 30000 && logger.isWarnEnabled()) {
+                logger.warn("Loading child resources took " + processingTime + " ms: " + parent.getURI());
+            }
 
             for (int i = 0; i < resources.length; i++) {
                 resources[i].setDataAccessor(this);
@@ -198,8 +215,8 @@ public class Cache implements DataAccessor {
             (r != null && r.getLock() != null
              && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
 
-        if (logger.isDebugEnabled() && lockTimedOut) {
-            logger.debug("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
+        if (logger.isInfoEnabled() && lockTimedOut) {
+            logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
         }
 
 
@@ -224,7 +241,15 @@ public class Cache implements DataAccessor {
                 logger.debug("load from wrappedAccessor: " + uri);
             }
 
+            long startTime = System.currentTimeMillis();
+
             r = wrappedAccessor.load(uri);
+
+            long processingTime = System.currentTimeMillis() - startTime;
+
+            if (processingTime > 30000 && logger.isWarnEnabled()) {
+                logger.warn("Loading resource took " + processingTime + " ms: " + uri);
+            }
 
             if (r == null) {
                 if (logger.isDebugEnabled()) {

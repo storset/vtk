@@ -282,6 +282,8 @@ public class VortikalServlet extends DispatcherServlet {
             number = requests;
         }                        
 
+        boolean wasCachedRequest = false;
+
         try {
 
             Thread.currentThread().setName(
@@ -306,6 +308,7 @@ public class VortikalServlet extends DispatcherServlet {
                 
                 if (checkLastModified(request, response)) {
                     
+                    wasCachedRequest = true;
                     super.doService(request, response);
                 }
                 
@@ -349,7 +352,7 @@ public class VortikalServlet extends DispatcherServlet {
 
             long processingTime = System.currentTimeMillis() - startTime;
 
-            logRequest(request, response, processingTime);
+            logRequest(request, response, processingTime, wasCachedRequest);
             securityInitializer.destroyContext();
             requestContextInitializer.destroyContext();
             Thread.currentThread().setName(threadName);
@@ -396,7 +399,7 @@ public class VortikalServlet extends DispatcherServlet {
 
 
     private void logRequest(HttpServletRequest req, HttpServletResponse resp,
-                            long processingTime) {
+                            long processingTime, boolean wasCachedRequest) {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -436,6 +439,7 @@ public class VortikalServlet extends DispatcherServlet {
         msg.append(" - jsession: ").append(jSession);
         msg.append(" - service: ").append(service);
         msg.append(" - user agent: ").append(userAgent);
+        msg.append(" - cached: ").append(wasCachedRequest);
         msg.append(" - time: ").append(processingTime);
         requestLogger.info(msg);
     }

@@ -71,7 +71,7 @@ public class SecurityInitializer {
     public boolean createContext(HttpServletRequest req,
                                  HttpServletResponse resp) {
 
-        String token = (String) req.getSession().getAttribute(
+        String token = (String) req.getSession(true).getAttribute(
             SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
         
         if (token != null) {
@@ -120,7 +120,7 @@ public class SecurityInitializer {
                         new SecurityContext(token, tokenManager.getPrincipal(token));
                         
                     SecurityContext.setSecurityContext(securityContext);
-                    req.getSession().setAttribute(SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
+                    req.getSession(true).setAttribute(SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
                             token);
 
                     if (!handler.postAuthentication(req, resp)) {
@@ -213,37 +213,10 @@ public class SecurityInitializer {
 
         tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
-        req.getSession().invalidate();
+        req.getSession(true).invalidate();
 
         return result;
         
-        
-        
-//         for (int i = 0; i < this.authenticationHandlers.length; i++) {
-//             AuthenticationHandler handler = this.authenticationHandlers[i];
-
-//             handler.logout(principal, req, resp);
-//         }
     }
-
-
-//     public void old_logout(HttpServletRequest req)
-//             throws AuthenticationProcessingException {
-
-//         SecurityContext securityContext = SecurityContext.getSecurityContext();
-//         Principal principal = securityContext.getPrincipal();
-//         if (principal == null) return;
-//         tokenManager.removeToken(securityContext.getToken());
-
-
-//         SecurityContext.setSecurityContext(null);
-//         req.getSession().invalidate();
-
-//         for (int i = 0; i < this.authenticationHandlers.length; i++) {
-//             AuthenticationHandler handler = this.authenticationHandlers[i];
-
-//             handler.onLogout(principal);
-//         }
-//     }
 }
 

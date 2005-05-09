@@ -70,6 +70,14 @@ import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * Abstract superclass for the XML edit controllers.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>lockTimeoutSeconds</code> - an integer specifying the
+ *   number of seconds to lock the resource when editing it. The
+ *   default is <code>1800</code> (30 minutes).
+ *   <li><code>viewName</code> - the view name to return.
+ * </ul>
  */
 public abstract class AbstractXmlEditController implements Controller {
 
@@ -90,6 +98,8 @@ public abstract class AbstractXmlEditController implements Controller {
     private Service deleteSubElementAtService;
     private Service finishEditingService;
     
+    private int lockTimeoutSeconds = 30 * 60;
+
     protected String viewName = "edit";
 
     protected Log logger = LogFactory.getLog(this.getClass());
@@ -152,6 +162,10 @@ public abstract class AbstractXmlEditController implements Controller {
         this.editElementDoneService = editElementDoneService;
     }
 
+    public void setLockTimeoutSeconds(int lockTimeoutSeconds) {
+        this.lockTimeoutSeconds = lockTimeoutSeconds;
+    }
+
     public void setViewName(final String viewName){
 	this.viewName = viewName;
     }
@@ -174,7 +188,7 @@ public abstract class AbstractXmlEditController implements Controller {
         // FIXME: possible multiple repositories at once!
         String sessionID = AbstractXmlEditController.class.getName() + ":" + uri; 
         
-        Map sessionMap = (Map) request.getSession().getAttribute(sessionID);
+        Map sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
 
         /* Check that sessionmap isn't stale (the lock has been released) */
         // FIXME: a user can access the same (locked) resource from different clients
@@ -189,7 +203,7 @@ public abstract class AbstractXmlEditController implements Controller {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Stored xml edit session data is out of date.");
                 }
-                request.getSession().removeAttribute(sessionID);
+                request.getSession(true).removeAttribute(sessionID);
                 sessionMap = null;
             }
         }
@@ -197,7 +211,7 @@ public abstract class AbstractXmlEditController implements Controller {
         /* "Validate" and create web-editable resource session */
         if (sessionMap == null) {
             initEditSession(request);
-            sessionMap = (Map) request.getSession().getAttribute(sessionID);
+            sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
         } 
         
         EditDocument document = (EditDocument) 
@@ -345,7 +359,7 @@ public abstract class AbstractXmlEditController implements Controller {
         
         /* Try to build document */
         try {
-            document = EditDocument.createEditDocument(repository);
+            document = EditDocument.createEditDocument(repository, this.lockTimeoutSeconds);
         } catch (JDOMException e) {
             // FIXME: error handling?
             throw new XMLEditException("Document build failure", e);
@@ -405,7 +419,7 @@ public abstract class AbstractXmlEditController implements Controller {
 
         sessionMap.put(EditDocument.class.getName(), document);
         sessionMap.put(SchemaDocumentDefinition.class.getName(), documentDefinition);
-        request.getSession().setAttribute(sessionID, sessionMap);
+        request.getSession(true).setAttribute(sessionID, sessionMap);
     } 
 
     

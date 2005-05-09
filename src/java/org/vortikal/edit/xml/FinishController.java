@@ -66,7 +66,7 @@ public class FinishController extends AbstractXmlEditController {
         // FIXME: possible multiple repositories at once!
         String sessionID = AbstractXmlEditController.class.getName() + ":" + uri; 
 
-        request.getSession().removeAttribute(sessionID);
+        request.getSession(true).removeAttribute(sessionID);
 
         return new ModelAndView(viewName);
     }

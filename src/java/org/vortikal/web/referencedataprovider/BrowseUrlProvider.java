@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -63,8 +64,9 @@ import org.vortikal.web.service.Service;
  */
 public class BrowseUrlProvider implements Provider, InitializingBean {
 
+    private static final String BROWSE_SESSION_ATTRIBUTE = "browsesession";
+    
     private Repository repository = null;
-
     private Service viewService;
 
     public final void setRepository(final Repository newRepository) {
@@ -99,13 +101,13 @@ public class BrowseUrlProvider implements Provider, InitializingBean {
 	String viewUrl = viewService.constructLink(resource, principal);
 
         BrowseSessionBean sessionBean = (BrowseSessionBean)
-            request.getSession().getAttribute("browsesession");
+            request.getSession(true).getAttribute(BROWSE_SESSION_ATTRIBUTE);
 
 	/* Deleting session if you get a parameterlist which contains
 	   'id' because then its a new request on the browse-app */
 
 	if (sessionBean != null && request.getParameter("id") != null){
-           request.getSession().removeAttribute("browsesession");
+           request.getSession(true).removeAttribute(BROWSE_SESSION_ATTRIBUTE);
 	   sessionBean = null;
 	}
 
@@ -113,7 +115,7 @@ public class BrowseUrlProvider implements Provider, InitializingBean {
 	   sessionBean = new BrowseSessionBean();
 	   sessionBean.setEditField(request.getParameter("id"));
 	   sessionBean.setStartUrl(viewUrl);
-	   request.getSession().setAttribute("browsesession", sessionBean);
+	   request.getSession(true).setAttribute(BROWSE_SESSION_ATTRIBUTE, sessionBean);
 	}
 
 	/* Checking whether to make a relative link or not */

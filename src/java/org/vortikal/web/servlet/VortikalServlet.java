@@ -354,7 +354,6 @@ public class VortikalServlet extends DispatcherServlet {
             requestContextInitializer.destroyContext();
             Thread.currentThread().setName(threadName);
 
-            // whether or not we succeeded, publish an event
             getWebApplicationContext().publishEvent(
                     new RequestHandledEvent(this, request.getRequestURI(),
                             processingTime, request.getRemoteAddr(), request
@@ -489,7 +488,7 @@ public class VortikalServlet extends DispatcherServlet {
             
         StringBuffer sb = new StringBuffer();
         if (message != null) sb.append(message).append(" ");
-        sb.append("Caught unexpected throwable during request processing. ");
+        sb.append("Message: ").append(t.getMessage()).append(" ");
         sb.append("Request context: [").append(requestContext).append("], ");
         sb.append("security context: [").append(securityContext).append("], ");
         sb.append("method: [").append(httpMethod).append("], ");
@@ -525,7 +524,7 @@ public class VortikalServlet extends DispatcherServlet {
         } catch (Throwable x) { }
 
         if (springContext == null) {
-            // When there no Spring WebApplicationContext is found, we
+            // When no Spring WebApplicationContext is found, we
             // cannot trust our regular error handling mechanism to
             // work. In most cases this is caused by the request
             // context initialization failing due to the content
@@ -632,7 +631,7 @@ public class VortikalServlet extends DispatcherServlet {
                 (candidate.getService() == null ||
                  (currentService != null && candidate.getService() != null
                   && (currentService == candidate.getService()
-                      ||currentService.isDescendantOf(candidate.getService()))))) {
+                      || currentService.isDescendantOf(candidate.getService()))))) {
 
                 selected = candidate;
 

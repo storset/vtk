@@ -9,6 +9,10 @@
     <release version="0.1.4-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="storset" type="update">
+        Improved logging for data access layer.
+      </action>
+
       <action dev="gormap" type="update">
         Improved error logging for dispatcher servlet
       </action>

@@ -5,6 +5,10 @@
     <title>Changelog</title>
   </properties>
   <body>
+    <release version="0.1.5-SNAPSHOT" date="In SVN">
+      <!-- add 'action' entries here, newest on top: -->
+    </release>
+
     <release version="0.1.4" date="2005-05-09">
       <!-- add 'action' entries here, newest on top: -->
 

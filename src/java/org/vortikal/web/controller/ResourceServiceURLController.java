@@ -57,6 +57,11 @@ import org.vortikal.web.service.Service;
  *   <li><code>repository</code> - the content repository
  *   <li><code>service</code> - the service used to construct the URL</li>
  *   <li><code>viewName</code> - the name of the returned view</li>
+ *   <li><code>childName</code> - if this optional property is set, it
+ *   is appended to the current resource URI when retrieving the
+ *   resource to display. This is typically used when displaying
+ *   index resources (i.e. <code>childName = 'index.xml'</code>, for
+ *   instance).
  * </ul>
  * </p>
  *
@@ -72,6 +77,7 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
     
     private Service service = null;
     private String viewName = DEFAULT_VIEW_NAME;
+    private String childName = null;
     private Repository repository = null;
 
 
@@ -84,6 +90,12 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
         this.viewName = viewName;
     }
     
+
+    public void setChildName(String childName) {
+        this.childName = childName;
+    }
+    
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -107,12 +119,18 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
+
+        String uri = requestContext.getResourceURI();
+
+        if (this.childName != null) 
+            uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
+
         Resource resource = repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(), false);
+            securityContext.getToken(), uri, false);
 
         Map model = new HashMap();
 
-        String url = service.constructLink(resource, principal);
+        String url = service.constructLink(resource, principal, false);
         model.put("resource", resource);
         model.put("resourceReference", url);
 

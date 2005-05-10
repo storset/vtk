@@ -63,12 +63,14 @@ import org.vortikal.xml.TransformerManager;
  * Controller that fetches an XML resource from the repository and
  * puts it in the model.
  * 
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>repository</code> - the content {@link Repository
  *   repository}
  *   <li><code>transformerManager</code> - the XSLT {@link
  *   TransformerManager transformer manager}
+ *   <li><code>viewName</code> - the name used for the submodel
+ *   provided. The default name is <code>transformXmlResource</code>.
  *   <li><code>childName</code> - if this optional property is set, it
  *   is appended to the current resource URI when retrieving the
  *   resource to display. This is typically used when displaying

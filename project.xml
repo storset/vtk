@@ -7,7 +7,7 @@
   <id>vortikal</id>
   <name>Vortikal</name>
   <groupId>vortikal</groupId>
-  <currentVersion>0.1.5-SNAPSHOT</currentVersion>
+  <currentVersion>0.1.5</currentVersion>
   <organization>
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
@@ -381,6 +381,11 @@
       <id>0.1.4</id>
       <name>0.1.4</name>
       <tag>release-0.1.4</tag>
+    </version>
+    <version>
+      <id>0.1.5</id>
+      <name>0.1.5</name>
+      <tag>release-0.1.5</tag>
     </version>
   </versions>
 </project>

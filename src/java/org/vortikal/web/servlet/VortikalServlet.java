@@ -282,7 +282,7 @@ public class VortikalServlet extends DispatcherServlet {
             number = requests;
         }                        
 
-        boolean wasCachedRequest = false;
+        boolean proceedService = true;
 
         try {
 
@@ -306,12 +306,12 @@ public class VortikalServlet extends DispatcherServlet {
                     requestContextInitializer.createContext(request);
                 }
                 
-                if (checkLastModified(request, response)) {
+                proceedService = checkLastModified(request, response);
+
+                if (proceedService) {
                     
-                    wasCachedRequest = true;
                     super.doService(request, response);
                 }
-                
 
             } catch (AuthenticationException ex) {
                 Service service = RequestContext.getRequestContext()
@@ -352,7 +352,7 @@ public class VortikalServlet extends DispatcherServlet {
 
             long processingTime = System.currentTimeMillis() - startTime;
 
-            logRequest(request, response, processingTime, wasCachedRequest);
+            logRequest(request, response, processingTime, !proceedService);
             securityInitializer.destroyContext();
             requestContextInitializer.destroyContext();
             Thread.currentThread().setName(threadName);
@@ -399,7 +399,7 @@ public class VortikalServlet extends DispatcherServlet {
 
 
     private void logRequest(HttpServletRequest req, HttpServletResponse resp,
-                            long processingTime, boolean wasCachedRequest) {
+                            long processingTime, boolean wasCacheRequest) {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -439,7 +439,7 @@ public class VortikalServlet extends DispatcherServlet {
         msg.append(" - jsession: ").append(jSession);
         msg.append(" - service: ").append(service);
         msg.append(" - user agent: ").append(userAgent);
-        msg.append(" - cached: ").append(wasCachedRequest);
+        msg.append(" - cached: ").append(wasCacheRequest);
         msg.append(" - time: ").append(processingTime);
         requestLogger.info(msg);
     }

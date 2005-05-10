@@ -48,6 +48,7 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
 
     private ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
     private String contentType = null;
+    private String characterEncoding = null;    
     private boolean isCommitted = false;
 
 
@@ -62,20 +63,23 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
 
 
     public String getContentType() {
+        if (this.characterEncoding != null) {
+            return this.contentType + ";charset=" + this.characterEncoding;
+        }
         return this.contentType;
     }
     
 
     public void setContentType(String contentType) {
         super.setContentType(contentType);
-        this.contentType = contentType;
+        processContentTypeHeader(contentType);
     }
 
 
     public void addHeader(String name, String value) {
         super.addHeader(name, value);
         if ("Content-Type".equals(name)) {
-            this.contentType = value;
+            processContentTypeHeader(value);
         }
     }
 
@@ -83,10 +87,18 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
     public void setHeader(String name, String value) {
         super.setHeader(name, value);
         if ("Content-Type".equals(name)) {
-            this.contentType = value;
+            processContentTypeHeader(value);
         }
     }
 
+
+    public String getCharacterEncoding() {
+        if (this.characterEncoding != null) {
+            return this.characterEncoding;
+        }
+        return super.getCharacterEncoding();
+    }
+    
 
     public boolean isCommitted() {
         return this.isCommitted || super.isCommitted();
@@ -360,7 +372,27 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
         }
     }
     
+    private void processContentTypeHeader(String value) {
+        if (value.matches(".+/.+;.*charset.*=.+")) {
 
+            String contentType = value.substring(
+                0, value.indexOf(";")).trim();
+            String characterEncoding = value.substring(
+                value.indexOf("=") + 1).trim();
+
+            if (characterEncoding.startsWith("\"")
+                && characterEncoding.endsWith("\"")) {
+
+                characterEncoding = characterEncoding.substring(
+                    1, characterEncoding.length() - 1).trim();
+            }
+            this.contentType = contentType;
+            this.characterEncoding = characterEncoding;
+
+        } else {
+            this.contentType = value;
+        }
+    }
 
 
 }

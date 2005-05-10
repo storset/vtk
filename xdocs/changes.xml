@@ -5,8 +5,12 @@
     <title>Changelog</title>
   </properties>
   <body>
-    <release version="0.1.5" date="2005-05-10">
+
+    <release version="0.1.6-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
+    </release>
+
+    <release version="0.1.5" date="2005-05-10">
 
       <action dev="gormap" type="update">XSLT now handles transformations with content type 'application/xhtml+xml' (XHTML) properly.</action>
       <action dev="gormap" type="fix">Servlet requests getting a '304 Not Modified' response are now logged as 'cached by client', and not the other way around.</action>

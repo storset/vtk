@@ -5,23 +5,14 @@
     <title>Changelog</title>
   </properties>
   <body>
-    <release version="0.1.5-SNAPSHOT" date="In SVN">
+    <release version="0.1.5" date="2005-05-10">
       <!-- add 'action' entries here, newest on top: -->
-      <action dev="gormap" type="update">
-        XSLT now handles transformations with content type
-        'application/xhtml+xml' (XHTML) properly.
-      </action>
-      <action dev="gormap" type="fix">
-        Servlet requests getting a '304 Not Modified' response are now
-        logged as 'cached by client', and not the other way around.
-      </action>
-      <action dev="gormap" type="fix">
-        Fixed character encoding issue with BufferedResponseWrapper.
-      </action>
+
+      <action dev="gormap" type="update">XSLT now handles transformations with content type 'application/xhtml+xml' (XHTML) properly.</action>
+      <action dev="gormap" type="fix">Servlet requests getting a '304 Not Modified' response are now logged as 'cached by client', and not the other way around.</action>
+      <action dev="gormap" type="fix">Fixed character encoding issue with BufferedResponseWrapper.</action>
     </release>
-
     <release version="0.1.4" date="2005-05-09">
-
       <action dev="storset" type="update">Improved logging for data access layer.</action>
       <action dev="gormap" type="update">Improved error logging for dispatcher servlet</action>
       <action dev="gormap" type="update">Parameterized lock timeouts for XML edit controllers</action>

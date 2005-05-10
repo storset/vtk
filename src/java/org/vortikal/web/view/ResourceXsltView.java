@@ -199,13 +199,13 @@ public class ResourceXsltView
              
         OutputStream out = null;
         try {
-            out = response.getOutputStream();
             String contentType = getTransformedContentType(transformer);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Transformed Content-Type is: " + contentType);
             }
             response.setContentType(contentType);
+
             response.setHeader("Content-Length", "" + resultBuffer.toByteArray().length);
             
             Property expiresProperty = resource.getProperty(
@@ -238,6 +238,7 @@ public class ResourceXsltView
                 response.setHeader("Cache-Control", "no-cache");
             }
 
+            out = response.getOutputStream();
             byte[] buffer = new byte[5000];
             int n = 0;
             while (((n = resultStream.read(buffer, 0, 5000)) > 0)) {
@@ -264,23 +265,42 @@ public class ResourceXsltView
      * @return a <code>String</code>
      */
     private String getTransformedContentType(Transformer transformer) {
+        String mediaType = transformer.getOutputProperty("media-type");
         String method = transformer.getOutputProperty("method");
         String encoding = transformer.getOutputProperty("encoding");
-        if (encoding == null)
-            encoding = "utf-8"; // FIXME: what to do if encoding == null?
 
         encoding = encoding.toLowerCase();
         
         String contentType = null;
-        if ("text".equals(method)) {
-            contentType = "text/plain;charset=" + encoding;
-        } else if ("html".equals(method)) {
-            contentType = "text/html;charset=" + encoding;
-        } else if ("xml".equals(method)) {
-            contentType = "text/xml;charset=" + encoding;
+        if (mediaType != null) {
+            contentType = mediaType;
+            if (encoding != null) {
+                contentType += ";charset=" + encoding;
+            }
+
         } else {
-            contentType = "application/octet-stream";
+            if (encoding == null)
+                encoding = "utf-8"; // FIXME: what to do if encoding == null?
+
+            if ("text".equals(method)) {
+                contentType = "text/plain;charset=" + encoding;
+            } else if ("html".equals(method)) {
+                contentType = "text/html;charset=" + encoding;
+            } else if ("xml".equals(method)) {
+                contentType = "text/xml;charset=" + encoding;
+            } else {
+                contentType = "application/octet-stream";
+            }
         }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                "Resolved content type: '" + contentType + "' from transformer "
+                + "output properties [media-type = " + mediaType + ", method = "
+                + method + ", encoding = " + encoding + "]");
+        }
+
+        
         return contentType;
     }
 

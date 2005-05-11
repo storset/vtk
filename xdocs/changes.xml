@@ -8,6 +8,17 @@
 
     <release version="0.1.6-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
+
+      <action dev="gormap" type="update">
+        Stale http sessions are now detected in the security
+        initializer. A new session is created if the old one was
+        invalid.
+      </action>
+
+      <action dev="gormap" type="update">
+        Composite view now avoids writing body on HEAD requests.
+      </action>
+
     </release>
 
     <release version="0.1.5" date="2005-05-10">

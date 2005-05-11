@@ -5,8 +5,12 @@
     <title>Changelog</title>
   </properties>
   <body>
-    <release version="0.1.6" date="2005-05-11">
+    <release version="0.1.7-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
+
+    </release>
+
+    <release version="0.1.6" date="2005-05-11">
 
       <action dev="gormap" type="update">Stale http sessions are now detected in the security initializer. A new session is created if the old one was invalid.</action>
       <action dev="gormap" type="update">Composite view now avoids writing body on HEAD requests.</action>

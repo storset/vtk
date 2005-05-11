@@ -5,24 +5,13 @@
     <title>Changelog</title>
   </properties>
   <body>
-
-    <release version="0.1.6-SNAPSHOT" date="In SVN">
+    <release version="0.1.6" date="2005-05-11">
       <!-- add 'action' entries here, newest on top: -->
 
-      <action dev="gormap" type="update">
-        Stale http sessions are now detected in the security
-        initializer. A new session is created if the old one was
-        invalid.
-      </action>
-
-      <action dev="gormap" type="update">
-        Composite view now avoids writing body on HEAD requests.
-      </action>
-
+      <action dev="gormap" type="update">Stale http sessions are now detected in the security initializer. A new session is created if the old one was invalid.</action>
+      <action dev="gormap" type="update">Composite view now avoids writing body on HEAD requests.</action>
     </release>
-
     <release version="0.1.5" date="2005-05-10">
-
       <action dev="gormap" type="update">XSLT now handles transformations with content type 'application/xhtml+xml' (XHTML) properly.</action>
       <action dev="gormap" type="fix">Servlet requests getting a '304 Not Modified' response are now logged as 'cached by client', and not the other way around.</action>
       <action dev="gormap" type="fix">Fixed character encoding issue with BufferedResponseWrapper.</action>

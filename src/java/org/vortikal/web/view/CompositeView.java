@@ -114,8 +114,16 @@ public class CompositeView
         OutputStream responseStream = null;
 
         try {
-            responseStream = response.getOutputStream();
-            responseStream.write(buffer);
+            if ("HEAD".equals(request.getMethod())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Request is HEAD, not writing content");
+                }
+                response.flushBuffer();
+            } else {
+                responseStream = response.getOutputStream();
+                responseStream.write(buffer);
+            }
+
         } finally {
             if (responseStream != null) {
                 responseStream.flush();

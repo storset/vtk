@@ -32,9 +32,11 @@ package org.vortikal.security.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -71,8 +73,20 @@ public class SecurityInitializer {
     public boolean createContext(HttpServletRequest req,
                                  HttpServletResponse resp) {
 
-        String token = (String) req.getSession(true).getAttribute(
+        HttpSession session = req.getSession(true);
+
+        String token = null;
+        try {
+            token = (String) session.getAttribute(
             SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
+        } catch (IllegalStateException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Session has been invalidated, creating new");
+            }
+            session.invalidate();
+            session = req.getSession(true);
+        }
+
         
         if (token != null) {
             Principal principal = tokenManager.getPrincipal(token);

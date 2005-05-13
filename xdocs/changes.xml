@@ -8,6 +8,19 @@
     <release version="0.1.7-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
 
+      <action dev="gormap" type="update">
+        Authentication exceptions are no longer logged at level WARN
+        when checking resources and requests for 'If-Modified-Since'
+        dates before the actual request processing.
+      </action>
+
+      <action dev="gormap" type="fix">
+        FilteringViewWrapper now bails out (aborting the filter
+        sequence) when it discovers that the wrapped response has an
+        unsupported character encoding. The original response is
+        written instead.
+      </action>
+      
     </release>
 
     <release version="0.1.6" date="2005-05-11">

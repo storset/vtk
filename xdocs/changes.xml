@@ -9,6 +9,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="fix">
+        Fixed NullPointerException error with error handler resolving
+        when no service is yet resolved.
+      </action>
+
       <action dev="storset" type="fix">
         Fixed bug in EvenStructuredText. It was unable to handle
         unfinished links at the end of the text (i.e. "laLA":<end-of-text>)

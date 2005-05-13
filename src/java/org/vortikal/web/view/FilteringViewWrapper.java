@@ -30,8 +30,9 @@
  */
 package org.vortikal.web.view;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -127,6 +128,19 @@ public class FilteringViewWrapper extends AbstractViewWrapper {
             characterEncoding = bufferedResponse.getCharacterEncoding();
         }
 
+        if (!Charset.isSupported(characterEncoding)) {
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                    "Unable to perform content filtering on response  "
+                    + bufferedResponse + " for requested URL "
+                    + request.getRequestURL() + ": character encoding '"
+                    + characterEncoding + "' is not supported on this system");
+            }
+            writeResponse(bufferedResponse);
+            return;
+        }
+
+
         if (logger.isDebugEnabled()) {
             logger.debug("Reading buffered content using character encoding "
                          + characterEncoding);
@@ -158,7 +172,7 @@ public class FilteringViewWrapper extends AbstractViewWrapper {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(": [");
         sb.append("wrappedView = ").append(this.getWrappedView());
-        sb.append(", contentFilters = ").append(java.util.Arrays.asList(this.contentFilters));
+        sb.append(", contentFilters = ").append(Arrays.asList(this.contentFilters));
         sb.append("]");
         return sb.toString();
     }

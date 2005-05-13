@@ -5,9 +5,13 @@
     <title>Changelog</title>
   </properties>
   <body>
-    <release version="0.1.7-SNAPSHOT" date="In SVN">
+
+    <release version="0.1.8-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.1.7" date="In SVN">
 
       <action dev="gormap" type="fix">
         Fixed NullPointerException error with error handler resolving

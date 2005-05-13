@@ -104,15 +104,7 @@ public class Cache implements DataAccessor {
                 logger.debug("Loading " + loadSet.length + " resources");
             }
 
-            long startTime = System.currentTimeMillis();
-
             Resource[] resources = wrappedAccessor.load(loadSet);
-
-            long processingTime = System.currentTimeMillis() - startTime;
-
-            if (processingTime > 30000 && logger.isWarnEnabled()) {
-                logger.warn("Loading resources took " + processingTime + " ms: " + Arrays.asList(loadSet));
-            }
 
             for (int i = 0; i < resources.length; i++) {
                 resources[i].setDataAccessor(this);
@@ -171,15 +163,7 @@ public class Cache implements DataAccessor {
                 logger.debug("Loading " + uris.length + " resources");
             }
 
-            long startTime = System.currentTimeMillis();
-
             resources = wrappedAccessor.loadChildren(parent);
-
-            long processingTime = System.currentTimeMillis() - startTime;
-
-            if (processingTime > 30000 && logger.isWarnEnabled()) {
-                logger.warn("Loading child resources took " + processingTime + " ms: " + parent.getURI());
-            }
 
             for (int i = 0; i < resources.length; i++) {
                 resources[i].setDataAccessor(this);
@@ -241,15 +225,7 @@ public class Cache implements DataAccessor {
                 logger.debug("load from wrappedAccessor: " + uri);
             }
 
-            long startTime = System.currentTimeMillis();
-
             r = wrappedAccessor.load(uri);
-
-            long processingTime = System.currentTimeMillis() - startTime;
-
-            if (processingTime > 30000 && logger.isWarnEnabled()) {
-                logger.warn("Loading resource took " + processingTime + " ms: " + uri);
-            }
 
             if (r == null) {
                 if (logger.isDebugEnabled()) {

@@ -54,6 +54,7 @@ import org.springframework.web.servlet.mvc.LastModified;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.xml.StylesheetCompilationException;
@@ -170,6 +171,10 @@ public class DisplayXmlResourceController
             resource = repository.retrieve(
                 securityContext.getToken(), uri, true);
         } catch (RepositoryException e) {
+            // These exceptions are expected
+            return -1;
+
+        } catch (AuthenticationException e) {
             // These exceptions are expected
             return -1;
 

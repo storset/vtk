@@ -36,21 +36,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.security.AuthenticationException;
 
 
 /**
@@ -236,10 +238,16 @@ public class DisplayResourceController
             uri += (uri.equals("/")) ? childName : "/" + childName;
 
         }
+
         try {
             resource = repository.retrieve(
                 securityContext.getToken(), uri, true);
+
         } catch (RepositoryException e) {
+            // These exceptions are expected
+            return -1;
+
+        } catch (AuthenticationException e) {
             // These exceptions are expected
             return -1;
 

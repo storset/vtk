@@ -21,6 +21,11 @@
         written instead.
       </action>
       
+      <action dev="storset" type="add">
+        Extended child assertion with optional assertion property to
+        be tested against child
+      </action>
+
     </release>
 
     <release version="0.1.6" date="2005-05-11">

@@ -614,6 +614,13 @@ public class VortikalServlet extends DispatcherServlet {
             }
 
             if (!candidate.getErrorType().isAssignableFrom(t.getClass())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                        "Candidate handler " + candidate + " requires the "
+                        + "error type to be " + candidate.getErrorType() + ". "
+                        + "The actual error type was " + t.getClass()
+                        + ", discarding candidate.");
+                }
                 continue;
             }
             
@@ -626,17 +633,14 @@ public class VortikalServlet extends DispatcherServlet {
                     logger.debug(
                         "Candidate handler " + candidate + " requires the "
                         + "current service to be " + candidate.getService() 
-                        + " or a descendant. Current service was " + currentService);
+                        + " or a descendant. Current service was " + currentService
+                        + ", discarding candidate.");
                 }
                 continue;
             }
 
-            if (selected == null &&
-                (candidate.getService() == null ||
-                 (currentService != null && candidate.getService() != null
-                  && (currentService == candidate.getService()
-                      || currentService.isDescendantOf(candidate.getService()))))) {
-
+            if (selected == null) {
+                
                 selected = candidate;
 
             } else if (!selected.getErrorType().equals(candidate.getErrorType())
@@ -645,8 +649,12 @@ public class VortikalServlet extends DispatcherServlet {
                 
                 selected = candidate;
 
-            } else if (candidate.getService() != null &&
-                       candidate.getService().isDescendantOf(selected.getService())) {
+            } else if (candidate.getService() != null && selected.getService() == null) {
+                
+                selected = candidate;
+
+            } else if (candidate.getService() != null && selected.getService() != null
+                       && candidate.getService().isDescendantOf(selected.getService())) {
 
                 selected = candidate;
             }

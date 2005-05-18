@@ -1219,14 +1219,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
-//     public void setPrincipalStore(PrincipalStore principalStore) {
-//         this.principalStore = principalStore;
-//     }
-
-//     public PrincipalStore getPrincipalStore() {
-//         return principalStore;
-//     }
-
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }

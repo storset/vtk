@@ -830,7 +830,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         PreparedStatement stmt = conn.prepareStatement(query);
 
-        stmt.setString(1, uri + "/%");
+        stmt.setString(1, uri + "%");
 
         ResultSet rs = stmt.executeQuery();
 

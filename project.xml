@@ -96,6 +96,11 @@
       <version>1.2-rc2</version>
     </dependency>
     <dependency>
+      <id>spring-mock</id>
+      <groupId>springframework</groupId>
+      <version>1.2-rc2</version>
+    </dependency>
+    <dependency>
       <id>commons-logging</id>
       <version>1.0.3</version>
       <properties>
@@ -279,7 +284,7 @@
 
   <build>
     <sourceDirectory>src/java</sourceDirectory>
-    <!--unitTestSourceDirectory>test/java</unitTestSourceDirectory-->
+    <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
 
     <integrationUnitTestSourceDirectory/>
     <!-- Unit test classes -->
@@ -300,6 +305,8 @@
         </resource>
       </resources>
     </unitTest>
+
+
     <!-- J A R  R E S O U R C E S -->
     <!-- Resources that are packaged up inside the JAR file -->
 

@@ -86,7 +86,7 @@ public class HtmlHeadContentFilter
         // Look for title element
         Matcher titleMatcher = TITLE_REGEXP.matcher(headContent);
             
-        if (removeTitles && titleMatcher.find(0)) {
+        if (this.removeTitles && titleMatcher.find(0)) {
             headContent = titleMatcher.replaceAll("");
         }
             
@@ -95,7 +95,7 @@ public class HtmlHeadContentFilter
         // Look for a meta element which declares a charset.
         Matcher charsetMatcher = CHARACTER_ENCODING__REGEXP.matcher(headContent);
 	
-        if (removeCharsets && charsetMatcher.find(0)) {
+        if (this.removeCharsets && charsetMatcher.find(0)) {
             if (debug && logger.isDebugEnabled()) {
                 logger.debug("found charset content, will remove");
             }

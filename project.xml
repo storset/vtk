@@ -93,12 +93,12 @@
     <dependency>
       <id>spring</id>
       <groupId>springframework</groupId>
-      <version>1.2-rc2</version>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <id>spring-mock</id>
       <groupId>springframework</groupId>
-      <version>1.2-rc2</version>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <id>commons-logging</id>

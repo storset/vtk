@@ -9,6 +9,16 @@
     <release version="0.1.8-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+
+      <action dev="gormap" type="add">
+        Added a new view implementation, 'StandardHttpView' that
+        allows parameterization of status code and headers.
+      </action>
+
+      <action dev="gormap" type="update">
+        Moved to Spring 1.2 final
+      </action>
+
     </release>
 
     <release version="0.1.7" date="2005-05-13">

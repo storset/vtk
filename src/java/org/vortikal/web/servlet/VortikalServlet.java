@@ -492,7 +492,7 @@ public class VortikalServlet extends DispatcherServlet {
             
         StringBuffer sb = new StringBuffer();
         if (message != null) sb.append(message).append(" ");
-        sb.append("Message: ").append(t.getMessage()).append(" ");
+        sb.append("Message: ").append(t.getMessage()).append(" - ");
         sb.append("Request context: [").append(requestContext).append("], ");
         sb.append("security context: [").append(securityContext).append("], ");
         sb.append("method: [").append(httpMethod).append("], ");

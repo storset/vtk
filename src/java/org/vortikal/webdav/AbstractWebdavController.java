@@ -67,8 +67,8 @@ public abstract class AbstractWebdavController implements Controller {
 
 
     /**
-     * The standard WebDAV XML properties supported by the Vortex
-     * servlet.
+     * The standard WebDAV XML properties supported by the WebDAV
+     * controllers.
      *
      */
     protected static final List davProperties;

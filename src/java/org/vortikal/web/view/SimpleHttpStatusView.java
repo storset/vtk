@@ -46,13 +46,9 @@ import org.vortikal.webdav.WebdavConstants;
 /**
  * Simple HTTP Status code view.
  *
- * @version $Id$
  */
 public class SimpleHttpStatusView extends AbstractView {
 
-    /*
-     * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     */
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 

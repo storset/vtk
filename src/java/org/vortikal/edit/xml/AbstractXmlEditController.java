@@ -195,8 +195,7 @@ public abstract class AbstractXmlEditController implements Controller {
         if (sessionMap != null) {
             String token = SecurityContext.getSecurityContext().getToken();
             Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-            Resource resource = 
-                repository.retrieve(token, uri, false);
+            Resource resource = repository.retrieve(token, uri, false);
             Lock[] locks = resource.getActiveLocks();
             if (locks == null || locks.length == 0
                 || (!locks[0].getPrincipal().equals(principal))) {

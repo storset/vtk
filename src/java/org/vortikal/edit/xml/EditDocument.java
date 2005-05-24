@@ -206,14 +206,10 @@ public class EditDocument extends Document {
 
 
     public String getDocumentMode() {
-        Element e = getRootElement();
-        List l = e.getContent();
-        for (Iterator it = l.iterator(); it.hasNext();) {
-            Object o = it.next();
-            if ((o instanceof ProcessingInstruction)
-                    && "mode".equals(((ProcessingInstruction) o).getTarget())) { return ((ProcessingInstruction) o)
-                    .getData(); }
-        }
+        ProcessingInstruction pi = findPI(getRootElement(), "mode");
+        if (pi != null)
+            return pi.getData(); 
+
         return "default";
     }
 
@@ -237,9 +233,10 @@ public class EditDocument extends Document {
         for (Iterator it = element.getContent().iterator(); it.hasNext();) {
             Object o = it.next();
             if ((o instanceof ProcessingInstruction)
-                    && target.equals((((ProcessingInstruction) o).getTarget()))) { 
+                    && target.equals(((ProcessingInstruction) o).getTarget())) { 
 
-            return (ProcessingInstruction) o; }
+                return (ProcessingInstruction) o; 
+            }
         }
         return null;
     }

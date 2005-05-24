@@ -219,6 +219,8 @@ public class VortikalServlet extends DispatcherServlet {
      * the servlet specs implementation of service() in
      * HttpServlet. We are overriding service(), so we need to supply
      * this functionality ourselves.
+     * 
+     * FIXME: Don't check lastModified if HEADER_IFMODSINCE isn't set
      *
      * @return <code>true</code> if the request should continue, or
      * <code>false</code> if a "304 Not Modified" status has been sent

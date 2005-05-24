@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl;
+package org.vortikal.util.repository;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +45,7 @@ import java.util.Properties;
  * specified by the system property
  * <code>org.vortikal.mime.properties.file</code>. The default path
  * (if not specified) is
- * <code>org/vortikal/repositoryimpl/mime.properties</code>.
+ * <code>org/vortikal/util/repository/mime.properties</code>.
  *
  * <p>The format of the properties file is <code>extension = MIME type</code>.
  *
@@ -84,7 +84,7 @@ public class MimeHelper {
         Log logger = LogFactory.getLog(MimeHelper.class);
 
         String fileName = System.getProperty("org.vortikal.mime.properties.file",
-                "org/vortikal/repositoryimpl/mime.properties");
+                "org/vortikal/util/repository/mime.properties");
 
         try {
             InputStream inStream = MimeHelper.class.getClassLoader()

@@ -10,6 +10,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="storset" type="update">
+        Put will now try to guess content type based on file extension
+        when the client sends application/octet-stream
+      </action>
+
       <action dev="gormap" type="add">
         Added a new view implementation, 'StandardHttpView' that
         allows parameterization of status code and headers.

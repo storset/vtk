@@ -45,6 +45,7 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.BoundedInputStream;
+import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 
@@ -153,8 +154,8 @@ public class PutController extends AbstractWebdavController {
             // FIXME: Properties may change while storing content?
             resource = repository.retrieve(token, resource.getURI(), false);
 
-            String contentType = getContentType(request);
-            if (contentType != null) {
+            String contentType = getContentType(request, resource);
+            if (contentType != null && !contentType.equals(resource.getContentType())) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Setting content-type: " + contentType);
                 }
@@ -224,7 +225,7 @@ public class PutController extends AbstractWebdavController {
    
 
    
-    protected String getContentType(HttpServletRequest request) {
+    protected String getContentType(HttpServletRequest request, Resource resource) {
         String contentType = request.getHeader("Content-Type");
 
         if (contentType == null || contentType.trim().equals("")) {
@@ -232,9 +233,12 @@ public class PutController extends AbstractWebdavController {
         }
         
         if (contentType.indexOf(";") > 0) {
-            return contentType.substring(0, contentType.indexOf(";") - 1);
+            contentType = contentType.substring(0, contentType.indexOf(";") - 1);
         }
 
+        if (contentType.equals(MimeHelper.DEFAULT_MIME_TYPE))
+            return MimeHelper.map(resource.getName());
+        
         return contentType;
     }
     

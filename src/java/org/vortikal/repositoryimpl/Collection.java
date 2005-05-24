@@ -51,6 +51,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
+import org.vortikal.util.repository.MimeHelper;
 
 
 public class Collection extends Resource implements Cloneable {

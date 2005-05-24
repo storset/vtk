@@ -315,8 +315,8 @@
         <!-- Include the MIME type helper file in the jar under
             '/org/vortikal/repositoryimpl'. -->
 
-        <directory>src/java/org/vortikal/repositoryimpl</directory>
-        <targetPath>org/vortikal/repositoryimpl</targetPath>
+        <directory>src/java/org/vortikal/util/repository</directory>
+        <targetPath>org/vortikal/util/repository</targetPath>
         <includes>
           <include>mime.properties</include>
         </includes>

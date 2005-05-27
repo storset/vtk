@@ -5,61 +5,22 @@
     <title>Changelog</title>
   </properties>
   <body>
-
-    <release version="0.1.8-SNAPSHOT" date="In SVN">
+    <release version="0.1.8-pr1" date="2005-05-27">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
-      <action dev="storset" type="update">
-        Put will now try to guess content type based on file extension
-        when the client sends application/octet-stream
-      </action>
-
-      <action dev="gormap" type="add">
-        Added a new view implementation, 'StandardHttpView' that
-        allows parameterization of status code and headers.
-      </action>
-
-      <action dev="gormap" type="update">
-        Moved to Spring 1.2 final
-      </action>
-
+      <action dev="storset" type="update">Put will now try to guess content type based on file extension when the client sends application/octet-stream</action>
+      <action dev="gormap" type="add">Added a new view implementation, 'StandardHttpView' that allows parameterization of status code and headers.</action>
+      <action dev="gormap" type="update">Moved to Spring 1.2 final</action>
     </release>
-
     <release version="0.1.7" date="2005-05-13">
-
-      <action dev="gormap" type="fix">
-        Fixed NullPointerException error with error handler resolving
-        when no service is yet resolved.
-      </action>
-
-      <action dev="storset" type="fix">
-        Fixed bug in EvenStructuredText. It was unable to handle
-        unfinished links at the end of the text (i.e. "laLA":[end-of-text])
-      </action>
-
-      <action dev="gormap" type="update">
-        Authentication exceptions are no longer logged at level WARN
-        when checking resources and requests for 'If-Modified-Since'
-        dates before the actual request processing.
-      </action>
-
-      <action dev="gormap" type="fix">
-        FilteringViewWrapper now bails out (aborting the filter
-        sequence) when it discovers that the wrapped response has an
-        unsupported character encoding. The original response is
-        written instead.
-      </action>
-      
-      <action dev="storset" type="add">
-        Extended child assertion with optional assertion property to
-        be tested against child
-      </action>
-
+      <action dev="gormap" type="fix">Fixed NullPointerException error with error handler resolving when no service is yet resolved.</action>
+      <action dev="storset" type="fix">Fixed bug in EvenStructuredText. It was unable to handle unfinished links at the end of the text (i.e. "laLA":[end-of-text])</action>
+      <action dev="gormap" type="update">Authentication exceptions are no longer logged at level WARN when checking resources and requests for 'If-Modified-Since' dates before the actual request processing.</action>
+      <action dev="gormap" type="fix">FilteringViewWrapper now bails out (aborting the filter sequence) when it discovers that the wrapped response has an unsupported character encoding. The original response is written instead.</action>
+      <action dev="storset" type="add">Extended child assertion with optional assertion property to be tested against child</action>
     </release>
-
     <release version="0.1.6" date="2005-05-11">
-
       <action dev="gormap" type="update">Stale http sessions are now detected in the security initializer. A new session is created if the old one was invalid.</action>
       <action dev="gormap" type="update">Composite view now avoids writing body on HEAD requests.</action>
     </release>

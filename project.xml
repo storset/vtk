@@ -7,7 +7,7 @@
   <id>vortikal</id>
   <name>Vortikal</name>
   <groupId>vortikal</groupId>
-  <currentVersion>0.1.8-SNAPSHOT</currentVersion>
+  <currentVersion>0.1.8-pr1</currentVersion>
   <organization>
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
@@ -285,7 +285,6 @@
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
-
     <integrationUnitTestSourceDirectory/>
     <!-- Unit test classes -->
 
@@ -305,8 +304,6 @@
         </resource>
       </resources>
     </unitTest>
-
-
     <!-- J A R  R E S O U R C E S -->
     <!-- Resources that are packaged up inside the JAR file -->
 
@@ -403,6 +400,11 @@
       <id>0.1.7</id>
       <name>0.1.7</name>
       <tag>release-0.1.7</tag>
+    </version>
+    <version>
+      <id>0.1.8-pr1</id>
+      <name>0.1.8-pr1</name>
+      <tag>release-0.1.8-pr1</tag>
     </version>
   </versions>
 </project>

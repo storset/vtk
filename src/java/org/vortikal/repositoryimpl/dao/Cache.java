@@ -427,13 +427,25 @@ public class Cache implements DataAccessor {
      */
     protected void enterResource(Resource item) {
         synchronized (items) {
-            if (items.size() > (maxItems - 1)) {
-                for (int i = 0; i < removeItems; i++) {
-                    items.removeOldest();
+            if (this.items.size() > (this.maxItems - 1)) {
+
+                long startTime = System.currentTimeMillis();
+
+                for (int i = 0; i < this.removeItems; i++) {
+                    this.items.removeOldest();
                 }
+
+                long processingTime = System.currentTimeMillis() - startTime;
+                if (logger.isInfoEnabled()) {
+                    logger.info("Maximum cache size (" + this.maxItems
+                                + ") exceeded, removed "
+                                + removeItems + " oldest items from cache in "
+                                + processingTime + " ms");
+                }
+                
             }
 
-            items.put(item.getURI(), item);
+            this.items.put(item.getURI(), item);
         }
     }
 

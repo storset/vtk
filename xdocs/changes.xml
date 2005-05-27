@@ -1,14 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 
 <document>
   <properties>
     <title>Changelog</title>
   </properties>
   <body>
-    <release version="0.1.8-pr1" date="2005-05-27">
+    <release version="0.1.8-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+    </release>
+
+    <release version="0.1.8-pr1" date="2005-05-27">
+      
       <action dev="storset" type="update">Put will now try to guess content type based on file extension when the client sends application/octet-stream</action>
       <action dev="gormap" type="add">Added a new view implementation, 'StandardHttpView' that allows parameterization of status code and headers.</action>
       <action dev="gormap" type="update">Moved to Spring 1.2 final</action>

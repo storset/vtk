@@ -506,17 +506,16 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
-    public String[] listLockExpired()
-            throws IOException {
+    public void deleteExpiredLocks() throws IOException {
         Connection conn = null;
         String[] retVal = null;
 
         try {
             conn = getConnection();
-            retVal = listLockExpired(conn);
+            deleteExpiredLocks(conn);
             conn.commit();
         } catch (SQLException e) {
-            logger.warn("Error occurred while listing expired locks", e);
+            logger.warn("Error occurred while deleting expired locks", e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -528,77 +527,24 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 throw new IOException(e.getMessage());
             }
         }
-
-        return retVal;
     }
 
-    private String[] listLockExpired(Connection conn)
+    private void deleteExpiredLocks(Connection conn)
             throws SQLException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String format = formatter.format(new Date());
 
-        String query = "select r.uri from VORTEX_RESOURCE r, VORTEX_LOCK l "
-                + "where r.resource_id = l.resource_id and " + "l.timeout < '" + format
-                + "'";
+        String query = "delete from VORTEX_LOCK "
+                + "where timeout < '" + format + "'";
 
         Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-        List resources = new ArrayList();
-
-        while (rs.next()) {
-            String uri = rs.getString("uri");
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("lock has expired for resource " + uri);
-            }
-            resources.add(uri);
+        int n = stmt.executeUpdate(query);
+        if (logger.isInfoEnabled()) {
+            logger.info("Deleted " + n + " expired locks");
         }
-
-        rs.close();
         stmt.close();
-
-        return (String[]) resources.toArray(new String[] {});
     }
 
-    public void deleteLocks(Resource[] resources)
-            throws IOException {
-        Connection conn = null;
-
-        try {
-            conn = getConnection();
-            deleteLocks(conn, resources);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred while deleting locks", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-    }
-
-    private void deleteLocks(Connection conn, Resource[] resources)
-            throws SQLException {
-        if (resources.length > 0) {
-            String query = "delete from VORTEX_LOCK where resource_id in (";
-
-            for (int i = 0; i < resources.length; i++) {
-                query += ((i < (resources.length - 1)) ? (resources[i].getID() + ", ")
-                        : (resources[i].getID() + ")"));
-            }
-
-            Statement stmt = conn.createStatement();
-
-            stmt.executeUpdate(query);
-            stmt.close();
-        }
-    }
 
     public void addChangeLogEntry(String loggerID, String loggerType, String uri,
             String operation, int resourceId, boolean collection)

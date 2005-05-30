@@ -82,11 +82,8 @@ public interface DataAccessor {
     /* Lists all descendants of a collection resource, sorted by URI */
     public String[] listSubTree(Collection parent) throws IOException;
 
-    /* Lists all expired locks (optimization feature) */
-    public String[] listLockExpired() throws IOException;
-
-    /* Deletes the locks for a number of resources */
-    public void deleteLocks(Resource[] resources) throws IOException;
+    /* Deletes all expired locks (should be called periodically) */
+    public void deleteExpiredLocks() throws IOException;
 
     /* Used externally to report a resource modification */
     public void addChangeLogEntry(String loggerID, String recordType,

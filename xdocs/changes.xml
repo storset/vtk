@@ -9,6 +9,12 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="update">
+        Modified the mechanism for cleaning up expired locks to
+        perform all the work directly in the data access layer,
+        instead of first loading the resources.
+      </action>
+
     </release>
 
     <release version="0.1.8-pr1" date="2005-05-27">

@@ -30,18 +30,9 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
-
-import org.vortikal.repositoryimpl.Collection;
-import org.vortikal.repositoryimpl.Resource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -49,32 +40,129 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.repositoryimpl.Collection;
+import org.vortikal.repositoryimpl.Resource;
+
 
 /**
- * Very simple write-trough cache implementation
+ * Very simple resource cache, wrapping around a {@link DataAccessor}.
+ * Resources are cached when loaded (and stored).  Resources are
+ * evicted in the following cases:
+ *
+ * <ul>
+ *   <ul>the cache grows beyond its maximum size
+ *   <ul>the resource itself is deleted
+ *   <ul>the resource was locked and the lock has timed out
+ *   <ul>a modification is made to one of its ancestors
+ *   <ul>the resource's content is modified
+ * </ul>
+ *
+ * <p>When the cache reaches its maximum size, a FIFO scheme is
+ * applied; a configurable percentage of the items are removed, the
+ * starting with the oldest ones.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>wrappedAccessor</code> - the {@link DataAccessor} to
+ *   act as a cache for.
+ *   <li><code>maxItems</code> - an positive integer denoting the
+ *   cache size. The default value is <code>1000</code>.
+ *   <li><code>evictionRatio</code> - a number between 0 and 1
+ *   specifying the number of items (as a percentage of
+ *   <code>maxItems</code>) to remove when the cache is filled up. The
+ *   default value is <code>0.1</code> (10%).
+ *   <li><code>gatherStatistics</code> - a boolean specifying whether
+ *   or not to gather hit/miss statistics during operation. The
+ *   default value is <code>false</code>.
+ * </ul>
  */
-public class Cache implements DataAccessor {
+public class Cache implements DataAccessor, InitializingBean {
     private Log logger = LogFactory.getLog(this.getClass());
     private DataAccessor wrappedAccessor;
     private LockManager lockManager = new LockManager();
-    private int maxItems;
+    private int maxItems = 1000;
+    private double evictionRatio = 0.1;
     private int removeItems;
     private Items items = new Items();
+
+    private boolean gatherStatistics = false;
+    private long hits = 0;
+    private long misses = 0;
+    
 
     public boolean validate() throws IOException {
         return wrappedAccessor.validate();
     }
 
-    public void destroy() throws IOException {
-        wrappedAccessor.destroy();
+    public void setMaxItems(int maxItems) {
+        if (maxItems <= 0) {
+            throw new IllegalArgumentException("Cache size must be a positive number");
+        }
+
+        this.maxItems = maxItems;
     }
+
+    public void setEvictionRatio(double evictionRatio) {
+        if (evictionRatio <= 0 || evictionRatio >= 1) {
+            throw new IllegalArgumentException(
+                "JavaBean property 'evictionRatio' must be a "
+                + "number between 0 and 1");
+        }
+        this.evictionRatio = evictionRatio;
+    }
+    
+
+    public void setWrappedAccessor(DataAccessor wrappedAccessor) {
+        this.wrappedAccessor = wrappedAccessor;
+    }
+
+
+    public void setGatherStatistics(boolean gatherStatistics) {
+        this.gatherStatistics = gatherStatistics;
+    }
+    
+    public long getMisses() {
+        return this.misses;
+    }
+
+
+    public long getHits() {
+        return this.hits;
+    }
+    
+    
+    public void afterPropertiesSet() {
+        if (this.wrappedAccessor == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'wrappedAccessor' not set");
+        }
+
+        this.removeItems = (int) (maxItems * this.evictionRatio);
+
+        if (this.removeItems == 0) {
+            this.removeItems = 1;
+        }
+    }
+    
+
+    public void destroy() throws IOException {
+        //wrappedAccessor.destroy();
+    }
+
 
     public Resource[] load(String[] uris) throws IOException {
         List found = new ArrayList();
         List notFound = new ArrayList();
 
         for (int i = 0; i < uris.length; i++) {
-            Resource r = items.get(uris[i]);
+            Resource r = this.items.get(uris[i]);
 
             boolean lockTimedOut =
                 (r != null && r.getLock() != null
@@ -91,6 +179,10 @@ public class Cache implements DataAccessor {
             }
         }
 
+        if (this.gatherStatistics) {
+            updateStatistics(found.size(), notFound.size());
+        }
+
         if (notFound.size() == 0) {
             return (Resource[]) found.toArray(new Resource[] {  });
         }
@@ -98,7 +190,7 @@ public class Cache implements DataAccessor {
         String[] loadSet = (String[]) notFound.toArray(new String[] {  });
 
         try {
-            lockManager.lock(loadSet);
+            this.lockManager.lock(loadSet);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Loading " + loadSet.length + " resources");
@@ -112,7 +204,7 @@ public class Cache implements DataAccessor {
                 found.add(resources[i]);
             }
         } finally {
-            lockManager.unlock(loadSet);
+            this.lockManager.unlock(loadSet);
         }
 
         if (logger.isDebugEnabled()) {
@@ -148,6 +240,10 @@ public class Cache implements DataAccessor {
             }
         }
 
+        if (this.gatherStatistics) {
+            updateStatistics(found.size(), notFound.size());
+        }
+
         if (notFound.size() == 0) {
             return (Resource[]) found.toArray(new Resource[] {  });
         }
@@ -157,20 +253,20 @@ public class Cache implements DataAccessor {
         Resource[] resources = null;
         
         try {
-            lockManager.lock(uris);
+            this.lockManager.lock(uris);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Loading " + uris.length + " resources");
             }
 
-            resources = wrappedAccessor.loadChildren(parent);
+            resources = this.wrappedAccessor.loadChildren(parent);
 
             for (int i = 0; i < resources.length; i++) {
                 resources[i].setDataAccessor(this);
                 enterResource(resources[i]);
             }
         } finally {
-            lockManager.unlock(uris);
+            this.lockManager.unlock(uris);
         }
 
         if (logger.isDebugEnabled()) {
@@ -205,13 +301,20 @@ public class Cache implements DataAccessor {
 
 
         if (r != null && ! lockTimedOut) {
+            if (this.gatherStatistics) {
+                updateStatistics(1, 0);
+            }
             return r;
+        }
+
+        if (this.gatherStatistics) {
+            updateStatistics(0, 1);
         }
 
         lockManager.lock(uri);
 
         try {
-            r = items.get(uri);
+            r = this.items.get(uri);
 
             lockTimedOut =
                 (r != null && r.getLock() != null
@@ -225,7 +328,7 @@ public class Cache implements DataAccessor {
                 logger.debug("load from wrappedAccessor: " + uri);
             }
 
-            r = wrappedAccessor.load(uri);
+            r = this.wrappedAccessor.load(uri);
 
             if (r == null) {
                 if (logger.isDebugEnabled()) {
@@ -269,7 +372,7 @@ public class Cache implements DataAccessor {
                 testURI += "/";
             }
 
-            for (Iterator iterator = items.uriSet().iterator();
+            for (Iterator iterator = this.items.uriSet().iterator();
                     iterator.hasNext();) {
                 String uri = (String) iterator.next();
 
@@ -279,20 +382,20 @@ public class Cache implements DataAccessor {
             }
         }
 
-        lockManager.lock(uris);
+        this.lockManager.lock(uris);
 
         try {
-            wrappedAccessor.store(r);
+            this.wrappedAccessor.store(r);
 
             for (Iterator i = uris.iterator(); i.hasNext();) {
                 String uri = (String) i.next();
 
-                if (!uri.equals(r.getURI()) && items.containsURI(uri)) {
-                    items.remove(uri);
+                if (!uri.equals(r.getURI()) && this.items.containsURI(uri)) {
+                    this.items.remove(uri);
                 }
             }
         } finally {
-            lockManager.unlock(uris);
+            this.lockManager.unlock(uris);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("cache size : " + items.size());
@@ -306,7 +409,7 @@ public class Cache implements DataAccessor {
         uris.add(r.getURI());
 
         if (r.isCollection()) {
-            for (Iterator iterator = items.uriSet().iterator();
+            for (Iterator iterator = this.items.uriSet().iterator();
                     iterator.hasNext();) {
                 String uri = (String) iterator.next();
 
@@ -318,24 +421,24 @@ public class Cache implements DataAccessor {
 
         String parentURI = Resource.getParent(r.getURI());
 
-        if ((parentURI != null) && items.containsURI(parentURI)) {
+        if ((parentURI != null) && this.items.containsURI(parentURI)) {
             uris.add(parentURI);
         }
 
-        lockManager.lock(uris);
+        this.lockManager.lock(uris);
 
         try {
-            wrappedAccessor.delete(r);
+            this.wrappedAccessor.delete(r);
 
             for (Iterator i = uris.iterator(); i.hasNext();) {
                 String uri = (String) i.next();
 
-                if (items.containsURI(uri)) {
-                    items.remove(uri);
+                if (this.items.containsURI(uri)) {
+                    this.items.remove(uri);
                 }
             }
         } finally {
-            lockManager.unlock(uris);
+            this.lockManager.unlock(uris);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("cache size : " + items.size());
@@ -345,60 +448,42 @@ public class Cache implements DataAccessor {
 
     public InputStream getInputStream(Resource resource)
         throws IOException {
-        return wrappedAccessor.getInputStream(resource);
+        return this.wrappedAccessor.getInputStream(resource);
     }
 
     public OutputStream getOutputStream(Resource resource)
         throws IOException {
         try {
-            lockManager.lock(resource.getURI());
-            items.remove(resource.getURI());
+            this.lockManager.lock(resource.getURI());
+            this.items.remove(resource.getURI());
 
-            return wrappedAccessor.getOutputStream(resource);
+            return this.wrappedAccessor.getOutputStream(resource);
         } finally {
-            lockManager.unlock(resource.getURI());
+            this.lockManager.unlock(resource.getURI());
         }
     }
 
     public long getContentLength(Resource resource) throws IOException {
-        return wrappedAccessor.getContentLength(resource);
+        return this.wrappedAccessor.getContentLength(resource);
     }
 
     public String[] listSubTree(Collection parent) throws IOException {
-        return wrappedAccessor.listSubTree(parent);
+        return this.wrappedAccessor.listSubTree(parent);
     }
 
-    public String[] listLockExpired() throws IOException {
-        return wrappedAccessor.listLockExpired();
+    public void deleteExpiredLocks() throws IOException {
+        this.wrappedAccessor.deleteExpiredLocks();
     }
-
-    public void deleteLocks(Resource[] resources) throws IOException {
-        List uris = new ArrayList();
-
-        for (int i = 0; i < resources.length; i++) {
-            uris.add(resources[i].getURI());
-        }
-
-        try {
-            lockManager.lock(uris);
-            wrappedAccessor.deleteLocks(resources);
-
-            for (int i = 0; i < resources.length; i++) {
-                items.remove(resources[i].getURI());
-            }
-        } finally {
-            lockManager.unlock(uris);
-        }
-    }
+    
 
     public String[] discoverLocks(Resource r) throws IOException {
-        return wrappedAccessor.discoverLocks(r);
+        return this.wrappedAccessor.discoverLocks(r);
     }
 
     public void addChangeLogEntry(String loggerID, String loggerType,
         String uri, String operation, int resourceId, boolean collection) throws IOException {
-        wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation,
-                                          resourceId, collection);
+        this.wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation,
+                                               resourceId, collection);
     }
 
     /**
@@ -406,8 +491,8 @@ public class Cache implements DataAccessor {
      *
      */
     public void clear() {
-        synchronized (items) {
-            items.clear();
+        synchronized (this.items) {
+            this.items.clear();
         }
     }
 
@@ -417,7 +502,7 @@ public class Cache implements DataAccessor {
      * @return the number of resources in the cache.
      */
     public int size() {
-        return items.size();
+        return this.items.size();
     }
 
     /**
@@ -425,8 +510,8 @@ public class Cache implements DataAccessor {
      *
      * @param item a <code>Resource</code> value
      */
-    protected void enterResource(Resource item) {
-        synchronized (items) {
+    private void enterResource(Resource item) {
+        synchronized (this.items) {
             if (this.items.size() > (this.maxItems - 1)) {
 
                 long startTime = System.currentTimeMillis();
@@ -438,9 +523,8 @@ public class Cache implements DataAccessor {
                 long processingTime = System.currentTimeMillis() - startTime;
                 if (logger.isInfoEnabled()) {
                     logger.info("Maximum cache size (" + this.maxItems
-                                + ") exceeded, removed "
-                                + removeItems + " oldest items from cache in "
-                                + processingTime + " ms");
+                                + ") reached, removed " + this.removeItems
+                                + " oldest items in " + processingTime + " ms");
                 }
                 
             }
@@ -449,28 +533,23 @@ public class Cache implements DataAccessor {
         }
     }
 
-    /**
-     * @param maxItems The maxItems to set.
-     */
-    public void setMaxItems(int maxItems) {
-        if (maxItems <= 0) {
-            throw new RuntimeException("Cache size must be a positive number");
+
+    private synchronized void updateStatistics(long hits, long misses) {
+        if ((this.hits > (Long.MAX_VALUE - this.hits))
+            || (this.misses > (Long.MAX_VALUE) - misses)) {
+
+            if (logger.isInfoEnabled()) {
+                logger.info("Number of hits/misses too big, resetting counters");
+            }
+
+            this.hits = 0;
+            this.misses = 0;
         }
 
-        this.maxItems = maxItems;
-        removeItems = (int) (maxItems * 0.1);
-
-        if (removeItems == 0) {
-            removeItems = 1;
-        }
+        this.hits += hits;
+        this.misses += misses;
     }
-
-    /**
-     * @param wrappedAccessor The wrappedAccessor to set.
-     */
-    public void setWrappedAccessor(DataAccessor wrappedAccessor) {
-        this.wrappedAccessor = wrappedAccessor;
-    }
+    
 
     private class Items {
         private Map map = new ConcurrentReaderHashMap();
@@ -478,12 +557,12 @@ public class Cache implements DataAccessor {
         private Item out = null;
 
         public void clear() {
-            map.clear();
-            in = out = null;
+            this.map.clear();
+            this.in = this.out = null;
         }
 
         public Resource get(String uri) {
-            Item i = (Item) map.get(uri);
+            Item i = (Item) this.map.get(uri);
 
             if (i != null) {
                 return i.getResource();
@@ -495,78 +574,78 @@ public class Cache implements DataAccessor {
         public synchronized void put(String uri, Resource resource) {
             Item i = new Item(resource);
 
-            map.put(uri, i);
+            this.map.put(uri, i);
 
             //             synchronized(this) {
-            if (in != null) {
-                in.newer = i;
+            if (this.in != null) {
+                this.in.newer = i;
             }
 
-            i.older = in;
-            in = i;
+            i.older = this.in;
+            this.in = i;
 
-            if (out == null) {
-                out = in;
+            if (this.out == null) {
+                this.out = in;
             }
 
             //              }
         }
 
         public synchronized void remove(String uri) {
-            Item i = (Item) map.get(uri);
+            Item i = (Item) this.map.get(uri);
 
             //             synchronized(this) {
             if (i != null) {
                 if (i.older != null) {
                     i.older.newer = i.newer;
                 } else {
-                    out = i.newer;
+                    this.out = i.newer;
                 }
 
                 if (i.newer != null) {
                     i.newer.older = i.older;
                 } else {
-                    in = i.older;
+                    this.in = i.older;
                 }
             }
 
             //             }
-            map.remove(uri);
+            this.map.remove(uri);
         }
 
         public int size() {
-            return map.size();
+            return this.map.size();
         }
 
         public Set uriSet() {
-            return map.keySet();
+            return this.map.keySet();
         }
 
         public boolean containsURI(String uri) {
-            return map.containsKey(uri);
+            return this.map.containsKey(uri);
         }
 
         public synchronized void hit(String uri) {
-            Item i = (Item) map.get(uri);
+            Item i = (Item) this.map.get(uri);
 
             //             synchronized(this) {
             //             if (logger.isDebugEnabled())
             //                logger.debug("Before hit: " + dump());
             if ((i != null) && (i != in)) {
                 /* Remove i from list: */
-                if (i != out) {
+                if (i != this.out) {
                     i.older.newer = i.newer;
                 } else {
-                    out = i.newer;
+                    this.out = i.newer;
                 }
 
                 i.newer.older = i.older;
 
                 /* Insert i first in list: */
-                in.newer = i;
-                i.older = in;
+                this.in.newer = i;
+                i.older = this.in;
                 i.newer = null;
-                in = i;
+                this.in = i;
             }
 
             //             if (logger.isDebugEnabled())
@@ -576,26 +655,26 @@ public class Cache implements DataAccessor {
 
         public synchronized void removeOldest() {
             //             synchronized(this) {
-            if (out != null) {
+            if (this.out != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Removing oldest item " +
                         out.getResource().getURI());
                 }
 
-                map.remove(out.getResource().getURI());
+                this.map.remove(this.out.getResource().getURI());
 
-                if (in != out) {
-                    out.newer.older = null;
-                    out = out.newer;
+                if (this.in != this.out) {
+                    this.out.newer.older = null;
+                    this.out = this.out.newer;
                 } else {
-                    in = out = null;
+                    this.in = this.out = null;
                 }
             }
         }
 
         private String dump() {
             StringBuffer s = new StringBuffer();
-            Item i = in;
+            Item i = this.in;
 
             while (i != null) {
                 s.append("[" + i.getResource().getURI() + "]");

@@ -1236,29 +1236,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
      * @exception IOException if an error occurs
      */
     public void cleanupLocks() throws IOException {
-        String[] expiredUris = dao.listLockExpired();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Cleaning up expired locks for uris: "
-                         + Arrays.asList(expiredUris));
-        }
-
-        Resource[] expired = new Resource[expiredUris.length];
-
-        for (int i = 0; i < expiredUris.length; i++) {
-            Resource r = dao.load(expiredUris[i]);
-
-            expired[i] = r;
-        }
 
         if (this.readOnly && !this.cleanupLocksWhenReadOnly) {
             if (logger.isInfoEnabled()) {
                 logger.info(
-                    "Repository is read-only, will not expire locks for resources "
-                    + Arrays.asList(expiredUris));
+                    "Repository is read-only, will not expire locks ");
             } 
         } else {
-            dao.deleteLocks(expired);
+            dao.deleteExpiredLocks();
         }
     }
 

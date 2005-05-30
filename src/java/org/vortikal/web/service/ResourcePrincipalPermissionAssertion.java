@@ -72,6 +72,8 @@ import org.vortikal.security.roles.RoleManager;
  *           lock owner is the current principal
  *       <li><code>lock</code> - <code>true</code> if the resource is not locked and the current
  *           principal has write permission
+ *       <li><code>delegate-ownership</code> - <code>true</code> if
+ *       the current principal is the  owner of the resource
  *     </ul>
  *   <li><code>requiresAuthentication</code> - whether authentication is explicitly
  *       required. An {@link AuthenticationException} will be thrown on matching
@@ -136,11 +138,13 @@ public class ResourcePrincipalPermissionAssertion
                 this.permission.equals("parent-write") ||
                 this.permission.equals("delete") ||
                 this.permission.equals("unlock") ||
-                this.permission.equals("lock"))) {
+                this.permission.equals("lock") ||
+                this.permission.equals("delegate-ownership"))) {
             throw new BeanInitializationException(
-                "Property 'permission' must " +
-                "be set to one of; 'read', read-processed', 'write', " +
-                "'write-acl', 'parent-write', 'delete', 'unlock' or 'lock'");
+                "Property 'permission' must "
+                + "be set to one of; 'read', read-processed', 'write', "
+                + "'write-acl', 'parent-write', 'delete', 'unlock' or 'lock', "
+                + "'delegate-ownership'");
         }
         if (this.principalManager == null) {
             throw new BeanInitializationException(
@@ -181,6 +185,14 @@ public class ResourcePrincipalPermissionAssertion
         if (!"/".equals(resource.getURI())) {
 
             try {
+
+                if (isRoot(principal)) {
+                    return true;
+                }
+
+                if (repository.getConfiguration().isReadOnly()) {
+                    return false;
+                }
 
                 // If parent resource is locked by another principal, we fail:
 
@@ -230,7 +242,15 @@ public class ResourcePrincipalPermissionAssertion
 
 
     private boolean checkDeletePermission(Resource resource, Lock lock,
-                                          Principal principal) {
+                                          Principal principal) throws IOException {
+        if (isRoot(principal)) {
+            return true;
+        }
+
+        if (repository.getConfiguration().isReadOnly()) {
+            return false;
+        }
+
         if (lock != null && ! lock.getPrincipal().equals(principal)) {
             return false;
         }
@@ -240,11 +260,15 @@ public class ResourcePrincipalPermissionAssertion
 
 
     private boolean checkUnlockPermission(Resource resource, Lock lock,
-                                          Principal principal) {
+                                          Principal principal) throws IOException {
         if (lock != null) {
 
             if (isRoot(principal)) {
                 return true;
+            }
+
+            if (repository.getConfiguration().isReadOnly()) {
+                return false;
             }
 
             Principal owner = lock.getPrincipal();
@@ -258,11 +282,15 @@ public class ResourcePrincipalPermissionAssertion
     
 
     private boolean checkLockPermission(Resource resource, Lock lock,
-                                        Principal principal) {
+                                        Principal principal) throws IOException {
         if (lock == null) {
 
             if (isRoot(principal)) {
                 return true;
+            }
+
+            if (repository.getConfiguration().isReadOnly()) {
+                return false;
             }
 
             Privilege[] privilegeSet = resource.getPrivilegeSet(
@@ -277,12 +305,28 @@ public class ResourcePrincipalPermissionAssertion
     }
     
 
+    private boolean checkDelegateOwnershipPermission(
+        Resource resource, Lock lock, Principal principal) throws IOException {
+
+        if (isRoot(principal)) {
+            return true;
+        }
+
+        if (repository.getConfiguration().isReadOnly()) {
+            return false;
+        }
+
+        return resource.getOwner().equals(principal);
+    }
+
+
+
     /**
      * Checks for permissions that can appear in ACLs ('read',
      * 'read-processed', 'write', 'write-acl')
      */
     private boolean checkACLPermission(Resource resource, Lock lock,
-                                       Principal principal) {
+                                       Principal principal) throws IOException {
 
         if (this.permission.equals("write") || this.permission.equals("write-acl")) {
             if (lock != null) {
@@ -307,6 +351,20 @@ public class ResourcePrincipalPermissionAssertion
             }
             return true;
         }
+
+        if (repository.getConfiguration().isReadOnly()
+            && (this.permission.equals("write")
+                || this.permission.equals("write-acl")
+                || this.permission.equals("parent-write")
+                || this.permission.equals("delete")
+                || this.permission.equals("lock")
+                || this.permission.equals("unlock")
+                || this.permission.equals("delegate-ownership"))) {
+
+            return false;
+        }
+
+
 
         Privilege[] privileges = resource.getPrivilegeSet(principal,
                                                           this.principalManager);
@@ -359,25 +417,35 @@ public class ResourcePrincipalPermissionAssertion
         Lock lock = (resource.getActiveLocks().length > 0) ?
             resource.getActiveLocks()[0] : null;
         
-        if (this.permission.equals("parent-write")) {
+        
+        try {
+            if (this.permission.equals("parent-write")) {
 
-            return checkParentWritePermission(resource, lock, principal);
+                return checkParentWritePermission(resource, lock, principal);
 
-        } else if (this.permission.equals("delete")) {
+            } else if (this.permission.equals("delete")) {
 
-            return checkDeletePermission(resource, lock, principal);
-            
-        } else if (this.permission.equals("unlock")) {
+                return checkDeletePermission(resource, lock, principal);
                 
-            return checkUnlockPermission(resource, lock, principal);
-
-        } else if (this.permission.equals("lock")) {
+            } else if (this.permission.equals("unlock")) {
                 
-            return checkLockPermission(resource, lock, principal);
-        } 
+                return checkUnlockPermission(resource, lock, principal);
+
+            } else if (this.permission.equals("lock")) {
+                
+                return checkLockPermission(resource, lock, principal);
+            } else if (this.permission.equals("delegate-ownership")) {
+
+                return checkDelegateOwnershipPermission(resource, lock, principal);
+            }
 
 
-        return checkACLPermission(resource, lock, principal);
+
+            return checkACLPermission(resource, lock, principal);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
 }

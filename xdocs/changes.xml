@@ -10,6 +10,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="update">
+        Updated ResourcePrincipalPermissionAssertion to avoid matching
+        when the repository is in read-only mode.
+      </action>
+
+      <action dev="gormap" type="update">
         Modified the mechanism for cleaning up expired locks to
         perform all the work directly in the data access layer,
         instead of first loading the resources.

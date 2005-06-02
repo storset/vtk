@@ -338,6 +338,8 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         }
         throw new RuntimeException(t);
     }
-
-
+    
+    public String getId() {
+        return this.repository.getId();
+    }
 }

@@ -495,4 +495,10 @@ public interface Repository {
      * operations such as getting rid of database connections, etc.
      */
     public void destroy() throws IOException;
+    
+    /**
+     * Get the repository id.
+     */
+    public String getId();
+    
 }

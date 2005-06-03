@@ -75,7 +75,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private static Log logger = LogFactory.getLog(RepositoryImpl.class);
     public static final int MAX_URI_LENGTH = 1500;
     private boolean readOnly = false;
-    private boolean cleanupLocksWhenReadOnly = false;
     private ApplicationContext context = null;
 
     private DataAccessor dao;
@@ -1227,25 +1226,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.tokenManager = tokenManager;
     }
 
-    /**
-     * Cleans up expired locks. Gets called periodically from the
-     * maintenance thread. When in read-only mode, locks will only get
-     * cleaned up when the property 'cleanupLocksWhenReadOnly' is set
-     * to <code>true</code>.
-     *
-     * @exception IOException if an error occurs
-     */
-    public void cleanupLocks() throws IOException {
-
-        if (this.readOnly && !this.cleanupLocksWhenReadOnly) {
-            if (logger.isInfoEnabled()) {
-                logger.info(
-                    "Repository is read-only, will not expire locks ");
-            } 
-        } else {
-            dao.deleteExpiredLocks();
-        }
-    }
 
     public void setDao(DataAccessor dao) {
         this.dao = dao;
@@ -1253,10 +1233,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
-    }
-
-    public void setCleanupLocksWhenReadOnly(boolean cleanupLocksWhenReadOnly) {
-        this.cleanupLocksWhenReadOnly = cleanupLocksWhenReadOnly;
     }
 
     public void setRoleManager(RoleManager roleManager) {

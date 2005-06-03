@@ -1,29 +1,18 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 
 <document>
   <properties>
     <title>Changelog</title>
   </properties>
   <body>
-    <release version="0.1.8-SNAPSHOT" date="In SVN">
+    <release version="0.1.8-pr2" date="2005-06-03">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
-      <action dev="gormap" type="update">
-        Updated ResourcePrincipalPermissionAssertion to avoid matching
-        when the repository is in read-only mode.
-      </action>
-
-      <action dev="gormap" type="update">
-        Modified the mechanism for cleaning up expired locks to
-        perform all the work directly in the data access layer,
-        instead of first loading the resources.
-      </action>
-
+      <action dev="gormap" type="update">Updated ResourcePrincipalPermissionAssertion to avoid matching when the repository is in read-only mode.</action>
+      <action dev="gormap" type="update">Modified the mechanism for cleaning up expired locks to perform all the work directly in the data access layer, instead of first loading the resources.</action>
     </release>
-
     <release version="0.1.8-pr1" date="2005-05-27">
-      
       <action dev="storset" type="update">Put will now try to guess content type based on file extension when the client sends application/octet-stream</action>
       <action dev="gormap" type="add">Added a new view implementation, 'StandardHttpView' that allows parameterization of status code and headers.</action>
       <action dev="gormap" type="update">Moved to Spring 1.2 final</action>

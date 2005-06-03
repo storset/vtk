@@ -57,16 +57,13 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class PutController extends AbstractWebdavController {
 
-    private Integer maxUploadSize = new Integer(-1);
+    private long maxUploadSize = -1;
 
 
 
-    public void setMaxUploadSize(Integer maxUploadSize) {
-        if (maxUploadSize == null) {
-            throw new IllegalArgumentException("maxUploadSize must be a number");
-        }
+    public void setMaxUploadSize(long maxUploadSize) {
 
-        if (maxUploadSize.intValue() <= 0) {
+        if (maxUploadSize <= 0) {
             throw new IllegalArgumentException("maxUploadSize must be a number > 0");
         }
 
@@ -148,7 +145,7 @@ public class PutController extends AbstractWebdavController {
             }
 
             InputStream inStream =
-                new BoundedInputStream(request.getInputStream(), maxUploadSize.intValue());
+                new BoundedInputStream(request.getInputStream(), this.maxUploadSize);
             repository.storeContent(token, resource.getURI(), inStream);
 
             // FIXME: Properties may change while storing content?

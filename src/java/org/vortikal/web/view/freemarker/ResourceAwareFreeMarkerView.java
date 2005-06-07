@@ -36,7 +36,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.web.HttpUtil;

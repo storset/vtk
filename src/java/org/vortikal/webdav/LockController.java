@@ -35,7 +35,6 @@ package org.vortikal.webdav;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -57,8 +56,6 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.webdav.AbstractWebdavController.StateToken;
-import org.vortikal.webdav.AbstractWebdavController.UriState;
 import org.vortikal.security.AuthenticationException;
 
 

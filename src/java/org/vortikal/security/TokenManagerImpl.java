@@ -38,7 +38,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.doomdark.uuid.UUIDGenerator;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.util.cache.SimpleCache;

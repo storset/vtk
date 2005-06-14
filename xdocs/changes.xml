@@ -9,6 +9,11 @@
     <release version="0.1.8-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action dev="storset" type="add">Added new FreemarkerConfig
+      implementation, MultiTemplateLocationsFreeMarkerConfigurer,
+      looking up (possibly) multiple template locations in the
+      application context</action>
+      <action dev="storset" type="update">Catching possible IllegalArgumentException when clients send unparsable date header</action>
     </release>
 
     <release version="0.1.8-pr2" date="2005-06-03">

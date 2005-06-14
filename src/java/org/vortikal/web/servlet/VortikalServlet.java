@@ -51,7 +51,6 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
 
-import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -235,7 +234,14 @@ public class VortikalServlet extends DispatcherServlet {
         if (method.equals(METHOD_GET)) {
             long lastModified = getLastModified(request);
             if (lastModified != -1) {
-                long ifModifiedSince = request.getDateHeader(HEADER_IFMODSINCE);
+                long ifModifiedSince = -1;
+                try {
+                    ifModifiedSince = request.getDateHeader(HEADER_IFMODSINCE);
+                } catch (IllegalArgumentException e) {
+                    // The client is sending an illegal header format, so we ignore it.
+                    ifModifiedSince = -1;
+                }
+                
                 if (ifModifiedSince < (lastModified / 1000 * 1000)) {
                     // If the servlet mod time is later, call doGet()
                     // Round down to the nearest second for a proper compare
@@ -383,10 +389,10 @@ public class VortikalServlet extends DispatcherServlet {
      */
     private void maybeSetLastModified(HttpServletResponse resp,
 				      long lastModified) {
-	if (resp.containsHeader(HEADER_LASTMOD))
-	    return;
-	if (lastModified >= 0)
-	    resp.setDateHeader(HEADER_LASTMOD, lastModified);
+        if (resp.containsHeader(HEADER_LASTMOD))
+            return;
+        if (lastModified >= 0)
+            resp.setDateHeader(HEADER_LASTMOD, lastModified);
     }
    
 	

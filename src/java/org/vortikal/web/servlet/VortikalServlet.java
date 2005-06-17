@@ -141,10 +141,10 @@ public class VortikalServlet extends DispatcherServlet {
         String threadName = Thread.currentThread().getName();
         try {
             Thread.currentThread().setName(config.getServletName());
+            logger.info(getServletInfo());
             super.init(config);
         } finally {
-            logger.info("Framework servlet '" + this.getServletName() + "' initialized");
-            logger.info(getServletInfo());
+            logger.info("Framework servlet '" + this.getServletName() + "' ready");
             Thread.currentThread().setName(threadName);
         }
     }

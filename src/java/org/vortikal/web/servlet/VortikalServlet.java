@@ -131,11 +131,10 @@ public class VortikalServlet extends DispatcherServlet {
     
     public String getServletInfo() {
         return Version.getFrameworkTitle()
-            + " version " + Version.getVersion()
-            + " built " + Version.getBuildDate()
+            + " - version " + Version.getVersion()
+            + ", built " + Version.getBuildDate()
             + " on " + Version.getBuildHost()
-            + " " + Version.getBuildVendor()
-            + " " + Version.getVendorURL();
+            + " - " + Version.getVendorURL();
     }
 
     public void init(ServletConfig config) throws ServletException {

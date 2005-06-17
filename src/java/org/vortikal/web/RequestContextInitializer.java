@@ -165,8 +165,8 @@ public class RequestContextInitializer
         logger.info("Registered service tree root services in the following order: " 
                 + rootServices);
         
-        if (logger.isDebugEnabled()) {
-            logger.debug(printServiceTree());
+        if (logger.isInfoEnabled()) {
+            logger.info(printServiceTree());
         }
     }
     
@@ -206,8 +206,8 @@ public class RequestContextInitializer
     private boolean resolveService(Service service, HttpServletRequest request,
                                    Resource resource) {
 		
-        if (logger.isDebugEnabled()) {
-            logger.debug("Matching for service " + service.getName() +
+        if (logger.isTraceEnabled()) {
+            logger.trace("Matching for service " + service.getName() +
                          ", having assertions: " + service.getAssertions());
         }
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -222,12 +222,12 @@ public class RequestContextInitializer
                 if (!assertion.matches(request,resource,securityContext.getPrincipal()))
                     match = false;
 
-                if (logger.isDebugEnabled()) {
+                if (logger.isTraceEnabled()) {
                     if (match) {
-                        logger.debug("Matched assertion: " + assertion +
+                        logger.trace("Matched assertion: " + assertion +
                                      " for service " + service.getName());
                     } else {
-                        logger.debug("Unmatched assertion: " + assertion +
+                        logger.trace("Unmatched assertion: " + assertion +
                                      " for service " + service.getName());
                     }
                 }
@@ -239,8 +239,8 @@ public class RequestContextInitializer
             throw(e);
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Currently matched service: " + service.getName() +
+        if (logger.isTraceEnabled()) {
+            logger.trace("Currently matched service: " + service.getName() +
                          ", will check for child services: " + service.getChildren());
         }
 
@@ -250,8 +250,8 @@ public class RequestContextInitializer
                 return true;
         }
         
-        if (logger.isInfoEnabled()) {
-            logger.info("Service matching produced result: " + service.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Service matching produced result: " + service.getName());
         }
 
         RequestContext.setRequestContext(

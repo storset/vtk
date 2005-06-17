@@ -57,6 +57,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.SecurityInitializer;
+import org.vortikal.util.Version;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.ErrorHandler;
 import org.vortikal.web.RepositoryContextInitializer;
@@ -128,12 +129,23 @@ public class VortikalServlet extends DispatcherServlet {
     private ErrorHandler[] errorHandlers = new ErrorHandler[0];
     private long requests = 0;
     
+    public String getServletInfo() {
+        return Version.getFrameworkTitle()
+            + " version " + Version.getVersion()
+            + " built " + Version.getBuildDate()
+            + " on " + Version.getBuildHost()
+            + " " + Version.getBuildVendor()
+            + " " + Version.getVendorURL();
+    }
+
     public void init(ServletConfig config) throws ServletException {
         String threadName = Thread.currentThread().getName();
         try {
             Thread.currentThread().setName(config.getServletName());
             super.init(config);
         } finally {
+            logger.info("Framework servlet '" + this.getServletName() + "' initialized");
+            logger.info(getServletInfo());
             Thread.currentThread().setName(threadName);
         }
     }
@@ -152,7 +164,6 @@ public class VortikalServlet extends DispatcherServlet {
         initRequestContextInitializer();
         initRepositoryContextInitializer();
         initErrorHandlers();
-        logger.info("Framework servlet '" + this.getServletName() + "' initialized");
     }
     
     private void initSecurityInitializer() {

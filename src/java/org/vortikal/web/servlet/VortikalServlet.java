@@ -144,7 +144,6 @@ public class VortikalServlet extends DispatcherServlet {
             logger.info(getServletInfo());
             super.init(config);
         } finally {
-            logger.info("Framework servlet '" + this.getServletName() + "' ready");
             Thread.currentThread().setName(threadName);
         }
     }

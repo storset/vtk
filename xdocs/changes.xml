@@ -5,19 +5,14 @@
     <title>Changelog</title>
   </properties>
   <body>
-
-    <release version="0.1.8-SNAPSHOT" date="In SVN">
+    <release version="0.1.8-pr3" date="2005-06-17">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
-      <action dev="storset" type="add">Added new FreemarkerConfig
-      implementation, MultiTemplateLocationsFreeMarkerConfigurer,
-      looking up (possibly) multiple template locations in the
-      application context</action>
+
+      <action dev="storset" type="add">Added new FreemarkerConfig implementation, MultiTemplateLocationsFreeMarkerConfigurer, looking up (possibly) multiple template locations in the application context</action>
       <action dev="storset" type="update">Catching possible IllegalArgumentException when clients send unparsable date header</action>
     </release>
-
     <release version="0.1.8-pr2" date="2005-06-03">
-
       <action dev="gormap" type="update">Updated ResourcePrincipalPermissionAssertion to avoid matching when the repository is in read-only mode.</action>
       <action dev="gormap" type="update">Modified the mechanism for cleaning up expired locks to perform all the work directly in the data access layer, instead of first loading the resources.</action>
     </release>

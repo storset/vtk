@@ -66,6 +66,23 @@ public class URIUtil {
         return parentURI + "/" + path;
     }
 
+    public static String makeAbsoluteURI(String ref, String base) {
+        if (ref.startsWith("/")) return ref;
+
+        if (base == null || base.equals("")) {
+            throw new IllegalArgumentException(
+                "The relative path '" + ref + "' cannot be resolved with a null resource");
+        };
+
+        if (base.endsWith("/")) { 
+            return base + "/" + ref; 
+        }
+
+        String parentURI = base.substring(0, base.lastIndexOf("/"));
+
+        return parentURI + "/" + ref;
+        
+    }
 
     /**
      * Expands '../' strings in resource URIs. 

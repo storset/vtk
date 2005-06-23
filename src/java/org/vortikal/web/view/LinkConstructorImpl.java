@@ -30,7 +30,7 @@
  */
 package org.vortikal.web.view;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -115,7 +115,7 @@ public class LinkConstructorImpl implements LinkConstructor,
     }
 
 	private Map getParametersMap(String parametersCSV) {
-		Map parameters = new HashMap();
+		Map parameters = new LinkedHashMap();
 		String[] mappings = parametersCSV.split(",");
 		for (int i = 0; i < mappings.length; i++) {
 			if (mappings[i].indexOf("=") == -1) {

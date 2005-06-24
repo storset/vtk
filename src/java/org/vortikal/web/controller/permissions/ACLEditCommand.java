@@ -48,8 +48,8 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
     private String[] groups;
     private String[] withdrawUserURLs;
     private String[] withdrawGroupURLs;
-    private String userName;
-    private String groupName;
+    private String userNames[];
+    private String groupNames[];
     private Ace[] editedACL;
     
 
@@ -241,42 +241,6 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
 
     
     /**
-     * Gets the value of userName
-     *
-     * @return the value of userName
-     */
-    public String getUserName() {
-        return this.userName;
-    }
-
-    /**
-     * Sets the value of userName
-     *
-     * @param userName Value to assign to this.userName
-     */
-    public void setUserName(String userName)  {
-        this.userName = userName;
-    }
-
-    /**
-     * Gets the value of groupName
-     *
-     * @return the value of groupName
-     */
-    public String getGroupName() {
-        return this.groupName;
-    }
-
-    /**
-     * Sets the value of groupName
-     *
-     * @param groupName Value to assign to this.groupName
-     */
-    public void setGroupName(String groupName)  {
-        this.groupName = groupName;
-    }
-
-    /**
      * Gets the value of editedACL
      *
      * @return the value of editedACL
@@ -292,6 +256,26 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
      */
     public void setEditedACL(Ace[] editedACL)  {
         this.editedACL = editedACL;
+    }
+
+
+    public String[] getGroupNames() {
+        return groupNames;
+    }
+
+
+    public void setGroupNames(String[] groupNames) {
+        this.groupNames = groupNames;
+    }
+
+
+    public String[] getUserNames() {
+        return userNames;
+    }
+
+
+    public void setUserNames(String[] userNames) {
+        this.userNames = userNames;
     }
 
 }

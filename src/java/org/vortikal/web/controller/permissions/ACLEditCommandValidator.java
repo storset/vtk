@@ -68,39 +68,44 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
             return;
         
         if (editCommand.getAddUserAction() != null) {
-            String userName = editCommand.getUserName();
-
+            String userNames[] = editCommand.getUserNames();
+            
+            for (int i = 0; i < userNames.length; i++) {
+                String userName = userNames[i];
             if (userName == null || userName.trim().equals("")) {
-                errors.rejectValue("userName", "permissions.user.missing.value",
+                errors.rejectValue("userNames", "permissions.user.missing.value",
                                    "You must type a value");
             } else {
                 try { 
                     Principal principal = principalManager.getPrincipal(userName);	
 
                     if (!principalManager.validatePrincipal(principal))
-                        errors.rejectValue("userName", "permissions.user.wrong.value", 
+                        errors.rejectValue("userNames", "permissions.user.wrong.value", 
                                 new Object[] {userName}, "User '" + userName
                                 + "' does not exist");
 
                 } catch (InvalidPrincipalException e) {
-                    errors.rejectValue("userName", "permissions.user.wrong.value", 
+                    errors.rejectValue("userNames", "permissions.user.wrong.value", 
                             new Object[] {userName}, "User '" + userName
                                        + "' is illegal");
                 }
             }
-            
+            }            
         } else if (editCommand.getAddGroupAction() != null) {
-            String groupName = editCommand.getGroupName();
+            String[] groupNames = editCommand.getGroupNames();
 
+            for (int i = 0; i < groupNames.length; i++) {
+                String groupName = groupNames[i];
             if (groupName == null || groupName.trim().equals(""))
-                errors.rejectValue("groupName",
+                errors.rejectValue("groupNames",
                                    "permissions.group.missing.value",
                                    "You must type a value");
 
             else if (!principalManager.validateGroup(groupName))
-                errors.rejectValue("groupName", "permissions.group.wrong.value",
+                errors.rejectValue("groupNames", "permissions.group.wrong.value",
                         new Object[] {groupName}, "Group '" + groupName
                                    + "' does not exist");
+            }
         }
     }
 

@@ -46,10 +46,7 @@ import org.vortikal.web.view.ReferenceDataProviding;
 
 /**
  * An extension of the FreeMarkerView provided in the Spring
- * Framework. Differs from that implementation in that a BeansWrapper
- * is used to wrap the model object before rendering, making
- * controllers independent of the view technology.
- *
+ * Framework.
  * <p>When the request method is <code>HEAD</code>, only headers is
  * written to the response.
  *

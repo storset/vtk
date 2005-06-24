@@ -136,7 +136,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         for (int i = 0; i < authorizedUsers.length; i++) {
             Map parameters = new HashMap();
             parameters.put("removeUserAction", "true");
-            parameters.put("userName", authorizedUsers[i]);
+            parameters.put("userNames", authorizedUsers[i]);
 
             if (!("dav:owner".equals(authorizedUsers[i]) ||
                   "dav:authenticated".equals(authorizedUsers[i]))) {
@@ -152,7 +152,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         for (int i = 0; i < authorizedGroups.length; i++) {
             Map parameters = new HashMap();
             parameters.put("removeGroupAction", "true");
-            parameters.put("groupName", authorizedGroups[i]);
+            parameters.put("groupNames", authorizedGroups[i]);
             String url = service.constructLink(
                 resource, securityContext.getPrincipal(), parameters);
             withdrawGroupURLs[i] = url;
@@ -176,7 +176,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
      * 
      * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
      */
-    protected ModelAndView processFormSubmission(HttpServletRequest arg0, HttpServletResponse arg1, Object command, BindException errors) throws Exception {
+    protected ModelAndView processFormSubmission(HttpServletRequest req, HttpServletResponse resp, Object command, BindException errors) throws Exception {
         if (errors.hasErrors()) {
             ACLEditCommand editCommand = (ACLEditCommand) command;
             editCommand.setAddGroupAction(null);
@@ -184,7 +184,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             editCommand.setRemoveUserAction(null);
             editCommand.setRemoveGroupAction(null);
         }
-        return super.processFormSubmission(arg0, arg1, command, errors);
+        return super.processFormSubmission(req, resp, command, errors);
     }
 
 
@@ -244,35 +244,45 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         // doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
-            Principal principal = principalManager.getPrincipal(editCommand.getUserName());
-            String qualifiedName = principal.getQualifiedName();
+            Ace[] newACL = editCommand.getEditedACL();
+            String[] userNames = editCommand.getUserNames();
 
-            System.out.println("Qualifiedname: " + qualifiedName);
-            System.out.println("Input: " + editCommand.getUserName());
-            
-            Ace[] newACL = AclUtil.withdrawPrivilegeFromACL(
-                editCommand.getEditedACL(), qualifiedName,
-                this.privilege);
+            for (int i = 0; i < userNames.length; i++) {
+                Principal principal = principalManager.getPrincipal(userNames[i]);
+                String qualifiedName = principal.getQualifiedName();
+
+                newACL = AclUtil.withdrawPrivilegeFromACL(
+                        newACL, qualifiedName, this.privilege);
+            }
             editCommand.setEditedACL(newACL);
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),
                                 this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
-            Ace[] newACL = AclUtil.withdrawPrivilegeFromACL(
-                editCommand.getEditedACL(), editCommand.getGroupName(),
+            Ace[] newACL = editCommand.getEditedACL();
+            String[] groupNames = editCommand.getGroupNames();
+            
+            for (int i = 0; i < groupNames.length; i++) {
+                newACL = AclUtil.withdrawPrivilegeFromACL(
+                newACL, groupNames[i],
                 this.privilege);
+            }
             editCommand.setEditedACL(newACL);
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),
                                 this.getCommandName()));
             
         } else if (editCommand.getAddUserAction() != null) {
-            Principal principal = principalManager.getPrincipal(editCommand.getUserName());
-            String qualifiedName = principal.getQualifiedName();
+            Ace[] newACL = editCommand.getEditedACL();
+            String[] userNames = editCommand.getUserNames();
+            for (int i = 0; i < userNames.length; i++) {
+                Principal principal = principalManager.getPrincipal(userNames[i]);
+                String qualifiedName = principal.getQualifiedName();
             
-            Ace[] newACL = AclUtil.addPrivilegeToACL(
-                resource, editCommand.getEditedACL(), qualifiedName, this.privilege, true);
+                newACL = AclUtil.addPrivilegeToACL(
+                        resource, newACL, qualifiedName, this.privilege, true);
+            }
             editCommand.setEditedACL(newACL);
             ModelAndView mv =  showForm(
                 request, response, new BindException(
@@ -281,11 +291,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return mv;
 
         } else if (editCommand.getAddGroupAction() != null) {
-            Ace[] newACL = AclUtil.addPrivilegeToACL(resource,
-                                      editCommand.getEditedACL(),
-                                      editCommand.getGroupName(),
+            Ace[] newACL = editCommand.getEditedACL();
+            String[] groupNames = editCommand.getGroupNames();
+            
+            for (int i = 0; i < groupNames.length; i++) {
+                newACL = AclUtil.addPrivilegeToACL(resource,
+                                      newACL,
+                                      groupNames[i],
                                       this.privilege,
                                       false);
+            }
             editCommand.setEditedACL(newACL);
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),

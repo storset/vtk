@@ -1,6 +1,7 @@
 package org.vortikal.web.view.components.menu;
 
-/** Bean representing a simple menu.
+/**
+ * Bean representing a simple menu.
  * 
  * <p>has the following properties:
  * <ul>
@@ -8,7 +9,7 @@ package org.vortikal.web.view.components.menu;
  * <li><b>items</b> - array of the contained {@link MenuItem}s
  * <li><b>activeItem</b> - reference to the currently active item, if it's in this menu
  */
-public class Menu {
+public class ListMenu {
 
     private String label;
     private MenuItem[] items;

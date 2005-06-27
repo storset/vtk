@@ -1,4 +1,4 @@
-package org.vortikal.web.view.components;
+package org.vortikal.web.view.components.menu;
 
 /** Bean representing a view menu item.
  * <p>Has the following properties:

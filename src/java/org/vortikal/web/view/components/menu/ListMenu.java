@@ -3,11 +3,11 @@ package org.vortikal.web.view.components.menu;
 /**
  * Bean representing a simple menu.
  * 
- * <p>has the following properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
- * <li><b>label</b> - string identifying the menu type
- * <li><b>items</b> - array of the contained {@link MenuItem}s
- * <li><b>activeItem</b> - reference to the currently active item, if it's in this menu
+ * <li><code>label</code> - string identifying the menu type
+ * <li><code>items</code> - array of the contained {@link MenuItem}s
+ * <li><code>activeItem</code> - reference to the currently active item, if it's in this menu
  */
 public class ListMenu {
 

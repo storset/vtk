@@ -1,12 +1,14 @@
 package org.vortikal.web.view.components.menu;
 
-/** Bean representing a view menu item.
- * <p>Has the following properties:
+/**
+ * Bean representing a view menu item.
+ * 
+ * <p>Configurable JavaBean properties:
  * <ul>
- * <li><b>title</b> - the display title string
- * <li><b>url</b> - the URL string to the item
- * <li><b>label</b> - string identifying the menu item type
- * <li><b>active</b> - boolean flag set if this is the current shown item
+ * <li><code>title</code> - the display title string
+ * <li><code>url</code> - the URL string to the item
+ * <li><code>label</code> - string identifying the menu item type
+ * <li><code>active</code> - boolean flag set if this is the current shown item
  *
  */
 public class MenuItem {

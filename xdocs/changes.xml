@@ -10,6 +10,8 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="storset" type="update">Adding/deleting
+      users/groups allows for multiple csv users at once</action>
     </release>
 
     <release version="0.1.8-pr3" date="2005-06-17">

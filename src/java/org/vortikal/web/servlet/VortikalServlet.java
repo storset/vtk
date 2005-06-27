@@ -214,8 +214,7 @@ public class VortikalServlet extends DispatcherServlet {
             for (Iterator i = handlers.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry) i.next();
                 this.errorHandlers[j] = (ErrorHandler) entry.getValue();
-                logger.info("Registering error handler for " +
-                            this.errorHandlers[j].getErrorType().getName());
+                logger.info("Registered error handler " + this.errorHandlers[j]);
                 j++;
             }
         }

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.Ordered;
+import org.vortikal.context.Categorizable;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;

@@ -153,19 +153,19 @@ public class DefaultListMenuProvider implements Provider {
             new org.springframework.web.servlet.support.RequestContext(request);
         String name = service.getName();
         
-        String defaultDescription = springContext.getMessage(
-                this.label + name, name);
-            String title = springContext.getMessage(
-                this.label + name + "." +
-                resource.getContentType(), defaultDescription);
+        String messageCode = this.label +"." + name;
+        String title = springContext.getMessage(messageCode, name);
+        
+        messageCode += "." + resource.getContentType();
+        title = springContext.getMessage(messageCode, title);
 
-            Property resourceType = resource.getProperty(Property.LOCAL_NAMESPACE, "resource-type");
-            if (resourceType != null) {
-                title = springContext.getMessage(
-                        this.label + name + "." +
-                        resource.getContentType() + "." + 
-                        resourceType.getValue(), title);
-            }
+        Property resourceType = resource.getProperty(Property.LOCAL_NAMESPACE,
+                "resource-type");
+
+        if (resourceType != null) {
+            messageCode += "." + resourceType.getValue();
+            title = springContext.getMessage(messageCode , title);
+        }
 
         return title;
     }

@@ -88,8 +88,8 @@ public class DefaultListMenuProvider implements Provider {
             
         this.label = label;
         this.modelName = modelName;
+        this.services = services;
         this.repository = repository;
-
     }
 
 
@@ -114,8 +114,8 @@ public class DefaultListMenuProvider implements Provider {
         List items = new ArrayList();
         MenuItem activeItem = null;
         
-        for (int i = 0; i < services.length; i++) {
-            Service service = services[i];
+        for (int i = 0; i < this.services.length; i++) {
+            Service service = this.services[i];
 
             String label = service.getName();
             String title = getTitle(resource, service, request);
@@ -126,8 +126,6 @@ public class DefaultListMenuProvider implements Provider {
                 // ok
             }
 
-            
-            
             MenuItem item = new MenuItem();
             item.setLabel(label);
             item.setTitle(title);

@@ -286,6 +286,7 @@ public class VortikalServlet extends DispatcherServlet {
                                  HttpServletResponse response) 
         throws ServletException, IOException {
         
+        StatusAwareResponseWrapper responseWrapper = new StatusAwareResponseWrapper(response);
 
         long startTime = System.currentTimeMillis();
         Throwable failureCause = null;
@@ -310,7 +311,7 @@ public class VortikalServlet extends DispatcherServlet {
                 this.repositoryContextInitializer.createContext(request);
 
                 if (securityInitializer != null
-                        && !securityInitializer.createContext(request, response)) {
+                        && !securityInitializer.createContext(request, responseWrapper)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Request " + request + " handled by " +
                                 "security initializer (authentication challenge)");
@@ -322,11 +323,11 @@ public class VortikalServlet extends DispatcherServlet {
                     requestContextInitializer.createContext(request);
                 }
                 
-                proceedService = checkLastModified(request, response);
+                proceedService = checkLastModified(request, responseWrapper);
 
                 if (proceedService) {
                     
-                    super.doService(request, response);
+                    super.doService(request, responseWrapper);
                 }
 
             } catch (AuthenticationException ex) {
@@ -346,7 +347,7 @@ public class VortikalServlet extends DispatcherServlet {
                 }
 
                 try {
-                    challenge.challenge(request, response);
+                    challenge.challenge(request, responseWrapper);
                 } catch (AuthenticationProcessingException e) {
                     logError(request, e);
                     throw new ServletException(
@@ -356,7 +357,7 @@ public class VortikalServlet extends DispatcherServlet {
 
             } catch (Throwable t) {
                 failureCause = t;
-                handleError(request, response, t);
+                handleError(request, responseWrapper, t);
             }
 
         } catch (AuthenticationProcessingException e) {
@@ -368,7 +369,7 @@ public class VortikalServlet extends DispatcherServlet {
 
             long processingTime = System.currentTimeMillis() - startTime;
 
-            logRequest(request, response, processingTime, !proceedService);
+            logRequest(request, responseWrapper, processingTime, !proceedService);
             securityInitializer.destroyContext();
             requestContextInitializer.destroyContext();
             Thread.currentThread().setName(threadName);
@@ -414,7 +415,7 @@ public class VortikalServlet extends DispatcherServlet {
 
 
 
-    private void logRequest(HttpServletRequest req, HttpServletResponse resp,
+    private void logRequest(HttpServletRequest req, StatusAwareResponseWrapper resp,
                             long processingTime, boolean wasCacheRequest) {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -422,7 +423,7 @@ public class VortikalServlet extends DispatcherServlet {
 
         String remoteHost = req.getRemoteHost();
         String request = req.getMethod() + " " + req.getRequestURI() + " "
-            + req.getProtocol();
+            + req.getProtocol() + " - " + resp.getStatus();
 
         Principal principal = null;
         String token = null;

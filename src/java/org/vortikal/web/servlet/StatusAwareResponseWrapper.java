@@ -67,6 +67,7 @@ public class StatusAwareResponseWrapper extends HttpServletResponseWrapper {
     
     public void sendRedirect(String location) throws IOException {
         this.status = HttpServletResponse.SC_MOVED_TEMPORARILY;
+        super.sendRedirect(location);
     }
     
 }

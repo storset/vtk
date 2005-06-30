@@ -423,7 +423,7 @@ public class VortikalServlet extends DispatcherServlet {
 
         String remoteHost = req.getRemoteHost();
         String request = req.getMethod() + " " + req.getRequestURI() + " "
-            + req.getProtocol() + " - " + resp.getStatus();
+            + req.getProtocol() + " - status: " + resp.getStatus();
 
         Principal principal = null;
         String token = null;

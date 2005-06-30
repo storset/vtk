@@ -36,6 +36,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -50,33 +53,65 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 /**
  * A reference data provider that supplies a populated {@link ListMenu}.
  *  
- * Constructor arguments:
+ * <p>Constructor arguments:
  * <ul>
  *  <li><code>repository</code> - the content repository
  *  <li><code>services</code> - required array of {@link Service}s to create ListMenu to 
  *  <li><code>label</code> - required MenyList type descriptor
- *  <li> <code>modelName</code> - the name to use as model key. The default is 'label', 
- *  override if you have multiple list menus with the same label. 
+ *  <li> <code>modelName</code> - the name to use as model key. The
+ *  default is 'label', override if you have multiple list menus with
+ *  the same label.
+ * </ul>
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>matchAncestorServices</code> - a boolean deciding
+ *   whether or not to check ancestors of the current service when
+ *   checking if a menu item is selected (or "active"). The default is
+ *   <code>false</code> (i.e. an exact service match is required).
  * </ul>
  * 
  * Model data provided:
  * <ul>
- *   <li><code>'modelName'</code> - a <code>ListMenu</code> item.
+ *   <li><code>'modelName'</code> - a {@link ListMenu} object. A note
+ *   about the <code>title</code> fields of this list menu's items: It
+ *   is looked up from message localization using the following steps:
+ *     <ol>
+ *       <li>A message key is constructed as follows:
+ *           <code>[label].[serviceName].[contentType].[resourceType]</code> where
+ *           <code>[serviceName]</code> is the name of the service and
+ *           <code>[contentType]</code> is the MIME type of the
+ *           resource. 
+ *           <code>[resourceType]</code> is the property 'resource-type'
+ *           in the namespace 'http://www.uio.no/vortex/custom-properties', and it is appended
+ *           only if it exists. A lookup attempt is then made using this key.
+ *       </li>
+ *       <li>If that lookup does not produce a message, the
+ *           <code>.[contentType]</code> and
+ *           <code>[resourceType]</code> suffices are removed from the
+ *           key, and the lookup is peformed again, using the service
+ *           name as the default value.  
+ *       </li>
+ *     </ol>
+ * </ul>
  * 
  */
 public class DefaultListMenuProvider implements Provider {
 
+    private static Log logger = LogFactory.getLog(DefaultListMenuProvider.class);
     private String modelName;
     private String label;
     private Repository repository;
     private Service[] services;
+    private boolean matchAncestorServices = false;
     
     
     public DefaultListMenuProvider(String label, Service[] services, Repository repository) {
         this(label, label, services, repository);
     }
 
-    public DefaultListMenuProvider(String label, String modelName, Service[] services, Repository repository) {
+    public DefaultListMenuProvider(String label, String modelName,
+                                   Service[] services, Repository repository) {
         if (label == null)
             throw new IllegalArgumentException("Argument 'label' cannot be null");
         if (modelName == null)
@@ -93,7 +128,10 @@ public class DefaultListMenuProvider implements Provider {
     }
 
 
-
+    public void setMatchAncestorServices(boolean matchAncestorServices) {
+        this.matchAncestorServices = matchAncestorServices;
+    }
+    
 
 
     public void referenceData(Map model, HttpServletRequest request)
@@ -131,23 +169,23 @@ public class DefaultListMenuProvider implements Provider {
             item.setTitle(title);
             item.setUrl(url);
 
-            if (service == currentService) {
+            if (activeItem == null && isActiveService(currentService, service)) {
                 item.setActive(true);
                 activeItem = item;
             }
+
             items.add(item);
         }
         
         menu.setItems((MenuItem[]) items.toArray(new MenuItem[items.size()]));
         menu.setActiveItem(activeItem);
-        
         model.put(modelName, menu);
-        // Create the shiznit
-        
-        
     }
 
-    private String getTitle(Resource resource, Service service, HttpServletRequest request) {
+
+
+    private String getTitle(Resource resource, Service service,
+                            HttpServletRequest request) {
 
         org.springframework.web.servlet.support.RequestContext springContext =
             new org.springframework.web.servlet.support.RequestContext(request);
@@ -169,5 +207,35 @@ public class DefaultListMenuProvider implements Provider {
 
         return title;
     }
+
+
+    /**
+     * Checks whether a service is "active" (that is, the current
+     * service of the request is either the same as, or a descendant
+     * of this service), depending on the value of
+     * <code>matchAncestorServices</code>.
+     *
+     * @param currentService the current service of the request
+     * @param service the service to check for
+     * @return if the service is active.
+     */
+    private boolean isActiveService(Service currentService, Service service) {
+
+        if (this.matchAncestorServices) {
+            Service s = currentService;
+            while (s != null) {
+                boolean match = false;
+                if (service == s) {
+                    return true;
+                }
+                s = s.getParent();
+            }
+            return false;
+        } else {
+            return (service == currentService);
+        }
+    }
+    
+
     
 }

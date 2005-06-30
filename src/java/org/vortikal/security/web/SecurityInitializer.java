@@ -134,13 +134,26 @@ public class SecurityInitializer {
                         new SecurityContext(token, tokenManager.getPrincipal(token));
                         
                     SecurityContext.setSecurityContext(securityContext);
-                    req.getSession(true).setAttribute(SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
-                            token);
+                    req.getSession(true).setAttribute(
+                        SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
+                        token);
 
                     if (!handler.postAuthentication(req, resp)) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(
+                                "Authentication post-processing completed by "
+                                + "authentication handler " + handler 
+                                + ", request processing will proceed");
+                        }
                         return true;
                     }
 
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
+                            "Authentication post-processing completed by "
+                            + "authentication handler " + handler 
+                            + ", response already committed.");
+                    }
                     return false;
                 
                 } catch (AuthenticationException exception) {
@@ -160,6 +173,14 @@ public class SecurityInitializer {
                 }
             }
         }
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                "Request " + req + " is not recognized as an authentication "
+                + "attempt by any authentication handler. Creating default "
+                + "security context.");
+        }
+
         SecurityContext.setSecurityContext(new SecurityContext(null, null));
         return true;
     }

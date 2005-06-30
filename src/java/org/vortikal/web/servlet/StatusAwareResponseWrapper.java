@@ -55,6 +55,11 @@ public class StatusAwareResponseWrapper extends HttpServletResponseWrapper {
         super.setStatus(sc);
     }
     
+    public void setStatus(int sc, String message) {
+        this.status = sc;
+        super.setStatus(sc, message);
+    }
+    
     public void sendError(int sc) throws IOException {
         this.status = sc;
         super.sendError(sc);

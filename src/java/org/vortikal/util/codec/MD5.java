@@ -34,6 +34,11 @@ package org.vortikal.util.codec;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+
+/**
+ * A utility class for computing MD5 checksums and returning the
+ * result in a hex string representation.
+ */
 public class MD5 {
     
 

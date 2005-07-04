@@ -30,6 +30,7 @@
  */
 package org.vortikal.security;
 
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.Map;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.vortikal.util.codec.MD5;
 
 
 /**
@@ -157,7 +159,7 @@ public class PropertyConfigurableMD5PrincipalStore
         
         String hash = getMD5HashString(principal.getQualifiedName());
         String clientHash = 
-            md5sum(principal.getQualifiedName() + ":" + realm + ":" + password); 
+            MD5.md5sum(principal.getQualifiedName() + ":" + realm + ":" + password); 
 
         if (hash == null || !hash.equals(clientHash)) {
             throw new AuthenticationException(
@@ -166,21 +168,5 @@ public class PropertyConfigurableMD5PrincipalStore
         }
     }
 
-
-    protected String md5sum(String str) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(str.getBytes());
-            StringBuffer result = new StringBuffer(2 * digest.length);
-            for (int i = 0; i < digest.length; ++i) {
-                int k = digest[i] & 0xFF;
-                if (k < 0x10) result.append('0');
-                result.append(Integer.toHexString(k));
-            }
-            return result.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                "MD5 digest not available in JVM");
-        }
-    }
 }
+

@@ -38,7 +38,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -49,6 +48,7 @@ import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.cache.SimpleCache;
+import org.vortikal.util.codec.Base64;
 import org.vortikal.util.codec.MD5;
 
 
@@ -128,9 +128,16 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         if (authHeader == null || !authHeader.startsWith("Basic ")) 
             return false;
 
-        String username = getUserName(req);
+        String username = null;
         Principal principal = null;
         
+        try {
+            username = getUserName(req);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidAuthenticationRequestException(e);
+        }
+
+
         try {
             principal = this.principalManager.getPrincipal(username);
         } catch (InvalidPrincipalException e) {
@@ -152,8 +159,17 @@ public abstract class AbstractHttpBasicAuthenticationHandler
 
     public Principal authenticate(HttpServletRequest request)
         throws AuthenticationProcessingException, AuthenticationException {
-        String username = getUserName(request);
-        String password = getPassword(request);
+
+        String username = null;
+        String password = null;
+        try {
+
+            username = getUserName(request);
+            password = getPassword(request);
+
+        } catch (IllegalArgumentException e) {
+            throw new InvalidAuthenticationRequestException(e);
+        }
 
         Principal principal = null;
         
@@ -223,7 +239,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
 
         String encodedString = authHeader.substring(
             "Basic ".length(), authHeader.length());
-        String decodedString = base64decode(encodedString);
+        String decodedString = Base64.decode(encodedString);
         int pos = decodedString.indexOf(":");
 
         if (pos == -1) {
@@ -246,23 +262,10 @@ public abstract class AbstractHttpBasicAuthenticationHandler
 
         String encodedString = authHeader.substring(
             "Basic ".length(), authHeader.length());
-        String decodedString = base64decode(encodedString);
+        String decodedString = Base64.decode(encodedString);
         String password = decodedString.substring(
             decodedString.indexOf(":") + 1, decodedString.length());
 
         return password;
     }
-    
-
-    protected String base64encode(String str) {
-        Base64 encoder = new Base64();
-        return new String(encoder.encode(str.getBytes()));
-    }
-   
-   
-    protected String base64decode(String str) { 
-        Base64 decoder = new Base64();
-        return new String(decoder.decode(str.getBytes()));
-    }
-
 }

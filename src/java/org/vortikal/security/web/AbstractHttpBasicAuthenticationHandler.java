@@ -49,6 +49,7 @@ import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.cache.SimpleCache;
+import org.vortikal.util.codec.MD5;
 
 
 
@@ -164,7 +165,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
 
         if (cache != null) {
             Principal cachedPrincipal = (Principal) 
-                this.cache.get(md5sum(principal.getQualifiedName() + password));
+                this.cache.get(MD5.md5sum(principal.getQualifiedName() + password));
         
             if (cachedPrincipal != null) {
                 if (logger.isDebugEnabled())
@@ -177,7 +178,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         
         if (cache != null)
             /* add to cache */
-            cache.put(md5sum(principal.getQualifiedName() + password), principal);
+            cache.put(MD5.md5sum(principal.getQualifiedName() + password), principal);
 
         return principal;
     }
@@ -223,8 +224,14 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         String encodedString = authHeader.substring(
             "Basic ".length(), authHeader.length());
         String decodedString = base64decode(encodedString);
+        int pos = decodedString.indexOf(":");
+
+        if (pos == -1) {
+            throw new IllegalArgumentException("Malformed 'Authorization' header");
+        }
+
         String username = decodedString.substring(
-            0, decodedString.indexOf(":"));
+            0, pos);
         return username;
     }
 
@@ -253,25 +260,9 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     }
    
    
-    protected String base64decode(String str) {
+    protected String base64decode(String str) { 
         Base64 decoder = new Base64();
         return new String(decoder.decode(str.getBytes()));
     }
 
-    protected String md5sum(String str) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(str.getBytes());
-            StringBuffer result = new StringBuffer(2 * digest.length);
-            for (int i = 0; i < digest.length; ++i) {
-                int k = digest[i] & 0xFF;
-                if (k < 0x10) result.append('0');
-                result.append(Integer.toHexString(k));
-            }
-            return result.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                "MD5 digest not available in JVM");
-        }
-    }
 }

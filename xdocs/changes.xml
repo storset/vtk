@@ -11,6 +11,10 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="update">
+        Added API support for rejecting invalid authentication requests.
+      </action>
+
+      <action dev="gormap" type="update">
         Added HTTP status codes to request/access logging.
       </action>
 

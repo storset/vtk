@@ -63,9 +63,12 @@ public interface AuthenticationHandler {
      * @param req the request in question
      * @return <code>true</code> if the request is a recognized
      * authentication request, <code>false</code> otherwise.
+     * @throws AuthenticationProcessingException if a system error occurs
+     * @throws InvalidAuthenticationRequestException if the
+     * authentication request is not valid
      */
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)
-        throws AuthenticationProcessingException;
+        throws AuthenticationProcessingException, InvalidAuthenticationRequestException;
     
     /**
      * Authenticates a request. 
@@ -75,9 +78,13 @@ public interface AuthenticationHandler {
      * prevented the request from being processed
      * @throws AuthenticationException if the request was not
      * successfully authenticated
+     * @throws AuthenticationProcessingException if a system error occurs
+     * @throws InvalidAuthenticationRequestException if the
+     * authentication request is not valid
      */
     public Principal authenticate(HttpServletRequest req)
-        throws AuthenticationProcessingException, AuthenticationException;
+        throws AuthenticationProcessingException, AuthenticationException,
+        InvalidAuthenticationRequestException;
 
 
     /**
@@ -92,10 +99,12 @@ public interface AuthenticationHandler {
      * method returns, or <code>true</code>, indicating that the
      * authentication handler has written the response (e.g. sent a
      * redirect, etc.)
-     * @exception AuthenticationProcessingException if an error occurs
+     * @throws AuthenticationProcessingException if a system error occurs
+     * @throws InvalidAuthenticationRequestException if the
+     * authentication request is not valid
      */
     public boolean postAuthentication(HttpServletRequest req, HttpServletResponse resp)
-        throws AuthenticationProcessingException;
+        throws AuthenticationProcessingException, InvalidAuthenticationRequestException;
     
 
 

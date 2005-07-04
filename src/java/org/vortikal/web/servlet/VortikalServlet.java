@@ -56,6 +56,7 @@ import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.web.AuthenticationChallenge;
+import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.util.Version;
 import org.vortikal.util.web.URLUtil;
@@ -364,6 +365,10 @@ public class VortikalServlet extends DispatcherServlet {
             logError(request, e);
             throw new ServletException(
                 "Fatal processing error while performing authentication", e);
+
+        } catch (InvalidAuthenticationRequestException e) {
+            logError(request, e);
+            responseWrapper.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         } finally {
 

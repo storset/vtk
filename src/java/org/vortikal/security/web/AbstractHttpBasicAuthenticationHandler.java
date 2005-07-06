@@ -30,18 +30,17 @@
  */
 package org.vortikal.security.web;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
@@ -50,7 +49,6 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.Base64;
 import org.vortikal.util.codec.MD5;
-
 
 
 /**

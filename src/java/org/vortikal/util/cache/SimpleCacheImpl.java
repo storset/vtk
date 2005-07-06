@@ -100,12 +100,13 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware {
     /**
      * @see org.vortikal.util.cache.SimpleCache#remove(java.lang.Object)
      */
-    public void remove(Object key) {
+    public Object remove(Object key) {
         if (cache.containsKey(key)) {
             synchronized (cache) {
-                cache.remove(key);
+                return ((Item) cache.remove(key)).getValue();
             }
         }
+        return null;
     }
 
     /**

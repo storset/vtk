@@ -40,7 +40,7 @@ public interface SimpleCache {
     
     public Object get(Object key);
     
-    public void remove(Object key);
+    public Object remove(Object key);
     
     public void cleanupExpiredItems();
 }

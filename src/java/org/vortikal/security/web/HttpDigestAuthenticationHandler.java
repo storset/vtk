@@ -117,6 +117,10 @@ public class HttpDigestAuthenticationHandler
         this.stateMap = stateMap;
     }
     
+    public void setMaintainState(boolean maintainState) {
+        this.maintainState = maintainState;
+    }
+    
     public void afterPropertiesSet() {
         if (this.principalStore == null) {
             throw new BeanInitializationException(

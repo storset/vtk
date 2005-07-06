@@ -307,9 +307,9 @@ VALUES (
     sysdate,
     sysdate,
     sysdate,
-    'vortex',
-    'vortex',
-    'vortex',
+    'vortex@localhost',
+    'vortex@localhost',
+    'vortex@localhost',
     '/',
     null,
     'application/x-vortex-collection',
@@ -335,7 +335,7 @@ VALUES (
     1,
     'dav:authenticated',
     'Y',
-    'vortex',
+    'vortex@localhost',
     sysdate
 );    
 
@@ -356,7 +356,7 @@ VALUES (
     4,
     'dav:all',
     'Y',
-    'vortex',
+    'vortex@localhost',
     sysdate
 );    
 
@@ -377,7 +377,7 @@ VALUES (
     1,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     sysdate
 );    
 
@@ -397,7 +397,7 @@ VALUES (
     2,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     sysdate
 );    
 
@@ -417,6 +417,6 @@ VALUES (
     3,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     sysdate
 );    

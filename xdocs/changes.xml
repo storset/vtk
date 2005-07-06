@@ -10,6 +10,10 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="add">
+        Added preliminary support for HTTP/Digest authentication.
+      </action>
+
       <action dev="storset" type="fix">
         Fixed nullpointer in plaintext edit. 
       </action>
@@ -22,6 +26,7 @@
       <action dev="storset" type="update">Reworked/generalized
       categorizable functionality</action>
 
+>>>>>>> .r440
       <action dev="gormap" type="update">
         Added API support for rejecting invalid authentication requests.
       </action>

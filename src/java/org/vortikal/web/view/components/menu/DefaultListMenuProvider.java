@@ -61,6 +61,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  <li> <code>modelName</code> - the name to use as model key. The
  *  default is 'label', override if you have multiple list menus with
  *  the same label.
+ *  <li> <code>matchAssertions</code> - boolean defaults to <code>true</code>,
+ *  if the link construction should match assertion. 
  * </ul>
  *
  * <p>Configurable JavaBean properties:
@@ -104,14 +106,17 @@ public class DefaultListMenuProvider implements Provider {
     private Repository repository;
     private Service[] services;
     private boolean matchAncestorServices = false;
-    
+    private boolean matchAssertions;
     
     public DefaultListMenuProvider(String label, Service[] services, Repository repository) {
-        this(label, label, services, repository);
+        this(label, label, true, services, repository);
     }
 
     public DefaultListMenuProvider(String label, String modelName,
                                    Service[] services, Repository repository) {
+        this(label, modelName, true, services, repository);
+    }
+        public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services, Repository repository) {
         if (label == null)
             throw new IllegalArgumentException("Argument 'label' cannot be null");
         if (modelName == null)
@@ -125,8 +130,10 @@ public class DefaultListMenuProvider implements Provider {
         this.modelName = modelName;
         this.services = services;
         this.repository = repository;
+        this.matchAssertions = matchAssertions;
     }
 
+    
 
     public void setMatchAncestorServices(boolean matchAncestorServices) {
         this.matchAncestorServices = matchAncestorServices;
@@ -159,7 +166,7 @@ public class DefaultListMenuProvider implements Provider {
             String title = getTitle(resource, service, request);
             String url = null;
             try {
-                url = service.constructLink(resource, principal);
+                url = service.constructLink(resource, principal, this.matchAssertions);
             } catch (ServiceUnlinkableException ex) {
                 // ok
             }

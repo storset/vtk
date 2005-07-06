@@ -79,6 +79,8 @@ import org.vortikal.web.service.Service;
  *   when user (required) cancels the operation
  *   <li><code>lockTimeoutSeconds</code> - the number of seconds for
  *   which to request lock timeouts on every request (default is 300)
+ *  <li><code>defaultCharacterEncoding - defaults to 'utf-8', which 
+ *  encoding to enterpret the supplied resource content in, if unable to guess.
  * </ul>
  */
 public class PlaintextEditController extends SimpleFormController
@@ -92,7 +94,7 @@ public class PlaintextEditController extends SimpleFormController
     private String cancelView = null;
     private Repository repository = null;
     private int lockTimeoutSeconds = 300;
-    
+    private String defaultCharacterEncoding = "utf-8";
     
     /**
      * Sets the repository.
@@ -337,50 +339,66 @@ public class PlaintextEditController extends SimpleFormController
         int len = MAX_XML_DECLARATION_SIZE;
         BufferedReader reader = null;
         InputStream inStream = null;
-        String characterEncoding = "utf-8";
+        String characterEncoding = this.defaultCharacterEncoding;
       
         try {
             if (logger.isDebugEnabled())
                 logger.debug("Opening document " + resource.getURI());
             inStream = repository.getInputStream(
                 token, resource.getURI(), false);
+            
             reader = new BufferedReader(new InputStreamReader(
                                             inStream, "utf-8"));
-            
+
             char[] chars = new char[len];
             int read = reader.read(chars, 0, len);
-
+            
+            // resource didn't have content;
+            if (read == -1)
+                return this.defaultCharacterEncoding;
+                
             String string = new String(chars, 0, read);
+
             Matcher m = charsetPattern.matcher(string);
 
-            if (m.matches()) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Regexp match in XML declaration for pattern "
-                                 + charsetPattern.pattern());
-                characterEncoding = m.group(1);
-            } else {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("No regexp match in XML declaration for pattern "
-                                 + charsetPattern.pattern());
+            if (!m.matches()) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("No regexp match in XML declaration for pattern "
+                                     + charsetPattern.pattern());
+                    return this.defaultCharacterEncoding;
             }
             
+            if (logger.isDebugEnabled())
+                logger.debug("Regexp match in XML declaration for pattern "
+                        + charsetPattern.pattern());
+            characterEncoding = m.group(1);
+
             try {
                 Charset.forName(characterEncoding);
             } catch (Exception e) {
                 if (logger.isDebugEnabled())
                     logger.debug(
-                        "Invalid character encoding '" + characterEncoding
-                        + "' for XML document " + resource + ", using utf-8");
-                characterEncoding = "utf-8";
+                            "Invalid character encoding '" + characterEncoding
+                            + "' for XML document " + resource + ", using utf-8");
+                return this.defaultCharacterEncoding;
             }
+                        
         } catch (IOException e) {
             logger.warn("Unexpected IO exception while performing "
                         + "XML charset regexp matching on resource "
                         + resource, e);
+            return this.defaultCharacterEncoding;
         }
 
         return characterEncoding;
+    }
+
+
+    /**
+     * @param defaultCharacterEncoding The defaultCharacterEncoding to set.
+     */
+    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
+        this.defaultCharacterEncoding = defaultCharacterEncoding;
     }
 }
 

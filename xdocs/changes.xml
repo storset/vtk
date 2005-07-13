@@ -10,6 +10,10 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="storset" type="add">
+        Added ...util.beans.comparator and two bean comparators
+      </action>
+
       <action dev="gormap" type="add">
         Added preliminary support for HTTP/Digest authentication.
       </action>

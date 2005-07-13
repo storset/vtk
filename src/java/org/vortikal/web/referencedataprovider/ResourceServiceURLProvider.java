@@ -41,30 +41,37 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
+
 
 /**
  * URL (link) reference data provider. Puts a URL to the requested
  * resource that is constructed using a configured service in a
  * submodel.
  * 
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
- *  <li> <code>repository</code> - the content repository
- *  <li> <code>modelName</code> - the name to use for the submodel generated
- *  <li> <code>service</code> - the service used to construct the URL
- *  <li> <code>matchAssertions</code> - whether to require that all
- *       assertions must match when constructing links (default is false)
- *  <li> <code>urlName</code> - the name to use for the url in the submodel
+ *  <li><code>repository</code> - the content {@link Repository repository}
+ *  <li><code>modelName</code> - the name to use for the submodel generated
+ *  <li><code>service</code> - the {@link Service} used to construct the URL
+ *  <li><code>linkToParent</code> - if this property is set to
+ *  <code>true</code>, the parent resource is used for URL
+ *  construction instead of the requested resource. The default is
+ *  <code>false</code>.
+ *  <li><code>matchAssertions</code> - whether to require that all
+ *  assertions must match when constructing links (default is
+ *  <code>false</code>)
+ *  <li><code>urlName</code> - the name to use for the url in the submodel
  * </ul>
  * 
  * <p>Model data provided:
  * <ul>
  *   <li><code>url</code> - the URL of the resource. If it could not
- *       be constructed for some reason, <code>null</code> is supplied
- *       as the value.</li>
+ *   be constructed for some reason, <code>null</code> is supplied
+ *   as the value.
  * </ul>
  * 
  */
@@ -74,22 +81,24 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
     private Service service = null;
     private Repository repository = null;
     private boolean matchAssertions = false;
+    private boolean linkToParent = false;
     private String urlName = "url";
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
     
-
     public void setService(Service service) {
         this.service = service;
     }
     
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
+    public void setLinkToParent(boolean linkToParent) {
+        this.linkToParent = linkToParent;
+    }
 
     public void setMatchAssertions(boolean matchAssertions) {
         this.matchAssertions = matchAssertions;
@@ -99,7 +108,6 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
         this.urlName = urlName;
     }
     
-
     public void afterPropertiesSet() {
         if (this.modelName == null) {
             throw new BeanInitializationException(
@@ -118,30 +126,42 @@ public class ResourceServiceURLProvider implements Provider, InitializingBean {
 
 
     public void referenceData(Map model, HttpServletRequest request)
-            throws Exception {
+        throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         Principal principal = securityContext.getPrincipal();
-        Resource resource = repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(),
-                                                true);
+
+        Resource resource = null;
+        String uri = requestContext.getResourceURI();
+        if (this.linkToParent) {
+            uri = URIUtil.getParentURI(uri);
+        }
+
+        try {
+            if (uri != null) {
+                resource = repository.retrieve(
+                    securityContext.getToken(), uri, true);
+            }
+        } catch (Throwable t) { }
 
         Map urlMap = (Map) model.get(this.modelName);
-
         if (urlMap == null) {
             urlMap = new HashMap();
         }
 
         String url = null;
         try {
-            url = this.service.constructLink(resource, principal,
-                                             this.matchAssertions);
-            urlMap.put(urlName, url);
-        } catch (ServiceUnlinkableException ex) {
-            urlMap.put(urlName, null);
-        }
-        model.put(modelName, urlMap);
+            if (resource != null) {
+                url = this.service.constructLink(resource, principal,
+                                                 this.matchAssertions);
+            }
+        } catch (ServiceUnlinkableException ex) { }
+
+        urlMap.put(this.urlName, url);
+        model.put(this.modelName, urlMap);
     }
+
+
 }

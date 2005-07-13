@@ -66,6 +66,7 @@ public class URIUtil {
         return parentURI + "/" + path;
     }
 
+
     public static String makeAbsoluteURI(String ref, String base) {
         if (ref.startsWith("/")) return ref;
 
@@ -84,6 +85,44 @@ public class URIUtil {
         
     }
 
+
+    /**
+     * Finds the parent of a URI.
+     * 
+     * @param uri the URI for which to find the parent. Must start
+     * with a <code>/</code>.
+     * @return the expanded URI. If the provided URI is the root URI
+     * <code>/</code>, <code>null</code> is returned.
+     * @throws IllegalArgumentException if the provided URI does not
+     * start with a slash, or if it ends with a slash (and is not the
+     * root URI: <code>/</code>).
+     */
+    public static String getParentURI(String uri) {
+        if (uri == null || uri.trim().equals("") || !uri.startsWith("/")) {
+            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
+        }
+
+        if ("/".equals(uri)) {
+            return null;
+        }
+
+        if (uri.endsWith("/")) {
+            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
+        }
+
+        String parentURI = uri.substring(0, uri.lastIndexOf("/"));
+        if (parentURI.equals("")) {
+            return "/";
+        }
+
+        if (parentURI.startsWith("//") || parentURI.endsWith("/")) {
+            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
+        }
+
+        return parentURI;
+    }
+    
+
     /**
      * Expands '../' strings in resource URIs. 
      * 
@@ -99,7 +138,7 @@ public class URIUtil {
         // Test to check that start of URI is legal path (e.g. UNIX '/', WINDOWS 'C:')
         // [using string test and regex checking]
         if ( !uri.startsWith("/") && (!uri.substring(0,2).matches("[c-zA-Z]:")) ) {
-            System.out.print("URI cannot be relative.");            
+            System.out.print("URI cannot be relative.");
         }
 
         if (uri.startsWith("/../")) {

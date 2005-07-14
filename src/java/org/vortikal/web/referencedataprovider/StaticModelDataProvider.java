@@ -41,10 +41,10 @@ import org.springframework.beans.factory.InitializingBean;
  * A reference data provider that puts static data in the model under
  * a configurable model name.
  *
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
- *  <li> <code>modelName</code> - the name to use for the submodel
- *  <li> <code>modelData</code> - an {@link Object} representing the model data
+ *  <li><code>modelName</code> - the name to use for the submodel
+ *  <li><code>modelData</code> - an {@link Object} representing the model data
  * </ul>
  * 
  * <p>Model data provided:

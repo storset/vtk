@@ -39,12 +39,12 @@ import org.vortikal.security.Principal;
 
 /**
  * Assertion on the URL protocol fragment.
- * Legal values are <code>http</code> and <code>https</code>.
  *
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
  *   <lI><code>protocol</code> - the name of the protocol. Legal
- *   values are <code>http</code> and <code>https</code>.
+ *   values are <code>*</code> (match any), <code>http</code> and
+ *   <code>https</code>.
  * </ul>
  */
 public class RequestProtocolAssertion implements Assertion {
@@ -58,17 +58,22 @@ public class RequestProtocolAssertion implements Assertion {
     
 
     public void setProtocol(String protocol) {
-        if ("http".equals(protocol) || "https".equals(protocol)) {
+        if ("http".equals(protocol) || "https".equals(protocol) || "*".equals(protocol)) {
             this.protocol = protocol;
         } else {
             throw new IllegalArgumentException(
-                "Only http and https are supported protocols");
+                "Values '*', 'http' and 'https' are supported for the 'protocol' property");
         }
     }
 
 
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestProtocolAssertion) {
+            if ("*".equals(this.protocol) ||
+                "*".equals(((RequestProtocolAssertion) assertion).getProtocol())) {
+                return false;
+            }
+
             return ! (this.protocol.equals(
                           ((RequestProtocolAssertion)assertion).getProtocol()));
         }
@@ -86,14 +91,21 @@ public class RequestProtocolAssertion implements Assertion {
     }
 
 
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        url.setProtocol(this.protocol);
+    public boolean processURL(URL url, Resource resource,
+                              Principal principal, boolean match) {
+        if (!"*".equals(this.protocol)) {
+            url.setProtocol(this.protocol);
+        }
         return true;
     }
 
 
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        if ("http".equals(protocol))
+    public boolean matches(HttpServletRequest request, Resource resource,
+                           Principal principal) {
+        if ("*".equals(this.protocol)) {
+            return true;
+        }
+        if ("http".equals(this.protocol))
             return !request.isSecure();
         
         return request.isSecure();

@@ -38,26 +38,41 @@ import org.vortikal.security.Principal;
 
 /**
  * Assertion matching on request port numbers.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>port</code> - either the string <code>*</code> meaning
+ *   'match all ports', or a port number (a positive integer)
+ * </ul>
  */
 public class RequestPortAssertion
   implements Assertion {
 
     private int port = -1;
 	
-    public void setPort(int port) {
-        if (port <= 0) throw new IllegalArgumentException(
-            "Server port number must be a positive integer");
+    public void setPort(String port) {
 		
-        this.port = port;
+        if (!"*".equals(port)) {
+            this.port = Integer.parseInt(port);
+            if (this.port <= 0) throw new IllegalArgumentException(
+                "Server port number must be a positive integer");
+        }
     }
 	
-    public int getPort() {
-        return port;
+
+    public int getPortNumber() {
+        return this.port;
     }
 	
+
     public boolean conflicts(Assertion assertion) {
+
         if (assertion instanceof RequestPortAssertion) {
-            return (this.port  != ((RequestPortAssertion)assertion).getPort());
+            if (this.port == -1 ||
+                ((RequestPortAssertion)assertion).getPortNumber() == -1) {
+                return false;
+            }
+            return (this.port  != ((RequestPortAssertion)assertion).getPortNumber());
         }
         return false;
     }
@@ -67,17 +82,28 @@ public class RequestPortAssertion
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; port = ").append(this.port);
-
+        if (this.port == -1) {
+            sb.append("; port = *");
+        } else {
+            sb.append("; port = ").append(this.port);
+        }
         return sb.toString();
     }
 
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        url.setPort(new Integer(this.port));
+
+    public boolean processURL(URL url, Resource resource, Principal principal,
+                              boolean match) {
+        if (this.port != -1) {
+            url.setPort(new Integer(this.port));
+        }
         return true;
     }
 
+
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        if (this.port == -1) {
+            return true;
+        }
         return port == request.getServerPort();
     }
 

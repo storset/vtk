@@ -10,6 +10,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="update">
+        Wildcards ('*') are now allowed in port and protocol
+        assertions.
+      </action>
+
       <action dev="storset" type="add">
         Added ...util.beans.comparator and two bean comparators
       </action>

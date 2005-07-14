@@ -10,6 +10,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="add">
+        Added a handler interceptor that redirects to a re-written URL
+        when the request URI matches a given regular expression
+      </action>
+
       <action dev="gormap" type="update">
         Wildcards ('*') are now allowed in port and protocol
         assertions.
@@ -35,7 +40,6 @@
       <action dev="storset" type="update">Reworked/generalized
       categorizable functionality</action>
 
->>>>>>> .r440
       <action dev="gormap" type="update">
         Added API support for rejecting invalid authentication requests.
       </action>

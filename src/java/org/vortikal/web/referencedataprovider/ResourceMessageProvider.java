@@ -50,13 +50,18 @@ import org.vortikal.web.service.Assertion;
 /**
  * A reference data provider that puts a message in the model, based
  * on the current resource. The current resource is either determined
- * trough the {@link ResourceContext}, or trough looking in the model.
+ * trough the {@link RequestContext}, or trough looking in the model.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>resourceInModelKey</code> - the key used when looking
- *   up the resource object in the model. If <code>null</code>, the
- *   resource is retrieved using the {@link ResourceContext}
+ *   up the resource object in the model. If the property is left
+ *   unspecified (<code>null</code>), the resource is retrieved using
+ *   the {@link RequestContext}. This property supports iterated
+ *   lookups (in maps only), using a dot (<code>.</code>) syntax,
+ *   i.e. if the key is <code>foo.bar</code>, the model is first
+ *   examined for the map of key <code>foo</code>. If that map exists,
+ *   it is in turn examined for the resource of key <code>bar</code>.
  *   <li><code>localizationKey</code> - the localization key to use
  *   when looking up the message to display in the model. The
  *   resource's name is used as a parameter.
@@ -143,6 +148,10 @@ public class ResourceMessageProvider implements Provider, InitializingBean {
             if (this.assertions != null) {
                 for (int i = 0; i < this.assertions.length; i++) {
                     if (!this.assertions[i].matches(request, resource, principal)) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Assertion " + this.assertions[i]
+                                         + " did not match for resource " + resource);
+                        }
                         proceed = false;
                         break;
                     }

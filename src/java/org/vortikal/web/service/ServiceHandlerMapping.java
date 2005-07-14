@@ -44,11 +44,12 @@ import org.vortikal.web.RequestContext;
 
 
 /**
- * HandlerMapping which uses a service tree to resolve the handler to
- * delegate the request to. Note: this handler mapper must be
- * configured in the application context in order for the Vortex
- * framework to be able to function correctly (i.e. map requests to
- * the correct handler based on the current service).
+ * A {@link HandlerMapping} that uses a {@link Service service tree}
+ * to resolve the handler to delegate the request to.
+ *
+ * <p>Note: this handler mapper must be configured in the application
+ * context in order for the framework to be able to map requests to
+ * the correct handler based on the current service.
  */
 public class ServiceHandlerMapping implements HandlerMapping {
 
@@ -58,7 +59,8 @@ public class ServiceHandlerMapping implements HandlerMapping {
      * @param request current HTTP request
      * @return the looked up handler instance, or the default handler
      */
-    public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+    public final HandlerExecutionChain getHandler(HttpServletRequest request)
+        throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext == null) {
@@ -102,6 +104,7 @@ public class ServiceHandlerMapping implements HandlerMapping {
 
         return controller;
     }
+
 
     private List getHandlerInterceptors(Service service) {
         List handlerInterceptors = new ArrayList();

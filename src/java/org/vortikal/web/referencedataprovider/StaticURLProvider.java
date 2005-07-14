@@ -30,11 +30,10 @@
  */
 package org.vortikal.web.referencedataprovider;
 
-
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 

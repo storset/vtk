@@ -1,0 +1,217 @@
+/* Copyright (c) 2005, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.web.referencedataprovider;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Assertion;
+
+/**
+ * A reference data provider that puts a message in the model, based
+ * on the current resource. The current resource is either determined
+ * trough the {@link ResourceContext}, or trough looking in the model.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>resourceInModelKey</code> - the key used when looking
+ *   up the resource object in the model. If <code>null</code>, the
+ *   resource is retrieved using the {@link ResourceContext}
+ *   <li><code>localizationKey</code> - the localization key to use
+ *   when looking up the message to display in the model. The
+ *   resource's name is used as a parameter.
+ *   <li><code>repository</code> - the {@link Repository} to retrieve
+ *   resources from. Only needed when configuration property
+ *   <code>resourceInModelKey</code> is not specified.
+ *   <li><code>modelName</code> - the name to use for the sub-model in
+ *   the main model. 
+ *   <li><code>assertions</code> - an array of {@link Assertion
+ *   assertions} that must match in order for the message to be
+ *   provided.
+ * </ul>
+ *
+ * <p>Model data provided:
+ * <ul>
+ *   <li>the localized message (in a sub-model whose name is
+ *   configurable trough the <code>modelName</code> JavaBean property)
+ * </ul>
+ * 
+ */
+public class ResourceMessageProvider implements Provider, InitializingBean {
+
+    private Log logger = LogFactory.getLog(this.getClass());
+
+    private String resourceInModelKey;
+    private String localizationKey;
+    private Repository repository;
+    private String modelName;
+    private Assertion[] assertions;
+
+
+    public void setResourceInModelKey(String resourceInModelKey) {
+        this.resourceInModelKey = resourceInModelKey;
+    }
+
+    public void setLocalizationKey(String localizationKey) {
+        this.localizationKey = localizationKey;
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public void setAssertions(Assertion[] assertions) {
+        this.assertions = assertions;
+    }
+    
+
+    public void afterPropertiesSet() {
+
+        if (this.localizationKey == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'localizationKey' not set");
+        }
+
+        if (this.modelName == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'modelName' not set");
+        }
+
+        if (this.resourceInModelKey == null && this.repository == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'repository' must be set when property "
+                + "'resourceInModelKey' is null");
+        }
+    }
+    
+
+
+    public void referenceData(Map model, HttpServletRequest request)
+            throws Exception {
+
+        Resource resource = getResource(model, request);
+        String message = null;
+        if (resource != null) {
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            Principal principal = securityContext.getPrincipal();
+            boolean proceed = true;
+
+            if (this.assertions != null) {
+                for (int i = 0; i < this.assertions.length; i++) {
+                    if (!this.assertions[i].matches(request, resource, principal)) {
+                        proceed = false;
+                        break;
+                    }
+                }
+            }
+
+            if (proceed) {
+
+                org.springframework.web.servlet.support.RequestContext springContext =
+                    new org.springframework.web.servlet.support.RequestContext(request);
+                message = springContext.getMessage(this.localizationKey,
+                                                   new Object[] { resource.getName() },
+                                                   this.localizationKey);
+            }
+        }
+
+        model.put(this.modelName, message);
+    }
+    
+
+    private Resource getResource(Map model, HttpServletRequest request) {
+        Resource resource = null;
+
+        // Try to locate the resource in the model:
+        if (this.resourceInModelKey != null) {
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Trying to locate resource in model with key '"
+                             + this.resourceInModelKey+ "'");
+            }
+
+
+            String[] accessors = this.resourceInModelKey.split("\\.");
+            Map m = model;
+            for (int i = 0; i < accessors.length; i++) {
+                Object o = m.get(accessors[i]);
+                if (o == null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Key '" + accessors[i] + "' not present in model");
+                    }
+                    return null;
+                }
+                if (i < accessors.length - 1 && (o instanceof Map)) {
+                    m = (Map) o;
+
+                } else if (i < accessors.length - 1 && ! (o instanceof Map)) {
+                    return null;
+
+                } else if (i == accessors.length - 1 && (o instanceof Resource)) {
+                    return (Resource) o;
+                } 
+            }
+            // No resource was found in model:
+            return null;
+        }
+
+        try {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            resource = this.repository.retrieve(securityContext.getToken(),
+                                                requestContext.getResourceURI(),
+                                                true);
+            return resource;
+
+        } catch (Throwable t) {
+            return null;
+        }
+
+    }
+    
+
+}

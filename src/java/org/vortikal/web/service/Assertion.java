@@ -63,6 +63,10 @@ public interface Assertion {
      * constructed
      * @param principal the authenticated principal for which the URL
      * is being constructed
+     * @return <code>true</code> if the <code>match</code> parameter
+     * is <code>true</code> and the assertion matches, and
+     * <code>false</code> otherwise (this signals that the URL cannot
+     * be constructed).
      */
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match);
 

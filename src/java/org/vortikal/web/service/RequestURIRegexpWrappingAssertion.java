@@ -106,7 +106,8 @@ public class RequestURIRegexpWrappingAssertion
     }
 
 
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+    public boolean processURL(URL url, Resource resource,
+                              Principal principal, boolean match) {
         if (this.uriPattern != null) {
             Matcher m = this.uriPattern.matcher(url.getPath());
             if (!m.find()) {
@@ -120,7 +121,8 @@ public class RequestURIRegexpWrappingAssertion
     }
 
 
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+    public boolean matches(HttpServletRequest request, Resource resource,
+                           Principal principal) {
         if (this.uriPattern != null) {
             Matcher m = this.uriPattern.matcher(request.getRequestURI());
             if (!m.find()) {

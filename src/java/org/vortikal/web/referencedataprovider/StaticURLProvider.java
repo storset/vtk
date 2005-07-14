@@ -56,6 +56,7 @@ import org.springframework.beans.factory.InitializingBean;
  * <ul>
  *   <li><code>url</code> - the URL
  *   <li><code>description</code> - the (possibly localized) description
+ *   <li><code>target</code> - the target (its value may be null)
  * </ul>
  * 
  */
@@ -64,6 +65,7 @@ public class StaticURLProvider implements Provider, InitializingBean {
     private String modelName = null;
     private String url = null;
     private String descriptionKey = null;
+    private String target = null;
 
 
 
@@ -77,6 +79,11 @@ public class StaticURLProvider implements Provider, InitializingBean {
 
     public void setDescriptionKey(String descriptionKey) {
         this.descriptionKey = descriptionKey;
+    }
+    
+
+    public void setTarget(String target) {
+        this.target = target;
     }
     
 
@@ -110,6 +117,7 @@ public class StaticURLProvider implements Provider, InitializingBean {
         Map urlModel = new HashMap();
         urlModel.put("url", this.url);
         urlModel.put("description", description);
+        urlModel.put("target", this.target);
         model.put(this.modelName, urlModel);
     }
 }

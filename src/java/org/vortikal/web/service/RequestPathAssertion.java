@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,41 +32,31 @@ package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 
 /**
- * FIXME: should be resourceuri?
- * Assertion that matches when the request URI starts with a specified prefix.
+ * Assertion that matches when the request URI matches a specified uri
+ * 
+ * <p>Properties:
+ * 
+ * <ul><li><code>path</code> - the path string to match against
  */
-public class RequestUriPrefixAssertion
-  implements Assertion {
+public class RequestPathAssertion implements Assertion, InitializingBean {
 
-    private String prefix;
-	
-    public String getPrefix() {
-        return this.prefix;
-    }
-	
-    public void setPrefix(String prefix) {
-        if (this.prefix == null) throw new IllegalArgumentException(
-            "Prefix not specified, is null");
-
-        if (!this.prefix.startsWith("/")) throw new IllegalArgumentException(
-            "Prefix must start with a '/' character");
-
-        if (this.prefix.endsWith("/")) throw new IllegalArgumentException(
-            "Prefix must not end with a '/' character");
-
-        this.prefix = prefix;
-    }
+    private String path;
+    
+    public void setPath(String path) {
+        this.path = path;
+    }    
     
 
     public boolean conflicts(Assertion assertion) {
-        if (assertion instanceof RequestUriPrefixAssertion) {
-            return ! (this.prefix.equals(
-                          ((RequestUriPrefixAssertion)assertion).getPrefix()));
+        if (assertion instanceof RequestPathAssertion) {
+            return ! (this.path.equals(
+                          ((RequestPathAssertion)assertion).getPath()));
         }
         return false;
     }
@@ -76,19 +66,41 @@ public class RequestUriPrefixAssertion
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; prefix = ").append(this.prefix);
+        sb.append("; path = ").append(this.path);
 
         return sb.toString();
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        String path = url.getPath();
-        url.setPath(this.prefix + path);
+        url.setPath(this.path);
         return true;
     }
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        return request.getRequestURI().startsWith(this.prefix);
+        return request.getRequestURI().equals(this.path);
+    }
+
+
+    /**
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet() throws Exception {
+        if (this.path == null) throw new IllegalArgumentException(
+        "Property path cannot be null");
+
+    if (!this.path.startsWith("/")) throw new IllegalArgumentException(
+        "Prefix must start with a '/' character");
+
+    if (this.path.endsWith("/")) throw new IllegalArgumentException(
+        "Prefix must not end with a '/' character");        
+    }
+
+
+    /**
+     * @return Returns the path.
+     */
+    String getPath() {
+        return path;
     }
 
 }

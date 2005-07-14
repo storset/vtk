@@ -45,8 +45,15 @@ import org.vortikal.web.referencedataprovider.Provider;
 /**
  * A handler interceptor that can be used to run a list of reference
  * data {@link Provider providers} after the request handler has run.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>providers</code> - an array of {@link Provider} objects
+ *   to be invoked on the model.
+ * </ul>
  */
-public class ReferenceDataProvidingHandlerInterceptor implements HandlerInterceptor {
+public class ReferenceDataProvidingHandlerInterceptor
+  implements HandlerInterceptor {
 
     private static Log logger = LogFactory.getLog(
         ReferenceDataProvidingHandlerInterceptor.class);
@@ -82,9 +89,9 @@ public class ReferenceDataProvidingHandlerInterceptor implements HandlerIntercep
             return;
         }
 
-        if (providers != null && providers.length > 0) {
-            for (int i = 0; i < providers.length; i++) {
-                Provider provider = providers[i];
+        if (this.providers != null && this.providers.length > 0) {
+            for (int i = 0; i < this.providers.length; i++) {
+                Provider provider = this.providers[i];
                 if (logger.isDebugEnabled()) 
                     logger.debug("Invoking reference data provider '" + 
                             provider + "'");

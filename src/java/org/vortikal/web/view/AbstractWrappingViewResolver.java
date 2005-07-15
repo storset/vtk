@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ViewResolver;
 
 public abstract class AbstractWrappingViewResolver implements ViewResolver {
 
-    private WrappingView wrappingView;
+    private ViewWrapper wrappingView;
     
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         View view = resolveViewNameInternal(viewName, locale);
@@ -27,16 +27,16 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
     /**
      * @param wrappingView The wrappingView to set.
      */
-    public void setWrappingView(WrappingView wrappingView) {
+    public void setWrappingView(ViewWrapper wrappingView) {
         this.wrappingView = wrappingView;
     }
 
     private class ProxyWrapper implements View {
         
         private View view;
-        private WrappingView wrappingView;
+        private ViewWrapper wrappingView;
         
-        public ProxyWrapper(View view, WrappingView wrappingView) {
+        public ProxyWrapper(View view, ViewWrapper wrappingView) {
             this.view = view;
             this.wrappingView = wrappingView;
         }

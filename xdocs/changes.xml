@@ -10,6 +10,12 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="storset" type="add">
+        Added possibility to wrap views and specify reference data
+        providers at the view resolver level, making it easier to
+        provide consistent sets of related views.
+      </action>
+
       <action dev="gormap" type="add">
         Added a handler interceptor that redirects to a re-written URL
         when the request URI matches a given regular expression

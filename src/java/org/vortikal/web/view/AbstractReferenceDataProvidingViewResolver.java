@@ -30,8 +30,10 @@
  */
 package org.vortikal.web.view;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -40,68 +42,86 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.vortikal.web.referencedataprovider.Provider;
-import org.vortikal.web.view.ReferenceDataProviding;
-
 
 /**
- * A reference data providing view resolver. This is an abstract
- * implementation of {@link ViewResolver} that in addition to
- * resolving views also invokes {@link Provider reference data
- * provider} instances that may manipulate the MVC model object before
- * the view is rendered.
- *
- * <p>Subclasses must implement the {@link #getView} method to
- * actually resolve a view.
- *
+ * A reference data providing view resolver. This is an abstract implementation
+ * of {@link ViewResolver} that in addition to resolving views also invokes
+ * {@link Provider reference data provider} instances that may manipulate the
+ * MVC model object before the view is rendered.
+ * 
+ * <p>
+ * Subclasses must implement the {@link #getView} method to actually resolve a
+ * view.
+ * 
+ * <p>
+ * The reference data providers invoked can be supplied through the list
+ * property <code>providers</code>, to be applied to all resolved views, or
+ * from the individual <code>View</code> itself if it implements {link
+ * ReferenceDataProviding}.
+ * 
+ * 
  * @see Provider
- *
- * FIXME: The functionality in this class (invoking reference data
- * providers) should really be placed elsewhere. (At least it should
- * not be performed in the view resolving stage.)
+ * 
+ * FIXME: The functionality in this class (invoking reference data providers)
+ * should really be placed elsewhere. (At least it should not be performed in
+ * the view resolving stage.)
  */
-public abstract class ReferenceDataProvidingViewResolver implements ViewResolver {
+public abstract class AbstractReferenceDataProvidingViewResolver extends
+        AbstractWrappingViewResolver {
 
-    private static Log logger = LogFactory.getLog(ReferenceDataProvidingViewResolver.class);
+    private static Log logger = LogFactory
+            .getLog(AbstractReferenceDataProvidingViewResolver.class);
 
-    public View resolveViewName(String viewName, Locale locale) throws Exception {
+    private Provider[] providers;
 
-        View view = getView(viewName);
+    public View resolveViewNameInternal(String viewName, Locale locale)
+            throws Exception {
 
-        if (view != null && (view instanceof ReferenceDataProviding)) {
-            Provider[] providers =
-                ((ReferenceDataProviding) view).getReferenceDataProviders();
-            
-            if ((providers != null) && providers.length > 0) { 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found reference data providers for view " 
-                                 + viewName + ": " + Arrays.asList(providers));
-                }
-                return new ProviderRunningView(view, providers);
+        View view = getView(viewName, locale);
+
+        if (view == null) {
+            return null;
+        }
+
+        List providerList = new ArrayList();
+
+        if (this.providers != null) {
+            providerList.addAll(Arrays.asList(this.providers));
+        }
+
+        if (view instanceof ReferenceDataProviding) {
+            Provider[] viewProviders = null;
+
+            viewProviders = ((ReferenceDataProviding) view)
+                    .getReferenceDataProviders();
+            if (viewProviders != null) {
+                providerList.addAll(Arrays.asList(viewProviders));
             }
+        }
 
+        if (providerList.size() > 0) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Found no reference data providers for view " 
-                             + viewName);
+                logger.debug("Found reference data providers for view "
+                        + viewName + ": " + providerList);
             }
+            return new ProviderRunningView(view, 
+                    (Provider[]) providerList.toArray(new Provider[providerList.size()]));
         }
 
         return view;
     }
 
-
     /**
      * Actually resolves the view. Must be implemented by subclasses.
-     *
-     * @param viewName a the name of the view.
+     * 
+     * @param viewName
+     *            a the name of the view.
      * @return the resolved view.
      */
-    protected abstract View getView(String viewName);
-    
-
+    protected abstract View getView(String viewName, Locale locale);
 
     /**
      * Wrapper class for the resolved view, running the <code>providers</code>
@@ -110,33 +130,36 @@ public abstract class ReferenceDataProvidingViewResolver implements ViewResolver
     private class ProviderRunningView implements View {
 
         private Provider[] providers;
+
         private View view;
 
         /**
-         * @param view - the view to eventually run
-         * @param providers - the set of reference data providers for this
-         * view
+         * @param view -
+         *            the view to eventually run
+         * @param providers -
+         *            the set of reference data providers for this view
          */
         public ProviderRunningView(View view, Provider[] providers) {
-            if (view == null) throw new IllegalArgumentException(
-                "The wrapped view cannot be null");
+            if (view == null)
+                throw new IllegalArgumentException(
+                        "The wrapped view cannot be null");
 
             this.view = view;
             this.providers = providers;
         }
-        
 
         public void render(Map model, HttpServletRequest request,
-                           HttpServletResponse response) throws Exception {
+                HttpServletResponse response) throws Exception {
 
             if (providers != null && providers.length > 0) {
-                if (model == null) model = new HashMap();
+                if (model == null)
+                    model = new HashMap();
 
                 for (int i = 0; i < providers.length; i++) {
                     Provider provider = providers[i];
-                    if (logger.isDebugEnabled()) 
-                        logger.debug("Invoking reference data provider '" + 
-                                provider + "'");
+                    if (logger.isDebugEnabled())
+                        logger.debug("Invoking reference data provider '"
+                                + provider + "'");
                     provider.referenceData(model, request);
                 }
             }
@@ -145,10 +168,18 @@ public abstract class ReferenceDataProvidingViewResolver implements ViewResolver
 
         public String toString() {
             StringBuffer sb = new StringBuffer();
-            sb.append(this.getClass().toString()).append(":" );
+            sb.append(this.getClass().toString()).append(":");
             sb.append("view = ").append(this.view.toString());
             return sb.toString();
         }
-        
+
+    }
+
+    /**
+     * @param providers
+     *            The providers to set.
+     */
+    public void setProviders(Provider[] providers) {
+        this.providers = providers;
     }
 }

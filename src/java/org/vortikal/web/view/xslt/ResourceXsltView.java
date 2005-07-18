@@ -49,14 +49,18 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.AbstractView;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.web.HttpUtil;
@@ -107,7 +111,8 @@ import org.vortikal.xml.TransformerManager;
  * </ul>
  * 
  */
-public class ResourceXsltView  implements ReferenceDataProviding, InitializingBean {
+public class ResourceXsltView extends AbstractView
+  implements ReferenceDataProviding, InitializingBean {
 
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
 
@@ -121,7 +126,8 @@ public class ResourceXsltView  implements ReferenceDataProviding, InitializingBe
         return referenceDataProviders;
     }
 
-    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
+    public void setReferenceDataProviders(
+        ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }
     

@@ -1,4 +1,4 @@
-package org.vortikal.web.view;
+package org.vortikal.web.view.wrapper;
 
 import java.util.Map;
 

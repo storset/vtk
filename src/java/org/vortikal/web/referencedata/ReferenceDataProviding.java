@@ -28,42 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view;
-
-import java.util.Map;
-import org.springframework.web.servlet.View;
+package org.vortikal.web.referencedata;
 
 
-/**
- * Unchecked exception indicating that a problem occurred while
- * rendering a wrapped view. The MVC model and view objects that
- * failed are made available.
- * 
- * @see AbstractViewWrapper
- */
-public class ViewWrapperException extends RuntimeException {
 
-    private Map model = null;
-    private View view = null;
+public interface ReferenceDataProviding {
+
+    public ReferenceDataProvider[] getReferenceDataProviders();
     
-
-    public ViewWrapperException(Throwable cause, Map model, View view) {
-        super(cause);
-        this.model = model;
-        this.view = view;
-    }
-    
-    public ViewWrapperException(String message, Throwable cause, Map model, View view) {
-        super(message, cause);
-        this.model = model;
-        this.view = view;
-    }
-    
-    public Map getModel() {
-        return this.model;
-    }
-
-    public View getView() {
-        return this.view;
-    }
 }

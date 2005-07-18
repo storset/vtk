@@ -1,4 +1,4 @@
-package org.vortikal.web.view;
+package org.vortikal.web.view.wrapper;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -8,15 +8,15 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
 /** 
- * Simple viewresolver, 
+ * Simple viewresolver
  * FIXME: remove this
  *
  */
-public class MappingViewResolver extends AbstractReferenceDataProvidingViewResolver implements ViewResolver {
+public class MappingViewResolver extends AbstractWrappingViewResolver implements ViewResolver {
 
     private Map views = new HashMap();
     
-    public View getView(String viewName, Locale locale) {
+    protected View resolveViewNameInternal(String viewName, Locale locale) {
 
         View view = (View) views.get(viewName);
         return view;

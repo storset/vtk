@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view;
+package org.vortikal.web.view.xslt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,6 +61,9 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProviding;
+import org.vortikal.web.view.LinkConstructor;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 
@@ -104,8 +107,7 @@ import org.vortikal.xml.TransformerManager;
  * </ul>
  * 
  */
-public class ResourceXsltView
-  extends AbstractReferenceDataProvidingView  implements InitializingBean {
+public class ResourceXsltView  implements ReferenceDataProviding, InitializingBean {
 
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
 
@@ -113,6 +115,15 @@ public class ResourceXsltView
     private TransformerManager transformerManager = null;
 
     private LinkConstructor linkConstructor;
+    private ReferenceDataProvider[] referenceDataProviders;
+    
+    public ReferenceDataProvider[] getReferenceDataProviders() {
+        return referenceDataProviders;
+    }
+
+    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
     
 
     public void setTransformerManager(TransformerManager transformerManager)  {

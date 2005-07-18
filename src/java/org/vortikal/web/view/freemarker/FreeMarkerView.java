@@ -39,9 +39,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.web.referencedataprovider.Provider;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
-import org.vortikal.web.view.ReferenceDataProviding;
 
 
 /**
@@ -63,7 +63,7 @@ public class FreeMarkerView
   implements ReferenceDataProviding {
 
     private boolean debug = false;
-    private Provider[] referenceDataProviders;
+    private ReferenceDataProvider[] referenceDataProviders;
     
     public void setDebug(boolean debug)  {
         this.debug = debug;
@@ -107,11 +107,11 @@ public class FreeMarkerView
         super.processTemplate(template, model, response);
     }
 
-    public Provider[] getReferenceDataProviders() {
+    public ReferenceDataProvider[] getReferenceDataProviders() {
         return referenceDataProviders;
     }
 
-    public void setReferenceDataProviders(Provider[] referenceDataProviders) {
+    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }
 

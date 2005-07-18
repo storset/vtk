@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view;
+package org.vortikal.web.view.wrapper;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -111,7 +111,7 @@ public abstract class AbstractViewProcessingTextContentFilter
      * implement this method.
      *
      * @param content the content from the original view (the one
-     * specified in {@link FilteringViewWrapper}
+     * specified in {@link WrappingView}
      * @param viewContent the content rendered by the view in this
      * class
      * @return the merged content from the two views

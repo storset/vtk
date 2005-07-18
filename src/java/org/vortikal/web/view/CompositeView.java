@@ -32,14 +32,21 @@ package org.vortikal.web.view;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
 
 /**
@@ -59,18 +66,18 @@ import org.vortikal.web.servlet.BufferedResponse;
  * <p>TODO: what about other headers (Last-Modified, etc.)?
  *
  */
-public class CompositeView
-  extends AbstractReferenceDataProvidingWithChildrenView
-  implements InitializingBean {
+public class CompositeView implements ReferenceDataProviding, InitializingBean {
 
+    private static Log logger = LogFactory.getLog(CompositeView.class);
+    
     private View[] views = null;
     private String contentType = null;
-
-
-    public View[] getViews() {
-        return views;
-    }
+    private ReferenceDataProvider[] referenceDataProviders;
     
+    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
+
 
     public void setViews(View[] views) {
         this.views = views;
@@ -132,4 +139,28 @@ public class CompositeView
         }
     }
 
+    /**
+     * Gets the set of reference data providers. The list returned is the concatenation
+     * of the providers set on this view and all providers for the list of
+     * views.
+     */
+    public ReferenceDataProvider[] getReferenceDataProviders() {
+        List providers = new ArrayList();
+
+        if (this.referenceDataProviders != null) {
+            providers.addAll(Arrays.asList(this.referenceDataProviders));
+        }
+
+        for (int i = 0; i < this.views.length; i++) {
+            if (this.views[i] instanceof ReferenceDataProviding) {
+                ReferenceDataProvider[] providerList = ((ReferenceDataProviding) this.views[i])
+                        .getReferenceDataProviders();
+                if (providerList != null && providerList.length > 0) {
+                    providers.addAll(Arrays.asList(providerList));
+                }
+            }
+        }
+
+        return (ReferenceDataProvider[]) providers.toArray(new ReferenceDataProvider[providers.size()]);
+    }
 }

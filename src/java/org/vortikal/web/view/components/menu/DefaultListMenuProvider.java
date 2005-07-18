@@ -45,7 +45,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.referencedataprovider.Provider;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
@@ -98,7 +98,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * </ul>
  * 
  */
-public class DefaultListMenuProvider implements Provider {
+public class DefaultListMenuProvider implements ReferenceDataProvider {
 
     private static Log logger = LogFactory.getLog(DefaultListMenuProvider.class);
     private String modelName;

@@ -28,47 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view;
+package org.vortikal.web.view.wrapper;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * Content filter that merges the supplied text content into the
- * <code>&lt;body&gt;</code> element of the original content (if there
- * is one). The text is placed at the beginning of the body content.
- *
- * <p>This type of filter may for example be used to provide a menu
- * component on all HTML pages.
+ * Interface utilized by {@link FilteringViewWrapper} for filtering
+ * text content from other views. 
+ * 
+ * @see FilteringViewWrapper
  */
-public class HtmlHeaderContentFilter
-  extends AbstractViewProcessingTextContentFilter {
+public interface TextContentFilter {
 
-
-    private static Pattern HEADER_REGEXP =
-        Pattern.compile("<\\s*body[^>]*>(.*)",
-                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
-
-
-    protected String processInternal(String content, String header)
-        throws Exception {
-
-        Matcher headerMatcher = HEADER_REGEXP.matcher(content);
-
-        if (headerMatcher.find()) {
-            if (debug && logger.isDebugEnabled()) {
-                logger.debug("Found <body> or similar, will add header");
-            }
-            int index = headerMatcher.start(1);
-            return content.substring(0, index) + header + content.substring(index);
-        } 
-
-        if (debug && logger.isDebugEnabled()) {
-            logger.debug("Did not find <body> or similar, returning original content");
-        }
-        return content;
-    }
-
+    /**
+     * Processes the content from another view.
+     *
+     * @param model the MVC model.
+     * @param request the servlet request
+     * @param content the textual content from another view
+     * @return the filtered content
+     * @exception Exception if an error occurs
+     */
+    public String process(Map model, HttpServletRequest request,
+                          String content) throws Exception;
+    
 }

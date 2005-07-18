@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProviding;
 
 
 /**
@@ -46,11 +48,20 @@ import org.vortikal.web.InvalidModelException;
  * to <code>false</code> to send 303 instead of 302 as HTTP status
  * code.
  * 
- * @see org.vortikal.web.referencedataprovider.RedirectProvider
+ * @see org.vortikal.web.referencedata.provider.RedirectProvider
  */
-public class RedirectView  extends AbstractReferenceDataProvidingView {
+public class RedirectView implements ReferenceDataProviding {
 
     private boolean http10 = true;
+    private ReferenceDataProvider[] referenceDataProviders;
+    
+    public ReferenceDataProvider[] getReferenceDataProviders() {
+        return referenceDataProviders;
+    }
+
+    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
     
     /**
      * @throws InvalidModelException ({@link InvalidModelException})

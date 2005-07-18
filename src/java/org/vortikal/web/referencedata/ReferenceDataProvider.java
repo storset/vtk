@@ -28,47 +28,26 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.referencedataprovider;
+package org.vortikal.web.referencedata;
 
-
-
-import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.util.Version;
-
 /**
- * Model builder that provides information on the current version of
- * the framework.  The information is made * available in the model as
- * a submodel of the name <code>version</code>.
- * 
- * Model data provided:
- * <ul>
- *   <li>version - 
- *   <li>buildDate - the build date of the framework
- *   <li>buildHost - the host of the build
- *   <li>buildVendor - 
- *   <li>frameworkTitle - 
- * </ul>
+ * Reference data providers add model data to MVC models. These
+ * providers are run on the request and model after the controller has
+ * done its work.
  */
-public class FrameworkVersionProvider implements Provider {
+public interface ReferenceDataProvider {
+
 
     
-
-    /**
-     * @see org.vortikal.web.referencedataprovider.Provider#referenceData(java.util.Map, javax.servlet.http.HttpServletRequest)
+    
+    /** 
+     * Build the model by adding reference data needed by the view
+     * renderer.
+     * @param model the model Map to populate with reference data.
      */
-    public void referenceData(Map model, HttpServletRequest request)
-        throws Exception {
-        Map versionModel = new HashMap();
-        versionModel.put("version", Version.getVersion());
-        versionModel.put("buildDate", Version.getBuildDate());
-        versionModel.put("buildHost", Version.getBuildHost());
-        versionModel.put("buildVendor", Version.getBuildVendor());
-        versionModel.put("frameworkTitle", Version.getFrameworkTitle());
-        model.put("version", versionModel);
-    }
-
+    public void referenceData(Map model, HttpServletRequest request) throws Exception;
+    
 }

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import junit.framework.TestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.vortikal.web.view.wrapper.HtmlHeadContentFilter;
 
 
 public class HtmlHeadContentFilterTest extends TestCase {

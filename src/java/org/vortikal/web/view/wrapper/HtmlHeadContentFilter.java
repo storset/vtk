@@ -28,10 +28,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view;
+package org.vortikal.web.view.wrapper;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 
 /**

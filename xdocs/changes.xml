@@ -9,6 +9,13 @@
     <release version="0.1.8-SNAPSHOT" date="In SVN">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      
+      <action dev="storset,gormap" type="update>
+        Refactored the view wrapping framework. Added a new package 
+        'view.wrapper' that now contains the view wrapping code.
+        Split 'referencedataprovider' package into 'referencedata' 
+        and 'referencedata.provider'.
+      </action>
 
       <action dev="storset" type="add">
         Added possibility to wrap views and specify reference data

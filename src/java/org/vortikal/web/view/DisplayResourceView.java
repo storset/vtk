@@ -35,14 +35,19 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProviding;
 
 
 /**
@@ -102,14 +107,25 @@ import org.vortikal.web.InvalidModelException;
  * </ul>
  *
  */
-public class DisplayResourceView extends AbstractReferenceDataProvidingView {
+public class DisplayResourceView implements ReferenceDataProviding {
 
+    private static Log logger = LogFactory.getLog(DisplayResourceView.class);
+    
     private int streamBufferSize = 5000;
 
     private boolean includeLastModifiedHeader = true;
     private boolean includeExpiresHeader = true;
     private boolean includeContentLanguageHeader = true;
+    private ReferenceDataProvider[] referenceDataProviders;
     
+    public ReferenceDataProvider[] getReferenceDataProviders() {
+        return referenceDataProviders;
+    }
+
+    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
+
 
     public void setStreamBufferSize(int streamBufferSize) {
         if (streamBufferSize <= 0) {

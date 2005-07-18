@@ -28,64 +28,49 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.referencedataprovider;
+package org.vortikal.web.view.wrapper;
 
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
- * A reference data provider that puts static data in the model under
- * a configurable model name.
+ * Content filter that merges the supplied text content into the
+ * <code>&lt;body&gt;</code> element of the original content (if there
+ * is one). The text is placed at the end of the body content.
  *
- * <p>Configurable JavaBean properties:
- * <ul>
- *  <li><code>modelName</code> - the name to use for the submodel
- *  <li><code>modelData</code> - an {@link Object} representing the model data
- * </ul>
- * 
- * <p>Model data provided:
- * <ul>
- *   <li>the <code>modelData</code> provided, under the
- *   <code>modelName</code> that was configured
- * </ul>
- * 
+ * <p>This type of filter may for example be used to provide a common
+ * footer component on all HTML pages.
  */
-public class StaticModelDataProvider implements Provider, InitializingBean {
+public class HtmlFooterContentFilter
+  extends AbstractViewProcessingTextContentFilter {
 
-    private String modelName = null;
-    private Object modelData = null;
-
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
+    private static Pattern FOOTER_REGEXP =
+        Pattern.compile("<\\s*/\\s*body",
+                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     
 
-    public void setModelData(Object modelData) {
-        this.modelData = modelData;
-    }
-    
+    protected String processInternal(String content, String footer)
+        throws Exception {
 
-    public void afterPropertiesSet() {
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelName' must be set");
+        Matcher footerMatcher = FOOTER_REGEXP.matcher(content);
+        if (footerMatcher.find()) {
+
+            if (debug && logger.isDebugEnabled()) {
+                logger.debug("Found </body> or similar, will add footer");
+            }
+            int index = footerMatcher.start();
+            if (debug && logger.isDebugEnabled()) {
+                logger.debug("Start index of </body>: " + index);
+            }
+            return content.substring(0, index) + footer + content.substring(index);
+        } 
+
+        if (debug && logger.isDebugEnabled()) {
+            logger.debug("Did not find </body> or similar, returning original content");
         }
-        if (this.modelData == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelData' must be set");
-        }
+        return content;
     }
-    
 
-
-    public void referenceData(Map model, HttpServletRequest request)
-            throws Exception {
-
-        model.put(this.modelName, this.modelData);
-    }
 }

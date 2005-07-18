@@ -28,45 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view;
+package org.vortikal.web.view.wrapper;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.Map;
 import org.springframework.web.servlet.View;
-import org.vortikal.web.referencedataprovider.Provider;
 
-public abstract class AbstractReferenceDataProvidingWithChildrenView
-  extends AbstractReferenceDataProvidingView {
 
-    /**
-     * Gets the set of reference data providers. The list returned is the union
-     * of the providers set on this view and all providers for the list of
-     * views.
-     */
-    public Provider[] getReferenceDataProviders() {
-        Set providers = new HashSet();
+/**
+ * Unchecked exception indicating that a problem occurred while
+ * rendering a wrapped view. The MVC model and view objects that
+ * failed are made available.
+ * 
+ * @see AbstractViewWrapper
+ */
+public class ViewWrapperException extends RuntimeException {
 
-        View[] viewList = getViews();
+    private Map model = null;
+    private View view = null;
+    
 
-        for (int i = 0; i < viewList.length; i++) {
-            if (viewList[i] instanceof ReferenceDataProviding) {
-                Provider[] providerList = ((ReferenceDataProviding) viewList[i])
-                        .getReferenceDataProviders();
-                if (providerList != null && providerList.length > 0) {
-                    providers.addAll(Arrays.asList(providerList));
-                }
-            }
-        }
-
-        if (super.getReferenceDataProviders() != null) {
-            providers.addAll(Arrays.asList(super.getReferenceDataProviders()));
-        }
-
-        return (Provider[]) providers.toArray(new Provider[0]);
+    public ViewWrapperException(Throwable cause, Map model, View view) {
+        super(cause);
+        this.model = model;
+        this.view = view;
+    }
+    
+    public ViewWrapperException(String message, Throwable cause, Map model, View view) {
+        super(message, cause);
+        this.model = model;
+        this.view = view;
+    }
+    
+    public Map getModel() {
+        return this.model;
     }
 
-    protected abstract View[] getViews();
-
+    public View getView() {
+        return this.view;
+    }
 }

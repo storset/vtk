@@ -39,16 +39,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.vortikal.web.referencedataprovider.Provider;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 
 /**
  * A handler interceptor that can be used to run a list of reference
- * data {@link Provider providers} after the request handler has run.
+ * data {@link ReferenceDataProvider providers} after the request handler has run.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>providers</code> - an array of {@link Provider} objects
+ *   <li><code>providers</code> - an array of {@link ReferenceDataProvider} objects
  *   to be invoked on the model.
  * </ul>
  */
@@ -59,10 +59,10 @@ public class ReferenceDataProvidingHandlerInterceptor
         ReferenceDataProvidingHandlerInterceptor.class);
 
     
-    private Provider[] providers;
+    private ReferenceDataProvider[] providers;
 
     
-    public void setProviders(Provider[] providers) {
+    public void setProviders(ReferenceDataProvider[] providers) {
         this.providers = providers;
     }
     
@@ -91,7 +91,7 @@ public class ReferenceDataProvidingHandlerInterceptor
 
         if (this.providers != null && this.providers.length > 0) {
             for (int i = 0; i < this.providers.length; i++) {
-                Provider provider = this.providers[i];
+                ReferenceDataProvider provider = this.providers[i];
                 if (logger.isDebugEnabled()) 
                     logger.debug("Invoking reference data provider '" + 
                             provider + "'");

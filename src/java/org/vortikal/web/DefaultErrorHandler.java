@@ -40,7 +40,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
 
-import org.vortikal.web.referencedataprovider.Provider;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 
@@ -86,7 +86,7 @@ public class DefaultErrorHandler implements ErrorHandler, BeanNameAware, Initial
     private View errorView = null;
     private Class errorType = Throwable.class;
     private Service service = null;
-    private Provider[] providers = new Provider[0];
+    private ReferenceDataProvider[] providers = new ReferenceDataProvider[0];
     private Map statusCodeMappings = new HashMap();
     
 
@@ -114,7 +114,7 @@ public class DefaultErrorHandler implements ErrorHandler, BeanNameAware, Initial
         return this.service;
     }
     
-    public void setReferenceDataProviders(Provider[] providers) {
+    public void setReferenceDataProviders(ReferenceDataProvider[] providers) {
         this.providers = providers;
     }
     

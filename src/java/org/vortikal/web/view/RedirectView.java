@@ -31,9 +31,10 @@
 package org.vortikal.web.view;
 
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.view.AbstractView;
 
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -50,7 +51,7 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  * 
  * @see org.vortikal.web.referencedata.provider.RedirectProvider
  */
-public class RedirectView implements ReferenceDataProviding {
+public class RedirectView extends AbstractView implements ReferenceDataProviding {
 
     private boolean http10 = true;
     private ReferenceDataProvider[] referenceDataProviders;

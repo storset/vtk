@@ -212,15 +212,19 @@ public abstract class Resource implements Cloneable {
     }
 
     public ACL getACL() {
-        return acl;
+        return this.acl;
     }
 
     public Lock getLock() {
-        return lock;
+        return this.lock;
+    }
+
+    public void setLock(Lock lock) {
+        this.lock = lock;
     }
 
     public String getOwner() {
-        return owner;
+        return this.owner;
     }
 
     public void setOwner(String owner) {
@@ -228,7 +232,7 @@ public abstract class Resource implements Cloneable {
     }
 
     public String getContentModifiedBy() {
-        return contentModifiedBy;
+        return this.contentModifiedBy;
     }
 
     public void setContentModifiedBy(String contentModifiedBy) {
@@ -236,15 +240,11 @@ public abstract class Resource implements Cloneable {
     }
 
     public String getPropertiesModifiedBy() {
-        return propertiesModifiedBy;
+        return this.propertiesModifiedBy;
     }
 
     public void setPropertiesModifiedBy(String propertiesModifiedBy) {
         this.propertiesModifiedBy = propertiesModifiedBy;
-    }
-
-    public void setLock(Lock lock) {
-        this.lock = lock;
     }
 
     /**
@@ -274,7 +274,7 @@ public abstract class Resource implements Cloneable {
                 org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
             if (!refresh) {
                 this.lock = null;
-                dao.store(this);
+                this.dao.store(this);
             }
         }
 
@@ -292,7 +292,7 @@ public abstract class Resource implements Cloneable {
 //         setLock(new Lock(principal, ownerInfo, depth,
 //                 new Date(System.currentTimeMillis() +
 //                     (desiredTimeoutSeconds * 1000))));
-        dao.store(this);
+        this.dao.store(this);
         return this.lock.getLockToken();
     }
 
@@ -300,23 +300,22 @@ public abstract class Resource implements Cloneable {
         RoleManager roleManager)
         throws AuthenticationException, AuthorizationException, 
             ResourceLockedException, IOException {
-        authorize(principal,
-            org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
+        this.authorize(
+            principal, org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
 
-        if (lock != null) {
+        if (this.lock != null) {
             if (!roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                lockAuthorize(principal,
-                    org.vortikal.repository.PrivilegeDefinition.WRITE,
-                    roleManager);
+                this.lockAuthorize(principal, org.vortikal.repository.PrivilegeDefinition.WRITE,
+                                   roleManager);
             }
 
-            lock = null;
-            dao.store(this);
+            this.lock = null;
+            this.dao.store(this);
         }
     }
 
     public String getURI() {
-        return uri;
+        return this.uri;
     }
 
     public int getID() {
@@ -342,7 +341,7 @@ public abstract class Resource implements Cloneable {
      * time
      */
     public Date getCreationTime() {
-        return creationTime;
+        return this.creationTime;
     }
 
     /**
@@ -360,7 +359,7 @@ public abstract class Resource implements Cloneable {
      * @return the time of last modification
      */
     public Date getContentLastModified() {
-        return contentLastModified;
+        return this.contentLastModified;
     }
 
     /**
@@ -378,7 +377,7 @@ public abstract class Resource implements Cloneable {
      * @return the time of last modification
      */
     public Date getPropertiesLastModified() {
-        return propertiesLastModified;
+        return this.propertiesLastModified;
     }
 
     /**
@@ -396,8 +395,8 @@ public abstract class Resource implements Cloneable {
      * @return the display name
      */
     public String getDisplayName() {
-        return ((displayName == null) || displayName.equals("")) ? name
-                                                                 : displayName;
+        return ((this.displayName == null) || this.displayName.equals("")) ? this.name
+                                                                 : this.displayName;
     }
 
     /**
@@ -417,15 +416,15 @@ public abstract class Resource implements Cloneable {
      * @return the content type
      */
     public String getContentType() {
-        return contentType;
+        return this.contentType;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getCharacterEncoding() {
-        return characterEncoding;
+        return this.characterEncoding;
     }
 
     public void setCharacterEncoding(String characterEncoding) {
@@ -470,7 +469,7 @@ public abstract class Resource implements Cloneable {
     public void addProperty(String namespace, String name, String value) {
         Vector property = null;
 
-        for (Iterator i = properties.iterator(); i.hasNext();) {
+        for (Iterator i = this.properties.iterator(); i.hasNext();) {
             Vector v = (Vector) i.next();
             String existingNamespace = (String) v.get(0);
             String existingName = (String) v.get(1);
@@ -486,7 +485,7 @@ public abstract class Resource implements Cloneable {
             property.add(namespace);
             property.add(name);
             property.add(value);
-            properties.add(property);
+            this.properties.add(property);
         } else {
             property.remove(2);
             property.add(value);
@@ -494,7 +493,7 @@ public abstract class Resource implements Cloneable {
     }
 
     public Vector getProperties() {
-        return properties;
+        return this.properties;
     }
 
     public void setProperties(org.vortikal.repository.Property[] properties) {
@@ -521,7 +520,7 @@ public abstract class Resource implements Cloneable {
     protected org.vortikal.repository.Property[] getPropertyDTOs() {
         ArrayList dtoList = new ArrayList();
 
-        for (Iterator i = properties.iterator(); i.hasNext();) {
+        for (Iterator i = this.properties.iterator(); i.hasNext();) {
             org.vortikal.repository.Property dto = new org.vortikal.repository.Property();
             Vector element = (Vector) i.next();
             String namespace = (String) element.get(0);
@@ -624,11 +623,11 @@ public abstract class Resource implements Cloneable {
         dto.setContentType(getContentType());
         dto.setCharacterEncoding(getCharacterEncoding());
         dto.setDisplayName(getDisplayName());
-        dto.setActiveLocks((lock == null)
+        dto.setActiveLocks((this.lock == null)
             ? new org.vortikal.repository.Lock[] {  }
-            : new org.vortikal.repository.Lock[] { lock.getLockDTO(principalManager) });
-        dto.setName(name);
-        dto.setOwner(principalManager.getPrincipal(owner));
+            : new org.vortikal.repository.Lock[] { this.lock.getLockDTO(principalManager) });
+        dto.setName(this.name);
+        dto.setOwner(principalManager.getPrincipal(this.owner));
         dto.setSupportedPrivileges(standardPrivilegeDefinition);
         dto.setAclRestrictions(standardRestrictions);
         dto.setProperties(getPropertyDTOs());
@@ -641,7 +640,7 @@ public abstract class Resource implements Cloneable {
             if ("/".equals(this.uri)) {
                 dto.setParentACL(new Ace[0]);
             } else {
-                Resource parent = dao.load(getParentURI());
+                Resource parent = this.dao.load(getParentURI());
                 ACL parentACL = (ACL) parent.getACL().clone();
 
                 dto.setParentACL(addRolesToACL(parentACL, roleManager));
@@ -660,13 +659,13 @@ public abstract class Resource implements Cloneable {
     public void delete(Principal principal, RoleManager roleManager)
         throws AuthorizationException, AuthenticationException, 
             ResourceLockedException, FailedDependencyException, IOException {
-        if (lock != null) {
+        if (this.lock != null) {
             lockAuthorize(principal,
                 org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
         }
 
         try {
-            dao.delete(this);
+            this.dao.delete(this);
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
@@ -734,7 +733,7 @@ public abstract class Resource implements Cloneable {
              * parent's ACL, since the supplied one may contain other
              * ACEs than the one we now inherit from. */
             try {
-                ACL parentACL = (ACL) dao.load(getParentURI()).getACL().clone();
+                ACL parentACL = (ACL) this.dao.load(getParentURI()).getACL().clone();
 
                 parentACL.setResource(this);
                 this.acl = parentACL;
@@ -743,32 +742,32 @@ public abstract class Resource implements Cloneable {
         }
 
         try {
-            dirtyACL = true;
+            this.dirtyACL = true;
 
-            dao.store(this);
+            this.dao.store(this);
         } catch (Exception e) {
             
             throw new IOException(e.getMessage());
         } finally {
-            dirtyACL = false;
+            this.dirtyACL = false;
         }
     }
 
     public boolean dirtyACL() {
-        return dirtyACL;
+        return this.dirtyACL;
     }
 
     public void lockAuthorize(Principal principal, String privilege,
         RoleManager roleManager)
         throws AuthenticationException, ResourceLockedException {
-        if (lock != null) {
-            lock.authorize(principal, privilege, roleManager);
+        if (this.lock != null) {
+            this.lock.authorize(principal, privilege, roleManager);
         }
     }
 
     public void authorize(Principal principal, String privilege,
         RoleManager roleManager)
         throws AuthorizationException, AuthenticationException, IOException {
-        acl.authorize(principal, privilege, dao, roleManager);
+        this.acl.authorize(principal, privilege, this.dao, roleManager);
     }
 }

@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,6 +44,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.AbstractView;
+
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
@@ -66,7 +67,8 @@ import org.vortikal.web.servlet.BufferedResponse;
  * <p>TODO: what about other headers (Last-Modified, etc.)?
  *
  */
-public class CompositeView implements ReferenceDataProviding, InitializingBean {
+public class CompositeView extends AbstractView
+  implements ReferenceDataProviding, InitializingBean {
 
     private static Log logger = LogFactory.getLog(CompositeView.class);
     

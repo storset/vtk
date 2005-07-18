@@ -99,6 +99,7 @@ public class ServiceImpl
         this.handler = handler;
     }
 	
+
     public void setAssertions(List assertions) {
         this.assertions = assertions;
     }
@@ -118,28 +119,29 @@ public class ServiceImpl
         return services;
     }
 
+
     public Object getHandler() {
         return handler;
     }
 	
 
-
-
     /**
      * Mapping the tree
-     **/
+     */
     public void setParent(Service parent) throws BeanInitializationException {
         if (this.parent != null && this.parent != parent) 
             throw new BeanInitializationException(
-                "Service " + getName() +  "has at least two parents ("
-                + parent.getName() + " and" + this.parent.getName() + ")");
+                "Service '" + getName() +  "' has at least two parents ('"
+                + parent.getName() + "' and '" + this.parent.getName() + "')");
         this.parent = parent;
     }
 	
+
     public List getAssertions() {
         return assertions;
     }
 	
+
     private List getAllAssertions() {
         if (parent == null) 
             return getAssertions();
@@ -148,14 +150,17 @@ public class ServiceImpl
         assertions.addAll(getAssertions());
         return assertions;
     }
+
 	
     public String getName() {
         return name;
     }
+
 	
     public void setBeanName(String name) {
         this.name = name;
     }
+
 
 
     public Service getParent() {
@@ -183,6 +188,7 @@ public class ServiceImpl
     public String constructLink(Resource resource, Principal principal) {
         return constructLink(resource, principal, null, true);
     }
+
 
     public String constructLink(Resource resource, Principal principal,
                                 boolean matchAssertions) {
@@ -280,50 +286,37 @@ public class ServiceImpl
         return sb.toString();
     }
 
+
     public AuthenticationChallenge getAuthenticationChallenge() {
         return authenticationChallenge;
     }
+
 
     public void setAuthenticationChallenge(
         AuthenticationChallenge authenticationChallenge) {
         this.authenticationChallenge = authenticationChallenge;
     }
     
-    /**
-     * @return Returns the order.
-     */
+
     public int getOrder() {
         return order;
     }
     
-    /**
-     * @param order The order to set.
-     */
+
     public void setOrder(int order) {
         this.order = order;
     }
+
 
     public Set getCategories() {
         return this.categories;
     }
 
+
     public void setCategories(Set categories) {
         this.categories = categories;
     }
   
-//    private Service getUnknownParent() {
-//        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-//                applicationContext, Service.class, true, false);
-//
-//        List allServices = new ArrayList(matchingBeans.values());
-//        List list = new ArrayList(allServices);
-//        for (Iterator iter = list.iterator(); iter.hasNext();) {
-//            Service service = (Service) iter.next();
-//            if (service.getChildren().contains(this))
-//                return service;
-//        }
-//        return null;
-//    }
     
     private List getUnknownServiceChildren() {
         // find all services, and sort out those of category 'category';

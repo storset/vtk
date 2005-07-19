@@ -89,8 +89,8 @@ import org.vortikal.web.service.Service;
  * <p>The request initializer is responsible for creating a {@link
  * RequestContext} that contains the matched {@link Service} for the
  * request, along with the requested resource URI (and the {@link
- * Resource} that this URI maps to, if it exists and is readable for
- * the current user).
+ * org.vortikal.repository.Resource} that this URI maps to, if it
+ * exists and is readable for the current user).
  *
  * <p>After context initialization, the servlet calls
  * <code>super.doService()</code>, in the standard DispatcherServlet

@@ -17,9 +17,6 @@ public class PrincipalQualifiedNameAssertion extends AbstractRepositoryAssertion
     }
 
     
-    /** 
-     * @see org.vortikal.web.service.PrincipalAssertion#matches(org.vortikal.security.Principal)
-     */
     public boolean matches(Resource resource, Principal principal) {
         if (principal != null) {
            

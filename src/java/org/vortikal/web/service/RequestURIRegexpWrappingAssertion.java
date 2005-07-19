@@ -48,7 +48,7 @@ import org.vortikal.security.Principal;
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>wrappedAssertion</code> - a {@link RequestAssertion}
+ *   <li><code>wrappedAssertion</code> - a {@link Assertion}
  *   that is invoked when the <code>uriPattern</code> regexp matches
  *   the current request.
  *   <li><code>uriPattern</code> - a regular expression constraining

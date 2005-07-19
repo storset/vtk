@@ -44,6 +44,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
+
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -67,7 +68,7 @@ import org.vortikal.security.web.AuthenticationChallenge;
  *   interceptors} that are executed prior to (around) the controller
  *   invocation.
  *   <li><code>order</code> - integer specifying the order of this
- *   service (see {@link Ordered}). Default is
+ *   service (see {@link org.springframework.core.Ordered}). Default is
  *   <code>Integer.MAX_VALUE</code> (unordered).
  *   <li><code>categories</code> - a {@link Set} of strings denoting
  *   the set of categories this service is a member of.

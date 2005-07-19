@@ -39,7 +39,7 @@ import org.springframework.web.servlet.View;
  * rendering a wrapped view. The MVC model and view objects that
  * failed are made available.
  * 
- * @see AbstractViewWrapper
+ * @see FilteringViewWrapper
  */
 public class ViewWrapperException extends RuntimeException {
 

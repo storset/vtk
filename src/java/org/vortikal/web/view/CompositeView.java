@@ -57,8 +57,8 @@ import org.vortikal.web.servlet.BufferedResponse;
  * content type of the last view in the chain takes precedence. The
  * HTTP status code set is always that of the last view.
  *
- * <p>Configurable properties (in addition to those defined by the {@link
- *  AbstractReferenceDataProvidingWithChildrenView superclass}):
+ * <p>Configurable properties (in addition to those defined by the
+ *  {@link AbstractView superclass}):
  * <ul>
  *   <li><code>viewList</code> - the array of {@link View views} to
  *   invoke (in sequence)

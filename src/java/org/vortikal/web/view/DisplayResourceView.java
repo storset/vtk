@@ -57,7 +57,7 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  * resource to the client.
  *
  * <p><a name="config">Configurable properties</a>
- * (and those defined by {@link AbstractReferenceDataProvidingView superclass}):
+ * (and those defined by {@link AbstractView superclass}):
  * <ul>
  *   <li><code>includeLastModifiedHeader</code> - boolean deciding
  *   whether to set the <code>Last-Modified</code> response

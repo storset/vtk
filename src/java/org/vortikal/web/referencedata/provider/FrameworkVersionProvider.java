@@ -47,20 +47,17 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  * 
  * Model data provided:
  * <ul>
- *   <li>version - 
- *   <li>buildDate - the build date of the framework
- *   <li>buildHost - the host of the build
- *   <li>buildVendor - 
- *   <li>frameworkTitle - 
+ *   <li><code>version</code> - the current version
+ *   <li><code>buildDate</code> - the build date of the framework
+ *   <li><code>buildHost</code> - the host of the build
+ *   <li><code>buildVendor</code> - 
+ *   <li><code>frameworkTitle</code> - 
  * </ul>
  */
 public class FrameworkVersionProvider implements ReferenceDataProvider {
 
     
 
-    /**
-     * @see org.vortikal.web.referencedata.provider.Provider#referenceData(java.util.Map, javax.servlet.http.HttpServletRequest)
-     */
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
         Map versionModel = new HashMap();

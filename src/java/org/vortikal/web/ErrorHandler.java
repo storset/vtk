@@ -52,7 +52,7 @@ import org.vortikal.web.service.Service;
  *   class will get selected over a handler specifying
  *   <code>java.lang.Throwable</code>.
  *   <li>The {@link #getService service}. This specifies the set
- *   of {@link services} for which the error handler is
+ *   of {@link Service services} for which the error handler is
  *   applicable. Error handlers with more specific services
  *   (descendants) take precedence over less specific ones. If
  *   <code>null</code> is specified, it is interpreted as "match any

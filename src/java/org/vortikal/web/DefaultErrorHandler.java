@@ -49,20 +49,21 @@ import org.vortikal.web.service.Service;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li>errorView - a <code>View</code> for rendering the error model
- *   <li>errorType - a {@link Throwable} deciding the type(s) of
- *   errors that are handled by this class
- *   <li>service - the {@link Service} (if any) for which this error
- *   handler is applicable
- *   <li>modelBuilders - a list of {@link ModelBuilder} objects,
- *   invoked on the error model. Note: some (or all) of these may
- *   crash during invocation, so this list should be a
- *   conservative set of model builders, that should at least not
- *   be operating on the repository.
- *   <li>statusCodeMappings - a {@link Map} that maps between
- *   error class names and HTTP status codes,
- *   e.g. <code>java.lang.Throwable --&gt; 500</code> (internal
- *   server error).
+ *   <li><code>errorView</code> - a {@link View} for rendering the
+ *   error model
+ *   <li><code>errorType</code> - a {@link Throwable} deciding the
+ *   type(s) of errors that are handled by this class
+ *   <li><code>service</code> - the {@link Service} (if any) for which
+ *   this error handler is applicable
+ *   <li><code>referenceDataProviders</code> - a list of {@link
+ *   ReferenceDataProvider} objects, invoked on the error model. Note:
+ *   some (or all) of these may crash during invocation, so this list
+ *   should be a conservative set of reference data providers that
+ *   should at least not be operating on the repository.
+ *   <li><code>statusCodeMappings</code> - a {@link Map} that maps
+ *   between error class names and HTTP status codes,
+ *   e.g. <code>java.lang.Throwable --&gt; 500</code> (internal server
+ *   error).
  * </ul>
  *
  * <p>Model data provided:
@@ -73,7 +74,8 @@ import org.vortikal.web.service.Service;
  * </ul>
  *
  */
-public class DefaultErrorHandler implements ErrorHandler, BeanNameAware, InitializingBean {
+public class DefaultErrorHandler
+  implements ErrorHandler, BeanNameAware, InitializingBean {
     
     public static final String DEFAULT_ERROR_CODE = "error.default";
     public static final String DEFAULT_ERROR_DESCRIPTION = "Internal server error";

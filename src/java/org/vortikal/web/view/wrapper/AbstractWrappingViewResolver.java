@@ -51,15 +51,14 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
 
     private Log logger = LogFactory.getLog(this.getClass());
     
-    private ViewWrapper wrappingView;
+    private ViewWrapper viewWrapper;
     private ReferenceDataProvider[] referenceDataProviders;
 
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         View view = resolveViewNameInternal(viewName, locale);
         
-//         if (view != null && this.wrappingView != null) {
         if (view != null) {
-            view = new ProxyView(view, this.referenceDataProviders, this.wrappingView);
+            view = new ProxyView(view, this.referenceDataProviders, this.viewWrapper);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Returning view '" + view + "' for view name '"
@@ -83,10 +82,9 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
     }
 
     
-    public void setWrappingView(ViewWrapper wrappingView) {
-        this.wrappingView = wrappingView;
+    public void setViewWrapper(ViewWrapper viewWrapper) {
+        this.viewWrapper = viewWrapper;
     }
-
 
     /**
      * Wrapper class for the resolved view, running the <code>referenceDataProviders</code>
@@ -184,4 +182,5 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
         }
 
     }
+
 }

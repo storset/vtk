@@ -51,16 +51,23 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  * view. The {@link ViewWrapper} interface is utilized for the
  * wrapping.
  *
- * <p>The wrapping view implements {@link ReferenceDataProviding}, and
- * the reference data providers returned are those of the wrapper and
- * the view (in that order, if they also implement the {@link
- * ReferenceDataProviding} interface).
- * 
+ * <p>The wrapping view implements {@link ReferenceDataProviding},
+ * returning the following concatenated list of providers:
+ * <ol>
+ *   <li>The reference data providers specified on this view, if any
+ *   <li>The providers from the view wrapper, if that wrapper
+ *   implements {@link ReferenceDataProviding}
+ *   <li>The providers from the view, if that view implements {@link
+ *   ReferenceDataProviding}
+ * </ol>
+ *
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>view</code> - the {@link View} to wrap around.
  *   <li><code>viewWrapper</code> - the {@link ViewWrapper} that
  *   performs the actual wrapping.
+ *   <li><code>referenceDataProviders</code> - the array of {@link
+ *   ReferenceDataProvider} objects specified on this view
  * </ul>
  * 
  * @see ViewWrapper
@@ -69,6 +76,7 @@ public class WrappingView implements View, InitializingBean, ReferenceDataProvid
 
     private View view;
     private ViewWrapper viewWrapper;
+    private ReferenceDataProvider[] referenceDataProviders;
     
 
     public void setView(View view) {
@@ -79,6 +87,12 @@ public class WrappingView implements View, InitializingBean, ReferenceDataProvid
     public void setViewWrapper(ViewWrapper viewWrapper) {
         this.viewWrapper = viewWrapper;
     }
+
+
+    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
+    
 
 
     public void afterPropertiesSet() throws Exception {
@@ -102,16 +116,19 @@ public class WrappingView implements View, InitializingBean, ReferenceDataProvid
     public ReferenceDataProvider[] getReferenceDataProviders() {
         List providersList = new ArrayList();
         
-        ReferenceDataProvider[] providers;
-        
+        if (this.referenceDataProviders != null && this.referenceDataProviders.length > 0)
+            providersList.addAll(Arrays.asList(this.referenceDataProviders));
+
         if (this.viewWrapper instanceof ReferenceDataProviding) {
-            providers = ((ReferenceDataProviding) this.viewWrapper).getReferenceDataProviders();
+            ReferenceDataProvider[] providers =
+                ((ReferenceDataProviding) this.viewWrapper).getReferenceDataProviders();
             if (providers != null && providers.length > 0)
                 providersList.addAll(Arrays.asList(providers));
         }
 
         if (this.view instanceof ReferenceDataProviding) {
-            providers = ((ReferenceDataProviding) this.view).getReferenceDataProviders();
+            ReferenceDataProvider[] providers =
+                ((ReferenceDataProviding) this.view).getReferenceDataProviders();
             if (providers != null && providers.length > 0)
                 providersList.addAll(Arrays.asList(providers));
         }

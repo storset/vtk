@@ -30,63 +30,121 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
- * A reference data provider that puts static data in the model under
- * a configurable model name.
+ * A reference data provider that puts static data in the model.
+ * It will not overwrite model data if a key is allready present in the model.
  *
- * <p>Configurable JavaBean properties:
+ * <p>Static model data can be set with these JavaBean properties:
  * <ul>
- *  <li><code>modelName</code> - the name to use for the submodel
- *  <li><code>modelData</code> - an {@link Object} representing the model data
+ *  <li><code>modelDataCSV</code> - CSV string
+ *  <li><code>modelData</code> - Properties
+ *  <li><code>modelDataMap</code> - 
  * </ul>
  * 
  * <p>Model data provided:
  * <ul>
- *   <li>the <code>modelData</code> provided, under the
- *   <code>modelName</code> that was configured
+ *   <li>the configured set of data, if not allready present in model.
  * </ul>
  * 
  */
-public class StaticModelDataProvider implements ReferenceDataProvider, InitializingBean {
+public class StaticModelDataProvider implements ReferenceDataProvider {
 
-    private String modelName = null;
-    private Object modelData = null;
-
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
+    private final Map staticModelData = new HashMap();
     
-
-    public void setModelData(Object modelData) {
-        this.modelData = modelData;
-    }
-    
-
-    public void afterPropertiesSet() {
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelName' must be set");
+    /**
+     * Set static model data as a CSV string.
+     * Format is: modelname0={value1},modelname1={value1}
+     */
+    public void setModelDataCSV(String propString) throws IllegalArgumentException {
+        if (propString == null) {
+            // leave static attributes unchanged
+            return;
         }
-        if (this.modelData == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelData' must be set");
+
+        StringTokenizer st = new StringTokenizer(propString, ",");
+        while (st.hasMoreTokens()) {
+            String tok = st.nextToken();
+            int eqIdx = tok.indexOf("=");
+            if (eqIdx == -1) {
+                throw new IllegalArgumentException("Expected = in attributes CSV string '" + propString + "'");
+            }
+            if (eqIdx >= tok.length() - 2) {
+                throw new IllegalArgumentException(
+                        "At least 2 characters ([]) required in attributes CSV string '" + propString + "'");
+            }
+            String name = tok.substring(0, eqIdx);
+            String value = tok.substring(eqIdx + 1);
+
+            // celete first and last characters of value: { and }
+            value = value.substring(1);
+            value = value.substring(0, value.length() - 1);
+
+            addStaticModelData(name, value);
         }
     }
+
+    /**
+     * Set static model data for this provider from a
+     * <code>java.util.Properties</code> object.
+     * <p>This is the most convenient way to set static model data. Note that
+     * static model data can be overridden by allready existing model data, if a value
+     * with the same name is in the model.
+     * <p>Can be populated with a String "value" (parsed via PropertiesEditor)
+     * or a "props" element in XML bean definitions.
+     * @see org.springframework.beans.propertyeditors.PropertiesEditor
+     */
+    public void setModelData(Properties props) {
+        setModelDataMap(props);
+    }
+
+    /**
+     * Set static model data for this provider from a Map. This allows to set
+     * any kind of model values, for example bean references.
+     * <p>Can be populated with a "map" or "props" element in XML bean definitions.
+     * @param modelData Map with name Strings as keys and model objects as values
+     */
+    public void setModelDataMap(Map modelData) {
+        if (modelData != null) {
+            Iterator it = modelData.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry) it.next();
+                if (!(entry.getKey() instanceof String)) {
+                    throw new IllegalArgumentException(
+                            "Illegal model key [" + entry.getKey() + "]: only Strings allowed");
+                }
+                addStaticModelData((String) entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Add static data provider, exposed in the model.
+     * <p>Must be invoked before any calls to <code>referenceData</code>.
+     * @param name name of model data to expose
+     * @param value object to expose
+     * @see #referenceData(Map, HttpServletRequest)
+     */
+    public void addStaticModelData(String name, Object value) {
+        this.staticModelData.put(name, value);
+    }
     
-
-
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
-        model.put(this.modelName, this.modelData);
+        for (Iterator iter = staticModelData.keySet().iterator(); iter.hasNext();) {
+            String key = (String)iter.next();
+            if (!model.containsKey(key))
+                model.put(key, staticModelData.get(key));
+        }
     }
 }

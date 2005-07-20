@@ -31,11 +31,10 @@
 package org.vortikal.web.view.wrapper;
 
 import java.util.HashMap;
-import junit.framework.TestCase;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-import org.vortikal.web.view.wrapper.HtmlHeadContentFilter;
+import junit.framework.TestCase;
+
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.web.view.MockStringView;
 
 
@@ -181,7 +180,6 @@ public class HtmlHeadContentFilterTest extends TestCase {
     private String runFilter(String document, String headContent,
                              boolean removeTitles, boolean removeCharsets) throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
 
         MockStringView view = new MockStringView(headContent);
         HtmlHeadContentFilter filter = new HtmlHeadContentFilter();

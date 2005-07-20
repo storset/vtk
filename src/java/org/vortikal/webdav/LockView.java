@@ -140,15 +140,15 @@ public class LockView implements View {
         Element lockDiscovery = new Element("lockdiscovery", WebdavConstants.DAV_NAMESPACE);
         Element activeLock = new Element("activelock", WebdavConstants.DAV_NAMESPACE);
 
-        activeLock.addContent((Element)
+        activeLock.addContent(
             new Element("locktype", WebdavConstants.DAV_NAMESPACE).addContent(
                 new Element(type, WebdavConstants.DAV_NAMESPACE)));
 
-        activeLock.addContent((Element)
+        activeLock.addContent(
             new Element("lockscope", WebdavConstants.DAV_NAMESPACE).addContent(
                 new Element(scope, WebdavConstants.DAV_NAMESPACE)));
 
-        activeLock.addContent((Element)
+        activeLock.addContent(
             new Element("depth", WebdavConstants.DAV_NAMESPACE).addContent(
                 lockInfo.getDepth()));
 
@@ -165,7 +165,7 @@ public class LockView implements View {
 
 //         String timeoutStr = "Second-410000000";
         
-        activeLock.addContent((Element)
+        activeLock.addContent(
             new Element("timeout", WebdavConstants.DAV_NAMESPACE).addContent(
                 /*"Infinite"*/            // MS fails
                 /*"Second-4100000000"*/   // Cadaver fails
@@ -173,9 +173,9 @@ public class LockView implements View {
                 timeoutStr
             ));
 
-        activeLock.addContent((Element)
+        activeLock.addContent(
             new Element("locktoken", WebdavConstants.DAV_NAMESPACE).addContent(
-                (Element) new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(
+                new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(
                     lockInfo.getLockToken())));
 
         lockDiscovery.addContent(activeLock);

@@ -32,6 +32,8 @@ package org.vortikal.edit.xml;
 
 public class XMLEditException extends RuntimeException {
 
+    private static final long serialVersionUID = 5186544326064943120L;
+
     public XMLEditException(String msg) {
         super(msg);
     }

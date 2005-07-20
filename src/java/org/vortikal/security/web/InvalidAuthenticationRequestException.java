@@ -33,6 +33,9 @@ package org.vortikal.security.web;
 
 public class InvalidAuthenticationRequestException extends RuntimeException {
 
+    private static final long serialVersionUID = -2725037616946224999L;
+
+
     public InvalidAuthenticationRequestException() {
         super();
     }

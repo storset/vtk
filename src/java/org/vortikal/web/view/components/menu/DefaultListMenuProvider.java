@@ -36,9 +36,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -100,7 +97,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  */
 public class DefaultListMenuProvider implements ReferenceDataProvider {
 
-    private static Log logger = LogFactory.getLog(DefaultListMenuProvider.class);
     private String modelName;
     private String label;
     private Repository repository;
@@ -231,16 +227,15 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         if (this.matchAncestorServices) {
             Service s = currentService;
             while (s != null) {
-                boolean match = false;
                 if (service == s) {
                     return true;
                 }
                 s = s.getParent();
             }
             return false;
-        } else {
-            return (service == currentService);
         }
+
+        return (service == currentService);
     }
     
 

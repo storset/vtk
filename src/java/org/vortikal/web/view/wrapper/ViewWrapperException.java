@@ -43,6 +43,8 @@ import org.springframework.web.servlet.View;
  */
 public class ViewWrapperException extends RuntimeException {
 
+    private static final long serialVersionUID = 2796471474145665926L;
+
     private Map model = null;
     private View view = null;
     

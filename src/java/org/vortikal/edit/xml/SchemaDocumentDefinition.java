@@ -767,6 +767,8 @@ public class SchemaDocumentDefinition {
 
     private class XSDAttributeElementFilter implements Filter {
 
+        private static final long serialVersionUID = -5181435871154415499L;
+
         public boolean matches(Object object) {
             return (object instanceof Element)
                     && ((Element) object).getName().equals("attribute");

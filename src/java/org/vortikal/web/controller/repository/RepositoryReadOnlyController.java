@@ -37,11 +37,9 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-
 import org.vortikal.repository.Configuration;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 
 /**
  * Controller that locks a resource (if it was previously unlocked).
@@ -90,7 +88,6 @@ public class RepositoryReadOnlyController
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         String token = securityContext.getToken();

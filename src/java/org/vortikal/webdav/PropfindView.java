@@ -239,8 +239,7 @@ public class PropfindView implements View, InitializingBean {
         String href = webdavService.constructLink(resource, p);
 
         responseElement.addContent(
-            (Element) new Element(
-                "href", WebdavConstants.DAV_NAMESPACE).addContent(href));
+                new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(href));
         Element foundProperties = new Element("prop", WebdavConstants.DAV_NAMESPACE);
         Element unknownProperties = new Element("prop", WebdavConstants.DAV_NAMESPACE);
 
@@ -428,15 +427,15 @@ public class PropfindView implements View, InitializingBean {
                 type = "write";
             }
 
-            activeLock.addContent((Element)
+            activeLock.addContent(
                 new Element("locktype", WebdavConstants.DAV_NAMESPACE).addContent(
                     new Element(type, WebdavConstants.DAV_NAMESPACE)));
 
-            activeLock.addContent((Element)
+            activeLock.addContent(
                 new Element("lockscope", WebdavConstants.DAV_NAMESPACE).addContent(
                     new Element(scope, WebdavConstants.DAV_NAMESPACE)));
 
-            activeLock.addContent((Element)
+            activeLock.addContent(
                 new Element("depth", WebdavConstants.DAV_NAMESPACE).addContent(
                     lock.getDepth()));
 
@@ -457,14 +456,13 @@ public class PropfindView implements View, InitializingBean {
             
             String timeoutStr = "Second-" + (timeout / 1000);
 
-            activeLock.addContent((Element)
+            activeLock.addContent(
                 new Element("timeout", WebdavConstants.DAV_NAMESPACE).addContent(
-                    timeoutStr
-                ));
+                    timeoutStr));
 
-            activeLock.addContent((Element)
+            activeLock.addContent(
                 new Element("locktoken", WebdavConstants.DAV_NAMESPACE).addContent(
-                    (Element) new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(
+                        new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(
                         lock.getLockToken())));
          
            lockDiscovery.addContent(activeLock);
@@ -491,10 +489,10 @@ public class PropfindView implements View, InitializingBean {
             
             if (supportedLocks[i].equals(Lock.LOCKTYPE_EXCLUSIVE_WRITE)) {
                 Element lockEntry = new Element("lockentry", WebdavConstants.DAV_NAMESPACE);
-                lockEntry.addContent((Element)
+                lockEntry.addContent(
                     new Element("lockscope", WebdavConstants.DAV_NAMESPACE).addContent(
                         new Element("exclusive", WebdavConstants.DAV_NAMESPACE)));
-                lockEntry.addContent((Element)
+                lockEntry.addContent(
                     new Element("locktype", WebdavConstants.DAV_NAMESPACE).addContent(
                         new Element("write", WebdavConstants.DAV_NAMESPACE)));
 
@@ -585,30 +583,29 @@ public class PropfindView implements View, InitializingBean {
         Element supportedPrivilege =
             new Element("supported-privilege", WebdavConstants.DAV_NAMESPACE);
 
-        supportedPrivilege.addContent((Element)
+        supportedPrivilege.addContent(
             new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
                 new Element("all", WebdavConstants.DAV_NAMESPACE)));
-        supportedPrivilege.addContent((Element)
+        supportedPrivilege.addContent(
             new Element("description", WebdavConstants.DAV_NAMESPACE).addContent(
                 "Any operation"));
 
 
         Element sub = new Element("supported-privilege", WebdavConstants.DAV_NAMESPACE);
-        sub.addContent((Element)
+        sub.addContent(
             new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
                 new Element("read", WebdavConstants.DAV_NAMESPACE)));
-        sub.addContent((Element) 
-                       new Element("description", WebdavConstants.DAV_NAMESPACE).addContent(
+        sub.addContent(new Element("description", WebdavConstants.DAV_NAMESPACE).addContent(
                            "Read any object"));
         
         supportedPrivilege.addContent(sub);
 
 
         sub = new Element("supported-privilege", WebdavConstants.DAV_NAMESPACE);
-        sub.addContent((Element)
+        sub.addContent(
             new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
                 new Element("write", WebdavConstants.DAV_NAMESPACE)));
-        sub.addContent((Element)
+        sub.addContent(
             new Element("description", WebdavConstants.DAV_NAMESPACE).addContent(
                            "Write any object"));
         
@@ -626,14 +623,11 @@ public class PropfindView implements View, InitializingBean {
     protected Element buildCurrentUserPrivilegeSetElement(Resource resource) {
         
         Element e = new Element("current-user-privilege-set", WebdavConstants.DAV_NAMESPACE);
-        e.addContent((Element)
-                     new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
+        e.addContent(new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
                          new Element("read", WebdavConstants.DAV_NAMESPACE)));
-        e.addContent((Element) 
-                     new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
+        e.addContent(new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
                          new Element("write", WebdavConstants.DAV_NAMESPACE)));
-        e.addContent((Element) 
-                     new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
+        e.addContent(new Element("privilege", WebdavConstants.DAV_NAMESPACE).addContent(
                          new Element("all", WebdavConstants.DAV_NAMESPACE)));
         return e;
     }

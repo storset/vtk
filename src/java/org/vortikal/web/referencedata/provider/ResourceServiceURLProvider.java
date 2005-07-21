@@ -169,7 +169,7 @@ public class ResourceServiceURLProvider
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append(" [ ");
         sb.append("modelName = ").append(this.modelName);
-        sb.append("service = ").append(this.service.getName());
+        sb.append(", service = ").append(this.service.getName());
         sb.append(" ]");
         return sb.toString();
     }

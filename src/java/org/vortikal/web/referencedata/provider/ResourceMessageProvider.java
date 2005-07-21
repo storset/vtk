@@ -225,7 +225,7 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append(" [ ");
         sb.append("modelName = ").append(this.modelName);
-        sb.append("localizationKey = ").append(this.localizationKey);
+        sb.append(", localizationKey = ").append(this.localizationKey);
         sb.append(" ]");
         return sb.toString();
     }

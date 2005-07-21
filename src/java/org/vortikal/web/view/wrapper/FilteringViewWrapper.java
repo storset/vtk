@@ -59,8 +59,9 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  * 
  * <p>Subclasses that wish to perform custom filtering (aside from
  * what is possible using the {@link TextContentFilter} interface) may
- * override {@link #preRender} or {@link #postRender} methods, which
- * provide access to the buffered response.
+ * override {@link #preRender preRender()} or {@link #postRender
+ * postRender()} methods, which provide access to the buffered
+ * response.
  *
  * <p>The Content-Type header written to the response is the same as
  * that of the original response, with a possible modification of the

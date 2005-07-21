@@ -36,23 +36,28 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
+import org.vortikal.web.RequestContext;
 
-/**
+/** Delete the requested resource from repository.
+ * 
+ *  <p>By default puts the parent resource in the model under the 'resource' name. 
+ *  This can be overridden by specifying a path (relative or absolute) to another resource.
  */
 public class DeleteResourceController extends AbstractController implements InitializingBean {
 
     private Repository repository;
     private String viewName;
-   
+    private String resourcePath;
+    
+    
     private String trustedToken;
     
     /**
@@ -80,9 +85,21 @@ public class DeleteResourceController extends AbstractController implements Init
         Resource resource = repository.retrieve(token, uri, false);
         repository.delete(token, uri);
     
-        Resource parent = repository.retrieve(token, resource.getParent(), false);
+        Resource modelResource = repository.retrieve(token, resource.getParent(), false);
+
+        if (this.resourcePath != null) {
+            String newUri = URIUtil.makeAbsoluteURI(uri, this.resourcePath);
+            if (newUri != null) {
+                try {
+                    modelResource = this.repository.retrieve(token, newUri, false);
+                } catch (Exception e) {
+                    // Do nothing
+                }
+            }
+        }
+        
         Map model = new HashMap();
-        model.put("resource", parent);
+        model.put("resource", modelResource);
         return new ModelAndView(viewName, model);
     }
 
@@ -93,6 +110,13 @@ public class DeleteResourceController extends AbstractController implements Init
 
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
+    }
+
+    /**
+     * @param resourcePath The resourcePath to set.
+     */
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
     }
     
 

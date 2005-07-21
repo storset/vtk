@@ -164,4 +164,11 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         model.put(this.modelName, resourceContextModel);
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [ ");
+        sb.append("modelName = ").append(this.modelName);
+        sb.append(" ]");
+        return sb.toString();
+    }
 }

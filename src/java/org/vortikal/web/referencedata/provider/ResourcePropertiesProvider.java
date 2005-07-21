@@ -186,5 +186,13 @@ public class ResourcePropertiesProvider implements ReferenceDataProvider, Initia
         model.put(this.modelName, resourcePropertiesModel);
     }
     
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [ ");
+        sb.append("modelName = ").append(this.modelName);
+        sb.append(" ]");
+        return sb.toString();
+    }
+
 }
 

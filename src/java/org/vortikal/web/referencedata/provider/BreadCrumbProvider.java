@@ -290,6 +290,13 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
     }
     
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [ ");
+        sb.append("breadcrumbName = ").append(this.breadcrumbName);
+        sb.append(" ]");
+        return sb.toString();
+    }
 
 }
 

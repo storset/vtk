@@ -66,6 +66,8 @@ public class CategoryResolvingFactoryBean implements ApplicationContextAware, Fa
     private String category;
     private Class clazz;
     private boolean ordered;
+
+
     /**
      * Gets a list of {@link Service services} declared to belong to a
      * certain category.

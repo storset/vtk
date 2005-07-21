@@ -65,7 +65,7 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
      * Set static model data as a CSV string.
      * Format is: modelname0={value1},modelname1={value1}
      */
-    public void setModelDataCSV(String propString) throws IllegalArgumentException {
+    public void setModelDataCSV(String propString) {
         if (propString == null) {
             // leave static attributes unchanged
             return;
@@ -73,19 +73,22 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
 
         StringTokenizer st = new StringTokenizer(propString, ",");
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
-            int eqIdx = tok.indexOf("=");
-            if (eqIdx == -1) {
-                throw new IllegalArgumentException("Expected = in attributes CSV string '" + propString + "'");
-            }
-            if (eqIdx >= tok.length() - 2) {
+            String token = st.nextToken();
+            int eqIndex = token.indexOf("=");
+            if (eqIndex == -1) {
                 throw new IllegalArgumentException(
-                        "At least 2 characters ([]) required in attributes CSV string '" + propString + "'");
+                    "CSV string must be in the format 'name={value}[,name={value}]+', was '"
+                    + propString + "'");
             }
-            String name = tok.substring(0, eqIdx);
-            String value = tok.substring(eqIdx + 1);
+            if (eqIndex >= token.length() - 2) {
+                throw new IllegalArgumentException(
+                        "At least 2 characters ([]) required in attributes CSV string '"
+                        + propString + "'");
+            }
+            String name = token.substring(0, eqIndex);
+            String value = token.substring(eqIndex + 1);
 
-            // celete first and last characters of value: { and }
+            // strip away: '{' and '}'
             value = value.substring(1);
             value = value.substring(0, value.length() - 1);
 
@@ -147,4 +150,13 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
                 model.put(key, staticModelData.get(key));
         }
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [ ");
+        sb.append("staticModelData = ").append(this.staticModelData);
+        sb.append(" ]");
+        return sb.toString();
+    }
+    
 }

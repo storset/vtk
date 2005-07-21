@@ -76,7 +76,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * </ul>
  * 
  */
-public class ResourceServiceURLProvider implements ReferenceDataProvider, InitializingBean {
+public class ResourceServiceURLProvider
+  implements ReferenceDataProvider, InitializingBean {
 
     private String modelName = null;
     private Service service = null;
@@ -164,5 +165,12 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider, Initia
         model.put(this.modelName, urlMap);
     }
 
-
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [ ");
+        sb.append("modelName = ").append(this.modelName);
+        sb.append("service = ").append(this.service.getName());
+        sb.append(" ]");
+        return sb.toString();
+    }
 }

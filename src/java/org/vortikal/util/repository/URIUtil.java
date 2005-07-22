@@ -149,7 +149,7 @@ public class URIUtil {
         int firstPos = uri.indexOf("../");
         if (firstPos == -1) {
             // Quickfix for trailing ../
-            if (uri.endsWith("/"))
+            if (!uri.equals("/") && uri.endsWith("/"))
                 return uri.substring(0, uri.length() -1);
             return uri;
         }

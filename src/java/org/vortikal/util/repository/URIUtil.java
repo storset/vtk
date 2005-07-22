@@ -148,6 +148,9 @@ public class URIUtil {
 
         int firstPos = uri.indexOf("../");
         if (firstPos == -1) {
+            // Quickfix for trailing ../
+            if (uri.endsWith("/"))
+                return uri.substring(0, uri.length() -1);
             return uri;
         }
         String base = uri.substring(0, firstPos - 1);
@@ -163,7 +166,7 @@ public class URIUtil {
      * @return null if href is a qualified url or base isn't an absolute path, otherwise
      * an '..'-expanded path..
      */
-    public String getAbsolutePath(String href, String base) {
+    public static String getAbsolutePath(String href, String base) {
 
         String uri = null;
         

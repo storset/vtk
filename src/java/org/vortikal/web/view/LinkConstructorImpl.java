@@ -63,34 +63,25 @@ public class LinkConstructorImpl implements LinkConstructor,
                 + resourceURI + "' with parameters '" + parametersCSV + "'");
         
         String token = SecurityContext.getSecurityContext().getToken();
-		Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-
-		Service service = null;
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        
+        Service service = null;
 		Resource resource = null;
 		Map parameters = null;
 
         String currentUri = RequestContext.getRequestContext().getResourceURI();
         
-		if (resourceURI == null || resourceURI.equals(""))
-			resourceURI = currentUri;
-		
-		if (serviceName == null || serviceName.equals(""))
-			service = RequestContext.getRequestContext().getService();
-
-        
 		try {
-            
-            resourceURI = URIUtil.makeAbsoluteURI(resourceURI, repository.retrieve(token, currentUri, true));
-            resourceURI = URIUtil.expandPath(resourceURI);
-            if (resourceURI.endsWith("..")) {
-                resourceURI = resourceURI.substring(0, resourceURI.lastIndexOf("/"));
-                resourceURI = resourceURI.substring(0, resourceURI.lastIndexOf("/"));
+            if (resourceURI == null || resourceURI.equals("")) {
+                resourceURI = currentUri;
+            } else {
+                resourceURI = URIUtil.getAbsolutePath(resourceURI, currentUri);
             }
-            
-            resource = repository.retrieve(token, resourceURI, true);
 
-			if (service == null) {
-				service = getService(serviceName);
+            if (serviceName == null || serviceName.equals(""))
+                service = RequestContext.getRequestContext().getService();
+            else {
+                service = getService(serviceName);
             }
             
             if (parametersCSV != null && !parametersCSV.trim().equals("")) {
@@ -98,16 +89,17 @@ public class LinkConstructorImpl implements LinkConstructor,
                 parameters = getParametersMap(parametersCSV);
             }
             
-                logger.debug("Trying to construct link to service '" + service.getName()
-                        + "' for resource '" + resource.getURI() + "'");
-
-			return service.constructLink(resource, principal, parameters, false);
-		
+            resource = repository.retrieve(token, resourceURI, true);
+            
+            logger.debug("Trying to construct link to service '" + service.getName()
+                    + "' for resource '" + resource.getURI() + "'");
+            
+            return service.constructLink(resource, principal, parameters, false);
 		
 		} catch (Exception e) {
             logger.warn("Caught exception on link construction", e);
-            return "";
 		}
+        return "";
 	}
 
 	private Service getService(String serviceName) {

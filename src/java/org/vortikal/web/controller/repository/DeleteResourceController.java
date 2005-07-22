@@ -88,11 +88,12 @@ public class DeleteResourceController extends AbstractController implements Init
         Resource modelResource = repository.retrieve(token, resource.getParent(), false);
 
         if (this.resourcePath != null) {
-            String newUri = URIUtil.makeAbsoluteURI(uri, this.resourcePath);
+            String newUri = URIUtil.getAbsolutePath(this.resourcePath, uri);
             if (newUri != null) {
                 try {
                     modelResource = this.repository.retrieve(token, newUri, false);
                 } catch (Exception e) {
+                    logger.info("Unable to retireve requested resource to view '" + newUri + "'", e);
                     // Do nothing
                 }
             }

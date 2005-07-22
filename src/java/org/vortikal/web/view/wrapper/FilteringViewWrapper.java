@@ -282,7 +282,7 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(": [");
         sb.append(", contentFilters = ").append(
-                Arrays.asList(this.contentFilters));
+            (this.contentFilters != null) ? Arrays.asList(this.contentFilters) : null);
         sb.append("]");
         return sb.toString();
     }

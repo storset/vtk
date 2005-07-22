@@ -10,6 +10,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
       
+      <action dev="gormap" type="add">
+        Added reference data provider for creating URLs to fixed
+        resources (as opposed to the currently requested resource).
+      </action>
+
       <action dev="storset,gormap" type="update">
         Refactored the view wrapping framework. Added a new package 
         'view.wrapper' that now contains the view wrapping code.

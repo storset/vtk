@@ -103,6 +103,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   <li><code>invertedSort</code> - is the child list inverted?
  *   <li><code>browsingLinks</code> - array of the links to the
  *   browsing service for each child
+ *   <li><code>resourceURIs</code> - array of the resource URI for 
+ *   each child (used in naming the checkboxes for copy/move 
  *   <li><code>parentURL</code> - link to the parent collection,
  *       generated using the <code>browsingService</code>. If the
  *       parent collection is the root, or the user is not allowed to
@@ -221,6 +223,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         
         Map[] childLinks = new HashMap[children.length];
         String[] browsingLinks = new String[children.length];
+        String[] resourceURIs = new String[children.length];
+        
         for (int i = 0;  i < children.length; i++) {
             Map linkMap = new HashMap();
             
@@ -237,6 +241,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             }
             childLinks[i] = linkMap; 
             
+            // Need URIs to easy implement copy/move 
+            resourceURIs[i] = children[i].getURI();
             
             try {
                 browsingLinks[i] = browsingService.constructLink(
@@ -245,6 +251,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                 // do nothing
             }
         }
+        collectionListingModel.put("resourceURIs", resourceURIs);
         collectionListingModel.put("childLinks", childLinks);
         collectionListingModel.put("browsingLinks", browsingLinks);
 

@@ -75,7 +75,7 @@ public class URIUtil {
                 "The relative path '" + ref + "' cannot be resolved with a null resource");
         };
 
-        if (base.endsWith("/")) { 
+        if (!base.endsWith("/")) { 
             return base + "/" + ref; 
         }
 

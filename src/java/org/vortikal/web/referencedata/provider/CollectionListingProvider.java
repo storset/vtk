@@ -119,7 +119,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     private static final Set supportedResourceColumns = 
         new HashSet(Arrays.asList(new String[] {
                                       DEFAULT_SORT_BY_PARAMETER, 
-                                      "size", 
+                                      "content-length", 
                                       "last-modified",
                                       "locked", 
                                       "content-type", 
@@ -285,7 +285,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     private void sortChildren(Resource[] children, String sortBy, boolean invert) {
         int order = ResourceSorter.ORDER_BY_NAME;
 
-        if ("size".equals(sortBy)) {
+        if ("content-length".equals(sortBy)) {
             order = ResourceSorter.ORDER_BY_FILESIZE;
         }
         if ("last-modified".equals(sortBy)) {

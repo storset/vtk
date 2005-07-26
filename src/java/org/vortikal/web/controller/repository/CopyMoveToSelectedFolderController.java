@@ -28,12 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.controller;
+package org.vortikal.web.controller.repository;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,12 +45,12 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.controller.CopyMoveController;
 import org.vortikal.web.controller.CopyMoveSessionBean;
 import org.vortikal.web.service.Service;
 
 /**
- * A controller stores the Uri of the resources the user has selected 
- * for copy/move in a session variable
+ * A controller that copies (or moves) resources from one folder to another 
  *
  * <p>Description:
  *  
@@ -62,13 +60,9 @@ import org.vortikal.web.service.Service;
  *   <li><code>viewService</code> - the service for which to construct a viewURL
  * </ul>
  *
- * <p>Model data published:
- * <ul>
- * 	 <li><code>filesToBeCopied</code>: an arraylist containing the selected elements
- * </ul>
  */
 
-public class CopyMoveController implements Controller {
+public class CopyMoveToSelectedFolderController implements Controller {
 
 	private static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
 	private String viewName = "DEFAULT_VIEW_NAME";    
@@ -87,48 +81,37 @@ public class CopyMoveController implements Controller {
     	
 	    	SecurityContext securityContext = SecurityContext.getSecurityContext();
 	    	String token = securityContext.getToken();
-	    	Principal principal = securityContext.getPrincipal();
 	    	RequestContext requestContext = RequestContext.getRequestContext();
-	    	
 	    	String uri = requestContext.getResourceURI();
-	    	Resource resource = repository.retrieve(token, uri, false);
-	    	
-	    	Map model = new HashMap();
 	    	
 	    	CopyMoveSessionBean sessionBean = (CopyMoveSessionBean)
 	    	request.getSession(true).getAttribute(COPYMOVE_SESSION_ATTRIBUTE);
-	    	
-	    	/* Deleting session if you get a POST-request (because then
-	    	 * it is a new request for copy/move) */
-	    	
-	    	if (sessionBean != null && request.getMethod().equals("POST")){
-	    		request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
-	    		sessionBean = null;
-	    	}
-	    	
-	    	if (sessionBean == null) {
-	    		sessionBean = new CopyMoveSessionBean();
-	    		List filesToBeCopied = new ArrayList();
-	    			    		
-	    		/* Walk through the request-parameters to find the resources
-	    		 * selected for copy/move and store them in session */
+	    
+	    	// Need to give some feedback when there is no session variable...
+	    	if (sessionBean != null){
+	    		List filesToBeCopied = sessionBean.getFilesToBeCopied();
+
+	    		ListIterator i = filesToBeCopied.listIterator();
 	    		
-	    		Enumeration e = request.getParameterNames();
-	    		
-	    		while (e.hasMoreElements()) {
-	    			String name = (String) e.nextElement();
+	    		while (i.hasNext()) {
 	    			
-	    			// Need to replace this with a better check...
-	    			if (name.startsWith("/")) {
-	    				filesToBeCopied.add(name);
+	    			// Need to do this in a more elegant way...
+	    			String resourceUri = i.next().toString();
+	    			String resourceFilename = 
+	    				resourceUri.substring(resourceUri.lastIndexOf("/"));
+	    			String newResourceUri = uri + resourceFilename;
+	    			
+	    			System.out.println("### Fra: " + resourceUri + " Til: " + newResourceUri);
+	    			
+	    			try {
+	    				repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
+	    			} catch (Exception e) {
+	    				// Do nothing for now...
 	    			}
-	    		}        			
-	    		sessionBean.setFilesToBeCopied(filesToBeCopied);
-	    		request.getSession(true).setAttribute(COPYMOVE_SESSION_ATTRIBUTE, sessionBean);
-	    	}		
-	    	
-	    	model.put("filesToBeCopied", sessionBean.getFilesToBeCopied()); 	
-	    	return new ModelAndView(viewName, model);
+	    		} 	
+	    	} 
+	    		
+	    	return new ModelAndView(viewName);
     }
     
 }

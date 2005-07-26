@@ -179,7 +179,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     }
 
     
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map model, HttpServletRequest request)
+        throws Exception {
+
         Map collectionListingModel = new HashMap();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -190,8 +192,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
         Resource resource = repository.retrieve(token, uri,
                                                 this.retrieveForProcessing);
-        //resource = repository.retrieve(token, uri, true);
-        if (resource == null || !resource.isCollection()) {
+        if (!resource.isCollection()) {
             // Can't do anything unless resource is a collection
             return;
         }
@@ -223,7 +224,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         
         Map[] childLinks = new HashMap[children.length];
         String[] browsingLinks = new String[children.length];
-        String[] resourceURIs = new String[children.length];
         
         for (int i = 0;  i < children.length; i++) {
             Map linkMap = new HashMap();
@@ -241,9 +241,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             }
             childLinks[i] = linkMap; 
             
-            // Need URIs to easy implement copy/move 
-            resourceURIs[i] = children[i].getURI();
-            
             try {
                 browsingLinks[i] = browsingService.constructLink(
                     children[i], securityContext.getPrincipal());
@@ -251,7 +248,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                 // do nothing
             }
         }
-        collectionListingModel.put("resourceURIs", resourceURIs);
         collectionListingModel.put("childLinks", childLinks);
         collectionListingModel.put("browsingLinks", browsingLinks);
 

@@ -5,10 +5,14 @@
     <title>Change Log</title>
   </properties>
   <body>
-    <release version="0.1.8" date="2005-07-27" description="Release 0.1.8">
+
+    <release version="0.1.9-SNAPSHOT" date="In SVN" description="Release 0.1.9">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+    </release>
+
+    <release version="0.1.8" date="2005-07-27" description="Release 0.1.8">
       <action dev="gormap" type="add">Added reference data provider for creating URLs to fixed resources (as opposed to the currently requested resource).</action>
       <action dev="storset,gormap" type="update">Refactored the view wrapping framework. Added a new package 'view.wrapper' that now contains the view wrapping code. Split 'referencedataprovider' package into 'referencedata' and 'referencedata.provider'.</action>
       <action dev="storset" type="add">Added possibility to wrap views and specify reference data providers at the view resolver level, making it easier to provide consistent sets of related views.</action>

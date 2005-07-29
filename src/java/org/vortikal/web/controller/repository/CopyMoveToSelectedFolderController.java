@@ -95,18 +95,28 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    		
 	    		while (i.hasNext()) {
 	    			
-	    			// Need to do this in a more elegant way...
+	    			// Need to construct the uri to the new file in a more elegant way...
 	    			String resourceUri = i.next().toString();
 	    			String resourceFilename = 
 	    				resourceUri.substring(resourceUri.lastIndexOf("/"));
-	    			String newResourceUri = uri + resourceFilename;
+	    			String newResourceUri = "";
+	    			
+	    			if (uri.equals("/")) {
+	    				newResourceUri = resourceFilename;
+	    			} else {
+	        			newResourceUri = uri + resourceFilename;    				
+	    			}
 	    			
 	    			System.out.println("### Fra: " + resourceUri + " Til: " + newResourceUri);
 	    			
 	    			try {
-	    				repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
+	    				if (request.getParameter("action").equals("move-resources")) {
+	    					repository.move(token, resourceUri, newResourceUri, false);
+	    				} else {
+	    					repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
+	    				}
 	    			} catch (Exception e) {
-	    				// Do nothing for now...
+	    				System.out.println("Copy/Move action failed: " + e.getClass() + " " + e.getMessage());
 	    			}
 	    		} 	
 	    	} 

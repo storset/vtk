@@ -84,14 +84,6 @@ public class CopyMoveController implements Controller {
     
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws Exception {
-    	
-	    	SecurityContext securityContext = SecurityContext.getSecurityContext();
-	    	String token = securityContext.getToken();
-	    	Principal principal = securityContext.getPrincipal();
-	    	RequestContext requestContext = RequestContext.getRequestContext();
-	    	
-	    	String uri = requestContext.getResourceURI();
-	    	Resource resource = repository.retrieve(token, uri, false);
 	    	
 	    	Map model = new HashMap();
 	    	

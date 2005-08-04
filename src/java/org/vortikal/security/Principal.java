@@ -46,7 +46,7 @@ public interface Principal extends Comparable {
     /**
      * Gets the unqualified name of the principal, stripped of domain
      * 
-     * @return the fully qualified name of the principal
+     * @return the unqualified name of the principal
      */
     public String getUnqualifiedName();
     

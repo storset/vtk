@@ -42,29 +42,26 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.controller.CopyMoveSessionBean;
-import org.vortikal.web.service.Service;
-
 /**
- * A controller stores the Uri of the resources the user has selected 
- * for copy/move in a session variable
- *
- * <p>Description:
- *  
- * <p>Configurable properties:
+ * A controller stores the Uri of the resources the user has selected for
+ * copy/move in a session variable
+ * 
+ * <p>
+ * Description:
+ * 
+ * <p>
+ * Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content repository
- *   <li><code>viewService</code> - the service for which to construct a viewURL
+ * <li><code>repository</code> - the content repository
+ * <li><code>viewService</code> - the service for which to construct a
+ * viewURL
  * </ul>
- *
- * <p>Model data published:
+ * 
+ * <p>
+ * Model data published:
  * <ul>
- * 	 <li><code>filesToBeCopied</code>: an arraylist containing the selected elements
+ * <li><code>aboveBreadCrumbMessage</code>: a message that is presented
+ * above the breadcrumb component</li>
  * </ul>
  */
 
@@ -72,16 +69,11 @@ public class CopyMoveController implements Controller {
 
 	private static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
 	private String viewName = "DEFAULT_VIEW_NAME";    
-	private Repository repository = null;
 	
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}
 	
-	public final void setRepository(final Repository newRepository) {
-		this.repository = newRepository;
-	}
-    
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws Exception {
 	    	
@@ -119,7 +111,7 @@ public class CopyMoveController implements Controller {
 	    		request.getSession(true).setAttribute(COPYMOVE_SESSION_ATTRIBUTE, sessionBean);
 	    	}		
 	    	
-	    	model.put("filesToBeCopied", sessionBean.getFilesToBeCopied()); 	
+	    	model.put("aboveBreadCrumbMessage", "copyMove." + viewName + ".header");
 	    	return new ModelAndView(viewName, model);
     }
     

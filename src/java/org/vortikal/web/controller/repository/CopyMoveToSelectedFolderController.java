@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.controller.repository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -37,17 +39,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.controller.CopyMoveController;
 import org.vortikal.web.controller.CopyMoveSessionBean;
-import org.vortikal.web.service.Service;
 
 /**
  * A controller that copies (or moves) resources from one folder to another 
@@ -60,10 +60,15 @@ import org.vortikal.web.service.Service;
  *   <li><code>viewService</code> - the service for which to construct a viewURL
  * </ul>
  *
+ * <p>Model data published:
+ * <ul>
+ *   <li><code>createErrorMessage</code>: errormessage
+ *   <li><code>errorItems</code>: an array of repository items which the errormessage relates to
+ * </ul>
  */
 
 public class CopyMoveToSelectedFolderController implements Controller {
-
+	private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
 	private static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
 	private String viewName = "DEFAULT_VIEW_NAME";    
 	private Repository repository = null;
@@ -79,6 +84,10 @@ public class CopyMoveToSelectedFolderController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws Exception {
     	
+    		long before = System.currentTimeMillis();
+    	
+    		Map model = new HashMap();
+    	
 	    	SecurityContext securityContext = SecurityContext.getSecurityContext();
 	    	String token = securityContext.getToken();
 	    	RequestContext requestContext = RequestContext.getRequestContext();
@@ -89,6 +98,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    
 	    	// Need to give some feedback when there is no session variable...
 	    	if (sessionBean != null){
+	    		List filesFailed = new ArrayList();
 	    		List filesToBeCopied = sessionBean.getFilesToBeCopied();
 
 	    		ListIterator i = filesToBeCopied.listIterator();
@@ -107,7 +117,9 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	        			newResourceUri = uri + resourceFilename;    				
 	    			}
 	    			
-	    			System.out.println("### Fra: " + resourceUri + " Til: " + newResourceUri);
+	    			if (logger.isDebugEnabled()) {
+	    	            logger.debug("Trying to copy(or move) resource from: " + resourceUri + " to: " + newResourceUri);
+	    	        }
 	    			
 	    			try {
 	    				if (request.getParameter("action").equals("move-resources")) {
@@ -116,12 +128,30 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    					repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
 	    				}
 	    			} catch (Exception e) {
-	    				System.out.println("Copy/Move action failed: " + e.getClass() + " " + e.getMessage());
+	    				filesFailed.add(resourceUri);  
+		    			
+	    				if (logger.isDebugEnabled()) {
+	    					logger.debug("Copy/Move action failed: " + e.getClass().getName() + " " + e.getMessage());    		
+		    	        	}
+	    						
 	    			}
 	    		} 	
+	    	
+	    		if (filesFailed.size() > 0) {	    		
+	    			model.put("createErrorMessage", "copyMove.error.copyMoveFailed"); 
+	    		    	model.put("errorItems", filesFailed); 
+	    		    	// return new ModelAndView(errorViewName, model);
+	    		}
+	    	
 	    	} 
-	    		
-	    	return new ModelAndView(viewName);
+	    
+	    	long total = System.currentTimeMillis() - before;
+	    	
+		if (logger.isDebugEnabled()) {
+			logger.debug("Milliseconds spent on this copy/move operation: " + total);    		
+	    }
+	    	
+	    	return new ModelAndView(viewName, model);
     }
     
 }

@@ -52,4 +52,11 @@ public class FreeMarkerTemplateLocationImpl implements
         this.order = order;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [").append("location: ").append(this.location).append("]");
+        return sb.toString();
+    }
+    
+
 }

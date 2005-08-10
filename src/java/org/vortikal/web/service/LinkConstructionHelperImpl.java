@@ -89,7 +89,7 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
                 throw new ServiceUnlinkableException(
                     "Service " + service.getName() + " cannot be applied to resource "
                     + resource.getURI() + ". Assertion " + assertion
-                    + "false for resource.");
+                    + " false for resource.");
             }
         }
         

@@ -84,6 +84,7 @@ public class ResourceServiceURLProvider
     private Repository repository = null;
     private boolean matchAssertions = false;
     private boolean linkToParent = false;
+    private boolean linkToGrandparent = false;
     private String urlName = "url";
 
     public void setModelName(String modelName) {
@@ -100,6 +101,10 @@ public class ResourceServiceURLProvider
     
     public void setLinkToParent(boolean linkToParent) {
         this.linkToParent = linkToParent;
+    }
+    
+    public void setLinkToGrandparent(boolean linkToGrandparent) {
+        this.linkToGrandparent = linkToGrandparent;
     }
 
     public void setMatchAssertions(boolean matchAssertions) {
@@ -137,8 +142,12 @@ public class ResourceServiceURLProvider
 
         Resource resource = null;
         String uri = requestContext.getResourceURI();
+        
         if (this.linkToParent) {
             uri = URIUtil.getParentURI(uri);
+        }
+        if (this.linkToGrandparent) {
+            uri = URIUtil.getParentURI( URIUtil.getParentURI(uri) );
         }
 
         try {

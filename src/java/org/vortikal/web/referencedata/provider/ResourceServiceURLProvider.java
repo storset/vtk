@@ -147,7 +147,7 @@ public class ResourceServiceURLProvider
             uri = URIUtil.getParentURI(uri);
         }
         if (this.linkToGrandparent) {
-            uri = URIUtil.getParentURI( URIUtil.getParentURI(uri) );
+            uri = URIUtil.getGrandparentURI(uri);
         }
 
         try {

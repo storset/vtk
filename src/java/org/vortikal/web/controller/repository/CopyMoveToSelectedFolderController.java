@@ -98,7 +98,10 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    
 	    	// Need to give some feedback when there is no session variable...
 	    	if (sessionBean != null){
+	    		boolean copyToSameDirectory = false;
 	    		List filesFailed = new ArrayList();
+	    		String action = request.getParameter("action");
+	    		
 	    		List filesToBeCopied = sessionBean.getFilesToBeCopied();
 
 	    		ListIterator i = filesToBeCopied.listIterator();
@@ -122,11 +125,15 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    	        }
 	    			
 	    			try {
-	    				if (request.getParameter("action").equals("move-resources")) {
-	    					repository.move(token, resourceUri, newResourceUri, false);
-	    				} else {
-	    					repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
-	    				}
+	    				if (action.equals("move-resources")) {
+	    					repository.move(token, resourceUri, newResourceUri, false);			
+	    				} else if (resourceUri.equals(newResourceUri)) {
+	    					// Identical source- and destination-directory	
+	    					copyToSameDirectory = true;
+	    	    			} else {
+	    	    				repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
+	    	    			}
+	    	    			
 	    			} catch (Exception e) {
 	    				filesFailed.add(resourceUri);  
 		    			
@@ -136,10 +143,13 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    						
 	    			}
 	    		} 	
-	    	
-	    		if (filesFailed.size() > 0) {	    		
+
+	    		// A small effort to provide some form of errorhandling  	
+	    		if (copyToSameDirectory) {
+	    			model.put("createErrorMessage", "copyMove.error.copyToSameDirectory"); 
+	    		} else if (filesFailed.size() > 0){
 	    			model.put("createErrorMessage", "copyMove.error.copyMoveFailed"); 
-	    		    	model.put("errorItems", filesFailed); 
+	    			model.put("errorItems", filesFailed); 
 	    		    	// return new ModelAndView(errorViewName, model);
 	    		}
 	    	

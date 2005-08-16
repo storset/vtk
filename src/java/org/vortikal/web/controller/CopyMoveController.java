@@ -79,8 +79,7 @@ public class CopyMoveController implements Controller {
 	    	
 	    	Map model = new HashMap();
 	    	
-	    	CopyMoveSessionBean sessionBean = (CopyMoveSessionBean)
-	    	request.getSession(true).getAttribute(COPYMOVE_SESSION_ATTRIBUTE);
+	    	CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 	    	
 	    	/* Deleting session if you get a POST-request (because then
 	    	 * it is a new request for copy/move) */

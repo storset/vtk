@@ -101,7 +101,7 @@ public class RequestContextInitializer
             // Set an initial request context (with the resource, but
             // without the matched service)
             RequestContext.setRequestContext(
-                new RequestContext(service, uri));
+                new RequestContext(request, service, uri));
             
             // Resolve the request to a service:
             if (resolveService(service, request, resource)) {
@@ -235,7 +235,7 @@ public class RequestContextInitializer
             }
         } catch (AuthenticationException e) {
             RequestContext.setRequestContext(
-                new RequestContext(service, requestContext.getResourceURI()));
+                new RequestContext(request, service, requestContext.getResourceURI()));
             throw(e);
         }
 
@@ -255,7 +255,7 @@ public class RequestContextInitializer
         }
 
         RequestContext.setRequestContext(
-            new RequestContext(service, requestContext.getResourceURI()));
+            new RequestContext(request, service, requestContext.getResourceURI()));
         return true;
     }
 

@@ -30,14 +30,15 @@
  */
 package org.vortikal.web;
 
+import javax.servlet.http.HttpServletRequest;
 import org.vortikal.web.service.Service;
-
 
 
 /**
  * Request context. Lives troughout one request, and contains the
- * current {@link Service} and the requested resource URI. The request
- * context can be obtained from application code in the following way:
+ * servlet request, the current {@link Service} and the requested
+ * resource URI. The request context can be obtained from application
+ * code in the following way:
  *
  * <pre>RequestContext requestContext = RequestContext.getRequestContext();</pre>
  *
@@ -46,11 +47,14 @@ public class RequestContext {
 
     private static ThreadLocal threadLocal = new ThreadLocal();
     
+    private final HttpServletRequest servletRequest;
     private final Service service;
     private final String resourceURI;
     
     
-    public RequestContext(Service service, String resourceURI) {
+    public RequestContext(HttpServletRequest servletRequest,
+                          Service service, String resourceURI) {
+        this.servletRequest = servletRequest;
         this.service = service;
         this.resourceURI = resourceURI;
     }
@@ -63,6 +67,17 @@ public class RequestContext {
         return (RequestContext) threadLocal.get();
     }
     
+
+    /**
+     * Gets the current servlet request.
+     * 
+     * @return the servlet request
+     */
+    public HttpServletRequest getServletRequest() {
+        return this.servletRequest;
+    }
+
+
     /**
      * Gets the current {@link Service} that this request executes
      * under.
@@ -71,7 +86,7 @@ public class RequestContext {
      * current service.
      */
     public Service getService() {
-        return service;
+        return this.service;
     }
 
 
@@ -82,7 +97,7 @@ public class RequestContext {
      * @return Returns URI of the requested resource.
      */
     public String getResourceURI() {
-        return resourceURI;
+        return this.resourceURI;
     }
     
 
@@ -92,6 +107,7 @@ public class RequestContext {
         sb.append(": [");
         sb.append("resourceURI = ").append(this.resourceURI);
         sb.append(", service = ").append(this.service.getName());
+        sb.append(", servletRequest = ").append(this.servletRequest);
         sb.append("]");
         return sb.toString();
     }

@@ -9,6 +9,7 @@
     <release version="0.1.9-SNAPSHOT" date="In SVN" description="Release 0.1.9">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action dev="tommae" type="add">Added controllers for copying and moving resources.</action>
       <action dev="gormap" type="update">
         Made the current servlet request available trough the request context.
       </action>

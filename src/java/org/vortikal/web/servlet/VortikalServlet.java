@@ -165,6 +165,8 @@ public class VortikalServlet extends DispatcherServlet {
         initErrorHandlers();
     }
     
+    
+
     private void initSecurityInitializer() {
         Object bean = getWebApplicationContext().getBean(SECURITY_INITIALIZER_BEAN_NAME);
         if (bean != null && ! (bean instanceof SecurityInitializer)) {
@@ -283,7 +285,7 @@ public class VortikalServlet extends DispatcherServlet {
      * performed by the doService() method in DispatcherServlet.
      * 
      */
-    protected final void service(HttpServletRequest request,
+    protected void service(HttpServletRequest request,
                                  HttpServletResponse response) 
         throws ServletException, IOException {
         

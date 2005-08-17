@@ -54,6 +54,8 @@ import org.vortikal.web.service.Service;
 import org.w3c.dom.NodeList;
 
 /**
+ * TODO: make more robust
+ * 
  * Adds commonly used metadata to the model. These model data are
  * useful when transforming XML resources using XSLT.
  * 

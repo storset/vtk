@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -53,15 +53,14 @@ import org.springframework.web.servlet.mvc.Controller;
  * Configurable properties:
  * <ul>
  * <li><code>repository</code> - the content repository
- * <li><code>viewService</code> - the service for which to construct a
- * viewURL
+ * <li><code>viewName</code> - the view to return to
  * </ul>
  * 
  * <p>
  * Model data published:
  * <ul>
- * <li><code>aboveBreadCrumbMessage</code>: a message that is presented
- * above the breadcrumb component</li>
+ * <li><code>infoMessage</code>: a message that is presented
+ * under the breadcrumb component</li>
  * </ul>
  */
 
@@ -105,12 +104,14 @@ public class CopyMoveController implements Controller {
 	    			if (name.startsWith("/")) {
 	    				filesToBeCopied.add(name);
 	    			}
-	    		}        			
+	    		}        
+	    		String action = request.getParameter("action");
+	    		sessionBean.setAction(action);
 	    		sessionBean.setFilesToBeCopied(filesToBeCopied);
 	    		request.getSession(true).setAttribute(COPYMOVE_SESSION_ATTRIBUTE, sessionBean);
 	    	}		
 	    	
-	    	model.put("aboveBreadCrumbMessage", "copyMove." + viewName + ".header");
+	    	model.put("infoMessage", "copyMove." + sessionBean.getAction() + ".header");
 	    	return new ModelAndView(viewName, model);
     }
     

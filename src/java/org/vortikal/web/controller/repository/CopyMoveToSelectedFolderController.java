@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import org.vortikal.web.controller.CopyMoveSessionBean;
  * <p>Configurable properties:
  * <ul>
  *   <li><code>repository</code> - the content repository
- *   <li><code>viewService</code> - the service for which to construct a viewURL
+ *   <li><code>viewName</code> - the view to which to return to
  * </ul>
  *
  * <p>Model data published:
@@ -100,7 +100,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    	if (sessionBean != null){
 	    		boolean copyToSameDirectory = false;
 	    		List filesFailed = new ArrayList();
-	    		String action = request.getParameter("action");
+	    		String action = sessionBean.getAction();
 	    		
 	    		List filesToBeCopied = sessionBean.getFilesToBeCopied();
 
@@ -152,7 +152,9 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    			model.put("errorItems", filesFailed); 
 	    		    	// return new ModelAndView(errorViewName, model);
 	    		}
-	    	
+	    		
+	    		// Removing session variable
+	    		request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 	    	} 
 	    
 	    	long total = System.currentTimeMillis() - before;

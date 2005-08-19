@@ -36,7 +36,8 @@ import java.util.List;
 
 /**
  * Instances of this class stores information about the resources
- * that are selected for a copy/move operation
+ * that are selected for a copy/move operation and if the action
+ * selected by the user is a copy or move action
  * 
  * @author Tomm Eriksen
  *
@@ -44,6 +45,7 @@ import java.util.List;
 
 public class CopyMoveSessionBean {
 	
+	String action = "";
 	List filesToBeCopied = new ArrayList();
 	
 	public List getFilesToBeCopied() {
@@ -52,6 +54,14 @@ public class CopyMoveSessionBean {
    
 	public void setFilesToBeCopied(List filesToBeCopied) {
 		this.filesToBeCopied = filesToBeCopied;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
 	}
 
 }

@@ -11,6 +11,13 @@
 
     </release>
 
+    <release version="0.1.9.1" date="2005-08-26" description="Release 0.1.9.1">
+      <action dev="gormap" type="fix">
+        Update property 'contentLastModified' when storing resources
+        with the 'overrideLiveProperties' flag set.
+      </action>
+    </release>
+
     <release version="0.1.9" date="2005-08-18" description="Release 0.1.9">
 
       <action dev="tommae" type="add">Added controllers for copying and moving resources.</action>

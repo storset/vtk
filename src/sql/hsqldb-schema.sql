@@ -13,6 +13,7 @@ DROP TABLE lock_type IF EXISTS;
 DROP TABLE acl_entry IF EXISTS;
 DROP TABLE action_type IF EXISTS;
 DROP TABLE vortex_resource IF EXISTS;
+DROP TABLE changelog_entry IF EXISTS;
 
 
 -----------------------------------------------------------------------------
@@ -148,6 +149,26 @@ CREATE TABLE extra_prop_entry
 
 
 
+----------------------------------------------------------------------
+-- changelog_entry
+-----------------------------------------------------------------------------
+
+/* The attribute 'uri' can't be longer that 1578 chars (OS-dependent?).     */
+/* If bigger -> "ORA-01450: maximum key length exceeded" (caused by index). */
+/* Since combined index '(uri, changelog_entry_id)' -> 1500 chars.          */
+
+CREATE TABLE changelog_entry
+(
+    changelog_entry_id IDENTITY NOT NULL PRIMARY KEY,
+    logger_id int NOT NULL,
+    logger_type int NOT NULL,
+    operation VARCHAR (128) NULL,
+    timestamp DATETIME NOT NULL,
+    uri VARCHAR (1500) NOT NULL,
+    resource_id int,
+    is_collection CHAR(1) DEFAULT 'N' NOT NULL
+);
+
 
 
 -----------------------------------------------------------------------------
@@ -162,6 +183,7 @@ INSERT INTO action_type (action_type_id, namespace, name) VALUES (4, 'uio', 'rea
 INSERT INTO LOCK_TYPE (lock_type_id, name) 
 VALUES (1, 'EXCLUSIVE_WRITE');
 
+-- root resource
 
 INSERT INTO VORTEX_RESOURCE (
     resource_id,
@@ -184,9 +206,9 @@ VALUES (
     now(),
     now(),
     now(),
-    'vortex',
-    'vortex',
-    'vortex',
+    'vortex@localhost',
+    'vortex@localhost',
+    'vortex@localhost',
     '/',
     null,
     'application/x-vortex-collection',
@@ -212,7 +234,7 @@ VALUES (
     1,
     'dav:authenticated',
     'Y',
-    'vortex',
+    'vortex@localhost',
     now()
 );    
 
@@ -232,7 +254,7 @@ VALUES (
     4,
     'dav:all',
     'Y',
-    'vortex',
+    'vortex@localhost',
     now()
 );    
 
@@ -253,7 +275,7 @@ VALUES (
     1,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     now()
 );    
 
@@ -274,7 +296,7 @@ VALUES (
     2,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     now()
 );    
 
@@ -295,6 +317,6 @@ VALUES (
     3,
     'dav:owner',
     'Y',
-    'vortex',
+    'vortex@localhost',
     now()
 );    

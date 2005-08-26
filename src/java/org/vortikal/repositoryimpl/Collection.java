@@ -366,20 +366,16 @@ public class Collection extends Resource implements Cloneable {
         } else {
             setContentLastModified(dto.getContentLastModified());
             setPropertiesLastModified(dto.getPropertiesLastModified());
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting lastModified to supplied date: " +
-                    dto.getLastModified());
-            }
-        }
-
-        if (dto.getOverrideLiveProperties()) {
             setCreationTime(dto.getCreationTime());
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Setting creation time to supplied date: " +
-                    dto.getCreationTime());
+                logger.debug(
+                    "Setting overriden live properties: "
+                    + "[propertiesLastModified:  " + dto.getPropertiesLastModified()
+                    + ", contentLastModified: " + dto.getContentLastModified()
+                    + ", creationTime: " + dto.getCreationTime() + "]");
             }
+
         }
 
         setContentType(dto.getContentType());

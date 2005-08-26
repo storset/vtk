@@ -138,27 +138,20 @@ public class Document extends Resource implements Cloneable {
             setPropertiesLastModified(new Date());
         } else {
             setPropertiesLastModified(dto.getPropertiesLastModified());
-
-            if (logger.isDebugEnabled()) {
-                logger.debug(
-                    "Setting propertiesLastModified to supplied date: " +
-                    dto.getPropertiesLastModified());
-            }
-        }
-
-        if (dto.getOverrideLiveProperties()) {
+            setContentLastModified(dto.getContentLastModified());
             setCreationTime(dto.getCreationTime());
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Setting creation time to supplied date: " +
-                    dto.getCreationTime());
+                logger.debug(
+                    "Setting overriden live properties: "
+                    + "[propertiesLastModified:  " + dto.getPropertiesLastModified()
+                    + ", contentLastModified: " + dto.getContentLastModified()
+                    + ", creationTime: " + dto.getCreationTime() + "]");
             }
         }
 
         setContentType(dto.getContentType());
-
         setCharacterEncoding(null);
-
 
         if ((contentType != null) && ContentTypeHelper.isTextContentType(contentType) &&
             (dto.getCharacterEncoding() != null)) {

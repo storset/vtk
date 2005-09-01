@@ -359,18 +359,25 @@ public class VortikalServlet extends DispatcherServlet {
                 }
 
             } catch (Throwable t) {
+                if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
+                    responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
                 failureCause = t;
                 handleError(request, responseWrapper, t);
             }
 
         } catch (AuthenticationProcessingException e) {
+            if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
+                responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+
             logError(request, e);
             throw new ServletException(
                 "Fatal processing error while performing authentication", e);
 
         } catch (InvalidAuthenticationRequestException e) {
-            logError(request, e);
             responseWrapper.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logError(request, e);
 
         } finally {
 

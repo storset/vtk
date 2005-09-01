@@ -86,7 +86,7 @@
     <dependency>
       <id>spring</id>
       <groupId>springframework</groupId>
-      <version>1.2.1</version>
+      <version>1.2.4</version>
     </dependency>
     <dependency>
       <id>spring-mock</id>

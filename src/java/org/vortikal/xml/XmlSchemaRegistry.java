@@ -34,78 +34,128 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 
 /**
+ * A store for XML schemas. The schemas are cached as JDOM {@link
+ * Document} objects for a configurable period to avoid unnecessary
+ * network traffic and XML parsing before being refreshed.
+ *
+ * <p>The method {@link #refresh()} needs to be called periodically in
+ * order for the cache mechanism to work.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>cacheTimeoutSeconds</code> - the number of seconds to
+ *   cache schemas before refreshing.
+ * </ul>
  */
 public class XmlSchemaRegistry {
 
     private static Log logger = LogFactory.getLog(XmlSchemaRegistry.class);
-    private Map schemas = new HashMap();
-    private long cacheTimeout = 10 * 60 * 1000;
+    private Map cache = new HashMap();
+    private long cacheTimeout = 30 * 60 * 1000;
     
     
     public void setCacheTimeoutSeconds(long cacheTimeoutSeconds) {
         this.cacheTimeout = cacheTimeoutSeconds * 1000;
     }
     
-    public void flush() {
-        schemas.clear();
+    /**
+     * Gets an XML schema as a JDOM document from a URL. If a cached
+     * copy of the schema is available, that copy is used.
+     *
+     * @param docType the schema identifier (URL)
+     * @return a schema {@link Document}. If no schema could be
+     * located, <code>null</code> is returned.
+     * @exception JDOMException if the schema is not a valid XML document
+     * @exception IOException if an error occurs
+     */
+    public Document getXMLSchema(String docType)
+        throws JDOMException, IOException {
+        
+        SchemaItem item = (SchemaItem) this.cache.get(docType);
+        if (item == null) {
+            cacheXMLSchema(docType);
+        }
+
+        item = (SchemaItem) this.cache.get(docType);
+        if (item == null) {
+            throw new IOException("Unable to find XML schema " + docType);
+        }
+        
+        return item.getDocument();
     }
     
 
 
     /**
-     * Gets an XML schema as a JDOM document from a URL. If a cached
-     * copy of the schema is available and that copy is less than 10
-     * minutes old, it is returned. 
-     *
-     * @param docType a <code>String</code> value
-     * @return a schema <code>Document</code>. If no schema could be
-     * located, <code>null</code> is returned.
-     * @exception JDOMException if an error occurs
-     * @exception MalformedURLException if an error occurs
+     * Finds all expired schema items and tries to fetch new copies of
+     * them.
      */
-    public Document getXMLSchema(String docType) throws JDOMException,
-        MalformedURLException, IOException {
-        SchemaItem item = (SchemaItem) schemas.get(docType);
-        long now = new Date().getTime();
+    public synchronized void refresh() {
+        List refreshList = new ArrayList();
+        
+        for (Iterator i = this.cache.keySet().iterator(); i.hasNext();) {
+            String url = (String) i.next();
+            SchemaItem item = (SchemaItem) this.cache.get(url);
 
-        if (item == null ||
-            (item.getTimestamp().getTime() + cacheTimeout < now)) {
+            long now = new Date().getTime();
+            if (item.getTimestamp().getTime() + this.cacheTimeout < now) {
 
-            try {
-                InputStream inStream = (new URL(docType)).openStream();
-                Document schemaDoc = new SAXBuilder().build(inStream);
-                schemas.put(docType, new SchemaItem(schemaDoc));
-                logger.info("Cached new copy of XML schema " + docType);
-
-            } catch (IOException e) {
-                logger.warn("Error trying to cache new copy of XML " +
-                            "schema " + docType, e);
-                if (item == null) {
-                    IOException ex = new IOException("Error retrieving XML schema " + docType);
-                    ex.setStackTrace(e.getStackTrace());
-                    throw ex;
-                }
-                logger.warn("Using cached version of schema " + docType);
+                refreshList.add(url);
             }
         }
 
-        item = (SchemaItem) schemas.get(docType);
-        return item.getDocument();
+        for (Iterator i = refreshList.iterator(); i.hasNext();) {
+            String url = (String) i.next();
+            try {
+
+                cacheXMLSchema(url);
+
+            } catch (Throwable t) {
+                logger.warn("Unable to cache new copy of XML schema " + url, t);
+            }
+        }
+    }
+    
+
+    public synchronized void flush() {
+        this.cache.clear();
+    }
+    
+
+
+    private synchronized void cacheXMLSchema(String docType) throws JDOMException,
+        IOException {
+
+        SchemaItem item = (SchemaItem) this.cache.get(docType);
+        long now = new Date().getTime();
+
+        if (item == null ||
+            (item.getTimestamp().getTime() + this.cacheTimeout < now)) {
+
+            InputStream inStream = (new URL(docType)).openStream();
+            Document schemaDoc = new SAXBuilder().build(inStream);
+            this.cache.put(docType, new SchemaItem(schemaDoc));
+            logger.info("Cached new copy of XML schema " + docType);
+        }
     }
 
-    
+
     /**
      * Class for holding a cached XML schema and a corresponding
      * timestamp.
@@ -128,5 +178,4 @@ public class XmlSchemaRegistry {
         }
     }
 
-    
 }

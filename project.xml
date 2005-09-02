@@ -25,8 +25,12 @@
 
     <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal</developerConnection>
   </repository>
+  <siteAddress>element.uio.no</siteAddress>
+  <siteDirectory>/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven-sites/vortikal-${pom.currentVersion}</siteDirectory>
+  <!--
   <siteAddress>shell.berlios.de</siteAddress>
   <siteDirectory>/home/groups/vortikal/htdocs/maven-sites/vortikal-${pom.currentVersion}</siteDirectory>
+  -->
   <mailingLists>
     <mailingList>
       <name>Vortikal Announce List</name>

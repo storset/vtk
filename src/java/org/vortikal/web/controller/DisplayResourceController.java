@@ -42,17 +42,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.security.AuthenticationException;
 
 
 /**
@@ -65,20 +67,22 @@ import org.vortikal.security.AuthenticationException;
  *       repository}</li>
  *   <li><code>childName</code> - if childName is set and the current
  *       resource is a collection, the child resource of that name is
- *       retrieved instead of the requested resource</li>
+ *       retrieved instead of the requested resource
  *   <li><code>streamToString</code> - set this to true if you
  *       want to provide the resource as resourceString model data
  *       instead of resourceStream if the content type is text based 
  *   <li><code>viewName</code> - name of the returned view. The
- *       default value is <code>displayResource</code></li>
- *   <li><code>unsupportedResourceView</code> - name of returned view if
- *       the resource type is unsupported. Default value is <code>HTTP_STATUS_NOT_FOUND</code> 
- *   <li><code>unsupportedResourceTypes</code> - list of content types that should return
- *       <code>unsupportedResourceView</code>. Default is 
- *       <code>application/x-vortex-collection</code> 
- *   <li><code>displayProcessed</code> - wether the resource should be retrieved
- *       for processing (uio:readProcessed) or for raw access (dav:read). Defaults 
- *       to false.
+ *       default value is <code>displayResource</code>
+ *   <li><code>view</code> - the actual {@link View} object (overrides
+ *   <code>viewName</code>.
+ *   <li><code>unsupportedResourceView</code> - name of returned view
+ *       if the resource type is unsupported. Default value is
+ *       <code>HTTP_STATUS_NOT_FOUND</code>
+ *   <li><code>unsupportedResourceTypes</code> - list of content types
+ *       that should return <code>unsupportedResourceView</code>.
+ *   <li><code>displayProcessed</code> - wether the resource should be
+ *       retrieved for processing (uio:readProcessed) or for raw
+ *       access (dav:read). Defaults to false.
  *   <li><code>ignoreLastModified</code> - wether or not to ignore the
  *       resource's <code>lastModified</code> value. Setting this
  *       property to <code>true</code> means that the resource content
@@ -111,6 +115,7 @@ public class DisplayResourceController
     private Repository repository;
     private String childName;
     private String viewName = DEFAULT_VIEW_NAME;
+    private View view = null;
     private String unsupportedResourceView = "HTTP_STATUS_NOT_FOUND";
     private Set unsupportedResourceTypes = null;
     private boolean streamToString = false;
@@ -128,6 +133,11 @@ public class DisplayResourceController
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+    
+
+    public void setView(View view) {
+        this.view = view;
     }
     
 
@@ -154,6 +164,12 @@ public class DisplayResourceController
     public void afterPropertiesSet() throws Exception {
         if (unsupportedResourceTypes == null) {
             unsupportedResourceTypes = new HashSet();
+        }
+
+        if (this.viewName == null && this.view == null) {
+            throw new BeanInitializationException(
+                "At least one of JavaBean properties 'viewName' or 'view' must "
+                + "be specified");
         }
     }
 
@@ -188,7 +204,11 @@ public class DisplayResourceController
 
             if (!streamToString || !resource.getContentType().startsWith("text/")) {
                 model.put("resourceStream", stream);
-                return new ModelAndView(this.viewName, model);
+                if (this.view != null) {
+                    return new ModelAndView(this.view, model);
+                } else {
+                    return new ModelAndView(this.viewName, model);
+                }
             }
 
             
@@ -215,7 +235,11 @@ public class DisplayResourceController
             model.put("resourceString", content);
         
         }
-        return new ModelAndView(this.viewName, model);
+        if (this.view != null) {
+            return new ModelAndView(this.view, model);
+        } else {
+            return new ModelAndView(this.viewName, model);
+        }
     }
 
 

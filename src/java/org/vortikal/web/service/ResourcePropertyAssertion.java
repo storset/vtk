@@ -38,13 +38,13 @@ import org.vortikal.security.Principal;
  * Assertion for matching on whether the current resource has a
  * property with a given name, namespace and value.
  *
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>namespace</code> - the {@link Property#getNamespace
  *   namespace} of the property to match
- *   <li><code>namespace</code> - the {@link Property#getName name} of
+ *   <li><code>name</code> - the {@link Property#getName name} of
  *   the property to match
- *   <li><code>namespace</code> - the {@link Property#getValue value}
+ *   <li><code>value</code> - the {@link Property#getValue value}
  *   of the property to match
  * </ul>
  */

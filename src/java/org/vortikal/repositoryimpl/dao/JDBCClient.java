@@ -1454,12 +1454,13 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         Map locks = loadLocksForChildren(conn, parent);
 
-        String query = "select r.* from VORTEX_RESOURCE r where r.resource_id in ("
-                + "select child_resource_id from PARENT_CHILD "
-                + "where parent_resource_id = " + parent.getID() + ")";
-
+        String query = 
+          "SELECT vr.* FROM vortex_resource vr INNER JOIN parent_child pc " +
+          "ON vr.resource_id=pc.child_resource_id " +
+          "WHERE pc.parent_resource_id=?";
+        
         PreparedStatement stmt = conn.prepareStatement(query);
-
+        stmt.setInt(1, parent.getID());
         ResultSet rs = stmt.executeQuery();
         List resources = new ArrayList();
 

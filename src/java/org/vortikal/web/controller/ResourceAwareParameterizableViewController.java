@@ -49,7 +49,7 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 public class ResourceAwareParameterizableViewController
   extends ParameterizableViewController {
 
-    private Repository repository;
+    protected Repository repository;
     
 
     /**
@@ -60,7 +60,7 @@ public class ResourceAwareParameterizableViewController
     public void setRepository(Repository repository)  {
         this.repository = repository;
     }
-
+    
     protected void initApplicationContext() {
         super.initApplicationContext();
         if (this.repository == null) {

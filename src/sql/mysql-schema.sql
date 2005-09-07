@@ -114,6 +114,8 @@ ALTER TABLE vortex_lock
     REFERENCES lock_type (lock_type_id)
 ;
 
+CREATE INDEX vortex_lock_index1 ON vortex_lock(resource_id);
+
 -----------------------------------------------------------------------------
 -- action_type
 -----------------------------------------------------------------------------
@@ -165,6 +167,7 @@ ALTER TABLE acl_entry
     REFERENCES action_type (action_type_id)
 ;
 
+CREATE INDEX acl_entry_index1 ON acl_entry(resource_id);
 
 -----------------------------------------------------------------------------
 -- extra_prop_entry
@@ -193,6 +196,7 @@ ALTER TABLE extra_prop_entry
     REFERENCES vortex_resource (resource_id)
 ;
 
+CREATE INDEX extra_prop_entry_index1 ON extra_prop_entry(resource_id);
 
 -----------------------------------------------------------------------------
 -- changelog_entry

@@ -109,7 +109,8 @@ public class WrappingView implements View, InitializingBean, ReferenceDataProvid
 
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
-        viewWrapper.renderView(view, model, request, response);
+        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
+        viewWrapper.renderView(view, model, requestWrapper, response);
     }
 
 

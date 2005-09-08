@@ -136,26 +136,27 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
 
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        BufferedResponseWrapper wrappedResponse = new BufferedResponseWrapper(
+        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
+        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(
                 response);
 
-        preRender(model, request, wrappedResponse);
+        preRender(model, request, responseWrapper);
 
         if (this.propagateExceptions) {
 
-            view.render(model, request, wrappedResponse);
+            view.render(model, requestWrapper, responseWrapper);
 
         } else {
 
             try {
-                view.render(model, request, wrappedResponse);
+                view.render(model, requestWrapper, responseWrapper);
             } catch (Throwable t) {
                 throw new ViewWrapperException(
                         "An error occurred while rendering the wrapped view",
                         t, model, view);
             }
         }
-        postRender(model, request, wrappedResponse);
+        postRender(model, request, responseWrapper);
 
     }
 
@@ -241,14 +242,14 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
      * response. Sets the HTTP header <code>Content-Length</code> to
      * the size of the buffer in the wrapped response.
      * 
-     * @param wrappedResponse the wrapped response.
+     * @param responseWrapper the wrapped response.
      * @exception Exception if an error occurs.
      */
-    protected void writeResponse(BufferedResponseWrapper wrappedResponse)
+    protected void writeResponse(BufferedResponseWrapper responseWrapper)
             throws Exception {
-        ServletResponse response = wrappedResponse.getResponse();
+        ServletResponse response = responseWrapper.getResponse();
         ServletOutputStream outStream = response.getOutputStream();
-        byte[] content = wrappedResponse.getContentBuffer();
+        byte[] content = responseWrapper.getContentBuffer();
         if (logger.isDebugEnabled()) {
             logger.debug("Write response: Content-Length: " + content.length
                     + ", unspecified content type");
@@ -261,9 +262,9 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
 
 
     protected void writeResponse(byte[] content,
-            BufferedResponseWrapper wrappedResponse, String contentType)
+            BufferedResponseWrapper responseWrapper, String contentType)
             throws Exception {
-        ServletResponse response = wrappedResponse.getResponse();
+        ServletResponse response = responseWrapper.getResponse();
         ServletOutputStream outStream = response.getOutputStream();
 
         if (logger.isDebugEnabled()) {

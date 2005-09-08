@@ -49,6 +49,7 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.view.wrapper.RequestWrapper;
 
 /**
  * View implementation that takes a list of other views, concatenating
@@ -97,6 +98,7 @@ public class CompositeView extends AbstractView
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                            HttpServletResponse response) throws Exception {
 
+        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
         ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
         
         int sc = HttpServletResponse.SC_OK;

@@ -8,7 +8,16 @@
     <release version="0.2-SNAPSHOT" date="In SVN" description="Release 0.2">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action dev="gormap" type="fix">
+        Fixed bug in wrapped views where HEAD requests sometimes
+        received different Content-Length headers than GET requests.
+      </action>
+    </release>
 
+    <release version="0.1.9.2" date="2005-09-07" description="Release 0.1.9.2">
+      <action dev="oyviste" type="update">
+        Various database (SQL) changes to improve performance.
+      </action>
     </release>
 
     <release version="0.1.9.1" date="2005-08-26" description="Release 0.1.9.1">

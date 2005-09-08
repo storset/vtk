@@ -77,7 +77,7 @@ public class FreeMarkerView
         ServletOutputStream outStream = response.getOutputStream();
         byte[] content = wrapper.getContentBuffer();
         response.setContentLength(content.length);
-        if ("HEAD".equals(request.getMethod())) {
+        if (false && "HEAD".equals(request.getMethod())) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Request is HEAD, not writing content");
             }

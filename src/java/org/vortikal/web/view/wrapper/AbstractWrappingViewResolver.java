@@ -164,11 +164,12 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
                     provider.referenceData(model, request);
                 }
             }
+            RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
             
             if (viewWrapper != null) {
-                this.viewWrapper.renderView(this.view, model, request, response);
+                this.viewWrapper.renderView(this.view, model, requestWrapper, response);
             } else {
-                this.view.render(model, request, response);
+                this.view.render(model, requestWrapper, response);
             }
             
         }

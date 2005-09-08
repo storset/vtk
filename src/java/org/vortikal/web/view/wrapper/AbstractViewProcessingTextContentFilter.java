@@ -124,9 +124,10 @@ public abstract class AbstractViewProcessingTextContentFilter
 
     private String renderView(Map model, HttpServletRequest request) throws Exception {
 
+        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
         BufferedResponse tmpResponse = new BufferedResponse();
 
-        view.render(model, request, tmpResponse);
+        view.render(model, requestWrapper, tmpResponse);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Rendered wrapped view " + view + ". "

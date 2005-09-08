@@ -30,44 +30,25 @@
  */
 package org.vortikal.web.view.wrapper;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.View;
-import org.vortikal.repository.Resource;
-import org.vortikal.util.web.HttpUtil;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 
 /**
- * A view wrapper that is "resource aware". The model is examined for a 
- * configurable key containing a {@link Resource} object. If such an object
- * exists, The HTTP header <code>Last-Modified</code> is set to the value of 
- * the resource object's {@link Resource#getLastModified getLastModified()}.
- *
+ * A request wrapper that delegates every method to the wrapped
+ * request except <code>getMethod()</code>. Useful for wrapping views
+ * that are sensitive to the HTTP HEAD method, for instance.
  */
-public class LastModifiedSettingViewWrapper implements ViewWrapper {
+public class RequestWrapper extends HttpServletRequestWrapper {
 
-    private String resourceModelKey = "resource";
+    private String method;
 
-    public void setResourceModelKey(String resourceModelKey) {
-        this.resourceModelKey = resourceModelKey;
+    public RequestWrapper(HttpServletRequest request, String method) {
+        super(request);
+        this.method = method;
     }
 
-    public void renderView(View view, Map model, HttpServletRequest request,
-                           HttpServletResponse response) throws Exception {
-        if (model.containsKey(this.resourceModelKey)) {
-            Object o = model.get(this.resourceModelKey);
-            if (o instanceof Resource) {
-                Resource resource = (Resource) o;
-                response.setHeader("Last-Modified", 
-                                   HttpUtil.getHttpDateString(resource.getLastModified()));
-            }
-        }
-        
-        view.render(model, request, response);
-        
+    public String getMethod() {
+        return this.method;
     }
-
 }

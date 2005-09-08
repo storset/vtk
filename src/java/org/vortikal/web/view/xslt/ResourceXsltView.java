@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -103,11 +104,23 @@ import org.vortikal.xml.TransformerManager;
  *   TransformerManager} to use for obtaining stylesheets
  *   <li><code>linkConstructor</code> - optional {@link
  *   LinkConstructor} to supply to the the transformer
+ *   <li><code>includeContentLanguageHeader</code> - whether to set the
+ *   HTTP header <code>Content-Language</code> based on the content
+ *   language of the transformed resource. Default is
+ *   <code>false</code>.
  * </ul>
  *
  * <p>Sets the following HTTP headers:
  * <ul>
  *   <li><code>Content-Type</code>
+ *   <li><code>Content-Language</code> (if
+ *   <code>includeContentLanguageHeader</code> is specified)
+ *   <li><code>Expires</code> (if the resource has the property
+ *   <code>expires-sec</code> to a numerical value (meaning the number
+ *   of seconds to cache the resource). The namespace of this property
+ *   is {@link Property#LOCAL_NAMESPACE}.
+ *   <li><code>Cache-Control: no-cache</code> if the
+ *   <code>expires-sec</code> property is not set.
  * </ul>
  * 
  */
@@ -122,6 +135,9 @@ public class ResourceXsltView extends AbstractView
     private LinkConstructor linkConstructor;
     private ReferenceDataProvider[] referenceDataProviders;
     
+    private boolean includeContentLanguageHeader = false;
+    
+
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return referenceDataProviders;
     }
@@ -136,6 +152,11 @@ public class ResourceXsltView extends AbstractView
         this.transformerManager = transformerManager;
     }
 
+
+    public void setIncludeContentLanguageHeader(boolean includeContentLanguageHeader) {
+        this.includeContentLanguageHeader = includeContentLanguageHeader;
+    }
+    
 
     public final void afterPropertiesSet() throws Exception {
         if (transformerManager == null) {
@@ -159,6 +180,8 @@ public class ResourceXsltView extends AbstractView
         if (logger.isDebugEnabled()) {
             logger.debug("Requested resource: " + resource);
         }
+
+        
 
         Document document = (Document) model.get("jdomDocument");
 
@@ -225,6 +248,14 @@ public class ResourceXsltView extends AbstractView
 
             response.setHeader("Content-Length", "" + resultBuffer.toByteArray().length);
             
+            if (this.includeContentLanguageHeader) {
+                Locale locale = resource.getContentLocale();
+                if (locale != null) {
+                    String contentLanguage = locale.getLanguage();
+                    response.setHeader("Content-Language", contentLanguage);
+                }
+            }
+
             Property expiresProperty = resource.getProperty(
                     Property.LOCAL_NAMESPACE, 
                     "expires-sec");
@@ -237,7 +268,7 @@ public class ResourceXsltView extends AbstractView
                     response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Setting header expires: " + 
+                        logger.debug("Setting header Expires: " + 
                                      HttpUtil.getHttpDateString(expires));
                     }
 

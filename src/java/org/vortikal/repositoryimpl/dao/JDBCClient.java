@@ -508,7 +508,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     public void deleteExpiredLocks() throws IOException {
         Connection conn = null;
-        String[] retVal = null;
 
         try {
             conn = getConnection();

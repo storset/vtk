@@ -97,7 +97,6 @@ public class CreateDocumentCommandValidator
 
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-        String sourceURI = createDocumentCommand.getSourceURI();
         String destinationURI = uri;
         if (!"/".equals(uri)) destinationURI += "/";
         destinationURI += createDocumentCommand.getName();

@@ -17,6 +17,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
         "org/vortikal/edit/xml/testInclude.xml";
     private static final String FRITEKST_XML = 
         "org/vortikal/edit/xml/fritekst.xml";
+    private static final String FRITEKST2_XML = 
+        "org/vortikal/edit/xml/fritekst2.xml";
     private static final String TEST_XSD = 
         "org/vortikal/edit/xml/test.xsd";
     private static final String CONFLICT_XSD = 
@@ -25,8 +27,10 @@ public class SchemaDocumentDefinitionTest extends TestCase {
    Document testDocument = null;
     Document testIncludeDocument = null;
     Document fritekstOnTopLevelDocument;
+    Document fritekst2OnTopLevelDocument;
     SchemaDocumentDefinition definition = null;
     SchemaDocumentDefinition fritekstDefinition = null;
+    SchemaDocumentDefinition fritekst2Definition = null;
     SchemaDocumentDefinition fritekstOnTopLevelDefinition = null;
 
     protected void setUp() throws Exception {
@@ -55,11 +59,17 @@ public class SchemaDocumentDefinitionTest extends TestCase {
             FRITEKST_XML);
             fritekstOnTopLevelDocument = builder.build(fritekstOnTopLevelXML);
 
+            URL fritekst2OnTopLevelXML = this.getClass().getClassLoader().getResource(
+                    FRITEKST2_XML);
+                    fritekst2OnTopLevelDocument = builder.build(fritekst2OnTopLevelXML);
+                    
             URL testXSD = this.getClass().getClassLoader().getResource(
                TEST_XSD);
             definition = new SchemaDocumentDefinition("test", testXSD);
 
             fritekstDefinition = new SchemaDocumentDefinition("onlyFritekst", testXSD);
+            
+            fritekst2Definition = new SchemaDocumentDefinition("onlyFritekst2", testXSD);
 
         } catch (Exception e) {
             fail("Couldn't instantiate test schema" + e.getMessage());
@@ -96,6 +106,18 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 	assertNotNull(ingress.getChild("utheving"));
 	assertEquals("Eva", ingress.getChild("utheving").getText());
     }
+
+    public void testOnlyFritekst2() {
+    	Element ingress = fritekst2OnTopLevelDocument.getRootElement().getChild("ingress");
+            fritekst2Definition.translateToEditingElement(ingress);
+
+            assertEquals("Even er veldig *kul*",
+                    fritekst2OnTopLevelDocument.getRootElement().getChild("ingress").getText());
+
+    	fritekst2Definition.setElementContents(ingress, "*Eva*");
+    	assertNotNull(ingress.getChild("avsnitt"));
+    	assertEquals("Eva", ingress.getChild("avsnitt").getChild("fet").getText());
+        }
 
 
     public void testElementType() {

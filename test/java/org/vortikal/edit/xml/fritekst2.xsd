@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<xsd:import namespace="http://www.w3.org/XML/1998/namespace" 
+  schemaLocation="http://www.uio.no/xsd/eksternt/xml-v001.xsd" />
+
+   <xsd:element name="onlyFritekst2" type="OnlyFritekst2"/>
+
+    <xsd:complexType name="OnlyFritekst2">
+      <xsd:sequence>
+        <xsd:element name="ingress" type="Fritekst2" />
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="fritekst" type="Fritekst2" />
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+
+  <xsd:complexType name="Fritekst2">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <elementType>UNBOUNDED_ELEMENT</elementType>
+        <structuredText>org.vortikal.util.text.EvenStructuredText</structuredText>
+      </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="avsnitt" type="BlockElement">
+        <xsd:annotation>
+          <xsd:appinfo>paragraph</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="punktliste" type="List">
+        <xsd:annotation>
+          <xsd:appinfo>unordered-list</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="nummerertliste" type="List">
+        <xsd:annotation>
+          <xsd:appinfo>ordered-list</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="BlockElement" mixed="true">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="fet" type="xsd:string">
+        <xsd:annotation>
+          <xsd:appinfo>bold</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="kursiv" type="xsd:string">
+        <xsd:annotation>
+          <xsd:appinfo>italic</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="weblenke" type="Link">
+        <xsd:annotation>
+          <xsd:appinfo>link</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="referanse" type="Referanse">
+        <xsd:annotation>
+          <xsd:appinfo>reference</xsd:appinfo>
+        </xsd:annotation>        
+      </xsd:element>
+    </xsd:choice>
+    <xsd:attribute ref="xml:space" /> <!-- trengs denne ? -->
+  </xsd:complexType>
+
+  <xsd:complexType name="List">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="listepunkt" type="BlockElement">
+        <xsd:annotation>
+          <xsd:appinfo>listitem</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Link">
+    <xsd:sequence>
+      <xsd:element name="lenketekst" type="xsd:string">
+        <xsd:annotation>
+          <xsd:appinfo>url-description</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="webadresse" type="xsd:string">
+        <xsd:annotation>
+          <xsd:appinfo>url</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>      
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Referanse">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="type" type="xsd:string">
+          <xsd:annotation>
+            <xsd:appinfo>reference-type</xsd:appinfo>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+</xsd:schema>

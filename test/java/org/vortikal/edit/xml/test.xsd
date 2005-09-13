@@ -12,6 +12,7 @@
     </xsd:annotation>
 
     <xsd:include schemaLocation="fritekst.xsd" />
+    <xsd:include schemaLocation="fritekst2.xsd" />
     <xsd:include schemaLocation="typedefs.xsd" />
 
     <xsd:element name="test" type="Test"/>

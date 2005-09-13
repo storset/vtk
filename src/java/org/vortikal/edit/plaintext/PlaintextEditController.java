@@ -70,7 +70,21 @@ import org.vortikal.web.service.Service;
 /**
  * Controller that handles editing of plaintext resource content.
  *
- * <p><a name="config">Configurable properties</a>
+ * <h3>A note on character encoding problems:</h3>
+ *
+ * If the resource is XML/HTML, there are some considerations: First,
+ * the resource may have an encoding set in the repository (either
+ * explicitly set using the 'contentType' property or inside the
+ * document itself). This is called the 'stored encoding'. In addition
+ * to that, there is the content that is posted from the form. This
+ * content is assumed to be posted using UTF-8, producing a valid
+ * String inside the Java code. The problem arises when the posted
+ * content contains a charset declaration and that declaration differs
+ * from the stored encoding. In such cases, the stored encoding should
+ * be altered to reflect that of the posted content (in a best-effort
+ * fashion).
+ *
+ * <p>Configurable JavaBean properties
  * (and those defined by {@link SimpleFormController superclass}):
  * <ul>
  *   <li><code>repository</code> - the content {@link Repository
@@ -79,8 +93,13 @@ import org.vortikal.web.service.Service;
  *   when user (required) cancels the operation
  *   <li><code>lockTimeoutSeconds</code> - the number of seconds for
  *   which to request lock timeouts on every request (default is 300)
- *  <li><code>defaultCharacterEncoding - defaults to 'utf-8', which 
- *  encoding to enterpret the supplied resource content in, if unable to guess.
+ *  <li><code>defaultCharacterEncoding</code> - defaults to
+ *  <code>utf-8</code>, which encoding to enterpret the supplied
+ *  resource content in, if unable to guess.
+ *  <li><code>storeModifiedCharacterEncodings</code> - whether or not
+ *  to also change the resource's <code>characterEncoding</code>
+ *  property when modified in the XML declaration or in a HTML meta
+ *  tag. Default is <code>false</code>.
  * </ul>
  */
 public class PlaintextEditController extends SimpleFormController
@@ -91,15 +110,15 @@ public class PlaintextEditController extends SimpleFormController
     private static Log logger = LogFactory.getLog(
         PlaintextEditController.class);
     
-    private String cancelView = null;
-    private Repository repository = null;
+    private String cancelView;
+    private Repository repository;
     private int lockTimeoutSeconds = 300;
     private String defaultCharacterEncoding = "utf-8";
+    private boolean storeModifiedCharacterEncodings = false;
     
+
     /**
      * Sets the repository.
-     *
-     * @param repository a <code>Repository</code> value
      */
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -108,8 +127,6 @@ public class PlaintextEditController extends SimpleFormController
 
     /**
      * Sets the requested number of seconds for lock timeout.
-     *
-     * @param lockTimeoutSeconds an <code>int</code> value
      */
     public void setLockTimeoutMinutes(int lockTimeoutSeconds) {
         this.lockTimeoutSeconds = lockTimeoutSeconds;
@@ -119,14 +136,29 @@ public class PlaintextEditController extends SimpleFormController
     /**
      * Sets the cancel view name (will be returned when user cancelles
      * the edit operation).
-     *
-     * @param cancelView the view name to set.
      */
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
     }
     
 
+    /**
+     * Sets the default character encoding.
+     */
+    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
+        this.defaultCharacterEncoding = defaultCharacterEncoding;
+    }
+
+
+    /**
+     * Sets whether to store modified character encodings on resources
+     * when altered in markup meta headers.
+     */
+    public void setStoreModifiedCharacterEncodings(
+        boolean storeModifiedCharacterEncodings) {
+        this.storeModifiedCharacterEncodings = storeModifiedCharacterEncodings;
+    }
+    
 
     public void afterPropertiesSet() {
         if (this.repository == null) {
@@ -171,7 +203,6 @@ public class PlaintextEditController extends SimpleFormController
     }
 
 
-
     protected ModelAndView onSubmit(Object command, BindException errors)
         throws Exception {
 
@@ -182,8 +213,8 @@ public class PlaintextEditController extends SimpleFormController
             return super.onSubmit(command, errors);
         }
         
-        // The user has selected "cancel". Unlock resource, return the
-        // cancelView.
+        /** The user has selected "cancel". Unlock resource, return
+         *  the cancelView. */
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -206,27 +237,86 @@ public class PlaintextEditController extends SimpleFormController
 
         Resource resource = repository.retrieve(token, uri, false);
 
-        String characterEncoding = resource.getCharacterEncoding();
-
-        if (characterEncoding == null) {
+        String storedEncoding = resource.getCharacterEncoding();
+        if (storedEncoding == null) {
 
             if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
-
-                characterEncoding = getXMLCharacterEncoding(resource, token);
+                storedEncoding = getXMLCharacterEncoding(resource, token);
 
             } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
-
-                characterEncoding = HtmlUtil.getCharacterEncodingFromBody(
-                    plaintextEditCommand.getContent().getBytes("iso-8859-1"));
-            } 
-
-            if (characterEncoding == null) {
-                characterEncoding = "iso-8859-1";
+                storedEncoding = getHTMLCharacterEncoding(resource, token);
             }
         }
-        if (logger.isDebugEnabled())
-            logger.debug("Character encoding for document "
-                         + resource + " resolved to: " + characterEncoding);
+
+        String postedEncoding = null;
+        if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
+
+            postedEncoding = getXMLCharacterEncoding(
+                plaintextEditCommand.getContent());
+            
+        } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
+
+            postedEncoding = HtmlUtil.getCharacterEncodingFromBody(
+                plaintextEditCommand.getContent().getBytes());
+        } 
+        
+        
+        try {
+            if (storedEncoding != null) Charset.forName(storedEncoding);
+        } catch (Exception e) {
+            if (logger.isDebugEnabled())
+                logger.debug(
+                    "Invalid character encoding '" + storedEncoding);
+                    
+            storedEncoding = null;
+        }
+
+        try {
+            if (postedEncoding != null) Charset.forName(postedEncoding);
+        } catch (Exception e) {
+            if (logger.isDebugEnabled())
+                logger.debug(
+                    "Invalid character encoding '" + postedEncoding);
+            postedEncoding = null;
+        }
+
+        
+        /** 
+         * When storing content, it has to be written as a byte
+         * sequence, produced from the posted content using an
+         * encoding decided by the following:
+         * 
+         * 1. storedEncoding == null, postedEncoding == null --> use defaultEncoding
+         * 2. storedEncoding == null, postedEncoding != null --> use postedEncoding
+         * 3. storedEncoding != null, postedEncoding == null --> keep storedEncoding
+         * 4. storedEncoding != null, postedEncoding != null --> use postedEncoding
+         */
+        String characterEncoding = this.defaultCharacterEncoding;
+        boolean storeEncoding = false;
+
+        if (storedEncoding == null && postedEncoding != null) {
+            characterEncoding = postedEncoding;
+            storeEncoding = true;
+
+        } else if (storedEncoding != null && postedEncoding == null) {
+            characterEncoding = storedEncoding;
+
+        } else if (storedEncoding != null && postedEncoding != null) {
+            characterEncoding = postedEncoding;
+            storeEncoding = true;
+        }
+
+        if (!this.storeModifiedCharacterEncodings) {
+            storeEncoding = false;
+        }
+
+        if (storeEncoding) {
+            if (logger.isDebugEnabled())
+                logger.debug("New character encoding for document "
+                             + resource + " resolved to: " + characterEncoding);
+            resource.setCharacterEncoding(characterEncoding);
+            repository.store(token, resource);
+        }
 
         String content = plaintextEditCommand.getContent();
 
@@ -234,17 +324,24 @@ public class PlaintextEditController extends SimpleFormController
                 new ByteArrayInputStream(content.getBytes(characterEncoding)));
     }
     
-    
+
+
 
     private String getResourceContent(Resource resource, String token)
         throws IOException {
 
-        // FIXME: if character encoding is set on the resource, just
-        // read it as a plain stream, regardless of whether it is an
-        // XML resource. Otherwise, let the XML parser handle the job,
-        // BOTH on "model building" and on form submits.
+        /**
+         * if character encoding is set on the resource, just read it
+         * as a plain stream using that encoding, regardless of
+         * whether it is an XML resource. Otherwise, let the XML
+         * parser handle the job */
+
+        if (resource.getCharacterEncoding() != null) {
+            return getPlainTextContent(resource, token);
+        }
+
         if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
-            return getXMLContent(resource, token);            
+            return getXMLContent(resource, token);
 
         } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
             return getHTMLContent(resource, token);
@@ -270,17 +367,21 @@ public class PlaintextEditController extends SimpleFormController
             
             Document doc = builder.build(new ByteArrayInputStream(out.toByteArray()));
 
-            //Format format = Format.getPrettyFormat();
             Format format = Format.getRawFormat();
+            if (resource.getCharacterEncoding() != null) {
+                format.setEncoding(resource.getCharacterEncoding());
+            }
+
             XMLOutputter xmlOutputter = new XMLOutputter(format);
             String xml = xmlOutputter.outputString(doc);
             return xml;
         
         } catch (JDOMException e) {
 
-            // Parsing the XML content did not work, so return the
-            // content converted to a string in a "best-effort"
-            // fashion:
+            /**
+             * Parsing the XML content did not work, so return the
+             * content converted to a string in a "best-effort"
+             * fashion: */
             String characterEncoding = "utf-8";
             if (resource.getCharacterEncoding() != null) {
                 characterEncoding = resource.getCharacterEncoding();
@@ -305,7 +406,7 @@ public class PlaintextEditController extends SimpleFormController
         byte[] bytes = StreamUtil.readInputStream(is);
         String encoding = resource.getCharacterEncoding();
         if (encoding == null) encoding = HtmlUtil.getCharacterEncodingFromBody(bytes);
-        if (encoding == null) encoding = "iso-8859-1";
+        if (encoding == null) encoding = this.defaultCharacterEncoding;
         String content = new String(bytes, encoding);
         return content;
     }
@@ -319,7 +420,7 @@ public class PlaintextEditController extends SimpleFormController
                                                    false);
         byte[] bytes = StreamUtil.readInputStream(is);
         String encoding = resource.getCharacterEncoding();
-        if (encoding == null) encoding = "iso-8859-1";
+        if (encoding == null) encoding = this.defaultCharacterEncoding;
         String content = new String(bytes, encoding);
         return content;
     }
@@ -327,14 +428,46 @@ public class PlaintextEditController extends SimpleFormController
 
 
 
-    
-
-    private String getXMLCharacterEncoding(Resource resource, String token)
-        throws IOException {
+    private String getXMLCharacterEncoding(String xmlContent) {
         // FIXME: more accurate regexp:
         Pattern charsetPattern = Pattern.compile(
             "^\\s*<\\?xml.*\\s+encoding=[\"']"
-            + "([A-Za-z0-9._\\-]+)[\"'][^>]*\\?>.*$");
+            + "([A-Za-z0-9._\\-]+)[\"'][^>]*\\?>.*",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+        String characterEncoding = this.defaultCharacterEncoding;
+      
+        Matcher m = charsetPattern.matcher(xmlContent);
+
+        if (!m.matches()) {
+            if (logger.isDebugEnabled())
+                logger.debug("No regexp match in XML declaration for pattern "
+                             + charsetPattern.pattern());
+            return this.defaultCharacterEncoding;
+        }
+            
+        if (logger.isDebugEnabled())
+            logger.debug("Regexp match in XML declaration for pattern "
+                         + charsetPattern.pattern());
+        characterEncoding = m.group(1);
+
+        try {
+            Charset.forName(characterEncoding);
+        } catch (Exception e) {
+            if (logger.isDebugEnabled())
+                logger.debug(
+                    "Invalid character encoding '" + characterEncoding
+                    + "' for XML document <string>, using utf-8");
+            return this.defaultCharacterEncoding;
+        }
+                        
+        return characterEncoding;
+
+    }
+
+
+    private String getXMLCharacterEncoding(Resource resource, String token)
+        throws IOException {
 
         int len = MAX_XML_DECLARATION_SIZE;
         BufferedReader reader = null;
@@ -358,30 +491,7 @@ public class PlaintextEditController extends SimpleFormController
                 return this.defaultCharacterEncoding;
                 
             String string = new String(chars, 0, read);
-
-            Matcher m = charsetPattern.matcher(string);
-
-            if (!m.matches()) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("No regexp match in XML declaration for pattern "
-                                     + charsetPattern.pattern());
-                    return this.defaultCharacterEncoding;
-            }
-            
-            if (logger.isDebugEnabled())
-                logger.debug("Regexp match in XML declaration for pattern "
-                        + charsetPattern.pattern());
-            characterEncoding = m.group(1);
-
-            try {
-                Charset.forName(characterEncoding);
-            } catch (Exception e) {
-                if (logger.isDebugEnabled())
-                    logger.debug(
-                            "Invalid character encoding '" + characterEncoding
-                            + "' for XML document " + resource + ", using utf-8");
-                return this.defaultCharacterEncoding;
-            }
+            return getXMLCharacterEncoding(string);
                         
         } catch (IOException e) {
             logger.warn("Unexpected IO exception while performing "
@@ -389,16 +499,46 @@ public class PlaintextEditController extends SimpleFormController
                         + resource, e);
             return this.defaultCharacterEncoding;
         }
-
-        return characterEncoding;
     }
 
 
-    /**
-     * @param defaultCharacterEncoding The defaultCharacterEncoding to set.
-     */
-    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
-        this.defaultCharacterEncoding = defaultCharacterEncoding;
+    private String getHTMLCharacterEncoding(Resource resource, String token) {
+        if (!ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
+            return null;
+        }
+
+        int len = MAX_XML_DECLARATION_SIZE;
+        InputStream inStream = null;
+      
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("Opening document " + resource.getURI());
+            inStream = repository.getInputStream(
+                token, resource.getURI(), false);
+            
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            int n = 0, total = 0;
+            byte[] buffer = new byte[1024];
+            while (total <= len && (n = inStream.read(buffer, 0, 1024)) > 0) {
+                total += n;
+                out.write(buffer, 0, n);
+            }
+
+            String storedEncoding = HtmlUtil.getCharacterEncodingFromBody(
+                out.toByteArray());
+            return storedEncoding;
+        
+        } catch (IOException e) {
+            logger.warn("Unexpected IO exception while finding "
+                        + "HTML character encoding on resource "
+                        + resource, e);
+            return null;
+        }
     }
+    
+
+
+
 }
 

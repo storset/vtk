@@ -175,8 +175,7 @@ public class EditDocument extends Document {
         String xml = xmlOutputter.outputString(this);
 
         // FIXME: God help us:
-        xml = xml
-                .replaceAll(" space=\"preserve\">", " xml:space=\"preserve\">");
+        xml = xml.replaceAll(" space=\"preserve\">", " xml:space=\"preserve\">");
 
         // FIXME: Replace space for empty elements
         xml = xml.replaceAll(" space=\"preserve\" />",
@@ -186,6 +185,16 @@ public class EditDocument extends Document {
 
         InputStream stream = new ByteArrayInputStream(buf);
         repository.storeContent(token, uri, stream);
+
+        // Fix character encoding if it is something other than UTF-8:
+        if (resource.getCharacterEncoding() != null) {
+            String encoding = resource.getCharacterEncoding().toLowerCase();
+            if (!"utf-8".equals(encoding)) {
+                resource.setCharacterEncoding("utf-8");
+                repository.store(token, resource);
+            }
+        }
+
         resource = repository.retrieve(token, uri, false);
         if (logger.isDebugEnabled())
             logger.debug("saved document '" + uri + "'");

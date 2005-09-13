@@ -51,6 +51,7 @@ import org.vortikal.web.controller.CopyMoveSessionBean;
 
 /**
  * A controller that copies (or moves) resources from one folder to another 
+ * based on a set of resources stored in a session variable
  *
  * <p>Description:
  *  
@@ -84,6 +85,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws Exception {
     	
+    		// For logging purposes
     		long before = System.currentTimeMillis();
     	
     		Map model = new HashMap();
@@ -91,17 +93,17 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    	SecurityContext securityContext = SecurityContext.getSecurityContext();
 	    	String token = securityContext.getToken();
 	    	RequestContext requestContext = RequestContext.getRequestContext();
-	    	String uri = requestContext.getResourceURI();
+	    	String destinationUri = requestContext.getResourceURI();
 	    	
 	    	CopyMoveSessionBean sessionBean = (CopyMoveSessionBean)
 	    	request.getSession(true).getAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 	    
-	    	// Need to give some feedback when there is no session variable...
+	    	// Should probably give some feedback when there is no session variable, but ...
 	    	if (sessionBean != null){
-	    		boolean copyToSameDirectory = false;
 	    		List filesFailed = new ArrayList();
 	    		String action = sessionBean.getAction();
-	    		
+
+	    		// Getting the selected files from Session
 	    		List filesToBeCopied = sessionBean.getFilesToBeCopied();
 
 	    		ListIterator i = filesToBeCopied.listIterator();
@@ -114,10 +116,11 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    				resourceUri.substring(resourceUri.lastIndexOf("/"));
 	    			String newResourceUri = "";
 	    			
-	    			if (uri.equals("/")) {
+	    			// Need to handle '/' as a special case
+	    			if (destinationUri.equals("/")) {
 	    				newResourceUri = resourceFilename;
 	    			} else {
-	        			newResourceUri = uri + resourceFilename;    				
+	        			newResourceUri = destinationUri + resourceFilename;    				
 	    			}
 	    			
 	    			if (logger.isDebugEnabled()) {
@@ -127,10 +130,39 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    			try {
 	    				if (action.equals("move-resources")) {
 	    					repository.move(token, resourceUri, newResourceUri, false);			
+
 	    				} else if (resourceUri.equals(newResourceUri)) {
-	    					// Identical source- and destination-directory	
-	    					copyToSameDirectory = true;
-	    	    			} else {
+	    					// Identical source- and destination-directory
+	    					
+		    				if (logger.isDebugEnabled()) {
+		    					logger.debug("Trying to duplicate resource: " + newResourceUri);    		
+			    	        	}
+	    					
+	    					String newUri = newResourceUri;
+	    					int index=1;
+	    			        	boolean cont = true;
+
+	    			        	// Need to insert numbering before file-ending like "file(1).txt"
+	    			        	String startOfUri = "";
+	    			        	String endOfUri = "";
+	    			        	int dot = newUri.lastIndexOf(".");
+	    			        
+	    			        	if (dot != -1) {
+	    			        		startOfUri = newUri.substring(0,dot);
+	    			        		endOfUri = "." + newUri.substring(dot+1);
+	    			        	} else {
+	    			        		startOfUri = newUri;
+	    			        	}	
+	    			        
+	    			        	while (cont) {
+	    			        		cont = repository.exists(token, startOfUri + "(" + index + ")" + endOfUri);	
+	    			        		if (cont) index++;
+	    			        	}
+
+	    			        	newResourceUri = startOfUri + "(" + index + ")" + endOfUri;
+	    			        	repository.copy(token, resourceUri, newResourceUri, "infinity", false, false);
+
+	    				} else {
 	    	    				repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
 	    	    			}
 	    	    			
@@ -145,9 +177,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    		} 	
 
 	    		// A small effort to provide some form of errorhandling  	
-	    		if (copyToSameDirectory) {
-	    			model.put("createErrorMessage", "copyMove.error.copyToSameDirectory"); 
-	    		} else if (filesFailed.size() > 0){
+	    		if (filesFailed.size() > 0){
 	    			model.put("createErrorMessage", "copyMove.error.copyMoveFailed"); 
 	    			model.put("errorItems", filesFailed); 
 	    		    	// return new ModelAndView(errorViewName, model);

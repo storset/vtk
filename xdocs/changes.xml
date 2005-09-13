@@ -8,6 +8,11 @@
     <release version="0.2-SNAPSHOT" date="In SVN" description="Release 0.2">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action dev="gormap" type="update">
+        The plain text edit component is now more robust with regards
+        to character encoding in XML/HTML documents.
+      </action>
+
       <action dev="gormap" type="fix">
         Fixed bug in wrapped views where HEAD requests sometimes
         received different Content-Length headers than GET requests.

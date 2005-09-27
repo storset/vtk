@@ -32,11 +32,11 @@ package org.vortikal.web.controller.repository;
 
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
-public class CreateCollectionCommand extends AbstractSaveCancelCommand {
+public class CreateCourseCommand extends AbstractSaveCancelCommand {
 
     private String name = null;
     
-    public CreateCollectionCommand(String submitURL) {
+    public CreateCourseCommand(String submitURL) {
         super(submitURL);
     }
 
@@ -57,7 +57,12 @@ public class CreateCollectionCommand extends AbstractSaveCancelCommand {
      * @param name Value to assign to this.name
      */
     public void setName(String name)  {
-        this.name = name.trim();
+    		name = name.trim();
+    		name = name.toUpperCase();
+    		name = name.replace('Æ','E');
+    		name = name.replace('Ø','O');
+    		name = name.replace('Å','A');
+    		this.name = name;
     }
     
 }

@@ -8,6 +8,13 @@
     <release version="0.2-SNAPSHOT" date="In SVN" description="Release 0.2">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+
+      <action dev="gormap" type="fix">
+        Fixed bug that caused move operations to fail in certain
+        circumstances when the principal was not present in the ACL of
+        the resource being moved.
+      </action>
+
       <action dev="gormap" type="update">
         The plain text edit component is now more robust with regards
         to character encoding in XML/HTML documents.

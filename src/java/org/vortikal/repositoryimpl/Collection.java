@@ -155,7 +155,7 @@ public class Collection extends Resource implements Cloneable {
         if (!inheritedACL) {
             acl.setResource(r);
             r.setInheritedACL(false);
-            r.storeACL(principal, acl.toAceList(), roleManager);
+            r.storeACL(principal, acl.toAceList(), roleManager, false);
         }
 
         addChildURI(r.getURI());
@@ -204,7 +204,7 @@ public class Collection extends Resource implements Cloneable {
         if (!inheritedACL) {
             acl.setResource(r);
             r.setInheritedACL(false);
-            r.storeACL(principal, acl.toAceList(), roleManager);
+            r.storeACL(principal, acl.toAceList(), roleManager, false);
         }
 
         addChildURI(r.getURI());

@@ -712,12 +712,26 @@ public abstract class Resource implements Cloneable {
     }
 
     public void storeACL(Principal principal,
-        org.vortikal.repository.Ace[] aceList, RoleManager roleManager)
+                         org.vortikal.repository.Ace[] aceList, RoleManager roleManager)
+        throws AuthorizationException, AuthenticationException, 
+        IllegalOperationException, IOException, AclException {
+
+        storeACL(principal, aceList, roleManager, true);
+    }
+    
+
+    public void storeACL(Principal principal,
+                         org.vortikal.repository.Ace[] aceList, RoleManager roleManager,
+                         boolean authorize)
         throws AuthorizationException, AuthenticationException, 
             IllegalOperationException, IOException, AclException {
-        authorize(principal,
-            org.vortikal.repository.PrivilegeDefinition.WRITE_ACL, roleManager);
 
+        if (authorize) {
+            
+            authorize(principal,
+                      org.vortikal.repository.PrivilegeDefinition.WRITE_ACL, roleManager);
+        }
+        
         acl.validateACL(aceList);
 
         this.acl = acl.buildACL(aceList);

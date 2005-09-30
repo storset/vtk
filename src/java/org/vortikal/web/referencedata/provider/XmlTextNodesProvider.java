@@ -46,6 +46,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.Xml;
@@ -95,38 +96,45 @@ public class XmlTextNodesProvider
     }
     
     /**
+     * As this provider is used by both view (no authentication needed) and admin beans
+     * (authentication required), AuthenticationExceptions are explicitly handled (i.e. ignored)
      * @see org.vortikal.web.referencedata.provider.Provider#referenceData(java.util.Map,
      *      javax.servlet.http.HttpServletRequest)
      */
     public void referenceData(Map model, HttpServletRequest req) throws Exception {
-
+        Map data = new HashMap();
+        
         String currentUri = RequestContext.getRequestContext().getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
+        // 'token' and 'principal' will both be NULL if user is not authenticated
+        String token = SecurityContext.getSecurityContext().getToken(); 
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-            
-        logger.debug("Will try to extract the xpath expressions '"
+        
+        if (token == null && principal == null) {
+            if ( logger.isDebugEnabled() )
+                logger.debug("'token' and 'principal' are NULL (meaning current user is not authenticated)");
+        }
+        
+        if ( logger.isDebugEnabled() )
+            logger.debug("Will try to extract the xpath expressions '"
                 + this.expressions + "' from resource '" + this.relativeURI
                 + "' relative to current resource '" + currentUri
-                + "'");
-
-        Map data = new HashMap();
-        model.put(this.modelKey, data);
+                + "'");        
         
+        // get complete path to xml-doc
+        String docUri = URIUtil.getAbsolutePath(this.relativeURI, currentUri + "/");       
+        // fetch the xml-doc to work on
+        Resource docResource = this.repository.retrieve(token, docUri, true);
+        
+        if (! "text/xml".equals(docResource.getContentType())) {
+            logger.warn("Resource (" + docUri + ") is not xml");
+            return;
+        }
+        
+        // build DOM and extract data (from XML docs) according to bean configuration
         try {
-            
-            String docUri = URIUtil.getAbsolutePath(this.relativeURI, currentUri + "/");
-
-            // fetch the xml-doc to work on
-            Resource docResource = this.repository.retrieve(token, docUri, true);
-            if (! "text/xml".equals(docResource.getContentType())) {
-                logger.warn("Resource (" + docUri + ") is not xml");
-                return;
-            }
-
-            // build DOM
             SAXBuilder builder = new SAXBuilder();
             Document doc = builder.build(this.repository.getInputStream(token, docUri, true));
-
+            
             for (Iterator iter = xpathExpressions.keySet().iterator(); iter.hasNext();) {
                 Object key = iter.next();
                 XPath xpathExpression = (XPath) xpathExpressions.get(key);
@@ -135,18 +143,38 @@ public class XmlTextNodesProvider
                 if (nodes != null && nodes.size() > 0)
                     data.put(key, nodes);
             }
-             
+        } catch (AuthenticationException ae) {
+            if( logger.isDebugEnabled() )
+                logger.debug("AuthenticationException when fetching '" + docUri + "' from repository " +
+                             "(current user is not authenticated) was properly handled"); 
+        } catch (Exception e) {
+            logger.error( "Unhandled exception when trying to extract element(s) from the DOM", e);
+        }
+        
+        
+        // Attempt to generate link to edit view for noticeboard config file
+        // (the link is only used by some admin views, hence users must be 
+        // authenticated to access these webpages)
+        try {
             if (this.editService != null) {
                 String url = this.editService.constructLink(docResource, principal);
                 if (url != null)
                     data.put("editUrl", url);
             }
+        } catch (AuthenticationException ae) {
+            if( logger.isDebugEnabled() )
+                logger.debug("AuthenticationException when generating 'editUrl' link " +
+                             "(current user is not authenticated) was properly handled");
         } catch (Exception e) {
-            // FIXME: better handling.. 
-            logger.warn("Caught exception trying to extract xml element(s)", e);
+            logger.error("Unhandled exception when trying to generating 'editUrl' link", e);
         }
+        // populate model
+        model.put(this.modelKey, data);
     }
 
+    /**
+     * Public bean property setter methods
+     */
     public void setEditService(Service editService) {
         this.editService = editService;
     }
@@ -166,4 +194,5 @@ public class XmlTextNodesProvider
     public void setRelativeURI(String relURI) {
         this.relativeURI = relURI;
     }
+    
 }

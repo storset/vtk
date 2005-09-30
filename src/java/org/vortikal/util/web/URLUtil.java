@@ -273,5 +273,21 @@ public class URLUtil {
         }
         return hostName;
     }
-
+    
+    
+    
+    /**
+     * Return parent of given url
+     * @param String url
+     * @return parent url if it exists, or NULL if invalid argument   
+     */
+    private String getParentURL( String url ) {
+        // url is root or has no parent or child-url is empty (e.g. link on the form "parent-url/")
+        if( url.lastIndexOf("/") == 0 
+         || url.lastIndexOf("/") == -1 
+         || "".equals( url.substring((url.lastIndexOf("/"))+1, url.length()) ) )
+            return null;
+        else
+            return url.substring( 0, url.lastIndexOf("/") );
+    }
 }

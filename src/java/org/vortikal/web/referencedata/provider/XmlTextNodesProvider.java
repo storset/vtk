@@ -145,8 +145,8 @@ public class XmlTextNodesProvider
             }
         } catch (AuthenticationException ae) {
             if( logger.isDebugEnabled() )
-                logger.debug("AuthenticationException when fetching '" + docUri + "' from repository " +
-                             "(current user is not authenticated) was properly handled"); 
+                logger.debug("AuthenticationException (as current user is not authenticated) when fetching '" +
+                             docUri + "' from repository was properly handled"); 
         } catch (Exception e) {
             logger.error( "Unhandled exception when trying to extract element(s) from the DOM", e);
         }
@@ -163,8 +163,8 @@ public class XmlTextNodesProvider
             }
         } catch (AuthenticationException ae) {
             if( logger.isDebugEnabled() )
-                logger.debug("AuthenticationException when generating 'editUrl' link " +
-                             "(current user is not authenticated) was properly handled");
+                logger.debug("AuthenticationException (as current user is not authenticated) when " +
+                             "generating 'editUrl' link was properly handled");
         } catch (Exception e) {
             logger.error("Unhandled exception when trying to generating 'editUrl' link", e);
         }

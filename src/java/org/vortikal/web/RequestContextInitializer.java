@@ -60,7 +60,23 @@ import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
 
 /**
- * Request context initializer.
+ * Request context initializer. On every request the {@link Service}
+ * tree(s) are traversed and assertions are tested until a match is
+ * found. The matched service is placed in the {@link RequestContext},
+ * which is associated with the request using a threadlocal.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>repository</code> - the {@link Repository content
+ *   repository}
+ *   <li><code>trustedToken</code> - the token used for initial
+ *   resource retrieval. This token should preferably be able to read
+ *   every resource (see {@link TokenManager#getRegisteredToken} and
+ *   {@link org.vortikal.security.roles.RoleManager#READ_EVERYTHING}
+ *   <li><code>uriPrefixes</code> - a {@link List} of URI prefixes
+ *   under which the web application exists (corresponds to servlet
+ *   contexts). The prefixes are stripped off the request URIs.
+ * </ul>
  *
  */
 public class RequestContextInitializer
@@ -75,71 +91,29 @@ public class RequestContextInitializer
     private List uriPrefixes = new ArrayList();
     
 
-
-    public void createContext(HttpServletRequest request) throws Exception {
-        String uri = getResourceURI(request);
-        Resource resource = null;
-
-        try {
-            resource = repository.retrieve(trustedToken, uri, false);
-            
-        } catch (ResourceNotFoundException e) {
-            // Ignore, this is not an error
-        } catch (ResourceLockedException e) {
-            // Ignore, this is not an error
-        } catch (RepositoryException e) {
-            // TODO: What to do when unable to retrieve resource at
-            // this point?
-            String msg = "Unable to retrieve resource for service " +
-                "matching: " + uri + ". A valid token is required.";
-            logger.warn(msg, e);
-            throw new ServletException(msg, e);
-        }
-
-        for (Iterator iter = rootServices.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
-            // Set an initial request context (with the resource, but
-            // without the matched service)
-            RequestContext.setRequestContext(
-                new RequestContext(request, service, uri));
-            
-            // Resolve the request to a service:
-            if (resolveService(service, request, resource)) {
-                break;
-            }
-             
-            RequestContext.setRequestContext(null);
-        }
-
-        //FIXME: What if no service is resolved?
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+ 
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
     }
 
-
-
-    public void destroyContext() {
-        RequestContext.setRequestContext(null);
+    public void setUriPrefixes(List uriPrefixes) {
+        this.uriPrefixes = uriPrefixes;
     }
-
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(getClass().getName());
-        sb.append(": ").append(System.identityHashCode(this));
-        return sb.toString();
-    }
-    
 
     public void setApplicationContext(ApplicationContext context) {
         this.context = context;
     }
     
     public void afterPropertiesSet() {
-        if (trustedToken == null) {
+        if (this.trustedToken == null) {
             throw new BeanInitializationException(
                 "Required property 'trustedToken' not set");
         }
 
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "Required property 'repository' not set");
         }
@@ -162,30 +136,59 @@ public class RequestContextInitializer
         }
         
         this.rootServices = rootServices;
-        logger.info("Registered service tree root services in the following order: " 
-                + rootServices);
         
         if (logger.isInfoEnabled()) {
+            logger.info("Registered service tree root services in the following order: " 
+                        + rootServices);
             logger.info(printServiceTree());
         }
     }
     
 
-    private StringBuffer printServiceTree() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("\nService tree:\n");
-        printServiceList(rootServices, buffer, "->");
-        return buffer;
+
+    public void createContext(HttpServletRequest request) throws Exception {
+        String uri = getResourceURI(request);
+        Resource resource = null;
+
+        try {
+            resource = this.repository.retrieve(this.trustedToken, uri, false);
+            
+        } catch (ResourceNotFoundException e) {
+            // Ignore, this is not an error
+        } catch (ResourceLockedException e) {
+            // Ignore, this is not an error
+        } catch (RepositoryException e) {
+            String msg = "Unable to retrieve resource for service " +
+                "matching: " + uri + ". A valid token is required.";
+            logger.warn(msg, e);
+            throw new ServletException(msg, e);
+        }
+
+        for (Iterator iter = this.rootServices.iterator(); iter.hasNext();) {
+            Service service = (Service) iter.next();
+            // Set an initial request context (with the resource, but
+            // without the matched service)
+            RequestContext.setRequestContext(
+                new RequestContext(request, service, uri));
+            
+            // Resolve the request to a service:
+            if (resolveService(service, request, resource)) {
+                break;
+            }
+             
+            RequestContext.setRequestContext(null);
+        }
+
+        // FIXME: What if no service is resolved?
     }
 
-    private void printServiceList(List services, StringBuffer buffer, String indent) {
-        for (Iterator iter = services.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
-            buffer.append(indent + service.getName() + "\n");
-            printServiceList(service.getChildren(), buffer, "  " + indent);
-        }
+
+
+    public void destroyContext() {
+        RequestContext.setRequestContext(null);
     }
-    
+
+
     /**
      * Resolves a request recursively to a service and creates the
      * request context.
@@ -250,8 +253,8 @@ public class RequestContextInitializer
                 return true;
         }
         
-        if (logger.isInfoEnabled()) {
-            logger.info("Service matching produced result: " + service.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Service matching produced result: " + service.getName());
         }
 
         RequestContext.setRequestContext(
@@ -260,13 +263,18 @@ public class RequestContextInitializer
     }
 
 
-
-
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName());
+        sb.append(": ").append(System.identityHashCode(this));
+        return sb.toString();
+    }
+    
 
     private String getResourceURI(HttpServletRequest req) {
         String uri = req.getRequestURI();
 
-        for (Iterator i = uriPrefixes.iterator(); i.hasNext();) {
+        for (Iterator i = this.uriPrefixes.iterator(); i.hasNext();) {
             String prefix = (String) i.next();
             if (uri.startsWith(prefix)) {
                 uri = uri.substring(prefix.length());
@@ -282,38 +290,31 @@ public class RequestContextInitializer
             uri = uri.substring(0, uri.length() - 1);
         }
 
-        
         try {
-
             uri = URLUtil.urlDecode(uri, "utf-8");
-
-        } catch (UnsupportedEncodingException e) {
-//            logger.warn("Unsupported encoding: utf-8", e);
-        }
+        } catch (UnsupportedEncodingException e) { }
         
         return uri;
     }
 
-    /**
-     * @param repository The repository to set.
-     */
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
- 
-    
-    /**
-     * @param trustedToken The trustedToken to set.
-     */
-    public void setTrustedToken(String trustedToken) {
-        this.trustedToken = trustedToken;
+    private StringBuffer printServiceTree() {
+        StringBuffer buffer = new StringBuffer();
+        String lineSeparator = System.getProperty("line.separator");
+        buffer.append(lineSeparator).append("Service tree:").append(lineSeparator);
+        printServiceList(this.rootServices, buffer, "->", lineSeparator);
+        return buffer;
     }
 
-    
-    /**
-     * @param uriPrefixes The uriPrefixes to set.
-     */
-    public void setUriPrefixes(List uriPrefixes) {
-        this.uriPrefixes = uriPrefixes;
+    private void printServiceList(List services, StringBuffer buffer,
+                                  String indent, String lineSeparator) {
+        for (Iterator iter = services.iterator(); iter.hasNext();) {
+            Service service = (Service) iter.next();
+            buffer.append(indent);
+            buffer.append(service.getName());
+            buffer.append(lineSeparator);
+            printServiceList(service.getChildren(), buffer, "  " + indent, lineSeparator);
+        }
     }
+    
+
 }

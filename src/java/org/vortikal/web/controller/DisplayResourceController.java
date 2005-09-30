@@ -61,7 +61,7 @@ import org.vortikal.web.RequestContext;
  * Controller that provides the requested resource and its input
  * stream in the model.
  *
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>repository</code> - the {@link Repository content
  *       repository}</li>

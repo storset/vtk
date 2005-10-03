@@ -6,9 +6,12 @@
   </properties>
   <body>
 
-    <release version="0.1.9.2" date="2005-09-07" description="Release 0.1.9.2">
+    <release version="0.1.9.3" date="In SVN" description="Release 0.1.9.2">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.1.9.2" date="2005-09-07" description="Release 0.1.9.2">
 
       <action dev="oyviste" type="update">
         Various database (SQL) changes to improve performance.

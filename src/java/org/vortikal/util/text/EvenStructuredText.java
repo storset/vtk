@@ -30,6 +30,7 @@
  */
 package org.vortikal.util.text;
 
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
@@ -40,6 +41,7 @@ import java.util.Set;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Attribute;
 import org.jdom.Text;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -78,7 +80,10 @@ public final class EvenStructuredText implements StructuredText {
     protected String ITALIC_CLOSE = "_";
     protected String LINK_START = "\"";
     protected String LINK_MIDDLE = "\":";
-
+    protected String REF_START = "[";
+    protected String REF_ATTRIBUTE = ":";
+    protected String REF_CLOSE = "]";
+    
     protected Map tagNames = new HashMap();
 
     public Set getTagNames() {
@@ -96,6 +101,8 @@ public final class EvenStructuredText implements StructuredText {
         tagNames.put("ordered-list", "sortedlist");
         tagNames.put("listitem", "listitem");
         tagNames.put("paragraph", "paragraph");
+        tagNames.put("reference", "refrence");
+        tagNames.put("reference-type", "type");
     }
 
     protected boolean paragraphAtPos(String text, int pos) {
@@ -183,6 +190,22 @@ public final class EvenStructuredText implements StructuredText {
 
             return true;
         }
+
+        return false;
+    }
+
+    protected boolean refrenceAtPos(String text, int pos) {
+        if (text.indexOf(REF_START, pos) != pos)
+            return false;
+        
+        int endPos = text.indexOf(REF_CLOSE, pos + REF_START.length());
+
+        if (endPos > 0)
+            return !(
+                endOfBlockLevelElement(
+                    text,
+                    pos + REF_START.length(),
+                    endPos));
 
         return false;
     }
@@ -406,7 +429,7 @@ public final class EvenStructuredText implements StructuredText {
         return endPos;
     }
 
-    //basictekst best�r av tekst, fet, kursiv, lenke m.m
+   // basicText consist of bold, italic, link and refrence.
     protected int parseBasicText(String basicText, int pos, Element parent) {
 
         int nextPos = pos;
@@ -415,6 +438,8 @@ public final class EvenStructuredText implements StructuredText {
             nextPos = parseBold(basicText, pos, parent);
         } else if (italicAtPos(basicText, pos)) {
             nextPos = parseItalic(basicText, pos, parent);
+        } else if (refrenceAtPos(basicText, pos)) {
+        		nextPos = parseRefrence(basicText, pos, parent);
         } else if (linkAtPos(basicText, pos)) {
             nextPos = parseLink(basicText, pos, parent);
         } else {
@@ -449,6 +474,31 @@ public final class EvenStructuredText implements StructuredText {
         return endPos + ITALIC_CLOSE.length();
     }
 
+    protected int parseRefrence(String text, int pos, Element element) {
+        int startPos = pos + REF_START.length();
+        int endPos = text.indexOf(REF_CLOSE, startPos);
+       
+        String refrenceText = text.substring(startPos, endPos);
+        Element refrence = new Element(lookupTag("reference"));        
+
+        int attributePos = refrenceText.indexOf(REF_ATTRIBUTE);
+            
+        if (attributePos > -1) {
+        	  String elementValue = refrenceText.substring(0, attributePos); 
+	      String typeAttributeValue = refrenceText.substring(attributePos + REF_ATTRIBUTE.length(), refrenceText.length());
+	      
+	      
+	      Attribute typeAttribute = new Attribute(lookupTag("reference-type"), typeAttributeValue);  
+	      refrence.setAttribute(typeAttribute);
+	      refrence.addContent(elementValue);
+        	
+        } else refrence.addContent(refrenceText);
+
+        element.addContent(refrence);
+
+        return endPos + REF_CLOSE.length();
+    }
+    
     protected int parseLink(String text, int pos, Element parent) {
 
         String description =
@@ -494,6 +544,7 @@ public final class EvenStructuredText implements StructuredText {
             if (paragraphAtPos(text, pos)
                 || listAtPos(text, pos)
                 || boldAtPos(text, pos)
+			   || refrenceAtPos(text, pos)
                 || italicAtPos(text, pos)
                 || listitemAtPos(text, pos)
                 || numlistitemAtPos(text, pos)	
@@ -533,6 +584,14 @@ public final class EvenStructuredText implements StructuredText {
                     buffer.append(ITALIC_START);
                     buffer.append(generateStructuredText(child));
                     buffer.append(ITALIC_CLOSE);
+                } else if (tagName.equals("reference")) {
+                    buffer.append(REF_START);
+                    buffer.append(generateStructuredText(child));
+                    if (child.getAttributeValue(lookupTag("reference-type"))!= null) {
+                    	buffer.append(REF_ATTRIBUTE);
+                    	buffer.append(child.getAttributeValue(lookupTag("reference-type")));	
+                    }               
+                    buffer.append(REF_CLOSE);
                 } else if (tagName.equals("link")) {
                     //buffer.append();
                     buffer.append(generateStructuredText(child));
@@ -670,8 +729,11 @@ public final class EvenStructuredText implements StructuredText {
 
             Map tagNames = new HashMap();
             tagNames.put("root", "fritekst");
-            tagNames.put("bold", "bold");
-            tagNames.put("italic", "it");
+            tagNames.put("bold", "fet");
+            tagNames.put("italic", "kursiv");
+            tagNames.put("reference", "referanse");
+            tagNames.put("reference-type", "type");
+            tagNames.put("reference-language", "spraak");
             tagNames.put("link", "weblenke");
             tagNames.put("url", "webadresse");
             tagNames.put("url-description", "lenketekst");

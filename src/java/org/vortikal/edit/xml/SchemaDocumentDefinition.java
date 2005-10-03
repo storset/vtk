@@ -702,24 +702,34 @@ public class SchemaDocumentDefinition {
          * Type definition elements for texthack elements must be defined with
          * choice or sequence elements
          */
-        Element element = elementDefinition.getChild("choice", XSD_NAMESPACE);
+
+    	Element element = elementDefinition.getChild("choice", XSD_NAMESPACE);
         if (element == null) {
-            element = elementDefinition.getChild("sequence", XSD_NAMESPACE);
+        	element = elementDefinition.getChild("sequence", XSD_NAMESPACE);
             /*
              * To make it possible to add xml:space
              * attribute we must check for simpleContent
              * as well. simpleContent = xsd:string Any
-             * other construct will just return...
+             * other construct will justf return...
              */
+            
+            if (element == null) {
+               element = elementDefinition.getChild("simpleContent", XSD_NAMESPACE).getChild("extension", XSD_NAMESPACE);            	  
+            }
+            
             if (element == null) return;
         }
-
+    		
         for (Iterator it = element.getChildren().iterator(); it.hasNext();) {
             element = (Element) it.next();
             String value = element.getAttributeValue("name");
             Element appInfo = element.getChild("annotation", XSD_NAMESPACE);
-            appInfo = appInfo.getChild("appinfo", XSD_NAMESPACE);
-            map.put(appInfo.getText(), value);
+            
+            if (appInfo == null) continue;	
+            
+            appInfo = appInfo.getChild("appinfo", XSD_NAMESPACE);            	
+            map.put(appInfo.getText(), value);            
+
             /* Check if the child is a SEQUENCE_ELEMENT */
             if (!element.getAttributeValue("type").equals("xsd:string")) {
                 element = findInElementList(element.getAttributeValue("type"),

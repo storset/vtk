@@ -88,8 +88,6 @@ public class Resource implements java.io.Serializable, Cloneable {
     private AclRestrictions aclRestrictions = null;
     private String serial = null;
     private String displayName = null;
-    private String description = null;
-    private String[] keywords = null;
     private String characterEncoding = null;
     private Locale contentLocale = null;
     private String contentType = null;
@@ -376,46 +374,6 @@ public class Resource implements java.io.Serializable, Cloneable {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-
-    /**
-     * Gets a resource's textual description.
-     *
-     * @return the description
-     */
-    public String getDescription() {
-        return this.description;
-    }
-    
-
-    /**
-     * Sets a resource's textual description.
-     *
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-
-    /**
-     * Gets a resource's set of keywords.
-     *
-     * @return the set of keywords
-     */
-    public String[] getKeywords() {
-        return this.keywords;
-    }
-    
-
-    /**
-     * Sets a resource's keywords.
-     *
-     * @param keywords the keywords to set
-     */
-    public void setKeywords(String[] keywords) {
-        this.keywords = keywords;
-    }
-    
 
     /**
      * Gets a resource's content locale.

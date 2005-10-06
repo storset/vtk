@@ -156,8 +156,6 @@ public abstract class Resource implements Cloneable {
     protected String name;
     protected PrincipalManager principalManager;
     protected String displayName = "";
-    protected String description = null;
-    protected String[] keywoords = null;
     protected String contentType = "";
     protected String characterEncoding = null;
     protected Vector properties = new Vector();

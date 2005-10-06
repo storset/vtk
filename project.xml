@@ -433,5 +433,10 @@
       <name>0.1.9.2</name>
       <tag>release-0.1.9.2</tag>
     </version>
+    <version>
+      <id>0.1.9.3</id>
+      <name>0.1.9.3</name>
+      <tag>release-0.1.9.3</tag>
+    </version>
   </versions>
 </project>

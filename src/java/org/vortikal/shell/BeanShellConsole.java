@@ -42,20 +42,12 @@ import bsh.Interpreter;
 
 /**
  * Shell implementation using BeanShell as its interpreter.
- *
- * @version $Id$
  */
-public class BeanShellManager extends ShellSupport {
+public class BeanShellConsole extends AbstractConsole {
 
     private Interpreter interpreter = new Interpreter();
 
     protected void init() {
-
-//         try {
-//             interpreter.set("context", context);
-//         } catch (Throwable t) {
-//             logger.warn("Unable to set application context", t);
-//         }
     }
     
 

@@ -39,8 +39,6 @@ import java.io.PrintStream;
  * reading lines from an input source to be fed to the
  * interpreter. Such input sources cound be for example a socket, a
  * pipe, stdin, or others.
- *
- * @version $Id$
  */
 public interface CommandReader {
 

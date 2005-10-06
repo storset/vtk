@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,39 +30,55 @@
  */
 package org.vortikal.shell;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * An implementation of CommandReader using System.in as its input
- * source. The prompt string used when reading a line may be
- * customized by setting the property <code>prompt</code>.
- *
- * TODO: implement using java.nio, to allow for thread interrupting,
- * if possible.
+ * Simple shell handler thread that reads commands from stdin and
+ * writes to stdout by default.
+ * 
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>commandReader</code> - a <code>CommandReader</code> to use for
+ *       reading input
+ *   <li><code>outputter</code> - a <code>PrintStream</code> to write output to
+ * </ul>
  */
-public class ConsoleReader implements CommandReader {
+public class ConsoleHandlerThread extends ShellHandlerThread {
 
-    private String prompt = "vrtx$ ";
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
+    protected Log logger = LogFactory.getLog(this.getClass());
+    private boolean alive = true;
+    private CommandReader reader = new ConsoleReader();
+    private PrintStream outputter = System.out;
+        
+    public final void setCommandReader(CommandReader reader) {
+        this.reader = reader;
     }
     
-
-    public String readLine(PrintStream out) throws IOException {
-        out.print(prompt);
-        return reader.readLine();
+    public final void setOutputter(PrintStream out) {
+        this.outputter = out;
     }
     
-
-    public void close() throws IOException {
+    public void interrupt() {
+        logger.info("Shutting down thread " + this.getName());
+        alive = false;
+        super.interrupt();
     }
-    
+        
+    public void run() {
+            
+        while (alive) {
+            try {
+                String line = reader.readLine(outputter);
+                if (alive) {
+                    getShell().eval(line, outputter);
+                }
+            } catch (Throwable t) {
+                outputter.println("Error: " + t.getMessage());
+                t.printStackTrace(outputter);
+            }
+        }
+        outputter.println("Exiting");
+    }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,39 +30,27 @@
  */
 package org.vortikal.shell;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * An implementation of CommandReader using System.in as its input
- * source. The prompt string used when reading a line may be
- * customized by setting the property <code>prompt</code>.
- *
- * TODO: implement using java.nio, to allow for thread interrupting,
- * if possible.
+ * Abstract base class for shell input/output handlers. Provides
+ * access to the shell for evaluating the input.
  */
-public class ConsoleReader implements CommandReader {
+public abstract class ShellHandlerThread extends Thread {
 
-    private String prompt = "vrtx$ ";
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private AbstractConsole shell;
 
+    public ShellHandlerThread() {
+        super();
+    }
 
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
+    public final void setShell(AbstractConsole shell) {
+        this.shell = shell;
     }
     
-
-    public String readLine(PrintStream out) throws IOException {
-        out.print(prompt);
-        return reader.readLine();
-    }
-    
-
-    public void close() throws IOException {
+    protected AbstractConsole getShell() {
+        return this.shell;
     }
     
 }

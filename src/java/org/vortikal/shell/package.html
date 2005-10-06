@@ -21,25 +21,30 @@
 
   <h3>Operation</h3>
 
-    The scripting objects consist of three components: an interpreter
-    (a subclass of {@link org.vortikal.shell.ShellSupport
-    ShellSupport}), a command reader (an instance of {@link
-    org.vortikal.shell.CommandReader CommandReader}), and a {@link
-    java.io.PrintStream PrintStream} (for outputting results of
-    evaluations). As soon as the shell has been initialized, it enters
-    an "read-eval-print" loop in a separate thread. The relationships
-    between the different components are shown below:
+    The scripting components in this implementation are centered
+    around the class {@link org.vortikal.shell.AbstractConsole
+    AbstractConsole}. This class offers pluggable support for
+    different interpreters. The console has an optional switch for
+    either running one pass on startup and then exiting, or running in
+    a "read-eval-print" loop in a separate thread (must be a subclass
+    of {@link ShellHandlerThread}).
+
+    The default implementation of ShellHandlerThread used by
+    AbstractConsole is {@link ConsoleHandlerThread}, which reads and
+    outputs commands and results to the console. The
+    ConsoleHandlerThread works with a {@link CommandReader} and a
+    {@link java.io.PrintStream}, executing commands as shown below:
 
     <pre>
       ----------------
      |                |  1. read command
      | CommandReader  |--------------
      |                |              |
-      ----------------            -------------
-                                 |             |  2. evaluate
-                                 | Interpreter |
-                                 |             |
-      ----------------            -------------
+      ----------------            -------------   2.evaluate   -------------
+                                 |             |  ----------> |             |
+                                 |  Thread     | <----------  | Interpreter |
+                                 |             |              |             |
+      ----------------            -------------                -------------
      |                |              |
      | PrintStream    |--------------
      |                |  3. print result
@@ -47,21 +52,22 @@
     </pre>
 
     The command reader and the PrintStream are configurable properties
-    of the ShellSupport class, allowing for commands to be read from
-    various sources such as sockets, pipes, files, etc. The default
+    of the ConsoleHandlerThread class, allowing for commands to be
+    read from various sources such as pipes, files, etc. The default
     implementation uses the console for input and System.out for
     output.
 
   <h3>Init files</h3>
 
-    The ShellSupport class (and consequently its subclasses) supports
-    setting an <code>initFiles</code> property. Setting this property
-    to a list of resources will cause the shell to evaluate each one
-    on startup. This may be useful for making custom functions,
-    scripts, etc. available to the interpreter. The init files are
-    located using the Spring framework's <code>ResourceLoader</code>
-    framework, and supports <code>classpath:</code> type locators in
-    addition to standard URLs.
+    The AbstractConsole class (and consequently its subclasses)
+    supports setting an <code>initFiles</code> property. Setting this
+    property to a list of resources will cause the shell to evaluate
+    each one on startup. This may be useful for making custom
+    functions, scripts, etc. available to the interpreter. The init
+    files are located using the Spring
+    framework's <code>ResourceLoader</code> framework, and
+    supports <code>classpath:</code> type locators in addition to
+    standard URLs.
 
   <h3>Bindings</h3>
 
@@ -69,7 +75,7 @@
   the name <code>context</code>. This allows scripts script to operate
   on other beans, e.g.
   <pre>
-    repository = context.getBean();
+    repository = context.getBean("...");
     repository.move(...);
     ...
     etc.
@@ -84,8 +90,10 @@
 
     <pre>
       &lt;bean id="console" class="org.vortikal.shell.BeanShellManager"&gt; 
-          &lt;property name="initFile"&gt;
-              &lt;value&gt;classpath:foo.bsh&lt;/value&gt;
+          &lt;property name="initFiles"&gt;
+              &lt;list&gt;
+                 &lt;value&gt;classpath:foo.bsh&lt;/value&gt;
+              &lt;/list&gt;
           &lt;/property&gt;
       &lt;/bean&gt;
     </pre>

@@ -44,8 +44,6 @@ import java.io.PrintStream;
  * stream. The source may be specified either as an InputStream
  * directly, or as a file name, in which case an InputStream for that
  * file is opened.
- *
- * @version $Id$
  */
 public class StreamReader implements CommandReader {
 
@@ -79,7 +77,6 @@ public class StreamReader implements CommandReader {
     
 
     public String readLine(PrintStream out) throws IOException {
-        //out.println("Prompting from thread " + Thread.currentThread().getName());
         out.print(prompt);
         return reader.readLine();
     }

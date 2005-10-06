@@ -9,6 +9,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="update">
+        Reworked the shell support package. Added a new socket based
+        command line interface for remote shell support.
+      </action>
+
       <action dev="gormap" type="fix">
         Fixed bug that caused move operations to fail in certain
         circumstances when the principal was not present in the ACL of
@@ -23,6 +28,19 @@
       <action dev="gormap" type="fix">
         Fixed bug in wrapped views where HEAD requests sometimes
         received different Content-Length headers than GET requests.
+      </action>
+    </release>
+
+
+    <release version="0.1.9.3" date="2005-10-03" description="Release 0.1.9.2">
+      <action dev="evenh" type="update">
+        Added 'reference' type element to structured text parser.
+      </action>
+    </release>
+
+    <release version="0.1.9.3" date="In SVN" description="Release 0.1.9.2">
+      <action dev="evenh" type="update">
+        Added 'reference' type element to structured text parser.
       </action>
     </release>
 

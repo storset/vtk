@@ -151,8 +151,6 @@ public class ACL implements Cloneable {
          *    is a group identifier and the user is a member of that group
          * */
 
-        // FIXME!!! read-processed m� godta read ogs�!
-        // forel�pig ligger read-processed ikke under read, men flatt!
         // Condition 1:
         if (userMatch(principalList, "dav:all")) {
             return;

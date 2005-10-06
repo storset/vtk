@@ -42,10 +42,8 @@ import java.io.PrintStream;
 
 /**
  * Shell implementation using Groovy as its interpreter.
- *
- * @version $Id$
  */
-public class GroovyManager extends ShellSupport {
+public class GroovyConsole extends AbstractConsole {
 
 
     private GroovyShell shell = null;

@@ -53,31 +53,30 @@ import org.springframework.core.io.ResourceLoader;
  * management, or for debugging. This class is a convenient superclass
  * for creating new scripting interfaces.
  *
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
- *   <li>initScripts - a list of resources to evaluate as scripts
- *       during startup
- *   <li>commandReader - a <code>CommandReader</code> to use for
- *       reading input
- *   <li>outputter - a <code>PrintStream</code> to write output to
- *   <li>runEvalLoop - a <code>boolean</code> indicating whether to
- *       run a read - eval - print loop, or just the init scripts.
+ *   <li><code>initScripts</code> - a list of resources to evaluate as
+ *       scripts during startup
+ *   <li><code>runEvalLoop</code> - a <code>boolean</code> indicating
+ *       whether to run a read - eval - print loop, or just the init
+ *       scripts.
+ *   <li>consoleHandler - a subclass of {@link ShellHandlerThread}
+ *   responsible for reading commands and invoking the {@link #eval}
+ *   method.
  * </ul>
  * 
  * TODO: add configurable custom (string) bindings that are passed to
  * the shell on startup.
- * @version $Id$
  */
-public abstract class ShellSupport
-  implements ApplicationContextAware, InitializingBean, DisposableBean, BeanNameAware, ResourceLoaderAware {
+public abstract class AbstractConsole
+  implements ApplicationContextAware, InitializingBean,
+             DisposableBean, BeanNameAware, ResourceLoaderAware {
 
     protected Log logger = LogFactory.getLog(this.getClass());
     private String beanName = null;
     private ApplicationContext context = null;
     private String[] initFiles = null;
-    private ManagerThread managerThread = null;
-    private CommandReader reader = new ConsoleReader();
-    private PrintStream outputter = System.out;
+    private ShellHandlerThread consoleHandler = null;
     private ResourceLoader resourceLoader = null;
     private boolean runEvalLoop = true;
 
@@ -131,23 +130,19 @@ public abstract class ShellSupport
         this.context = ctx;
     }
     
-
-    public final void setCommandReader(CommandReader reader) {
-        this.reader = reader;
-    }
-    
-    
-    public final void setOutputter(PrintStream out) {
-        this.outputter = out;
-    }
-    
     
     public final void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
     
+
     public final void setRunEvalLoop(boolean runEvalLoop) {
         this.runEvalLoop = runEvalLoop;
+    }
+    
+
+    public final void setConsoleHandler(ShellHandlerThread consoleHandler) {
+        this.consoleHandler = consoleHandler;
     }
     
 
@@ -163,7 +158,7 @@ public abstract class ShellSupport
         this.bind("resourceLoader", this.resourceLoader);
         if (logger.isDebugEnabled())
             logger.debug("Binding: 'logger'");
-        this.bind("resourceLoader", this.logger);
+        this.bind("logger", this.logger);
 
         if (this.initFiles != null) {
             for (int i = 0; i < initFiles.length; i++) {
@@ -173,7 +168,7 @@ public abstract class ShellSupport
                     stream = resource.getInputStream();
                     if (logger.isDebugEnabled())
                         logger.debug("Evaluating init file " + resource);
-                    this.evalInitFile(stream, outputter);
+                    this.evalInitFile(stream, System.out);
                 
                 } catch (IOException e) {
                     logger.warn("Cannot resolve init file path '" +
@@ -191,51 +186,26 @@ public abstract class ShellSupport
         }
 
         if (this.runEvalLoop) {
-            this.managerThread = new ManagerThread(
-                this.getClass().getName() + "[id: " + this.beanName + "]");
-            this.managerThread.start();
+            if (this.consoleHandler == null) {
+                this.consoleHandler = new ConsoleHandlerThread();
+            }
+
+            this.consoleHandler.setName(this.getClass().getName() + "." +
+                                        this.beanName);
+            this.consoleHandler.setShell(this);
+            this.consoleHandler.start();
         }
     }
     
 
 
     public final void destroy() {
-        if (this.managerThread != null) {
-            this.managerThread.kill();
+        if (this.consoleHandler != null) {
+            this.consoleHandler.interrupt();
         }
     }
 
 
 
 
-    private class ManagerThread extends Thread {
-
-        private boolean alive = true;
-        
-        public ManagerThread(String name) {
-            super(name);
-        }
-        
-        public void kill() {
-            logger.info("Shutting down thread " + this.getName());
-            alive = false;
-            this.interrupt();
-        }
-        
-        public void run() {
-            
-            while (alive) {
-                try {
-                    String line = reader.readLine(outputter);
-                    if (alive) {
-                        eval(line, outputter);
-                    }
-                } catch (Throwable t) {
-                    outputter.println("Error: " + t.getMessage());
-                    t.printStackTrace(outputter);
-                }
-            }
-            outputter.println("Exiting");
-        }
-    }
 }

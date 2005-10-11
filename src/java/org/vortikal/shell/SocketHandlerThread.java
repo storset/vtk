@@ -30,6 +30,7 @@
  */
 package org.vortikal.shell;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +40,11 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import java.util.Iterator;
 
 /**
  * A shell handler that reads commands from network clients. Supports
@@ -62,6 +65,8 @@ public class SocketHandlerThread extends ShellHandlerThread {
     private Log logger = LogFactory.getLog(this.getClass());
     private boolean alive = true;
     private int port = 9999;
+    private Set connections = new HashSet();
+    
         
     public void setPort(int port) {
         if (port <= 0) {
@@ -74,6 +79,19 @@ public class SocketHandlerThread extends ShellHandlerThread {
     public void interrupt() {
         logger.info("Exiting");
         alive = false;
+        Set interruptableConnections = new HashSet();
+        for (Iterator i = this.connections.iterator(); i.hasNext();) {
+            interruptableConnections.add(i.next());
+        }
+
+        for (Iterator i = interruptableConnections.iterator(); i.hasNext();) {
+            ConnectionHandlerThread thread = (ConnectionHandlerThread) i.next();
+            try {
+                thread.interrupt();
+            } catch (Throwable t) {
+                logger.warn("Error interrupting connection handler " + thread);
+            }
+        }
         super.interrupt();
     }
         
@@ -81,6 +99,7 @@ public class SocketHandlerThread extends ShellHandlerThread {
     public void run() {
 
         ServerSocket serverSocket = null;
+        long count = 0;
 
         try {
             serverSocket = new ServerSocket(this.port);
@@ -95,10 +114,12 @@ public class SocketHandlerThread extends ShellHandlerThread {
             try {
 
                 Socket clientSocket = serverSocket.accept();
+                count++;
                 ConnectionHandlerThread handlerThread = new ConnectionHandlerThread(
                     this.getName() + ".handler.", clientSocket);
                 handlerThread.setName(handlerThread.getName()
-                                      + handlerThread.getId());
+                                      + count);
+                this.connections.add(handlerThread);
                 handlerThread.start();
 
             } catch (Throwable t) {
@@ -184,6 +205,7 @@ public class SocketHandlerThread extends ShellHandlerThread {
                     }
                 }
             }
+            connections.remove(this);
         }
     }
     

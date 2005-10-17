@@ -372,11 +372,11 @@ public class HttpDigestAuthenticationHandler
             StringBuffer b = new StringBuffer();
             b.append(componentA1);
 
-            b.append(":" + nonce);
-            if (nc != null) b.append(":" + nc);
-            if (cnonce != null) b.append(":" + cnonce);
-            if (qop != null) b.append(":" + qop);
-            b.append(":" + componentA2);
+            b.append(":").append(nonce);
+            if (nc != null) b.append(":").append(nc);
+            if (cnonce != null) b.append(":").append(cnonce);
+            if (qop != null) b.append(":").append(qop);
+            b.append(":").append(componentA2);
                 
             String serverDigest = MD5.md5sum(b.toString());
       

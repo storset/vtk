@@ -84,7 +84,7 @@ public class MoveItController extends AbstractXmlEditController {
                 }
 
                 /* prepare insertion in the new location: */
-                String currentPath = new String(path);
+                String currentPath = path;
                 if (currentPath.indexOf(".") >= 0) {
                     // Strip away the leading '1.' (root element)
                     currentPath = currentPath.substring(2, currentPath.length());

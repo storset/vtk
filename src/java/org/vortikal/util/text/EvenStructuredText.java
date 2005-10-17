@@ -237,7 +237,7 @@ public final class EvenStructuredText implements StructuredText {
 
     public Element parseStructuredText(String text) {
 
-        String structureText = new String(text);
+        String structureText = text;
 
         structureText = structureText.replaceAll("\r\n", "\n");
         structureText = structureText.replaceAll("\r", "\n");
@@ -672,7 +672,7 @@ public final class EvenStructuredText implements StructuredText {
     private String lookupTag(String tagName) {
         String tag = (String) tagNames.get(tagName);
         if (tag == null)
-            tag = new String(tagName);
+            tag = tagName;
 
         return tag;
     }
@@ -684,7 +684,7 @@ public final class EvenStructuredText implements StructuredText {
                 return tagName;
             }
         }
-        return new String(mappedTag);
+        return mappedTag;
     }
 
     public static void dumpXML(Document doc, PrintStream out) {

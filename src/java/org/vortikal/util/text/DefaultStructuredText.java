@@ -228,7 +228,7 @@ public final class DefaultStructuredText implements StructuredText {
                 String url = child.getChild(lookupTag("url")).getText();
                 String description = child.getChild(
                         lookupTag("url-description")).getText();
-                buffer.append("\"" + description + "\":" + url);
+                buffer.append("\"").append(description).append("\":").append(url);
 
             } else if (tagName.equals("paragraph")) {
 
@@ -249,7 +249,7 @@ public final class DefaultStructuredText implements StructuredText {
                             && buffer.charAt(buffer.length() - 2) != '\n') {
                         buffer.append("\n");
                     }
-                    buffer.append("- " + regenerateText(listItem));
+                    buffer.append("- ").append(regenerateText(listItem));
                 }
             }
         }

@@ -676,7 +676,9 @@ public class Cache implements DataAccessor, InitializingBean {
             Item i = this.in;
 
             while (i != null) {
-                s.append("[" + i.getResource().getURI() + "]");
+                s.append("[");
+                s.append(i.getResource().getURI());
+                s.append("]");
                 i = i.older;
             }
 

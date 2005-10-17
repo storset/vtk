@@ -689,11 +689,14 @@ public class ACL implements Cloneable {
             String action = (String) i.next();
             List principalList = getPrincipalList(action);
 
-            sb.append(" [" + action + ":");
+            sb.append(" [");
+            sb.append(action);
+            sb.append(":");
             for (Iterator j = principalList.iterator(); j.hasNext();) {
                 ACLPrincipal p = (ACLPrincipal) j.next();
 
-                sb.append(" " + p.getUrl());
+                sb.append(" ");
+                sb.append(p.getUrl());
 
                 if (p.isGroup()) {
                     sb.append("(g)");

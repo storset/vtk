@@ -161,14 +161,14 @@ public class FileUploadController extends SimpleFormController {
 
         if (fileName.indexOf("\\") < 0) {
 
-            return new String(fileName);
+            return fileName;
         }
 
         int pos = fileName.lastIndexOf("\\");
 
         if (pos > fileName.length() - 2) {
 
-            return new String(fileName);
+            return fileName;
         }
 
         return fileName.substring(pos + 1, fileName.length());

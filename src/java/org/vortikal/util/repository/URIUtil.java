@@ -152,6 +152,7 @@ public class URIUtil {
         // Test to check that start of URI is legal path (e.g. UNIX '/', WINDOWS 'C:')
         // [using string test and regex checking]
         if ( !uri.startsWith("/") && (!uri.substring(0,2).matches("[c-zA-Z]:")) ) {
+            // FIXME: this should go to a logger
             System.out.print("URI cannot be relative.");
         }
 

@@ -47,18 +47,36 @@ import java.util.Properties;
  * (if not specified) is
  * <code>org/vortikal/util/repository/mime.properties</code>.
  *
- * <p>The format of the properties file is <code>extension = MIME type</code>.
- *
- * @version $Id$
+ * <p>The format of the properties file is
+ * <pre>
+ * extension1 = MIME type 1
+ * ...
+ * extensionN = MIME type N
+ * </pre>
  */
 public class MimeHelper {
+
+
+    /**
+     * The default MIME type, returned when no other mapping exists
+     * for a given file extension. Its value is
+     * <code>application/octet-stream</code>.
+     */
     public static final String DEFAULT_MIME_TYPE = "application/octet-stream";
+
     private static Properties properties;
 
     static {
         load();
     }
 
+    /**
+     * Maps a file name to a MIME type based on its file extension.
+     *
+     * @param fileName a file name (or path).
+     * @return the MIME type, or {@link #DEFAULT_MIME_TYPE} if no
+     * mapping exists for the file extension in question.
+     */
     public static String map(String fileName) {
         String extension = findExtension(fileName);
 

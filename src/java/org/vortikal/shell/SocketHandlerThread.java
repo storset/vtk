@@ -194,6 +194,8 @@ public class SocketHandlerThread extends ShellHandlerThread {
                     }
                 } catch (Throwable t) {
 
+                    alive = false;
+
                     try {
                         outputter.println("Error: " + t.getMessage());
                         t.printStackTrace(outputter);

@@ -102,8 +102,14 @@ public class DisplayClassPathResourceController
             uri = uri.substring(this.uriPrefix.length());
         }
 
-        ClassPathResource resource = new ClassPathResource(this.basePath + "/" + uri);
-        logger.info("About to serve resource: " + resource);
+        String path = this.basePath;
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        path += uri;
+
+        ClassPathResource resource = new ClassPathResource(path);
+        logger.info("About to serve resource: " + resource + " from path: " + path);
         
         InputStream inStream = null;
         OutputStream outStream = null;

@@ -141,12 +141,19 @@ public class DisplayClassPathResourceController
 
     public long getLastModified(HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
+
         String uri = requestContext.getResourceURI();
         if (this.uriPrefix != null) {
             uri = uri.substring(this.uriPrefix.length());
         }
 
-        ClassPathResource resource = new ClassPathResource(this.basePath + "/" + uri);
+        String path = this.basePath;
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        path += uri;
+
+        ClassPathResource resource = new ClassPathResource(path);
         if (resource.exists()) {
             return applicationContext.getStartupDate();
         }

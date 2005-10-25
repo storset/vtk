@@ -213,14 +213,14 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         collectionListingModel.put("invertedSort", new Boolean(invertedSort));
         collectionListingModel.put("children", children);
         
-        List linkingServiceNames = new ArrayList();
+        List linkedServiceNames = new ArrayList();
         
         for (Iterator iter = linkedServices.keySet().iterator(); iter.hasNext();) {
             String linkName = (String) iter.next();
-            linkingServiceNames.add(linkName);
+            linkedServiceNames.add(linkName);
         }
        
-        collectionListingModel.put("linkingServiceNames", linkingServiceNames);
+        collectionListingModel.put("linkedServiceNames", linkedServiceNames);
         
         Map[] childLinks = new HashMap[children.length];
         String[] browsingLinks = new String[children.length];

@@ -58,6 +58,10 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  <li><code>modelName</code> - the name to use for the submodel generated
  *  <li><code>service</code> - the {@link Service} used to construct the URL
  *  <li><code>uri</code> - the URI (path) of the resource in the repository
+ *  <li><code>appendPath</code> - a path (starting with <code>/</code>
+ *  to append to the URL after construction. This will only work if
+ *  the resource is a collection. Default is <code>null</code> (no
+ *  path appended).
  *  <li><code>matchAssertions</code> - whether to require that all
  *  assertions must match when constructing links (default is
  *  <code>false</code>)
@@ -80,6 +84,7 @@ public class FixedResourceServiceURLProvider
     private Repository repository;
     private boolean matchAssertions;
     private String uri;
+    private String appendPath;
     private String urlName = "url";
 
     public void setModelName(String modelName) {
@@ -96,6 +101,10 @@ public class FixedResourceServiceURLProvider
     
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public void setAppendPath(String appendPath) {
+        this.appendPath = appendPath;
     }
 
     public void setMatchAssertions(boolean matchAssertions) {
@@ -122,6 +131,10 @@ public class FixedResourceServiceURLProvider
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "Bean property 'repository' must be set");
+        }
+        if (this.appendPath != null && !this.appendPath.startsWith("/")) {
+            throw new BeanInitializationException(
+                "Bean property 'appendPath' must start with a '/' character");
         }
     }
     
@@ -154,9 +167,29 @@ public class FixedResourceServiceURLProvider
             }
         } catch (ServiceUnlinkableException ex) { }
 
+        if (this.appendPath != null && url != null && resource.isCollection()) {
+            url = appendPath(url);
+        }
+
         urlMap.put(this.urlName, url);
         model.put(this.modelName, urlMap);
     }
+
+    private String appendPath(String url) {
+        String queryString = "";
+        int queryStringIndex = url.indexOf("?");
+        if (queryStringIndex > 0) {
+            queryString = url.substring(queryStringIndex);
+            url = url.substring(0, queryStringIndex);
+        }
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
+        url = url + this.appendPath + queryString;
+        return url;
+    }
+    
 
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());

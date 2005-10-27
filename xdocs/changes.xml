@@ -9,6 +9,10 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="add">
+        Added web controller for serving class path resources.
+      </action>
+
       <action dev="gormap" type="update">
         Reworked the shell support package. Added a new socket based
         command line interface for remote shell support.

@@ -53,7 +53,6 @@ public class StreamUtil {
      */
     public static byte[] readInputStream(InputStream content)
             throws IOException {
-        // Convert stream to a String, and then process it.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
@@ -72,4 +71,41 @@ public class StreamUtil {
         }
     }
 
+    /**
+     * Reads the first N bytes of an input stream into a byte
+     * array. Closes the stream after the data has been read.
+     *
+     * @param content an <code>InputStream</code> value
+     * @param maxLength the maximum number of bytes to read from the
+     * stream.
+     * @return a <code>byte[]</code> array. The length of the byte
+     * array will be less than or equal to the <code>maxLength</code>
+     * argument.
+     * @exception IOException if an error occurs
+     */
+    public static byte[] readInputStream(InputStream content, int maxLength)
+            throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            byte[] buffer = new byte[10000];
+            int n = 0;
+            int total = 0;
+            while ((n = content.read(buffer)) > 0 && total < maxLength) {
+
+                if (n + total > maxLength) {
+                    n = maxLength - total;
+                }
+                out.write(buffer, 0, n);
+                total += n;
+            }
+            return out.toByteArray();
+        } finally {
+            try {
+                content.close();
+            } catch (IOException e) {
+                logger.warn("Error closing input stream", e);
+            }
+        }
+    }
 }

@@ -34,8 +34,7 @@ import org.springframework.beans.factory.BeanNameAware;
 
 
 /**
- * Abstract base class for assertions. Is bean name aware and contains
- * an empty <code>processURL()</code> implementation.
+ * Abstract bean name aware base class for assertions.
  */
 public abstract class AbstractAssertion implements Assertion, BeanNameAware {
 
@@ -48,8 +47,6 @@ public abstract class AbstractAssertion implements Assertion, BeanNameAware {
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
-
-    
 
     public String toString() {
         StringBuffer sb = new StringBuffer();

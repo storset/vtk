@@ -65,6 +65,10 @@ public class ResourceContentTypeRegexpAssertion
     
     
     public void setExceptionPattern(String exceptionPattern) {
+        if (exceptionPattern == null) {
+            this.exceptionPattern = null;
+            return;
+        }
         this.exceptionPattern = Pattern.compile(exceptionPattern);
     }
     

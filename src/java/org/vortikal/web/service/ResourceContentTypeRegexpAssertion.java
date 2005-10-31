@@ -37,17 +37,25 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 /**
+ * Assertion that performs a regular expression match on a resource's
+ * content type.
  *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>pattern</code> - the regular expression to match
+ *   <li><code>exceptionPattern</code> - a regular expression denoting
+ *   possible exceptions to the <code>pattern</code>
+ *   expression. Content types that match this expression prevent the
+ *   assertion from matching.
+ * </ul>
  */
 public class ResourceContentTypeRegexpAssertion
   extends AbstractRepositoryAssertion {
 
-    private Pattern pattern = null;
+    private Pattern pattern;
+    private Pattern exceptionPattern;
+    
 
-
-    /**
-     * @param pattern The pattern to set.
-     */
     public void setPattern(String pattern) {
         if (pattern == null) throw new IllegalArgumentException(
             "Property 'pattern' cannot be null");
@@ -56,10 +64,25 @@ public class ResourceContentTypeRegexpAssertion
     }
     
     
+    public void setExceptionPattern(String exceptionPattern) {
+        this.exceptionPattern = Pattern.compile(exceptionPattern);
+    }
+    
+    
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourceContentTypeAssertion) {
-            Matcher m = pattern.matcher(((ResourceContentTypeAssertion) assertion).getContentType());
-            return ! m.matches();
+            String contentType = ((ResourceContentTypeAssertion) assertion).getContentType();
+            Matcher m = pattern.matcher(contentType);
+            boolean match = m.matches();
+
+            if (this.exceptionPattern != null) {
+                m = exceptionPattern.matcher(contentType);
+                if (m.matches()) {
+                    match = false;
+                }
+            }
+
+            return ! match;
         }
         return false;
     }
@@ -69,16 +92,26 @@ public class ResourceContentTypeRegexpAssertion
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; pattern = ").append(pattern.pattern());
-		
+        sb.append("; pattern = ").append(this.pattern.pattern());
+        if (this.exceptionPattern != null) {
+            sb.append("; exceptionPattern = ").append(this.exceptionPattern.pattern());
+        }
         return sb.toString();
     }
 
 
     public boolean matches(Resource resource, Principal principal) {
         if (resource != null && resource.getContentType() != null) {
-            Matcher m = pattern.matcher(resource.getContentType());
-            return m.matches();
+            Matcher m = this.pattern.matcher(resource.getContentType());
+            boolean match = m.matches();
+            
+            if (this.exceptionPattern != null) {
+                m = this.exceptionPattern.matcher(resource.getContentType());
+                if (m.matches()) {
+                    match = false;
+                }
+            }
+            return match;
         }
         return false;
     }

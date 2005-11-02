@@ -61,4 +61,11 @@ public class ContentTypeHelper {
         return (contentType != null) && (contentType.startsWith("text/html"));
     }   
     
+
+    public static boolean isHTMLOrXHTMLContentType(String contentType) {
+        return (contentType != null)
+            && (contentType.startsWith("text/html")
+                || contentType.startsWith("application/xhtml"));
+    }   
+    
 }

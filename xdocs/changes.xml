@@ -9,6 +9,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="add">
+        Added assertion for performing regular expression matches on
+        request headers.
+      </action>
+
       <action dev="gormap" type="fix">
         Removed extra URL decoding on request context initialization
         (caused file names that contain the '+' character to fail).

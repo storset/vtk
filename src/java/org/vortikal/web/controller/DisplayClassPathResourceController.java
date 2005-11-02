@@ -109,7 +109,6 @@ public class DisplayClassPathResourceController
         path += uri;
 
         ClassPathResource resource = new ClassPathResource(path);
-        logger.info("About to serve resource: " + resource + " from path: " + path);
         
         InputStream inStream = null;
         OutputStream outStream = null;
@@ -126,9 +125,15 @@ public class DisplayClassPathResourceController
             while (((n = inStream.read(buffer, 0, 5000)) > 0)) {
                 outStream.write(buffer, 0, n);
             }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully served resource: " + resource + " from path: " + path);
+            }
 
         } catch (Exception e) {
 
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to serve resource: " + resource + " from path: " + path, e);
+            }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
 
         } finally {

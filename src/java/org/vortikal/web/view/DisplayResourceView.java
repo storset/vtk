@@ -53,7 +53,7 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
 
 
 /**
- * "Web server" behaving view. Writes the contents of a
+ * "Web server" resembling view. Writes the contents of a
  * resource to the client.
  *
  * <p><a name="config">Configurable properties</a>
@@ -155,22 +155,108 @@ public class DisplayResourceView extends AbstractView
     
 
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
-                       HttpServletResponse response) throws Exception {
+                                        HttpServletResponse response) throws Exception {
 
-        Resource resource = (Resource) model.get("resource");
-        if (resource == null) {
+        Resource resource = getResource(model, request, response);
+        InputStream resourceStream = getResourceStream(resource, model, request, response);
+
+        setHeaders(resource, model, request, response);
+        writeResponse(resource, resourceStream, model, request, response);
+    }
+    
+
+
+    /**
+     * Gets the {@link Resource} object being served. Defaults to
+     * examining the model for the key <code>resource</code>.
+     */
+    protected Resource getResource(Map model,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) throws Exception {
+        Object o = model.get("resource");
+        if (o == null || ! (o instanceof Resource)) {
             throw new InvalidModelException(
                 "Missing resource in model " +
                 "(expected a Resource object having key 'resource')");
         }
+        return (Resource) o;
+    }
+    
 
-        InputStream inStream = (InputStream) model.get("resourceStream");
-        if (inStream == null) {
+
+    /**
+     * Gets the {@link InputStream} representing the content of the
+     * served resource. Defaults to examining the model for the key
+     * <code>resourceStream</code>. Note to overriders: be careful to
+     * always close the input stream already present in the model when
+     * returning a different input stream.
+     */
+    protected InputStream getResourceStream(Resource resource, Map model,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) throws Exception {
+        Object o = model.get("resourceStream");
+        if (o == null || ! (o instanceof InputStream)) {
             throw new InvalidModelException(
-                "Missing stream in model " +
+                "Missing InputStream in model " +
                 "(expected an InputStream object having key 'resourceStream')");
         }
+        return (InputStream) o;
+    }
+    
 
+    protected void setHeaders(Resource resource, Map model, HttpServletRequest request,
+                              HttpServletResponse response) throws Exception {
+
+        setContentTypeHeader(resource, model, request, response);
+        setContentLanguageHeader(resource, model, request, response);
+        setContentLengthHeader(resource, model, request, response);
+        setExpiresHeader(resource, model, request, response);
+        setLastModifiedHeader(resource, model, request, response);
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
+    
+
+
+    protected void writeResponse(Resource resource, InputStream resourceStream,
+                                 Map model, HttpServletRequest request,
+                                 HttpServletResponse response) throws Exception {
+        OutputStream out = null;
+        int bytesWritten = 0;
+        try {
+            if ("HEAD".equals(request.getMethod())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Request is HEAD, not writing content");
+                }
+                response.flushBuffer();
+            } else {
+
+                out = response.getOutputStream();
+                byte[] buffer = new byte[this.streamBufferSize];
+                int n = 0;
+                while (((n = resourceStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
+                    out.write(buffer, 0, n);
+                    bytesWritten += n;
+                }
+            }
+
+        } finally {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Wrote a total of " + bytesWritten
+                             + " bytes to response");
+            }
+
+            if (out != null) {
+                out.flush();
+                out.close();
+            }
+            if (resourceStream != null) resourceStream.close();
+        }
+    }
+
+
+    protected void setContentTypeHeader(Resource resource, Map model,
+                                        HttpServletRequest request,
+                                        HttpServletResponse response) throws Exception {
         String contentType = resource.getContentType();
         
         if (ContentTypeHelper.isHTMLContentType(resource.getContentType()) &&
@@ -193,7 +279,12 @@ public class DisplayResourceView extends AbstractView
             logger.debug("Setting header Content-Type: " + contentType);
         }
         response.setHeader("Content-Type", contentType);
+    }
+    
 
+    protected void setContentLanguageHeader(Resource resource, Map model,
+                                            HttpServletRequest request,
+                                            HttpServletResponse response) throws Exception {
         // Fix for Spring's DispatcherServlet's behavior (always sets
         // the response's locale to that of the request).
         response.setHeader("Content-Language", "");
@@ -207,11 +298,20 @@ public class DisplayResourceView extends AbstractView
                 response.setHeader("Content-Language", locale.getLanguage());
             }
         }
-
+    }
+    
+    protected void setContentLengthHeader(Resource resource, Map model,
+                                          HttpServletRequest request,
+                                          HttpServletResponse response) throws Exception {
         if (logger.isDebugEnabled()) {
             logger.debug("Setting header Content-Length: " + resource.getContentLength());
         }
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
+    }
+    
+
+    protected void setExpiresHeader(Resource resource, Map model, HttpServletRequest request,
+                                    HttpServletResponse response) throws Exception {
         if (this.includeExpiresHeader) {
             
             Property expiresProperty = resource.getProperty(
@@ -240,6 +340,12 @@ public class DisplayResourceView extends AbstractView
                 }
             }
         }
+    }
+    
+    
+    protected void setLastModifiedHeader(Resource resource, Map model,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response) throws Exception {
         
         if (this.includeLastModifiedHeader) {
             if (logger.isDebugEnabled()) {
@@ -253,41 +359,6 @@ public class DisplayResourceView extends AbstractView
         if (logger.isDebugEnabled()) {
             logger.debug("Setting HTTP status code: " + HttpServletResponse.SC_OK);
         }
-        response.setStatus(HttpServletResponse.SC_OK);
-  
-        OutputStream out = null;
-        int bytesWritten = 0;
-        try {
-            if ("HEAD".equals(request.getMethod())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Request is HEAD, not writing content");
-                }
-                response.flushBuffer();
-            } else {
-
-                out = response.getOutputStream();
-                byte[] buffer = new byte[this.streamBufferSize];
-                int n = 0;
-                while (((n = inStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
-                    out.write(buffer, 0, n);
-                    bytesWritten += n;
-                }
-            }
-
-        } finally {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Wrote a total of " + bytesWritten
-                             + " bytes to response");
-            }
-
-            if (out != null) {
-                out.flush();
-                out.close();
-            }
-            if (inStream != null) inStream.close();
-        }
     }
-    
-
 
 }

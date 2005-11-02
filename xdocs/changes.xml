@@ -10,6 +10,10 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Added assertion for matching on principals and groups.
+      </action>
+
+      <action dev="gormap" type="add">
         Added assertion for performing regular expression matches on
         request headers.
       </action>

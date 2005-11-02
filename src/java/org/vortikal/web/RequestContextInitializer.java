@@ -273,6 +273,7 @@ public class RequestContextInitializer
 
     private String getResourceURI(HttpServletRequest req) {
         String uri = req.getRequestURI();
+        String requestedURI = uri;
 
         for (Iterator i = this.uriPrefixes.iterator(); i.hasNext();) {
             String prefix = (String) i.next();
@@ -290,10 +291,13 @@ public class RequestContextInitializer
             uri = uri.substring(0, uri.length() - 1);
         }
 
-        try {
-            uri = URLUtil.urlDecode(uri, "utf-8");
-        } catch (UnsupportedEncodingException e) { }
+        // Spaces are not always decoded by the container:
+        uri = uri.replaceAll("%20", " ");
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("Received request for URI: '" + requestedURI
+                         + "', mapped to resource URI: '" + uri + "'");
+        }
         return uri;
     }
 

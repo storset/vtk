@@ -123,11 +123,11 @@ public class URLUtil {
         while (tokenizer.hasMoreTokens()) {
             String s = tokenizer.nextToken();
             elements.add(s);
-            String path = "";
+            StringBuffer path = new StringBuffer();
             for (Iterator i = elements.iterator(); i.hasNext();) {
-                path += "/" + (String) i.next();
+                path.append("/").append((String) i.next());
             }
-            incremental.add(path);
+            incremental.add(path.toString());
         }
         
         incremental.add(0, "/");
@@ -179,16 +179,15 @@ public class URLUtil {
         }
 
         String[] path = splitUri(uri);
-        String result = "";
+        StringBuffer result = new StringBuffer();
         
         for (int i = 1; i < path.length; i++) {
 
-            result += "/";
-
-            result += URLDecoder.decode(path[i], encoding);
+            result.append("/");
+            result.append(URLDecoder.decode(path[i], encoding));
         }
 
-        return result;
+        return result.toString();
     }
 
 
@@ -251,6 +250,7 @@ public class URLUtil {
             result.append("/");
         }
         
+        // Force hex '%20' instead of '+' as space representation:
         return result.toString().replaceAll("\\+", "%20");
     }
 

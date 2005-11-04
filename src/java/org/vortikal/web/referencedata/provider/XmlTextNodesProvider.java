@@ -54,6 +54,7 @@ import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceUnlinkableException;
 
 
 public class XmlTextNodesProvider
@@ -111,7 +112,7 @@ public class XmlTextNodesProvider
         
         if (token == null && principal == null) {
             if ( logger.isDebugEnabled() )
-                logger.debug("'token' and 'principal' are NULL (meaning current user is not authenticated)");
+                logger.debug("'token' and 'principal' are NULL which means current user is not authenticated");
         }
         
         if ( logger.isDebugEnabled() )
@@ -145,8 +146,8 @@ public class XmlTextNodesProvider
             }
         } catch (AuthenticationException ae) {
             if( logger.isDebugEnabled() )
-                logger.debug("AuthenticationException (as current user is not authenticated) when fetching '" +
-                             docUri + "' from repository was properly handled"); 
+                logger.debug("AuthenticationException when fetching '" + docUri + "' from repository, " +
+                             "as current user is not authenticated, was properly handled"); 
         } catch (Exception e) {
             logger.error( "Unhandled exception when trying to extract element(s) from the DOM", e);
         }
@@ -157,14 +158,21 @@ public class XmlTextNodesProvider
         // authenticated to access these webpages)
         try {
             if (this.editService != null) {
+                /**
+                 * FIXME: Er feil her (se log hos Eirik)
+                 */
                 String url = this.editService.constructLink(docResource, principal);
                 if (url != null)
                     data.put("editUrl", url);
             }
         } catch (AuthenticationException ae) {
             if( logger.isDebugEnabled() )
-                logger.debug("AuthenticationException (as current user is not authenticated) when " +
-                             "generating 'editUrl' link was properly handled");
+                logger.debug("AuthenticationException when generating 'editUrl' link, as current user " +
+                             "is not authenticated, was properly handled");
+        } catch (ServiceUnlinkableException sue) {
+            if( logger.isDebugEnabled() )
+                logger.debug("ServiceUnlinkableException, as current user is not authorized to " +
+                             "access resource '" + docResource.getURI() + "', was properly handled" );
         } catch (Exception e) {
             logger.error("Unhandled exception when trying to generating 'editUrl' link", e);
         }

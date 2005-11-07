@@ -578,6 +578,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (dest != null) {
             dest.delete(principal, roleManager);
+            context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
+                    dest instanceof Collection));
+
         }
 
         try {

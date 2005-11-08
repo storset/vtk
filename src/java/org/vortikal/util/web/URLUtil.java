@@ -34,9 +34,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
-
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -277,12 +279,48 @@ public class URLUtil {
     
     
     /**
+     * Splits the request query string into a set of (name, value)
+     * pairs.
+     *
+     * @param request the servlet request
+     * @return the (name, value) map
+     */
+    public static Map splitQueryString(HttpServletRequest request) {
+        Map queryMap = new HashMap();
+        String queryString = request.getQueryString();
+
+        if (queryString != null) {
+            if (queryString.startsWith("?")) {
+                queryString = queryString.substring(1);
+            }
+            String[] pairs = queryString.split("&");
+            for (int i = 0; i < pairs.length; i++) {
+                if (pairs[i].length() == 0) {
+                    continue;
+                }
+                int equalsIdx = pairs[i].indexOf("=");
+                if (equalsIdx == -1) {
+                    queryMap.put(pairs[i], "");
+                } else {
+                    String key = pairs[i].substring(0, equalsIdx);
+                    String value = pairs[i].substring(equalsIdx + 1);
+                    queryMap.put(key, value);
+                }
+            }
+        }
+        return queryMap;
+    }
+    
+
+
+    /**
      * Return parent of given url
      * @param String url
      * @return parent url if it exists, or NULL if invalid argument   
      */
-    private String getParentURL( String url ) {
-        // url is root or has no parent or child-url is empty (e.g. link on the form "parent-url/")
+    private String getParentURL(String url) {
+        // url is root or has no parent or child-url is empty
+        // (e.g. link on the form "parent-url/")
         if( url.lastIndexOf("/") == 0 
          || url.lastIndexOf("/") == -1 
          || "".equals( url.substring((url.lastIndexOf("/"))+1, url.length()) ) )
@@ -290,4 +328,5 @@ public class URLUtil {
         else
             return url.substring( 0, url.lastIndexOf("/") );
     }
+
 }

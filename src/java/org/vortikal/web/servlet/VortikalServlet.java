@@ -64,21 +64,28 @@ import org.vortikal.web.ErrorHandler;
 import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
+import org.vortikal.web.RequestFilter;
+import org.vortikal.web.StandardRequestFilter;
 import org.vortikal.web.service.Service;
 
 
 /**
- * Subclass of {@link
- * org.springframework.web.servlet.DispatcherServlet} in the Spring
- * framework.  Overrides the <code>doService</code> method to support
- * other request types than GET and POST (support for WebDAV methods,
- * such as PUT, PROPFIND, etc.).
+ * Subclass of {@link DispatcherServlet} in the Spring framework.
+ * Overrides the <code>doService</code> method to support other
+ * request types than <code>GET</code> and <code>POST</code> (support
+ * for WebDAV methods, such as <code>PUT</code>,
+ * <code>PROPFIND</code>, etc.).
  *
- * <p>The servlet is also responsible for creating and disposing of mapping and
- * request contexts implementing the {@link org.vortikal.web.ContextInitializer}
- * interface.  Currently, there are two such context initializers: the
- * {@link SecurityInitializer} and the {@link RequestContextInitializer}
- * classes.
+ * <p>If a {@link RequestFilter} is configured in the bean context
+ * under the name <code>requestFilter</code>, it is invoked first on
+ * every request. If no such bean is configured, the standard {@link
+ * StandardRequestFilter} is invoked.
+ *
+ * <p>The servlet is also responsible for creating and disposing of
+ * mapping and request contexts implementing the {@link
+ * org.vortikal.web.ContextInitializer} interface.  Currently, there
+ * are two such context initializers: the {@link SecurityInitializer}
+ * and the {@link RequestContextInitializer} classes.
  *
  * <p>The security innitializer takes care of checking requests for
  * authentication credentials, and if present, authenticating users,
@@ -119,11 +126,14 @@ public class VortikalServlet extends DispatcherServlet {
     private static final String SECURITY_INITIALIZER_BEAN_NAME = "securityInitializer";
     private static final String REQUEST_CONTEXT_INITIALIZER_BEAN_NAME = "requestContextInitializer";
     private static final String REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME = "repositoryContextInitializer";
+    private static final String REQUEST_FILTER_BEAN_NAME = "requestFilter";
+    
     
     private Log logger = LogFactory.getLog(this.getClass().getName());
     private Log requestLogger = LogFactory.getLog(this.getClass().getName() + ".Request");
     private Log errorLogger = LogFactory.getLog(this.getClass().getName() + ".Error");
 
+    private RequestFilter requestFilter = new StandardRequestFilter();
     private SecurityInitializer securityInitializer;
     private RepositoryContextInitializer repositoryContextInitializer;
     private RequestContextInitializer requestContextInitializer;
@@ -159,6 +169,7 @@ public class VortikalServlet extends DispatcherServlet {
     protected void initFrameworkServlet()
         throws ServletException, BeansException {
         super.initFrameworkServlet();
+        initRequestFilter();
         initSecurityInitializer();
         initRequestContextInitializer();
         initRepositoryContextInitializer();
@@ -170,8 +181,8 @@ public class VortikalServlet extends DispatcherServlet {
     private void initSecurityInitializer() {
         Object bean = getWebApplicationContext().getBean(SECURITY_INITIALIZER_BEAN_NAME);
         if (bean != null && ! (bean instanceof SecurityInitializer)) {
-            throw new BeanNotOfRequiredTypeException("The bean name " + 
-                    SECURITY_INITIALIZER_BEAN_NAME + " is reserved", 
+            throw new BeanNotOfRequiredTypeException("The bean name '" + 
+                    SECURITY_INITIALIZER_BEAN_NAME + "' is reserved", 
                     SecurityInitializer.class, bean.getClass());
         }
         logger.info("Security initializer " + bean + " set up successfully");
@@ -184,8 +195,8 @@ public class VortikalServlet extends DispatcherServlet {
             REQUEST_CONTEXT_INITIALIZER_BEAN_NAME);
         
         if (bean != null && ! (bean instanceof RequestContextInitializer)) {
-            throw new BeanNotOfRequiredTypeException("The bean name " + 
-                    REQUEST_CONTEXT_INITIALIZER_BEAN_NAME + " is reserved", 
+            throw new BeanNotOfRequiredTypeException("The bean name '" + 
+                    REQUEST_CONTEXT_INITIALIZER_BEAN_NAME + "' is reserved", 
                     RequestContextInitializer.class, bean.getClass());
         }
         logger.info("Request context initializer " + bean + " set up successfully");
@@ -207,6 +218,25 @@ public class VortikalServlet extends DispatcherServlet {
     }
     
     
+    private void initRequestFilter() {
+
+        Object bean = null;
+        try {
+            bean = getWebApplicationContext().getBean(REQUEST_FILTER_BEAN_NAME);
+        } catch (Exception e) { 
+            return;
+        }
+
+        if (bean != null && ! (bean instanceof RequestFilter)) {
+            throw new BeanNotOfRequiredTypeException(
+                REQUEST_FILTER_BEAN_NAME, 
+                RequestFilter.class, bean.getClass());
+        }
+        this.requestFilter = (RequestFilter) bean;
+        logger.info("Request filter " + bean + " set up successfully");
+    }
+
+
     private void initErrorHandlers() {
         Map handlers = getWebApplicationContext().getBeansOfType(
             ErrorHandler.class, false, false);
@@ -311,10 +341,17 @@ public class VortikalServlet extends DispatcherServlet {
 
             try {
 
+                if (this.requestFilter != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Running request filter: " + this.requestFilter);
+                    }
+                    request = this.requestFilter.filterRequest(request);
+                }
+
                 this.repositoryContextInitializer.createContext(request);
 
-                if (securityInitializer != null
-                        && !securityInitializer.createContext(request, responseWrapper)) {
+                if (this.securityInitializer != null
+                    && !this.securityInitializer.createContext(request, responseWrapper)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Request " + request + " handled by " +
                                 "security initializer (authentication challenge)");
@@ -322,8 +359,8 @@ public class VortikalServlet extends DispatcherServlet {
                     return;
                 }
 
-                if (requestContextInitializer != null) {
-                    requestContextInitializer.createContext(request);
+                if (this.requestContextInitializer != null) {
+                    this.requestContextInitializer.createContext(request);
                 }
                 
                 proceedService = checkLastModified(request, responseWrapper);

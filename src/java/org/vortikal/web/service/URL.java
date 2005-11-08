@@ -31,14 +31,13 @@
 package org.vortikal.web.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.web.URLUtil;
-import java.util.Iterator;
 
 
 /**
@@ -51,14 +50,13 @@ import java.util.Iterator;
  */
 public class URL {
 
-    private static Log logger = LogFactory.getLog(URL.class);
-    
     private String protocol = null;
     private String host = null;
     private Integer port = null;
     //private String authority = null;
     //private String userInfo = null;
     private String path = null;
+    private String characterEncoding = "utf-8";
 
     private List parameterNames = new ArrayList();
     private List parameterValues = new ArrayList();
@@ -138,19 +136,34 @@ public class URL {
     
     
     public void addParameter(String name, String value) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Adding parameter: " + name + "=" + value);
-        }
         this.parameterNames.add(name);
         this.parameterValues.add(value);
     }
     
+
+    public void removeParameter(String name) {
+        int index = this.parameterNames.indexOf(name);
+        if (index == -1) {
+            return;
+        }
+        this.parameterNames.remove(index);
+        this.parameterValues.remove(index);
+    }
+    
+
+    public void clearParameters() {
+        this.parameterNames.clear();
+        this.parameterValues.clear();
+    }
+    
+
     public String getParameter(String parameterName) {
         if (parameterNames.contains(parameterName))
             return (String)this.parameterValues.get(parameterNames.indexOf(parameterName));
         return null;
     }
     
+
     public String getRef() {
         return this.ref;
     }
@@ -160,6 +173,18 @@ public class URL {
         this.ref = ref;
     }
     
+
+    /**
+     * Sets the character encoding used when URL-encoding the path.
+     */
+    public void setCharacterEncoding(String characterEncoding) {
+        if (characterEncoding == null) {
+            throw new IllegalArgumentException("Character encoding must be specified");
+        }
+        java.nio.charset.Charset.forName(characterEncoding);
+        this.characterEncoding = characterEncoding;
+    }
+
 
     public String toString() {
         StringBuffer url = new StringBuffer();
@@ -172,16 +197,16 @@ public class URL {
                 url.append(":").append(this.port.intValue());
             }
         }
-        url.append(URLUtil.urlEncode(this.path));
-                
+        try {
+            url.append(URLUtil.urlEncode(this.path, this.characterEncoding));
+        } catch (java.io.UnsupportedEncodingException e) {
+            // Ignore, this.characterEncoding is supposed to be valid.
+        }
+        
         if (!this.parameterNames.isEmpty()) {
             Map parameters = new LinkedHashMap();
             
             for (int i = 0; i < parameterNames.size(); i++) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting parameter: " + parameterNames.get(i) + "="
-                                + parameterValues.get(i));
-                }
                 parameters.put(parameterNames.get(i), parameterValues.get(i));
             }
 
@@ -201,4 +226,41 @@ public class URL {
         return url.toString();
     }
     
+
+
+    /**
+     * Utility method to create a URL from a servlet request.
+     *
+     * @param request the servlet request
+     * @return the generated URL
+     */
+    public static URL create(HttpServletRequest request) {
+
+        String requestURL = request.getRequestURL().toString();
+        int i = requestURL.indexOf("://") + 3;
+        int j = requestURL.indexOf("/", i);
+        String path = request.getRequestURI();
+        if (path == null || "".equals(path)) path = "/";
+
+        String host = request.getServerName();
+        int port = request.getServerPort();
+
+        URL url = new URL("http", host, path);
+        if (request.isSecure()) {
+            url.setProtocol("https");
+        }
+
+        Map queryStringMap = URLUtil.splitQueryString(request);
+
+        for (Iterator iter = queryStringMap.keySet().iterator(); iter.hasNext();) {
+            String key = (String) iter.next();
+            String value = (String) queryStringMap.get(key);
+            url.addParameter(key, value);
+        }
+        return url;
+    }
+    
+
+
+
 }

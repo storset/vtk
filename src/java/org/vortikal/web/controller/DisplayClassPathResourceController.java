@@ -66,7 +66,7 @@ public class DisplayClassPathResourceController
   implements Controller, LastModified, InitializingBean, ApplicationContextAware {
 
     private static final String defaultCharacterEncoding = "utf-8";
-    private static Log logger = LogFactory.getLog(DisplayClassPathResourceController.class);
+    private Log logger = LogFactory.getLog(this.getClass());
     private String basePath;
     private String uriPrefix;
     private ApplicationContext applicationContext;
@@ -95,6 +95,12 @@ public class DisplayClassPathResourceController
 
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+
+        if (!"GET".equals(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return null;
+        }
+
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
@@ -126,13 +132,15 @@ public class DisplayClassPathResourceController
                 outStream.write(buffer, 0, n);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("Successfully served resource: " + resource + " from path: " + path);
+                logger.debug("Successfully served resource: " + resource
+                             + " from path: " + path);
             }
 
         } catch (Exception e) {
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Unable to serve resource: " + resource + " from path: " + path, e);
+                logger.debug("Unable to serve resource: " + resource
+                             + " from path: " + path, e);
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
 
@@ -146,6 +154,10 @@ public class DisplayClassPathResourceController
 
     public long getLastModified(HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
+        
+        if (!"GET".equals(request.getMethod())) {
+            return -1;
+        }
 
         String uri = requestContext.getResourceURI();
         if (this.uriPrefix != null) {

@@ -88,19 +88,13 @@ public class RequestContextInitializer
 
     private String trustedToken;
     private Repository repository;
-    private List uriPrefixes = new ArrayList();
     
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
  
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
-    }
-
-    public void setUriPrefixes(List uriPrefixes) {
-        this.uriPrefixes = uriPrefixes;
     }
 
     public void setApplicationContext(ApplicationContext context) {
@@ -147,6 +141,7 @@ public class RequestContextInitializer
 
 
     public void createContext(HttpServletRequest request) throws Exception {
+
         String uri = getResourceURI(request);
         Resource resource = null;
 
@@ -253,8 +248,8 @@ public class RequestContextInitializer
                 return true;
         }
         
-        if (logger.isInfoEnabled()) {
-            logger.info("Service matching produced result: " + service.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Service matching produced result: " + service.getName());
         }
 
         RequestContext.setRequestContext(
@@ -271,32 +266,14 @@ public class RequestContextInitializer
     }
     
 
-    private String getResourceURI(HttpServletRequest req) {
+    private String getResourceURI(HttpServletRequest req) throws Exception {
+
         String uri = req.getRequestURI();
-        String requestedURI = uri;
-
-        for (Iterator i = this.uriPrefixes.iterator(); i.hasNext();) {
-            String prefix = (String) i.next();
-            if (uri.startsWith(prefix)) {
-                uri = uri.substring(prefix.length());
-                break;
-            }
+        if (uri == null) {
+            uri = "/";
         }
-
-	if (uri == null || uri.equals("")){
-            uri="/";
-	}
-
         if (uri.endsWith("/") && !uri.equals("/")) {
             uri = uri.substring(0, uri.length() - 1);
-        }
-
-        // Spaces are not always decoded by the container:
-        uri = uri.replaceAll("%20", " ");
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Received request for URI: '" + requestedURI
-                         + "', mapped to resource URI: '" + uri + "'");
         }
         return uri;
     }

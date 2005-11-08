@@ -253,8 +253,8 @@ public class RequestContextInitializer
                 return true;
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Service matching produced result: " + service.getName());
+        if (logger.isInfoEnabled()) {
+            logger.info("Service matching produced result: " + service.getName());
         }
 
         RequestContext.setRequestContext(

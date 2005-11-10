@@ -64,8 +64,8 @@ import org.vortikal.web.ErrorHandler;
 import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
-import org.vortikal.web.RequestFilter;
-import org.vortikal.web.StandardRequestFilter;
+import org.vortikal.web.filter.RequestFilter;
+import org.vortikal.web.filter.StandardRequestFilter;
 import org.vortikal.web.service.Service;
 
 

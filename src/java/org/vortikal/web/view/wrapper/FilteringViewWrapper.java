@@ -77,7 +77,6 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  *   it was not specified by the <code>Content-Type</code> header of
  *   the wrapped view. Default is <code>false</code>.
  *   <li><code>appendCharacterEncodingToContentType</code> (boolean)
- *   <li><code>appendCharacterEncodingToContentType</code> (boolean)
  *   - if set to <code>false</code>, no <code>charset</code> parameter
  *   will be added to the <code>Content-Type</code> header set by this
  *   view. Default is <code>true</code>.
@@ -87,6 +86,8 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  *   <code>false</code>, all exceptions are caught and re-thrown
  *   wrapped inside a {@link ViewWrapperException}. The default value
  *   is <code>true</code>.
+ *   <li><code>forcedOutputEncoding</code> - if this option is set,
+ *   the output will be written using that character encoding.
  * </ul>
  * 
  * @see TextContentFilter
@@ -98,12 +99,18 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
     private boolean propagateExceptions = true;
     private TextContentFilter[] contentFilters;
     private ReferenceDataProvider[] referenceDataProviders;
+    private String forcedOutputEncoding;
     private boolean guessCharacterEncodingFromContent = false;
     private boolean appendCharacterEncodingToContentType = true;
 
 
     public void setContentFilters(TextContentFilter[] contentFilters) {
         this.contentFilters = contentFilters;
+    }
+
+
+    public void setForcedOutputEncoding(String forcedOutputEncoding) {
+        this.forcedOutputEncoding = forcedOutputEncoding;
     }
 
 
@@ -226,8 +233,12 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
             }
         }
 
+        if (this.forcedOutputEncoding != null) {
+            characterEncoding = this.forcedOutputEncoding;
+        }
+
         if (this.appendCharacterEncodingToContentType
-                && ContentTypeHelper.isXMLContentType(contentType)) {
+                && ContentTypeHelper.isTextContentType(contentType)) {
 
             contentType = contentType + ";charset=" + characterEncoding;
         }

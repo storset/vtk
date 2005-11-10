@@ -10,6 +10,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Added a new interface: RequestFilter for performing various
+        pre-processing tasks on servlet requests.
+      </action>
+
+      <action dev="gormap" type="add">
         Added assertion for matching on principals and groups.
       </action>
 

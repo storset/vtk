@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web;
+package org.vortikal.web.filter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -40,48 +40,32 @@ import org.vortikal.util.web.URLUtil;
 
 
 /**
- * Request URI processor that strips away certain prefixes from URIs.
- *
- * <p>Configurable JavaBean properties:
- * <ul>
- *   <li><code>uriPrefixes</code> - a list of prefixes to match and strip away
- * </ul>
+ * Standard request filter. Ensures that the URI is not empty or
+ * <code>null</code>.
  */
-public class URIPrefixRequestFilter implements RequestFilter, InitializingBean {
+public class StandardRequestFilter implements RequestFilter {
 
-    private String[] uriPrefixes;
 
-    public void setUriPrefixes(String[] uriPrefixes) {
-        this.uriPrefixes = uriPrefixes;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.uriPrefixes == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'uriPrefixes' not specified");
-        }
-    }
-    
     public HttpServletRequest filterRequest(HttpServletRequest request) {
-        return new URIPrefixRequestWrapper(request, uriPrefixes);
+        return new StandardRequestWrapper(request);
     }
     
-    private class URIPrefixRequestWrapper extends HttpServletRequestWrapper {
+    private class StandardRequestWrapper extends HttpServletRequestWrapper {
 
         private String uri;
         
-        public URIPrefixRequestWrapper(HttpServletRequest request,
-                                         String[] uriPrefixes) {
+        public StandardRequestWrapper(HttpServletRequest request) {
+
             super(request);
-            String uri = request.getRequestURI();
-            for (int i = 0; i < uriPrefixes.length; i++) {
-                if (uri.startsWith(uriPrefixes[i])) {
-                    uri = uri.substring(uriPrefixes[i].length());
-                    break;
-                }
+            String requestURI = request.getRequestURI();
+
+            if (requestURI == null || "".equals(requestURI)) {
+                requestURI = "/";
             }
-            
-            this.uri = uri;
+
+            // Spaces are not always decoded by the container:
+            requestURI = requestURI.replaceAll("%20", " ");
+            this.uri = requestURI;
         }
         
         public String getRequestURI() {

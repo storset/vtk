@@ -28,52 +28,24 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web;
+package org.vortikal.web.filter;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-
-import org.vortikal.util.web.URLUtil;
 
 
 /**
- * Standard request filter. Ensures that the URI is not empty or
- * <code>null</code>.
+ * Interface for filtering the request at request context
+ * initialization time. Utilized by the {@link
+ * RequestContextInitializer}.
  */
-public class StandardRequestFilter implements RequestFilter {
+public interface RequestFilter {
 
+    /**
+     * Perform filtering on the request.
+     *
+     * @param request the original request
+     * @return the filtered request
+     */
+    public HttpServletRequest filterRequest(HttpServletRequest request);
 
-    public HttpServletRequest filterRequest(HttpServletRequest request) {
-        return new StandardRequestWrapper(request);
-    }
-    
-    private class StandardRequestWrapper extends HttpServletRequestWrapper {
-
-        private String uri;
-        
-        public StandardRequestWrapper(HttpServletRequest request) {
-
-            super(request);
-            String requestURI = request.getRequestURI();
-
-            if (requestURI == null || "".equals(requestURI)) {
-                requestURI = "/";
-            }
-
-            // Spaces are not always decoded by the container:
-            requestURI = requestURI.replaceAll("%20", " ");
-            this.uri = requestURI;
-        }
-        
-        public String getRequestURI() {
-            return this.uri;
-        }
-    }
-        
 }
-    
-
-

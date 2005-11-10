@@ -28,52 +28,68 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web;
+package org.vortikal.web.filter;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.vortikal.util.web.URLUtil;
+
 
 /**
- * Request filter for aggregating other request filters. The
- * aggregated filters are run in sequence.
+ * Request URI processor that strips away certain prefixes from URIs.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>filters</code> - the list of aggregated {@link
- *   RequestFilter filters}
+ *   <li><code>uriPrefixes</code> - a list of prefixes to match and strip away
  * </ul>
  */
-public class MultiRequestFilter implements InitializingBean, RequestFilter {
+public class URIPrefixRequestFilter implements RequestFilter, InitializingBean {
 
-    private RequestFilter[] filters;
+    private String[] uriPrefixes;
 
-
-    public void setFilters(RequestFilter[] filters) {
-        this.filters = filters;
+    public void setUriPrefixes(String[] uriPrefixes) {
+        this.uriPrefixes = uriPrefixes;
     }
-    
 
     public void afterPropertiesSet() throws Exception {
-        if (this.filters == null) {
+        if (this.uriPrefixes == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'filters' not specified");
+                "JavaBean property 'uriPrefixes' not specified");
         }
-    }
-
-    public HttpServletRequest filterRequest(HttpServletRequest request) {
-        for (int i = 0; i < this.filters.length; i++) {
-            request = this.filters[i].filterRequest(request);
-        }
-        return request;
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
-        sb.append(": filters = ").append(java.util.Arrays.asList(this.filters));
-        return sb.toString();
     }
     
+    public HttpServletRequest filterRequest(HttpServletRequest request) {
+        return new URIPrefixRequestWrapper(request, uriPrefixes);
+    }
+    
+    private class URIPrefixRequestWrapper extends HttpServletRequestWrapper {
+
+        private String uri;
+        
+        public URIPrefixRequestWrapper(HttpServletRequest request,
+                                         String[] uriPrefixes) {
+            super(request);
+            String uri = request.getRequestURI();
+            for (int i = 0; i < uriPrefixes.length; i++) {
+                if (uri.startsWith(uriPrefixes[i])) {
+                    uri = uri.substring(uriPrefixes[i].length());
+                    break;
+                }
+            }
+            
+            this.uri = uri;
+        }
+        
+        public String getRequestURI() {
+            return this.uri;
+        }
+    }
+        
 }
+    
+
+

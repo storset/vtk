@@ -28,24 +28,52 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web;
+package org.vortikal.web.filter;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
 
 /**
- * Interface for filtering the request at request context
- * initialization time. Utilized by the {@link
- * RequestContextInitializer}.
+ * Request filter for aggregating other request filters. The
+ * aggregated filters are run in sequence.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>filters</code> - the list of aggregated {@link
+ *   RequestFilter filters}
+ * </ul>
  */
-public interface RequestFilter {
+public class MultiRequestFilter implements InitializingBean, RequestFilter {
 
-    /**
-     * Perform filtering on the request.
-     *
-     * @param request the original request
-     * @return the filtered request
-     */
-    public HttpServletRequest filterRequest(HttpServletRequest request);
+    private RequestFilter[] filters;
 
+
+    public void setFilters(RequestFilter[] filters) {
+        this.filters = filters;
+    }
+    
+
+    public void afterPropertiesSet() throws Exception {
+        if (this.filters == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'filters' not specified");
+        }
+    }
+
+    public HttpServletRequest filterRequest(HttpServletRequest request) {
+        for (int i = 0; i < this.filters.length; i++) {
+            request = this.filters[i].filterRequest(request);
+        }
+        return request;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": filters = ").append(java.util.Arrays.asList(this.filters));
+        return sb.toString();
+    }
+    
 }

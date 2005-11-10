@@ -44,9 +44,10 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.io.BoundedInputStream;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.filter.RequestFilter;
+import org.vortikal.web.filter.UploadLimitInputStreamFilter;
 import org.vortikal.web.RequestContext;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -59,7 +60,8 @@ public class PutController extends AbstractWebdavController {
 
     private long maxUploadSize = -1;
 
-
+    private RequestFilter[] requestFilters;
+    
 
     public void setMaxUploadSize(long maxUploadSize) {
 
@@ -71,11 +73,26 @@ public class PutController extends AbstractWebdavController {
     }
     
 
+    public void setRequestFilters(RequestFilter[] requestFilters) {
+        this.requestFilters = requestFilters;
+    }
+    
 
 
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
          
+        if (this.maxUploadSize > 0) {
+            request = new UploadLimitInputStreamFilter(this.maxUploadSize).
+                filterRequest(request);;
+        }
+
+        if (this.requestFilters != null) {
+            for (int i = 0; i < this.requestFilters.length; i++) {
+                request = this.requestFilters[i].filterRequest(request);
+            }
+        }
+
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -144,19 +161,33 @@ public class PutController extends AbstractWebdavController {
                 model.put(WebdavConstants.WEBDAVMODEL_CREATED_RESOURCE, resource);
             }
 
-            InputStream inStream =
-                new BoundedInputStream(request.getInputStream(), this.maxUploadSize);
+            InputStream inStream = request.getInputStream();
+//                 new BoundedInputStream(request.getInputStream(), this.maxUploadSize);
             repository.storeContent(token, resource.getURI(), inStream);
 
             // FIXME: Properties may change while storing content?
             resource = repository.retrieve(token, resource.getURI(), false);
-
+            boolean store = false;
+            
             String contentType = getContentType(request, resource);
             if (contentType != null && !contentType.equals(resource.getContentType())) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Setting content-type: " + contentType);
                 }
                 resource.setContentType(contentType);
+                store = true;
+            }
+
+            String characterEncoding = request.getCharacterEncoding();
+            if (characterEncoding != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Setting character encoding: " + characterEncoding);
+                }
+                resource.setCharacterEncoding(characterEncoding);
+                store = true;
+            }
+
+            if (store) {
                 repository.store(token, resource);
             }
 
@@ -223,6 +254,17 @@ public class PutController extends AbstractWebdavController {
 
    
     protected String getContentType(HttpServletRequest request, Resource resource) {
+        String contentType = HttpUtil.getContentType(request);
+        
+        if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
+            contentType = MimeHelper.map(resource.getName());
+        }
+        return contentType;
+    }
+
+
+    /*
+    protected String getContentTypeOLD(HttpServletRequest request, Resource resource) {
         String contentType = request.getHeader("Content-Type");
 
         if (contentType == null || contentType.trim().equals("")) {
@@ -238,6 +280,6 @@ public class PutController extends AbstractWebdavController {
         
         return contentType;
     }
-    
+    */
 
 }

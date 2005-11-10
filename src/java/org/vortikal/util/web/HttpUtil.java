@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -135,15 +136,16 @@ public class HttpUtil {
      * 'charset' parameter.
      *
      * @param headerValue the value part of a HTTP 'Content-Type:' header.
-     * @return a <code>String</code>
+     * @return the content type, or <code>null</code> if there is no
+     * such header, or if it is unparseable.
      */
-    public static String getMimeTypeFromContentTypeHeader(String headerValue) {
+    public static String getContentType(HttpServletRequest request) {
+        String headerValue = request.getHeader("Content-Type");
         if (headerValue == null) {
-            throw new NullPointerException("headerValue is null");
+            return null;
         }
         if (!headerValue.matches("\\s*\\w+/\\w+(;charset=[^\\s]+)?")) {
-            throw new IllegalArgumentException("Header value '" + headerValue +
-                                               "' is not a valid 'Content-Type' value");
+            return null;
         }
         if (headerValue.indexOf(";") == -1) {
             return headerValue.trim();

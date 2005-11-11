@@ -120,5 +120,12 @@ public class DeleteResourceController extends AbstractController implements Init
         this.resourcePath = resourcePath;
     }
     
+    protected Repository getRepository() {
+        return repository;
+    }
+    
+    protected String getTrustedToken() {
+        return trustedToken;
+    }
 
 }

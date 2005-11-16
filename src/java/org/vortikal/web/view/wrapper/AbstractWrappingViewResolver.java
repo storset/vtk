@@ -177,8 +177,8 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
         public String toString() {
             StringBuffer sb = new StringBuffer();
             sb.append(this.getClass().getName()).append(":");
-            sb.append("view = ").append(this.view);
-            sb.append("viewWrapper = ").append(this.viewWrapper);
+            sb.append(" [view = ").append(this.view);
+            sb.append(", viewWrapper = ").append(this.viewWrapper).append("]");
             return sb.toString();
         }
 

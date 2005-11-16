@@ -32,28 +32,46 @@ package org.vortikal.web.servlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+
+import org.vortikal.util.io.BoundedOutputStream;
 
 
 
 /**
  * A response wrapper that buffers the content written to it. Status
- * code and headers are passed through to the wrapped response.
+ * code and headers are passed through to the wrapped response. An
+ * optional limit can be set on the buffer size.
  */
 public class BufferedResponseWrapper extends HttpServletResponseWrapper {
 
+    private long maxBufferSize = -1;
     private ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
     private String contentType = null;
     private String characterEncoding = null;    
     private boolean isCommitted = false;
 
 
+    /**
+     * Creates a buffered response wrapper with no limit on the buffer size.
+     * @param resp the wrapped response
+     */
     public BufferedResponseWrapper(HttpServletResponse resp) {
         super(resp);
+    }
+
+    /**
+     * Creates a buffered response wrapper with a limited buffer size.
+     * @param resp the wrapped response
+     * @param maxBufferSize the buffer size limit
+     */
+    public BufferedResponseWrapper(HttpServletResponse resp, long maxBufferSize) {
+        super(resp);
+        this.maxBufferSize = maxBufferSize;
     }
 
 
@@ -109,8 +127,14 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
             throw new IllegalStateException(
                 "getWriter() has already been called on this response.");
         }
+        
+        OutputStream outputStream = this.bufferStream;
+        if (this.maxBufferSize > 0) {
+            outputStream = new BoundedOutputStream(outputStream, this.maxBufferSize);
+        }
+
         this.isCommitted = true;
-        return new ByteArrayServletOutputStream(bufferStream, this.getCharacterEncoding());
+        return new WrappedServletOutputStream(outputStream, this.getCharacterEncoding());
     }
 
 
@@ -119,9 +143,16 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
             throw new IllegalStateException(
                 "getOutputStream() has already been called on this response.");
         }
+
+        OutputStream outputStream = this.bufferStream;
+        if (this.maxBufferSize > 0) {
+            outputStream = new BoundedOutputStream(outputStream, this.maxBufferSize);
+        }
+
         this.isCommitted = true;
-        return new ByteArrayServletOutputStreamWriter(new ByteArrayServletOutputStream(
-                                            bufferStream, this.getCharacterEncoding()));
+        return new WrappedServletOutputStreamWriter(
+            new WrappedServletOutputStream(
+                outputStream, this.getCharacterEncoding()));
     }
     
 
@@ -131,247 +162,6 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
 
 
 
-    private class ByteArrayServletStreamWriter extends PrintWriter {
-        private ByteArrayServletOutputStream stream;
-        private Object error = null;
-        
-
-        public ByteArrayServletStreamWriter(ByteArrayServletOutputStream stream) {
-            super(stream);
-            this.stream = stream;
-        }
-        
-
-        public boolean checkError() {
-            return this.error == null;
-        }
-        
-
-        public void close() {
-        }
-        
-
-        public void flush() {
-        }
-        
-
-        public void print(boolean b) {
-            try {
-                stream.print(b);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(char c) {
-            try {
-                stream.print(c);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(char[] s) {
-            try {
-                stream.print(new String(s));
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(double d) {
-            try {
-                stream.print(d);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(float f) {
-            try {
-                stream.print(f);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(int i) {
-            try {
-                stream.print(i);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(long l) {
-            try {
-                stream.print(l);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(Object obj) {
-            try {
-                stream.print(obj.toString());
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void print(String s) {
-            try {
-                stream.print(s);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void println() {
-            try {
-                stream.println();
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-        
-        public void println(boolean x) {
-            try {
-                stream.println(x);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void println(char x) {
-            try {
-                stream.println(x);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void println(char[] x) {
-            try {
-                stream.println(new String(x));
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void println(double x) {
-            try {
-                stream.println(x);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-        
-        public void println(float x) {
-            try {
-                stream.println(x);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-        
-        public void println(int x) {
-            try {
-                stream.println(x);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-        
-        public void println(long x) {
-            try {
-                stream.println(x);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void println(Object x) {
-            try {
-                stream.println(x.toString());
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void println(String x) {
-            try {
-                stream.println(x);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-
-        public void write(char[] buf) {
-            try {
-                stream.print(new String(buf));
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-        
-        public void write(char[] buf,  int off,  int len) {
-            try {
-                stream.print(new String(buf, off, len));
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-        
-        public void write(int c) {
-            try {
-                stream.write(c);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-        
-        
-        public void write(String s) {
-            try {
-                stream.write(s.getBytes(stream.getCharacterEncoding()));
-            } catch (IOException e) {
-                this.error = e;
-            }
-            
-        }
-        
-        
-        public void write(String s, int off, int len) {
-            try {
-                stream.write(s.getBytes(stream.getCharacterEncoding()), off, len);
-            } catch (IOException e) {
-                this.error = e;
-            }
-        }
-    }
-    
     private void processContentTypeHeader(String value) {
         if (value.matches(".+/.+;.*charset.*=.+")) {
 

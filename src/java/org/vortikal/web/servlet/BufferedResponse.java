@@ -32,6 +32,7 @@ package org.vortikal.web.servlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,22 +40,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.vortikal.util.io.BoundedOutputStream;
 import org.vortikal.util.web.HttpUtil;
 
 
 
 /**
  * A HttpServletResponse implementation that buffers the content and
- * headers.
- *
+ * headers. An optional limit can be set on the buffer size.
  */
 public class BufferedResponse implements HttpServletResponse {
 
+    private long maxBufferSize = -1;
     private int status = 200;
     private String statusMessage = "OK";
     private ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
@@ -69,6 +70,24 @@ public class BufferedResponse implements HttpServletResponse {
     private boolean committed = false;
     
 
+    /**
+     * Creates a buffered response with no limit on the buffer size.
+     */
+    public BufferedResponse() {
+    }
+    
+
+    /**
+     * Creates a buffered response with a limited buffer size.
+     *
+     * @param maxBufferSize the maximum number of bytes that can be
+     * buffered in this response wrapper. A negative number means no
+     * limit.
+     */
+    public BufferedResponse(long maxBufferSize) {
+        this.maxBufferSize = maxBufferSize;
+    }
+    
     public String getContentType() {
         if (this.characterEncoding != null) {
             return this.contentType + ";charset=" + this.characterEncoding;
@@ -89,8 +108,6 @@ public class BufferedResponse implements HttpServletResponse {
     }
     
 
-    /* HttpServletResponse implementation */
-
     public String getCharacterEncoding() {
         if (this.characterEncoding == null) {
             return "iso-8859-1";
@@ -99,7 +116,7 @@ public class BufferedResponse implements HttpServletResponse {
     }
 
     public PrintWriter getWriter() throws IOException {
-        return new ByteArrayServletOutputStreamWriter(new ByteArrayServletOutputStream(
+        return new WrappedServletOutputStreamWriter(new WrappedServletOutputStream(
                                             bufferStream, this.getCharacterEncoding()));
     }
 
@@ -124,9 +141,13 @@ public class BufferedResponse implements HttpServletResponse {
     }
 
     public ServletOutputStream getOutputStream() throws IOException {
-        ServletOutputStream s = new ByteArrayServletOutputStream(this.bufferStream,
+        OutputStream outputStream = this.bufferStream;
+        if (this.maxBufferSize > 0) {
+            outputStream = new BoundedOutputStream(outputStream, this.maxBufferSize);
+        }
+        ServletOutputStream servletStream = new WrappedServletOutputStream(outputStream,
                                                 this.characterEncoding);
-        return s;
+        return servletStream;
     }
 
     public void setContentType(String contentType) {

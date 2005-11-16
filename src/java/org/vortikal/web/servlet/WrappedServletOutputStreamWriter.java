@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,12 +34,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 
-public class ByteArrayServletOutputStreamWriter extends PrintWriter {
-    private ByteArrayServletOutputStream stream;
+/**
+ * A writer for a {@link WrappedServletOutputStream}.
+ * 
+ */
+public class WrappedServletOutputStreamWriter extends PrintWriter {
+    private WrappedServletOutputStream stream;
     private Object error = null;
         
 
-    public ByteArrayServletOutputStreamWriter(ByteArrayServletOutputStream stream) {
+    public WrappedServletOutputStreamWriter(WrappedServletOutputStream stream) {
         super(stream);
         this.stream = stream;
     }
@@ -60,7 +64,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(boolean b) {
         try {
-            stream.print(b);
+            this.stream.print(b);
         } catch (IOException e) {
             this.error = e;
         }
@@ -69,7 +73,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(char c) {
         try {
-            stream.print(c);
+            this.stream.print(c);
         } catch (IOException e) {
             this.error = e;
         }
@@ -78,7 +82,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(char[] s) {
         try {
-            stream.print(new String(s));
+            this.stream.print(new String(s));
         } catch (IOException e) {
             this.error = e;
         }
@@ -87,7 +91,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(double d) {
         try {
-            stream.print(d);
+            this.stream.print(d);
         } catch (IOException e) {
             this.error = e;
         }
@@ -96,7 +100,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(float f) {
         try {
-            stream.print(f);
+            this.stream.print(f);
         } catch (IOException e) {
             this.error = e;
         }
@@ -105,7 +109,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(int i) {
         try {
-            stream.print(i);
+            this.stream.print(i);
         } catch (IOException e) {
             this.error = e;
         }
@@ -114,7 +118,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(long l) {
         try {
-            stream.print(l);
+            this.stream.print(l);
         } catch (IOException e) {
             this.error = e;
         }
@@ -123,7 +127,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(Object obj) {
         try {
-            stream.print(obj.toString());
+            this.stream.print(obj.toString());
         } catch (IOException e) {
             this.error = e;
         }
@@ -132,7 +136,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void print(String s) {
         try {
-            stream.print(s);
+            this.stream.print(s);
         } catch (IOException e) {
             this.error = e;
         }
@@ -141,7 +145,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void println() {
         try {
-            stream.println();
+            this.stream.println();
         } catch (IOException e) {
             this.error = e;
         }
@@ -150,7 +154,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void println(boolean x) {
         try {
-            stream.println(x);
+            this.stream.println(x);
         } catch (IOException e) {
             this.error = e;
         }
@@ -159,7 +163,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void println(char x) {
         try {
-            stream.println(x);
+            this.stream.println(x);
         } catch (IOException e) {
             this.error = e;
         }
@@ -168,7 +172,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void println(char[] x) {
         try {
-            stream.println(new String(x));
+            this.stream.println(new String(x));
         } catch (IOException e) {
             this.error = e;
         }
@@ -177,7 +181,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void println(double x) {
         try {
-            stream.println(x);
+            this.stream.println(x);
         } catch (IOException e) {
             this.error = e;
         }
@@ -186,7 +190,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void println(float x) {
         try {
-            stream.println(x);
+            this.stream.println(x);
         } catch (IOException e) {
             this.error = e;
         }
@@ -195,7 +199,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void println(int x) {
         try {
-            stream.println(x);
+            this.stream.println(x);
         } catch (IOException e) {
             this.error = e;
         }
@@ -204,7 +208,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void println(long x) {
         try {
-            stream.println(x);
+            this.stream.println(x);
         } catch (IOException e) {
             this.error = e;
         }
@@ -213,7 +217,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void println(Object x) {
         try {
-            stream.println(x.toString());
+            this.stream.println(x.toString());
         } catch (IOException e) {
             this.error = e;
         }
@@ -222,7 +226,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void println(String x) {
         try {
-            stream.println(x);
+            this.stream.println(x);
         } catch (IOException e) {
             this.error = e;
         }
@@ -231,7 +235,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
 
     public void write(char[] buf) {
         try {
-            stream.print(new String(buf));
+            this.stream.print(new String(buf));
         } catch (IOException e) {
             this.error = e;
         }
@@ -240,7 +244,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void write(char[] buf,  int off,  int len) {
         try {
-            stream.print(new String(buf, off, len));
+            this.stream.print(new String(buf, off, len));
         } catch (IOException e) {
             this.error = e;
         }
@@ -249,7 +253,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void write(int c) {
         try {
-            stream.write(c);
+            this.stream.write(c);
         } catch (IOException e) {
             this.error = e;
         }
@@ -258,7 +262,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void write(String s) {
         try {
-            stream.write(s.getBytes(stream.getCharacterEncoding()));
+            this.stream.write(s.getBytes(this.stream.getCharacterEncoding()));
         } catch (IOException e) {
             this.error = e;
         }
@@ -268,7 +272,7 @@ public class ByteArrayServletOutputStreamWriter extends PrintWriter {
         
     public void write(String s, int off, int len) {
         try {
-            stream.write(s.getBytes(stream.getCharacterEncoding()), off, len);
+            this.stream.write(s.getBytes(this.stream.getCharacterEncoding()), off, len);
         } catch (IOException e) {
             this.error = e;
         }

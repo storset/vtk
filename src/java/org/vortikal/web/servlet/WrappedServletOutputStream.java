@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,22 @@
  */
 package org.vortikal.web.servlet;
 
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 import javax.servlet.ServletOutputStream;
 
 
-public class ByteArrayServletOutputStream extends ServletOutputStream {
+/**
+ * A servlet output stream wrapper.
+ */
+public class WrappedServletOutputStream extends ServletOutputStream {
 
-    private ByteArrayOutputStream buffer;
+    private OutputStream out;
     private String characterEncoding;
         
-    public ByteArrayServletOutputStream(ByteArrayOutputStream buffer,
-                                        String characterEncoding) {
-        this.buffer = buffer;
+    public WrappedServletOutputStream(OutputStream out,
+                                      String characterEncoding) {
+        this.out = out;
         this.characterEncoding = characterEncoding;
     }
 
@@ -51,35 +54,35 @@ public class ByteArrayServletOutputStream extends ServletOutputStream {
     }
 
     public void print(boolean b) throws IOException {
-        buffer.write(String.valueOf(b).getBytes(characterEncoding));
+        this.out.write(String.valueOf(b).getBytes(characterEncoding));
     }
         
     public void print(char c) throws IOException {
-        buffer.write(String.valueOf(c).getBytes(characterEncoding));
+        this.out.write(String.valueOf(c).getBytes(characterEncoding));
     }
         
     public void print(int n) throws IOException {
-        buffer.write(String.valueOf(n).getBytes(characterEncoding));
+        this.out.write(String.valueOf(n).getBytes(characterEncoding));
     }
 
     public void print(long l) throws IOException {
-        buffer.write(String.valueOf(l).getBytes(characterEncoding));
+        this.out.write(String.valueOf(l).getBytes(characterEncoding));
     }
 
     public void print(String s) throws IOException {
-        buffer.write(s.getBytes(characterEncoding));
+        this.out.write(s.getBytes(characterEncoding));
     }
 
     public void print(float f) throws IOException {
-        buffer.write(String.valueOf(f).getBytes(characterEncoding));
+        this.out.write(String.valueOf(f).getBytes(characterEncoding));
     }
 
     public void print(double d) throws IOException {
-        buffer.write(String.valueOf(d).getBytes(characterEncoding));
+        this.out.write(String.valueOf(d).getBytes(characterEncoding));
     }
 
     public void println() throws IOException {
-        buffer.write("\r\n".getBytes(characterEncoding));
+        this.out.write("\r\n".getBytes(characterEncoding));
     }
 
     public void println(String s) throws IOException {
@@ -118,15 +121,15 @@ public class ByteArrayServletOutputStream extends ServletOutputStream {
     }
 
     public void write(int n) throws IOException {
-        buffer.write(n);
+        this.out.write(n);
     }
 
     public void write(byte[] b) throws IOException {
-        buffer.write(b);
+        this.out.write(b);
     }
 
     public void write(byte[] b, int off, int len) throws IOException {
-        buffer.write(b, off, len);
+        this.out.write(b, off, len);
     }
 
     public void close() throws IOException {

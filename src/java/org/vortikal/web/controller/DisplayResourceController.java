@@ -88,6 +88,9 @@ import org.vortikal.web.RequestContext;
  *       property to <code>true</code> means that the resource content
  *       cannot be cached by the client. Default is
  *       <code>false</code>.
+ *   <li><code>ignoreLastModifiedOnCollections</code> - wether or not to ignore the
+ *       resource's <code>lastModified</code> value when the resource is a collection.
+ *       Default is <code>false</code>.
  * </ul>
  * </p>
  *
@@ -120,6 +123,7 @@ public class DisplayResourceController
     private Set unsupportedResourceTypes = null;
     private boolean streamToString = false;
     private boolean ignoreLastModified = false;
+    private boolean ignoreLastModifiedOnCollections = false;
     
     public void setChildName(String childName) {
         this.childName = childName;
@@ -143,6 +147,11 @@ public class DisplayResourceController
 
     public void setIgnoreLastModified(boolean ignoreLastModified) {
         this.ignoreLastModified = ignoreLastModified;
+    }
+    
+
+    public void setIgnoreLastModifiedOnCollections(boolean ignoreLastModifiedOnCollections) {
+        this.ignoreLastModifiedOnCollections = ignoreLastModifiedOnCollections;
     }
     
 
@@ -246,9 +255,12 @@ public class DisplayResourceController
     public long getLastModified(HttpServletRequest request) {
 
         if (this.ignoreLastModified) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Ignoring last-modified value for request "
+                             + request.getRequestURI());
+            }
             return -1;
         }
-
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -260,7 +272,11 @@ public class DisplayResourceController
         if (childName != null) {
             uri = requestContext.getResourceURI();
             uri += (uri.equals("/")) ? childName : "/" + childName;
+        }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Getting last-modified value for resource "
+                         + uri);
         }
 
         try {
@@ -269,25 +285,41 @@ public class DisplayResourceController
 
         } catch (RepositoryException e) {
             // These exceptions are expected
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to get last-modified value for resource "
+                             + uri, e);
+            }
             return -1;
 
         } catch (AuthenticationException e) {
             // These exceptions are expected
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to get last-modified value for resource "
+                             + uri, e);
+            }
             return -1;
 
         } catch (Throwable t) {
             if (logger.isInfoEnabled()) {
                 logger.info(
-                    "Unable to get the last modified date for resource "
+                    "Unable to get the last-modified value for resource "
                     + uri, t);
             }
             return -1;
         }
         
-        if (resource.isCollection()) {
+        if (resource.isCollection() && this.ignoreLastModifiedOnCollections) {
+            logger.debug("Ignorig last-modified value for resource "
+                         + uri + ": resource is collection");
             return -1;
         }
-        
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Returning last-modified value for resource "
+                         + uri + ": " + resource.getLastModified());
+        }
+
+
         return resource.getLastModified().getTime();
     }
 

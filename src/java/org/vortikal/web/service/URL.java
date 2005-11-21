@@ -246,6 +246,7 @@ public class URL {
         int port = request.getServerPort();
 
         URL url = new URL("http", host, path);
+        url.setPort(new Integer(port));
         if (request.isSecure()) {
             url.setProtocol("https");
         }

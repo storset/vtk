@@ -2,12 +2,11 @@
 
 <project>
   <!-- the version of maven's project object model -->
-
   <pomVersion>3</pomVersion>
   <id>vortikal</id>
   <name>Vortikal</name>
   <groupId>vortikal</groupId>
-  <currentVersion>0.2-SNAPSHOT</currentVersion>
+  <currentVersion>0.2</currentVersion>
   <organization>
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
@@ -22,7 +21,6 @@
     <!--connection>scm:svn:svn:svn.berlios.de/vortikal</connection-->
     <!--developerConnection>scm:svn:svn+ssh:svn.berlios.de/svnroot/repos/vortikal</developerConnection-->
     <!--url>http://svn.berlios.de/viewcvs/vortikal/</url-->
-
     <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal</developerConnection>
   </repository>
   <siteAddress>element.uio.no</siteAddress>
@@ -194,7 +192,6 @@
       </properties>
     </dependency>
     <!-- BeanShell: -->
-
     <dependency>
       <id>bsh</id>
       <version>2.0b1</version>
@@ -203,7 +200,6 @@
       </properties>
     </dependency>
     <!-- Groovy: -->
-
     <dependency>
       <id>groovy</id>
       <version>all-1.0-beta-10</version>
@@ -212,7 +208,6 @@
       </properties>
     </dependency>
     <!-- Quartz job scheduling-->
-
     <dependency>
       <id>quartz</id>
       <version>1.4.2</version>
@@ -221,7 +216,6 @@
       </properties>
     </dependency>
     <!-- backend deps -->
-
     <dependency>
       <id>concurrent</id>
       <version>1.0</version>
@@ -275,16 +269,13 @@
      </properties>
    </dependency>
    -->
-
   </dependencies>
   <!-- build information for the project -->
-
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
     <integrationUnitTestSourceDirectory/>
     <!-- Unit test classes -->
-
     <unitTest>
       <includes>
         <include>**/*Test.java</include>
@@ -303,12 +294,10 @@
     </unitTest>
     <!-- J A R  R E S O U R C E S -->
     <!-- Resources that are packaged up inside the JAR file -->
-
     <resources>
       <resource>
         <!-- Include the MIME type helper file in the jar under
             '/org/vortikal/repositoryimpl'. -->
-
         <directory>src/java/org/vortikal/util/repository</directory>
         <targetPath>org/vortikal/util/repository</targetPath>
         <includes>
@@ -317,7 +306,6 @@
       </resource>
       <resource>
         <!-- Include Language bundles in the jar under '/'. -->
-
         <directory>src/i18n</directory>
         <targetPath>/</targetPath>
         <includes>
@@ -330,7 +318,6 @@
          TODO: should move 'src/webapp/WEB-INF/ftl' to 'src/ftl', to
          avoid duplication of ftl files in webapps.
        -->
-
         <directory>src/webapp/WEB-INF/ftl</directory>
         <targetPath>/ftl</targetPath>
         <includes>
@@ -344,16 +331,13 @@
     <report>maven-changes-plugin</report>
     <!--report>maven-developer-activity-plugin</report-->
     <!--report>maven-file-activity-plugin</report-->
-
     <report>maven-license-plugin</report>
     <!-- report>maven-statcvs-plugin</report -->
     <!-- report>maven-checkstyle-plugin</report -->
-
     <report>maven-javadoc-plugin</report>
     <!--report>maven-jxr-plugin</report-->
     <!--report>maven-junit-report-plugin</report-->
     <!--report>maven-clover-plugin</report-->
-
     <report>maven-tasklist-plugin</report>
     <report>maven-jdepend-plugin</report>
   </reports>
@@ -437,6 +421,11 @@
       <id>0.1.9.3</id>
       <name>0.1.9.3</name>
       <tag>release-0.1.9.3</tag>
+    </version>
+    <version>
+      <id>0.2</id>
+      <name>0.2</name>
+      <tag>release-0.2</tag>
     </version>
   </versions>
 </project>

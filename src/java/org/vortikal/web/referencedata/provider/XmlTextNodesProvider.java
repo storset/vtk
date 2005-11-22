@@ -99,7 +99,7 @@ public class XmlTextNodesProvider
     /**
      * As this provider is used by both view (no authentication needed) and admin beans
      * (authentication required), AuthenticationExceptions are explicitly handled (i.e. ignored)
-     * @see org.vortikal.web.referencedata.provider.Provider#referenceData(java.util.Map,
+     * @see org.vortikal.web.referencedata.ReferenceDataProvider#referenceData(java.util.Map,
      *      javax.servlet.http.HttpServletRequest)
      */
     public void referenceData(Map model, HttpServletRequest req) throws Exception {

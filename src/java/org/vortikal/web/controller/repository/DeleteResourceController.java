@@ -128,4 +128,8 @@ public class DeleteResourceController extends AbstractController implements Init
         return trustedToken;
     }
 
+    protected String getViewName() {
+        return viewName;
+    }
+    
 }

@@ -2,13 +2,18 @@
 
 <document>
   <properties>
-    <title>Change Log</title>
+    <title>Vortikal Change Log</title>
   </properties>
   <body>
   <body>
     <release version="0.2.1-SNAPSHOT" date="In SVN" description="Release 0.2.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action dev="gormap" type="fix">
+        Removed ACL validating when moving resources which caused the
+        move operation to fail when the ACL contained invalid
+        principals.
+      </action>
     </release>
 
     <release version="0.2" date="2005-11-22" description="Release 0.2">

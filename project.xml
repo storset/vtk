@@ -312,6 +312,15 @@
           <include>*.properties</include>
         </includes>
       </resource>
+      <!-- Include the change log XML file in the jar under
+           '/vortikal-changes'. -->
+      <resource>
+        <directory>xdocs</directory>
+        <targetPath>vortikal-changes</targetPath>
+        <includes>
+          <include>changes.xml</include>
+        </includes>
+      </resource>
       <resource>
         <!-- Include FreeMarker templates in the jar under '/ftl'. -->
         <!--

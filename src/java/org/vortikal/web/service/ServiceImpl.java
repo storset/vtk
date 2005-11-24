@@ -76,7 +76,8 @@ import org.vortikal.security.web.AuthenticationChallenge;
  *
  */
 public class ServiceImpl
-  implements Service, BeanNameAware, InitializingBean, ApplicationContextAware {
+  implements Service, RelocatableService, ExtendableService, BeanNameAware, InitializingBean,
+             ApplicationContextAware {
 
     private AuthenticationChallenge authenticationChallenge;
     private Object handler;
@@ -111,6 +112,11 @@ public class ServiceImpl
     }
 
 
+    public void addServices(List services) {
+        this.services.addAll(services);
+    }
+    
+
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
@@ -129,7 +135,7 @@ public class ServiceImpl
     /**
      * Mapping the tree
      */
-    public void setParent(Service parent) throws BeanInitializationException {
+    public void setParent(Service parent) {
         if (this.parent != null && this.parent != parent) 
             throw new BeanInitializationException(
                 "Service '" + getName() +  "' has at least two parents ('"
@@ -143,16 +149,15 @@ public class ServiceImpl
     }
 	
 
-    private List getAllAssertions() {
-        if (parent == null) 
-            return getAssertions();
- 
-        List assertions = new ArrayList(((ServiceImpl) parent).getAllAssertions());
-        assertions.addAll(getAssertions());
+    private static List getAllAssertions(Service service) {
+        ArrayList assertions = new ArrayList();
+        do {
+            assertions.addAll(0, service.getAssertions());
+        } while ((service = service.getParent()) != null);
         return assertions;
     }
 
-	
+    
     public String getName() {
         return name;
     }
@@ -199,14 +204,14 @@ public class ServiceImpl
 	
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters) {
-        List assertions = getAllAssertions();
+        List assertions = getAllAssertions(this);
         return linkConstructor.construct(resource, principal, parameters, assertions,
                                          this, true);
     }
 
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters, boolean matchAssertions) {
-        List assertions = getAllAssertions();
+        List assertions = getAllAssertions(this);
         return linkConstructor.construct(resource, principal, parameters, assertions, this,
                                          matchAssertions);
     }
@@ -218,7 +223,7 @@ public class ServiceImpl
         List childServices = getUnknownServiceChildren();
 
         for (int i = childServices.size() - 1; i > -1; i--) {
-            Service child = (Service)childServices.get(i);
+            Service child = (Service) childServices.get(i);
             if (!this.services.contains(child)) {
                 
                 if (child.getOrder() == Integer.MAX_VALUE) {
@@ -233,23 +238,23 @@ public class ServiceImpl
 
         for (Iterator iter = this.services.iterator(); iter.hasNext();) {
             Object o = iter.next();
-            if (! (o instanceof ServiceImpl)) {
+
+            if (! (o instanceof RelocatableService)) {
                 throw new BeanInitializationException(
                     "Only 'ServiceImpl' implementations of Service " +
                     "is supported ( check " + getName() +
                     "'s child services )");
             }
 
-            ServiceImpl child = (ServiceImpl) o;
-
+            RelocatableService child = (RelocatableService) o;
             validateAssertions(child);
             child.setParent(this);
         }
     }
 
     
-    private void validateAssertions(ServiceImpl child) {
-        List childAssertions = child.getAllAssertions();
+    private void validateAssertions(Service child) {
+        List childAssertions = getAllAssertions(child);
 		
         for (Iterator iter = getAssertions().iterator(); iter.hasNext();) {
             Assertion assertion = (Assertion) iter.next();

@@ -614,6 +614,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         } catch (AclException e) {
             OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
                 "tried to set an illegal ACL", token, principal);
+
             throw new IllegalOperationException(e.getMessage());
         }
     }
@@ -1061,6 +1062,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
+
+        if (!validateURI(uri)) {
+            OperationLog.failure("getACL(" + uri + ")", "resource not found",
+                token, principal);
+
+            throw new ResourceNotFoundException(uri);
+        }
 
         Resource r = dao.load(uri);
 

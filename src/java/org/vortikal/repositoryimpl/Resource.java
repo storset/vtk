@@ -730,10 +730,10 @@ public abstract class Resource implements Cloneable {
             
             authorize(principal,
                       org.vortikal.repository.PrivilegeDefinition.WRITE_ACL, roleManager);
+
+            acl.validateACL(aceList);
         }
         
-        acl.validateACL(aceList);
-
         this.acl = acl.buildACL(aceList);
         this.acl.setResource(this);
 

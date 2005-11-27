@@ -57,6 +57,13 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 
+/**
+ * 
+ * @deprecated This class is only used by noticeboard. It is replaced by {@link no.uio.tavle.provider.ConfigurationTextNodesProvider} 
+ *
+ */
+
+
 public class XmlTextNodesProvider
   implements ReferenceDataProvider, InitializingBean {
     private static Log logger = LogFactory.getLog(XmlTextNodesProvider.class);
@@ -201,6 +208,10 @@ public class XmlTextNodesProvider
 
     public void setRelativeURI(String relURI) {
         this.relativeURI = relURI;
+    }
+
+    protected Repository getRepository() {
+        return repository;
     }
     
 }

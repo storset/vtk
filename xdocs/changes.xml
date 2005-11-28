@@ -5,9 +5,12 @@
     <title>Change Log</title>
   </properties>
   <body>
-    <release version="0.2" date="2005-11-22" description="Release 0.2">
+    <release version="0.2.1-SNAPSHOT" date="In SVN" description="Release 0.2.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.2" date="2005-11-22" description="Release 0.2">
       <action dev="gormap" type="add">Added a new interface: RequestFilter for performing various pre-processing tasks on servlet requests.</action>
       <action dev="gormap" type="add">Added assertion for matching on principals and groups.</action>
       <action dev="gormap" type="add">Added assertion for performing regular expression matches on request headers.</action>

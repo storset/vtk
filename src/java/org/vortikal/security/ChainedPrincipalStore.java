@@ -55,6 +55,20 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     private SimpleCache cache = null;
     
 
+    public ChainedPrincipalStore() {
+    }
+
+    public ChainedPrincipalStore(List managers) {
+        this.managers = managers;
+    }
+
+    public ChainedPrincipalStore(List managers, SimpleCache cache) {
+        this.managers = managers;
+        this.cache = cache;
+    }
+    
+    
+
     public void setManagers(List managers) {
         this.managers = managers;
     }
@@ -69,10 +83,6 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
         if (this.managers == null) {
             throw new BeanInitializationException(
                 "Bean property 'managers' cannot be null");
-        }
-        if (this.cache == null) {
-            throw new BeanInitializationException(
-                "Bean property 'cache' cannot be null");
         }
     }
 
@@ -134,32 +144,22 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
         return new String[0];
     }
     
+    
 
     public boolean isMember(Principal principal, String groupName)
         throws AuthenticationProcessingException {
 
-        GroupItem item = (GroupItem) cache.get(principal);
-        if (item == null) {
-
-            item = new GroupItem();
-            cache.put(principal, item);
-            
+        if (this.cache == null) {
+            return isMemberUncached(principal, groupName);
+        } else {
+            return isMemberCached(principal, groupName);
         }
+    }
+    
+    public boolean isMemberUncached(Principal principal, String groupName)
+        throws AuthenticationProcessingException {
 
-        Map groupsMap = item.getGroupsMap();
-
-        if (groupsMap.containsKey(groupName)) {
-            boolean isMember = (groupsMap.get(groupName) != null);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Validated group membership for principal '"
-                        + principal + "', group '" + groupName + "'" + " to '"
-                        + isMember + "' from cache ");
-            }
-            return isMember;
-
-        }
-
-        for (Iterator i = managers.iterator(); i.hasNext();) {
+        for (Iterator i = this.managers.iterator(); i.hasNext();) {
             PrincipalStore manager = (PrincipalStore) i.next();
             if (manager.validateGroup(groupName)) {
                 if (logger.isDebugEnabled()) {
@@ -169,6 +169,54 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
                 }
 
                 boolean isMember = manager.isMember(principal, groupName);
+                return isMember;
+            }
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Validating group membership failed: no principal "
+                    + "manager match for principal '" + principal + "'"
+                    + ", group '" + groupName + "'");
+        }
+        return false;
+    }
+
+
+    public boolean isMemberCached(Principal principal, String groupName)
+        throws AuthenticationProcessingException {
+
+            GroupItem item = (GroupItem) cache.get(principal);
+            if (item == null) {
+
+                item = new GroupItem();
+                cache.put(principal, item);
+            
+            }
+
+            Map groupsMap = item.getGroupsMap();
+
+            if (groupsMap.containsKey(groupName)) {
+                boolean isMember = (groupsMap.get(groupName) != null);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Validated group membership for principal '"
+                                 + principal + "', group '" + groupName + "'" + " to '"
+                                 + isMember + "' from cache ");
+                }
+                return isMember;
+
+            }
+
+
+        for (Iterator i = this.managers.iterator(); i.hasNext();) {
+            PrincipalStore manager = (PrincipalStore) i.next();
+            if (manager.validateGroup(groupName)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Validated group membership for principal '"
+                            + principal + "', group '" + groupName + "' using "
+                            + "manager " + manager);
+                }
+
+                boolean isMember = manager.isMember(principal, groupName);
+
                 if (isMember) {
                     item.getGroupsMap().put(groupName, new Object());
                 } else {
@@ -192,6 +240,13 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
         public Map getGroupsMap() {
             return this.groupsMap;
         }
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": managers = [").append(this.managers).append("]");
+        sb.append(", cache = ").append(this.cache);
+        return sb.toString();
     }
     
 }

@@ -31,11 +31,13 @@
 package org.vortikal.security;
 
 
+
 import java.util.List;
 import java.util.Map;
-
+import java.util.Properties;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.Ordered;
 import org.vortikal.util.codec.MD5;
 
 
@@ -44,13 +46,15 @@ import org.vortikal.util.codec.MD5;
  * user and group information in-memory.
  */
 public class PropertyConfigurableMD5PrincipalStore
-  implements MD5PasswordPrincipalStore, InitializingBean {
+  implements MD5PasswordPrincipalStore, InitializingBean, Ordered {
 
-    private Map principals;
+    private Properties principals;
     private Map groups;
     private String realm;
     private String domain;
 
+    private int order = Integer.MAX_VALUE;
+    
     
     /**
      * Sets the principal map. The map is assumed to contain entries
@@ -58,10 +62,9 @@ public class PropertyConfigurableMD5PrincipalStore
      * <code>md5hash</code> is in turn assumed to be a hashed value of
      * the string <code>username:realm:password</code>.
      */
-    public void setPrincipals(Map principals) {
+    public void setPrincipals(Properties principals) {
         this.principals = principals;
     }
-
 
 
     /**
@@ -75,6 +78,40 @@ public class PropertyConfigurableMD5PrincipalStore
         this.groups = groups;
     }
     
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+
+    public int getOrder() {
+        return this.order;
+    }
+    
+
+    /**
+     * @deprecated
+     */
+    public String getRealm() {
+        return realm;
+    }
+    
+    
+    public void setRealm(String realm) {
+        this.realm = realm;
+    }
+
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    
+    public void afterPropertiesSet() throws Exception {
+        if (domain == null)
+            throw new BeanInitializationException(
+                "Property 'domain' must be set");
+    }
 
 
     public boolean validatePrincipal(Principal principal) {
@@ -92,11 +129,10 @@ public class PropertyConfigurableMD5PrincipalStore
     
 
     /**
-     * @see org.vortikal.security.MD5PasswordPrincipalStore#getMD5HashString(java.lang.String)
      * @deprecated
      */
-    public String getMD5HashString(String principal) {
-        return (String) this.principals.get(principal);
+    public String getMD5HashString(Principal principal) {
+        return this.principals.getProperty(principal.getQualifiedName());
     }
     
 
@@ -121,40 +157,10 @@ public class PropertyConfigurableMD5PrincipalStore
 
 
 
-    /**
-     * @see org.vortikal.security.MD5PasswordPrincipalStore#getRealm()
-     * @deprecated
-     */
-    public String getRealm() {
-        return realm;
-    }
-    
-    
-    public void setRealm(String realm) {
-        this.realm = realm;
-    }
-
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet() throws Exception {
-        if (domain == null)
-            throw new BeanInitializationException(
-                "Property 'domain' must be set");
-    }
-
-
-
     public void authenticate(Principal principal, String password)
         throws AuthenticationException {
         
-        String hash = getMD5HashString(principal.getQualifiedName());
+        String hash = getMD5HashString(principal);
         String clientHash = 
             MD5.md5sum(principal.getQualifiedName() + ":" + realm + ":" + password); 
 

@@ -48,7 +48,7 @@ public interface MD5PasswordPrincipalStore extends PrincipalStore {
      * principal does not exist in this principal store.
      * @deprecated
      */
-    public String getMD5HashString(String principal)
+    public String getMD5HashString(Principal principal)
         throws AuthenticationProcessingException;
     
     /**

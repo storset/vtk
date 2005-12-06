@@ -59,6 +59,10 @@ public class ACLModificationEvent extends RepositoryEvent {
         return this.resource;
     }
 
+    public String getURI() {
+        return this.resource.getURI();
+    }
+
     public Resource getOriginal() {
         return this.original;
     }

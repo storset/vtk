@@ -43,4 +43,7 @@ public abstract class RepositoryEvent extends ApplicationEvent {
     public Repository getRepository() {
         return (Repository) getSource();
     }
+
+    public abstract String getURI();
+    
 }

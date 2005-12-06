@@ -48,4 +48,9 @@ public class ResourceCreationEvent extends RepositoryEvent {
     public Resource getResource() {
         return this.resource;
     }
+
+    public String getURI() {
+        return this.resource.getURI();
+    }
+
 }

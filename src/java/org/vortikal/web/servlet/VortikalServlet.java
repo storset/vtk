@@ -30,27 +30,31 @@
  */
 package org.vortikal.web.servlet;
 
+
+
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.core.OrderComparator;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.RequestHandledEvent;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
-
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -126,14 +130,13 @@ public class VortikalServlet extends DispatcherServlet {
     private static final String SECURITY_INITIALIZER_BEAN_NAME = "securityInitializer";
     private static final String REQUEST_CONTEXT_INITIALIZER_BEAN_NAME = "requestContextInitializer";
     private static final String REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME = "repositoryContextInitializer";
-    private static final String REQUEST_FILTER_BEAN_NAME = "requestFilter";
     
     
     private Log logger = LogFactory.getLog(this.getClass().getName());
     private Log requestLogger = LogFactory.getLog(this.getClass().getName() + ".Request");
     private Log errorLogger = LogFactory.getLog(this.getClass().getName() + ".Error");
 
-    private RequestFilter requestFilter = new StandardRequestFilter();
+    private RequestFilter[] requestFilters;
     private SecurityInitializer securityInitializer;
     private RepositoryContextInitializer repositoryContextInitializer;
     private RequestContextInitializer requestContextInitializer;
@@ -169,7 +172,7 @@ public class VortikalServlet extends DispatcherServlet {
     protected void initFrameworkServlet()
         throws ServletException, BeansException {
         super.initFrameworkServlet();
-        initRequestFilter();
+        initRequestFilters();
         initSecurityInitializer();
         initRequestContextInitializer();
         initRepositoryContextInitializer();
@@ -218,24 +221,21 @@ public class VortikalServlet extends DispatcherServlet {
     }
     
     
-    private void initRequestFilter() {
 
-        Object bean = null;
-        try {
-            bean = getWebApplicationContext().getBean(REQUEST_FILTER_BEAN_NAME);
-        } catch (Exception e) { 
-            return;
-        }
 
-        if (bean != null && ! (bean instanceof RequestFilter)) {
-            throw new BeanNotOfRequiredTypeException(
-                REQUEST_FILTER_BEAN_NAME, 
-                RequestFilter.class, bean.getClass());
-        }
-        this.requestFilter = (RequestFilter) bean;
-        logger.info("Request filter " + bean + " set up successfully");
+    private void initRequestFilters() {
+        Map matchingBeans = getWebApplicationContext().getBeansOfType(
+            RequestFilter.class, false, false);
+
+        List filters = new ArrayList(matchingBeans.values());
+        Collections.sort(filters, new OrderComparator());
+        
+        this.requestFilters = (RequestFilter[]) filters.toArray(
+            new RequestFilter[filters.size()]);
+
+        logger.info("Request filters: " + filters + " set up successfully");
     }
-
+    
 
     private void initErrorHandlers() {
         Map handlers = getWebApplicationContext().getBeansOfType(
@@ -341,11 +341,13 @@ public class VortikalServlet extends DispatcherServlet {
 
             try {
 
-                if (this.requestFilter != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Running request filter: " + this.requestFilter);
+                if (this.requestFilters != null) {
+                    for (int i = 0; i < this.requestFilters.length; i++) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Running request filter: " + this.requestFilters[i]);
+                        }
+                        request = this.requestFilters[i].filterRequest(request);
                     }
-                    request = this.requestFilter.filterRequest(request);
                 }
 
                 this.repositoryContextInitializer.createContext(request);
@@ -421,9 +423,6 @@ public class VortikalServlet extends DispatcherServlet {
             long processingTime = System.currentTimeMillis() - startTime;
 
             logRequest(request, responseWrapper, processingTime, !proceedService);
-            securityInitializer.destroyContext();
-            requestContextInitializer.destroyContext();
-            Thread.currentThread().setName(threadName);
 
             getWebApplicationContext().publishEvent(
                     new RequestHandledEvent(this, request.getRequestURI(),
@@ -431,7 +430,12 @@ public class VortikalServlet extends DispatcherServlet {
                                     .getMethod(), getServletConfig()
                                     .getServletName(), WebUtils
                                     .getSessionId(request),
+
                             getUsernameForRequest(request), failureCause));
+
+            securityInitializer.destroyContext();
+            requestContextInitializer.destroyContext();
+            Thread.currentThread().setName(threadName);
         }
         
     }
@@ -469,11 +473,22 @@ public class VortikalServlet extends DispatcherServlet {
     private void logRequest(HttpServletRequest req, StatusAwareResponseWrapper resp,
                             long processingTime, boolean wasCacheRequest) {
 
+        if (!requestLogger.isInfoEnabled()) {
+            return;
+        }
+
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
 
         String remoteHost = req.getRemoteHost();
-        String request = req.getMethod() + " " + req.getRequestURI() + " "
+
+        String requestURI = req.getRequestURI();
+        String queryString = req.getQueryString();
+        if (queryString != null) {
+            requestURI += ("?"  + queryString);
+        }
+
+        String request = req.getMethod() + " " + requestURI + " "
             + req.getProtocol() + " - status: " + resp.getStatus();
 
         Principal principal = null;
@@ -558,9 +573,17 @@ public class VortikalServlet extends DispatcherServlet {
         }
         params.append("}");
             
+        StringBuffer requestURL = req.getRequestURL();
+        String queryString = req.getQueryString();
+        if (queryString != null) {
+            requestURL.append("?").append(queryString);
+        }
+
+
         StringBuffer sb = new StringBuffer();
         if (message != null) sb.append(message).append(" ");
         sb.append("Message: ").append(t.getMessage()).append(" - ");
+        sb.append("Full request URL: [").append(requestURL).append("], ");
         sb.append("Request context: [").append(requestContext).append("], ");
         sb.append("security context: [").append(securityContext).append("], ");
         sb.append("method: [").append(httpMethod).append("], ");

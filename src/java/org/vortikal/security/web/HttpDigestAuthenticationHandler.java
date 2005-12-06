@@ -360,11 +360,15 @@ public class HttpDigestAuthenticationHandler
         }
         
 
-        Principal principal = null;
+        Principal principal = this.principalManager.getPrincipal(username);
         boolean correctDigest = false;
 
         // FIXME: Why is getMD5HashString() deprecated?
-        String componentA1 = this.principalStore.getMD5HashString(username);
+        String componentA1 = null;
+        if (principal != null) {
+            componentA1 = this.principalStore.getMD5HashString(principal);
+        }
+
         String componentA2 = MD5.md5sum(request.getMethod() + ":" + uri);
         
         if (componentA1 != null) {

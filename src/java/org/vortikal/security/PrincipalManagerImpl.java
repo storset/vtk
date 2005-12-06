@@ -30,10 +30,26 @@
  */
 package org.vortikal.security;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.OrderComparator;
+import org.springframework.core.Ordered;
+
 import org.vortikal.repository.ACLPrincipal;
-import java.util.Map;
+import org.vortikal.util.cache.SimpleCacheImpl;
+import org.vortikal.web.service.Service;
 
 
 /**
@@ -54,13 +70,20 @@ import java.util.Map;
  *   acessed using the {@link Principal#getURL} method.
  * </ul>
  */
-public class PrincipalManagerImpl implements PrincipalManager, InitializingBean {
+public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
+                                             ApplicationContextAware {
+    
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private String delimiter = "@";
     private String defaultDomain;
     private Map domainURLMap;
     private PrincipalStore principalStore;
     
+    private ApplicationContext applicationContext;
+    
+
+
     public void setDefaultDomain(String defaultDomain) {
         if (defaultDomain != null) {
             if ("".equals(defaultDomain.trim())) {
@@ -81,6 +104,52 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         this.domainURLMap = domainURLMap;
     }
     
+
+    public void setPrincipalStore(PrincipalStore principalStore) {
+        this.principalStore = principalStore;
+    }
+
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+
+        if (this.principalStore == null) {
+            
+            // Try to look up principal stores from the context
+
+            Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+                applicationContext, PrincipalStore.class, true, false);
+    
+            List allStores = new ArrayList(matchingBeans.values());
+            List stores = new ArrayList();
+            for (Iterator iter = allStores.iterator(); iter.hasNext();) {
+                PrincipalStore store = (PrincipalStore) iter.next();
+                if (store instanceof Ordered) {
+                    stores.add(store);
+                }
+            }
+
+            Collections.sort(stores, new OrderComparator());
+
+            if (stores.size() > 0) {
+                this.principalStore = new ChainedPrincipalStore(stores, new SimpleCacheImpl(60));
+            }
+        }
+        
+        if (this.principalStore == null) {
+            throw new BeanInitializationException(
+                "JavaBean Property 'principalStore' must be specified");
+        }
+        if (logger.isInfoEnabled()) {
+            logger.info("Using principal store " + this.principalStore);
+        }
+    }
+    
+
+
 
     public Principal getPrincipal(String id) {
         if (id == null) {
@@ -150,7 +219,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             }
         }
 
-
         return new PrincipalImpl(name, qualifiedName, domain, url);
     }
 
@@ -168,52 +236,23 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
     }
 
 
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet() throws Exception {
-
-        if (principalStore == null)
-            throw new BeanInitializationException("Property 'principalStore' must be set");
-    }
-    
-
-    /**
-     * @param principalStore The principalStore to set.
-     */
-    public void setPrincipalStore(PrincipalStore principalStore) {
-        this.principalStore = principalStore;
+    public boolean validatePrincipal(Principal principal)
+        throws AuthenticationProcessingException {
+        return this.principalStore.validatePrincipal(principal);
     }
 
 
-    /**
-     * @see org.vortikal.security.PrincipalStore#validatePrincipal(org.vortikal.security.Principal)
-     */
-    public boolean validatePrincipal(Principal principal) throws AuthenticationProcessingException {
-        return principalStore.validatePrincipal(principal);
-    }
-
-
-    /**
-     * @see org.vortikal.security.PrincipalStore#validateGroup(java.lang.String)
-     */
     public boolean validateGroup(String groupName) throws AuthenticationProcessingException {
-        return principalStore.validateGroup(groupName);
+        return this.principalStore.validateGroup(groupName);
     }
 
 
-    /**
-     * @see org.vortikal.security.PrincipalStore#resolveGroup(java.lang.String)
-     */
     public String[] resolveGroup(String groupName) throws AuthenticationProcessingException {
-        return principalStore.resolveGroup(groupName);
+        return this.principalStore.resolveGroup(groupName);
     }
 
 
-    /**
-     * @see org.vortikal.security.PrincipalStore#isMember(org.vortikal.security.Principal, java.lang.String)
-     */
     public boolean isMember(Principal principal, String groupName) {
-        return principalStore.isMember(principal, groupName);
+        return this.principalStore.isMember(principal, groupName);
     }
 }

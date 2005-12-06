@@ -34,22 +34,30 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 /**
+ * Assertion for exact string matching on the URI of the requested
+ * resource.
  *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>uri</code> - the exact URI (path) to match
+ *   <li><code>inverted</code> - a flag to invert matching (default
+ *   <code>false</code>).
+ * </ul>
  */
 public class ResourceURIAssertion
   extends AbstractRepositoryAssertion {
 
-    private String uri = "";
+    private String uri;
     private boolean inverted = false;
     
 
     public String getUri() {
-        return uri;
+        return this.uri;
     }
 
     public void setUri(String uri) {
         if (uri == null) throw new IllegalArgumentException(
-            "Property 'uri' cannot be null");
+            "JavaBean property 'uri' cannot be null");
     
         this.uri = uri;
     }
@@ -90,10 +98,15 @@ public class ResourceURIAssertion
     }
 
     public boolean matches(Resource resource, Principal principal) {
-        if (this.inverted) {
-            return ! uri.equals(resource.getURI());
+        if (resource == null) {
+            return this.inverted ? true : false;
         }
-        return uri.equals(resource.getURI());
+
+        if (this.inverted) {
+            return ! this.uri.equals(resource.getURI());
+        }
+        
+        return this.uri.equals(resource.getURI());
     }
 
 }

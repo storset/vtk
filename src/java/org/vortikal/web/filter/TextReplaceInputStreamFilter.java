@@ -72,7 +72,10 @@ public class TextReplaceInputStreamFilter implements RequestFilter, Initializing
     private Pattern pattern;
     private String replacement;
     
+    private int order = Integer.MAX_VALUE;
     
+
+
     public void setCharacterEncoding(String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
@@ -85,6 +88,15 @@ public class TextReplaceInputStreamFilter implements RequestFilter, Initializing
         this.replacement = replacement;
     }
     
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
+    }
+    
+
     public void afterPropertiesSet() throws Exception {
         if (this.characterEncoding == null) {
             throw new BeanInitializationException(

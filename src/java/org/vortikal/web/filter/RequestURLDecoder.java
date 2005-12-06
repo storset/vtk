@@ -57,9 +57,21 @@ public class RequestURLDecoder implements RequestFilter, InitializingBean {
 
     private String characterEncoding;
     
+    private int order = Integer.MAX_VALUE;
+    
+
     public void setCharacterEncoding(String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
+    }
+    
 
     public void afterPropertiesSet() throws Exception {
         if (this.characterEncoding == null) {

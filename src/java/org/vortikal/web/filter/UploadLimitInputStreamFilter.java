@@ -50,10 +50,20 @@ public class UploadLimitInputStreamFilter implements RequestFilter {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private long uploadLimit = 0;
+    private int order = Integer.MAX_VALUE;
     
 
     public UploadLimitInputStreamFilter(long uploadLimit) {
         this.uploadLimit = uploadLimit;
+    }
+    
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
     }
     
 

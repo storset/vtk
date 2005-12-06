@@ -32,13 +32,15 @@ package org.vortikal.web.filter;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.Ordered;
+
 
 /**
  * Interface for filtering the request at request context
  * initialization time. Utilized by the {@link
  * RequestContextInitializer}.
  */
-public interface RequestFilter {
+public interface RequestFilter extends Ordered {
 
     /**
      * Perform filtering on the request.

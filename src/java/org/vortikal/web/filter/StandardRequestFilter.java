@@ -45,6 +45,16 @@ import org.vortikal.util.web.URLUtil;
  */
 public class StandardRequestFilter implements RequestFilter {
 
+    private int order = Integer.MAX_VALUE;
+    
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
+    }
+    
 
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new StandardRequestWrapper(request);

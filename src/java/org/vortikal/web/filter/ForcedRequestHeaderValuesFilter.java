@@ -58,8 +58,19 @@ public class ForcedRequestHeaderValuesFilter implements RequestFilter, Initializ
 
     private Log logger = LogFactory.getLog(this.getClass());
 
+    private int order = Integer.MAX_VALUE;
+
     private Map headers;
     
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
+    }
+    
+
     public void setHeaders(Map headers) {
         this.headers = headers;
     }

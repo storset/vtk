@@ -59,6 +59,9 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
 
     private String fromEncoding;
     private String toEncoding;
+
+    private int order = Integer.MAX_VALUE;
+    
     
     public void setFromEncoding(String fromEncoding) {
         this.fromEncoding = fromEncoding;
@@ -67,6 +70,15 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
     public void setToEncoding(String toEncoding) {
         this.toEncoding = toEncoding;
     }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
+    }
+    
 
     public void afterPropertiesSet() throws Exception {
         if (this.fromEncoding == null) {
@@ -102,7 +114,7 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
             
             String uri = this.request.getRequestURI();
             boolean appendSlash = false;
-            if (uri == null || uri.endsWith("/")) {
+            if (uri == null || (uri.endsWith("/") && ! "/".equals(uri))) {
                 appendSlash = true;
             }
 

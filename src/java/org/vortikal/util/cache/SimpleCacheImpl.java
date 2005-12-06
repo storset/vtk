@@ -30,6 +30,7 @@
  */
 package org.vortikal.util.cache;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,10 +38,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * This cache stores items for <code>timeoutSeconds</code> seconds,
@@ -49,7 +51,8 @@ import org.springframework.beans.factory.BeanNameAware;
  * You can set refreshTimestampOnGet to false if you don't want to 
  * refresh an item's timestamp when it's retrieved from the cache. 
  */
-public class SimpleCacheImpl implements SimpleCache, BeanNameAware {
+public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
+                                        InitializingBean, DisposableBean {
     
     private static Log logger = LogFactory.getLog(SimpleCacheImpl.class);
 
@@ -60,25 +63,55 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware {
 
     private String name;
     
-    /**
-     * @param timeoutSeconds The number of seconds a cached item is valid.
-     */
+    private CleanupThread cleanupThread;
+
+
+    public SimpleCacheImpl() {
+    }
+
+
+    public SimpleCacheImpl(int timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
+    }
+    
+
     public void setTimeoutSeconds(int timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
     }
 
-    /**
-     * @see org.vortikal.util.cache.SimpleCache#put(java.lang.Object, java.lang.Object)
-     */
+
     public void put(Object key, Object value) {
         synchronized (cache) {
             cache.put(key, new Item(value));
         }
     }
 
-    /**
-     * @see org.vortikal.util.cache.SimpleCache#get(java.lang.Object)
-     */
+
+    public void setRefreshTimestampOnGet(boolean refreshTimestampOnGet) {
+        this.refreshTimestampOnGet = refreshTimestampOnGet;
+    }
+
+
+    public void setBeanName(String name) {
+        this.name = name;
+    }
+
+
+    public void afterPropertiesSet() {
+        if (this.timeoutSeconds > 0) {
+            this.cleanupThread = new CleanupThread(this.timeoutSeconds);
+            this.cleanupThread.start();
+        }
+    }
+    
+
+    public void destroy() {
+        if (this.cleanupThread != null) {
+            this.cleanupThread.interrupt();
+        }
+    }
+    
+
     public Object get(Object key) {
         Item item = (Item) cache.get(key);
         if (item == null)
@@ -97,9 +130,7 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware {
         return null;
     }
 
-    /**
-     * @see org.vortikal.util.cache.SimpleCache#remove(java.lang.Object)
-     */
+
     public Object remove(Object key) {
         if (cache.containsKey(key)) {
             synchronized (cache) {
@@ -109,13 +140,14 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware {
         return null;
     }
 
+
     /**
      * Cleans up expired cached information periodically.
      * 
      */
     public void cleanupExpiredItems() {
 
-        if (timeoutSeconds < 1) return;
+        if (this.timeoutSeconds < 1) return;
         
         ArrayList removeableItems = new ArrayList();
 
@@ -165,7 +197,6 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware {
         }
         
         
-        
         public Object getValue() {
             if (refreshTimestampOnGet) this.date = new Date();
             return value;
@@ -175,17 +206,35 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware {
 
 
 
-    /**
-     * @param refreshTimestampOnGet The refreshTimestampOnGet to set.
-     */
-    public void setRefreshTimestampOnGet(boolean refreshTimestampOnGet) {
-        this.refreshTimestampOnGet = refreshTimestampOnGet;
-    }
+    private class CleanupThread extends Thread {
 
-    /**
-     * @see org.springframework.beans.factory.BeanNameAware#setBeanName(java.lang.String)
-     */
-    public void setBeanName(String name) {
-        this.name = name;
+        private long sleepSeconds;
+        private boolean alive = true;
+    
+
+        public CleanupThread(long sleepSeconds) {
+            this.sleepSeconds = sleepSeconds;
+        }
+
+        public void run() {
+
+            while (alive) {
+
+                try {
+
+                    sleep(1000 * sleepSeconds);
+                    cleanupExpiredItems();
+                    
+                } catch (InterruptedException e) {
+                    this.alive = false;
+
+                } catch (Throwable t) {
+                    logger.warn("Caught exception in cleanup thread", t);
+                }
+            }
+        }
     }
+    
+    
 }
+

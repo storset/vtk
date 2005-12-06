@@ -46,7 +46,8 @@ public class ResourcePropertyRegexpAssertion
     private String namespace;
     private String name;
     private Pattern pattern = null;
-
+    private boolean invert = false;
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -62,6 +63,10 @@ public class ResourcePropertyRegexpAssertion
         this.pattern = Pattern.compile(pattern);
     }
     
+    public void setInvert(boolean invert) {
+        this.invert = invert;
+    }
+    
     
     public boolean conflicts(Assertion assertion) {
         // FIXME: ?
@@ -74,7 +79,7 @@ public class ResourcePropertyRegexpAssertion
 		
         sb.append(super.toString());
         sb.append("; pattern = ").append(pattern.pattern());
-		
+        sb.append("; invert = ").append(this.invert);
         return sb.toString();
     }
 
@@ -84,11 +89,13 @@ public class ResourcePropertyRegexpAssertion
 
             if (property != null) {
                 Matcher m = pattern.matcher(property.getValue());
-                return m.matches();
+                //return m.matches();
+                return invert != m.matches();
             }
         }
         
-        return false;
+        //return false;
+        return invert;
     }
 
 }

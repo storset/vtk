@@ -63,6 +63,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.util.repository.TextResourceContentHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -105,8 +106,6 @@ import org.vortikal.web.service.Service;
 public class PlaintextEditController extends SimpleFormController
   implements InitializingBean {
 
-    private static final int MAX_XML_DECLARATION_SIZE = 500;
-
     private static Log logger = LogFactory.getLog(
         PlaintextEditController.class);
     
@@ -115,6 +114,7 @@ public class PlaintextEditController extends SimpleFormController
     private int lockTimeoutSeconds = 300;
     private String defaultCharacterEncoding = "utf-8";
     private boolean storeModifiedCharacterEncodings = false;
+    private TextResourceContentHelper textResourceContentHelper;
     
 
     /**
@@ -170,6 +170,8 @@ public class PlaintextEditController extends SimpleFormController
                 "Bean property 'cancelView' must be set");
         }
 
+        this.textResourceContentHelper = new TextResourceContentHelper(
+            this.repository, this.defaultCharacterEncoding);
     }
     
 
@@ -190,7 +192,7 @@ public class PlaintextEditController extends SimpleFormController
         Resource resource = repository.retrieve(token, uri, false);
 
         String url = service.constructLink(resource, principal);
-        String content = getResourceContent(resource, token);
+        String content = this.textResourceContentHelper.getResourceContent(resource, token);
         
         PlaintextEditCommand command =
             new PlaintextEditCommand(content, url);
@@ -241,17 +243,19 @@ public class PlaintextEditController extends SimpleFormController
         if (storedEncoding == null) {
 
             if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
-                storedEncoding = getXMLCharacterEncoding(resource, token);
+                storedEncoding = this.textResourceContentHelper.getXMLCharacterEncoding(
+                    resource, token);
 
             } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
-                storedEncoding = getHTMLCharacterEncoding(resource, token);
+                storedEncoding = this.textResourceContentHelper.getHTMLCharacterEncoding(
+                    resource, token);
             }
         }
 
         String postedEncoding = null;
         if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
 
-            postedEncoding = getXMLCharacterEncoding(
+            postedEncoding = this.textResourceContentHelper.getXMLCharacterEncoding(
                 plaintextEditCommand.getContent());
             
         } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
@@ -327,215 +331,6 @@ public class PlaintextEditController extends SimpleFormController
 
 
 
-    private String getResourceContent(Resource resource, String token)
-        throws IOException {
-
-        /**
-         * if character encoding is set on the resource, just read it
-         * as a plain stream using that encoding, regardless of
-         * whether it is an XML resource. Otherwise, let the XML
-         * parser handle the job */
-
-        if (resource.getCharacterEncoding() != null) {
-            return getPlainTextContent(resource, token);
-        }
-
-        if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
-            return getXMLContent(resource, token);
-
-        } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
-            return getHTMLContent(resource, token);
-        }
-
-        return getPlainTextContent(resource, token);
-    }
-    
-
-    private String getXMLContent(Resource resource, String token)
-        throws IOException {
-        SAXBuilder builder = new SAXBuilder();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int n = 0;
-        byte[] buf = new byte[1024];
-        InputStream in = repository.getInputStream(token, resource.getURI(), false);
-        while ((n = in.read(buf)) > 0) {
-            out.write(buf, 0, n);
-        }
-        in.close();
-
-        try {
-            
-            Document doc = builder.build(new ByteArrayInputStream(out.toByteArray()));
-
-            Format format = Format.getRawFormat();
-            if (resource.getCharacterEncoding() != null) {
-                format.setEncoding(resource.getCharacterEncoding());
-            }
-
-            XMLOutputter xmlOutputter = new XMLOutputter(format);
-            String xml = xmlOutputter.outputString(doc);
-            return xml;
-        
-        } catch (JDOMException e) {
-
-            /**
-             * Parsing the XML content did not work, so return the
-             * content converted to a string in a "best-effort"
-             * fashion: */
-            String characterEncoding = "utf-8";
-            if (resource.getCharacterEncoding() != null) {
-                characterEncoding = resource.getCharacterEncoding();
-            }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug(
-                    "Unable to build DOM tree for resource " 
-                    + resource + ": " + e.getMessage() + ", converting "
-                    + "byte stream to string using character encoding "
-                    + characterEncoding);
-            }
-            return new String(out.toByteArray(), characterEncoding);
-        }
-    }
-    
-
-    private String getHTMLContent(Resource resource, String token)
-        throws IOException {
-        InputStream is = repository.getInputStream(
-            token, resource.getURI(), false);
-        byte[] bytes = StreamUtil.readInputStream(is);
-        String encoding = resource.getCharacterEncoding();
-        if (encoding == null) encoding = HtmlUtil.getCharacterEncodingFromBody(bytes);
-        if (encoding == null) encoding = this.defaultCharacterEncoding;
-        String content = new String(bytes, encoding);
-        return content;
-    }
-    
-
-
-    private String getPlainTextContent(Resource resource, String token)
-        throws IOException {
-
-        InputStream is = repository.getInputStream(token, resource.getURI(),
-                                                   false);
-        byte[] bytes = StreamUtil.readInputStream(is);
-        String encoding = resource.getCharacterEncoding();
-        if (encoding == null) encoding = this.defaultCharacterEncoding;
-        String content = new String(bytes, encoding);
-        return content;
-    }
-
-
-
-
-    private String getXMLCharacterEncoding(String xmlContent) {
-        // FIXME: more accurate regexp:
-        Pattern charsetPattern = Pattern.compile(
-            "^\\s*<\\?xml.*\\s+encoding=[\"']"
-            + "([A-Za-z0-9._\\-]+)[\"'][^>]*\\?>.*",
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
-        String characterEncoding = this.defaultCharacterEncoding;
-      
-        Matcher m = charsetPattern.matcher(xmlContent);
-
-        if (!m.matches()) {
-            if (logger.isDebugEnabled())
-                logger.debug("No regexp match in XML declaration for pattern "
-                             + charsetPattern.pattern());
-            return this.defaultCharacterEncoding;
-        }
-            
-        if (logger.isDebugEnabled())
-            logger.debug("Regexp match in XML declaration for pattern "
-                         + charsetPattern.pattern());
-        characterEncoding = m.group(1);
-
-        try {
-            Charset.forName(characterEncoding);
-        } catch (Exception e) {
-            if (logger.isDebugEnabled())
-                logger.debug(
-                    "Invalid character encoding '" + characterEncoding
-                    + "' for XML document <string>, using utf-8");
-            return this.defaultCharacterEncoding;
-        }
-                        
-        return characterEncoding;
-
-    }
-
-
-    private String getXMLCharacterEncoding(Resource resource, String token)
-        throws IOException {
-
-        int len = MAX_XML_DECLARATION_SIZE;
-        BufferedReader reader = null;
-        InputStream inStream = null;
-        String characterEncoding = this.defaultCharacterEncoding;
-      
-        try {
-            if (logger.isDebugEnabled())
-                logger.debug("Opening document " + resource.getURI());
-            inStream = repository.getInputStream(
-                token, resource.getURI(), false);
-            
-            reader = new BufferedReader(new InputStreamReader(
-                                            inStream, "utf-8"));
-
-            char[] chars = new char[len];
-            int read = reader.read(chars, 0, len);
-            
-            // resource didn't have content;
-            if (read == -1)
-                return this.defaultCharacterEncoding;
-                
-            String string = new String(chars, 0, read);
-            return getXMLCharacterEncoding(string);
-                        
-        } catch (IOException e) {
-            logger.warn("Unexpected IO exception while performing "
-                        + "XML charset regexp matching on resource "
-                        + resource, e);
-            return this.defaultCharacterEncoding;
-        }
-    }
-
-
-    private String getHTMLCharacterEncoding(Resource resource, String token) {
-        if (!ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
-            return null;
-        }
-
-        int len = MAX_XML_DECLARATION_SIZE;
-        InputStream inStream = null;
-      
-        try {
-            if (logger.isDebugEnabled())
-                logger.debug("Opening document " + resource.getURI());
-            inStream = repository.getInputStream(
-                token, resource.getURI(), false);
-            
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-            int n = 0, total = 0;
-            byte[] buffer = new byte[1024];
-            while (total <= len && (n = inStream.read(buffer, 0, 1024)) > 0) {
-                total += n;
-                out.write(buffer, 0, n);
-            }
-
-            String storedEncoding = HtmlUtil.getCharacterEncodingFromBody(
-                out.toByteArray());
-            return storedEncoding;
-        
-        } catch (IOException e) {
-            logger.warn("Unexpected IO exception while finding "
-                        + "HTML character encoding on resource "
-                        + resource, e);
-            return null;
-        }
-    }
     
 
 

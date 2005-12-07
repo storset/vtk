@@ -223,11 +223,11 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
 
         String content = new String(contentBuffer, characterEncoding);
 
-        if (contentFilters != null) {
-            for (int i = 0; i < contentFilters.length; i++) {
-                content = contentFilters[i].process(model, request, content);
+        if (this.contentFilters != null) {
+            for (int i = 0; i < this.contentFilters.length; i++) {
+                content = this.contentFilters[i].process(model, request, content);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Ran content filter " + contentFilters[i]
+                    logger.debug("Ran content filter " + this.contentFilters[i]
                             + ", content length after = " + content.length());
                 }
             }

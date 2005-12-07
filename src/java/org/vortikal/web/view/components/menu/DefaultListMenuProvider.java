@@ -243,6 +243,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append(" [ ");
         sb.append("modelName = ").append(this.modelName);
+        sb.append(",services = ").append(java.util.Arrays.asList(this.services));
         sb.append(" ]");
         return sb.toString();
     }

@@ -41,19 +41,24 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
- * A reference data provider that puts static data in the model.
- * It will not overwrite model data if a key is allready present in the model.
+ * A reference data provider that puts static data in the model.  It
+ * will not overwrite model data if a key is allready present in the
+ * model.
  *
  * <p>Static model data can be set with these JavaBean properties:
  * <ul>
- *  <li><code>modelDataCSV</code> - CSV string
- *  <li><code>modelData</code> - Properties
- *  <li><code>modelDataMap</code> - 
+ *  <li><code>modelDataCSV</code> - model data as CSV string
+ *  <li><code>modelData</code> - model data as {@link Properties}
+ *  <li><code>modelDataMap</code> - model data as {@link Map}
+ *  <li><code>mergeModelData</code> - try to merge Map entries if
+ *  already present in model. Default is <code>false</code>.
  * </ul>
  * 
  * <p>Model data provided:
  * <ul>
- *   <li>the configured set of data, if not allready present in model.
+ *   <li>the configured set of data, if not allready present in
+ *   model. If <code>mergeModelData</code> is set and both "source"
+ *   and "destination" entries are maps, those maps are merged.
  * </ul>
  * 
  */
@@ -61,6 +66,9 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
 
     private final Map staticModelData = new HashMap();
     
+    private boolean mergeModelData = false;
+    
+
     /**
      * Set static model data as a CSV string.
      * Format is: modelname0={value1},modelname1={value1}
@@ -141,13 +149,27 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
         this.staticModelData.put(name, value);
     }
     
+
+    public void setMergeModelData(boolean mergeModelData) {
+        this.mergeModelData = mergeModelData;
+    }
+    
+
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
-        for (Iterator iter = staticModelData.keySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = this.staticModelData.keySet().iterator(); iter.hasNext();) {
             String key = (String)iter.next();
-            if (!model.containsKey(key))
-                model.put(key, staticModelData.get(key));
+
+            if (!model.containsKey(key)) {
+                model.put(key, this.staticModelData.get(key));
+
+            } else if (this.mergeModelData && (model.get(key) instanceof Map)
+                       && (this.staticModelData.get(key) instanceof Map)) {
+                // Merge model data:
+                Map destination = (Map) model.get(key);
+                destination.putAll((Map) this.staticModelData.get(key));
+            }
         }
     }
 

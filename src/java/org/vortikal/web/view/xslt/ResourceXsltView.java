@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -68,6 +69,7 @@ import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
+import org.vortikal.web.referencedata.ExtendableReferenceDataProviding;
 import org.vortikal.web.view.LinkConstructor;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
@@ -125,7 +127,8 @@ import org.vortikal.xml.TransformerManager;
  * 
  */
 public class ResourceXsltView extends AbstractView
-  implements ReferenceDataProviding, InitializingBean {
+  implements ReferenceDataProviding, ExtendableReferenceDataProviding,
+             InitializingBean {
 
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
 
@@ -145,6 +148,21 @@ public class ResourceXsltView extends AbstractView
     public void setReferenceDataProviders(
         ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
+    }
+    
+
+    public void addReferenceDataProvider(ReferenceDataProvider provider) {
+        System.out.println("SJABbA_");
+        if (this.referenceDataProviders == null) {
+            this.referenceDataProviders = new ReferenceDataProvider[0];
+        }
+
+        List newProviders = new java.util.ArrayList();
+        newProviders.addAll(java.util.Arrays.asList(this.referenceDataProviders));
+        
+        newProviders.add(provider);
+        this.referenceDataProviders = (ReferenceDataProvider[]) newProviders.toArray(
+            new ReferenceDataProvider[newProviders.size()]);
     }
     
 

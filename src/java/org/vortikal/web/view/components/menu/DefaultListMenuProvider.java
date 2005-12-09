@@ -60,6 +60,10 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  the same label.
  *  <li> <code>matchAssertions</code> - boolean defaults to <code>true</code>,
  *  if the link construction should match assertion. 
+ *  <li> <code>retrieveForProcessing</code> - whether or not to set
+ *  the <code>forProcessing</code> flag to <code>true</code> when
+ *  {@link Repository#retrieve retrieving} the resource from the
+ *  repository (default <code>false</code>).
  * </ul>
  *
  * <p>Configurable JavaBean properties:
@@ -103,6 +107,8 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     private Service[] services;
     private boolean matchAncestorServices = false;
     private boolean matchAssertions;
+    private boolean retrieveForProcessing = false;
+    
     
     public DefaultListMenuProvider(String label, Service[] services, Repository repository) {
         this(label, label, true, services, repository);
@@ -135,7 +141,11 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         this.matchAncestorServices = matchAncestorServices;
     }
     
-
+    
+    public void setRetrieveForProcessing(boolean retrieveForProcessing) {
+        this.retrieveForProcessing = retrieveForProcessing;
+    }
+    
 
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
@@ -149,7 +159,8 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         
         Principal principal = securityContext.getPrincipal();
         Resource resource = repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(), false);
+            securityContext.getToken(), requestContext.getResourceURI(),
+            this.retrieveForProcessing);
         Service currentService = requestContext.getService();
         
         List items = new ArrayList();

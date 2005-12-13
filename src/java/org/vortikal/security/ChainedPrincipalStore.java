@@ -90,7 +90,7 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     public boolean validatePrincipal(Principal principal)
         throws AuthenticationProcessingException {
 
-        for (Iterator i = managers.iterator(); i.hasNext();) {
+        for (Iterator i = this.managers.iterator(); i.hasNext();) {
             PrincipalStore manager = (PrincipalStore) i.next();
             if (manager.validatePrincipal(principal)) {
                 if (logger.isDebugEnabled()) {

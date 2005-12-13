@@ -86,11 +86,11 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
 
     public void setDefaultDomain(String defaultDomain) {
         if (defaultDomain != null) {
+
             if ("".equals(defaultDomain.trim())) {
-                throw new InvalidPrincipalException(
-                    "Invalid domain: " + defaultDomain);
-            }
-            if (defaultDomain.indexOf(this.delimiter) != -1) {
+                defaultDomain = null;
+
+            } else if (defaultDomain.indexOf(this.delimiter) != -1) {
                 throw new InvalidPrincipalException(
                     "Invalid domain: " + defaultDomain + ": "
                     + "must not contain delimiter: '" + this.delimiter + "'");

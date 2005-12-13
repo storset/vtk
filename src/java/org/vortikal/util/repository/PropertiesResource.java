@@ -44,11 +44,29 @@ import org.springframework.context.ApplicationEvent;
 
 
 /**
- * 
+ * A Properties that reads its elements from a repository resource in
+ * {@link Properties} format. Supports (re)loading its elements via
+ * the {@link #load} method.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>repository</code> - the {@link Repository content repository} 
+ *   <li><code>uri</code> - the full path of the properties
+ *   resource. If this file does not exist, the map will be initially
+ *   empty. (See also <code>demandResourceAvailability</code>)
+ *   <li><code>token</code> - the token to use for reading the
+ *   properties resource.
+ *   <li><code>demandResourceAvailability</code> - whether to require
+ *   that the properties resource is available. Default is
+ *   <code>false</code>.
+ *   <li><code>lazyInit</code> - whether to attempt loading the
+ *   resource when the {@link #afterPropertiesSet} method is called,
+ *   or to wait for a {@link ContextRefreshedEvent}. Default is
+ *   <code>false</code> (attempt to load the resource immediately).
+ * </ul>
  */
 public class PropertiesResource extends Properties implements InitializingBean,
                                                               ApplicationListener {
-
     private Log logger = LogFactory.getLog(this.getClass());
 
     private Repository repository;
@@ -72,6 +90,7 @@ public class PropertiesResource extends Properties implements InitializingBean,
         this.uri = uri;
         this.token = token;
         this.demandResourceAvailability = demandResourceAvailability;
+        this.lazyInit = lazyInit;
     }
     
 

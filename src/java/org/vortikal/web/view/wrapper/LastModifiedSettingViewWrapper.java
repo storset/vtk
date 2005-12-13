@@ -46,6 +46,12 @@ import org.vortikal.util.web.HttpUtil;
  * exists, The HTTP header <code>Last-Modified</code> is set to the value of 
  * the resource object's {@link Resource#getLastModified getLastModified()}.
  *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>resourceModelKey</code> - the key to use for looking up
+ *   the resource object in the model. The default value is
+ *   <code>resource</code>.
+ * </ul>
  */
 public class LastModifiedSettingViewWrapper implements ViewWrapper {
 

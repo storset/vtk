@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.Ordered;
 
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
@@ -56,7 +57,7 @@ import org.vortikal.util.codec.MD5;
  * authentication. Subclasses normally only need to override the
  * {@link #authenticateInternal(Principal, String)} method.
  * 
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>principalManager</code> - a {@link PrincipalManager} (required)
  *   <li><code>challenge</code> - an {@link
@@ -72,10 +73,12 @@ import org.vortikal.util.codec.MD5;
  *     requests. If the principal in an authentication request is
  *     present in this set, the authentication request is treated as if
  *     it were not recognized, even though it normally would.
+ *   <li><code>order</code> - the bean order returned in {@link
+ *   Ordered#getOrder}
  *  </ul>
  */
 public abstract class AbstractHttpBasicAuthenticationHandler 
-	implements AuthenticationHandler, InitializingBean {
+  implements AuthenticationHandler, Ordered, InitializingBean {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
@@ -83,6 +86,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     private SimpleCache cache = null;
     private Set recognizedDomains = null;
     private Set excludedPrincipals = new HashSet();
+    private int order = Integer.MAX_VALUE;
 
     protected HttpBasicAuthenticationChallenge challenge;
     protected PrincipalManager principalManager;
@@ -107,6 +111,15 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         this.excludedPrincipals = excludedPrincipals;
     }
     
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
+    }
+    
+
     public void afterPropertiesSet() {
         if (this.principalManager == null) {
             throw new BeanInitializationException(

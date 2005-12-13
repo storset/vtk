@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,8 @@ package org.vortikal.web.controller;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -60,6 +62,16 @@ import org.vortikal.web.RequestContext;
  *   is prepended to every class path resource retrieval.
  *   <li><code>uriPrefix</code> - the URI prefix is stripped off the
  *   request URI before prepending the base class path (optional).
+ *   <lI><code>resourceInModelName</code> - if specified, instead of
+ *   writing the response directly, this controller will put the class
+ *   path resource in the model under this name, and the rendering
+ *   must be handled by a view.
+ *   <li><code>resourceTransformer</code> (used in conjunction with
+ *   <code>resourceInModelName</code>) - a {@link ResourceTransformer},
+ *   which, if specified, causes the result of a transformation to be
+ *   placed in the model instead of the resource directly.
+ *   <lI><code>viewName</code> - optional viewName, used with
+ *   <code>resourceInModelName</code>
  * </ul>
  */
 public class DisplayClassPathResourceController 
@@ -70,6 +82,10 @@ public class DisplayClassPathResourceController
     private String basePath;
     private String uriPrefix;
     private ApplicationContext applicationContext;
+
+    private String resourceInModelName;
+    private ResourceTransformer resourceTransformer;
+    private String viewName;
     
     
     public void setBasePath(String basePath) {
@@ -85,10 +101,29 @@ public class DisplayClassPathResourceController
     }
     
 
+    public void setResourceInModelName(String resourceInModelName) {
+        this.resourceInModelName = resourceInModelName;
+    }
+
+    public void setResourceTransformer(ResourceTransformer resourceTransformer) {
+        this.resourceTransformer = resourceTransformer;
+    }
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+    
+
     public void afterPropertiesSet() throws Exception {
         if (this.basePath == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'basePath' not set");
+                "JavaBean property 'basePath' not specified");
+        }
+
+        if (this.resourceInModelName != null && this.viewName == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'viewName' must also be specified when property "
+                + "'resourceInModelName' is specified");
         }
     }
 
@@ -116,10 +151,31 @@ public class DisplayClassPathResourceController
 
         ClassPathResource resource = new ClassPathResource(path);
         
+        if (!resource.exists()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to serve resource: " + resource
+                             + " from path: " + path + ": resource does not exist");
+            }
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
+
         InputStream inStream = null;
         OutputStream outStream = null;
 
         try {
+
+            if (this.resourceInModelName != null) {
+                Object modelObject = resource;
+                if (this.resourceTransformer != null) {
+                    modelObject = this.resourceTransformer.transformResource(resource);
+                    Map model = new HashMap();
+                    model.put(this.resourceInModelName, modelObject);
+                    return new ModelAndView(this.viewName, model);
+                }
+            }
+
 
             inStream = resource.getInputStream();                
             outStream  = response.getOutputStream();

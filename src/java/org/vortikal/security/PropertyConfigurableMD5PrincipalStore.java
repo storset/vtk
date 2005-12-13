@@ -30,23 +30,46 @@
  */
 package org.vortikal.security;
 
-
-
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
+
 import org.vortikal.util.codec.MD5;
 
 
 /**
  * An implementation of MD5PasswordPrincipalManager that stores its
  * user and group information in-memory.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>principals</code> - a {@link Properties} object
+ *   containing names and encoded passwords of the principals. This map
+ *   is assumed to contain entries of type <code>(username,
+ *   md5hash)</code>, and <code>md5hash</code> is in turn assumed to be
+ *   a hashed value of the string <code>username:realm:password</code>.
+ *   <li><code>groups</code> - This {@link Map} is assumed to contain
+ *   entries of type <code>(group, memberlist)</code>, where
+ *   <code>memberlist</code> is a <code>java.util.List</code> of
+ *   strings which represent the names of those principals that are
+ *   members of the group.
+ *   <li><code>realm</code> - the authentication realm
+ *   <li><code>domain</code> - the domain of the principals in this
+ *   store (may be <code>null</code>)
+ * </ul>
+ * 
  */
 public class PropertyConfigurableMD5PrincipalStore
   implements MD5PasswordPrincipalStore, InitializingBean, Ordered {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private Properties principals;
     private Map groups;
@@ -56,24 +79,11 @@ public class PropertyConfigurableMD5PrincipalStore
     private int order = Integer.MAX_VALUE;
     
     
-    /**
-     * Sets the principal map. The map is assumed to contain entries
-     * of type <code>(username, md5hash)</code>, and
-     * <code>md5hash</code> is in turn assumed to be a hashed value of
-     * the string <code>username:realm:password</code>.
-     */
     public void setPrincipals(Properties principals) {
         this.principals = principals;
     }
 
 
-    /**
-     * Sets the groups map. The map is assumed to contain entries of
-     * type <code>(group, memberlist)</code>, where
-     * <code>memberlist</code> is a <code>java.util.List</code> of
-     * strings which represent the names of those principals that are
-     * members of the group.
-     */
     public void setGroups(Map groups) {
         this.groups = groups;
     }
@@ -108,23 +118,40 @@ public class PropertyConfigurableMD5PrincipalStore
 
     
     public void afterPropertiesSet() throws Exception {
-        if (domain == null)
-            throw new BeanInitializationException(
-                "Property 'domain' must be set");
     }
 
 
     public boolean validatePrincipal(Principal principal) {
-        if (principal == null) return false;
-        if (!domain.equals(principal.getDomain())) return false;
 
-        return this.principals.containsKey(principal.getQualifiedName());
+        if (principal == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Validate principal: " + principal + ": false");
+            }
+            return false;
+        }
+        
+        if (this.domain != null && !this.domain.equals(principal.getDomain())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Validate principal: " + principal + ": false");
+            }
+            return false;
+        }
+
+        boolean hit = this.principals.getProperty(principal.getQualifiedName()) != null;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Validate principal: " + principal + ": " + hit);
+        }
+        return hit;
     }
     
 
 
     public boolean validateGroup(String groupName) {
-        return this.groups.containsKey(groupName);
+        boolean hit = this.groups.containsKey(groupName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Validate group: " + groupName + ": " + hit);
+        }
+        return hit;
     }
     
 
@@ -138,21 +165,38 @@ public class PropertyConfigurableMD5PrincipalStore
 
     public String[] resolveGroup(String groupName) {
         if (!this.groups.containsKey(groupName)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Resolve group: " + groupName + ": unknown group");
+            }
+
             return new String[0];
         }
 
         List members = (List) this.groups.get(groupName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Resolve group: " + groupName + ": " + members);
+        }
+
         return (String[]) members.toArray(new String[members.size()]);
     }
 
 
     public boolean isMember(Principal principal, String groupName) {
         if (!this.groups.containsKey(groupName)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Check membership for principal " + principal
+                             + ", group: " + groupName + ": unknown group");
+            }
             return false;
         }
 
         List members = (List) this.groups.get(groupName);
-        return members.contains(principal.getQualifiedName());
+        boolean hit = members.contains(principal.getQualifiedName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Check membership for principal " + principal
+                         + ", group: " + groupName + ": " + hit);
+        }
+        return hit;
     }
 
 
@@ -169,6 +213,11 @@ public class PropertyConfigurableMD5PrincipalStore
                 "Authentication failed for principal " + principal.getQualifiedName()
                 + ", " + "wrong credentials.");
         }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Successfully authenticated principal: " + principal);
+        }
+
     }
 
 }

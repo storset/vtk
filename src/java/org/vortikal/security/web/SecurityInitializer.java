@@ -30,12 +30,22 @@
  */
 package org.vortikal.security.web;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.OrderComparator;
 
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
@@ -52,22 +62,67 @@ import org.vortikal.security.TokenManager;
  * AuthenticationHandler authentication handlers}) and tries to
  * process them.
  *
- * <p>Configurable properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>authenticationHandlers</code> the list of {@link
  *       AuthenticationHandler authentication handlers} to use. These
- *       handlers are invoked in the same order they are provided.
+ *       handlers are invoked in the same order they are provided.  If
+ *       unspecified, the application context is searched for
+ *       authentication handlers.
  *   <li><code>tokenManager</code> the {@link TokenManager} which
  *       stores repository tokens for authenticated principals
  * </ul>
  */
-public class SecurityInitializer {
+public class SecurityInitializer implements InitializingBean, ApplicationContextAware {
 
 
     private static Log logger = LogFactory.getLog(SecurityContext.class);
     private TokenManager tokenManager;
 
     private AuthenticationHandler[] authenticationHandlers = null;
+    private ApplicationContext applicationContext;
+
+
+    public void setTokenManager(
+            TokenManager tokenManager) {
+        this.tokenManager = tokenManager;
+    }
+
+
+    public void setAuthenticationHandlers(
+        AuthenticationHandler[] authenticationHandlers) {
+        this.authenticationHandlers = authenticationHandlers;
+    }
+    
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+    
+
+    public void afterPropertiesSet() {
+        if (this.authenticationHandlers == null) {
+            logger.info("No authentication handlers specified, looking in context");
+
+            Map matchingBeans = this.applicationContext.getBeansOfType(
+                AuthenticationHandler.class, false, false);
+
+            List handlers = new ArrayList(matchingBeans.values());
+            if (handlers.size() == 0) {
+                throw new IllegalStateException(
+                    "At least one authentication handler must be specified, "
+                    + "either explicitly or in application context");
+            }
+
+            Collections.sort(handlers, new OrderComparator());
+            this.authenticationHandlers = (AuthenticationHandler[])
+                handlers.toArray(new AuthenticationHandler[handlers.size()]);
+
+        }
+
+        logger.info("Using authentication handlers: "
+                    + Arrays.asList(this.authenticationHandlers));
+    }
     
 
     public boolean createContext(HttpServletRequest req,
@@ -197,27 +252,6 @@ public class SecurityInitializer {
     }
 
     /**
-     * @param tokenManager The tokenManager to set.
-     */
-    public void setTokenManager(
-            TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
-    }
-
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(getClass().getName());
-        sb.append(": ").append(System.identityHashCode(this));
-        return sb.toString();
-    }
-
-    public void setAuthenticationHandlers(
-        AuthenticationHandler[] authenticationHandlers) {
-        this.authenticationHandlers = authenticationHandlers;
-    }
-    
-    /**
      * Logs out the client from the authentication system. Clears the
      * {@link SecurityContext}, removes the principal from the {@link
      * TokenManager} and invalidates the request {@link
@@ -252,6 +286,17 @@ public class SecurityInitializer {
 
         return result;
         
+    }
+
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getName());
+        sb.append(": ").append(System.identityHashCode(this));
+        sb.append(", authenticationHandlers: [");
+        sb.append(java.util.Arrays.asList(this.authenticationHandlers));
+        sb.append("]");
+        return sb.toString();
     }
 }
 

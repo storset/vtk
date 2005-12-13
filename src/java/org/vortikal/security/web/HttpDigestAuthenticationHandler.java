@@ -41,6 +41,7 @@ import org.doomdark.uuid.UUIDGenerator;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.Ordered;
 
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
@@ -82,10 +83,11 @@ import org.vortikal.util.web.HttpUtil;
  *   conjunction with the <code>maintainState</code> setting for
  *   keeping state between requests. Note: Needs to be cleaned up
  *   periodically from an external source.
+ *   <li><code>order</code> - the order returned in {@link Order#getOrder}
  * </ul>
  */
 public class HttpDigestAuthenticationHandler
-  implements AuthenticationHandler, AuthenticationChallenge, InitializingBean {
+  implements AuthenticationHandler, AuthenticationChallenge, Ordered, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private String nonceKey = NetUtils.guessHostName() + "." + System.currentTimeMillis();
@@ -95,6 +97,7 @@ public class HttpDigestAuthenticationHandler
     private Set excludedPrincipals = new HashSet();
     private boolean maintainState = false;
     private SimpleCache stateMap;
+    private int order = Integer.MAX_VALUE;
     
 
     public void setPrincipalStore(MD5PasswordPrincipalStore principalStore) {
@@ -121,6 +124,14 @@ public class HttpDigestAuthenticationHandler
         this.maintainState = maintainState;
     }
     
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    public int getOrder() {
+        return this.order;
+    }
+
     public void afterPropertiesSet() {
         if (this.principalStore == null) {
             throw new BeanInitializationException(

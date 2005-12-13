@@ -63,6 +63,7 @@ import org.vortikal.util.codec.MD5;
  *   <li><code>realm</code> - the authentication realm
  *   <li><code>domain</code> - the domain of the principals in this
  *   store (may be <code>null</code>)
+ *   <li><code>order</code> - the order returned in {@link Order#getOrder}
  * </ul>
  * 
  */

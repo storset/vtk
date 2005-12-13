@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.servlet;
 
-
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,8 +41,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.core.OrderComparator;
@@ -55,6 +54,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
+
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -188,7 +188,7 @@ public class VortikalServlet extends DispatcherServlet {
                     SECURITY_INITIALIZER_BEAN_NAME + "' is reserved", 
                     SecurityInitializer.class, bean.getClass());
         }
-        logger.info("Security initializer " + bean + " set up successfully");
+        logger.info("Security initializer set up successfully: " + bean);
         this.securityInitializer = (SecurityInitializer) bean;
     }
 

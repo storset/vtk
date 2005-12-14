@@ -12,6 +12,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Added a new JDOM Document extension that is backed by a
+        repository resource.
+      </action>
+
+      <action dev="gormap" type="add">
         New view wrapper that sets arbitrary response headers,
         configurable using a (key, value) map.
       </action>
@@ -19,7 +24,7 @@
       <action dev="gormap" type="add">
         Added java.util.Properties and java.util.HashMap
         implementations that read their initial entries from the
-        content repository, with support for reloading those entries.
+        content repository, with support for dynamic reloading.
       </action>
 
       <action dev="gormap" type="remove">

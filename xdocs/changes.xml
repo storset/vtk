@@ -2,117 +2,308 @@
 
 <document>
   <properties>
-    <title>Change Log</title>
+    <title>Change Log
+    </title>
   </properties>
   <body>
+
     <release version="0.2.1-SNAPSHOT" date="In SVN" description="Release 0.2.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+
+      <action dev="gormap" type="fix">
+        Collection timestamps are now correctly updated on resource
+        creations and deletions.
+      </action>
+
     </release>
 
     <release version="0.2" date="2005-11-22" description="Release 0.2">
-      <action dev="gormap" type="add">Added a new interface: RequestFilter for performing various pre-processing tasks on servlet requests.</action>
-      <action dev="gormap" type="add">Added assertion for matching on principals and groups.</action>
-      <action dev="gormap" type="add">Added assertion for performing regular expression matches on request headers.</action>
-      <action dev="gormap" type="fix">Removed extra URL decoding on request context initialization (caused file names that contain the '+' character to fail).</action>
-      <action dev="gormap" type="add">Added web controller for serving class path resources.</action>
-      <action dev="gormap" type="update">Reworked the shell support package. Added a new socket based command line interface for remote shell support.</action>
-      <action dev="gormap" type="fix">Fixed bug that caused move operations to fail in certain circumstances when the principal was not present in the ACL of the resource being moved.</action>
-      <action dev="gormap" type="update">The plain text edit component is now more robust with regards to character encoding in XML/HTML documents.</action>
-      <action dev="gormap" type="fix">Fixed bug in wrapped views where HEAD requests sometimes received different Content-Length headers than GET requests.</action>
+      <action dev="gormap" type="add">Added a new interface:
+      RequestFilter for performing various pre-processing tasks on
+        servlet requests.
+      </action>
+      <action dev="gormap" type="add">Added assertion for matching on
+        principals and groups.
+      </action>
+      <action dev="gormap" type="add">Added assertion for performing
+        regular expression matches on request headers.
+      </action>
+      <action dev="gormap" type="fix">Removed extra URL decoding on
+      request context initialization (caused file names that contain
+        the '+' character to fail).
+      </action>
+      <action dev="gormap" type="add">Added web controller for serving
+        class path resources.
+      </action>
+      <action dev="gormap" type="update">Reworked the shell support
+      package. Added a new socket based command line interface for
+        remote shell support.
+      </action>
+      <action dev="gormap" type="fix">Fixed bug that caused move
+      operations to fail in certain circumstances when the principal
+        was not present in the ACL of the resourcebeing moved.
+      </action>
+      <action dev="gormap" type="update">The plain text edit component
+      is now more robust with regards to character encoding in
+        XML/HTML documents.
+      </action>
+      <action dev="gormap" type="fix">Fixed bug in wrapped views where
+      HEAD requests sometimes received different Content-Length
+        headers than GET requests.
+      </action>
     </release>
     <release version="0.1.9.3" date="2005-10-03" description="Release 0.1.9.2">
-      <action dev="evenh" type="update">Added 'reference' type element to structured text parser.</action>
+      <action dev="evenh" type="update">Added 'reference' type element
+        to structured text parser.
+      </action>
     </release>
     <release version="0.1.9.3" date="In SVN" description="Release 0.1.9.2">
-      <action dev="evenh" type="update">Added 'reference' type element to structured text parser.</action>
+      <action dev="evenh" type="update">Added 'reference' type element
+        to structured text parser.
+      </action>
     </release>
     <release version="0.1.9.2" date="2005-09-07" description="Release 0.1.9.2">
-      <action dev="oyviste" type="update">Various database (SQL) changes to improve performance.</action>
+      <action dev="oyviste" type="update">Various database (SQL)
+        changes to improve performance.
+      </action>
     </release>
     <release version="0.1.9.1" date="2005-08-26" description="Release 0.1.9.1">
-      <action dev="gormap" type="fix">Update property 'contentLastModified' when storing resources with the 'overrideLiveProperties' flag set.</action>
+      <action dev="gormap" type="fix">Update property
+      'contentLastModified' when storing resources with the
+        'overrideLiveProperties' flag set.
+      </action>
     </release>
     <release version="0.1.9" date="2005-08-18" description="Release 0.1.9">
-      <action dev="tommae" type="add">Added controllers for copying and moving resources.</action>
-      <action dev="gormap" type="update">Made the current servlet request available trough the request context.</action>
+      <action dev="tommae" type="add">Added controllers for copying
+        and moving resources.
+      </action>
+      <action dev="gormap" type="update">Made the current servlet
+        request available trough the request context.
+      </action>
     </release>
     <release version="0.1.8" date="2005-07-27" description="Release 0.1.8">
-      <action dev="gormap" type="add">Added reference data provider for creating URLs to fixed resources (as opposed to the currently requested resource).</action>
-      <action dev="storset,gormap" type="update">Refactored the view wrapping framework. Added a new package 'view.wrapper' that now contains the view wrapping code. Split 'referencedataprovider' package into 'referencedata' and 'referencedata.provider'.</action>
-      <action dev="storset" type="add">Added possibility to wrap views and specify reference data providers at the view resolver level, making it easier to provide consistent sets of related views.</action>
-      <action dev="gormap" type="add">Added a handler interceptor that redirects to a re-written URL when the request URI matches a given regular expression</action>
-      <action dev="gormap" type="update">Wildcards ('*') are now allowed in port and protocol assertions.</action>
-      <action dev="storset" type="add">Added ...util.beans.comparator and two bean comparators</action>
-      <action dev="gormap" type="add">Added preliminary support for HTTP/Digest authentication.</action>
-      <action dev="storset" type="fix">Fixed nullpointer in plaintext edit.</action>
-      <action dev="storset" type="remove">TabsProvider and ActionBarProvider replaced by menu component</action>
-      <action dev="storset" type="add">Added menu component</action>
-      <action dev="storset" type="update">Reworked/generalized categorizable functionality</action>
-      <action dev="gormap" type="update">Added API support for rejecting invalid authentication requests.</action>
-      <action dev="gormap" type="update">Added HTTP status codes to request/access logging.</action>
-      <action dev="storset" type="update">Adding/deleting users/groups allows for multiple csv users at once</action>
+      <action dev="gormap" type="add">Added reference data provider
+      for creating URLs to fixed resources (as opposed to the
+        currently requested resource).
+      </action>
+      <action dev="storset,gormap" type="update">Refactored the view
+      wrapping framework. Added a new package 'view.wrapper' that now
+      contains the view wrapping code. Split 'referencedataprovider'
+        package into 'referencedata' and 'referencedata.provider'.
+      </action>
+      <action dev="storset" type="add">Added possibility to wrap views
+      and specify reference data providers at the view resolver level,
+        making it easier to provide consistent sets of related views.
+      </action>
+      <action dev="gormap" type="add">Added a handler interceptor that
+      redirects to a re-written URL when the request URI matches a
+        given regular expression
+      </action>
+      <action dev="gormap" type="update">Wildcards ('*') are now
+        allowed in port and protocol assertions.
+      </action>
+      <action dev="storset" type="add">Added ...util.beans.comparator
+        and two bean comparators
+      </action>
+      <action dev="gormap" type="add">Added preliminary support for
+        HTTP/Digest authentication.
+      </action>
+      <action dev="storset" type="fix">Fixed nullpointer in plaintext
+edit.
+      </action>
+      <action dev="storset" type="remove">TabsProvider and
+        ActionBarProvider replaced by menu component
+      </action>
+      <action dev="storset" type="add">Added menu component
+      </action>
+      <action dev="storset" type="update">Reworked/generalized
+        categorizable functionality
+      </action>
+      <action dev="gormap" type="update">Added API support for
+        rejecting invalid authentication requests.
+      </action>
+      <action dev="gormap" type="update">Added HTTP status codes to
+        request/access logging.
+      </action>
+      <action dev="storset" type="update">Adding/deleting users/groups
+        allows for multiple csv users at once
+      </action>
     </release>
     <release version="0.1.8-pr3" date="2005-06-17">
-      <action dev="storset" type="add">Added new FreemarkerConfig implementation, MultiTemplateLocationsFreeMarkerConfigurer, looking up (possibly) multiple template locations in the application context</action>
-      <action dev="storset" type="update">Catching possible IllegalArgumentException when clients send unparsable date header</action>
+      <action dev="storset" type="add">Added new FreemarkerConfig
+      implementation, MultiTemplateLocationsFreeMarkerConfigurer,
+      looking up (possibly) multiple template locations in the
+        application context
+      </action>
+      <action dev="storset" type="update">Catching possible
+      IllegalArgumentException when clients send unparsable date
+header
+      </action>
     </release>
     <release version="0.1.8-pr2" date="2005-06-03">
-      <action dev="gormap" type="update">Updated ResourcePrincipalPermissionAssertion to avoid matching when the repository is in read-only mode.</action>
-      <action dev="gormap" type="update">Modified the mechanism for cleaning up expired locks to perform all the work directly in the data access layer, instead of first loading the resources.</action>
+      <action dev="gormap" type="update">Updated
+      ResourcePrincipalPermissionAssertion to avoid matching when the
+        repository is in read-only mode.
+      </action>
+      <action dev="gormap" type="update">Modified the mechanism for
+      cleaning up expired locks to perform all the work directly in
+        the data access layer, instead of first loading the resources.
+      </action>
     </release>
     <release version="0.1.8-pr1" date="2005-05-27">
-      <action dev="storset" type="update">Put will now try to guess content type based on file extension when the client sends application/octet-stream</action>
-      <action dev="gormap" type="add">Added a new view implementation, 'StandardHttpView' that allows parameterization of status code and headers.</action>
-      <action dev="gormap" type="update">Moved to Spring 1.2 final</action>
+      <action dev="storset" type="update">Put will now try to guess
+      content type based on file extension when the client sends
+        application/octet-stream
+      </action>
+      <action dev="gormap" type="add">Added a new view implementation,
+      'StandardHttpView' that allows parameterization of status code
+and headers.
+      </action>
+      <action dev="gormap" type="update">Moved to Spring 1.2 final
+      </action>
     </release>
     <release version="0.1.7" date="2005-05-13">
-      <action dev="gormap" type="fix">Fixed NullPointerException error with error handler resolving when no service is yet resolved.</action>
-      <action dev="storset" type="fix">Fixed bug in EvenStructuredText. It was unable to handle unfinished links at the end of the text (i.e. "laLA":[end-of-text])</action>
-      <action dev="gormap" type="update">Authentication exceptions are no longer logged at level WARN when checking resources and requests for 'If-Modified-Since' dates before the actual request processing.</action>
-      <action dev="gormap" type="fix">FilteringViewWrapper now bails out (aborting the filter sequence) when it discovers that the wrapped response has an unsupported character encoding. The original response is written instead.</action>
-      <action dev="storset" type="add">Extended child assertion with optional assertion property to be tested against child</action>
+      <action dev="gormap" type="fix">Fixed NullPointerException error
+        with error handler resolving when no service is yet resolved.
+      </action>
+      <action dev="storset" type="fix">Fixed bug in
+      EvenStructuredText. It was unable to handle unfinished links at
+        the end of the text (i.e. "laLA":[end-of-text])
+      </action>
+      <action dev="gormap" type="update">Authentication exceptions are
+      no longer logged at level WARN when checking resources and
+        requests for 'If-Modified-Since' dates before the actual request
+      processing.
+      </action>
+      <action dev="gormap" type="fix">FilteringViewWrapper now bails
+      out (aborting the filter sequence) when it discovers that the
+      wrapped response has an unsupported character encoding. The
+        original response is written instead.
+      </action>
+      <action dev="storset" type="add">Extended child assertion with
+        optional assertion property to be tested against child
+      </action>
     </release>
     <release version="0.1.6" date="2005-05-11">
-      <action dev="gormap" type="update">Stale http sessions are now detected in the security initializer. A new session is created if the old one was invalid.</action>
-      <action dev="gormap" type="update">Composite view now avoids writing body on HEAD requests.</action>
+      <action dev="gormap" type="update">Stale http sessions are now
+      detected in the security initializer. A new session is created
+        if the old onewas invalid.
+      </action>
+      <action dev="gormap" type="update">Composite view now avoids
+        writing body on HEAD requests.
+      </action>
     </release>
     <release version="0.1.5" date="2005-05-10">
-      <action dev="gormap" type="update">XSLT now handles transformations with content type 'application/xhtml+xml' (XHTML) properly.</action>
-      <action dev="gormap" type="fix">Servlet requests getting a '304 Not Modified' response are now logged as 'cached by client', and not the other way around.</action>
-      <action dev="gormap" type="fix">Fixed character encoding issue with BufferedResponseWrapper.</action>
+      <action dev="gormap" type="update">XSLT now handles
+      transformations with content type 'application/xhtml+xml'
+        (XHTML) properly.
+      </action>
+      <action dev="gormap" type="fix">Servlet requests getting a '304
+      Not Modified' response are now logged as 'cached by client', and
+        not the other way around.
+      </action>
+      <action dev="gormap" type="fix">Fixed character encoding issue
+        with BufferedResponseWrapper.
+      </action>
     </release>
     <release version="0.1.4" date="2005-05-09">
-      <action dev="storset" type="update">Improved logging for data access layer.</action>
-      <action dev="gormap" type="update">Improved error logging for dispatcher servlet</action>
-      <action dev="gormap" type="update">Parameterized lock timeouts for XML edit controllers</action>
-      <action dev="gormap" type="update">Fix for illegal (expired) session states</action>
+      <action dev="storset" type="update">Improved logging for data
+        accesslayer.
+      </action>
+      <action dev="gormap" type="update">Improved error logging for
+        dispatcher servlet
+      </action>
+      <action dev="gormap" type="update">Parameterized lock timeouts
+        for XML edit controllers
+      </action>
+      <action dev="gormap" type="update">Fix for illegal (expired)
+        sessionstates
+      </action>
     </release>
     <release version="0.1.3" date="2005-05-04">
-      <action dev="gormap" type="fix">Locks that have expired, but have not yet been removed by the lock-cleaning thread are not loaded anymore.</action>
-      <action dev="gormap" type="update">The correct timezone (UTC) is now used when returning the WebDAV 'creationdate' property.</action>
-      <action dev="gormap" type="update">Modification timestamps on collections are now correctly updated when creating child resources.</action>
+      <action dev="gormap" type="fix">Locks that have expired, but
+      have not yet been removed by the lock-cleaning thread are not
+        loaded anymore.
+      </action>
+      <action dev="gormap" type="update">The correct timezone (UTC) is
+        now used when returning the WebDAV 'creationdate' property.
+      </action>
+      <action dev="gormap" type="update">Modification timestamps on
+      collections are now correctly updated when creating child
+resources.
+      </action>
     </release>
     <release version="0.1.2" date="2005-04-29">
-      <action dev="gormap" type="add">Added the ability to associate error handlers with a service tree. When a service is specified for an error handler, the handler is not selected unless the service of the request is the same as or a descendant of the specified service.</action>
-      <action dev="gormap" type="fix">Fixed lock discovery functionality in XML edit component (re-locking previously failed due to a bug)</action>
-      <action dev="gormap" type="fix">WebDAV now returns the correct lock timeout on 'lockdiscovery' PROPFIND request. Fixes some issues with Microsoft Office and lock refreshing.</action>
-      <action dev="storset" type="update">Factored out services' ability to 'categorize' their parent into a specific parent property</action>
-      <action dev="storset" type="update">Factored out services' Categorizable functionality into its own interface</action>
-      <action dev="storset" type="add">Added a new MessageSource implementation that looks up other message sources in the application context and delegates lookups to them.</action>
-      <action dev="gormap" type="add">Implemented HTTP HEAD handling, both for FreeMarkerView and DisplayResourceView.</action>
+      <action dev="gormap" type="add">Added the ability to associate
+      error handlers with a service tree. When a service is specified
+      for an error handler, the handler is not selected unless the
+      service of the request is the same as or a descendant of the
+specified service.
+      </action>
+      <action dev="gormap" type="fix">Fixed lock discovery
+      functionality in XML edit component (re-locking previously
+        failed due to a bug)
+      </action>
+      <action dev="gormap" type="fix">WebDAV now returns the correct
+      lock timeout on 'lockdiscovery' PROPFIND request. Fixes some
+        issues with Microsoft Office and lock refreshing.
+      </action>
+      <action dev="storset" type="update">Factored out services'
+      ability to 'categorize' their parent into a specific parent
+property
+      </action>
+      <action dev="storset" type="update">Factored out services'
+        Categorizable functionality into its own interface
+      </action>
+      <action dev="storset" type="add">Added a new MessageSource
+      implementation that looks up other message sources in the
+        application context and delegates lookups to them.
+      </action>
+      <action dev="gormap" type="add">Implemented HTTP HEAD handling,
+        both for FreeMarkerView and DisplayResourceView.
+      </action>
     </release>
     <release version="0.1.1" date="2005-04-01">
-      <action dev="gormap" type="fix">Fixed crash in HtmlHeadContentFilter HTML head elements containing the '$' character.</action>
-      <action dev="gormap" type="add">Added RequestURIRegexpWrappingAssertion, for selectively applying assertions based on regular expression matching on the request URI. One use case for such an assertion is to require that certain subtrees in the URI space are only accessible through https.</action>
-      <action dev="storset" type="add">Added LinkConstructor as an optional parameter to xsl transformation with ResourceXsltView. This makes it possible to create links from within xsl.</action>
-      <action dev="storset" type="fix">Refactored/bug fixed getAbsolutePath() in AbstractPathBasedURIResolver. Not extensively tested.</action>
-      <action dev="gormap" type="update">It is now possible for services to 'hook into' another service trough a new category-based lookup system, avoiding the need to explicitly refer to child services from an existing service. (As a consequence, services may now belong to more than one category.)</action>
-      <action dev="gormap" type="update">Added refresh functionality to the document templates listing component for creating new documents.</action>
-      <action dev="gormap" type="update">Improved character encoding for HTML documents in plaintext editing component. Now checks actual HTML content for meta tags if no character encoding is set on the resource itself.</action>
+      <action dev="gormap" type="fix">Fixed crash in
+      HtmlHeadContentFilter HTML head elements containing the '$'
+character.
+      </action>
+      <action dev="gormap" type="add">Added
+      RequestURIRegexpWrappingAssertion, for selectively applying
+      assertions based on regular expression matching on the request
+      URI. One use case for such an assertion is to require that
+        certain subtrees in the URI space are only accessible through
+      https.
+      </action>
+      <action dev="storset" type="add">Added LinkConstructor as an
+      optional parameter to xsl transformation with
+        ResourceXsltView. This makes it possible to create links from
+      within xsl.
+      </action>
+      <action dev="storset" type="fix">Refactored/bug fixed
+      getAbsolutePath() in AbstractPathBasedURIResolver. Not
+        extensively tested.
+      </action>
+      <action dev="gormap" type="update">It is now possible for
+      services to 'hook into' another service trough a new
+      category-based lookup system, avoiding the need to explicitly
+      refer to child services from an existing service. (As a
+        consequence, services may now belong tomore than one category.)
+      </action>
+      <action dev="gormap" type="update">Added refresh functionality
+      to the document templates listing component for creating new
+documents.
+      </action>
+      <action dev="gormap" type="update">Improved character encoding
+      for HTML documents in plaintext editing component. Now checks
+      actual HTML content for meta tags if no character encoding is
+        set on the resource itself.
+      </action>
     </release>
     <release version="0.1" date="2005-03-08">
-      <action dev="gormap" type="update">Initial release</action>
+      <action dev="gormap" type="update">Initial release
+      </action>
     </release>
   </body>
 </document>

@@ -79,7 +79,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private DataAccessor dao;
     private RoleManager roleManager = null;
     private PrincipalManager principalManager;
-    //private PrincipalStore principalStore;
     private TokenManager tokenManager;
     private String id;
 
@@ -600,8 +599,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 token, principal);
 
             Resource r = dao.load(destUri);
-            //ResourceDeletionEvent deletionEvent = new ResourceDeletionEvent(this,
-            //        srcUri);
             ResourceDeletionEvent deletionEvent = new ResourceDeletionEvent(this, srcUri,
                    src.getID(), src instanceof Collection);
 
@@ -614,6 +611,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         } catch (AclException e) {
             OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
                 "tried to set an illegal ACL", token, principal);
+
             throw new IllegalOperationException(e.getMessage());
         }
     }
@@ -680,9 +678,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         r.delete(principal, roleManager);
+
+        parentCollection.store(principal,
+                               parentCollection.getResourceDTO(
+                                   principal, principalManager, roleManager),
+                               roleManager);
+
         OperationLog.success("delete(" + uri + ")", token, principal);
 
-        //ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri);
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), 
                                                                 r instanceof Collection);
 
@@ -1061,6 +1064,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
+
+        if (!validateURI(uri)) {
+            OperationLog.failure("getACL(" + uri + ")", "resource not found",
+                token, principal);
+
+            throw new ResourceNotFoundException(uri);
+        }
 
         Resource r = dao.load(uri);
 

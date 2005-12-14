@@ -163,6 +163,11 @@ public class Collection extends Resource implements Cloneable {
         // Update timestamps:
         setContentLastModified(new Date());
         setPropertiesLastModified(new Date());
+
+        // Update principal info:
+        setContentModifiedBy(principal.getQualifiedName());
+        setPropertiesModifiedBy(principal.getQualifiedName());
+
         dao.store(this);
 
         return r;
@@ -212,6 +217,11 @@ public class Collection extends Resource implements Cloneable {
         // Update timestamps:
         setContentLastModified(new Date());
         setPropertiesLastModified(new Date());
+
+        // Update principal info:
+        setContentModifiedBy(principal.getQualifiedName());
+        setPropertiesModifiedBy(principal.getQualifiedName());
+
         dao.store(this);
 
         return r;
@@ -359,6 +369,7 @@ public class Collection extends Resource implements Cloneable {
         }
 
         setPropertiesModifiedBy(principal.getQualifiedName());
+        setContentModifiedBy(principal.getQualifiedName());
 
         if (!dto.getOverrideLiveProperties()) {
             setContentLastModified(new Date());

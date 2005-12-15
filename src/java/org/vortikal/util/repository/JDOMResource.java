@@ -52,7 +52,8 @@ public class JDOMResource extends Document {
             Document doc = builder.build(inputStream);
             this.setContent(doc.removeContent());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to build document", e);
+            throw new RuntimeException("Unable to build document", e);
         }
     }
+
 }

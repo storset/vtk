@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.web.RequestContext;
 
 
 /**
@@ -43,6 +44,9 @@ import org.vortikal.security.Principal;
  * <ul>
  *   <li><code>port</code> - either the string <code>*</code> meaning
  *   'match all ports', or a port number (a positive integer)
+ *   <li><code>additionaalport</code> - a positive integer specifying
+ *   an additional port to match. This port only has effect on URL
+ *   generation if it matches the port in the request.
  * </ul>
  */
 public class RequestPortAssertion
@@ -50,6 +54,8 @@ public class RequestPortAssertion
 
     private int port = -1;
 	
+    private int additionalPort = -1;
+
     public void setPort(String port) {
 		
         if (!"*".equals(port)) {
@@ -57,6 +63,16 @@ public class RequestPortAssertion
             if (this.port <= 0) throw new IllegalArgumentException(
                 "Server port number must be a positive integer");
         }
+    }
+	
+    public void setAdditionalPort(int port) {
+		
+        if (port <= 0) {
+            throw new IllegalArgumentException(
+                "Port number must be a number greater than zero");
+        }
+
+        this.additionalPort = port;
     }
 	
 
@@ -94,7 +110,18 @@ public class RequestPortAssertion
     public boolean processURL(URL url, Resource resource, Principal principal,
                               boolean match) {
         if (this.port != -1) {
+
             url.setPort(new Integer(this.port));
+
+        }
+
+        if (this.additionalPort != -1) {
+
+            RequestContext requestContext = RequestContext.getRequestContext();
+            int requestPort = requestContext.getServletRequest().getServerPort();
+            if (this.additionalPort == requestPort) {
+                url.setPort(new Integer(requestPort));
+            }
         }
         return true;
     }
@@ -103,7 +130,11 @@ public class RequestPortAssertion
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         if (this.port == -1) {
             return true;
+
+        } else if (this.additionalPort == request.getServerPort()) {
+            return true;
         }
+
         return port == request.getServerPort();
     }
 

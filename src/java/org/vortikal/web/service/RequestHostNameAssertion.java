@@ -30,11 +30,13 @@
  */
 package org.vortikal.web.service;
 
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.util.web.URLUtil;
+import org.vortikal.web.RequestContext;
 
 /**
  * Assertion that matches on the request hostname.
@@ -43,16 +45,27 @@ import org.vortikal.util.web.URLUtil;
  * <ul>
  *   <li><code>hostName</code> - the hostname to match. A value of
  *   <code>*</code> means that any hostname matches.
+ *   <li><code>additionalHostNames</code> - a {@link Set} of
+ *   additional host names to match for. When generating URLs, a
+ *   hostname specified here has effect only if it matches that of the
+ *   request
  * </ul>
  */
 public class RequestHostNameAssertion implements Assertion {
 
     private String hostName;
+    private Set additionalHostNames;
+    
 	
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
 
+
+    public void setAdditionalHostNames(Set additionalHostNames) {
+        this.additionalHostNames = additionalHostNames;
+    }
+    
 
     /**
      * Gets the host name. If the configuration parameter
@@ -80,6 +93,42 @@ public class RequestHostNameAssertion implements Assertion {
     }
 
 
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+
+        url.setHost(this.getHostName());
+
+        if (this.additionalHostNames != null) {
+            
+            RequestContext requestContext = RequestContext.getRequestContext();
+
+            String requestHostName = requestContext.getServletRequest().getServerName();
+            if (this.additionalHostNames.contains(requestHostName)) {
+                url.setHost(requestHostName);
+            }
+        }
+        return true;
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        if ("*".equals(this.hostName)) {
+            return true;
+        }
+
+        String requestHostName = request.getServerName();
+        if (this.hostName.equals(requestHostName)) {
+            return true;
+        }
+
+        if (this.additionalHostNames != null &&
+            this.additionalHostNames.contains(requestHostName)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
 		
@@ -87,19 +136,6 @@ public class RequestHostNameAssertion implements Assertion {
         sb.append("; hostName = ").append(this.hostName);
 
         return sb.toString();
-    }
-
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        url.setHost(this.getHostName());
-        return true;
-    }
-
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        if ("*".equals(this.hostName)) {
-            return true;
-        }
-        String reqHostName = URLUtil.getHostName(request);
-        return this.hostName.equals(reqHostName);
     }
 
 

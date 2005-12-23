@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-
+import org.vortikal.web.RequestContext;
 
 
 /**
@@ -45,12 +45,22 @@ import org.vortikal.security.Principal;
  *   <lI><code>protocol</code> - the name of the protocol. Legal
  *   values are <code>*</code> (match any), <code>http</code> and
  *   <code>https</code>.
+ *   <li><code>additionalProtocol</code> - an additional protocol to
+ *   check. This protocol influences URL generation only if it matches
+ *   the port of the servlet request.
  * </ul>
  */
 public class RequestProtocolAssertion implements Assertion {
 	
-    private String protocol = null;
+    private final static String PROTO_HTTP = "http";
+    private final static String PROTO_HTTPS = "https";
+    private final static String PROTO_ANY = "*";
+    
+
+    private String protocol;
 	
+    private String additionalProtocol;
+    
 
     public String getProtocol() {
         return this.protocol;
@@ -58,25 +68,77 @@ public class RequestProtocolAssertion implements Assertion {
     
 
     public void setProtocol(String protocol) {
-        if ("http".equals(protocol) || "https".equals(protocol) || "*".equals(protocol)) {
+        if (PROTO_HTTP.equals(protocol) || PROTO_HTTPS.equals(protocol)
+                                        || PROTO_ANY.equals(protocol)) {
             this.protocol = protocol;
+
         } else {
             throw new IllegalArgumentException(
-                "Values '*', 'http' and 'https' are supported for the 'protocol' property");
+                "Values '" + PROTO_ANY + "', '" + PROTO_HTTP
+                + "' and '" + PROTO_HTTPS + "' are supported for the 'protocol' property");
         }
     }
 
+    public void setAdditionalProtocol(String protocol) {
+        if (PROTO_HTTP.equals(protocol) || PROTO_HTTPS.equals(protocol)) {
+            this.additionalProtocol = protocol;
+        } else {
+            throw new IllegalArgumentException(
+                "Values '" + PROTO_HTTP + "' and '" + PROTO_HTTPS
+                + "' are supported for the 'additionalProtocol' property");
+        }
+    }
 
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestProtocolAssertion) {
-            if ("*".equals(this.protocol) ||
-                "*".equals(((RequestProtocolAssertion) assertion).getProtocol())) {
+            if (PROTO_ANY.equals(this.protocol) ||
+                PROTO_ANY.equals(((RequestProtocolAssertion) assertion).getProtocol())) {
                 return false;
             }
 
             return ! (this.protocol.equals(
                           ((RequestProtocolAssertion)assertion).getProtocol()));
         }
+        return false;
+    }
+
+
+    public boolean processURL(URL url, Resource resource,
+                              Principal principal, boolean match) {
+        if (!PROTO_ANY.equals(this.protocol)) {
+            url.setProtocol(this.protocol);
+        }
+        
+        if (this.additionalProtocol != null && !PROTO_ANY.equals(this.protocol)) {
+
+            RequestContext requestContext = RequestContext.getRequestContext();
+            String requestProtocol = getProtocol(requestContext.getServletRequest());
+            
+            if (this.additionalProtocol.equals(requestProtocol)) {
+                url.setProtocol(requestProtocol);
+            }
+        }
+
+        return true;
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource,
+                           Principal principal) {
+        if (PROTO_ANY.equals(this.protocol)) {
+            return true;
+        }
+
+        String requestProtocol = getProtocol(request);
+        if (this.protocol.equals(requestProtocol)) {
+            return true;
+        }
+
+        if (this.additionalProtocol != null
+            && this.additionalProtocol.equals(requestProtocol)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -90,25 +152,9 @@ public class RequestProtocolAssertion implements Assertion {
         return sb.toString();
     }
 
-
-    public boolean processURL(URL url, Resource resource,
-                              Principal principal, boolean match) {
-        if (!"*".equals(this.protocol)) {
-            url.setProtocol(this.protocol);
-        }
-        return true;
+    private String getProtocol(HttpServletRequest request) {
+        return request.isSecure() ? PROTO_HTTPS : PROTO_HTTP;
     }
-
-
-    public boolean matches(HttpServletRequest request, Resource resource,
-                           Principal principal) {
-        if ("*".equals(this.protocol)) {
-            return true;
-        }
-        if ("http".equals(this.protocol))
-            return !request.isSecure();
-        
-        return request.isSecure();
-    }
+    
 
 }

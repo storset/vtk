@@ -263,6 +263,7 @@ public class URLUtil {
      *
      * @param request a <code>HttpServletRequest</code> value
      * @return a <code>String</code>
+     * @deprecated Use {@link HttpServletRequest#getServerName} instead.
      */
     public static String getHostName(HttpServletRequest request) {
         StringBuffer url = request.getRequestURL();

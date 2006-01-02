@@ -1,0 +1,4 @@
+This directory contains Freemarker templates that are components of
+the layout wrapping mechanism. The layout is applied after the main
+HTML page is rendered.
+                                            

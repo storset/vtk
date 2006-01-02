@@ -1,0 +1,4 @@
+This directory contains Freemarker templates that are reusable
+components. These templates should generally be referred to, and not
+include or import other templates, with a possible exception of
+templates defined here.

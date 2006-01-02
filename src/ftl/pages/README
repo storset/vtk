@@ -1,0 +1,22 @@
+This directory contains Freemarker templates that are complete HTML
+pages (pages that should be self-contained and work stand-alone
+without any layout wrapping).
+
+This is an example of a layout wrapping: 
+                                            
+                                             -------------- 
+ --------------                             |    head      |
+|              |                             -------------- 
+|              |                            |    header    |
+|  HTML-page   |   --- layout-wrapping -->   --------------
+|              |                            |              |
+|              |                            |  Modified    |
+|              |                            |  HTML-page   |
+ --------------                             |              |
+                                             -------------- 
+                                            |    footer    |
+                                             -------------- 
+
+
+The original HTML page is expected to be well-formed (as content is
+inserted in the <head> and <body> elements.

@@ -47,6 +47,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 
+
 public abstract class AbstractWrappingViewResolver implements ViewResolver {
 
     private Log logger = LogFactory.getLog(this.getClass());
@@ -54,10 +55,23 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
     private ViewWrapper viewWrapper;
     private ReferenceDataProvider[] referenceDataProviders;
 
+
+    public void setReferenceDataProviders(
+        ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
+
+    
+    public void setViewWrapper(ViewWrapper viewWrapper) {
+        this.viewWrapper = viewWrapper;
+    }
+
+
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         View view = resolveViewNameInternal(viewName, locale);
         
-        if (view != null) {
+        if (view != null) {           
+
             view = new ProxyView(view, this.referenceDataProviders, this.viewWrapper);
         }
         if (logger.isDebugEnabled()) {
@@ -76,15 +90,6 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
      */
     protected abstract View resolveViewNameInternal(String viewName, Locale locale);
 
-
-    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
-        this.referenceDataProviders = referenceDataProviders;
-    }
-
-    
-    public void setViewWrapper(ViewWrapper viewWrapper) {
-        this.viewWrapper = viewWrapper;
-    }
 
     /**
      * Wrapper class for the resolved view, running the <code>referenceDataProviders</code>
@@ -117,7 +122,9 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
                 providerList.addAll(Arrays.asList(resolverProviders));
             }
 
-            if (this.viewWrapper != null && (this.viewWrapper instanceof ReferenceDataProviding)) {
+            if (this.viewWrapper != null
+                && (this.viewWrapper instanceof ReferenceDataProviding)) {
+
                 ReferenceDataProvider[] wrapperProviders = null;
 
                 wrapperProviders = ((ReferenceDataProviding) this.viewWrapper)
@@ -143,15 +150,17 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
                             + this.view + ": " + providerList);
                 }
 
-                this.referenceDataProviders = (ReferenceDataProvider[])
-                    providerList.toArray(new ReferenceDataProvider[providerList.size()]);
+                this.referenceDataProviders = (ReferenceDataProvider[]) providerList.
+                    toArray(new ReferenceDataProvider[providerList.size()]);
             }        
         }
 
         public void render(Map model, HttpServletRequest request,
                 HttpServletResponse response) throws Exception {
 
-            if (this.referenceDataProviders != null && this.referenceDataProviders.length > 0) {
+            if (this.referenceDataProviders != null
+                && this.referenceDataProviders.length > 0) {
+
                 if (model == null) {
                     model = new HashMap();
                 }

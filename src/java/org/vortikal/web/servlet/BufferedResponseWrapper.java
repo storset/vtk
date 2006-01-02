@@ -75,10 +75,27 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
     }
 
 
+    /**
+     * Gets the written content as a byte buffer.
+     */
     public byte[] getContentBuffer() {
         return this.bufferStream.toByteArray();
     }
 
+
+    /**
+     * Gets the written content as a string, converted using the
+     * character encoding of this response. If that character encoding
+     * is unspecified, <code>utf-8</code> is used.
+     */
+    public String getContentString() throws Exception {
+        if (this.characterEncoding != null) {
+            return new String(this.bufferStream.toByteArray(), this.characterEncoding);
+        }
+
+        return new String(this.bufferStream.toByteArray(), "utf-8");
+    }
+    
 
     public String getContentType() {
         if (this.characterEncoding != null) {

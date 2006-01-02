@@ -1,0 +1,1753 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+
+  <!-- MANAGE services -->
+  
+  <bean id="manageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="admin" />
+        </bean>
+        <ref bean="requiresReadPermissionAssertion" />
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="setNorwegianNBLocaleService" />
+        <ref bean="setNorwegianNNLocaleService" />
+        <ref bean="setEnglishLocaleService" />
+        <ref bean="deleteResourceService" />
+        <!-- ref bean="duplicateResourceService" / -->
+        <ref bean="lockResourceService" />
+        <ref bean="unlockResourceService" />
+        <ref bean="previewCollectionListingService" />
+        <ref bean="aboutResourceService" />
+        <ref bean="permissionsService" />
+        <ref bean="manageCollectionListingService" />
+        <ref bean="previewService"/>
+      </list>
+    </property>        
+  </bean>
+
+  <bean id="permissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-9550</value></property>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>mode</value>
+          </property>
+          <property name="parameterValue">
+            <value>permissions</value>
+          </property>
+        </bean>      
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="aclInheritanceService" />
+        <ref bean="editWritePermissionsService" />
+        <ref bean="editReadPermissionsService" />
+        <ref bean="editWriteACLPermissionsService" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="permissionsHandler" />
+    </property>
+  </bean>        
+
+  <bean id="aboutResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>9600</value></property>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>mode</value>
+          </property>
+          <property name="parameterValue">
+            <value>about</value>
+          </property>
+        </bean>      
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="renameService" />
+        <ref bean="ownershipService" />
+        <ref bean="setContentTypeService" />
+        <ref bean="setContentLanguageService" />
+        <ref bean="setCharacterEncodingService" />
+        <ref bean="editResourcePropertyService" />
+        <ref bean="setResourcePropertyService" />
+        <ref bean="deleteResourcePropertyService" />      
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="aboutResourceHandler" />
+    </property>
+  </bean>        
+  
+  <bean id="manageCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-10000</value></property>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="manageCollectionListingHandler" />
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="createDocumentService" />
+        <ref bean="createCollectionService" />
+        <ref bean="fileUploadService" />
+      </list>        
+    </property>
+  </bean>        
+  
+
+
+  <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-1000</value></property>
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>upload-file</value>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+        
+        <!--        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+             <property name="method">
+             <value>POST</value>
+             </property>       
+             </bean>
+             <bean class="org.vortikal.web.service.RequestContentTypeRegexpAssertion">
+             <property name="pattern">
+             <value>^multipart/form-data;.*</value>
+             </property>
+             </bean> -->
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="fileUploadHandler" />
+    </property>
+  </bean>        
+
+  <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-998</value></property>
+    <property name="categories">
+      <set>
+        <value>resourceMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref local="resourceNotRootAssertion" />
+        <ref local="deleteResourcePermissionAssertion" />
+        <bean id="ss" class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>delete</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="deleteResourceHandler" />
+    </property>
+  </bean>
+  
+  <!-- bean id="duplicateResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="resourceNotRootAssertion" />
+        <ref local="writeParentPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>duplicate</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="duplicateResourceHandler" />
+    </property>
+  </bean -->
+
+
+
+  <bean id="lockResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="categories">
+      <set>
+        <value>lockUnlockAction</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="lockPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>lock</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="lockResourceHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="unlockResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="categories">
+      <set>
+        <value>lockUnlockAction</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="unlockPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>unlock</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="unlockResourceHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="createDocumentService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-999</value></property>
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <ref bean="resourceIsCollectionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>create-document</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="createDocumentHandler" />
+    </property>
+  </bean>
+
+  <bean id="createCollectionService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>0</value></property>
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <ref bean="resourceIsCollectionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>create-directory</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="createCollectionHandler" />
+    </property>
+  </bean>
+
+  <bean id="renameService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-1000</value></property>
+    <property name="categories">
+      <set>
+        <value>resourceMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref local="deleteResourcePermissionAssertion" />
+        <ref local="resourceNotRootAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>rename</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="renameHandler" />
+    </property>
+  </bean>
+
+  <bean id="ownershipService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="delegateOwnershipPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>delegate-ownership</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="ownershipHandler" />
+    </property>
+  </bean>
+
+  <bean id="aclInheritanceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="resourceNotRootAssertion" />
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>update-acl-inheritance</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="aclInheritanceHandler" />
+    </property>
+  </bean>
+
+  <bean id="editWritePermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-write-permissions</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="editWritePermissionsHandler" />
+    </property>
+  </bean>
+
+  <bean id="editReadPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-read-permissions</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="editReadPermissionsHandler" />
+    </property>
+  </bean>
+
+  <bean id="editWriteACLPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-write-acl-permissions</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="editWriteACLPermissionsHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="editResourcePropertyService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-property</value>
+          </property>
+        </bean>
+      </list>    
+    </property>
+    <property name="handler">
+      <ref bean="editResourcePropertyController" />
+    </property>
+  </bean>
+
+  <bean id="setContentTypeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-content-type</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="setContentTypeController" />
+    </property>
+  </bean>
+
+  <bean id="setContentLanguageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-language-type</value>
+          </property>
+        </bean>
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="setContentLanguageController" />
+    </property>
+  </bean>
+
+  <bean id="setCharacterEncodingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-character-encoding</value>
+          </property>
+        </bean>
+        <ref bean="contentTypeMatchesText" />
+      </list>
+    </property>  
+    <property name="handler">
+      <ref bean="setCharacterEncodingController" />
+    </property>
+  </bean>
+
+
+  <bean id="setResourcePropertyService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>set-property</value>
+          </property>
+        </bean>
+      </list>    
+    </property>
+    <property name="handler">
+      <ref bean="setResourcePropertyController" />
+    </property>
+  </bean>
+
+
+  <bean id="deleteResourcePropertyService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>delete-property</value>
+          </property>
+        </bean>
+      </list>    
+    </property>
+    <property name="handler">
+      <ref bean="deleteResourcePropertyController" />
+    </property>
+  </bean>
+
+
+  <!-- preview services -->
+  
+  <bean id="previewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-9900</value></property>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean
+         class="org.vortikal.web.service.ResourceIsCollectionAssertion">
+          <property name="invert" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>GET</value>
+          </property>       
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewFallbackHandler" />
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="previewXmlTransformService" />
+        <ref bean="previewHTMLService" />
+        <ref bean="previewImageService" />
+        <ref bean="previewTextService" />
+      </list>    
+    </property>
+  </bean>
+
+
+  <bean id="previewXmlTransformService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesXml" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace">
+            <value>http://www.uio.no/vortex/custom-properties</value>
+          </property>
+          <property name="name">
+            <value>transform-view</value>
+          </property>
+          <property name="value">
+            <value>yes</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewXmlResourceHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="previewHTMLService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesHtml" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewHTMLHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="previewImageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesImage" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewImageHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="previewTextService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesAnyText" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewTextHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="previewCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-9900" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsCollectionAssertion" />
+        <bean id="previewVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="preview" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="previewCollectionHandler" />
+    <property name="services">
+      <list>
+        <ref bean="previewTransformIndexXmlFileService" />
+        <ref bean="previewTransformIndexEngXmlFileService" />
+        <ref bean="previewDisplayIndexHtmlFileService" />
+        <ref bean="previewDisplayIndexEngHtmlFileService" />
+      </list>    
+    </property>
+  </bean>
+
+  <bean id="previewCollectionListingServiceInterceptor"
+        class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers">
+      <ref bean="indexFileMessageProvider" />
+    </property>
+  </bean>
+
+
+  <bean id="indexFileMessageProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
+    <description>
+      This provider depends on a 'resource' entry being present in the
+      model (use for example with the ResourceServiceURLController).
+    </description>
+    <property name="resourceInModelKey" value="resource" />
+    <property name="modelName" value="tabMessage" />
+    <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
+    <!--property name="repository" ref="repository" /-->
+    <!--property name="assertions" -->
+  </bean>
+
+
+  <bean id="previewTransformIndexXmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName">
+            <value>index.xml</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="previewCollectionListingServiceInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewIndexXmlHandler" />
+    </property>
+  </bean>                
+
+  <bean id="previewTransformIndexEngXmlFileService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName">
+            <value>index-eng.xml</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="previewCollectionListingServiceInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewIndexEngXmlHandler" />
+    </property>
+  </bean>                
+
+  <bean id="previewDisplayIndexHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName">
+            <value>index.html</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="previewCollectionListingServiceInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewIndexHtmlHandler" />
+    </property>
+  </bean>                
+
+  <bean id="previewDisplayIndexEngHtmlFileService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName">
+            <value>index-eng.html</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="previewCollectionListingServiceInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewIndexEngHtmlHandler" />
+    </property>
+  </bean>                
+
+
+  <!-- MANAGE controllers -->
+
+  
+  <bean id="fileUploadHandler" 
+    class="org.vortikal.web.controller.repository.FileUploadController"
+    parent="requestLocalRepositoryAware">
+    <property name="formView" value="manageCollectionListing" />
+    <property name="successView" value="redirectToManage" />
+    <property name="commandName" value="uploadForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.repository.FileUploadCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.repository.FileUploadCommandValidator"
+            parent="requestLocalRepositoryAware">
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="multipartResolver" 
+    class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
+  <bean id="deleteResourceHandler" 
+    class="org.vortikal.web.controller.repository.DeleteResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="redirectToManage" />
+  </bean>
+
+  <!-- bean id="duplicateResourceHandler" 
+    class="org.vortikal.web.controller.repository.DuplicateResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="redirectToManage" />
+  </bean -->
+
+  <bean id="lockResourceHandler" 
+    class="org.vortikal.web.controller.repository.LockResourceController"
+    parent="requestLocalRepositoryAware" />
+
+
+  <bean id="unlockResourceHandler" 
+    class="org.vortikal.web.controller.repository.UnlockResourceController"
+    parent="requestLocalRepositoryAware" />
+
+
+  <bean id="createDocumentHandler" 
+    class="org.vortikal.web.controller.repository.CreateDocumentController"
+    parent="requestLocalRepositoryAware">
+    <property name="formView" value="manageCollectionListing" />
+    <property name="successView" value="redirectToManage" />
+    <property name="commandName" value="createDocumentForm" />
+    <property name="commandClass"
+      value="org.vortikal.web.controller.repository.CreateDocumentCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.repository.CreateDocumentCommandValidator"
+            parent="requestLocalRepositoryAware" />
+    </property>
+    <property name="documentTemplates" ref="defaultDocumentTemplates" />
+  </bean>
+
+  <bean id="defaultDocumentTemplates" 
+    class="org.vortikal.web.controller.repository.DefaultDocumentTemplates">
+    <property name="templatesCollection"
+              value="${documentTemplatesCollection}" />
+    <property name="repository" ref="repository" />
+    <property name="trustedToken" ref="trustedToken" />
+    <property name="parseCategoryTemplates"
+              value="${documentTemplatesParseCategoryTemplates}" />
+    <property name="parseTopTemplates"
+              value="${documentTemplatesParseTopTemplates}" />
+  </bean>
+
+  <bean id="documentTemplatesRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uriPattern" value="/vrtx/templates/.*" />
+    <property name="targetObject" ref="defaultDocumentTemplates" />
+    <property name="method" value="refresh" />
+  </bean>
+
+  <!-- Refresh the document templates bean every 10 minutes -->
+  <!--
+  <bean id="repository.refreshDocumentTemplatsSchedulerFactory"
+        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="triggers">
+      <list>
+        <bean id="repository.refreshDocumentTemplatesTrigger"
+              class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+          <property name="jobDetail">
+            <bean id="repository.refreshDocumentTemplatesJobDetail" 
+                  class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+              <property name="group" value="repository" />
+              <property name="targetObject"><ref bean="defaultDocumentTemplates"/></property>
+              <property name="targetMethod"><value>refresh</value></property>
+            </bean>
+          </property>
+          <property name="startDelay">
+            <value>60000</value>
+          </property>
+          <property name="repeatInterval">
+            <value>600000</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  -->
+
+  <bean id="createCollectionHandler" 
+    class="org.vortikal.web.controller.repository.CreateCollectionController"
+    parent="requestLocalRepositoryAware">
+    <property name="formView" value="manageCollectionListing" />
+    <property name="successView" value="redirectToManage" />
+    <property name="commandName" value="createCollectionForm" />
+    <property name="commandClass"
+      value="org.vortikal.web.controller.repository.CreateCollectionCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.repository.CreateCollectionCommandValidator"
+            parent="requestLocalRepositoryAware" />
+    </property>
+  </bean>
+
+  <bean id="renameHandler" 
+    class="org.vortikal.web.controller.repository.RenameController"
+    parent="requestLocalRepositoryAware">
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirectToManage" />
+    <property name="commandName" value="renameForm" />
+    <property name="commandClass"
+      value="org.vortikal.web.controller.repository.RenameCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.repository.RenameCommandValidator"
+            parent="requestLocalRepositoryAware">
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="ownershipHandler" 
+    class="org.vortikal.web.controller.properties.OwnershipController"
+    parent="requestLocalRepositoryAware">
+    <property name="formView"><value>admin</value></property>
+    <property name="successView"><value>redirect</value></property>
+    <property name="commandName"><value>ownershipForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.OwnershipCommand</value>
+    </property>
+    <property name="principalManager">
+      <ref bean="principalManager" />
+    </property>
+  </bean>
+
+  <bean id="aclInheritanceHandler" 
+    class="org.vortikal.web.controller.permissions.ACLInheritanceController"
+    parent="requestLocalRepositoryAware">
+    <property name="formView" value="permissions" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="aclInheritanceForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.permissions.UpdateACLInheritanceCommand" />
+  </bean>
+
+  <bean id="editWritePermissionsHandler"
+        class="org.vortikal.web.controller.permissions.ACLEditController"
+        parent="requestLocalRepositoryAware">
+    <property name="principalManager"><ref bean="principalManager" /></property>    
+    <property name="privilege"><value>write</value></property>    
+    <property name="formView" value="permissions" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName"><value>editWritePermissionsForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.permissions.ACLEditCommand</value>
+    </property>
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
+        <property name="principalManager">
+          <ref bean="principalManager" />
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editReadPermissionsHandler"
+        class="org.vortikal.web.controller.permissions.ACLEditController"
+        parent="requestLocalRepositoryAware">
+    <property name="principalManager"><ref bean="principalManager" /></property>    
+    <property name="privilege"><value>read</value></property>    
+    <property name="formView" value="permissions" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName"><value>editReadPermissionsForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.permissions.ACLEditCommand</value>
+    </property>
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
+        <property name="principalManager">
+          <ref bean="principalManager" />
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editWriteACLPermissionsHandler"
+        class="org.vortikal.web.controller.permissions.ACLEditController"
+        parent="requestLocalRepositoryAware">
+    <property name="principalManager" ref="principalManager" />
+    <property name="privilege" value="write-acl" />
+    <property name="formView" value="permissions" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="editWriteACLPermissionsForm" />
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.permissions.ACLEditCommand</value>
+    </property>
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
+        <property name="principalManager">
+          <ref bean="principalManager" />
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editResourcePropertyController"
+        class="org.vortikal.web.controller.properties.EditResourcePropertyController"
+        parent="requestLocalRepositoryAware">
+    <property name="propertyDescriptors">
+      <ref bean="standardEditablePropertyList" />
+    </property>
+    <property name="formView"><value>admin</value></property>
+    <property name="successView"><value>redirect</value></property>
+    <property name="commandName"><value>editResourcePropertyForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
+    </property>
+  </bean>
+
+  <bean id="standardEditablePropertyList" class="java.util.ArrayList">
+    <description>
+      Represents the set of "controlled" resource properties that are
+      treated in a special way. These properties have a fixed
+      set of values.
+    </description>
+    <constructor-arg>
+      <list>
+        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
+          <property name="assertions">
+            <list>
+              <ref bean="contentTypeMatchesXmlOrHtmlOrCollection" />
+            </list>
+          </property>
+          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
+          <property name="name"><value>visual-profile</value></property>
+          <property name="values">
+            <list>
+              <value>yes</value>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
+          <property name="assertions">
+            <list>
+              <ref bean="contentTypeMatchesXml" />
+            </list>
+          </property>
+          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
+          <property name="name"><value>web-edit</value></property>
+          <property name="values">
+            <list>
+              <value>yes</value>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
+          <property name="assertions">
+            <list>
+              <ref bean="contentTypeMatchesXml" />
+            </list>
+          </property>
+          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
+          <property name="name"><value>transform-view</value></property>
+          <property name="values">
+            <list>
+              <value>yes</value>
+            </list>
+          </property>
+          <!--
+          <property name="defaultValue">
+            <description>
+              If this string has a value, that value is used as the
+              default value (typically shows up in a web form with
+              this value selected when setting the property for the
+              first time). If it has no value (i.e. null), the default
+              value is "not set".
+            </description>
+            <value>no</value>
+          </property>
+          -->
+        </bean>
+  
+        
+        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
+          <property name="assertions">
+            <list>
+              <ref bean="contentTypeMatchesXml" />
+            </list>
+          </property>
+          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
+          <property name="name"><value>plaintext-xmledit</value></property>
+          <property name="values">
+            <list>
+              <value>yes</value>
+            </list>
+          </property>
+        </bean>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="setResourcePropertyController"
+        class="org.vortikal.web.controller.properties.SetResourcePropertyController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView"><value>admin</value></property>
+    <property name="successView"><value>redirect</value></property>
+    <property name="commandName"><value>setResourcePropertyForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourcePropertyCommand</value>
+    </property>
+  </bean>
+
+  <bean id="deleteResourcePropertyController"
+        class="org.vortikal.web.controller.properties.DeleteResourcePropertyController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView"><value>admin</value></property>
+    <property name="successView"><value>redirect</value></property>
+    <property name="commandName"><value>deleteResourcePropertyForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourcePropertyCommand</value>
+    </property>
+  </bean>
+
+  <bean id="setContentTypeController" 
+        class="org.vortikal.web.controller.properties.ContentTypeController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView"><value>admin</value></property>
+    <property name="successView"><value>redirect</value></property>
+    <property name="commandName"><value>editContentTypeForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ContentTypeCommand</value>
+    </property>
+  </bean>
+
+  <bean id="setContentLanguageController" 
+        class="org.vortikal.web.controller.properties.ContentLanguageController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView"><value>admin</value></property>
+    <property name="successView"><value>redirect</value></property>
+    <property name="commandName"><value>editContentLanguageForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ContentLanguageCommand</value>
+    </property>
+    <!-- Using java locale codes to store language -->
+    <property name="possibleLanguages">
+      <list>
+        <value>unknown</value>
+        <value>no_NO</value>
+        <value>en</value>
+        <value>no_NO_NY</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="setCharacterEncodingController" 
+        class="org.vortikal.web.controller.properties.CharacterEncodingController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView"><value>admin</value></property>
+    <property name="successView"><value>redirect</value></property>
+    <property name="commandName"><value>editCharacterEncodingForm</value></property>
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.CharacterEncodingCommand</value>
+    </property>
+  </bean>
+  <!--
+
+  <bean id="setPropertyHandler" 
+    class="org.vortikal.web.controller.SetPropertyController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="deletePropertyHandler" 
+    class="org.vortikal.web.controller.DeletePropertyController"
+    parent="requestLocalRepositoryAware" /-->
+
+  <bean id="permissionsHandler" 
+    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName"><value>permissions</value></property>
+  </bean>
+
+  <bean id="aboutResourceHandler" 
+    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName"><value>admin</value></property>
+  </bean>
+
+  <bean id="manageCollectionListingHandler" 
+    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="manageCollectionListing" />
+  </bean>
+
+  <bean id="previewCollectionHandler"
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="viewName" value="previewIframe" />
+    <property name="service" ref="viewService"/>
+  </bean>
+
+
+  <bean id="previewIndexXmlHandler" 
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingService" />
+    <property name="viewName" value="previewIframe"/>
+    <property name="childName" value="index.xml" />
+  </bean>
+
+  <bean id="previewIndexEngXmlHandler" 
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingService" />
+    <property name="viewName" value="previewIframe"/>
+    <property name="childName" value="index-eng.xml" />
+  </bean>
+
+  <bean id="previewIndexHtmlHandler" 
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingService" />
+    <property name="viewName" value="previewIframe"/>
+    <property name="childName" value="index.html" />
+  </bean>
+
+  <bean id="previewIndexEngHtmlHandler" 
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingService" />
+    <property name="viewName" value="previewIframe"/>
+    <property name="childName" value="index-eng.html" />
+  </bean>
+
+  <bean id="previewIndexHtmHandler" 
+    class="org.vortikal.web.controller.ResourceServiceURLController"
+    parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingService" />
+    <property name="childName" value="index.htm" />
+    <property name="viewName" value="previewIframe" />
+  </bean>
+
+  <bean id="previewXmlResourceHandler" 
+    class="org.vortikal.web.controller.ResourceServiceURLController"
+    parent="requestLocalRepositoryAware">
+    <property name="service" ref="displayResourceService" />
+    <property name="viewName" value="previewIframe" />
+  </bean>
+
+
+  <bean id="previewHTMLHandler"
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="viewService" />
+    <property name="viewName" value="previewIframe" />
+  </bean>
+
+  <bean id="previewImageHandler"
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="viewName" value="previewImage" />
+    <property name="service" ref="viewService"/>
+  </bean>
+
+  <bean id="previewTextHandler"
+        class="org.vortikal.web.controller.DisplayResourceController"
+        parent="requestLocalRepositoryAware">
+    <property name="ignoreLastModified" value="true" />
+    <property name="viewName" value="previewText" />
+    <property name="streamToString" value="true" />
+  </bean>
+
+  <bean id="previewFallbackHandler"
+        class="org.vortikal.web.controller.DisplayResourceController"
+        parent="requestLocalRepositoryAware">
+    <property name="ignoreLastModified" value="true" />
+    <property name="viewName" value="previewFallback" />
+  </bean>
+
+
+
+  <!-- MANAGE views -->
+
+  <bean id="adminViewResolver" 
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="manageCollectionListing" 
+               value-ref="manageCollectionListingView" />
+        <entry key="admin"
+               value-ref="aboutView" />
+        <entry key="permissions"
+               value-ref="permissionsView" />
+        <entry key="previewImage"
+               value-ref="previewImageView" />
+        <entry key="previewIframe"
+               value-ref="previewIframeView" />
+        <entry key="previewText"
+               value-ref="previewTextView" />
+        <entry key="previewFallback"
+               value-ref="previewFallbackView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="manageViewWrapper" />
+  </bean>
+
+  <!-- Manage wrapping -->
+
+
+
+
+
+  <bean id="manageViewWrapper" 
+        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+    <description>
+      This wrapper wraps manage views with the manage view layout
+      items. It uses three filters for head, header and footer
+    </description>
+    <property name="propagateExceptions" value="true" />
+    <property name="contentFilters">
+      <list>
+        <ref bean="manageHeadContentFilter" />
+        <ref bean="manageHeaderContentFilter" />
+        <ref bean="manageFooterContentFilter" />
+      </list>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="leaveAdminLinkProvider" />
+        <ref bean="logoutLinkProvider" />
+        <ref bean="tabsProvider" />
+        <ref bean="resourceContextProvider" />
+
+        <!--ref bean="versionProvider" /-->
+
+        <ref bean="resourceMenuProvider" /> 
+        <ref bean="switchLocaleActionsProvider" />
+        <ref bean="lockUnlockActionsProvider" />
+        <ref bean="manageBreadCrumbProvider" />
+        <ref bean="resourceTitleProvider" />
+        <ref bean="adminHtmlTitleProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manageLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelName" value="manageLink" />
+    <property name="service" ref="manageService" />
+  </bean>
+
+  <bean id="manageHeadContentFilter"
+        class="org.vortikal.web.view.wrapper.HtmlHeadContentFilter">
+    <description>
+      This filter merges the output from the 'manageHeadView' view
+      into the HTML head element.
+    </description>
+    <property name="view" ref="manageHeadView"/>
+  </bean>
+
+  <bean id="manageHeadView" parent="freemarkerView">
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${cssBaseURL}/basic.css</value>
+            <value>${cssBaseURL}/tabs.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${cssBaseURL}/browser-sniffer.js</value>
+            <value>${cssBaseURL}/admin-enhancements.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="url" value="layouts/head.ftl" />
+  </bean>
+
+  <bean id="manageHeaderContentFilter"
+        class="org.vortikal.web.view.wrapper.HtmlHeaderContentFilter">
+    <description>
+      This filter merges the output from the
+      'manageHeaderView' view into the beginning of the HTML
+      body element (before any other body content).
+    </description>
+    <property name="view" ref="manageHeaderView"/>
+  </bean>
+
+  <bean id="manageHeaderView" parent="freemarkerView">
+    <property name="attributesMap">
+      <map>
+        <entry key="helpURL" value="${helpURL}" />
+      </map>
+    </property>
+    <property name="url" value="layouts/header.ftl" />
+  </bean>
+
+  <bean id="manageFooterContentFilter"
+        class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+    <description>
+      This filter merges the output from the
+      'manageFooterView' view into end of the HTML
+      body element (after any other body content).
+    </description>
+    <property name="view" ref="manageFooterView"/>
+  </bean>
+
+  <bean id="manageFooterView" parent="freemarkerView">
+    <property name="url" value="layouts/footer.ftl" />
+  </bean>
+
+  <!-- Views -->
+
+  <bean id="previewImageView" parent="freemarkerView">
+    <property name="url" value="pages/preview-image.ftl" />
+  </bean>
+
+  <bean id="previewIframeView" parent="freemarkerView">
+    <property name="url" value="pages/preview-iframe.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="iframeJSProvider" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="previewTextView" parent="freemarkerView">
+    <property name="url" value="pages/preview-text.ftl" />
+  </bean>
+  
+  <bean id="previewFallbackView" parent="freemarkerView">
+    <property name="url" value="pages/preview-unavailable.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceDetailProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="permissionsView" parent="freemarkerView">
+    <property name="url" value="pages/permissions.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="adminCSSProvider" />
+        <ref bean="adminACLProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="aboutView" parent="freemarkerView">
+    <property name="url" value="pages/about-resource.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="adminCSSProvider" />
+        <ref bean="resourceDetailProvider" />
+        <ref bean="aboutResourcePropertiesProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manageCollectionListingView" parent="freemarkerView">
+    <property name="url" value="pages/manage-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="adminCSSProvider" />
+        <ref bean="parentLinkProvider" /> 
+        <ref bean="collectionMenuProvider" /> 
+        <ref bean="manageCollectionlistingProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <!-- Manage specific providers -->
+
+  <bean id="adminCSSProvider"
+        class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="cssURLs"> 
+          <list>
+            <value>${cssBaseURL}/basic.css</value>
+            <value>${cssBaseURL}/tabs.css</value>
+            <value>${cssBaseURL}/admin.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="iframeJSProvider"
+        class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="jsURLs"> 
+          <list>
+            <value>${cssBaseURL}/browser-sniffer.js</value>
+            <value>${cssBaseURL}/admin-enhancements.js</value>
+            <value>${cssBaseURL}/dynamic-resize-iframe.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="adminHtmlTitleProvider" parent="abstractHtmlTitleProvider">
+    <property name="localizationKeys">
+      <map>
+        <entry key="name" value="title.title" />
+        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.title" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="adminACLProvider" 
+        class="org.vortikal.web.referencedata.provider.ACLProvider" 
+        parent="requestLocalRepositoryAware">
+    <property name="principalManager" 
+              ref="principalManager" />
+    <property name="aclInheritanceService" 
+              ref="aclInheritanceService" />
+    <property name="editWritePermissionsService" 
+              ref="editWritePermissionsService" />
+    <property name="editReadPermissionsService" 
+              ref="editReadPermissionsService" />
+    <property name="editWriteACLPermissionsService" 
+              ref="editWriteACLPermissionsService" /> 
+  </bean>
+
+  <bean id="manageCollectionlistingProvider" 
+        class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 
+        parent="requestLocalRepositoryAware" >
+    <property name="browsingService" ref="manageService" />
+    <property name="childInfoItems">
+      <list>
+        <value>name</value>
+        <value>owner</value>
+        <value>content-length</value>
+        <value>locked</value>
+        <value>last-modified</value>
+      </list>
+    </property>
+    <property name="linkedServices">
+      <map>
+        <entry key="delete" value-ref="deleteResourceService" />
+        <!-- entry key="duplicate" value-ref="duplicateResourceService" / -->
+      </map>
+    </property>
+    <property name="retrieveForProcessing" value="false" />
+  </bean>
+
+  <bean id="aboutResourcePropertiesProvider"
+        class="org.vortikal.web.referencedata.provider.ResourcePropertiesProvider"
+        parent="requestLocalRepositoryAware" >
+    <property name="propertyDescriptors" ref="standardEditablePropertyList" />
+    <property name="editPropertyService" ref="editResourcePropertyService" />
+  </bean>
+
+  <bean id="resourceMenuProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="resourceActionServicesFactory" />
+    <constructor-arg value="globalMenu" />
+    <constructor-arg ref="repository.requestLocal" />
+  </bean>
+
+  <bean id="resourceActionServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="resourceMenu" />
+  </bean>
+
+
+  <!-- MANAGE assertions -->
+
+  <bean id="requiresReadPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="requiresAuthentication" value="true" />
+    <property name="permission" value="read" />
+  </bean>
+
+  <bean id="requiresWritePermissionAssertion" 
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="requiresAuthentication" value="true" />
+    <property name="permission" value="write" />
+  </bean>
+
+  <bean id="writeParentPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="parent-write" />
+  </bean>
+
+  <bean id="deleteResourcePermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="delete" />
+  </bean>
+
+  <bean id="writePermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="write" />
+  </bean>
+
+  <bean id="writeACLPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="write-acl" />
+  </bean>
+
+  <bean id="readProcessedPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="requiresAuthentication" value="true" />
+    <property name="permission" value="read-processed" />
+  </bean>
+
+  <bean id="unlockPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="unlock" />
+  </bean>
+
+  <bean id="lockPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="lock" />
+  </bean>
+
+  <bean id="delegateOwnershipPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" value="delegate-ownership" />
+  </bean>
+
+  <bean id="resourceNotRootAssertion" 
+        class="org.vortikal.web.service.ResourceURIAssertion">
+    <property name="uri" value="/" />
+    <property name="inverted" value="true" />
+  </bean>
+
+  <bean id="adminVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="admin" />
+  </bean>
+
+
+  <!-- MANAGE error handlers -->
+
+  <bean id="abstractReferencedataProvidingErrorHandler"
+        class="org.vortikal.web.DefaultErrorHandler" abstract="true">
+    <property name="referenceDataProviders" ref="standardManageReferenceDataProviders" />
+  </bean>
+
+  <bean id="standardManageReferenceDataProviders" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="adminCSSProvider" />
+        <ref bean="leaveAdminLinkProvider" />
+        <ref bean="tabsProvider" />
+        <ref bean="resourceContextProvider" />
+        <!--ref bean="versionProvider" /-->
+        <ref bean="manageBreadCrumbProvider" />
+        <ref bean="lockUnlockActionsProvider" />            
+        <ref bean="switchLocaleActionsProvider" />
+        <ref bean="resourceMenuProvider" /> 
+        <ref bean="resourceDetailProvider" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+
+  <bean id="abstractManageXsltErrorHandler"
+        class="org.vortikal.web.DefaultErrorHandler"
+        parent="abstractReferencedataProvidingErrorHandler" abstract="true">
+    <description>Provides specific handling of XSLT-related errors in the manage service</description>
+    <property name="service" ref="manageService" />
+    <property name="errorView" ref="manageXsltErrorView" />
+  </bean>
+
+
+
+  <bean id="manageXmlBuildErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
+        parent="abstractReferencedataProvidingErrorHandler">
+    <description>
+      Provides error handling errors that occur when building XML
+      (JDOM) documents for services in the 'manageService' tree.
+    </description>
+    <property name="service" ref="manageService" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.jdom.input.JDOMParseException" />
+      </bean>
+    </property>
+    <property name="errorView" ref="manageXmlBuildErrorView" />
+  </bean>
+
+
+  <bean id="manageStylesheetCompilationExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.xml.StylesheetCompilationException" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="manageTransformerConfigurationExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="javax.xml.transform.TransformerConfigurationException" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="manageTransformerExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="javax.xml.transform.TransformerException" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="defaultManageErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="service" ref="manageService" />
+    <property name="errorView" ref="defaultManageErrorView" />
+    <property name="referenceDataProviders" ref="standardManageReferenceDataProviders" />
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.repository.ResourceNotFoundException" value="404" />
+        <entry key="org.vortikal.repository.AuthorizationException" value="403" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="manageErrorHandlerViewWrapper"
+        class="org.vortikal.web.view.wrapper.WrappingView" abstract="true">
+    <property name="viewWrapper" ref="manageViewWrapper" />
+  </bean>
+
+
+  <bean id="manageXsltErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/xslt-error.ftl" />
+  </bean>
+
+  <bean id="manageXmlBuildErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/preview-xml-error.ftl" />
+  </bean>
+
+
+  <bean id="defaultManageErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/default-manage-error.ftl" />
+  </bean>
+
+</beans>

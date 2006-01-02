@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <description>
+
+    The beans defined in this file provide SSL for subtrees of the
+    content repository. This is achieved using the following
+    mechanisms:
+
+    1. A service wrapper around webService. This wrapper service
+       contains a handler interceptor that checks the URI against a
+       regular expression, and redirects to the https version of that
+       URI if it matches.
+
+    2. Overriding of the webProtocolAssertion, to require https access
+       if the above regular expression matches, and otherwise not care
+       about the protocol.
+
+    The https subtree mechanism will only take place when the property
+    'requireSSLURIPattern' is specified.
+
+  </description>
+
+
+   <!-- #if ( ${requireSSLURIPattern} != '' ) -->
+
+   <bean id="redirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
+     <property name="order" value="0" />
+     <!-- Interceptor that redirects to https: -->
+     <property name="handlerInterceptors">
+       <list>
+         <bean id="redirectToHttpsInterceptor"
+               class="org.vortikal.web.controller.URLRewritingRedirectInterceptor">
+           <property name="urlPattern" value="http://([^/]*${requireSSLURIPattern})" />
+           <property name="rewritePattern" value="https://$1" />
+         </bean>
+       </list>
+     </property>
+     <!-- Dummy handler that is never invoked (the interceptor will
+          prevent it): -->
+     <property name="handler">
+       <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+         <property name="viewName" value="HTTP_200_OK" />
+       </bean>
+     </property>
+     <!-- Hook into the service tree as a root service (parent of
+          webService): -->
+     <property name="services">
+       <list>
+         <ref bean="webService" />
+       </list>
+     </property>
+   </bean>
+
+   <!-- Override the webProtocolAssertion: -->
+   <bean id="webProtocolAssertion"
+         class="org.vortikal.web.service.RequestURIRegexpWrappingAssertion">
+     <property name="uriPattern" value="${requireSSLURIPattern}" />
+     <property name="wrappedAssertion">
+       <bean
+        class="org.vortikal.web.service.RequestProtocolAssertion">
+         <property name="protocol" value="https" />
+       </bean>
+     </property>
+   </bean>
+
+   <!-- #end -->
+
+</beans>

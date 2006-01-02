@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+   <!-- Context Initializers -->
+
+   <bean id="requestContextInitializer"
+         class="org.vortikal.web.RequestContextInitializer">
+     <description>
+       This bean is required in order to initialize requests with the
+       request context. The request context contains the service and
+       the URI for each request.
+       (See classes org.vortikal.web.RequestContext
+       and org.vortikal.web.service.Service)
+     </description>
+      <property name="trustedToken" ref="trustedToken" />
+      <property name="repository" ref="repository" />
+   </bean>
+
+      
+  <bean id="securityInitializer"
+    class="org.vortikal.security.web.SecurityInitializer">
+    <description>
+      This bean initializes the security context for each request. The
+      security context contains the authenticated principal and the
+      repository token.
+    </description>
+    <property name="tokenManager" ref="tokenManager" />
+      <!--
+
+    <property name="authenticationHandlers">
+      <description>
+        This list is traversed on every request. Each authentication
+        handler must decide whether or not the request is recognized
+        as an authentication request, and in that case, an
+        authentication attempt will be made.
+      </description>
+      <list>
+        <ref bean="feideAuthenticationHandler" />
+        <ref bean="uioLDAPServiceAuthenticationHandler" />
+        <ref bean="httpDigestAuthenticationHandler" />
+        <ref bean="httpBasicAuthenticationHandler" />
+-->
+<!--        <ref bean="uioLDAPAuthenticationHandler" />-->
+<!--
+        <ref bean="feideDirectAuthenticationHandler" />
+      </list>
+    </property>
+-->
+  </bean>
+
+  <bean id="repositoryContextInitializer"
+        class="org.vortikal.web.RepositoryContextInitializer" />
+
+  <bean id="requestLocalRepositoryAware" abstract="true">
+    <description>
+      Simple parent template for repository aware controllers.  Just
+      saves a couple of lines for each controller having a repository
+      property, that's just about all of them
+    </description>
+    <property name="repository" ref="repository.requestLocal" />
+  </bean>
+
+   <!-- HandlerMapping -->
+
+   <bean id="serviceMapping" class="org.vortikal.web.service.ServiceHandlerMapping">
+     <description>
+       The service handler mapping must be set in order for the
+       service framework to function.
+     </description>
+   </bean>
+
+
+   <!-- Locale resolver  -->
+
+   <bean id="localeResolver"
+         class="org.vortikal.web.servlet.CookieLocaleResolver" >
+     <property name="defaultLocale"> 
+       <bean class="java.util.Locale">
+         <constructor-arg value="no" />
+       </bean>
+     </property>
+   </bean>
+
+
+   <bean id="messageSource"
+         class="org.vortikal.web.context.ChildDelegatingMessageSource">
+   </bean>
+
+   <bean id="defaultMessageSource"
+         class="org.springframework.context.support.ResourceBundleMessageSource">
+     <property name="basenames">
+       <list>
+         <value>messages</value>
+       </list>
+     </property>
+   </bean>
+
+
+
+</beans>

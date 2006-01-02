@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Browse services -->
+  
+  <bean id="browseService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="browse" />
+        </bean>
+        <ref bean="requiresReadPermissionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="defaultBrowseHandler" />
+    <property name="services">
+      <list>
+        <ref bean="createLinkToResourceService" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="createLinkToResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order"><value>-998</value></property>
+    <property name="categories">
+      <set>
+        <value>browseMenu</value>
+      </set>
+    </property>
+  </bean>
+
+
+  <!-- BROWSE controllers -->
+
+  <bean id="defaultBrowseHandler" 
+    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName"><value>browse</value></property>
+  </bean>
+
+
+  <!-- BROWSE view resolver -->
+
+  <bean id="browseViewResolver" 
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="browse" value-ref="browseView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="browseViewWrapper" />
+  </bean>
+
+
+  <!-- BROWSE views -->
+
+  <bean id="browseViewWrapper" 
+        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+    <property name="propagateExceptions" value="true" />
+    <property name="contentFilters">
+      <list>
+        <bean class="org.vortikal.web.view.wrapper.HtmlHeadContentFilter">
+          <property name="view" ref="browseHeadView"/>
+        </bean>
+        <bean class="org.vortikal.web.view.wrapper.HtmlHeaderContentFilter">
+          <property name="view" ref="browseHeaderView"/>
+        </bean>
+        <bean class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+          <property name="view" ref="browseFooterView"/>
+        </bean>
+      </list>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="browseBreadCrumbProvider" />
+        <ref bean="browseUrlProvider" />
+        <ref bean="browseMenuProvider" /> 
+        <ref bean="browseCollectionListingProvider" />
+        <ref bean="browseHtmlTitleProvider" />
+        <ref bean="resourceTitleProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="browseView" parent="freemarkerView">
+    <property name="url" value="pages/browse.ftl" />
+  </bean>
+
+
+  <bean id="browseHeadView" parent="freemarkerView">
+    <property name="url" value="layouts/head.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${cssBaseURL}/basic.css</value>
+            <value>${cssBaseURL}/browse.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${cssBaseURL}/browse.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="browseHeaderView" parent="freemarkerView">
+    <property name="attributesMap">
+      <map>
+        <entry key="helpURL" value="${helpURL}" />
+      </map>
+    </property>
+    <property name="url" value="layouts/header-without-tabs.ftl" />
+  </bean>
+
+  <bean id="browseFooterView" parent="freemarkerView">
+    <property name="url" value="layouts/footer-without-tabs.ftl" />
+  </bean>
+
+
+
+  <!-- BROWSE reference data providers -->
+
+  <bean id="browseCollectionListingProvider"
+        class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 
+        parent="requestLocalRepositoryAware" >
+    <property name="browsingService" ref="browseService" />
+    <property name="childInfoItems">
+      <list>
+        <value>name</value>
+        <value>owner</value>
+        <value>content-length</value>
+        <value>last-modified</value>
+      </list>
+    </property>
+    <property name="retrieveForProcessing" value="false" />
+  </bean>
+
+
+  <bean id="browseHtmlTitleProvider" parent="abstractHtmlTitleProvider">
+    <property name="localizationKeys">
+      <map>
+        <entry key="name" value="title.browse" />
+        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.browse" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="browseBreadCrumbProvider" 
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+        parent="requestLocalRepositoryAware">
+    <description>
+      Breadcrumb provider that generates links to the browse service
+    </description>
+    <property name="service" ref="browseService"/>
+    <property name="titleOverrideProperties" 
+              ref="defaultBreadcrumbTitlePropertyList" />
+  </bean>
+
+
+  <bean id="browseUrlProvider" 
+        class="org.vortikal.web.referencedata.provider.BrowseUrlProvider" 
+        parent="requestLocalRepositoryAware">
+    <description>
+      Generates a link to a document in the repository (for
+      xml-edit in elements like "webadresse")
+    </description>
+    <property name="viewService" ref="viewService" />
+  </bean>
+
+
+  <bean id="browseMenuProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="browseActionServicesFactory" />
+    <constructor-arg value="globalMenu" />
+    <constructor-arg ref="repository.requestLocal" />
+  </bean>
+
+
+  <bean id="browseActionServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="browseMenu" />
+  </bean>
+
+</beans>

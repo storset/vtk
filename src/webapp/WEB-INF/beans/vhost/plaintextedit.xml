@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  
+  <bean id="plaintextOrHTMLEditService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="order" value="-9700" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="actionParameterEqualsPlaintextEdit" />
+        <ref bean="contentTypeMatchesTextOrHtml" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="plaintextEditHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="plaintextXMLEditService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="order" value="-9700" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="actionParameterEqualsPlaintextEdit" />
+        <ref bean="contentTypeMatchesXml" />
+        <ref bean="xmlEditPropertyIsSet" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="plaintextEditHandler" />
+    </property>
+  </bean>
+
+  <bean id="xmlEditPropertyIsSet"
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="name" value="plaintext-xmledit" />
+    <property name="value" value="yes" />
+  </bean>
+
+  <bean id="actionParameterEqualsPlaintextEdit"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="plaintext-edit" />
+  </bean>
+
+  <bean id="plaintextViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="plaintextEdit" value-ref="plaintextEditView" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="plaintextEditView" parent="freemarkerView">
+    <property name="url" value="pages/plaintext-edit.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="plainEditCSSURLs" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="plainEditCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${cssBaseURL}/basic.css</value>
+        <value>${cssBaseURL}/tabs.css</value>
+        <value>${cssBaseURL}/plain-edit.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Plaintext edit controller -->
+  
+  <bean id="plaintextEditHandler"
+        class="org.vortikal.edit.plaintext.PlaintextEditController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView" value="plaintextEdit" />
+    <property name="successView" value="plaintextEdit" />
+    <property name="cancelView" value="redirectToManage" />
+    <property name="commandName" value="plaintextEditForm" />
+    <property name="commandClass" value="org.vortikal.edit.plaintext.PlaintextEditCommand" />
+    <property name="storeModifiedCharacterEncodings" value="true" />
+  </bean>
+
+</beans>

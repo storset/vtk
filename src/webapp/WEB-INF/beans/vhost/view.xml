@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="viewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="httpOptions">
+          <ref bean="httpOptionsView" />
+        </entry>
+        <entry key="collectionRedirect">
+          <ref bean="collectionRedirectView" />
+        </entry>
+        <entry key="redirect">
+          <ref bean="redirectView" />
+        </entry>
+        <entry key="redirectToManage">
+          <ref bean="redirectToManageView" />
+        </entry>
+        <entry key="redirectToPermissions">
+          <ref bean="redirectToPermissionView" />
+        </entry>
+        <entry key="redirectToPreviewCollection">
+          <ref bean="redirectToPreviewCollectionView" />
+        </entry>
+        <entry key="displayResource">
+          <ref bean="displayResourceView" />
+        </entry>
+        <entry key="transformRssResource">
+          <ref bean="transformRssView" />
+        </entry>
+        <entry key="collectionListing">
+          <ref bean="collectionListingView" />
+        </entry>
+        <entry key="displayHTMLResource" 
+               value-ref="displayResourceView" />
+        <entry key="transformXmlResource"
+               value-ref="transformXmlView" />
+      </map>
+    </property>
+  </bean>
+
+
+  <!-- View definitions -->
+
+  <bean id="displayResourceView"
+        class="org.vortikal.web.view.DisplayResourceView">
+    <property name="includeLastModifiedHeader" value="true" />
+    <property name="includeExpiresHeader" value="true" />
+  </bean> 
+
+  <bean id="transformXmlView" 
+        class="org.vortikal.web.view.xslt.ResourceXsltView">
+    <property name="linkConstructor" ref="linkConstructor" />
+    <property name="transformerManager" ref="transformerManager" />
+    <property name="includeContentLanguageHeader" value="true" />
+    <property name="referenceDataProviders" ref="referenceDataProvidersForTransformXmlView" />
+
+  </bean>
+
+  <bean id="referenceDataProvidersForTransformXmlView"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+          parent="requestLocalRepositoryAware">
+          <property name="service" ref="rssTransformService" />
+          <property name="modelName" value="xsltParameters" />
+          <property name="urlName" value="RSS-URL" />
+        </bean>
+        <ref bean="viewXslParameterProvider" />
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+  
+
+  <bean id="httpOptionsView"
+        class="org.vortikal.web.view.StandardHttpView">
+    <property name="headers">
+      <map>
+        <entry key="Allow" value="GET, HEAD, POST, OPTIONS, TRACE" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="transformRssView" class="org.vortikal.web.view.xslt.ResourceXsltView">
+    <property name="linkConstructor" ref="linkConstructor" />
+    <property name="transformerManager" ref="rssTransformerManager" />
+    <property name="referenceDataProviders">
+      <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+            parent="requestLocalRepositoryAware">
+        <property name="service" ref="viewService" />
+        <property name="modelName" value="xsltParameters" />
+        <property name="urlName" value="VIEW-URL" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="collectionListingView" parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="viewBreadCrumbProvider" />
+        <ref bean="viewCollectionListingProvider" />
+        <ref bean="resourceTitleProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs" value-ref="viewCSSURLs" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="viewCollectionListingProvider"
+        class="org.vortikal.web.referencedata.provider.CollectionListingProvider"
+        parent="requestLocalRepositoryAware" >
+    <property name="browsingService" ref="viewService" />
+    <property name="retrieveForProcessing" value="true" />
+  </bean>
+
+  <bean id="freemarkerView" abstract="true"
+        class="org.vortikal.web.view.freemarker.FreeMarkerView">
+    <property name="exposeSpringMacroHelpers" value="true" />
+    <property name="contentType" value="text/html;charset=utf-8" />
+    <property name="encoding" value="utf-8" />
+    <property name="debug" value="true" />
+  </bean>
+
+  <bean id="collectionRedirectView" 
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view</description>
+  </bean>
+
+  <bean id="redirectView" 
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the aboutResourceService service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToAboutProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToPreviewCollectionView" 
+        class="org.vortikal.web.view.RedirectView">
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToPreviewCollectionProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToManageView"
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the manage service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToManageProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToPermissionView"
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the permissions service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToPermissionsProvider" />
+      </list>
+    </property>
+  </bean>
+
+    <!-- Model data providers -->
+
+    <bean id="defaultBreadcrumbTitlePropertyList" class="java.util.ArrayList">
+      <constructor-arg>
+        <list>
+          <value>http://www.uio.no/vortex/custom-properties:title</value>
+        </list>
+      </constructor-arg>
+    </bean>
+
+
+  <bean id="resourceTitleProvider"
+        class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelNames">
+      <map>
+        <entry key="http://www.uio.no/vortex/custom-properties"
+               value="resourceTitle" />
+      </map>
+    </property>
+    <property name="properties">
+      <list>
+        <value>http://www.uio.no/vortex/custom-properties:title</value>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="abstractHtmlTitleProvider"
+        class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
+        parent="requestLocalRepositoryAware" abstract="true">
+    <property name="modelNames">
+      <map>
+        <entry key="http://www.uio.no/vortex/custom-properties" value="title" />
+        <entry key="" value="title" />
+      </map>
+    </property>
+    <property name="properties">
+      <list>
+        <!--value>displayName</value-->
+        <value>name</value>
+        <value>http://www.uio.no/vortex/custom-properties:title</value>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="previewHtmlTitleProvider" parent="abstractHtmlTitleProvider">
+    <property name="localizationKeys">
+      <map>
+        <entry key="name" value="title.title" />
+        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.title" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="collectionListingHtmlTitleProvider" parent="abstractHtmlTitleProvider">
+    <property name="localizationKeys">
+      <map>
+        <entry key="name" value="title.collectionListing" />
+        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.collectionListing" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="resourceDetailProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceDetailProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="serviceMap">
+      <map>
+        <entry key="ownershipServiceURL" value-ref="ownershipService" />
+        <entry key="setContentTypeServiceURL" value-ref="setContentTypeService" />
+        <entry key="setContentLanguageServiceURL" value-ref="setContentLanguageService" />
+        <entry key="setCharacterEncodingServiceURL" value-ref="setCharacterEncodingService" />
+        <entry key="viewURL" value-ref="viewService" />
+        <entry key="webdavURL" value-ref="webdavService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="redirectToAboutProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="redirectToService" ref="aboutResourceService" />
+  </bean>
+
+  <bean id="redirectToPreviewCollectionProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="repository" ref="repository" />
+    <property name="redirectToService" ref="previewCollectionListingService" />
+  </bean>
+
+  <bean id="redirectToManageProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="redirectToService" ref="manageService" />
+  </bean>
+
+  <bean id="redirectToPermissionsProvider" 
+    class="org.vortikal.web.referencedata.provider.RedirectProvider"
+    parent="requestLocalRepositoryAware">
+    <property name="redirectToService" ref="permissionsService" />
+  </bean>
+
+  <bean id="leaveAdminLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="viewService" />
+    <property name="modelName" value="leaveAdmin" />
+  </bean>
+
+  <bean id="logoutLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="logoutService" />
+    <property name="modelName" value="logout" />
+    <property name="matchAssertions" value="true" />
+  </bean>
+
+  <bean id="parentLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="manageService" />
+    <property name="modelName" value="tabMenu1" />
+    <property name="linkToParent" value="true" />
+    <property name="matchAssertions" value="true" />
+  </bean>
+
+  <bean id="tabsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="tabServicesFactory" />
+    <constructor-arg value="tabs"/>
+    <constructor-arg ref="repository.requestLocal"/>
+    <property name="matchAncestorServices" value="true" />
+  </bean>
+
+  <bean id="tabServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="tabMenu" />
+  </bean>
+
+  <bean id="resourceContextProvider" 
+        class="org.vortikal.web.referencedata.provider.ResourceContextProvider" 
+        parent="requestLocalRepositoryAware">
+    <property name="retrieveForProcessing" value="true" />
+  </bean>
+
+  <bean id="uhtmlResourceContextProvider" 
+        class="org.vortikal.web.referencedata.provider.ResourceContextProvider" 
+        parent="requestLocalRepositoryAware">
+    <property name="retrieveForProcessing" value="true" />
+    <property name="getResourceFromModel" value="true" />
+    <property name="modelName" value="uhtmlResourceContext" />
+  </bean>
+
+  <bean id="collectionMenuProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="collectionActionServicesFactory" />
+    <constructor-arg value="tabMenu2" />
+    <constructor-arg ref="repository.requestLocal" />
+  </bean>
+
+  <bean id="collectionActionServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="collectionMenu" />
+  </bean>
+
+  <bean id="viewResourceMenuProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="viewResourceActionServicesFactory" />
+    <constructor-arg value="globalMenu" />
+    <constructor-arg ref="repository.requestLocal" />
+    <property name="retrieveForProcessing" value="true" />
+  </bean>
+
+  <bean id="viewResourceActionServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="viewResourceMenu" />
+  </bean>
+
+  <bean id="switchLocaleActionsProvider" 
+        class="org.vortikal.web.referencedata.provider.SwitchLocaleProvider"
+        parent="requestLocalRepositoryAware">
+    <description>
+      Map of links for locale switching
+    </description>
+    <property name="modelName">
+      <value>switchLocaleActions</value>
+    </property>
+    <property name="locales">
+      <map>
+        <entry key="no" value-ref="setNorwegianNBLocaleService" />
+        <entry key="nn" value-ref="setNorwegianNNLocaleService" />
+        <entry key="en" value-ref="setEnglishLocaleService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="lockUnlockActionsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="lockActionServicesFactory" />
+    <constructor-arg value="lockUnlockActions" />
+    <constructor-arg ref="repository.requestLocal" />
+  </bean>
+
+  <bean id="lockActionServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="lockUnlockAction" />
+  </bean>
+
+  <bean id="viewXslParameterProvider"
+    class="org.vortikal.web.referencedata.provider.ViewXslProvider"
+    parent="requestLocalRepositoryAware">
+    <description>
+      This reference data provider adds commonly used resource
+      metadata to the model, such as creation time, last modified,
+      etc. for use when transforming XML documents.
+    </description>
+    <property name="adminService" ref="manageService" />
+  </bean>
+
+  <bean id="viewBreadCrumbProvider"
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+        parent="requestLocalRepositoryAware">
+    <description>
+      Breadcrumb provider that generates links to the view service
+    </description>
+    <property name="service" ref="viewService"/>
+    <property name="ignoreProperty"
+              value="http://www.uio.no/vortex/custom-properties:collection-skip-in-path" />
+    <property name="titleOverrideProperties">
+      <list>
+        <value>http://www.uio.no/vortex/custom-properties:collection-name-in-path</value>
+        <value>http://www.uio.no/vortex/custom-properties:title</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manageBreadCrumbProvider" 
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+        parent="requestLocalRepositoryAware">
+    <description>
+      Breadcrumb provider that generates links to the manage service
+    </description>
+    <property name="breadcrumbName" value="manageBreadCrumb" />
+    <property name="service" ref="manageService"/>
+    <property name="titleOverrideProperties" ref="defaultBreadcrumbTitlePropertyList" />
+  </bean>
+
+ <!-- Config for view technologies -->
+
+   <!-- Freemarker config -->
+
+   <bean id="freemarkerConfigurer"
+         class="org.vortikal.web.view.freemarker.MultiTemplateLocationsFreeMarkerConfigurer"/>
+     
+   <bean id="vortexFreemarkerTemplateLocation" class="org.vortikal.web.view.freemarker.FreeMarkerTemplateLocationImpl">
+     <property name="location" value="${templateLoaderPath}" />
+   </bean>
+
+   <!-- XSL config -->
+   
+   <bean id="transformerManager" class="org.vortikal.xml.TransformerManager">
+     <description>
+       XSLT Transformer manager
+     </description>
+     <property name="stylesheetReferenceResolvers">
+       <list>
+         <bean class="org.vortikal.xml.StylesheetInDocumentResolver"/>
+         <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
+           <property name="schemaRegistry"><ref bean="schemaRegistry"/></property>
+         </bean>
+       </list>
+     </property>
+     <property name="compilationURIResolvers">
+       <description>
+         This is the list of URI resolvers used to obtain the XSL
+         stylesheet resources during compilation (applies to imports
+         and includes).
+       </description>
+       <list>
+         <ref bean="xsltCompilationFilePathURIResolver" />
+         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
+         <ref bean="xsltCompilationFileURIResolver" />
+       </list>
+     </property>
+     <property name="transformationURIResolvers">
+       <description>
+         This is the list of URI resolvers used to obtain the XML
+         document resources during transformation (via the document()
+         call in XSL). This list SHOULD contain only one URI resolver
+         that gets resources from the repository, as it is not
+         generally advisable to allow document() calls to operate on
+         the file system.
+       </description>
+       <list>
+         <ref bean="xsltTransformationRepositoryURIResolver" />
+       </list>
+     </property>
+   </bean>
+
+   <bean id="rssTransformerManager" class="org.vortikal.xml.TransformerManager">
+     <description>
+       XSLT Transformer manager for RSS-generation
+     </description>
+     <property name="stylesheetReferenceResolvers">
+       <list>
+         <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
+           <property name="schemaRegistry" ref="schemaRegistry" />
+           <property name="elementXPath" 
+                     value="/xsd:schema/xsd:annotation/xsd:appinfo/rss/xsl" />
+         </bean>
+       </list>
+     </property>
+     <property name="compilationURIResolvers">
+       <list>
+         <ref bean="xsltCompilationFilePathURIResolver" />
+         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
+         <ref bean="xsltCompilationFileURIResolver" />
+       </list>
+     </property>
+     <property name="transformationURIResolvers">
+       <list>
+         <ref bean="xsltTransformationRepositoryURIResolver" />
+       </list>
+     </property>
+   </bean>
+
+
+   
+
+   <bean id="xsltCompilationFileURIResolver" class="org.vortikal.xml.FileURIResolver">
+     <description>
+       This URI resolver gets stylesheets from 'file://' type URLs.
+     </description>     
+   </bean>
+
+
+   <bean id="xsltCompilationFilePathURIResolver" class="org.vortikal.xml.FilePathURIResolver">
+     <description>
+       This URI resolver gets stylesheets from file paths starting
+       with '/', e.g. '/foo/bar' (and NOT 'file://' type URLs).
+     </description>     
+     <property name="prefix" value="${xslFilePath}" />
+   </bean>
+
+
+   <bean id="xsltCompilationRepositoryURIResolver"
+         class="org.vortikal.xml.RepositoryURIResolver"
+         parent="requestLocalRepositoryAware">
+     <description>
+       This URI resolver gets stylesheets from the repository. It uses
+       a trusted token, as is is only used during compilation of the
+       stylesheets, not for document() calls.
+     </description>
+     <property name="prefix" value="${xslRepositoryPath}" />
+   </bean>
+
+
+   <bean id="xsltTransformationRepositoryURIResolver"
+         class="org.vortikal.xml.RepositoryURIResolver"
+         parent="requestLocalRepositoryAware">
+     <description>
+       No token is defined here, in order to use the user's actual
+       token during transformation, for XSLT document() calls.
+
+       Although one could specify a file path URI resolver here, it
+       would make no sense in most cases, as document() calls works
+       with documents located preferably in the repository.
+     </description>
+   </bean>
+
+
+   <bean id="linkConstructor" class="org.vortikal.web.view.LinkConstructorImpl"
+         parent="requestLocalRepositoryAware" />
+   
+
+   <bean id="viewCSSURLs" class="java.util.ArrayList">
+     <constructor-arg>
+       <list>
+         <value>${cssBaseURL}/basic.css</value>
+         <value>http://www.uio.no/visuell-profil/css/uio.css</value>
+       </list>
+     </constructor-arg>
+   </bean>
+
+</beans>

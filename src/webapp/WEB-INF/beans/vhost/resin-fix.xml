@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- #if ( $resin3 == 'true' && $srunPort != '' ) -->
+
+   <!-- Fix for resin 3.0 -->
+   <bean class="org.vortikal.web.filter.StandardRequestFilter">
+     <property name="order" value="0" />
+   </bean>
+   <bean class="org.vortikal.web.filter.RequestURIEncodingTranslator">
+     <property name="order" value="10" />
+     <property name="fromEncoding" value="iso-8859-1" />
+     <property name="toEncoding" value="utf-8" />
+   </bean>
+   <!-- #end -->
+
+
+
+  <!-- #if ( $srunPort == '' ) -->
+  <bean class="org.vortikal.web.filter.StandardRequestFilter">
+    <property name="order" value="0" />
+  </bean>
+  <bean class="org.vortikal.web.filter.RequestURLDecoder">
+    <property name="order" value="10" />
+    <property name="characterEncoding" value="utf-8" />
+  </bean>
+   <!-- #end -->
+
+
+</beans>

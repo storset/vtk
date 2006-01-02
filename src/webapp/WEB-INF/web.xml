@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN' 'http://java.sun.com/dtd/web-app_2_3.dtd'>
 
+
+<!-- This file is processed by Maven using Velocity
+      when doing a 'maven war' or 'maven war:webapp'   -->
+
 <web-app>
   <servlet id="vortikalServlet"> 
     <servlet-name>vortikal</servlet-name>
-    <servlet-class>org.vortikal.web.servlet.VortikalServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-    <init-param>
+	<servlet-class>org.vortikal.web.servlet.VortikalServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
+    	<init-param>
+          <param-name>contextConfigLocation</param-name>
+          <param-value>/WEB-INF/applicationContext.xml,classpath*:beans/vortexExtension.xml</param-value>
+        </init-param>
+          <!--
+    	<init-param>
       <param-name>contextConfigLocation</param-name>
-      <param-value>classpath:view.xml,classpath:vortikal.xml,classpath:service.xml,classpath:controllers.xml</param-value>
+      <param-value>/WEB-INF/beans/main.xml,classpath*:beans/vortexExtension.xml</param-value>
+-->
+      <!--param-value>#foreach ( $name in ${beanConfigFileNames} )classpath:$name,#end classpath*:beans/vortexExtension.xml</param-value-->
+
+<!--
     </init-param>
+-->
   </servlet>  
   
   <servlet-mapping>

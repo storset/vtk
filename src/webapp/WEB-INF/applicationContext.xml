@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+   <bean id="propertyConfigurer"
+         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+     <property name="ignoreResourceNotFound" value="true" />
+     <property name="locations">
+       <list>
+         <value>WEB-INF/beans/vortikal.properties</value>
+         <value>classpath:vortikal-custom.properties</value>
+       </list>
+     </property>
+   </bean>
+
+  <!--import resource="beans/base-components/main.xml" /-->
+  
+  <import resource="beans/vhost/main.xml" />
+
+  <!-- Import files from standard-extensions (if any): -->
+  <!-- #foreach( $ext in $standardExtensionFiles.iterator()) -->
+  <!--import resource="standard-extensions/${ext}/${ext}.xml"/-->
+  <!-- #end -->
+
+</beans>

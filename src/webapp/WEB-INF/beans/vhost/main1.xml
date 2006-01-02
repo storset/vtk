@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+<!--
+
+  <import resource="security.xml" />
+  <import resource="repository.xml" />
+  <import resource="changelog.xml" />
+  <import resource="repository-store-interceptor.xml" />
+  <import resource="schema-registry.xml" />
+
+  <import resource="resin-fix.xml" />
+
+-->
+</beans>

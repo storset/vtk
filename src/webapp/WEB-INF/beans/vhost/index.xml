@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+  
+<beans>
+
+
+  <!-- Observer between the index observer and the notifier.
+       Used to apply a filter criterion, before the index observer sees the list
+       of changes. -->
+  <bean id="dmsIndexObserverWrapper" 
+    class="org.vortikal.index.observation.FilteringResourceChangeObserverWrapper">
+    <property name="wrappedObservers">
+      <list>
+        <ref bean="dmsIndexResourceChangeObserver"/>
+      </list>
+    </property>
+    <property name="notifier" ref="repository.resourceChangeNotifier"/>
+    <property name="filterCriterion" ref="dmsIndexFilter"/>
+  </bean>
+  
+
+
+  <!-- The ResourceChangeObserver responsible for applying changes to an index.
+       If this is wrapped in a filter, a notifier should _not_ be set here, but
+       in the wrapper (see above). -->
+  <bean id="dmsIndexResourceChangeObserver"
+    class="org.vortikal.index.lucene.ResourceChangeObserverImpl">
+    <property name="index" ref="dmsIndex"/>
+    <!-- This observer is wrapped by another observer, so we don't want it to register
+         itself with the master notifier, directly (the wrapper does this).--> 
+  </bean>
+  
+
+
+  <!-- This is the main index definition. -->
+  <bean id="dmsIndex" class="org.vortikal.index.lucene.LuceneIndex">
+    <property name="indexPath" value="${systemIndexPath}"/>
+    <property name="optimizeInterval" value="500"/>
+    <property name="forceUnlock" value="true"/>
+    <property name="indexResourceIdHelper" ref="backendIndexResourceIdHelper"/>
+    <property name="extractor" ref="dmsExtractor"/>
+  </bean>
+  
+
+  <!-- Security filter for search results. 
+       This filter looks up all results from an index query, and tests
+       whether the user with the given token really has access to the resource. -->  
+  <bean id="dmsSearchSecurityFilter"
+    class="org.vortikal.index.security.DMSResultSecurityFilter">
+    <property name="repository" ref="repository"/>
+    <property name="noFilterPrincipals">
+      <set>
+        <value>root@localhost</value>
+      </set>
+    </property>
+    <property name="maxFilteredPrincipalsResults" value="1000"/>
+  </bean>  
+  
+
+
+  <!-- Generic extractor for all kinds of Vortex resources. Also extracts 
+    collections. Used by DMS index.-->
+  <bean id="dmsExtractor" class="org.vortikal.index.dms.DMSExtractor">
+    <property name="repository" ref="repository"/>
+    <property name="token" ref="trustedToken"/>
+  </bean>
+  
+
+
+  <!-- Note: No filter for system index in testing phase. -->
+  <!-- DMS index filter (provided as an example).
+       There is support for combining filters, but it can get confusing, 
+       so it is better to keep this simple. Also, avoid using filters that
+       need repository access to determine if a resource is filtered or not
+       (ResourcePropertyFilterCriterion would be an example of that). -->
+  <bean id="dmsIndexFilter" class="org.vortikal.index.observation.URIPrefixFilterCriterion">
+    <property name="exclusions">
+      <list>
+        <value>/noindex</value>
+      </list>
+    </property>
+  </bean>
+
+
+  <!-- Repository backend (cache) resource ID helper. 
+       This is used by indexes to extract resource id information
+       from the repository. -->
+  <bean id="backendIndexResourceIdHelper"
+        class="org.vortikal.repositoryimpl.dao.RepositoryBackendIndexResourceIdHelper">
+    <property name="dao" ref="repository.backend" />
+  </bean>
+  
+
+
+  <!-- Reindexer for the DMS index. -->
+  <bean id="dmsReindexer" class="org.vortikal.index.lucene.LuceneReindexer">
+    <property name="repository" ref="repository"/>
+    <property name="token" ref="trustedToken"/>
+    <property name="index" ref="dmsIndex"/>
+    <property name="asynchronous" value="true"/>
+    <property name="filter" ref="dmsIndexFilter"/>
+  </bean>
+
+
+
+  <!-- Common runtime manager for all indexes in vhost. 
+       The runtime manager automatically picks up index-related beans from
+       the application context during Spring initialization. 
+       It currently provides facilities for running re-indexing operations
+       and disabling/enabling observers. It can also be used to enumerate
+       configured indexes at runtime, and get status information about them. -->
+  <bean id="indexRuntimeManager"
+    class="org.vortikal.index.lucene.RuntimeManagerImpl"/>
+  
+
+  <!-- Temporary web-accessible index runtime manager controller. --> 
+  <bean id="indexManagementHandler"
+    class="org.vortikal.web.controller.index.IndexManagementController">
+    <property name="runtimeManager" ref="indexRuntimeManager"/>
+    <!--<property name="viewName" value="redirectToManage"/>-->
+  </bean>
+
+
+  
+  <!-- Index management service. Belongs in 'management.xml' ? -->
+  <bean id="indexManagementService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-30"/>
+    <property name="parent" ref="manageService"/>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="index"/>
+          <property name="parameterValue" value="manage"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="indexManagementHandler"/>
+  </bean>
+
+  
+  <!-- Search related -->
+  <!-- This provides search access to a Lucene index (old implementation, 
+    but provides access to all of Lucene's query functionality. -->
+  <!--  <bean id="dmsIndexSearcher" class="org.vortikal.index.lucene.LuceneSearcher">
+    <property name="index" ref="dmsIndex"/>
+    </bean>-->
+
+  
+  <!-- The new index searcher implementation type. -->
+  <bean id="dmsIndexSearcher"
+    class="org.vortikal.index.lucene.SearcherImpl">
+    <property name="securityFilter" ref="dmsSearchSecurityFilter"/>
+    <property name="applySecurityFilter" value="true"/>
+    <property name="index" ref="dmsIndex"/>
+  </bean>
+
+
+  <!-- Peforms DMS text (parsed) queries and returns XML. -->
+  <bean id="dmsXmlQueryHelper"
+    class="org.vortikal.index.dms.DMSXmlQuery">
+    <property name="searcher" ref="dmsIndexSearcher"/>
+  </bean>
+
+  
+  <bean id="dmsXmlQueryHandler"
+    class="org.vortikal.web.controller.index.DMSXmlQueryController">
+    <property name="dmsXmlQueryHelper" ref="dmsXmlQueryHelper"/>
+  </bean>
+
+
+  <bean id="dmsXmlQueryService"
+    class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService"/>
+    <property name="order" value="-99998"/>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="dms" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="dmsXmlQueryHandler"/>
+  </bean>
+
+  
+  <!-- Provides access to DMS queries from XSL transformations -->
+  <bean id="dmsQueryXslProvider"
+    class="org.vortikal.web.referencedata.provider.DMSQueryXslProvider">
+    <property name="dmsXmlQueryHelper" ref="dmsXmlQueryHelper"/>
+  </bean>
+
+
+  <!-- Add the XSL provider to the central list: -->
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="transformXmlView" />
+    <property name="targetMethod" value="addReferenceDataProvider" />
+    <property name="arguments">
+      <list>
+        <ref bean="dmsQueryXslProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="dmsRawQueryURLProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelName" value="xsltParameters" />
+    <property name="urlName" value="dmsRawQueryURL" />
+    <property name="service" ref="dmsXmlQueryService" />
+  </bean>
+
+  <!-- Add the raw query URL provider to the central list: -->
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="editView" />
+    <property name="targetMethod" value="addReferenceDataProvider" />
+    <property name="arguments">
+      <list>
+        <ref bean="dmsRawQueryURLProvider" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

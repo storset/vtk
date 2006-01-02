@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Error handlers -->
+
+  <bean id="resourceNotFoundErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorView" ref="resourceNotFoundErrorView" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.repository.ResourceNotFoundException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.repository.ResourceNotFoundException" value="404" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="notAuthorizedErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorView" ref="notAuthorizedErrorView" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.repository.AuthorizationException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.repository.AuthorizationException" value="403" />
+      </map>
+    </property>
+  </bean>
+
+
+
+
+
+  <bean id="defaultErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorView" ref="defaultErrorView" />
+    <property name="referenceDataProviders">
+      <list>
+        <!--ref bean="versionProvider"/-->
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.repository.ResourceNotFoundException" value="404" />
+        <entry key="org.vortikal.repository.AuthorizationException" value="403" />
+      </map>
+    </property>
+  </bean>
+
+
+  <!-- Error views-->
+
+
+  <bean id="resourceNotFoundErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/404.ftl" />
+  </bean>
+
+  <bean id="notAuthorizedErrorView"  parent="freemarkerView">
+    <property name="url" value="pages/error/403.ftl" />
+  </bean>
+
+  <bean id="defaultErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/default-error.ftl" />
+  </bean>
+
+
+</beans>

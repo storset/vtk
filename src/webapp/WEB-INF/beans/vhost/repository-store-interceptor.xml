@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="repository.repositoryProxyCreator"
+        class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+    <property name="interceptorNames">
+      <list>
+        <value>repository.repositoryContentStoreInterceptor</value>
+      </list>
+    </property>
+    <property name="beanNames">
+      <list>
+        <value>repository</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="repository.repositoryContentStoreInterceptor" 
+        class="org.vortikal.aop.interceptor.RepositoryContentStoreInterceptor">
+    <property name="contentHandlers">
+      <list>
+        <bean class="org.vortikal.aop.interceptor.XMLSchemaPropertyContentStoreHandler">
+          <property name="assertions">
+            <list>
+
+              <bean class="org.vortikal.web.service.RepositoryShortcutOrAssertion">
+                <property name="assertions">
+                  <list>
+
+                    <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+                      <property name="namespace" 
+                                value="http://www.uio.no/vortex/custom-properties" />
+                      <property name="name" value="web-edit" />
+                      <property name="value" value="yes" />
+                    </bean>
+                    
+                    <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+                      <property name="namespace">
+                        <value>http://www.uio.no/vortex/custom-properties</value>
+                      </property>
+                      <property name="name">
+                        <value>transform-view</value>
+                      </property>
+                      <property name="value">
+                        <value>yes</value>
+                      </property>
+                    </bean>
+                  </list>
+                </property>
+              </bean>
+            </list>
+          </property>
+          <property name="principalManager" ref="principalManager" />
+          <property name="roleManager" ref="roleManager" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+</beans>

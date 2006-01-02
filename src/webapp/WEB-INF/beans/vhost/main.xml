@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <description>
+    This is the main bean configuration file.  This file does not
+    contain any bean definitions, its purpose is to import the other
+    configuration files in a given order.  When a new bean
+    configuration file is added to the system, it must be included in
+    the list below.
+  </description>
+
+
+  <import resource="security.xml" />
+  <import resource="repository.xml" />
+  <import resource="changelog.xml" />
+  <import resource="repository-store-interceptor.xml" />
+  <import resource="schema-registry.xml" />
+
+  <import resource="resin-fix.xml" />
+
+
+  <import resource="vortex.xml" />
+
+  <import resource="view.xml" />
+  <import resource="controllers.xml" />
+  <import resource="service.xml" />
+  <import resource="manage.xml" />
+  <import resource="browse.xml" />
+  <import resource="xml-edit.xml" />
+  <import resource="webdav.xml" />
+  <import resource="windows-webdav-explorer.xml" />
+  <import resource="plaintextedit.xml" />
+  <!--import resource="visualprofileedit.xml" /-->
+  <import resource="copy-move.xml" />
+  <import resource="errorhandlers.xml" />
+  <!--import resource="php.xml" /-->
+  <!--import resource="shell.xml" /-->
+  <import resource="management.xml" />
+  <!--import resource="subtree-https.xml" /-->
+  <import resource="static-resources.xml" />
+  <!--import resource="extras.xml" /-->
+
+
+  <!-- Indexing configuration files -->
+  <import resource="index.xml" />
+
+</beans>

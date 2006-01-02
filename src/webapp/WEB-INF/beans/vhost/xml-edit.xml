@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+<!-- XML Edit services -->
+
+  <bean id="editService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-9800" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesXml" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" 
+                    value="http://www.uio.no/vortex/custom-properties" />
+          <property name="name" value="web-edit" />
+          <property name="value" value="yes" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="edit" />
+        </bean>
+        <ref bean="requiresWritePermissionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="defaultEditHandler" />
+    <property name="services">
+      <list>
+        <ref local="editElementService"/>
+        <ref local="editElementDoneService"/>
+        <ref local="deleteElementService"/>
+        <ref local="deleteSubElementAtService"/>
+        <ref local="moveElementService"/>
+        <ref local="moveElementDoneService"/>
+        <ref local="newElementService"/>
+        <ref local="newElementAtService"/>
+        <ref local="newSubElementAtService"/>
+        <ref local="finishEditingService"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editElementService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="editElementHandler" />
+  </bean>
+
+  <bean id="editElementDoneService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="editDone" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="editElementDoneHandler" />
+  </bean>
+
+
+  <bean id="deleteElementService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="deleteElement" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="deleteElementHandler" />
+  </bean>
+
+  <bean id="deleteSubElementAtService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="deleteSubElementAt" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="deleteSubElementAtHandler" />
+  </bean>
+
+  <bean id="moveElementService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="moveElement" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="moveElementHandler" />
+  </bean>
+
+  <bean id="moveElementDoneService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="moveElementDone" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="moveElementDoneHandler" />
+  </bean>
+
+  <bean id="newElementService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="newElement" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="newElementHandler" />
+  </bean>
+
+  <bean id="newElementAtService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="newElementAt" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="newElementAtHandler" />
+  </bean>
+
+  <bean id="newSubElementAtService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="newSubElementAt" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="newSubElementAtHandler" />
+  </bean>
+
+  <bean id="finishEditingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="finish" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler" ref="finishEditingHandler" />
+  </bean>
+
+  <!-- XML edit handlers -->
+
+  <bean id="abstractXmlEditController" 
+        abstract="true"
+        parent="requestLocalRepositoryAware">
+    <property name="transformerManager" ref="editTransformerManager" />
+    <property name="editService" ref="editService" />
+    <property name="browseService" ref="browseService" />
+    <property name="editElementService" ref="editElementService" />
+    <property name="editElementDoneService" ref="editElementDoneService" />
+    <property name="moveElementService" ref="moveElementService" />
+    <property name="moveElementDoneService" ref="moveElementDoneService" />
+    <property name="deleteElementService" ref="deleteElementService" />
+    <property name="newElementAtService" ref="newElementAtService" />
+    <property name="newElementService" ref="newElementService" />
+    <property name="newSubElementAtService" ref="newSubElementAtService" />
+    <property name="deleteSubElementAtService" ref="deleteSubElementAtService" />
+    <property name="finishEditingService" ref="finishEditingService" />
+  </bean>
+  
+  <bean id="defaultEditHandler" 
+	class="org.vortikal.edit.xml.DefaultController"
+	parent="abstractXmlEditController" />
+
+  <bean id="editElementHandler" 
+	class="org.vortikal.edit.xml.EditController"
+	parent="abstractXmlEditController" />
+  
+  <bean id="editElementDoneHandler" 
+	class="org.vortikal.edit.xml.EditDoneController"
+	parent="abstractXmlEditController" />
+
+  <bean id="deleteElementHandler" 
+	class="org.vortikal.edit.xml.DeleteController"
+	parent="abstractXmlEditController" />
+
+  <bean id="deleteSubElementAtHandler" 
+	class="org.vortikal.edit.xml.DeleteSubElementAtController"
+	parent="abstractXmlEditController" />
+  
+  <bean id="moveElementHandler" 
+	class="org.vortikal.edit.xml.MoveController"
+	parent="abstractXmlEditController">
+  </bean>
+
+  <bean id="moveElementDoneHandler" 
+	class="org.vortikal.edit.xml.MoveItController"
+	parent="abstractXmlEditController"/>
+
+  <bean id="newElementHandler" 
+	class="org.vortikal.edit.xml.NewElementController"
+	parent="abstractXmlEditController" />
+
+  <bean id="newElementAtHandler" 
+	class="org.vortikal.edit.xml.NewElementAtController"
+	parent="abstractXmlEditController" />
+
+  <bean id="newSubElementAtHandler" 
+	class="org.vortikal.edit.xml.NewSubElementAtController"
+	parent="abstractXmlEditController" />
+
+  <bean id="finishEditingHandler" 
+	class="org.vortikal.edit.xml.FinishController"
+	parent="abstractXmlEditController" >
+    <property name="viewName" value="redirectToManage" />
+  </bean>
+
+
+  <bean id="editMessageProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
+    <property name="modelName" value="tabMessage" />
+    <property name="localizationKey" value="xmledit.tabMessage" />
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="editTabHelpURLProvider"
+        class="org.vortikal.web.referencedata.provider.StaticURLProvider">
+    <property name="modelName" value="tabHelpURL" />
+    <property name="descriptionKey" value="xmledit.tabHelpURLDescription" />
+    <property name="url" value="${editHelpURL}" />
+    <property name="target" value="helpWindow" />
+  </bean>
+
+
+  <bean id="editViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="edit" value-ref="editView" />
+        <entry key="redirectToEdit" value-ref="redirectToEditView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="redirectToEditView" 
+        class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the manage service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToEditProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToEditProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider">
+    <property name="repository" ref="repository" />
+    <property name="redirectToService" ref="editService" />
+  </bean>
+
+
+  <!-- XML edit views -->
+
+  <bean id="editView" class="org.vortikal.web.view.xslt.ResourceXsltView">
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="editMessageProvider" />
+        <ref bean="editTabHelpURLProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="editCSSURLs" />
+              <entry key="jsURLs" value-ref="editJSURLs" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="linkConstructor" ref="linkConstructor" />
+    <property name="transformerManager" ref="editTransformerManager" />
+  </bean>
+
+  <bean id="editCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${cssBaseURL}/basic.css</value>
+        <value>${cssBaseURL}/tabs.css</value>
+        <value>${cssBaseURL}/edit.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="editJSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${cssBaseURL}/browser-sniffer.js</value>
+        <value>${cssBaseURL}/fixed.js</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+
+  <bean id="xmlEditMessageSource"
+        class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>xmledit</value>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="editTransformerManager" class="org.vortikal.xml.TransformerManager">
+    <property name="alwaysCompile" value="true" />
+    <property name="stylesheetReferenceResolvers">
+      <list>
+        <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
+          <property name="schemaRegistry" ref="schemaRegistry"/>
+          <property name="elementXPath" value="/xsd:schema/xsd:annotation/xsd:appinfo/edit/xsl" />
+         </bean>
+       </list>
+     </property>
+     <property name="compilationURIResolvers">
+       <list>
+         <ref bean="xsltCompilationFilePathURIResolver" />
+         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
+         <ref bean="xsltCompilationFileURIResolver" />
+       </list>
+     </property>
+     <property name="transformationURIResolvers">
+       <list>
+         <ref bean="xsltTransformationRepositoryURIResolver" />
+       </list>
+     </property>
+   </bean>
+
+  <!-- XML edit error handler -->
+
+  <bean id="xmlEditErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
+        parent="abstractReferencedataProvidingErrorHandler">
+    <description>
+      Provides error handling for the XML edit service.
+    </description>
+    <property name="service" ref="editService" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.edit.xml.XMLEditException" />
+      </bean>
+    </property>
+    <property name="errorView" ref="xmlEditErrorView" />
+  </bean>
+
+
+  <bean id="xmlEditErrorView" parent="manageErrorHandlerViewWrapper">
+    <property name="view">
+      <bean parent="freemarkerView">
+        <property name="url" value="pages/error/edit-xml-error.ftl" />
+      </bean>
+    </property>
+  </bean>
+
+</beans>

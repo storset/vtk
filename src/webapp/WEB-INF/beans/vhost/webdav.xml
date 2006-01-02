@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <bean id="webdavService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <ref bean="webdavPortAssertion" />
+        <ref bean="webdavHostNameAssertion" />
+        <ref bean="webdavProtocolAssertion" />
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="webdavCollectionListingService" />
+        <ref bean="webdavCollectionListingHeadService" />
+        <ref bean="realWebdavClientService" />
+      </list>
+    </property>
+    <property name="authenticationChallenge" ref="${webdavAuthenticationChallenge}" />
+  </bean>
+  
+
+  <bean id="realWebdavClientService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="emptyQueryStringAssertion" />
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="webdavOptionsService" />
+        <ref bean="webdavGetService" />
+        <ref bean="webdavHeadService" />
+        <ref bean="webdavPropfindService" />
+        <ref bean="webdavLockService" />
+        <ref bean="webdavUnlockService" />
+        <ref bean="webdavPutService" />
+        <ref bean="webdavPostService" />
+        <ref bean="webdavMkColService" />
+        <ref bean="webdavCopyService" />
+        <ref bean="webdavMoveService" />
+        <ref bean="webdavDeleteService" />
+        <ref bean="webdavProppatchService" />
+        <!-- These controllers are not yet implemented: -->
+        <ref bean="webdavSearchService" />
+        <ref bean="webdavReportService" />
+        <ref bean="webdavACLService" />
+        <ref bean="webdavVersionControlService" />
+        <ref bean="webdavCheckoutService" />
+        <ref bean="webdavUncheckoutService" />
+        <ref bean="webdavLabelService" />
+        <ref bean="webdavUpdateService" />
+      </list>
+    </property>
+  </bean>
+
+
+   <bean id="webdavProtocolAssertion"
+         class="org.vortikal.web.service.RequestProtocolAssertion">
+     <property name="protocol">
+       <value>${webdavProtocol}</value>
+     </property>
+   </bean>
+
+   <bean id="webdavPortAssertion"
+         class="org.vortikal.web.service.RequestPortAssertion">
+     <property name="port">
+       <value>${webdavPort}</value>
+     </property>
+   </bean>
+
+   <bean id="webdavHostNameAssertion"
+         class="org.vortikal.web.service.RequestHostNameAssertion">
+     <property name="hostName">
+       <value>${webdavHostName}</value>
+     </property>
+   </bean>
+
+   <bean id="emptyQueryStringAssertion"
+         class="org.vortikal.web.service.RequestEmptyQueryStringAssertion" />
+
+
+  <!-- DAV handler services: -->
+
+  <bean id="webdavCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>GET</value>
+          </property>
+        </bean>
+        <ref bean="resourceIsCollectionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="webdavCollectionListingHandler" />
+  </bean>
+
+  <bean id="webdavCollectionListingHeadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>HEAD</value>
+          </property>
+        </bean>
+        <ref bean="resourceIsCollectionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="webdavCollectionListingHandler" />
+  </bean>
+
+  <bean id="webdavOptionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="options" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>OPTIONS</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavOptionsHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavGetService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="get" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>GET</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavGetHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavHeadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="head" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>HEAD</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavHeadHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavPropfindService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="propfind" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>PROPFIND</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavPropfindHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavLockService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="lock" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>LOCK</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavLockHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavUnlockService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="unlock" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>UNLOCK</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavUnlockHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavPutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="put" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>PUT</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavPutHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavMkColService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="MkCol" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>MKCOL</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavMkColHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavPostService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Post" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>POST</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavPutHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavCopyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Copy" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>COPY</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavCopyHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavMoveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Move" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>MOVE</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavMoveHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavDeleteService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Delete" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>DELETE</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavDeleteHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavProppatchService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Proppatch" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>PROPPATCH</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="webdavProppatchHandler" />
+    </property>
+  </bean>
+
+  <!-- The following are not implemented yet: -->
+
+  <bean id="webdavSearchService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Search" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>SEARCH</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavReportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Report" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>REPORT</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavACLService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="ACL" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>ACL</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavVersionControlService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="VersionControl" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>VERSION-CONTROL</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavCheckoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Checkout" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>CHECKOUT</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavUncheckoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Uncheckout" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>UNCHECKOUT</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavLabelService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Label" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>LABEL</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+
+  <bean id="webdavUpdateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="Update" class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>UPDATE</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="methodNotImplementedHandler" />
+    </property>
+  </bean>
+  
+
+
+
+  <!-- WebDAV controllers -->
+
+  <bean id="methodNotImplementedHandler" 
+        class="org.vortikal.web.controller.HttpMethodNotImplementedHandler"/>
+
+
+  <bean id="webdavCollectionListingHandler"
+        class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+        parent="requestLocalRepositoryAware" >
+    <property name="viewName">
+      <value>webdavCollectionListingView</value>
+    </property>
+  </bean>
+
+
+  <bean id="webdavCollectionListingHeadHandler"
+        class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+        parent="requestLocalRepositoryAware" >
+    <property name="viewName">
+      <value>webdavCollectionListingView</value>
+    </property>
+  </bean>
+
+  <bean id="webdavOptionsHandler" class="org.vortikal.webdav.OptionsController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavGetHandler" class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName"><value>webdavDisplayResource</value></property>
+    <property name="ignoreLastModified"><value>true</value></property>
+  </bean>
+
+
+  <bean id="webdavHeadHandler" class="org.vortikal.webdav.HeadController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavPropfindHandler" class="org.vortikal.webdav.PropfindController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavLockHandler" class="org.vortikal.webdav.LockController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavUnlockHandler" class="org.vortikal.webdav.UnlockController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavMkColHandler" class="org.vortikal.webdav.MkColController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavCopyHandler" class="org.vortikal.webdav.CopyController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavMoveHandler" class="org.vortikal.webdav.MoveController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavDeleteHandler" class="org.vortikal.webdav.DeleteController"
+    parent="requestLocalRepositoryAware" />
+
+  <bean id="webdavProppatchHandler" class="org.vortikal.webdav.ProppatchController"
+    parent="requestLocalRepositoryAware" />
+
+
+
+
+
+  <!-- View resolver -->
+
+  
+  <bean id="webdavViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="webdavDisplayResource" value-ref="webdavDisplayResourceView" />
+        <entry key="OPTIONS" value-ref="OPTIONS" />
+        <entry key="PROPFIND" value-ref="PROPFIND" />
+        <entry key="HEAD" value-ref="HEAD" />
+        <entry key="LOCK" value-ref="LOCK" />
+        <entry key="PROPPATCH" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="MKCOL" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="MOVE" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="UNLOCK" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="COPY" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="PUT" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="POST" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="DELETE" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="HTTP_STATUS_VIEW" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="HTTP_STATUS_NOT_FOUND" value-ref="HTTP_STATUS_NOT_FOUND_VIEW" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="webdavCollectionListingViewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="webdavCollectionListingHeadView" value-ref="webdavCollectionListingHeadView" />
+        <entry key="webdavCollectionListingView" value-ref="webdavCollectionListingView" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="webdavCollectionListingHtmlTitleProvider" />
+        <ref bean="manageLinkProvider" />
+        <ref bean="webdavCollectionListingMessageProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <!-- View definitions -->
+
+  <bean id="webdavCollectionListingView" parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="webdavBreadCrumbProvider" />
+        <ref bean="webdavCollectionListingProvider" />
+        <ref bean="resourceTitleProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs" value-ref="viewCSSURLs" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
+
+
+  <bean id="webdavDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" >
+    <property name="includeLastModifiedHeader">
+      <value>false</value>
+    </property>
+  </bean>
+
+
+
+  <bean id="HTTP_STATUS_VIEW" class="org.vortikal.web.view.SimpleHttpStatusView"/>
+
+  <bean id="HTTP_STATUS_NOT_FOUND_VIEW"
+        class="org.vortikal.web.view.SimpleHttpStatusView">
+    <property name="attributesMap">
+      <map>
+        <entry key="httpStatusCode">
+          <bean class="java.lang.Integer">
+            <constructor-arg><value>404</value></constructor-arg>
+          </bean>
+        </entry>
+      </map>  
+    </property>
+  </bean>  
+
+
+  <bean id="OPTIONS" class="org.vortikal.webdav.OptionsView"/>
+
+  <bean id="PROPFIND" class="org.vortikal.webdav.PropfindView">
+    <property name="webdavService">
+      <ref bean="webdavService"/>
+    </property>
+  </bean>
+
+  <bean id="HEAD" class="org.vortikal.webdav.HeadView"/>
+
+  <bean id="LOCK" class="org.vortikal.webdav.LockView"/>
+
+
+  <bean id="webdavBreadCrumbProvider"
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+        parent="requestLocalRepositoryAware">
+    <description>
+      Breadcrumb provider that generates links to the WebDAV service
+    </description>
+    <property name="service">
+      <ref bean="webdavService"/>
+    </property>
+    <property name="titleOverrideProperties">
+      <ref bean="defaultBreadcrumbTitlePropertyList" />
+    </property>
+  </bean>
+
+  <bean id="webdavCollectionListingProvider"
+        class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 
+        parent="requestLocalRepositoryAware" >
+    <property name="browsingService">
+      <ref bean="webdavService" />
+    </property>
+    <property name="retrieveForProcessing">
+      <value>false</value>
+    </property>
+  </bean>
+
+  <bean id="webdavCollectionListingMessageProvider"
+        class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+    <property name="modelDataMap">
+      <map>
+        <entry key="includeTemplate" value="/pages/webdav-info.ftl" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="webdavCollectionListingHtmlTitleProvider" parent="abstractHtmlTitleProvider">
+    <property name="localizationKeys">
+      <map>
+        <entry key="name">
+          <value>title.webdavCollectionListing</value>
+        </entry>
+        <entry key="http://www.uio.no/vortex/custom-properties:title">
+          <value>title.webdavCollectionListing</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+</beans>

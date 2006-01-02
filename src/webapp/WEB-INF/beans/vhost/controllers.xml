@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- WEB controllers -->
+
+  <bean id="logoutHandler" 
+    class="org.vortikal.web.controller.LogoutController" parent="requestLocalRepositoryAware">
+    <property name="service" ref="viewService" />
+    <property name="securityInitializer" ref="securityInitializer" />
+  </bean>
+
+  <bean id="redirectHandler" 
+    class="org.vortikal.web.controller.RedirectController">
+    <property name="viewName" value="collectionRedirect" />
+  </bean>
+
+  <bean id="httpOptionsHandler"
+        class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+        parent="requestLocalRepositoryAware">
+    <property name="supportedMethods" value="OPTIONS" />
+    <property name="viewName" value="httpOptions" />
+  </bean>
+
+  <bean id="collectionListingHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="collectionListing" />
+    <property name="displayProcessed" value="true" />
+  </bean>
+
+  <bean id="displayIndexXmlHandler" 
+        class="org.vortikal.web.controller.DisplayXmlResourceController"
+        parent="requestLocalRepositoryAware">
+    <property name="handleLastModified" value="false" />
+    <property name="transformerManager" ref="transformerManager" />
+    <property name="childName" value="index.xml" />
+  </bean>
+
+  <bean id="displayIndexXmlAsHtmlHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="displayProcessed" value="true" />
+    <property name="childName" value="index.xml" />
+    <property name="viewName" value="displayHTMLResource" />
+  </bean>
+
+  <bean id="displayIndexEngXmlHandler" 
+        class="org.vortikal.web.controller.DisplayXmlResourceController"
+        parent="requestLocalRepositoryAware">
+    <property name="handleLastModified" value="false" />
+    <property name="transformerManager" ref="transformerManager" />
+    <property name="childName" value="index-eng.xml" />
+  </bean>
+
+  <bean id="displayIndexEngXmlAsHtmlHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="displayProcessed" value="true" />
+    <property name="childName" value="index-eng.xml" />
+    <property name="viewName" value="displayHTMLResource" />
+  </bean>
+
+
+  <bean id="displayIndexHtmlHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="displayProcessed" value="true" />
+    <property name="childName" value="index.html" />
+    <property name="viewName" value="displayHTMLResource" />
+  </bean>
+
+  <bean id="displayIndexEngHtmlHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="displayProcessed" value="true" />
+    <property name="childName" value="index-eng.html" />
+    <property name="viewName" value="displayHTMLResource" />
+  </bean>
+
+  <bean id="displayIndexHtmlAsXmlHandler" 
+        class="org.vortikal.web.controller.DisplayXmlResourceController"
+        parent="requestLocalRepositoryAware">
+    <property name="transformerManager" ref="transformerManager" />
+    <property name="childName" value="index.html" />
+  </bean>
+
+  <bean id="displayIndexEngHtmlAsXmlHandler" 
+        class="org.vortikal.web.controller.DisplayXmlResourceController"
+        parent="requestLocalRepositoryAware">
+    <property name="transformerManager" ref="transformerManager" />
+    <property name="childName" value="index-eng.html" />
+  </bean>
+
+  <bean id="displayResourceHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="displayProcessed" value="true" />
+  </bean>
+
+  <bean id="displayHTMLResourceHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="displayProcessed" value="true" />
+    <property name="viewName" value="displayHTMLResource" />
+  </bean>
+
+  <bean id="displayHTMLResourceWithoutUhtmlHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="displayHTMLResourceHandler">
+    <property name="viewName">
+      <value>displayHTMLResourceWithoutUhtml</value>
+    </property>
+  </bean>
+
+  <bean id="displayXmlResourceHandler" 
+    class="org.vortikal.web.controller.DisplayXmlResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="handleLastModified" value="false" />
+    <property name="transformerManager" ref="transformerManager" />
+    <property name="viewName" value="transformXmlResource"/>
+  </bean>
+
+  <bean id="displayXmlResourceWithoutUhtmlHandler" 
+    class="org.vortikal.web.controller.DisplayXmlResourceController"
+    parent="displayXmlResourceHandler">
+    <property name="handleLastModified" value="false" />
+    <property name="viewName" value="transformXmlResourceWithoutUhtml" />
+  </bean>
+
+  <bean id="displayRssResourceHandler" 
+    class="org.vortikal.web.controller.DisplayXmlResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="transformerManager" ref="rssTransformerManager" />
+    <property name="viewName" value="transformRssResource" />
+  </bean>
+
+
+  <bean id="setNorwegianNBLocaleController"
+        class="org.vortikal.web.controller.SetLocaleController">
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>no</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver">
+      <ref bean="localeResolver" />
+    </property>
+    <property name="viewName">
+      <value>redirectToManage</value>
+    </property>
+  </bean>
+
+  <bean id="setNorwegianNNLocaleController"
+        class="org.vortikal.web.controller.SetLocaleController">
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>nn</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver">
+      <ref bean="localeResolver" />
+    </property>
+    <property name="viewName">
+      <value>redirectToManage</value>
+    </property>
+  </bean>
+
+  <bean id="setEnglishLocaleController"
+        class="org.vortikal.web.controller.SetLocaleController">
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>en</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver">
+      <ref bean="localeResolver" />
+    </property>
+    <property name="viewName">
+      <value>redirectToManage</value>
+    </property>
+  </bean>
+
+
+
+</beans>

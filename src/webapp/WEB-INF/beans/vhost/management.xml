@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <description>
+    Service for bringing the repository in and out of read-only mode.
+    Request parameters: action=set-read-only&amp;read-only={true,false}
+  </description>
+
+
+  <bean id="repositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="0" />
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="set-read-only" />
+        </bean>
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="setRepositoryReadOnlyService" />
+        <ref bean="unsetRepositoryReadOnlyService" />
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+            parent="requestLocalRepositoryAware">
+        <property name="viewName" value="redirect" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="setRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RepositoryReadOnlyAssertion">
+          <property name="repository" ref="repository" />
+          <property name="invert" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="read-only" />
+          <property name="parameterValue" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="repositoryReadOnlyController" />
+    </property>
+  </bean>
+
+  <bean id="unsetRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RepositoryReadOnlyAssertion">
+          <property name="repository" ref="repository" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="read-only" />
+          <property name="parameterValue" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="repositoryReadOnlyController" />
+    </property>
+  </bean>
+
+  <bean id="repositoryReadOnlyController"
+        class="org.vortikal.web.controller.repository.RepositoryReadOnlyController" >
+    <property name="repository" ref="repository" />
+  </bean>
+
+</beans>

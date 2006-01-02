@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+          "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="roleManager"
+        class="org.vortikal.security.roles.RoleManager">
+    <description>
+      The role manager. Principals can be assigned certain special
+      roles. Currently, two such roles are
+      defined: the root role, which allows any operation on the
+      repository, and the 'read everything' role, which allows full
+      read access to all resources in the repository.
+
+      Roles are different from groups in that they are more
+      specialized and less dynamic; whereas a group may be granted
+      certain privileges to certain resources, a principal in a
+      role will always be granted the privileges of that role to
+      ALL resources. Furthermore, role privileges don't show up in
+      the acces control lists (ACLs) of resources.
+
+      It is not advised that "ordinary" users be given the root
+      role or the read everything role, as this bypasses the
+      ordinary security mechanism (ACL). The standard way is to
+      create a root principal which is given the root role, and to
+      give the read everything role to any system users
+      (indexers, etc.) that may need full read access.
+    </description>
+    <property name="rootRole">
+      <set>
+        <value>root@localhost</value>
+        <value>super@localhost</value>
+      </set>            
+    </property>
+    <property name="readEverythingRole">
+      <set><value>trustedUser@localhost</value></set>
+    </property>
+  </bean>
+
+
+  <!-- =============================================================== -->
+  <!-- Authentication and principal management section                 -->
+  <!-- Set up the various authentication handlers, principal stores    -->
+  <!-- and session stores                                              -->
+  <!-- =============================================================== -->
+
+
+  <bean id="tokenManager" class="org.vortikal.security.TokenManagerImpl">
+    <description>
+      The token manager. Tokens are "tickets" assigned to users
+      when logging into the system, and are used for repository
+      access. The token manager keeps track of these tokens,
+      mapping them to user names, and making sure they expire after
+      periods of inactivity.
+    </description>
+    <property name="cache" ref="tokenManagerCache" />
+    <property name="defaultPrincipals">
+      <list>
+        <ref bean="trustedPrincipal" />
+        <ref bean="superPrincipal" />
+        <ref bean="rootPrincipal" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="tokenManagerCache"
+        class="org.vortikal.util.cache.SimpleCacheImpl">
+    <property name="timeoutSeconds" value="1800" />
+  </bean>
+
+  <!-- Authentication challenges -->
+
+  <!-- The digest authentication handler also implements AuthenticationChallenge: -->
+  <alias name="httpDigestAuthenticationHandler" 
+         alias="httpDigestAuthenticationChallenge" />
+
+
+
+
+  <bean id="httpBasicAuthenticationChallenge" 
+        class="org.vortikal.security.web.HttpBasicAuthenticationChallenge">
+    <description>A HTTP/Basic authentication challenge</description>
+    <property name="principalStore" ref="localPrincipalStore" />
+  </bean>
+
+
+
+
+  <bean id="httpBasicAuthenticationHandler" 
+        class="org.vortikal.security.web.HttpBasicAuthenticationHandler">
+    <description>
+      A HTTP/Basic authentication manager running against a
+      principal store of "local" users and groups
+    </description>
+    <property name="order" value="100" />
+    <property name="recognizedDomains">
+      <set>
+        <value>localhost</value>
+        <null />
+      </set>
+    </property>
+    <property name="principalManager" ref="principalManager" />
+    <property name="challenge" ref="httpBasicAuthenticationChallenge" />
+    <property name="principalStore" ref="localPrincipalStore"/>
+  </bean>
+
+  <bean id="httpDigestAuthenticationHandler" 
+        class="org.vortikal.security.web.HttpDigestAuthenticationHandler">
+    <description>
+      A HTTP/Digest authentication manager running against a
+      principal store of "local" users and groups
+    </description>
+    <property name="order" value="0" />
+    <!--      <property name="stateMap" ref="digestStateMap" />-->
+    <property name="recognizedDomains">
+      <set>
+        <value>localhost</value>
+        <value>vindaloo</value>
+      </set>
+    </property>
+    <property name="principalManager" ref="principalManager" />
+    <property name="principalStore" ref="localPrincipalStore" />
+  </bean>
+
+  <!--   <bean id="digestStateMap" class="org.vortikal.util.cache.SimpleCacheImpl">
+         <property name="timeoutSeconds" value="1800" />
+    </bean>-->
+
+  <bean id="principalManager" class="org.vortikal.security.PrincipalManagerImpl">
+    <property name="defaultDomain" value="${defaultPrincipalDomain}" />
+    <!--property name="principalStore" ref="principalStore"/-->
+    <property name="domainURLMap">
+      <map>
+        <entry key="uio.no" value="http://www.uio.no/sok?person=%u" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="groupMembershipFastLookupCache"
+        class="org.vortikal.util.cache.SimpleCacheImpl">
+    <property name="timeoutSeconds" value="60" />
+    <property name="refreshTimestampOnGet" value="false" />
+  </bean>
+
+
+  <bean id="localPrincipalStore" class="org.vortikal.security.PropertyConfigurableMD5PrincipalStore">
+    <property name="order" value="10" />
+    <!--property name="domain" value="localhost" /-->
+    <property name="realm" value="Vortex" />
+    <property name="principals" ref="localPrincipals" />
+    <property name="groups" ref="localGroups" />
+  </bean>
+
+  <bean id="localPrincipals"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <description>
+      This is the "local users and groups" principal store. Its
+      users and groups are stored in memory, in the 'principals'
+      and 'groups' properties, respectively.
+    </description>
+
+    <constructor-arg index="0" type="java.util.Properties">
+      <description>
+        To add a new user, insert an entry where 'key' is the user
+        name and 'value' is an MD5 hash of the following
+        composition: 'username:realm:password'. I.e. if realm is
+        'Vortex', username is 'root' and password is 'fish', the
+        composition will be 'root:Vortex:fish'. 
+
+        On a UNIX system this may be accomplished as follows:
+        unix> echo -n root:Vortex:fish | md5sum
+        42d92f646a0ae29a74e2484ce45b25e7 -
+        unix>
+      </description>
+      <props>
+       <prop key="root@localhost">0a4872c6927f992f3808955b0938f808</prop>
+        <prop key="vortex@localhost">b46c78fb2455c0875e8f5d35515e9fe7</prop>
+        <!-- password = 'pw': -->
+        <prop key="user@localhost">6292e997b1b4cf500c7356d6c6593b7e</prop>
+        <!-- is not possible to authenticate as: -->
+        <prop key="trustedUser@localhost">NO_REAL_VALUE</prop>
+        <!-- duper: -->
+        <prop key="super@localhost">768f9142d878dadc4dadedc44077adf9</prop>
+      </props>
+    </constructor-arg>
+    <property name="lazyInit" value="true" />
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${repositoryPasswdFile}" />
+    <property name="token" ref="trustedToken" />
+  </bean>
+
+  <bean id="localPrincipalsRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uriPattern" value="${repositoryPasswdFile}" />
+    <property name="targetObject" ref="localPrincipals" />
+    <property name="method" value="load" />
+  </bean>
+
+
+
+  <bean id="localGroups"
+        class="org.vortikal.util.repository.HashMapResource">
+    <property name="lazyInit" value="true" />
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${repositoryGroupsFile}" />
+    <property name="token" ref="trustedToken" />
+    <property name="storeValuesAsLists" value="true" />
+  </bean>
+
+  <bean id="localGroupsRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uriPattern" value="${repositoryGroupsFile}" />
+    <property name="targetObject" ref="localGroups" />
+    <property name="method" value="load" />
+  </bean>
+
+
+  <!-- Quartz scheduled jobs cleaning up caches and token store  -->
+
+<!--
+  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="triggers">
+      <list>
+        <ref local="cleanupExpiredTokensTrigger" />
+        <ref local="cleanupLDAPGroupCacheTrigger" />
+        <ref local="cleanupFeideDirectCache" />
+        <ref local="cleanupUIOLDAPCache" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="cleanupLDAPGroupCacheTrigger" 
+        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail" ref="cleanupLDAPGroupCacheJobDetail"/>
+    <property name="startDelay" value="60000" />
+    <property name="repeatInterval" value="600000" />
+  </bean>
+
+  <bean id="cleanupLDAPGroupCacheJobDetail" 
+        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+    <property name="group" value="repository" />
+    <property name="targetObject" ref="ldapGroupCache" />
+    <property name="targetMethod" value="cleanupExpiredItems" />
+  </bean>                 
+
+  <bean id="cleanupExpiredTokensTrigger" 
+        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail" ref="cleanupExpiredSessionsJobDetail"/>
+    <property name="startDelay" value="60000" />
+    <property name="repeatInterval" value="600000" />
+  </bean>
+
+  <bean id="cleanupExpiredSessionsJobDetail" 
+        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+    <property name="group" value="repository" />
+    <property name="targetObject" ref="tokenManagerCache" />
+    <property name="targetMethod" value="cleanupExpiredItems" />
+  </bean>                 
+
+  <bean id="cleanupFeideDirectCache" 
+        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail" ref="cleanupFeideDirectCacheJobDetail"/>
+    <property name="startDelay" value="60000" />
+    <property name="repeatInterval" value="600000" />
+  </bean>
+  
+  <bean id="cleanupFeideDirectCacheJobDetail" 
+        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+    <property name="group" value="repository" />
+    <property name="targetObject" ref="feideDirectAuthenticationCache" />
+    <property name="targetMethod" value="cleanupExpiredItems" />
+  </bean>                 
+
+  <bean id="cleanupUIOLDAPCache" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail" ref="cleanupUIOLDAPCacheJobDetail"/>
+    <property name="startDelay" value="60000" />
+    <property name="repeatInterval" value="600000" />
+  </bean>
+
+  <bean id="cleanupUIOLDAPCacheJobDetail" 
+        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+    <property name="group" value="repository" />
+    <property name="targetObject" ref="uioLDAPAuthenticationCache" />
+    <property name="targetMethod" value="cleanupExpiredItems" />
+  </bean>                 
+
+  <bean id="cleanupGroupMembershipFastLookupCache"
+        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail" 
+              ref="cleanupGroupMembershipFastLookupCacheJobDetail"/>
+    <property name="startDelay" value="60000" />
+    <property name="repeatInterval" value="600000" />
+  </bean>
+  
+  <bean id="cleanupGroupMembershipFastLookupCacheJobDetail" 
+        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+    <property name="group" value="repository" />
+    <property name="targetObject" ref="groupMembershipFastLookupCache" />
+    <property name="targetMethod" value="cleanupExpiredItems" />
+  </bean>                 
+-->
+<!--  <bean id="cleanupDigestStateMap" 
+        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail" ref="cleanupDigestStateMapJobDetail"/>
+    <property name="startDelay" value="60000" />
+    <property name="repeatInterval" value="600000" />
+  </bean>
+
+  <bean id="cleanupDigestStateMapJobDetail" 
+        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+    <property name="group" value="repository" />
+    <property name="targetObject" ref="digestStateMap"/>
+    <property name="targetMethod" value="cleanupExpiredItems" />
+  </bean>
+-->
+  <!-- Special principals and tokens -->
+
+  <bean id="trustedPrincipal" 
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="principalManager"/>
+    <property name="targetMethod" value="getPrincipal" />
+    <property name="arguments">
+      <list>
+        <value>trustedUser@localhost</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="trustedToken" 
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <description>
+      This bean represents a "trusted" repository token. It is used
+      for framework components that require unconditional read access
+      to the repository, and need a way of authenticating themselves.
+    </description>
+    <property name="targetObject" ref="tokenManager" />
+    <property name="targetMethod" value="getRegisteredToken" />
+    <property name="arguments">
+      <list>
+        <ref bean="trustedPrincipal" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="rootPrincipal" 
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="principalManager"/>
+    <property name="targetMethod" value="getPrincipal" />
+    <property name="arguments">
+      <list>
+        <value>root@localhost</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="writeAllToken"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <description>
+      This bean is a "root" repository token. It is used
+      by framework components that require full access
+      to the repository, as the user root@localhost.
+    </description>
+    <property name="targetObject" ref="tokenManager" />
+    <property name="targetMethod" value="getRegisteredToken" />
+    <property name="arguments">
+      <list>
+        <ref bean="rootPrincipal" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="superPrincipal" 
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="principalManager" />
+    <property name="targetMethod" value="getPrincipal" />
+    <property name="arguments">
+      <list>
+        <value>super@localhost</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="superToken"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <description>
+      This bean represents a "root" repository token. It is used
+      for applications that require full access
+      to the repository, as the user super@localhost.
+    </description>
+    <property name="targetObject" ref="tokenManager" />
+    <property name="targetMethod" value="getRegisteredToken" />
+    <property name="arguments">
+      <list>
+        <ref bean="superPrincipal" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

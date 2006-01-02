@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <!-- Repository -->
+
+  <bean id="repository" class="org.vortikal.repositoryimpl.RepositoryImpl">
+    <property name="principalManager">
+      <ref bean="principalManager"/>
+    </property>
+    <property name="tokenManager">
+      <ref bean="tokenManager" />
+    </property>
+    <property name="id">
+      <value>${repositoryID}</value>
+    </property>
+    <property name="roleManager">
+      <ref bean="roleManager" />
+    </property> 
+    <property name="dao">
+      <ref bean="repository.backend" />
+    </property>
+    <property name="readOnly"><value>${repositoryReadOnly}</value></property>
+  </bean>
+
+  
+  <bean id="repository.backend" class="org.vortikal.repositoryimpl.dao.Cache">
+    <property name="maxItems"><value>${resourceCacheSize}</value></property>
+    <property name="wrappedAccessor">
+      <ref local="repository.database" />
+    </property>
+  </bean>
+
+  <bean id="repository.database" class="org.vortikal.repositoryimpl.dao.JDBCClient">
+    <property name="databaseDriver"><value>${databaseDriver}</value></property>
+    <property name="maxDatabaseConnections"><value>${maxDatabaseConnections}</value></property>
+    <property name="databaseURL"><value>${databaseURL}</value></property>
+    <property name="databaseUser"><value>${jdbcUsername}</value></property>
+    <property name="databasePassword"><value>${jdbcPassword}</value></property>
+
+    <property name="principalManager"><ref bean="principalManager"/></property>
+    <property name="urlEncodeFileNames"><value>${urlEncodeFileNames}</value></property>
+    <property name="repositoryDataDirectory"><value>${repositoryDataDirectory}</value></property>
+  </bean>
+
+
+  <bean id="repository.requestLocal" class="org.vortikal.web.RequestLocalRepository">
+    <property name="repository">
+      <ref bean="repository"/>
+    </property>
+  </bean>
+
+
+
+
+  <!-- Quartz scheduled jobs -->
+
+  <bean id="repository.schedulerFactory"
+        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="triggers">
+      <list>
+        <ref local="repository.unlockSimpleTrigger"/>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="repository.unlockSimpleTrigger"
+        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail">
+      <!-- see the example of method invoking job above -->    
+      <ref bean="repository.cleanupLocksJobDetail"/>
+    </property>
+    <property name="startDelay">
+      <!-- 60 seconds -->
+      <value>60000</value>
+    </property>
+    <property name="repeatInterval">
+      <!-- repeat every 600 seconds -->
+      <value>600000</value>
+    </property>
+  </bean>
+
+  <bean id="repository.cleanupLocksJobDetail" 
+        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+    <property name="group" value="repository" />
+    <property name="targetObject"><ref bean="repository.database"/></property>
+    <property name="targetMethod"><value>deleteExpiredLocks</value></property>
+  </bean>
+
+
+
+</beans>

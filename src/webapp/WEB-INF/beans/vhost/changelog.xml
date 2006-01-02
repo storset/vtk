@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <!-- Publish events whenever changes to Vortex resources occur. -->
+  <bean id="repository.processedContentEventDumper" 
+    class="org.vortikal.backend.ProcessedContentEventDumper">
+    <property name="dataAccessor">
+      <ref bean="repository.database"/>
+    </property>
+    <property name="id">
+      <value>1</value>
+    </property>
+    <property name="repository">
+      <ref bean="repository"/>
+    </property>
+    <property name="loggerType">
+      <value>2</value>
+    </property>
+  </bean>
+
+  <!-- Resource change fetcher.  This bean can be used to extract
+    lists of resource changes from the database changelog table. -->
+  <bean id="repository.dbResourceChangeFetcher" 
+        class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
+    <property name="jdbcDatabase" ref="repository.database" />
+    <property name="loggerType" value="2" />
+    <property name="loggerId" value="1" />
+  </bean>
+  
+
+  <!-- Resource change notifier, polls resource change fetcher and publishes
+       changes to any registered observers. Requires a Quartz scheduler trigger
+       to call its pollChanges() method periodically -->
+  <bean id="repository.resourceChangeNotifier"
+    class="org.vortikal.index.observation.ResourceChangeNotifierImpl">
+    <property name="changeFetcher" ref="repository.dbResourceChangeFetcher"/>
+  </bean>
+  
+
+  <!-- Quartz scheduler factory for resourceChangeNotifier -->
+  <bean id="repository.DMSSchedulerfactory" 
+        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="triggers">
+      <list>
+        <!-- Triggers -->
+        <!-- Trigger: poll resource changes from Vortex -->
+        <bean id="repository.pollChangesTrigger"
+          class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+          <property name="jobDetail">
+            <bean id="repository.pollChangesJobDetail"
+                  class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
+              <property name="group" value="repository" />
+              <property name="targetObject" ref="repository.resourceChangeNotifier" />
+              <property name="targetMethod" value="pollChanges" />
+              <property name="concurrent" value="false" />
+            </bean>
+          </property>
+          <!-- A start delay is necessary to let all interested observers get a chance
+               to register themselves before polling starts. -->
+          <property name="startDelay" value="20000"/>
+          <property name="repeatInterval" value="5000"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+</beans>

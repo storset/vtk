@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+
+  <!-- ************************** -->
+  <!-- THE WEB SERVICE TREE       -->
+  <!-- Web browser based services -->
+  <!-- ************************** -->
+
+  <bean id="webService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="webHostNameAssertion" />
+        <ref bean="webProtocolAssertion" />
+        <ref bean="webPortAssertion" />
+      </list>
+    </property>
+
+    <property name="handlerInterceptors">
+      <list>
+        <bean id="webServiceInterceptor"
+              class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+          <description>
+            Interceptor on the web-based services, in order to provide a
+            global 'message' in all the MVC models that are produced by
+            the handlers.
+          </description>
+          <property name="providers">
+            <bean id="repositoryReadOnlyMessageProvider"
+                  class="org.vortikal.web.referencedata.provider.RepositoryReadOnlyMessageProvider">
+              <property name="modelName" value="message" />
+              <property name="repository" ref="repository" />
+              <property name="messageKey" value="repository.readOnlyMode" />
+            </bean>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="collectionRedirectService" />
+        <ref bean="authenticateService" />
+        <ref bean="logoutService" />
+        <ref bean="httpOptionsService" />
+
+        <!-- These are located in their own files: -->
+        <ref bean="editService" />
+        <ref bean="manageService" />
+        <ref bean="browseService" />
+        <ref bean="viewService"/>
+        <!--         <ref bean="searchService" /> -->
+      </list>
+    </property>
+    <property name="authenticationChallenge">
+      <ref bean="webAuthenticationChallenge" />
+    </property>
+  </bean>
+
+  <bean name="webAuthenticationChallenge"
+        parent="httpDigestAuthenticationHandler" />
+
+
+  <!-- Collection redirect service -->
+
+  <bean id="collectionRedirectService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="resourceIsCollection" />
+        <ref local="uriDoesNotEndWithSlash" />
+      </list>
+    </property>
+    <property name="handler" ref="redirectHandler" />
+  </bean>
+
+
+
+
+
+  <!-- WEB assertions -->
+
+
+  <bean id="webHostNameAssertion" class="org.vortikal.web.service.RequestHostNameAssertion">
+    <property name="hostName" value="${webHostName}" />
+    <property name="additionalHostNames">
+      <set>
+        <value>${secondaryWebHostName}</value>
+      </set>
+    </property>
+  </bean>
+
+  <!-- Logout service -->
+  
+  <bean id="logoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="logoutIsSupported" />
+        <ref bean="vrtxParameterEqualsLogout" />
+      </list>
+    </property>
+    <property name="handler" ref="logoutHandler" />
+  </bean>
+
+
+  <bean id="authenticateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="authenticationChallenge" 
+              ref="httpDigestAuthenticationChallenge" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="authenticate" />
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="invert" value="true" />
+          <property name="requiresAuthentication" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+
+  <bean id="setNorwegianNBLocaleService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="requestLocaleNotNorwegianNB"/>
+        <ref bean="localeParameterEqualsNO" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="setNorwegianNBLocaleController"/>
+    </property>
+  </bean>
+
+
+  <bean id="setNorwegianNNLocaleService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="requestLocaleNotNorwegianNN"/>
+        <ref bean="localeParameterEqualsNN" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="setNorwegianNNLocaleController"/>
+    </property>
+  </bean>
+
+
+  <bean id="setEnglishLocaleService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="requestLocaleNotEnglish" />
+        <ref bean="localeParameterEqualsEN" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="setEnglishLocaleController"/>
+    </property>
+  </bean>
+
+
+  <bean id="httpOptionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="methods">
+            <set>
+              <value>OPTIONS</value>
+            </set>
+          </property>       
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="httpOptionsHandler" />
+    </property>
+  </bean>
+
+
+  <!-- View services -->
+  
+  <bean id="viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="methods">
+            <set>
+              <value>GET</value>
+              <value>HEAD</value>
+              <value>POST</value>
+            </set>
+          </property>       
+        </bean>
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="collectionListingService" />
+        <ref bean="displayResourceService" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="collectionListingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list><ref bean="resourceIsCollectionAssertion" /></list>
+    </property>
+    <property name="handler">
+      <ref bean="collectionListingHandler" />
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="transformIndexXmlFileService" />
+        <ref bean="displayIndexHtmlFileService" />
+        <ref bean="transformIndexEngXmlFileService" />
+      </list>    
+    </property>
+  </bean>
+
+
+  <bean id="transformIndexXmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="hasIndexXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName" value="index.xml" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="displayIndexXmlHandler" />
+    <property name="services">
+      <list>
+        <bean id="indexXmlIsHtmlService" class="org.vortikal.web.service.ServiceImpl">
+          <property name="assertions">
+            <list>
+              <bean id="indexXmlIsHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+                <property name="childName" value="index.xml" />
+                <property name="trustedToken" ref="trustedToken" />
+                <property name="repository" ref="repository" />
+                <property name="childResourceAssertion">
+                  <ref bean="contentTypeMatchesHtml" />
+                </property>
+              </bean>
+            </list>
+          </property>
+          <property name="handler" ref="displayIndexXmlAsHtmlHandler" />
+        </bean>
+      </list>
+    </property>
+  </bean>                
+
+  <bean id="transformIndexEngXmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="hasIndexEngXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName" value="index-eng.xml" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="displayIndexEngXmlHandler" />
+    <property name="services">
+      <list>
+        <bean id="indexEngXmlIsHtmlService" class="org.vortikal.web.service.ServiceImpl">
+          <property name="assertions">
+            <list>
+              <bean id="indexEngXmlIsHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+                <property name="childName" value="index-eng.xml" />
+                <property name="trustedToken" ref="trustedToken" />
+                <property name="repository" ref="repository" />
+                <property name="childResourceAssertion">
+                  <ref bean="contentTypeMatchesHtml" />
+                </property>
+              </bean>
+            </list>
+          </property>
+          <property name="handler" ref="displayIndexEngXmlAsHtmlHandler" />
+        </bean>
+      </list>
+    </property>
+  </bean>                
+
+
+  <bean id="displayIndexHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="hasIndexHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName" value="index.html" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayIndexHtmlHandler" />
+    </property>
+    <property name="services">
+      <list>
+        <bean id="indexHtmlIsXmlService" class="org.vortikal.web.service.ServiceImpl">
+          <property name="assertions">
+            <list>
+              <bean id="indexHtmlIsXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+                <property name="childName" value="index.html" />
+                <property name="trustedToken" ref="trustedToken" />
+                <property name="repository" ref="repository" />
+                <property name="childResourceAssertion" 
+                          ref="contentTypeMatchesXml" />
+              </bean>
+            </list>
+          </property>
+          <property name="handler" ref="displayIndexHtmlAsXmlHandler" />
+        </bean>
+      </list>
+    </property>
+  </bean>                
+
+
+
+  <bean id="displayIndexEngHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean id="hasIndexEngHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName" value="index-eng.html" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayIndexEngHtmlHandler" />
+    </property>
+    <property name="services">
+      <list>
+        <bean id="indexEngHtmlIsXmlService" class="org.vortikal.web.service.ServiceImpl">
+          <property name="assertions">
+            <list>
+              <bean id="indexEngHtmlIsXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+                <property name="childName" value="index-eng.html" />
+                <property name="trustedToken" ref="trustedToken" />
+                <property name="repository" ref="repository" />
+                <property name="childResourceAssertion">
+                  <ref bean="contentTypeMatchesXml" />
+                </property>
+              </bean>
+            </list>
+          </property>
+          <property name="handler" ref="displayIndexEngHtmlAsXmlHandler" />
+        </bean>
+      </list>
+    </property>
+  </bean>                
+
+
+  <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="handler">
+      <ref bean="displayResourceHandler" />
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="displayHTMLResourceService" />
+        <ref bean="rssTransformService" />
+        <ref bean="xmlTransformService" />
+      </list>    
+    </property>
+  </bean>
+
+
+  <bean id="displayHTMLResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <description>
+      Specific service for displaying HTML resources. It is unwise to
+      use the plain 'displayResource' service here, as a number of
+      content wrappers are applied to the response, and this should
+      not be done on e.g. PDF resources, etc.
+    </description>
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesHtml" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayHTMLResourceHandler" />
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="displayHTMLResourceWithoutUhtmlService" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="displayHTMLResourceWithoutUhtmlService" 
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName"><value>uhtml</value></property>
+          <property name="parameterValue"><value>false</value></property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayHTMLResourceWithoutUhtmlHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesXml" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace">
+            <value>http://www.uio.no/vortex/custom-properties</value>
+          </property>
+          <property name="name">
+            <value>transform-view</value>
+          </property>
+          <property name="value">
+            <value>yes</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayXmlResourceHandler" />
+    </property>
+
+  </bean>
+
+  <bean id="xmlTransformWithoutUhtmlService" 
+    class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent"><ref bean="xmlTransformService"/></property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName"><value>uhtml</value></property>
+          <property name="parameterValue"><value>false</value></property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayXmlResourceWithoutUhtmlHandler" />
+    </property>
+  </bean>
+
+  
+  <bean id="rssTransformService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesXml" />
+        <ref bean="rssParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayRssResourceHandler" />
+    </property>
+  </bean>
+
+
+
+  
+
+
+  <!-- **************** -->
+  <!-- ASSERTIONS       -->
+  <!-- **************** -->
+
+  <!-- Parent assertions -->
+
+  <bean id="vrtxParameterEquals" 
+        class="org.vortikal.web.service.RequestParameterAssertion" abstract="true">
+    <property name="parameterName" value="vrtx" />
+  </bean>
+
+  <!-- Logout -->
+
+  <bean id="vrtxParameterEqualsLogout" 
+        parent="vrtxParameterEquals">
+    <property name="parameterValue" value="logout" />
+  </bean>
+
+  <bean id="logoutIsSupported"
+        class="org.vortikal.web.service.LogoutSupportedAssertion">
+    <property name="tokenManager" ref="tokenManager" />
+  </bean>
+
+  <!-- Collection redirect -->
+
+  <bean id="resourceIsCollection"
+        class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+
+  <bean id="uriDoesNotEndWithSlash"
+        class="org.vortikal.web.service.RequestURIRegexpAssertion">
+    <property name="pattern" value=".*[^/]$" />
+  </bean>   
+
+
+  <bean id="rssParameterSetAssertion" 
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="rss" />
+  </bean>
+
+
+  <bean id="abstractResourcePrincipalPermissionAssertion" 
+        class="org.vortikal.web.service.ResourcePrincipalPermissionAssertion"
+        abstract="true">
+    <property name="principalManager" ref="principalManager" />
+    <property name="roleManager" ref="roleManager" />
+    <property name="repository" ref="repository" />
+    <property name="trustedToken" ref="trustedToken" />
+  </bean>
+
+  <bean id="webProtocolAssertion"
+        class="org.vortikal.web.service.RequestProtocolAssertion">
+    <property name="protocol" value="${webProtocol}" />
+    <property name="additionalProtocol" value="${secondaryWebProtocol}" />
+  </bean>
+
+  <bean id="webPortAssertion"
+        class="org.vortikal.web.service.RequestPortAssertion">
+    <property name="port" value="${webPort}" />
+    <property name="additionalPort" value="${secondaryWebPort}" />
+  </bean>
+
+
+
+  <bean id="resourceIsCollectionAssertion" 
+        class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+
+  <bean id="requestLocaleNotNorwegianNB"
+        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
+    <property name="invert" value="true" />
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>no</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver" ref="localeResolver" />
+  </bean>
+  
+  <bean id="requestLocaleNotNorwegianNN"
+        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
+    <property name="invert" value="true" />
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>nn</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver" ref="localeResolver" />
+  </bean>
+  
+  <bean id="requestLocaleNotEnglish"
+        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
+    <property name="invert" value="true" />
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>en</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver" ref="localeResolver" />
+  </bean>
+  
+  <bean id="localeParameterEqualsNO"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="locale" />
+    <property name="parameterValue" value="no" />
+  </bean>
+
+  <bean id="localeParameterEqualsNN"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="locale" />
+    <property name="parameterValue" value="nn" />
+  </bean>
+
+  <bean id="localeParameterEqualsEN"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="locale" />
+    <property name="parameterValue" value="en" />
+  </bean>
+
+  <!-- Content type assertions -->
+
+  <bean id="contentTypeMatchesText"
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/xml)|(text/(plain|html|xml))" />
+  </bean>
+
+  <bean id="contentTypeMatchesAnyText" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="text/.+" />
+    <property name="exceptionPattern" value="text/rtf" />
+  </bean>
+
+  <bean id="contentTypeMatchesXml"
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(text|application)/xml" />
+  </bean>
+
+  <bean id="contentTypeMatchesHtml" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="text/html" />
+  </bean>
+
+  <bean id="contentTypeMatchesTextOrHtml"
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="text/(plain|html)" />
+  </bean>
+
+  <bean id="contentTypeMatchesXmlOrHtml" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/xml)|(text/(xml|html))" />
+  </bean>
+
+  <bean id="contentTypeMatchesXmlOrHtmlOrCollection" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/xml)|(text/(xml|html))|(application/x-vortex-collection)" />
+  </bean>
+
+  <bean id="contentTypeMatchesImage" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="image/.+" />
+  </bean>
+
+</beans>

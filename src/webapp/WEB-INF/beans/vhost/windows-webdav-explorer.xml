@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="windowsWebdavExplorerService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webdavService" />
+    <property name="order" value="0" />
+
+    <property name="categories">
+      <set>
+        <value>resourceMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method">
+            <value>PROPFIND</value>
+          </property>
+        </bean>
+        <ref bean="resourceIsCollectionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="webdavPropfindHandler" />
+  </bean>
+
+</beans>

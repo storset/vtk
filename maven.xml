@@ -60,6 +60,17 @@
     <j:set var="beanConfigDir" value="${destination.beanconfig.dir}" />
     <j:set var="srunPort" value="${srunPort}" />
 
+    <u:available file="${maven.war.src}/WEB-INF/beans/vortikal.properties">
+      <u:properties file="${maven.war.src}/WEB-INF/beans/vortikal.properties"/>
+    </u:available>
+
+    <u:available file="${basedir}/build.properties">
+      <ant:copy file="${basedir}/build.properties"
+                tofile="${maven.war.webapp.dir}/WEB-INF/classes/vortikal-custom.properties" />
+    </u:available>
+
+    <u:properties file="${maven.war.src}/WEB-INF/beans/vortikal.properties"/>
+
     <j:choose>
       <j:when test="${resin3}">
         <v:merge template="resin-3.0.conf" basedir="${maven.conf.dir}"

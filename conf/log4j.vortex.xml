@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+        
+  <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%t [%c{2}] %-5p - %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="stdoutFile" class="org.vortikal.util.logging.ThreadNamePatternRollingFileAppender">
+    <param name="pattern" value="${no.uio.webapps.log.path}/%tm{(.*)\\.\\d+}{$1}.stdout.log" />
+    <param name="debug" value="false" />
+    <param name="bufferedIO" value="false" />
+    <param name="bufferSize" value="8192" />
+    <param name="append" value="true" />
+    <param name="maxFileSize" value="1MB" />
+    <param name="maxBackupIndex" value="3" />
+    <param name="threadNameMaxLength" value="7" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%t [%c{2}] %-5p - %m%n"/>
+    </layout>
+  </appender>
+
+  <!-- #if ( $reportErrorsToMailAddress != '' ) -->
+  <!-- SMTPAppender depends on the JavaMail API and javax.activation -->
+  <appender name="errorMail" class="org.apache.log4j.net.SMTPAppender">
+    <param name="SMTPHost" value="localhost" />
+    <!--param name="BufferSize" value="100" /-->
+    <param name="To" value="${reportErrorsToMailAddress}" />
+    <param name="Subject" value="Application error" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <!--param name="ConversionPattern" value="[%d{ISO8601}]%n%n%-5p%n%n%c%n%n%m%n%n" /-->
+      <param name="ConversionPattern" value="%d %p [%c{2} %t]%x - %m\r\n"/>
+    </layout>
+  </appender>
+  <!-- #end -->
+
+  <appender name="error" class="org.apache.log4j.RollingFileAppender">
+    <param name="maxBackupIndex" value="10" />
+    <param name="maxFileSize" value="2MB" />
+    <param name="file" value="${no.uio.webapps.log.path}/error.log" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%t [%c{2}]%x - %m%n"/>
+    </layout>
+  </appender>
+
+
+  <logger name="org.vortikal.web.servlet.VortikalServlet.Error" additivity="false">
+    <level value="warn" />
+    <appender-ref ref="stdout"/>
+    <!-- #if ( $reportErrorsToMailAddress != '' ) -->
+    <appender-ref ref="errorMail"/>
+    <!-- #end -->
+  </logger>
+
+  <logger name="org.vortikal.web.servlet.VortikalServlet.Request" additivity="false">
+    <level value="debug" />
+    <appender-ref ref="stdout"/>
+  </logger>
+
+
+  <logger name="org.vortikal.web.servlet.VortikalServlet" additivity="false">
+    <level value="debug" />
+    <appender-ref ref="stdout"/>
+  </logger>
+
+  <logger name="org.springframework"><level value="warn" /></logger>
+
+  <logger name="org.springframework.aop.interceptor.JamonPerformanceMonitorInterceptor"><level value="all" /></logger>
+
+  <logger name="org.vortikal.aop"><level value="info" /></logger>
+
+  <logger name="freemarker"><level value="fatal" /></logger>
+  <logger name="org.apache.axis"><level value="warn" /></logger>
+  <logger name="org.quartz"><level value="warn" /></logger>
+
+  <logger name="org.vortikal.repositoryimpl"><level value="info" /></logger>
+  <logger name="org.vortikal.repositoryimpl.OperationLog"><level value="info" /></logger>
+  <!--logger name="org.vortikal.repositoryimpl.ns"><level value="trace" /></logger-->
+  <logger name="org.vortikal.util.cache"><level value="info" /></logger>
+  <logger name="org.vortikal.security"><level value="info" /></logger>
+  <logger name="org.vortikal.web"><level value="debug" /></logger>
+  <logger name="org.vortikal.web.referencedataprovider"><level value="info" /></logger>
+  <logger name="org.vortikal.web.view"><level value="info" /></logger>
+  <logger name="org.vortikal.web.view.wrapper"><level value="info" /></logger>
+  <logger name="org.vortikal.web.view.xslt.ResourceXsltView"><level value="debug" /></logger>
+  <logger name="org.vortikal.web.view.components.menu"><level value="debug" /></logger>
+  <logger name="org.vortikal.web.controller"><level value="info" /></logger>
+  <logger name="org.vortikal.web.service"><level value="info" /></logger>
+  <logger name="org.vortikal.web.RequestContextInitializer"><level value="debug" /></logger>
+  <logger name="org.vortikal.webdav"><level value="info" /></logger>
+  <logger name="org.vortikal.uhtml"><level value="debug" /></logger>
+  <logger name="org.vortikal.index"><level value="info" /></logger>
+  <logger name="org.vortikal.edit"><level value="info" /></logger>
+  <logger name="org.vortikal.edit.plaintext"><level value="debug" /></logger>
+
+  <logger name="org.apache.pluto"><level value="debug" /></logger>
+
+  <logger name="no.uio.feide"><level value="debug" /></logger>
+  <logger name="org.vortikal.security.feide"><level value="debug" /></logger>
+
+  <root>
+    <level value ="info"/>
+    <appender-ref ref="stdout"/>
+    <!-- appender-ref ref="stdoutFile"/ -->
+  </root>
+
+</log4j:configuration>

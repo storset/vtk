@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pensumliste xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.uio.no/xsd/studier/pensumliste/v001/pensumliste.xsd">
+  <spraak>bokmaal</spraak>
+  <tittel>
+    <emnekode>KRU1200</emnekode>
+    <emnenavn>Teori og metode</emnenavn>
+    <aar>2003</aar>
+    <semester>vår</semester>
+  </tittel>
+  <fritekst><tekstblokk>Validating</tekstblokk></fritekst>
+</pensumliste>

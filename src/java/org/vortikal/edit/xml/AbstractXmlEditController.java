@@ -322,7 +322,7 @@ public abstract class AbstractXmlEditController implements Controller {
             HttpServletRequest request, 
             HttpServletResponse response,
             EditDocument document,
-            SchemaDocumentDefinition documentDefinition);
+            SchemaDocumentDefinition documentDefinition) throws IOException, JDOMException;
 
 
     private void initEditSession(HttpServletRequest request) throws Exception {

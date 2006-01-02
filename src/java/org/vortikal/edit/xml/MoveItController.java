@@ -42,11 +42,8 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -64,7 +61,7 @@ public class MoveItController extends AbstractXmlEditController {
 
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) {
+        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, JDOMException {
 
         Map model = new HashMap();
         String mode = document.getDocumentMode();
@@ -144,17 +141,8 @@ public class MoveItController extends AbstractXmlEditController {
                 currentElement.setContent(newChildren);
                 document.setDocumentMode("default");
                 document.resetElements();
-                try {
-                    document.save(repository);
-                } catch (IOException e) {
-                    String uri = RequestContext.getRequestContext().getResourceURI();
-                    Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-
-                    logger.warn(
-                            "Saving document '" + uri + "' failed. " +
-                            "Principal is '" + principal + "'", e);
-                    setXsltParameter(model,"ERRORMESSAGE", "UNABLE_TO_SAVE");
-                }
+                
+                document.save(repository);
             } else  {
                 document.setDocumentMode("default");
                 document.resetElements();

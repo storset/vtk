@@ -123,12 +123,11 @@ public class EditDocument extends Document {
         if (logger.isDebugEnabled())
             logger.debug("Locked resource '" + uri + "', principal = '" + principal + "'");
 
-        SAXBuilder builder = new SAXBuilder(
-                "org.apache.xerces.parsers.SAXParser");
+        SAXBuilder builder = 
+            new SAXBuilder("org.apache.xerces.parsers.SAXParser");
         builder.setValidation(true);
 
         /* turn on schema support */
-
         builder.setFeature("http://apache.org/xml/features/validation/schema",
                 true);
 
@@ -154,7 +153,7 @@ public class EditDocument extends Document {
 
 
 
-    public void save(Repository repository) throws IOException {
+    public void save(Repository repository) throws IOException, JDOMException {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -164,6 +163,9 @@ public class EditDocument extends Document {
         
         if (logger.isDebugEnabled())
                 logger.debug("Saving document '" + uri + "'");
+
+        new Validator().validate(this);
+        
         removeProcessingInstructions();
 
         Format format = Format.getRawFormat();

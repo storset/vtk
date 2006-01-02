@@ -37,11 +37,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -60,11 +57,8 @@ public class EditDoneController extends AbstractXmlEditController {
 
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) {
+        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, JDOMException {
 
-        String uri = RequestContext.getRequestContext().getResourceURI();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        
         Map model = new HashMap();
         
         String mode = document.getDocumentMode();
@@ -80,14 +74,8 @@ public class EditDoneController extends AbstractXmlEditController {
                         getRequestParameterMap(request), documentDefinition);
                 document.resetEditingElement();
                 document.setClone(null);
-                try {
-                    document.save(repository);
-                } catch (IOException e) {
-                    logger.warn(
-                            "Saving document '" + uri + "' failed. " +
-                            "Principal is '" + principal + "'", e);
-                    setXsltParameter(model,"ERRORMESSAGE", "Unable to save document due to server error.");
-                }
+
+                document.save(repository);
 
             } else {
                 Element element = document.getEditingElement();

@@ -12,6 +12,12 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Added validation of document before saving in xml
+        edit. Changed exception handling to propagate
+        validation/saving exceptions.
+      </action>
+
+      <action dev="gormap" type="add">
         Added a new JDOM Document extension that is backed by a
         repository resource.
       </action>

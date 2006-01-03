@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -57,7 +56,7 @@ public class EditDoneController extends AbstractXmlEditController {
 
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, JDOMException {
+        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
         Map model = new HashMap();
         

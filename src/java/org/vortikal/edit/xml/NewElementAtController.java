@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.ProcessingInstruction;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.web.RequestContext;
@@ -57,7 +56,7 @@ public class NewElementAtController extends AbstractXmlEditController {
 
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, JDOMException {
+        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
         String uri = RequestContext.getRequestContext().getResourceURI();
         

@@ -40,7 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.ProcessingInstruction;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -60,7 +59,7 @@ public class DeleteController extends AbstractXmlEditController {
      */
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response, EditDocument document,
-            SchemaDocumentDefinition documentDefinition) throws IOException, JDOMException {
+            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
         String mode = document.getDocumentMode();
 

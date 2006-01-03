@@ -367,21 +367,6 @@
     <property name="errorView" ref="xmlEditErrorView" />
   </bean>
 
-  <bean id="xmlEditJDOMErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
-        parent="abstractReferencedataProvidingErrorHandler">
-    <description>
-      Provides error handling for the XML edit service.
-    </description>
-    <property name="service" ref="editService" />
-    <property name="errorType">
-      <bean class="java.lang.Class" factory-method="forName">
-        <constructor-arg value="org.jdom.JDOMException" />
-      </bean>
-    </property>
-    <property name="errorView" ref="xmlEditErrorView" />
-  </bean>
-
-
   <bean id="xmlEditErrorView" parent="manageErrorHandlerViewWrapper">
     <property name="view">
       <bean parent="freemarkerView">

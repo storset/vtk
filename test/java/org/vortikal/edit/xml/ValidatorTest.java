@@ -31,15 +31,18 @@
 package org.vortikal.edit.xml;
 
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-/** This test case is commented out, because the xml has to reference an external url 
+/** This test case is commented out, because the xml has to reference an external schema url 
  * for the validator to work. If you want to run it, just uncomment the commented code...
  *
  */
@@ -47,26 +50,29 @@ public class ValidatorTest extends TestCase {
 
     private static final String VALIDATING_XML = "org/vortikal/edit/xml/validating.xml";
 
-    Document validating, nonValidating;
+    Document validating;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        SAXBuilder builder = new SAXBuilder(
-                "org.apache.xerces.parsers.SAXParser");
-        builder.setValidation(true);
-
-        /* turn on schema support */
-        builder.setFeature("http://apache.org/xml/features/validation/schema",
-                true);
-
-        URL validatingXML = this.getClass().getClassLoader()
-        .getResource(VALIDATING_XML);
-        
+//    protected void setUp() throws Exception {
+//        super.setUp();
+//
+//        SAXBuilder builder = new SAXBuilder(
+//                "org.apache.xerces.parsers.SAXParser");
+//        
+//        builder.setValidation(true);
+//
+//        /* turn on schema support */
+//        builder.setFeature("http://apache.org/xml/features/validation/schema",
+//                true);
+//       
+//        URL validatingXML = this.getClass().getClassLoader()
+//        .getResource(VALIDATING_XML);
+//
+//        builder.setXMLFilter(new XMLSpaceCorrectingXMLFilter());
 //        validating = builder.build(validatingXML);
-    }
+//
+//    }
 
-//    public void testValidate() {
+    public void testValidate() {
 //        try {
 //            new Validator().validate(validating);
 //    
@@ -82,10 +88,14 @@ public class ValidatorTest extends TestCase {
 //        try {
 //            new Validator().validate(validating);
 //            fail("Shouldn't validate");
-//        } catch (JDOMException e) {
+//        } catch (XMLEditException e) {
+//            if (!(e.getCause() instanceof JDOMException)) {
+//                fail("Cause should be JDOMException, not " + e.getCause().getClass().getName());
+//            }
 //            // Expected
 //        } catch (Exception e) {
-//            fail("Should fail with JDOMException, not: " + e.getMessage());
+//            fail("Should fail with XMLEditException, not: " 
+//                    + e.getClass().getName() + " - "+ e.getMessage());
 //        }
-//    }
+    }
 }

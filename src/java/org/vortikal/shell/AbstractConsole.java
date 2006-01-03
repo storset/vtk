@@ -146,7 +146,7 @@ public abstract class AbstractConsole
     }
     
 
-    public final void afterPropertiesSet() throws IOException {
+    public final void afterPropertiesSet() {
 
         this.init();
 

@@ -214,13 +214,11 @@ public class TextResourceContentHelper {
     }
 
 
-    public String getXMLCharacterEncoding(Resource resource, String token)
-        throws IOException {
+    public String getXMLCharacterEncoding(Resource resource, String token) {
 
         int len = MAX_XML_DECLARATION_SIZE;
         BufferedReader reader = null;
         InputStream inStream = null;
-        String characterEncoding = this.defaultCharacterEncoding;
       
         try {
             if (logger.isDebugEnabled())

@@ -11,7 +11,7 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
-      <action dev="gormap" type="add">
+      <action dev="storset" type="add">
         Added validation of document before saving in xml
         edit. Changed exception handling to propagate
         validation/saving exceptions.

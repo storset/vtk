@@ -30,8 +30,6 @@
  */
 package org.vortikal.shell;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Abstract base class for shell input/output handlers. Provides

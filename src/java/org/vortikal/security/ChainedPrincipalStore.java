@@ -151,9 +151,8 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
 
         if (this.cache == null) {
             return isMemberUncached(principal, groupName);
-        } else {
-            return isMemberCached(principal, groupName);
         }
+        return isMemberCached(principal, groupName);
     }
     
     public boolean isMemberUncached(Principal principal, String groupName)

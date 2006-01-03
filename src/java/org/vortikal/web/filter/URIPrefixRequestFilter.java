@@ -36,8 +36,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.vortikal.util.web.URLUtil;
-
 
 /**
  * Request URI processor that strips away certain prefixes from URIs.

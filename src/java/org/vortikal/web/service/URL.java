@@ -236,9 +236,6 @@ public class URL {
      */
     public static URL create(HttpServletRequest request) {
 
-        String requestURL = request.getRequestURL().toString();
-        int i = requestURL.indexOf("://") + 3;
-        int j = requestURL.indexOf("/", i);
         String path = request.getRequestURI();
         if (path == null || "".equals(path)) path = "/";
 

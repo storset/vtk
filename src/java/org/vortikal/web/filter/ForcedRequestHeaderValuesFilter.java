@@ -35,13 +35,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
-import org.vortikal.util.web.URLUtil;
 
 
 /**
@@ -55,8 +50,6 @@ import org.vortikal.util.web.URLUtil;
  * </ul>
  */
 public class ForcedRequestHeaderValuesFilter implements RequestFilter, InitializingBean {
-
-    private Log logger = LogFactory.getLog(this.getClass());
 
     private int order = Integer.MAX_VALUE;
 

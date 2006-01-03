@@ -30,7 +30,6 @@
  */
 package org.vortikal.web;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -55,7 +54,6 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
 

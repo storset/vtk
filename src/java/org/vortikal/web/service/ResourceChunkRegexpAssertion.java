@@ -32,23 +32,16 @@ package org.vortikal.web.service;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalStore;
 import org.vortikal.util.io.StreamUtil;
 
 /**

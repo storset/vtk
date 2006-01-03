@@ -35,10 +35,10 @@ package org.vortikal.web.filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.URLUtil;
 
 
 /**

@@ -77,7 +77,6 @@ import org.vortikal.web.RequestContext;
 public class DisplayClassPathResourceController 
   implements Controller, LastModified, InitializingBean, ApplicationContextAware {
 
-    private static final String defaultCharacterEncoding = "utf-8";
     private Log logger = LogFactory.getLog(this.getClass());
     private String basePath;
     private String uriPrefix;

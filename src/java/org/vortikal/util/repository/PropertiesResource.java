@@ -67,6 +67,8 @@ import org.springframework.context.ApplicationEvent;
  */
 public class PropertiesResource extends Properties implements InitializingBean,
                                                               ApplicationListener {
+    private static final long serialVersionUID = 8393113714334599560L;
+
     private Log logger = LogFactory.getLog(this.getClass());
 
     private Repository repository;

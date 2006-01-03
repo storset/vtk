@@ -104,12 +104,12 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         this.templatesCollection = templatesCollection;
     }
     
-    public Map getTopTemplates() throws IOException {
+    public Map getTopTemplates() {
         return this.topTemplates;
     }
 
 
-    public Map getCategoryTemplates() throws IOException {
+    public Map getCategoryTemplates() {
         return this.categoryTemplates;
     }
 
@@ -130,7 +130,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    public void refresh() throws IOException {
+    public void refresh() {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Refreshing document templates list");

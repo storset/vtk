@@ -33,11 +33,6 @@ package org.vortikal.web.filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-
-import org.vortikal.util.web.URLUtil;
-
 
 /**
  * Standard request filter. Ensures that the URI is not empty or

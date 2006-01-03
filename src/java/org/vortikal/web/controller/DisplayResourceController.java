@@ -215,9 +215,8 @@ public class DisplayResourceController
                 model.put("resourceStream", stream);
                 if (this.view != null) {
                     return new ModelAndView(this.view, model);
-                } else {
-                    return new ModelAndView(this.viewName, model);
                 }
+                return new ModelAndView(this.viewName, model);
             }
 
             
@@ -246,9 +245,8 @@ public class DisplayResourceController
         }
         if (this.view != null) {
             return new ModelAndView(this.view, model);
-        } else {
-            return new ModelAndView(this.viewName, model);
         }
+        return new ModelAndView(this.viewName, model);
     }
 
 

@@ -45,6 +45,8 @@ import org.vortikal.repository.Repository;
  */
 public class JDOMResource extends Document {
 
+    private static final long serialVersionUID = 4230066896745338645L;
+
     public JDOMResource(Repository repository, String uri, String token) {
         try {
             InputStream inputStream = repository.getInputStream(token, uri, false);

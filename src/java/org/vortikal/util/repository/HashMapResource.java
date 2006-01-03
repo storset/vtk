@@ -80,6 +80,8 @@ import org.vortikal.repository.Repository;
 public class HashMapResource extends HashMap implements InitializingBean,
                                                         ApplicationListener {
 
+    private static final long serialVersionUID = 3588458569422752713L;
+
     private Log logger = LogFactory.getLog(this.getClass());
 
     private Repository repository;

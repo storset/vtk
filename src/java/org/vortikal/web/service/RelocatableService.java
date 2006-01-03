@@ -30,14 +30,6 @@
  */
 package org.vortikal.web.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.core.Ordered;
-import org.vortikal.context.Categorizable;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.web.AuthenticationChallenge;
 
 /**
  * A relocatable service that allows its parent service to change.

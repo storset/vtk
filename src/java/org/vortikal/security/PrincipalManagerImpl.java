@@ -38,7 +38,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,10 +45,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
-
 import org.vortikal.repository.ACLPrincipal;
 import org.vortikal.util.cache.SimpleCacheImpl;
-import org.vortikal.web.service.Service;
 
 
 /**

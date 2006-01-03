@@ -31,11 +31,11 @@
 package org.vortikal.web.service;
 
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
 /**

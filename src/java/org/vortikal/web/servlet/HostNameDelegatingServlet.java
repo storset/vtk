@@ -33,6 +33,7 @@ package org.vortikal.web.servlet;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -41,9 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.HttpServletBean;
-import org.vortikal.util.web.URLUtil;
 
 
 public class HostNameDelegatingServlet extends HttpServletBean {
@@ -97,7 +96,7 @@ public class HostNameDelegatingServlet extends HttpServletBean {
 
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        String hostName = URLUtil.getHostName(request);
+        String hostName = request.getServerName();
         String key = hostName + ":" + request.getServerPort();
         String servletName = (String) this.hostMap.get(key);
         

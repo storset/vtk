@@ -37,13 +37,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.web.RequestContext;
 
 
 
@@ -52,7 +49,6 @@ import org.springframework.web.servlet.ModelAndView;
  * Controller that inserts a new element at a specified location in
  * the document.
  *
- * @version $Id$
  */
 public class NewElementAtController extends AbstractXmlEditController {
 
@@ -60,10 +56,9 @@ public class NewElementAtController extends AbstractXmlEditController {
 
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) {
+        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
         String uri = RequestContext.getRequestContext().getResourceURI();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         
         Map model = new HashMap();
         
@@ -104,18 +99,9 @@ public class NewElementAtController extends AbstractXmlEditController {
                         getRequestParameterMap(request), documentDefinition);
                 document.setDocumentMode("default");
                 document.resetEditingElement();
-                try {
-                    document.save(repository);
-                } catch (IOException e) {
-                    logger.warn(
-                        "Saving document '" + uri + "' failed. "
-                        + "Principal is '" + principal + "'", e);
-                    setXsltParameter(model,"ERRORMESSAGE",
-                                     "Unable to save document due to server error");
-                }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Saved document " + uri + ": OK");
-                }
+                
+                document.save(repository);
+
             } else {
                 /* Cancel; remove the new element from the document */
                 if (logger.isDebugEnabled()) {

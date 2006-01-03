@@ -31,6 +31,7 @@
 package org.vortikal.edit.xml;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -123,15 +124,16 @@ public class EditDocument extends Document {
         if (logger.isDebugEnabled())
             logger.debug("Locked resource '" + uri + "', principal = '" + principal + "'");
 
-        SAXBuilder builder = new SAXBuilder(
-                "org.apache.xerces.parsers.SAXParser");
+        SAXBuilder builder = 
+            new SAXBuilder("org.apache.xerces.parsers.SAXParser");
         builder.setValidation(true);
 
         /* turn on schema support */
-
         builder.setFeature("http://apache.org/xml/features/validation/schema",
                 true);
 
+        builder.setXMLFilter(new XMLSpaceCorrectingXMLFilter());
+        
         Document document = builder.build(repository.getInputStream(token, uri, false));
 
         Element root = document.getRootElement();
@@ -154,7 +156,7 @@ public class EditDocument extends Document {
 
 
 
-    public void save(Repository repository) throws IOException {
+    public void save(Repository repository) throws XMLEditException, IOException {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -164,6 +166,9 @@ public class EditDocument extends Document {
         
         if (logger.isDebugEnabled())
                 logger.debug("Saving document '" + uri + "'");
+
+        new Validator().validate(this);
+        
         removeProcessingInstructions();
 
         Format format = Format.getRawFormat();
@@ -172,18 +177,9 @@ public class EditDocument extends Document {
         XMLOutputter xmlOutputter = new XMLOutputter();
         xmlOutputter.setFormat(format);
 
-        String xml = xmlOutputter.outputString(this);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        // FIXME: God help us:
-        xml = xml.replaceAll(" space=\"preserve\">", " xml:space=\"preserve\">");
-
-        // FIXME: Replace space for empty elements
-        xml = xml.replaceAll(" space=\"preserve\" />",
-                " xml:space=\"preserve\" />");
-
-        byte[] buf = xml.getBytes("utf-8");
-
-        InputStream stream = new ByteArrayInputStream(buf);
+        InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
         repository.storeContent(token, uri, stream);
 
         // Fix character encoding if it is something other than UTF-8:

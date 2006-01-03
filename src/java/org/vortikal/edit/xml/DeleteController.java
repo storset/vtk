@@ -39,10 +39,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,11 +59,7 @@ public class DeleteController extends AbstractXmlEditController {
      */
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response, EditDocument document,
-            SchemaDocumentDefinition documentDefinition) {
-
-        String uri = RequestContext.getRequestContext().getResourceURI();
-        Principal principal = SecurityContext.getSecurityContext()
-                .getPrincipal();
+            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
         String mode = document.getDocumentMode();
 
@@ -110,13 +102,7 @@ public class DeleteController extends AbstractXmlEditController {
 
                 document.setDocumentMode("default");
                 document.resetElements();
-                try {
-                    document.save(repository);
-                } catch (IOException e) {
-                    logger.warn("Saving document '" + uri + "' failed. "
-                            + "Principal is '" + principal + "'", e);
-                    setXsltParameter(model,"ERRORMESSAGE", "UNABLE_TO_SAVE");
-                }
+                document.save(repository);
             } else {
                 document.setDocumentMode("default");
                 document.resetElements();

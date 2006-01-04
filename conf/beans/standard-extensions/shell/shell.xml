@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+   <bean id="console" class="org.vortikal.shell.BeanShellConsole">
+      <description>
+         A shell-like management console, reading commands from stdin.
+      </description>
+      <!-- Shell init files: '${shellInitFileList}' -->
+
+      <!--
+      <property name="initFiles">
+        <list>
+          <value>${f}</value>
+        </list>
+      </property>
+      -->
+      <property name="runEvalLoop" value="${shellRunEvalLoop}" />
+      <property name="consoleHandler">
+        <bean class="org.vortikal.shell.SocketHandlerThread" />
+      </property>
+
+   </bean>
+
+</beans>

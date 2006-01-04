@@ -75,7 +75,7 @@
                 tofile="${maven.war.webapp.dir}/WEB-INF/classes/vortikal-custom.properties" />
     </u:available>
 
-    <u:properties file="${maven.war.src}/WEB-INF/beans/vortikal.properties"/>
+    <u:properties file="${maven.conf.dir}/beans/vortikal.properties"/>
 
     <j:choose>
       <j:when test="${resin3}">
@@ -92,9 +92,9 @@
              name="${maven.war.webapp.dir}/WEB-INF/classes/log4j.vortex.xml" />
 
 
-    <u:available file="${maven.war.src}/WEB-INF/beans/extensions.xml">
-      <v:merge template="extensions.xml" basedir="${maven.war.src}/WEB-INF/beans"
-             name="${maven.war.webapp.dir}/WEB-INF/beans/extensions.xml" />
+    <u:available file="${maven.war.src}/WEB-INF/extensions.xml">
+      <v:merge template="extensions.xml" basedir="${maven.war.src}/WEB-INF"
+             name="${maven.war.webapp.dir}/WEB-INF/extensions.xml" />
     </u:available>
 
 

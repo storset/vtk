@@ -546,9 +546,9 @@
     <!-- Resources that are packaged up inside the JAR file -->
     <resources>
       <!-- Include bean definition files in the jar/war
-           under '/vrtx/web-resources'. -->
+           under '/vortikal/beans'. -->
       <resource>
-        <directory>src/webapp/WEB-INF/beans</directory>
+        <directory>conf/beans</directory>
         <targetPath>/vortikal/beans</targetPath>
         <includes>
           <include>**/*</include>

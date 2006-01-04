@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Publish events whenever changes to Vortex resources occur. -->
+  <bean id="processedContentEventDumper" 
+    class="org.vortikal.backend.ProcessedContentEventDumper">
+    <property name="dataAccessor">
+      <ref bean="repository.database"/>
+    </property>
+    <property name="id">
+      <value>1</value>
+    </property>
+    <property name="repository">
+      <ref bean="repository"/>
+    </property>
+    <property name="loggerType">
+      <value>1</value>
+    </property>
+  </bean>
+
+  <!-- Resource change fetcher.  This bean can be used to extract
+    lists of resource changes from the database changelog table. -->
+  <bean id="dbResourceChangeFetcher" 
+        class="${dbResourceChangeFetcherClass}">
+    <property name="jdbcDatabase" ref="repository.database" />
+    <property name="loggerType" value="1" />
+    <property name="loggerId" value="1" />
+  </bean>
+
+</beans>

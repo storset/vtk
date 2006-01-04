@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="performanceMonitorProxyCreator"
+        class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+    <property name="interceptorNames">
+      <list>
+        <value>performanceInterceptor</value>
+      </list>
+    </property>
+    <property name="beanNames">
+      <list>
+        <value>resourceXsltView</value>
+        <!--
+            <value>*transformXmlView</value>
+            <value>*Handler</value>
+            <value>*View</value>
+            -->
+      </list>
+    </property>
+  </bean>
+
+  <bean id="performanceInterceptor" 
+        class="org.springframework.aop.interceptor.JamonPerformanceMonitorInterceptor">
+    <property name="useDynamicLogger" value="false" />
+  </bean>
+
+</beans>

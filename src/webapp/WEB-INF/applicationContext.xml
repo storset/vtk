@@ -13,9 +13,9 @@
   </bean>
   -->
 
-  <import resource="beans/vhost/main.xml" />
+  <import resource="classpath:/vortikal/beans/vhost/main.xml" />
 
-  <import resource="beans/extensions.xml" />
+  <import resource="extensions.xml" />
 
 
 
@@ -24,7 +24,7 @@
      <property name="ignoreResourceNotFound" value="true" />
      <property name="locations">
        <list>
-         <value>WEB-INF/beans/vortikal.properties</value>
+         <value>classpath:/vortikal/beans/vortikal.properties</value>
          <value>classpath:vortikal-custom.properties</value>
        </list>
      </property>

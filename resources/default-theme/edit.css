@@ -1,0 +1,153 @@
+/* Vortex overriding section */
+
+div.activeTab { 
+	background-color: #dddddd;
+	border-bottom: solid 2px; 
+        border-color: white;
+}
+
+div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
+	background-color: #dddddd;
+}
+
+#contents {
+	padding: 0;
+	min-height: 500px; 
+	height:expression(
+	    this.scrollHeight < 500? "500px" : "auto" ); 
+}
+
+div.footer {display: none;} /* Removing version & locale selection */
+
+/* Headings */
+
+h1,h2,h3,h4 {font-weight: bold; display:inline;}
+
+h1 {font-size: 150%;}
+h2 {font-size: 130%;}
+h3 {font-size: 115%;}
+
+.documentTitle {font-size: 150%; font-weight: bold;} 
+
+/* Form section */
+
+form {margin:0;padding:0;}
+.ekspandert {padding: 15px 0px 15px 15px;}
+.light {font-size: 80%;} 
+
+/* Document structure / grid */
+
+.bgcolorDocument {background-color: white;} 
+.bgcolorOne {background-color: #EFEFEF;} 
+.bgcolorTwo {background-color: white;} 
+.bgcolorThree{background-color: whitesmoke;}
+.bgcolorExpanded {background-color: #DDDDDD;}
+.margincell {width: 18px; padding-left: 5px; padding-right: 5px;}
+.documentMargin{padding-top: 5px;}
+.bottomborder {border-width: 1px; border-bottom-style: solid; border-color: white;}
+
+.errormessage {font-size: 125%; font-weight: bold; color: red;}
+
+/* Move / Delete section */
+
+.instructiontext {font-size: 150%; font-weight: bold;}
+.markedElementFaint {background-color: #F2F0E6; color: #AAAAAA;}
+.markedElement {background-color: #EFEFEF; color: black;}
+
+ /* Specific classes for generic editing used in form-elements.xsl 
+    (choice-, sequence og attribute-edit) */
+ 
+td.elementvaluecell {
+        padding:0; 
+        margin: 0;
+}
+
+td.deletebuttoncell {
+	padding: 0px 0px 0px 0.5em;
+	margin: 0;
+	text-align:right;
+	vertical-align:top;
+}
+
+td.attributelabelcell {
+	margin-left: 0;
+	padding-left: 0;
+}
+
+td.attributevaluecell {
+	width:99%
+}
+
+table.nothing {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        border: none; 
+}
+
+td fieldset {
+        display: block;             
+        padding: 0 0.5em 0.5em 0.5em;
+        margin: 0;
+        border: 1px solid gray; 
+}
+
+td legend {
+        padding: 0 0.5em;
+        text-align: right;
+        color: black; 
+}
+
+div.subbuttons {
+        padding: 0.5em 0;
+        margin: 0.5em 0 0; 
+} 
+
+
+/* Buttons in bottom row */
+
+div.buttons {
+    position: fixed;
+    bottom: 0px;
+    left: 21px;
+    right: 21px;
+    background-color: #dddddd;
+    padding: 5px;
+    text-align: center;
+}
+
+div.buttons ul {
+    list-style-type: none;
+    display: inline;
+}
+
+div.buttons li {
+    display: inline;
+}
+
+ul.moveDelete {
+    float: left;
+    margin: 0;
+    padding: 0px;
+}
+
+ul.moveButtons {
+    margin: 0;
+    padding: 0px;
+}
+
+ul.insertButtons {
+    margin: 0;
+    padding: 0px;
+}
+
+ul.newButtons {
+    margin: 0 10em auto 0 1em auto;
+    padding: 0px;
+}
+
+ul.finishButton {
+    padding: 0; margin: 0;
+    float: right;
+}
+

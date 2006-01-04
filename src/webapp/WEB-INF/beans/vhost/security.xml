@@ -116,7 +116,7 @@
     <property name="recognizedDomains">
       <set>
         <value>localhost</value>
-        <value>vindaloo</value>
+        <null/>
       </set>
     </property>
     <property name="principalManager" ref="principalManager" />

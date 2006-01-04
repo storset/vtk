@@ -78,7 +78,7 @@
          class="org.vortikal.web.servlet.CookieLocaleResolver" >
      <property name="defaultLocale"> 
        <bean class="java.util.Locale">
-         <constructor-arg value="no" />
+         <constructor-arg value="${defaultLocale}" />
        </bean>
      </property>
    </bean>

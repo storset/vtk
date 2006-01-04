@@ -152,7 +152,7 @@ public class ResourceXsltView extends AbstractView
     
 
     public void addReferenceDataProvider(ReferenceDataProvider provider) {
-        System.out.println("SJABbA_");
+
         if (this.referenceDataProviders == null) {
             this.referenceDataProviders = new ReferenceDataProvider[0];
         }

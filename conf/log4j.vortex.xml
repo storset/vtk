@@ -96,6 +96,8 @@
   <logger name="org.vortikal.edit"><level value="info" /></logger>
   <logger name="org.vortikal.edit.plaintext"><level value="debug" /></logger>
 
+  <logger name="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"><level value="debug" /></logger>
+
   <logger name="org.apache.pluto"><level value="debug" /></logger>
 
   <logger name="no.uio.feide"><level value="debug" /></logger>

@@ -4,6 +4,21 @@
 
 <beans>
   
+
+  <!--
+  <bean id="extensionsLoader" class="org.vortikal.beans.factory.PropertyBeanDefinitionLoader">
+    <property name="location" value="classpath:vortikal-custom.properties" />
+    <property name="propertyName" value="standardExtensions" />
+    <property name="ignoreResourceNotFound" value="true" />
+  </bean>
+  -->
+
+  <import resource="beans/vhost/main.xml" />
+
+  <import resource="beans/extensions.xml" />
+
+
+
    <bean id="propertyConfigurer"
          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
      <property name="ignoreResourceNotFound" value="true" />
@@ -15,13 +30,16 @@
      </property>
    </bean>
 
-  <!--import resource="beans/base-components/main.xml" /-->
-  
-  <import resource="beans/vhost/main.xml" />
-
-  <!-- Import files from standard-extensions (if any): -->
-  <!-- #foreach( $ext in $standardExtensionFiles.iterator()) -->
-  <!--import resource="standard-extensions/${ext}/${ext}.xml"/-->
-  <!-- #end -->
-
+   <!--
+   <bean id="propertyConfigurer"
+         class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+     <property name="ignoreResourceNotFound" value="true" />
+     <property name="locations">
+       <list>
+         <value>WEB-INF/beans/vortikal.properties</value>
+         <value>classpath:vortikal-custom.properties</value>
+       </list>
+     </property>
+   </bean>
+   -->
 </beans>

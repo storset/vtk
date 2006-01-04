@@ -54,6 +54,9 @@
 
    <postGoal name="war:webapp">
 
+    <u:tokenize var="classpaths" delim=",">${classpath}</u:tokenize>
+    <u:tokenize var="standardExtensionFiles" delim=",">${standardExtensions}</u:tokenize>
+
     <j:set var="logPath" value="${maven.build.dir}/logs" /> 
     <j:set var="xercesPath" value="${maven.home.local}/xerces/jars/xerces-2.4.0.jar" /> 
     <j:set var="webappDir" value="${maven.war.webapp.dir}" />
@@ -84,13 +87,21 @@
 
     <v:merge template="log4j.vortex.xml" basedir="${maven.conf.dir}"
              name="${maven.war.webapp.dir}/WEB-INF/classes/log4j.vortex.xml" />
+
+
+    <u:available file="${maven.war.src}/WEB-INF/beans/extensions.xml">
+      <v:merge template="extensions.xml" basedir="${maven.war.src}/WEB-INF/beans"
+             name="${maven.war.webapp.dir}/WEB-INF/beans/extensions.xml" />
+    </u:available>
+
+
    </postGoal>
 
-  <goal name="etags"
-    prereqs="etags:java"
-    description="generates TAGS files for spring-beans and
-    java classes">
-  </goal>
+   <goal name="etags"
+         prereqs="etags:java"
+         description="generates TAGS files for spring-beans and
+         java classes">
+   </goal>
   
   <goal name="etags:java"
     description="Generate TAGS file for java classes">

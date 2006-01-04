@@ -17,7 +17,7 @@
     <property name="handler">
       <bean class="org.vortikal.web.controller.DisplayClassPathResourceController">
         <property name="uriPrefix" value="${cssBaseURL}" />
-        <property name="basePath" value="/vrtx/web-resources/default-theme" />
+        <property name="basePath" value="/vortikal/resources/default-theme" />
       </bean>
     </property>
   </bean>

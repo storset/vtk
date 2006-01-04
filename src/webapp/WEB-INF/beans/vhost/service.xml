@@ -215,73 +215,12 @@
     </property>
     <property name="services">
       <list>
-        <ref bean="transformIndexXmlFileService" />
         <ref bean="displayIndexHtmlFileService" />
-        <ref bean="transformIndexEngXmlFileService" />
       </list>    
     </property>
   </bean>
 
 
-  <bean id="transformIndexXmlFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <bean id="hasIndexXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index.xml" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayIndexXmlHandler" />
-    <property name="services">
-      <list>
-        <bean id="indexXmlIsHtmlService" class="org.vortikal.web.service.ServiceImpl">
-          <property name="assertions">
-            <list>
-              <bean id="indexXmlIsHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-                <property name="childName" value="index.xml" />
-                <property name="trustedToken" ref="trustedToken" />
-                <property name="repository" ref="repository" />
-                <property name="childResourceAssertion">
-                  <ref bean="contentTypeMatchesHtml" />
-                </property>
-              </bean>
-            </list>
-          </property>
-          <property name="handler" ref="displayIndexXmlAsHtmlHandler" />
-        </bean>
-      </list>
-    </property>
-  </bean>                
-
-  <bean id="transformIndexEngXmlFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <bean id="hasIndexEngXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index-eng.xml" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayIndexEngXmlHandler" />
-    <property name="services">
-      <list>
-        <bean id="indexEngXmlIsHtmlService" class="org.vortikal.web.service.ServiceImpl">
-          <property name="assertions">
-            <list>
-              <bean id="indexEngXmlIsHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-                <property name="childName" value="index-eng.xml" />
-                <property name="trustedToken" ref="trustedToken" />
-                <property name="repository" ref="repository" />
-                <property name="childResourceAssertion">
-                  <ref bean="contentTypeMatchesHtml" />
-                </property>
-              </bean>
-            </list>
-          </property>
-          <property name="handler" ref="displayIndexEngXmlAsHtmlHandler" />
-        </bean>
-      </list>
-    </property>
-  </bean>                
 
 
   <bean id="displayIndexHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
@@ -358,7 +297,6 @@
       <list>
         <ref bean="displayHTMLResourceService" />
         <ref bean="rssTransformService" />
-        <ref bean="xmlTransformService" />
       </list>    
     </property>
   </bean>
@@ -403,44 +341,6 @@
   </bean>
 
 
-  <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesXml" />
-        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace">
-            <value>http://www.uio.no/vortex/custom-properties</value>
-          </property>
-          <property name="name">
-            <value>transform-view</value>
-          </property>
-          <property name="value">
-            <value>yes</value>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="displayXmlResourceHandler" />
-    </property>
-
-  </bean>
-
-  <bean id="xmlTransformWithoutUhtmlService" 
-    class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent"><ref bean="xmlTransformService"/></property>
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName"><value>uhtml</value></property>
-          <property name="parameterValue"><value>false</value></property>
-        </bean>
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="displayXmlResourceWithoutUhtmlHandler" />
-    </property>
-  </bean>
 
   
   <bean id="rssTransformService" class="org.vortikal.web.service.ServiceImpl">

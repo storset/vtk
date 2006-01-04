@@ -1,0 +1,60 @@
+h1, h2, h3, h4, h5, h6, div, pre, blockquote, form, label, ul, li {margin:0;padding:0;}
+
+/* Need to override classes from basic.css */
+
+div#titleContainer { 
+	margin: 0;
+	padding: 0;
+}
+ 
+div.resource-title h1 {
+	float: left;
+        display: inline;
+    	font-size: 125%;
+    	font-weight: bold;
+}
+
+.browse-actions {
+	display: inline;
+}
+
+table.directoryListing {
+	margin: 0;
+	padding: 0;
+        clear: left;
+	margin-bottom: 1em;
+        font-weight: normal;
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #b0e0e6;
+        //white-space: nowrap;
+}
+
+table.directoryListing th {
+        padding: 3px;
+        text-align: left;
+        font-size: 80%;
+        font-weight: normal;
+        background: #F9F0BD;
+}
+
+table tr.odd {
+        background: transparent;
+}
+
+table tr.even {
+        background: #F9F0BD;
+}
+
+/* Banner section: */
+
+div.banner {
+        background: #F9F0BD url(uio-logo-browse.png) no-repeat 15px 50%;
+        border-color: #807743;
+}
+
+.close {
+        padding-right: 15px;
+	padding-left: 20px;
+        background: transparent url(close.gif) no-repeat 1px 0px;
+}

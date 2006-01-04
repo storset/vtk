@@ -11,6 +11,19 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="add">
+        Added default theme (css, images, etc.)
+      </action>
+
+      <action dev="gormap" type="add">
+        Added support for indexing (from the Vortex project at UiO):
+        http://www.usit.uio.no/it/vortex/dokumentasjon/DMS/
+      </action>
+
+      <action dev="gormap" type="add">
+        Added default set of bean configuration files
+      </action>
+
       <action dev="storset" type="add">
         Added validation of document before saving in xml
         edit. Changed exception handling to propagate

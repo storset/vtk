@@ -583,6 +583,15 @@
           <include>**/*.ftl</include>
         </includes>
       </resource>
+      <!-- Include CSS/graphics/JavaScript files in the jar/war
+           under '/vrtx/web-resources'. -->
+      <resource>
+        <directory>resources</directory>
+        <targetPath>/vortikal/resources</targetPath>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
     </resources>
   </build>
   <reports>

@@ -91,7 +91,7 @@ public class HtmlHeadContentFilterTest extends TestCase {
         String document = "<html><head></head><head></head><body></body></html>";
         String headContent = "<title>my title</title>";
         String expectedResult =
-            "<html><head></head><head><title>my title</title></head><body></body></html>";
+            "<html><head><title>my title</title></head><head></head><body></body></html>";
 
         String result = runFilter(document, headContent);
         assertEquals(expectedResult, result);

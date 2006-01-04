@@ -52,10 +52,15 @@ import java.util.regex.Pattern;
 public class HtmlHeadContentFilter
   extends AbstractViewProcessingTextContentFilter {
 
-    private static Pattern HEAD_REGEXP =
-		Pattern.compile("(<\\s*head.*?>)(.*)(<\\s*/\\s*head\\s*>)",
-            			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static Pattern HEAD_START_REGEXP =
+        Pattern.compile("<\\s*head[^>]*>",
+                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static Pattern HEAD_END_REGEXP =
+        Pattern.compile("<\\s*/\\s*head\\s*>",
+                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
+    
+    
     private static Pattern CHARACTER_ENCODING__REGEXP =
 		Pattern.compile("((<\\s*meta[^>]+charset\\s*\\=\\s*)([\\w-]+)[^>]*>"
                                 + "(\\s*</\\s*meta\\s*>)?)",
@@ -71,19 +76,21 @@ public class HtmlHeadContentFilter
     protected String processInternal(String content, String head) throws Exception {
 
         // Get the head content to look for a charset meta element there.
-        Matcher headMatcher = HEAD_REGEXP.matcher(content);
+        Matcher headStartMatcher = HEAD_START_REGEXP.matcher(content);
+        Matcher headEndMatcher = HEAD_END_REGEXP.matcher(content);
         String headContent = null;
-        if (headMatcher.find(0)) {
-            headContent = headMatcher.group(2);
-            if (debug && logger.isDebugEnabled()) {
-                logger.debug("found head content: \n" + headContent);
-            }
-        } else {
+        int startHead, endHead;
+        
+        if (! (headStartMatcher.find(0) && headEndMatcher.find(0))) {
             // No head found, nothing to do
             return content;
         }
 
+        startHead = headStartMatcher.end();
+        endHead = headEndMatcher.start();
         
+        headContent = content.substring(startHead, endHead);
+
         // Look for title element
         Matcher titleMatcher = TITLE_REGEXP.matcher(headContent);
             
@@ -91,8 +98,6 @@ public class HtmlHeadContentFilter
             headContent = titleMatcher.replaceAll("");
         }
             
-        String newHeadContent = "";
-
         // Look for a meta element which declares a charset.
         Matcher charsetMatcher = CHARACTER_ENCODING__REGEXP.matcher(headContent);
 	
@@ -100,19 +105,15 @@ public class HtmlHeadContentFilter
             if (debug && logger.isDebugEnabled()) {
                 logger.debug("found charset content, will remove");
             }
-            newHeadContent = headMatcher.group(1) +
-            charsetMatcher.replaceAll("") +  head + headMatcher.group(3);
-        } else {
-            newHeadContent = headMatcher.group(1) + 
-            headContent + head + headMatcher.group(3);
+            headContent = charsetMatcher.replaceAll("");
         }
             
         if (debug && logger.isDebugEnabled()) {
-            logger.debug("New head content:\n" + newHeadContent);
+            logger.debug("New head content:\n" + headContent);
         }
         
-        return content.substring(0, headMatcher.start())
-            + newHeadContent + content.substring(headMatcher.end());
+        return content.substring(0, headStartMatcher.end())
+            + headContent + head + content.substring(headEndMatcher.start());
     }
     
     

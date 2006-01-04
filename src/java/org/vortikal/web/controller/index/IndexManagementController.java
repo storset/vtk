@@ -144,11 +144,10 @@ public final class IndexManagementController implements Controller {
                     writer.println("* No re-indexer configured for index '" + id + "'");
                     printStatus(writer);
                     return null;
-                } else {
-                    writer.println("* Signalling re-indexer to stop ..");
-                    writer.flush();
-                    reindexer.stop();
                 }
+                writer.println("* Signalling re-indexer to stop ..");
+                writer.flush();
+                reindexer.stop();
             } else if (ACTION_DISABLE_OBSERVER.equals(action)) {
                 ResourceChangeObserver observer = runtimeManager.getObserver(id);
                 writer.println("* Disabling observer '" + id + "' ..");

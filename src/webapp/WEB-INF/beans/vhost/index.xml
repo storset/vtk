@@ -199,34 +199,12 @@
   </bean>
 
 
-  <!-- Add the XSL provider to the central list: -->
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="transformXmlView" />
-    <property name="targetMethod" value="addReferenceDataProvider" />
-    <property name="arguments">
-      <list>
-        <ref bean="dmsQueryXslProvider" />
-      </list>
-    </property>
-  </bean>
-
   <bean id="dmsRawQueryURLProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
         parent="requestLocalRepositoryAware">
     <property name="modelName" value="xsltParameters" />
     <property name="urlName" value="dmsRawQueryURL" />
     <property name="service" ref="dmsXmlQueryService" />
-  </bean>
-
-  <!-- Add the raw query URL provider to the central list: -->
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="editView" />
-    <property name="targetMethod" value="addReferenceDataProvider" />
-    <property name="arguments">
-      <list>
-        <ref bean="dmsRawQueryURLProvider" />
-      </list>
-    </property>
   </bean>
 
 </beans>

@@ -52,6 +52,9 @@
      </echo>
    </postGoal>
 
+
+
+
    <postGoal name="war:webapp">
 
     <u:tokenize var="classpaths" delim=",">${classpath}</u:tokenize>
@@ -103,11 +106,11 @@
          java classes">
    </goal>
   
-  <goal name="etags:java"
-    description="Generate TAGS file for java classes">
-    <ant:exec dir="${maven.src.dir}/java" executable="etags" os="Linux">
-      <ant:arg line="--recurse=yes" />
-    </ant:exec>
-  </goal>
+   <goal name="etags:java"
+         description="Generate TAGS file for java classes">
+     <ant:exec dir="${maven.src.dir}/java" executable="etags" os="Linux">
+       <ant:arg line="--recurse=yes" />
+     </ant:exec>
+   </goal>
 
 </project>

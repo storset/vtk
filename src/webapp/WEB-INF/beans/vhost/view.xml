@@ -435,7 +435,7 @@
    <bean id="freemarkerConfigurer"
          class="org.vortikal.web.view.freemarker.MultiTemplateLocationsFreeMarkerConfigurer"/>
      
-   <bean id="vortexFreemarkerTemplateLocation" class="org.vortikal.web.view.freemarker.FreeMarkerTemplateLocationImpl">
+   <bean id="vortikalFreemarkerTemplateLocation" class="org.vortikal.web.view.freemarker.FreeMarkerTemplateLocationImpl">
      <property name="location" value="${templateLoaderPath}" />
    </bean>
 

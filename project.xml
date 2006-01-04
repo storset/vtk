@@ -545,6 +545,18 @@
     <!-- J A R  R E S O U R C E S -->
     <!-- Resources that are packaged up inside the JAR file -->
     <resources>
+      <!-- Include bean definition files in the jar/war
+           under '/vrtx/web-resources'. -->
+      <resource>
+        <directory>src/webapp/WEB-INF/beans</directory>
+        <targetPath>/vortikal/beans</targetPath>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <excludes>
+          <exclude>extensions.xml</exclude>
+        </excludes>
+      </resource>
       <resource>
         <!-- Include the MIME type helper file in the jar under
             '/org/vortikal/repositoryimpl'. -->
@@ -572,19 +584,19 @@
         </includes>
       </resource>
       <resource>
-        <!-- Include FreeMarker templates in the jar under '/ftl'. -->
+        <!-- Include FreeMarker templates in the jar under '/vortikal/ftl'. -->
         <!--
          TODO: should move 'src/webapp/WEB-INF/ftl' to 'src/ftl', to
          avoid duplication of ftl files in webapps.
        -->
         <directory>src/ftl</directory>
-        <targetPath>/ftl</targetPath>
+        <targetPath>/vortikal/ftl</targetPath>
         <includes>
           <include>**/*.ftl</include>
         </includes>
       </resource>
       <!-- Include CSS/graphics/JavaScript files in the jar/war
-           under '/vrtx/web-resources'. -->
+           under '/vortikal/resources'. -->
       <resource>
         <directory>resources</directory>
         <targetPath>/vortikal/resources</targetPath>

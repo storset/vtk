@@ -52,6 +52,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
@@ -302,6 +303,21 @@ public abstract class AbstractXmlEditController implements Controller {
 
     private ModelAndView handleModeError(EditDocument document, HttpServletRequest request) {
         Map model = new HashMap();
+        
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+
+        StringBuffer sb = new StringBuffer();
+        
+
+        sb.append("Mismatch in edit state (don't use 'back' button). ");
+        sb.append("Request context: [").append(requestContext).append("], ");
+        sb.append("security context: [").append(securityContext).append("], ");
+        sb.append("request parameters: ").append(request.getParameterMap()).append(", ");
+        sb.append("user agent: [").append(request.getHeader("User-Agent")).append("], ");
+        sb.append("remote host: [").append(request.getRemoteHost()).append("]");
+
+        logger.warn(sb.toString());
         
         setXsltParameter(model, "ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
         return new ModelAndView("edit", model);

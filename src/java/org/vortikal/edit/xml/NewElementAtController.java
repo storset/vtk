@@ -96,7 +96,7 @@ public class NewElementAtController extends AbstractXmlEditController {
 
                 /* Add input values to element and save: */
                 document.addContentsToElement(document.getEditingElement(),
-                        getRequestParameterMap(request), documentDefinition);
+                        request.getParameterMap(), documentDefinition);
                 document.setDocumentMode("default");
                 document.resetEditingElement();
                 

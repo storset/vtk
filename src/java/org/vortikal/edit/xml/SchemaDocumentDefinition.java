@@ -508,6 +508,7 @@ public class SchemaDocumentDefinition {
             new Filter() {
                 public boolean matches(Object o) {
                     return (o instanceof ProcessingInstruction);
+
                 }
                 private static final long serialVersionUID = -305689634836226453L;
             });

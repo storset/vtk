@@ -518,7 +518,7 @@ public class EditDocument extends Document {
                                     || (o instanceof Element);
                             }
                             private static final long serialVersionUID = 4746825449858085648L;
-                        }   
+                        }
                     ));
 
                 /* Add the new element to the list at the specified
@@ -575,5 +575,11 @@ public class EditDocument extends Document {
      */
     public Resource getResource() {
         return resource;
+    }
+    
+    public String toStringDetail() {
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+        
+        return outputter.outputString(this);
     }
 }

@@ -316,6 +316,7 @@ public abstract class AbstractXmlEditController implements Controller {
         sb.append("request parameters: ").append(request.getParameterMap()).append(", ");
         sb.append("user agent: [").append(request.getHeader("User-Agent")).append("], ");
         sb.append("remote host: [").append(request.getRemoteHost()).append("]");
+        sb.append("Current document state:\n").append(document.toStringDetail());
 
         logger.warn(sb.toString());
         
@@ -459,17 +460,6 @@ public abstract class AbstractXmlEditController implements Controller {
         }
 
         return null;
-    }
-
-    protected Map getRequestParameterMap(HttpServletRequest request) {
-        Map parameterMap = new HashMap();
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
-            String key = (String) e.nextElement();
-            
-            parameterMap.put(key, request.getParameter(key));
-        }
-        return parameterMap;
-    
     }
 
     protected Object getXsltParameter(Map model, String key) {

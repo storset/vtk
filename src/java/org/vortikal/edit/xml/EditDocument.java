@@ -575,4 +575,10 @@ public class EditDocument extends Document {
     public Resource getResource() {
         return resource;
     }
+    
+    public String toStringDetail() {
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+        
+        return outputter.outputString(this);
+    }
 }

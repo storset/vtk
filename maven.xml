@@ -57,6 +57,8 @@
 
    <postGoal name="war:webapp">
 
+    <u:properties file="${maven.conf.dir}/beans/vortikal.properties"/>
+
     <u:tokenize var="classpaths" delim=",">${classpath}</u:tokenize>
     <u:tokenize var="standardExtensionFiles" delim=",">${standardExtensions}</u:tokenize>
 
@@ -74,8 +76,6 @@
       <ant:copy file="${basedir}/build.properties"
                 tofile="${maven.war.webapp.dir}/WEB-INF/classes/vortikal-custom.properties" />
     </u:available>
-
-    <u:properties file="${maven.conf.dir}/beans/vortikal.properties"/>
 
     <j:choose>
       <j:when test="${resin3}">

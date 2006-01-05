@@ -29,7 +29,7 @@
   <import resource="service.xml" />
   <import resource="manage.xml" />
   <import resource="browse.xml" />
-  <import resource="xml-edit.xml" />
+  <!--import resource="xml-edit.xml" /-->
   <import resource="webdav.xml" />
   <import resource="windows-webdav-explorer.xml" />
   <import resource="plaintextedit.xml" />

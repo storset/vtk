@@ -516,8 +516,9 @@ public class EditDocument extends Document {
                             public boolean matches(Object o) {
                                 return (o instanceof ProcessingInstruction)
                                     || (o instanceof Element);
+                            }
+                            private static final long serialVersionUID = 4746825449858085648L;
                         }
-                    }
                     ));
 
                 /* Add the new element to the list at the specified

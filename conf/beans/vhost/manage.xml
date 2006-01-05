@@ -1671,7 +1671,7 @@
         parent="abstractReferencedataProvidingErrorHandler" abstract="true">
     <description>Provides specific handling of XSLT-related errors in the manage service</description>
     <property name="service" ref="manageService" />
-    <property name="errorView" ref="manageXsltErrorView" />
+    <property name="errorViewName" value="manageXsltError" />
   </bean>
 
 
@@ -1688,7 +1688,7 @@
         <constructor-arg value="org.jdom.input.JDOMParseException" />
       </bean>
     </property>
-    <property name="errorView" ref="manageXmlBuildErrorView" />
+    <property name="errorViewName" value="manageXmlBuildError" />
   </bean>
 
 
@@ -1721,7 +1721,7 @@
 
   <bean id="defaultManageErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
     <property name="service" ref="manageService" />
-    <property name="errorView" ref="defaultManageErrorView" />
+    <property name="errorViewName" value="defaultManageError" />
     <property name="referenceDataProviders" ref="standardManageReferenceDataProviders" />
     <property name="statusCodeMappings">
       <map>
@@ -1731,11 +1731,26 @@
     </property>
   </bean>
 
+
+  <bean id="manageErrorViewResolver"
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="manageXsltError" value-ref="manageXsltErrorView" />
+        <entry key="manageXmlBuildError" value-ref="manageXmlBuildErrorView" />
+        <entry key="defaultManageError" value-ref="defaultManageErrorView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="manageViewWrapper" />
+  </bean>
+  
+
+  <!--
   <bean id="manageErrorHandlerViewWrapper"
         class="org.vortikal.web.view.wrapper.WrappingView" abstract="true">
     <property name="viewWrapper" ref="manageViewWrapper" />
   </bean>
-
+  -->
 
   <bean id="manageXsltErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/xslt-error.ftl" />

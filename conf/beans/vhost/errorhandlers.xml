@@ -7,7 +7,7 @@
   <!-- Error handlers -->
 
   <bean id="resourceNotFoundErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
-    <property name="errorView" ref="resourceNotFoundErrorView" />
+    <property name="errorViewName" value="resourceNotFoundError" />
     <property name="errorType">
       <bean class="java.lang.Class" factory-method="forName">
         <constructor-arg value="org.vortikal.repository.ResourceNotFoundException" />
@@ -27,7 +27,7 @@
 
 
   <bean id="notAuthorizedErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
-    <property name="errorView" ref="notAuthorizedErrorView" />
+    <property name="errorViewName" value="notAuthorizedError" />
     <property name="errorType">
       <bean class="java.lang.Class" factory-method="forName">
         <constructor-arg value="org.vortikal.repository.AuthorizationException" />
@@ -46,11 +46,11 @@
   </bean>
 
 
-
+  
 
 
   <bean id="defaultErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
-    <property name="errorView" ref="defaultErrorView" />
+    <property name="errorViewName" value="defaultError" />
     <property name="referenceDataProviders">
       <list>
         <!--ref bean="versionProvider"/-->
@@ -67,6 +67,16 @@
 
   <!-- Error views-->
 
+
+  <bean id="errorViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="resourceNotFoundError" value-ref="resourceNotFoundErrorView" />
+        <entry key="notAuthorizedError" value-ref="notAuthorizedErrorView" />
+        <entry key="defaultError" value-ref="defaultErrorView" />
+      </map>
+    </property>
+  </bean>
 
   <bean id="resourceNotFoundErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/404.ftl" />

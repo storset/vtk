@@ -377,15 +377,20 @@
         <constructor-arg value="org.vortikal.edit.xml.XMLEditException" />
       </bean>
     </property>
-    <property name="errorView" ref="xmlEditErrorView" />
+    <property name="errorViewName" value="xmlEditError" />
   </bean>
 
-  <bean id="xmlEditErrorView" parent="manageErrorHandlerViewWrapper">
-    <property name="view">
-      <bean parent="freemarkerView">
-        <property name="url" value="pages/error/edit-xml-error.ftl" />
-      </bean>
+  <bean id="xmlEditErrorViewResolver" parent="manageErrorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="xmlEditError" value-ref="xmlEditErrorView" />
+      </map>
     </property>
+  </bean>
+  
+
+  <bean id="xmlEditErrorView" parent="freemarkerView">
+        <property name="url" value="pages/error/edit-xml-error.ftl" />
   </bean>
 
 </beans>

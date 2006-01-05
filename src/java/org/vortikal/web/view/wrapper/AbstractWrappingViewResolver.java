@@ -42,18 +42,22 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.core.Ordered;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 
 
-public abstract class AbstractWrappingViewResolver implements ViewResolver {
+public abstract class AbstractWrappingViewResolver implements ViewResolver, Ordered {
 
     private Log logger = LogFactory.getLog(this.getClass());
     
     private ViewWrapper viewWrapper;
     private ReferenceDataProvider[] referenceDataProviders;
+    private int order = Integer.MAX_VALUE;
 
 
     public void setReferenceDataProviders(
@@ -66,6 +70,16 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver {
         this.viewWrapper = viewWrapper;
     }
 
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+
+    public int getOrder() {
+        return this.order;
+    }
+    
 
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         View view = resolveViewNameInternal(viewName, locale);

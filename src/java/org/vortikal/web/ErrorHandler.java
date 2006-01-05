@@ -100,11 +100,11 @@ public interface ErrorHandler {
      * @param request a <code>HttpServletRequest</code> value
      * @param response a <code>HttpServletResponse</code> value
      * @param error a <code>Throwable</code> value
-     * @return a <code>View</code>
+     * @return a <code>View</code> or a view name
      * @exception Exception if an error occurs
      */
-    public View getErrorView(HttpServletRequest request, HttpServletResponse response,
-                             Throwable error) throws Exception;
+    public Object getErrorView(HttpServletRequest request, HttpServletResponse response,
+                               Throwable error) throws Exception;
     
 
     /**

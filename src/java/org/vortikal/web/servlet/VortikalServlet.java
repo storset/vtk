@@ -30,11 +30,15 @@
  */
 package org.vortikal.web.servlet;
 
+
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
@@ -42,7 +46,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -641,7 +644,15 @@ public class VortikalServlet extends DispatcherServlet {
         View view = null;
         try {
             model = handler.getErrorModel(req, resp, t);
-            view = handler.getErrorView(req, resp, t);
+
+            Object obj = handler.getErrorView(req, resp, t);
+            if (obj instanceof View) {
+                view = (View) obj;
+            } else {
+                Locale locale = RequestContextUtils.getLocale(req);
+                view = this.resolveViewName((String) obj, model, locale, req);
+            }
+
             statusCode = handler.getHttpStatusCode(req, resp, t);
 
         } catch (Throwable errorHandlerException) {
@@ -650,6 +661,12 @@ public class VortikalServlet extends DispatcherServlet {
                      req, errorHandlerException);
             throw new ServletException(errorHandlerException);
         }
+
+        if (view == null) {
+            throw new ServletException("Unable to resolve error view for handler "
+                                       + handler, t);
+        }
+
 
         // Log '500 internal server error' incidents to the error log:
         if (statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR) {

@@ -49,8 +49,10 @@ import org.vortikal.web.service.Service;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
+ *   <li><code>errorViewName</code> - a view name, used to resolve an
+ *   error {@link View} for rendering the error model
  *   <li><code>errorView</code> - a {@link View} for rendering the
- *   error model
+ *   error model (overrides <code>errorViewName</code>)
  *   <li><code>errorType</code> - a {@link Throwable} deciding the
  *   type(s) of errors that are handled by this class
  *   <li><code>service</code> - the {@link Service} (if any) for which
@@ -86,6 +88,7 @@ public class DefaultErrorHandler
     
     private String beanName = null;
     private View errorView = null;
+    private String errorViewName = null;
     private Class errorType = Throwable.class;
     private Service service = null;
     private ReferenceDataProvider[] providers = new ReferenceDataProvider[0];
@@ -98,6 +101,10 @@ public class DefaultErrorHandler
 
     public void setErrorView(View errorView) {
         this.errorView = errorView;
+    }
+
+    public void setErrorViewName(String errorViewName) {
+        this.errorViewName = errorViewName;
     }
 
     public void setErrorType(Class errorType) {
@@ -125,21 +132,17 @@ public class DefaultErrorHandler
     }
     
     public void afterPropertiesSet() {
-        if (this.errorView == null) {
+        if (this.errorView == null && this.errorViewName == null) {
             throw new BeanInitializationException(
-                "Bean property 'errorView' not set.");
+                "One of JavaBean properties 'errorView' or 'errorViewName' must be specified.");
         }
         if (this.errorType == null) {
             throw new BeanInitializationException(
-                "Bean property 'errorType' cannot be null.");
-        }
-        if (this.providers == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelBuilders' cannot be null.");
+                "JavaBean property 'errorType' cannot be null.");
         }
         if (this.statusCodeMappings == null) {
             throw new BeanInitializationException(
-                "Bean property 'statusCodeMappings' cannot be null.");
+                "JavaBean property 'statusCodeMappings' cannot be null.");
         }
     }
     
@@ -148,13 +151,16 @@ public class DefaultErrorHandler
                              HttpServletResponse response,
                              Throwable error) throws Exception {
         Map model = new HashMap();
-        try {
-            for (int i = 0; i < providers.length; i++) {
-                providers[i].referenceData(model, request);
+        if (this.providers != null) {
+            try {
+                for (int i = 0; i < providers.length; i++) {
+                    this.providers[i].referenceData(model, request);
+                }
+            } catch (Throwable t) {
+                // Silently ignore
             }
-        } catch (Throwable t) {
-            // Silently ignore
         }
+
 
         org.springframework.web.servlet.support.RequestContext ctx = null;
         try {
@@ -181,10 +187,13 @@ public class DefaultErrorHandler
     
 
 
-    public View getErrorView(HttpServletRequest request,
+    public Object getErrorView(HttpServletRequest request,
                              HttpServletResponse response,
                              Throwable error) throws Exception {
-        return this.errorView;
+        if (this.errorView != null) {
+            return this.errorView;
+        }
+        return this.errorViewName;
     }
     
 
@@ -214,7 +223,11 @@ public class DefaultErrorHandler
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(":").append(this.beanName);
         sb.append(": [");
-        sb.append("errorView = ").append(this.errorView).append(", ");
+        if (this.errorView != null) {
+            sb.append("errorView = ").append(this.errorView).append(", ");
+        } else {
+            sb.append("errorViewName = ").append(this.errorViewName).append(", ");
+        }
         sb.append("errorType = ").append(this.errorType.getName()).append("]");
         return sb.toString();
     }

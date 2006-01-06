@@ -47,25 +47,27 @@
         <ref bean="httpOptionsService" />
 
         <!-- These are located in their own files: -->
-        <ref bean="editService" />
-        <ref bean="manageService" />
-        <ref bean="browseService" />
-        <ref bean="viewService"/>
+        <!--ref bean="editService" /-->               <!-- 400 -->
+        <!--ref bean="manageService" /-->             <!-- 500 -->
+        <!--ref bean="browseService" /-->             <!-- 600 -->
+        <ref bean="viewService"/>                     <!-- 700 -->
         <!--         <ref bean="searchService" /> -->
       </list>
     </property>
     <property name="authenticationChallenge">
-      <ref bean="webAuthenticationChallenge" />
+      <ref bean="${webAuthenticationChallenge}" />
     </property>
   </bean>
 
+  <!--
   <bean name="webAuthenticationChallenge"
         parent="httpDigestAuthenticationHandler" />
-
+  -->
 
   <!-- Collection redirect service -->
 
   <bean id="collectionRedirectService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="0" />
     <property name="assertions">
       <list>
         <ref local="resourceIsCollection" />
@@ -94,6 +96,7 @@
   <!-- Logout service -->
   
   <bean id="logoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="200" />
     <property name="assertions">
       <list>
         <ref bean="logoutIsSupported" />
@@ -105,6 +108,8 @@
 
 
   <bean id="authenticateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="100" />
+
     <property name="authenticationChallenge" 
               ref="httpDigestAuthenticationChallenge" />
     <property name="assertions">
@@ -164,6 +169,7 @@
 
 
   <bean id="httpOptionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="300" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
@@ -184,6 +190,7 @@
   <!-- View services -->
   
   <bean id="viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="700" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestMethodAssertion">

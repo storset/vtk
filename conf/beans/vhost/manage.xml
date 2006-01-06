@@ -8,6 +8,8 @@
   <!-- MANAGE services -->
   
   <bean id="manageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="500" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">

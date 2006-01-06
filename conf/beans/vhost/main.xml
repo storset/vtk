@@ -19,7 +19,7 @@
   <import resource="repository-store-interceptor.xml" />
   <import resource="schema-registry.xml" />
 
-  <import resource="resin-fix.xml" />
+  <!--import resource="resin-fix.xml" /-->
 
 
   <import resource="vortex.xml" />

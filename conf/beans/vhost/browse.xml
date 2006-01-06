@@ -7,6 +7,8 @@
   <!-- Browse services -->
   
   <bean id="browseService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="600" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">

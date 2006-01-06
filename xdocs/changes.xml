@@ -12,6 +12,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Added option to use name based view resolving in error
+        handlers instead of having to supply a view object directly.
+      </action>
+
+      <action dev="gormap" type="add">
         Added default theme (css, images, etc.)
       </action>
 

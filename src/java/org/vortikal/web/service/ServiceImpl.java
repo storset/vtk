@@ -250,6 +250,8 @@ public class ServiceImpl
             validateAssertions(child);
             child.setParent(this);
         }
+
+        Collections.sort(this.services, new OrderComparator());
     }
 
     

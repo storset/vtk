@@ -55,11 +55,23 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Handler for PUT requests.
  *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>maxUploadSize</code> - optional long value specifying
+ *   the maximum upload size in bytes. Default is <code>-1</code> (no
+ *   limit).
+ *   <li><code>viewName</code> - the name of the view to return (default
+ *   <code>PUT</code>).
+ *   <li><code>requestFilters</code> - an optional array of {@link
+ *   RequestFilter request filters} to be executed before the PUT
+ *   request is processed.
+ * </ul>
+ *
  */
 public class PutController extends AbstractWebdavController {
 
     private long maxUploadSize = -1;
-
+    private String viewName = "PUT";
     private RequestFilter[] requestFilters;
     
 
@@ -70,6 +82,11 @@ public class PutController extends AbstractWebdavController {
         }
 
         this.maxUploadSize = maxUploadSize;
+    }
+    
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
     
 
@@ -198,7 +215,7 @@ public class PutController extends AbstractWebdavController {
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                           new Integer(HttpServletResponse.SC_CREATED));
             }
-            return new ModelAndView("PUT", model);
+            return new ModelAndView(this.viewName, model);
 
         } catch (ResourceNotFoundException e) {
             if (logger.isDebugEnabled()) {

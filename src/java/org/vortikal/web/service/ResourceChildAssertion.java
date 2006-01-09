@@ -58,6 +58,11 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
     private String trustedToken;
     
     public boolean matches(Resource resource, Principal principal) {
+        if (!resource.isCollection()) {
+            return false;
+        }
+
+
         String[] childURIs = resource.getChildURIs();
         
         for (int i = 0; i < childURIs.length; i++) {

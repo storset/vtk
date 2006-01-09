@@ -126,46 +126,6 @@
   </bean>
   
 
-  <bean id="setNorwegianNBLocaleService"
-        class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <ref bean="requestLocaleNotNorwegianNB"/>
-        <ref bean="localeParameterEqualsNO" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="setNorwegianNBLocaleController"/>
-    </property>
-  </bean>
-
-
-  <bean id="setNorwegianNNLocaleService"
-        class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <ref bean="requestLocaleNotNorwegianNN"/>
-        <ref bean="localeParameterEqualsNN" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="setNorwegianNNLocaleController"/>
-    </property>
-  </bean>
-
-
-  <bean id="setEnglishLocaleService"
-        class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <ref bean="requestLocaleNotEnglish" />
-        <ref bean="localeParameterEqualsEN" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="setEnglishLocaleController"/>
-    </property>
-  </bean>
 
 
   <bean id="httpOptionsService" class="org.vortikal.web.service.ServiceImpl">
@@ -467,24 +427,6 @@
     <property name="localeResolver" ref="localeResolver" />
   </bean>
   
-  <bean id="localeParameterEqualsNO"
-        class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="locale" />
-    <property name="parameterValue" value="no" />
-  </bean>
-
-  <bean id="localeParameterEqualsNN"
-        class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="locale" />
-    <property name="parameterValue" value="nn" />
-  </bean>
-
-  <bean id="localeParameterEqualsEN"
-        class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="locale" />
-    <property name="parameterValue" value="en" />
-  </bean>
-
   <!-- Content type assertions -->
 
   <bean id="contentTypeMatchesText"

@@ -12,7 +12,12 @@
         <value>tabMenu</value>
       </set>
     </property>
-    <property name="order" value="-9700" />
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
+      </map>
+    </property>
+    <property name="order" value="-100" />
     <property name="assertions">
       <list>
         <ref bean="requiresWritePermissionAssertion" />
@@ -33,7 +38,12 @@
         <value>tabMenu</value>
       </set>
     </property>
-    <property name="order" value="-9700" />
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
+      </map>
+    </property>
+    <property name="order" value="-100" />
     <property name="assertions">
       <list>
         <ref bean="requiresWritePermissionAssertion" />

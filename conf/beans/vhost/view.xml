@@ -315,6 +315,11 @@
     class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="tabMenu" />
+    <property name="comparator">
+      <bean class="org.vortikal.web.service.ServiceAttributeComparator">
+        <property name="attributeName" value="tabOrder" />
+      </bean>
+    </property>
   </bean>
 
   <bean id="resourceContextProvider" 

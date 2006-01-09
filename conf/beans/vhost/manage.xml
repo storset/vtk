@@ -37,12 +37,58 @@
     </property>        
   </bean>
 
+  <bean id="setNorwegianNBLocaleService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="requestLocaleNotNorwegianNB"/>
+        <ref bean="localeParameterEqualsNO" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="setNorwegianNBLocaleController"/>
+    </property>
+  </bean>
+
+
+  <bean id="setNorwegianNNLocaleService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="requestLocaleNotNorwegianNN"/>
+        <ref bean="localeParameterEqualsNN" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="setNorwegianNNLocaleController"/>
+    </property>
+  </bean>
+
+
+  <bean id="setEnglishLocaleService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref bean="requestLocaleNotEnglish" />
+        <ref bean="localeParameterEqualsEN" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="setEnglishLocaleController"/>
+    </property>
+  </bean>
+
   <bean id="permissionsService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-9550</value></property>
+    <!--property name="order"><value>-9550</value></property-->
     <property name="categories">
       <set>
         <value>tabMenu</value>
       </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">200</value></entry>
+      </map>
     </property>
     <property name="assertions">
       <list>
@@ -70,11 +116,16 @@
   </bean>        
 
   <bean id="aboutResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>9600</value></property>
+    <!--property name="order"><value>9600</value></property-->
     <property name="categories">
       <set>
         <value>tabMenu</value>
       </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">300</value></entry>
+      </map>
     </property>
     <property name="assertions">
       <list>
@@ -106,11 +157,16 @@
   </bean>        
   
   <bean id="manageCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-10000</value></property>
+    <!--property name="order"><value>-10000</value></property-->
     <property name="categories">
       <set>
         <value>tabMenu</value>
       </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">0</value></entry>
+      </map>
     </property>
     <property name="assertions">
       <list>
@@ -169,7 +225,7 @@
   </bean>        
 
   <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-998</value></property>
+    <!--property name="order" value="-998" /-->
     <property name="categories">
       <set>
         <value>resourceMenu</value>
@@ -565,11 +621,16 @@
   <!-- preview services -->
   
   <bean id="previewService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-9900</value></property>
+    <!--property name="order"><value>-9900</value></property-->
     <property name="categories">
       <set>
         <value>tabMenu</value>
       </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">100</value></entry>
+      </map>
     </property>
     <property name="assertions">
       <list>
@@ -658,11 +719,16 @@
 
 
   <bean id="previewCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-9900" />
+    <!--property name="order" value="-9900" /-->
     <property name="categories">
       <set>
         <value>tabMenu</value>
       </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">100</value></entry>
+      </map>
     </property>
     <property name="assertions">
       <list>
@@ -1640,6 +1706,25 @@
   <bean id="adminVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
     <property name="parameterValue" value="admin" />
+  </bean>
+
+
+  <bean id="localeParameterEqualsNO"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="locale" />
+    <property name="parameterValue" value="no" />
+  </bean>
+
+  <bean id="localeParameterEqualsNN"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="locale" />
+    <property name="parameterValue" value="nn" />
+  </bean>
+
+  <bean id="localeParameterEqualsEN"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="locale" />
+    <property name="parameterValue" value="en" />
   </bean>
 
 

@@ -124,12 +124,17 @@
   
   <!-- Index management service. Belongs in 'management.xml' ? -->
   <bean id="indexManagementService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-30"/>
+    <property name="order" value="-300"/>
     <property name="parent" ref="manageService"/>
     <property name="categories">
       <set>
         <value>tabMenu</value>
       </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">1000</value></entry>
+      </map>
     </property>
     <property name="assertions">
       <list>

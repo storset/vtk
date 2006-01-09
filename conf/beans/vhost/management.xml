@@ -10,7 +10,7 @@
 
 
   <bean id="repositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="0" />
+    <property name="order" value="-100" />
     <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>

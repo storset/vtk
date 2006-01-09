@@ -290,6 +290,11 @@ public class RequestContextInitializer
             Service service = (Service) iter.next();
             buffer.append(indent);
             buffer.append(service.getName());
+            if (service.getOrder() == Integer.MAX_VALUE) {
+                buffer.append(" (*)");
+            } else {
+                buffer.append(" (").append(service.getOrder()).append(")");
+            }
             buffer.append(lineSeparator);
             printServiceList(service.getChildren(), buffer, "  " + indent, lineSeparator);
         }

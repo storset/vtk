@@ -32,6 +32,7 @@ package org.vortikal.web.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ import org.vortikal.security.web.AuthenticationChallenge;
  *   invocation.
  *   <li><code>order</code> - integer specifying the order of this
  *   service (see {@link org.springframework.core.Ordered}). Default is
- *   <code>Integer.MAX_VALUE</code> (unordered).
+ *   <code>0</code>.
  *   <li><code>categories</code> - a {@link Set} of strings denoting
  *   the set of categories this service is a member of.
  * </ul>
@@ -85,8 +86,9 @@ public class ServiceImpl
     private List services = new ArrayList();
     private Service parent;
     private String name;
+    private Map attributes = new HashMap();
     private List handlerInterceptors;
-    private int order = Integer.MAX_VALUE; // Same as non ordered;
+    private int order = 0;
     private Set categories = null;
     private ApplicationContext applicationContext;
     
@@ -131,6 +133,19 @@ public class ServiceImpl
         return handler;
     }
 	
+
+    public void setAttributes(Map attributes) {
+        this.attributes = attributes;
+    }
+    
+
+    public Object getAttribute(String name) {
+        if (this.attributes == null) {
+            return null;
+        }
+        return this.attributes.get(name);
+    }
+    
 
     /**
      * Mapping the tree
@@ -251,6 +266,7 @@ public class ServiceImpl
             child.setParent(this);
         }
 
+        // Sort all children:
         Collections.sort(this.services, new OrderComparator());
     }
 

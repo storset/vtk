@@ -95,6 +95,16 @@ public interface Service extends  Ordered, Categorizable {
 	
 
     /**
+     * Gets a named attribute.
+     *
+     * @param name the name of the attribute
+     * @return the attribute value.
+     */
+    public Object getAttribute(String name);
+    
+    
+
+    /**
      * Gets this service's parent service.
      *
      * @return the parent service, or <code>null</code> if this is the

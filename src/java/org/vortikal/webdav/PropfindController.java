@@ -219,7 +219,7 @@ public class PropfindController extends AbstractWebdavController {
             resourceList = getResourceDescendants(
                 resource.getURI(), depth, repository, token);
         }
-        if (depth.equals("0") /*|| depth.equals("1")*/) {
+        if (depth.equals("0") || depth.equals("1")) {
             resourceList.add(resource);
         }
         model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCES,

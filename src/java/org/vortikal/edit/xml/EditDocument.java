@@ -176,9 +176,11 @@ public class EditDocument extends Document {
 
         XMLOutputter xmlOutputter = new XMLOutputter();
         xmlOutputter.setFormat(format);
-
+        
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+        xmlOutputter.output(this, outputStream);
+        
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
         repository.storeContent(token, uri, stream);
 

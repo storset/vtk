@@ -32,10 +32,14 @@ package org.vortikal.web.service;
 
 
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
@@ -49,32 +53,33 @@ import org.vortikal.web.RequestContext;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>header</code> - the name of the header to check
- *   <li><code>pattern</code> - the regular expression to match
+ *   <li><code>pattern</code> - a regular expression to match
  *   <li><code>patterns</code> - a list of regular expressions to
  *   match. If one of these matches, the assertion also matches. This
- *   setting is incompatible with the <code>pattern</code> setting
- *   (i.e. only one can be specified).
+ *   setting is compatible with the <code>pattern</code> setting
+ *   (meaning if both is specified, they are both matched).
+ *   <li><code>invert</code> - if set to <code>true</code>, match only when 
+ *   none of the patterns match.
  * </ul>
  */
 public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean {
 
-    private Pattern pattern;
-    private Pattern[] patterns;
+    private List patternsList = new ArrayList();
     private String header;
+    private boolean invert = false;
 
 
     public void setPattern(String pattern) {
         if (pattern != null) {
-            this.pattern = Pattern.compile(pattern);
+            patternsList.add(Pattern.compile(pattern));
         }
     }
     
     
     public void setPatterns(String[] patterns) {
         if (patterns != null) {
-            this.patterns = new Pattern[patterns.length];
             for (int i = 0; i < patterns.length; i++) {
-                this.patterns[i] = Pattern.compile(patterns[i]);
+                this.patternsList.add(Pattern.compile(patterns[i]));
             }
         }
     }
@@ -89,13 +94,9 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
     
 
     public void afterPropertiesSet() {
-        if (this.pattern == null && this.patterns == null) {
+        if (this.patternsList.size() == 0) {
             throw new BeanInitializationException(
-                "One of JavaBean properties 'pattern' or 'patterns' must be specified");
-        }
-        if (this.pattern != null && this.patterns != null) {
-            throw new BeanInitializationException(
-                "Only one of JavaBean properties 'pattern' and 'patterns' can be specified");
+                "At least one of the JavaBean properties 'pattern' or 'patterns' must be specified");
         }
         if (this.header == null) {
             throw new BeanInitializationException(
@@ -114,12 +115,8 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
 		
         sb.append(super.toString());
         sb.append("; header = ").append(this.header);
-        if (this.pattern != null) {
-            sb.append("; pattern = ").append(this.pattern);
-        }
-        if (this.patterns != null) {
-            sb.append("; patterns = ").append(java.util.Arrays.asList(this.patterns));
-        }
+        sb.append("; patterns = ").append(this.patternsList);
+        sb.append("; invert = ").append(invert);
 		
         return sb.toString();
     }
@@ -131,19 +128,16 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
         if (headerValue == null) {
             return false;
         }
-        if (this.patterns != null) {
-            for (int i = 0; i < this.patterns.length; i++) {
-                Matcher m = this.patterns[i].matcher(headerValue);
-                if (m.matches()) {
-                    return true;
-                }
+        
+        for (Iterator iter = patternsList.iterator(); iter.hasNext();) {
+            Pattern pattern = (Pattern) iter.next();
+            if (pattern.matcher(headerValue).matches()) {
+                return true;
             }
-            return false;
         }
-
-        Matcher m = pattern.matcher(headerValue);
-        return m.matches();
+        return false;
     }
+
 
 
     public boolean processURL(URL url, Resource resource, Principal principal,
@@ -153,9 +147,18 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
         HttpServletRequest request = requestContext.getServletRequest();
 
         if (match && request != null) {
-            return matches(requestContext.getServletRequest(), resource, principal); 
+            boolean matched = matches(requestContext.getServletRequest(), resource, principal); 
+            
+            if (invert) return !matched;
+            
+            return matched;
         }
         return true;
+    }
+
+
+    public void setInvert(boolean invert) {
+        this.invert = invert;
     }
     
 

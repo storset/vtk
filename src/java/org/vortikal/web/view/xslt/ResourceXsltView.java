@@ -110,6 +110,10 @@ import org.vortikal.xml.TransformerManager;
  *   HTTP header <code>Content-Language</code> based on the content
  *   language of the transformed resource. Default is
  *   <code>false</code>.
+ *   <li><code>handleExpiresProperty</code> - whether to set the
+ *   <code>Expires</code> header according to the value of the
+ *   <code>expires-sec</code> resource property. Default to
+ *   <code>false</code>.
  * </ul>
  *
  * <p>Sets the following HTTP headers:
@@ -120,7 +124,9 @@ import org.vortikal.xml.TransformerManager;
  *   <li><code>Expires</code> (if the resource has the property
  *   <code>expires-sec</code> to a numerical value (meaning the number
  *   of seconds to cache the resource). The namespace of this property
- *   is {@link Property#LOCAL_NAMESPACE}.
+ *   is {@link Property#LOCAL_NAMESPACE}. (Only set if the
+ *   <code>handleExpiresProperty</code> config property is also set on
+ *   this class.)
  *   <li><code>Cache-Control: no-cache</code> if the
  *   <code>expires-sec</code> property is not set.
  * </ul>
@@ -139,6 +145,7 @@ public class ResourceXsltView extends AbstractView
     private ReferenceDataProvider[] referenceDataProviders;
     
     private boolean includeContentLanguageHeader = false;
+    private boolean handleExpiresProperty = false;
     
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
@@ -173,6 +180,11 @@ public class ResourceXsltView extends AbstractView
 
     public void setIncludeContentLanguageHeader(boolean includeContentLanguageHeader) {
         this.includeContentLanguageHeader = includeContentLanguageHeader;
+    }
+    
+
+    public void setHandleExpiresProperty(boolean handleExpiresProperty) {
+        this.handleExpiresProperty = handleExpiresProperty;
     }
     
 
@@ -277,7 +289,8 @@ public class ResourceXsltView extends AbstractView
             Property expiresProperty = resource.getProperty(
                     Property.LOCAL_NAMESPACE, 
                     "expires-sec");
-            if (expiresProperty != null && expiresProperty.getValue() != null) {
+            if (this.handleExpiresProperty &&
+                expiresProperty != null && expiresProperty.getValue() != null) {
 
                 try {
                     long expiresMilliseconds = new Long(

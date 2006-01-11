@@ -124,10 +124,21 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
 
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
+        boolean matched = match(request, resource, principal); 
+        
+        if (invert) return !matched;
+        
+        return matched;
+
+    }
+     
+    private boolean match(HttpServletRequest request, Resource resource,
+            Principal principal) {
         String headerValue = request.getHeader(this.header);
         if (headerValue == null) {
             return false;
         }
+        
         
         for (Iterator iter = patternsList.iterator(); iter.hasNext();) {
             Pattern pattern = (Pattern) iter.next();
@@ -147,11 +158,7 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
         HttpServletRequest request = requestContext.getServletRequest();
 
         if (match && request != null) {
-            boolean matched = matches(requestContext.getServletRequest(), resource, principal); 
-            
-            if (invert) return !matched;
-            
-            return matched;
+            return matches(requestContext.getServletRequest(), resource, principal); 
         }
         return true;
     }

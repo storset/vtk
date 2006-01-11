@@ -70,7 +70,7 @@ public class EditDoneController extends AbstractXmlEditController {
                 document.setDocumentMode("default");
 
                 document.addContentsToElement(document.getEditingElement(),
-                        request.getParameterMap(), documentDefinition);
+                        getRequestParameterMap(request), documentDefinition);
                 document.resetEditingElement();
                 document.setClone(null);
 

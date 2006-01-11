@@ -58,7 +58,7 @@ public class DeleteSubElementAtController extends AbstractXmlEditController {
             String path = request.getParameter("path");
 
             document.addContentsToElement(document.getEditingElement(),
-                    request.getParameterMap(), documentDefinition);
+                    getRequestParameterMap(request), documentDefinition);
             documentDefinition.translateToEditingElement(
                     document.getEditingElement());
 

@@ -65,7 +65,7 @@ public class NewSubElementAtController extends AbstractXmlEditController {
 
             document.addContentsToElement(
                 document.getEditingElement(),
-                request.getParameterMap(),
+                getRequestParameterMap(request),
                 documentDefinition);
 
             documentDefinition.translateToEditingElement(

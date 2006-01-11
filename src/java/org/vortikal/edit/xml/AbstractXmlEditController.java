@@ -470,6 +470,17 @@ public abstract class AbstractXmlEditController implements Controller {
         return null;
     }
     
+    protected Map getRequestParameterMap(HttpServletRequest request) {
+        Map parameterMap = new HashMap();
+        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
+            String key = (String) e.nextElement();
+
+            parameterMap.put(key, request.getParameter(key));
+        }
+        return parameterMap;
+
+    }
+
     protected final void setXsltParameter(Map model, String key, Object value) {
         Map parameters = (Map)model.get("xsltParameters");
         if (parameters == null) {

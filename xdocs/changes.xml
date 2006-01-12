@@ -11,9 +11,10 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
-      <action dev="storset" type="update">
-        Documents are validated against the XML schema when saved in
-        the XML edit component.
+      <action dev="storset" type="add">
+        Added validation of document before saving in xml
+        edit. Changed exception handling to propagate
+        validation/saving exceptions.
       </action>
 
       <action dev="oyviste" type="update">

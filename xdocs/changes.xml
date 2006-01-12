@@ -11,6 +11,22 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="storset" type="update">
+        Documents are validated against the XML schema when saved in
+        the XML edit component.
+      </action>
+
+      <action dev="oyviste" type="update">
+        The current collection is now included in the WebDAV PROPFIND
+        response on requests with the "depth" parameter set to
+        1. Fixes WebDAV mounting in gnome-vfs.
+      </action>
+
+      <action dev="gormap" type="update">
+        Added option to disable sending of "Expires" HTTP header on
+        XSLT views.
+      </action>
+
       <action dev="gormap" type="fix">
         Collection timestamps are now correctly updated on resource
         creations and deletions.

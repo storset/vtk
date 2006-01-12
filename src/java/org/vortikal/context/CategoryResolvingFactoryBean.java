@@ -59,7 +59,7 @@ import org.vortikal.web.service.Service;
  * 
  *   <li><code>category</code> - required {@link String} describing
  *   the category of the services
- *   <li><code>class</code> - required bean {@link Class type}. Must
+ *   <li><code>clazz</code> - required bean {@link Class type}. Must
  *    implement {@link Categorizable}.  If the class implements {@link
  *    Ordered}, the returned set will be sorted.
  *   <li><code>category</code> - an optional {@link Comparator},

@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
@@ -47,7 +48,10 @@ import org.vortikal.index.IndexConstants;
 import org.vortikal.index.ModifiableResults;
 import org.vortikal.index.Results;
 import org.vortikal.index.query.AbstractSearcher;
+import org.vortikal.index.query.And;
 import org.vortikal.index.query.Condition;
+import org.vortikal.index.query.Not;
+import org.vortikal.index.query.Or;
 import org.vortikal.index.query.ParseException;
 import org.vortikal.index.query.ParsedQueryCondition;
 import org.vortikal.index.query.Query;
@@ -62,6 +66,10 @@ import org.vortikal.index.query.UnsupportedConditionException;
  * New searcher implementation based on searcher interface from vortikal sandbox.
  * TODO: Support more conditions, but make sure we keep most of the flexibility
  *       of Lucene's own query classes.
+ *       
+ * TODO: Integrate queries which can utilize parent resource ids for greatly improving efficiency
+ *       when listing contents based on URI (URIQuery). Such queries can be used for directory-like
+ *       listing of resources.
  * 
  * @author oyviste
  *
@@ -76,8 +84,8 @@ public class SearcherImpl extends AbstractSearcher
     
     public void afterPropertiesSet() {
         if (index == null) {
-            throw new BeanInitializationException("Property 'index' not set.");
-        }
+            throw new BeanInitializationException("Required property 'index' not set.");
+        } 
     }
     
     public Results execute(String token, Query query) 
@@ -92,17 +100,16 @@ public class SearcherImpl extends AbstractSearcher
     
     public Results execute(String token, Query query, int maxResults, int cursor) 
         throws QueryException {
-        IndexSearcher searcher = null;
+        IndexReader reader = null;
         try {
-            searcher = index.getIndexSearcher();
-            org.apache.lucene.search.Query luceneQuery =
-                                prepareLuceneQuery(query.getCondition());
+            reader = index.getReadOnlyIndexReader();
+            IndexSearcher searcher = new IndexSearcher(reader);
 
             Sort sort = query.getSort();
-
+            org.apache.lucene.search.Query luceneQuery = prepareLuceneQuery(
+                    query.getCondition(), reader);
 
             Hits hits = null;
-
             if (sort != null) {
                 org.apache.lucene.search.Sort luceneSort = null;
 
@@ -110,35 +117,30 @@ public class SearcherImpl extends AbstractSearcher
 
                 if (sortFields != null && sortFields.length > 0) {
 
-
-                    org.apache.lucene.search.SortField[] luceneSortFields =
-                        new org.apache.lucene.search.SortField[sortFields.length];
+                    org.apache.lucene.search.SortField[] luceneSortFields = new org.apache.lucene.search.SortField[sortFields.length];
 
                     for (int i = 0; i < sortFields.length; i++) {
                         luceneSortFields[i] = new org.apache.lucene.search.SortField(
-                            sortFields[i].getField(), sortFields[i].isInvert());
+                                sortFields[i].getField(), sortFields[i].isInvert());
                     }
                     luceneSort = new org.apache.lucene.search.Sort(luceneSortFields);
                 }
-
                 hits = searcher.search(luceneQuery, null, luceneSort);
             } else {
                 hits = searcher.search(luceneQuery);
             }
-
-            ModifiableResults results = new CachedLuceneResults(hits, index.getIndexBeanClass(), 
-                                                        maxResults, cursor);
+            
+            ModifiableResults results = new CachedLuceneResults(hits, index.getIndexBeanClass(), maxResults, cursor);
 
             int rawSize = results.getSize();
-
 
             super.applySecurityFilter(results, token);
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Searched for query: '" + query + "': raw size: "
-                             + rawSize + ", after processing: " + results.getSize());
+                        + rawSize + ", after processing: " + results.getSize());
             }
-            
+
             return results;
         } catch (IOException io) {
             throw new QueryException("IOException while performing query: " + io.getMessage());
@@ -146,17 +148,29 @@ public class SearcherImpl extends AbstractSearcher
             throw new QueryException("Overflow in wildcard or boolean " + 
                           "query (too many clauses), please rephrase: " + tmc.getMessage());
         } finally {
-            if (searcher != null) {
+            if (reader != null) {
                 try {
-                    searcher.close();
+                    reader.close();
                 } catch (IOException io) {
-                    logger.warn("IOException while closing index searcher: " + io.getMessage());
+                    logger.warn("IOException while closing index reader: " + io.getMessage());
                 }
             }
         }
     }
 
-    private org.apache.lucene.search.Query prepareLuceneQuery(Condition condition) 
+    /**
+     * Construct an {@link org.apache.lucene.search.Query} object tree from a
+     * {@link org.vortikal.index.query.Condition}-tree.
+     * @param condition
+     * @param reader
+     * @return An <code>org.apache.lucene.search.Query</code> object tree which
+     *         can be passed directly to a Lucene searcher.
+     * @throws IOException
+     * @throws UnsupportedConditionException If an unsupported <code>Condition</code> type
+     *         is encountered in the tree.
+     */
+    private org.apache.lucene.search.Query prepareLuceneQuery(Condition condition, 
+                                                              IndexReader reader) 
         throws IOException, UnsupportedConditionException {
         if (condition == null) {
             throw new IllegalArgumentException("Condition is null.");
@@ -171,8 +185,7 @@ public class SearcherImpl extends AbstractSearcher
             
             try {
                 if (pqc.isMultiField()) {
-                    String[] fields = (String[]) 
-                        index.getReadOnlyIndexReader().getFieldNames(true).toArray(new String[]{});
+                    String[] fields = (String[]) reader.getFieldNames(true).toArray(new String[]{});
                     return MultiFieldQueryParser.parse(expression, fields, 
                             index.getAnalyzer());
                 } else {
@@ -194,10 +207,36 @@ public class SearcherImpl extends AbstractSearcher
             }
             
             return new TermQuery(new Term(field, text));
+        } else if (condition instanceof Not) {
+            BooleanQuery bq = new BooleanQuery();
+            bq.add(prepareLuceneQuery(((Not)condition).getCondition(), reader), false, true);
+            return bq;
+        } else if (condition instanceof Or) {
+            // Process left and right conditions
+            org.apache.lucene.search.Query left = 
+                  prepareLuceneQuery(((Or)condition).getLeftCondition(), reader);
+            org.apache.lucene.search.Query right =
+                  prepareLuceneQuery(((Or)condition).getRightCondition(), reader);
+
+            // 'OR' the left and right conditions
+            BooleanQuery bq = new BooleanQuery();
+            bq.add(left, false, false);
+            bq.add(right, false, false);
+            return bq;
+        } else if (condition instanceof And) {
+            // 'AND' left and right conditions
+            org.apache.lucene.search.Query left = 
+                  prepareLuceneQuery(((And)condition).getLeftCondition(), reader);
+            org.apache.lucene.search.Query right =
+                  prepareLuceneQuery(((And)condition).getRightCondition(), reader);
+
+            BooleanQuery bq = new BooleanQuery();
+            bq.add(left, true, false);
+            bq.add(right, true, false);
+            return bq;
         }
         
         throw new UnsupportedConditionException("Condition not supported.", condition);
-        
     }
     
     public void setDefaultField(String defaultField) {

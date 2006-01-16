@@ -47,9 +47,9 @@ public class BasenameExcludeFilterCriterion implements FilterCriterion {
         if (this.baseNames != null) {
             String baseName = uri.substring(uri.lastIndexOf('/')+1, uri.length());
             return this.baseNames.contains(baseName);
-        } else {
-            return false;
-        }
+        } 
+    
+        return false;
     }
 
     public void setBaseNames(Set baseNames) {

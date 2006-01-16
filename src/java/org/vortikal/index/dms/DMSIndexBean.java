@@ -174,6 +174,23 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
+    
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
 
+        buffer.append("DMSIndexBean[");
+        buffer.append("creationDate='").append(creationDate).append("',");
+        buffer.append("lastModified='").append(lastModified).append("',");
+        buffer.append("schemaId='").append(schemaId).append("',");
+        buffer.append("owner='").append(owner).append("',");
+        buffer.append("lastModifiedBy='").append(lastModifiedBy).append("',");
+        buffer.append("contentType='").append(contentType).append("',");
+        buffer.append("encoding='").append(encoding).append("',");
+        buffer.append("contentLength='").append(contentLength).append("',");
+        buffer.append("davResourceType='").append(davResourceType).append("',");
+        buffer.append("vortexResourceType='").append(vortexResourceType).append("']");
+        
+        return buffer.toString();
+    }
 
 }

@@ -31,10 +31,9 @@
 package org.vortikal.index.observation;
 
 import java.io.IOException;
-import java.util.Arrays;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;

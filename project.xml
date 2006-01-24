@@ -604,6 +604,16 @@
           <include>**/*</include>
         </includes>
       </resource>
+      <!-- Include Standard Kupu resources in the jar/war
+           under '/vortikal/resources/kupu-resources'. -->
+      <resource>
+        <directory>ext/kupu/v1.3.1</directory>
+        <targetPath>/vortikal/resources/kupu-resources</targetPath>
+        <includes>
+          <include>common/**</include>
+          <include>i18n/**</include>
+        </includes>
+      </resource>
     </resources>
   </build>
   <reports>

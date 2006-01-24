@@ -12,6 +12,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Integrated the Kupu client-side HTML editor as an extension
+        (http://kupu.oscom.org).
+      </action>
+
+      <action dev="gormap" type="add">
         Added option to use name based view resolving in error
         handlers instead of having to supply a view object directly.
       </action>
@@ -21,18 +26,13 @@
       </action>
 
       <action dev="gormap" type="add">
-        Added support for indexing (from the Vortex project at UiO):
+        Added support for indexing (from the Vortex project at the
+        University of Oslo):
         http://www.usit.uio.no/it/vortex/dokumentasjon/DMS/
       </action>
 
       <action dev="gormap" type="add">
         Added default set of bean configuration files
-      </action>
-
-      <action dev="storset" type="add">
-        Added validation of document before saving in xml
-        edit. Changed exception handling to propagate
-        validation/saving exceptions.
       </action>
 
       <action dev="gormap" type="add">
@@ -57,7 +57,6 @@
         initialization.
       </action>
 
-
       <action dev="gormap" type="add">
         Added a repository event trigger that invokes a method on a
         configurable object on repository events. Supports filtering
@@ -65,12 +64,10 @@
         support a list of RepositoryAssertions.) 
       </action>
 
-
       <action dev="gormap" type="update">
         SimpleCacheImpl now maintains its own cleanup thread if
         the expires-timeout is specified.
       </action>
-
 
       <action dev="gormap" type="update">
         The default PrincipalManager implementation now has the option
@@ -88,9 +85,31 @@
       </action>
     </release>
 
-    <release version="0.2.1-SNAPSHOT" date="In SVN" description="Release 0.2.1">
+
+    <release version="0.2.2-SNAPSHOT" date="In SVN" description="Release 0.2.2">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+
+    <release version="0.2.1" date="In SVN" description="Release 0.2.1">
+
+      <action dev="storset" type="add">
+        Added validation of document before saving in xml
+        edit. Changed exception handling to propagate
+        validation/saving exceptions.
+      </action>
+
+      <action dev="oyviste" type="update">
+        The current collection is now included in the WebDAV PROPFIND
+        response on requests with the "depth" parameter set to
+        1. Fixes WebDAV mounting in gnome-vfs.
+      </action>
+
+      <action dev="gormap" type="update">
+        Added option to disable sending of "Expires" HTTP header on
+        XSLT views.
+      </action>
 
       <action dev="gormap" type="fix">
         Collection timestamps are now correctly updated on resource
@@ -98,7 +117,6 @@
       </action>
 
     </release>
-
 
 
     <release version="0.2" date="2005-11-22" description="Release 0.2">

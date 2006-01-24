@@ -30,64 +30,82 @@
  */
 package org.vortikal.web.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.util.StringUtils;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
 
 /**
  * Assertion that matches on the request hostname.
  *
- * <p>Configurable properties
+ * <p>Configurable JavaBean properties
  * <ul>
  *   <li><code>hostName</code> - the hostname to match. A value of
- *   <code>*</code> means that any hostname matches.
- *   <li><code>additionalHostNames</code> - a {@link Set} of
- *   additional host names to match for. When generating URLs, a
- *   hostname specified here has effect only if it matches that of the
- *   request
+ *   <code>*</code> means that any hostname matches. A comma separated
+ *   list of hostnames is also allowed.
  * </ul>
  */
 public class RequestHostNameAssertion implements Assertion {
 
-    private String hostName;
-    private Set additionalHostNames;
     
+    private String defaultHostName;
+    private String[] hostNames;
+
 	
     public void setHostName(String hostName) {
-        this.hostName = hostName;
+        if (hostName == null || hostName.trim().equals("")) {
+            throw new IllegalArgumentException("Illegal hostname: '" + hostName + "'");
+        }
+        
+        this.hostNames = StringUtils.tokenizeToStringArray(hostName, ", ");
+        if (this.hostNames.length == 0) {
+            throw new IllegalArgumentException(
+                "Unable to find host name in argument: '" + hostName + "'");
+        }
+
+        this.defaultHostName = this.hostNames[0];
+        if ("*".equals(this.defaultHostName)) {
+            this.defaultHostName = org.vortikal.util.net.NetUtils.guessHostName();
+        }
     }
 
 
-    public void setAdditionalHostNames(Set additionalHostNames) {
-        this.additionalHostNames = additionalHostNames;
+    public String[] getHostNames() {
+        return this.hostNames;
     }
     
 
-    /**
-     * Gets the host name. If the configuration parameter
-     * <code>hostName</code> has a value of <code>*</code>, the
-     * current host's default host name is returned.
-     *
-     */
-    public String getHostName() {
-        if ("*".equals(this.hostName)) {
-            return org.vortikal.util.net.NetUtils.guessHostName();
-        }
-        return hostName;
-    }
-
-
     public boolean conflicts(Assertion assertion) {
-        if (assertion instanceof RequestHostNameAssertion) {
-            String otherHostName = ((RequestHostNameAssertion)assertion).getHostName();
-            if ("*".equals(this.hostName) || "*".equals(otherHostName)) {
-                return false;
+        if (assertion instanceof RequestHostNameAssertion) { 
+            boolean conflict = true;
+
+           for (int i = 0; i < this.hostNames.length; i++) {
+                if ("*".equals(this.hostNames[i])) {
+                    conflict = false;
+                    break;
+                }
+                String[] otherHostNames = ((RequestHostNameAssertion)assertion).getHostNames();
+                for (int j = 0; j < otherHostNames.length; j++) {
+                    if ("*".equals(otherHostNames[j])) {
+                        conflict = false;
+                        break;
+                    }
+
+                    if (this.hostNames[i].equals(otherHostNames[j])) {
+                        conflict = false;
+                        break;
+                    }
+                }
             }
-            return ! (this.hostName.equals(otherHostName));
+           return conflict;
+
         }
         return false;
     }
@@ -95,36 +113,38 @@ public class RequestHostNameAssertion implements Assertion {
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
 
-        url.setHost(this.getHostName());
+        url.setHost(this.defaultHostName);
 
-        if (this.additionalHostNames != null) {
-            
-            RequestContext requestContext = RequestContext.getRequestContext();
+        RequestContext requestContext = RequestContext.getRequestContext();
 
+        if (requestContext != null) {
             String requestHostName = requestContext.getServletRequest().getServerName();
-            if (this.additionalHostNames.contains(requestHostName)) {
-                url.setHost(requestHostName);
+            for (int i = 0; i < this.hostNames.length; i++) {
+                if (requestHostName.equals(this.hostNames[i])) {
+                    url.setHost(requestHostName);
+                    break;
+                }
             }
         }
+
         return true;
     }
 
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        if ("*".equals(this.hostName)) {
-            return true;
-        }
 
-        String requestHostName = request.getServerName();
-        if (this.hostName.equals(requestHostName)) {
-            return true;
-        }
+        for (int i = 0; i < this.hostNames.length; i++) {
 
-        if (this.additionalHostNames != null &&
-            this.additionalHostNames.contains(requestHostName)) {
-            return true;
-        }
+            if ("*".equals(this.hostNames[i])) {
+                return true;
+            }
 
+            String requestHostName = request.getServerName();
+            if (this.hostNames[i].equals(requestHostName)) {
+                return true;
+            }
+
+        }
         return false;
     }
 
@@ -133,7 +153,7 @@ public class RequestHostNameAssertion implements Assertion {
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; hostName = ").append(this.hostName);
+        sb.append("; hostNames = ").append(java.util.Arrays.asList(this.hostNames));
 
         return sb.toString();
     }

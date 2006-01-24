@@ -36,6 +36,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 
+import org.springframework.util.StringUtils;
+
 
 /**
  * Assertion on the URL protocol fragment.
@@ -44,10 +46,7 @@ import org.vortikal.web.RequestContext;
  * <ul>
  *   <lI><code>protocol</code> - the name of the protocol. Legal
  *   values are <code>*</code> (match any), <code>http</code> and
- *   <code>https</code>.
- *   <li><code>additionalProtocol</code> - an additional protocol to
- *   check. This protocol influences URL generation only if it matches
- *   the port of the servlet request.
+ *   <code>https</code>. A comma separated list of values is accepted.
  * </ul>
  */
 public class RequestProtocolAssertion implements Assertion {
@@ -57,47 +56,52 @@ public class RequestProtocolAssertion implements Assertion {
     private final static String PROTO_ANY = "*";
     
 
-    private String protocol;
-	
-    private String additionalProtocol;
-    
-
-    public String getProtocol() {
-        return this.protocol;
-    }
-    
+    private String[] protocols;
 
     public void setProtocol(String protocol) {
-        if (PROTO_HTTP.equals(protocol) || PROTO_HTTPS.equals(protocol)
-                                        || PROTO_ANY.equals(protocol)) {
-            this.protocol = protocol;
-
-        } else {
+        if (protocol == null || protocol.trim().equals("")) {
+            throw new IllegalArgumentException("Illegal protocol value: '" + protocol + "'");
+        }
+        
+        this.protocols = StringUtils.tokenizeToStringArray(protocol, ", ");
+        if (this.protocols.length == 0) {
             throw new IllegalArgumentException(
-                "Values '" + PROTO_ANY + "', '" + PROTO_HTTP
-                + "' and '" + PROTO_HTTPS + "' are supported for the 'protocol' property");
+                "Unable to find protocol in argument: '" + protocol + "'");
+        }
+
+        for (int i = 0; i < this.protocols.length; i++) {
+            if (PROTO_HTTP.equals(this.protocols[i]) || PROTO_HTTPS.equals(this.protocols[i])
+                || PROTO_ANY.equals(this.protocols[i])) {
+                continue;
+            }
+            throw new IllegalArgumentException("Illegal protocol value: '" + protocol + "'");
         }
     }
-
-    public void setAdditionalProtocol(String protocol) {
-        if (PROTO_HTTP.equals(protocol) || PROTO_HTTPS.equals(protocol)) {
-            this.additionalProtocol = protocol;
-        } else {
-            throw new IllegalArgumentException(
-                "Values '" + PROTO_HTTP + "' and '" + PROTO_HTTPS
-                + "' are supported for the 'additionalProtocol' property");
-        }
-    }
+    
 
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestProtocolAssertion) {
-            if (PROTO_ANY.equals(this.protocol) ||
-                PROTO_ANY.equals(((RequestProtocolAssertion) assertion).getProtocol())) {
-                return false;
-            }
+            boolean conflict = true;
 
-            return ! (this.protocol.equals(
-                          ((RequestProtocolAssertion)assertion).getProtocol()));
+           for (int i = 0; i < this.protocols.length; i++) {
+               if (PROTO_ANY.equals(this.protocols[i])) {
+                    conflict = false;
+                    break;
+                }
+                String[] otherProtocols = ((RequestProtocolAssertion)assertion).protocols;
+                for (int j = 0; j < otherProtocols.length; j++) {
+                    if (PROTO_ANY.equals(otherProtocols[j])) {
+                        conflict = false;
+                        break;
+                    }
+
+                    if (this.protocols[i].equals(otherProtocols[j])) {
+                        conflict = false;
+                        break;
+                    }
+                }
+            }
+           return conflict;
         }
         return false;
     }
@@ -105,40 +109,38 @@ public class RequestProtocolAssertion implements Assertion {
 
     public boolean processURL(URL url, Resource resource,
                               Principal principal, boolean match) {
-        if (!PROTO_ANY.equals(this.protocol)) {
-            url.setProtocol(this.protocol);
-        }
-        
-        if (this.additionalProtocol != null && !PROTO_ANY.equals(this.protocol)) {
 
-            RequestContext requestContext = RequestContext.getRequestContext();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext != null) {
+
             String requestProtocol = getProtocol(requestContext.getServletRequest());
-            
-            if (this.additionalProtocol.equals(requestProtocol)) {
-                url.setProtocol(requestProtocol);
+
+            for (int i = 0; i < this.protocols.length; i++) {
+
+                if (this.protocols[i].equals(requestProtocol)) {
+                    url.setProtocol(requestProtocol);
+                }
             }
         }
-
         return true;
     }
 
 
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
-        if (PROTO_ANY.equals(this.protocol)) {
-            return true;
-        }
 
         String requestProtocol = getProtocol(request);
-        if (this.protocol.equals(requestProtocol)) {
-            return true;
-        }
 
-        if (this.additionalProtocol != null
-            && this.additionalProtocol.equals(requestProtocol)) {
-            return true;
-        }
+        for (int i = 0; i < this.protocols.length; i++) {
+            if (PROTO_ANY.equals(this.protocols[i])) {
+                return true;
+            }
 
+            if (this.protocols[i].equals(requestProtocol)) {
+                return true;
+            }
+        }
+            
         return false;
     }
 
@@ -147,7 +149,7 @@ public class RequestProtocolAssertion implements Assertion {
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; protocol = ").append(this.protocol);
+        sb.append("; protocol = ").append(java.util.Arrays.asList(this.protocols));
 
         return sb.toString();
     }

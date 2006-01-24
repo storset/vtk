@@ -36,6 +36,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 
+import org.springframework.util.StringUtils;
+
 
 /**
  * Assertion matching on request port numbers.
@@ -43,52 +45,58 @@ import org.vortikal.web.RequestContext;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>port</code> - either the string <code>*</code> meaning
- *   'match all ports', or a port number (a positive integer)
- *   <li><code>additionaalport</code> - a positive integer specifying
- *   an additional port to match. This port only has effect on URL
- *   generation if it matches the port in the request.
+ *   'match all ports', or a comma separated list of port numbers
+ *   (positive integers)
  * </ul>
  */
 public class RequestPortAssertion
   implements Assertion {
 
-    private int port = -1;
+    private static final int PORT_ANY = -1;
+
+    private int[] ports;
 	
-    private int additionalPort = -1;
 
     public void setPort(String port) {
 		
-        if (!"*".equals(port)) {
-            this.port = Integer.parseInt(port);
-            if (this.port <= 0) throw new IllegalArgumentException(
-                "Server port number must be a positive integer");
-        }
-    }
-	
-    public void setAdditionalPort(int port) {
-		
-        if (port <= 0) {
-            throw new IllegalArgumentException(
-                "Port number must be a number greater than zero");
+        String[] portsArray  = StringUtils.tokenizeToStringArray(port, ", ");
+        this.ports = new int[portsArray.length];
+
+        for (int i = 0; i < portsArray.length; i++) {
+            if ("*".equals(portsArray[i])) {
+                this.ports[i] = PORT_ANY;
+            } else {
+                this.ports[i] = Integer.parseInt(port);
+                if (this.ports[i] <= 0) throw new IllegalArgumentException(
+                    "Server port number must be a positive integer");
+            }
         }
 
-        this.additionalPort = port;
     }
-	
-
-    public int getPortNumber() {
-        return this.port;
-    }
-	
 
     public boolean conflicts(Assertion assertion) {
 
         if (assertion instanceof RequestPortAssertion) {
-            if (this.port == -1 ||
-                ((RequestPortAssertion)assertion).getPortNumber() == -1) {
-                return false;
+            boolean conflict = true;
+            for (int i = 0; i < this.ports.length; i++) {
+                if (PORT_ANY == this.ports[i]) {
+                    conflict = false;
+                    break;
+                }
+                int[] otherPorts = ((RequestPortAssertion)assertion).ports;
+                for (int j = 0; j < otherPorts.length; j++) {
+                    if (PORT_ANY == otherPorts[j]) {
+                        conflict = false;
+                        break;
+                    }
+
+                    if (this.ports[i] == otherPorts[j]) {
+                        conflict = false;
+                        break;
+                    }
+                }
             }
-            return (this.port  != ((RequestPortAssertion)assertion).getPortNumber());
+            return conflict;
         }
         return false;
     }
@@ -96,12 +104,15 @@ public class RequestPortAssertion
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-		
         sb.append(super.toString());
-        if (this.port == -1) {
-            sb.append("; port = *");
-        } else {
-            sb.append("; port = ").append(this.port);
+        sb.append("; port = ");
+        for (int i = 0; i < this.ports.length; i++) {
+            if (i != 0) sb.append(", ");
+            if (this.ports[i] != PORT_ANY) {
+                sb.append(this.ports[i]);
+            } else {
+                sb.append("*");
+            }
         }
         return sb.toString();
     }
@@ -109,18 +120,25 @@ public class RequestPortAssertion
 
     public boolean processURL(URL url, Resource resource, Principal principal,
                               boolean match) {
-        if (this.port != -1) {
 
-            url.setPort(new Integer(this.port));
 
+        if (this.ports[0] != PORT_ANY) {
+
+
+            url.setPort(new Integer(this.ports[0]));
         }
 
-        if (this.additionalPort != -1) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext != null) {
 
-            RequestContext requestContext = RequestContext.getRequestContext();
             int requestPort = requestContext.getServletRequest().getServerPort();
-            if (this.additionalPort == requestPort) {
-                url.setPort(new Integer(requestPort));
+
+
+            for (int i = 0; i < this.ports.length; i++) {
+                if (this.ports[i] == requestPort) {
+                    url.setPort(new Integer(requestPort));
+                    break;
+                }
             }
         }
         return true;
@@ -128,14 +146,15 @@ public class RequestPortAssertion
 
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        if (this.port == -1) {
-            return true;
-
-        } else if (this.additionalPort == request.getServerPort()) {
-            return true;
+        for (int i = 0; i < this.ports.length; i++) {
+            if (this.ports[i] == PORT_ANY) {
+                return true;
+            }
+            if (this.ports[i] == request.getServerPort()) {
+                return true;
+            }
         }
-
-        return port == request.getServerPort();
+        return false;
     }
 
 }

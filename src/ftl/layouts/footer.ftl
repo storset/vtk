@@ -8,6 +8,7 @@
   -
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/version.ftl" as vrsn />
 
       </div>  <#-- End of <div class="content"> -->
 
@@ -16,16 +17,6 @@
   </div>  <#-- End of <div class="body"> -->
 
   <div class="footer">
-    <#if version?exists>
-    <div class="versionInfo">
-      <@vrtx.msg "version.shortDisplaystring",
-      "version", [version.frameworkTitle, version.version]/>
-
-      <!-- (<@vrtx.msg "version.displaystring",
-      "version", [version.frameworkTitle, version.version,
-      version.buildDate?datetime?string.long, version.buildHost] /> ) -->
-      <!-- (Vortikal ${version.vortikalVersion}) -->
-    </div>
-    </#if>
+    <@vrsn.displayVersion version=version />
     <#include "language.ftl" />
   </div>

@@ -374,58 +374,61 @@ public class HttpDigestAuthenticationHandler
         Principal principal = this.principalManager.getPrincipal(username);
         boolean correctDigest = false;
 
+
+        if (principal == null) {
+            throw new AuthenticationException(
+                "Unable to authenticate principal using HTTP/Digest for request"
+                + request + ": no principal found");
+        }
+
+        if (!this.principalManager.validatePrincipal(principal)) {
+            throw new AuthenticationException(
+                "Unknown principal in HTTP/Digest request: " + principal);
+        }
+
         // FIXME: Why is getMD5HashString() deprecated?
-        String componentA1 = null;
-        if (principal != null) {
-            componentA1 = this.principalStore.getMD5HashString(principal);
+        String componentA1 = this.principalStore.getMD5HashString(principal);
+
+        if (componentA1 == null) {
+            throw new AuthenticationException(
+                "Password hash for principal " + principal + " not found");
         }
 
         String componentA2 = MD5.md5sum(request.getMethod() + ":" + uri);
         
-        if (componentA1 != null) {
-                
-            StringBuffer b = new StringBuffer();
-            b.append(componentA1);
+        StringBuffer b = new StringBuffer();
+        b.append(componentA1);
 
-            b.append(":").append(nonce);
-            if (nc != null) b.append(":").append(nc);
-            if (cnonce != null) b.append(":").append(cnonce);
-            if (qop != null) b.append(":").append(qop);
-            b.append(":").append(componentA2);
+        b.append(":").append(nonce);
+        if (nc != null) b.append(":").append(nc);
+        if (cnonce != null) b.append(":").append(cnonce);
+        if (qop != null) b.append(":").append(qop);
+        b.append(":").append(componentA2);
                 
-            String serverDigest = MD5.md5sum(b.toString());
+        String serverDigest = MD5.md5sum(b.toString());
       
-            if (logger.isDebugEnabled()) {
-                logger.debug("client digest: " + response);
-                logger.debug("server digest: " + serverDigest);
-            }
+        if (logger.isDebugEnabled()) {
+            logger.debug("client digest: '" + response
+                         + "', server digest: '" + serverDigest + "'");
+        }
                 
-            correctDigest = serverDigest.equals(response);
-
-            if (correctDigest) {
-
-                if (this.maintainState && stateEntry == null) {
-
-                    stateEntry = new StateEntry(null, new Date(), nonce, 1, opaque);
-                    stateEntry.setStale(true);
-                    this.stateMap.put(nonce + ":" + opaque, stateEntry);
-                    throw new AuthenticationException(
-                        "Nothing known about request  " + request);
-
-                } else if (this.maintainState && stateEntry != null && stateEntry.isStale()) {
-                    throw new AuthenticationException(
-                        "Stale nonce header field in authentication request: " + request);
-                } 
-
-                principal = this.principalManager.getPrincipal(username);
-            }
+        if (!serverDigest.equals(response)) {
+            throw new AuthenticationException("Authentication failure for principal "
+                                              + principal + " (incorrect password)");
         }
-            
-        if (principal == null) {
+
+        if (this.maintainState && stateEntry == null) {
+
+            stateEntry = new StateEntry(null, new Date(), nonce, 1, opaque);
+            stateEntry.setStale(true);
+            this.stateMap.put(nonce + ":" + opaque, stateEntry);
             throw new AuthenticationException(
-                "Unable to authenticate principal using HTTP/Digest for request"
-                + request);
-        }
+                "Nothing known about request  " + request);
+
+        } else if (this.maintainState && stateEntry != null && stateEntry.isStale()) {
+            throw new AuthenticationException(
+                "Stale nonce header field in authentication request: " + request);
+        } 
 
         if (logger.isDebugEnabled()) {
             logger.debug("Successfully authenticated principal " + principal);

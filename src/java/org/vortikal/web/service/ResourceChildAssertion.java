@@ -58,7 +58,7 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
     private String trustedToken;
     
     public boolean matches(Resource resource, Principal principal) {
-        if (!resource.isCollection()) {
+        if (resource == null || !resource.isCollection()) {
             return false;
         }
 

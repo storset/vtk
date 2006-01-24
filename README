@@ -20,8 +20,8 @@ are necessary:
 4. Start resin using the configuration file in 'target/resin.conf'. 
 
 5. You should now be able to access the web service on
-   http:localhost:9321/ and the WebDAV service on
-   http://localhost:9322/. Log in as 'root@localhost:fish'.
+   http:localhost:9322/ and the WebDAV service on
+   http://localhost:9321/. Log in as 'root@localhost:fish'.
 
 6. See the default configuration file 'conf/beans/vortikal.properties'
    for descriptions of the various configuration settings.

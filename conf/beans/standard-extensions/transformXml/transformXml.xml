@@ -59,7 +59,7 @@
   </bean>
   
 
-  <bean id="viewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+  <bean id="transformXmlViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="transformXmlResource"

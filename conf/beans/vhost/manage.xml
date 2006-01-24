@@ -1386,6 +1386,12 @@
       items. It uses three filters for head, header and footer
     </description>
     <property name="propagateExceptions" value="true" />
+    <property name="staticHeaders">
+      <map>
+        <entry key="Cache-Control" value="no-cache, must-revalidate" />
+        <entry key="Expires" value="0" />
+      </map>
+    </property>
     <property name="contentFilters">
       <list>
         <ref bean="manageHeadContentFilter" />
@@ -1400,7 +1406,7 @@
         <ref bean="tabsProvider" />
         <ref bean="resourceContextProvider" />
 
-        <!--ref bean="versionProvider" /-->
+        <ref bean="versionProvider" />
 
         <ref bean="resourceMenuProvider" /> 
         <ref bean="switchLocaleActionsProvider" />
@@ -1641,6 +1647,27 @@
     <property name="category" value="resourceMenu" />
   </bean>
 
+  <bean id="manageBreadCrumbProvider" 
+        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+        parent="requestLocalRepositoryAware">
+    <description>
+      Breadcrumb provider that generates links to the manage service
+    </description>
+    <property name="breadcrumbName" value="manageBreadCrumb" />
+    <property name="service" ref="manageService"/>
+    <property name="titleOverrideProperties" ref="defaultBreadcrumbTitlePropertyList" />
+  </bean>
+
+
+  <bean id="versionProvider" 
+        class="org.vortikal.web.referencedata.provider.ParameterizableBeanProvider" >
+    <property name="modelName" value="version" />
+    <property name="object">
+      <bean class="org.vortikal.util.Version">
+      </bean>
+    </property>
+  </bean>
+
 
   <!-- MANAGE assertions -->
 
@@ -1742,7 +1769,7 @@
         <ref bean="leaveAdminLinkProvider" />
         <ref bean="tabsProvider" />
         <ref bean="resourceContextProvider" />
-        <!--ref bean="versionProvider" /-->
+        <ref bean="versionProvider" />
         <ref bean="manageBreadCrumbProvider" />
         <ref bean="lockUnlockActionsProvider" />            
         <ref bean="switchLocaleActionsProvider" />

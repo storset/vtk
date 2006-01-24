@@ -86,11 +86,15 @@
 
   <bean id="webHostNameAssertion" class="org.vortikal.web.service.RequestHostNameAssertion">
     <property name="hostName" value="${webHostName}" />
+
+<!--
+    <property name="hostName" value="${webHostName}" />
     <property name="additionalHostNames">
       <set>
         <value>${secondaryWebHostName}</value>
       </set>
     </property>
+-->
   </bean>
 
   <!-- Logout service -->
@@ -380,13 +384,11 @@
   <bean id="webProtocolAssertion"
         class="org.vortikal.web.service.RequestProtocolAssertion">
     <property name="protocol" value="${webProtocol}" />
-    <property name="additionalProtocol" value="${secondaryWebProtocol}" />
   </bean>
 
   <bean id="webPortAssertion"
         class="org.vortikal.web.service.RequestPortAssertion">
     <property name="port" value="${webPort}" />
-    <property name="additionalPort" value="${secondaryWebPort}" />
   </bean>
 
 

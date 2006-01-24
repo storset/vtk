@@ -58,6 +58,10 @@
    <postGoal name="war:webapp">
 
     <u:properties file="${maven.conf.dir}/beans/vortikal.properties"/>
+    <!-- Avoid shadowing of variables in the build.properties file: -->
+    <u:available file="${basedir}/build.properties">
+      <u:properties file="${basedir}/build.properties"/>
+    </u:available>
 
     <u:tokenize var="classpaths" delim=",">${classpath}</u:tokenize>
     <u:tokenize var="standardExtensionFiles" delim=",">${standardExtensions}</u:tokenize>

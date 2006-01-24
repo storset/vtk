@@ -28,16 +28,11 @@
         <entry key="displayResource">
           <ref bean="displayResourceView" />
         </entry>
-        <entry key="transformRssResource">
-          <ref bean="transformRssView" />
-        </entry>
         <entry key="collectionListing">
           <ref bean="collectionListingView" />
         </entry>
         <entry key="displayHTMLResource" 
                value-ref="displayResourceView" />
-        <entry key="transformXmlResource"
-               value-ref="transformXmlView" />
       </map>
     </property>
   </bean>
@@ -51,51 +46,12 @@
     <property name="includeExpiresHeader" value="true" />
   </bean> 
 
-  <bean id="transformXmlView" 
-        class="org.vortikal.web.view.xslt.ResourceXsltView">
-    <property name="linkConstructor" ref="linkConstructor" />
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="includeContentLanguageHeader" value="true" />
-    <property name="referenceDataProviders" ref="referenceDataProvidersForTransformXmlView" />
-
-  </bean>
-
-  <bean id="referenceDataProvidersForTransformXmlView"
-        class="org.springframework.beans.factory.config.ListFactoryBean">
-    <property name="sourceList">
-      <list>
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-          parent="requestLocalRepositoryAware">
-          <property name="service" ref="rssTransformService" />
-          <property name="modelName" value="xsltParameters" />
-          <property name="urlName" value="RSS-URL" />
-        </bean>
-        <ref bean="viewXslParameterProvider" />
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-  </bean>
-  
-
   <bean id="httpOptionsView"
         class="org.vortikal.web.view.StandardHttpView">
     <property name="headers">
       <map>
         <entry key="Allow" value="GET, HEAD, POST, OPTIONS, TRACE" />
       </map>
-    </property>
-  </bean>
-
-  <bean id="transformRssView" class="org.vortikal.web.view.xslt.ResourceXsltView">
-    <property name="linkConstructor" ref="linkConstructor" />
-    <property name="transformerManager" ref="rssTransformerManager" />
-    <property name="referenceDataProviders">
-      <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-            parent="requestLocalRepositoryAware">
-        <property name="service" ref="viewService" />
-        <property name="modelName" value="xsltParameters" />
-        <property name="urlName" value="VIEW-URL" />
-      </bean>
     </property>
   </bean>
 
@@ -328,14 +284,6 @@
     <property name="retrieveForProcessing" value="true" />
   </bean>
 
-  <bean id="uhtmlResourceContextProvider" 
-        class="org.vortikal.web.referencedata.provider.ResourceContextProvider" 
-        parent="requestLocalRepositoryAware">
-    <property name="retrieveForProcessing" value="true" />
-    <property name="getResourceFromModel" value="true" />
-    <property name="modelName" value="uhtmlResourceContext" />
-  </bean>
-
   <bean id="collectionMenuProvider" 
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="collectionActionServicesFactory" />
@@ -394,17 +342,6 @@
     <property name="category" value="lockUnlockAction" />
   </bean>
 
-  <bean id="viewXslParameterProvider"
-    class="org.vortikal.web.referencedata.provider.ViewXslProvider"
-    parent="requestLocalRepositoryAware">
-    <description>
-      This reference data provider adds commonly used resource
-      metadata to the model, such as creation time, last modified,
-      etc. for use when transforming XML documents.
-    </description>
-    <property name="adminService" ref="manageService" />
-  </bean>
-
   <bean id="viewBreadCrumbProvider"
         class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
         parent="requestLocalRepositoryAware">
@@ -442,118 +379,6 @@
      
    <bean id="vortikalFreemarkerTemplateLocation" class="org.vortikal.web.view.freemarker.FreeMarkerTemplateLocationImpl">
      <property name="location" value="${templateLoaderPath}" />
-   </bean>
-
-   <!-- XSL config -->
-   
-   <bean id="transformerManager" class="org.vortikal.xml.TransformerManager">
-     <description>
-       XSLT Transformer manager
-     </description>
-     <property name="stylesheetReferenceResolvers">
-       <list>
-         <bean class="org.vortikal.xml.StylesheetInDocumentResolver"/>
-         <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
-           <property name="schemaRegistry"><ref bean="schemaRegistry"/></property>
-         </bean>
-       </list>
-     </property>
-     <property name="compilationURIResolvers">
-       <description>
-         This is the list of URI resolvers used to obtain the XSL
-         stylesheet resources during compilation (applies to imports
-         and includes).
-       </description>
-       <list>
-         <ref bean="xsltCompilationFilePathURIResolver" />
-         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
-         <ref bean="xsltCompilationFileURIResolver" />
-       </list>
-     </property>
-     <property name="transformationURIResolvers">
-       <description>
-         This is the list of URI resolvers used to obtain the XML
-         document resources during transformation (via the document()
-         call in XSL). This list SHOULD contain only one URI resolver
-         that gets resources from the repository, as it is not
-         generally advisable to allow document() calls to operate on
-         the file system.
-       </description>
-       <list>
-         <ref bean="xsltTransformationRepositoryURIResolver" />
-       </list>
-     </property>
-   </bean>
-
-   <bean id="rssTransformerManager" class="org.vortikal.xml.TransformerManager">
-     <description>
-       XSLT Transformer manager for RSS-generation
-     </description>
-     <property name="stylesheetReferenceResolvers">
-       <list>
-         <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
-           <property name="schemaRegistry" ref="schemaRegistry" />
-           <property name="elementXPath" 
-                     value="/xsd:schema/xsd:annotation/xsd:appinfo/rss/xsl" />
-         </bean>
-       </list>
-     </property>
-     <property name="compilationURIResolvers">
-       <list>
-         <ref bean="xsltCompilationFilePathURIResolver" />
-         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
-         <ref bean="xsltCompilationFileURIResolver" />
-       </list>
-     </property>
-     <property name="transformationURIResolvers">
-       <list>
-         <ref bean="xsltTransformationRepositoryURIResolver" />
-       </list>
-     </property>
-   </bean>
-
-
-   
-
-   <bean id="xsltCompilationFileURIResolver" class="org.vortikal.xml.FileURIResolver">
-     <description>
-       This URI resolver gets stylesheets from 'file://' type URLs.
-     </description>     
-   </bean>
-
-
-   <bean id="xsltCompilationFilePathURIResolver" class="org.vortikal.xml.FilePathURIResolver">
-     <description>
-       This URI resolver gets stylesheets from file paths starting
-       with '/', e.g. '/foo/bar' (and NOT 'file://' type URLs).
-     </description>     
-     <property name="prefix" value="${xslFilePath}" />
-   </bean>
-
-
-   <bean id="xsltCompilationRepositoryURIResolver"
-         class="org.vortikal.xml.RepositoryURIResolver"
-         parent="requestLocalRepositoryAware">
-     <description>
-       This URI resolver gets stylesheets from the repository. It uses
-       a trusted token, as is is only used during compilation of the
-       stylesheets, not for document() calls.
-     </description>
-     <property name="prefix" value="${xslRepositoryPath}" />
-   </bean>
-
-
-   <bean id="xsltTransformationRepositoryURIResolver"
-         class="org.vortikal.xml.RepositoryURIResolver"
-         parent="requestLocalRepositoryAware">
-     <description>
-       No token is defined here, in order to use the user's actual
-       token during transformation, for XSLT document() calls.
-
-       Although one could specify a file path URI resolver here, it
-       would make no sense in most cases, as document() calls works
-       with documents located preferably in the repository.
-     </description>
    </bean>
 
 

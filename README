@@ -1,0 +1,27 @@
+To set up a minimal version of the Vortikal server the following steps
+are necessary:
+
+1. Create a database using the DDL in the
+   'src/sql/postgresql-schema.sql' (currently only PostgreSQL is
+   supported, but HSQLDB has also been known to work in the past).
+
+2. Create a 'build.properties' file in this directory containing (at a
+   minimum) these properties:
+
+   jdbcUsername = <your JDBC user>
+   jdbcPassword = <your JDBC password>
+   databaseURL = <your JDBC URL, e.g. jdbc:postgresql:my-user>
+   repositoryDataDirectory = <an empty directory for storing files>
+   systemIndexPath = <an empty directory for storing indexes>
+
+3. Run the command 'maven war:webapp' (standing in the project
+   directory).
+
+4. Start resin using the configuration file in 'target/resin.conf'. 
+
+5. You should now be able to access the web service on
+   http:localhost:9321/ and the WebDAV service on
+   http://localhost:9322/. Log in as 'root@localhost:fish'.
+
+6. See the default configuration file 'conf/beans/vortikal.properties'
+   for descriptions of the various configuration settings.

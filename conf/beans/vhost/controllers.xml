@@ -31,39 +31,6 @@
     <property name="displayProcessed" value="true" />
   </bean>
 
-  <bean id="displayIndexXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="handleLastModified" value="false" />
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index.xml" />
-  </bean>
-
-  <bean id="displayIndexXmlAsHtmlHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="displayProcessed" value="true" />
-    <property name="childName" value="index.xml" />
-    <property name="viewName" value="displayHTMLResource" />
-  </bean>
-
-  <bean id="displayIndexEngXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="handleLastModified" value="false" />
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index-eng.xml" />
-  </bean>
-
-  <bean id="displayIndexEngXmlAsHtmlHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="displayProcessed" value="true" />
-    <property name="childName" value="index-eng.xml" />
-    <property name="viewName" value="displayHTMLResource" />
-  </bean>
-
-
   <bean id="displayIndexHtmlHandler" 
     class="org.vortikal.web.controller.DisplayResourceController"
     parent="requestLocalRepositoryAware">
@@ -80,20 +47,6 @@
     <property name="viewName" value="displayHTMLResource" />
   </bean>
 
-  <bean id="displayIndexHtmlAsXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index.html" />
-  </bean>
-
-  <bean id="displayIndexEngHtmlAsXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index-eng.html" />
-  </bean>
-
   <bean id="displayResourceHandler" 
     class="org.vortikal.web.controller.DisplayResourceController"
     parent="requestLocalRepositoryAware">
@@ -106,37 +59,6 @@
     <property name="displayProcessed" value="true" />
     <property name="viewName" value="displayHTMLResource" />
   </bean>
-
-  <bean id="displayHTMLResourceWithoutUhtmlHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="displayHTMLResourceHandler">
-    <property name="viewName">
-      <value>displayHTMLResourceWithoutUhtml</value>
-    </property>
-  </bean>
-
-  <bean id="displayXmlResourceHandler" 
-    class="org.vortikal.web.controller.DisplayXmlResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="handleLastModified" value="false" />
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="viewName" value="transformXmlResource"/>
-  </bean>
-
-  <bean id="displayXmlResourceWithoutUhtmlHandler" 
-    class="org.vortikal.web.controller.DisplayXmlResourceController"
-    parent="displayXmlResourceHandler">
-    <property name="handleLastModified" value="false" />
-    <property name="viewName" value="transformXmlResourceWithoutUhtml" />
-  </bean>
-
-  <bean id="displayRssResourceHandler" 
-    class="org.vortikal.web.controller.DisplayXmlResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="transformerManager" ref="rssTransformerManager" />
-    <property name="viewName" value="transformRssResource" />
-  </bean>
-
 
   <bean id="setNorwegianNBLocaleController"
         class="org.vortikal.web.controller.SetLocaleController">

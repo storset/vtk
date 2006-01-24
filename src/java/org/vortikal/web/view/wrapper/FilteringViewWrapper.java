@@ -32,6 +32,8 @@ package org.vortikal.web.view.wrapper;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
@@ -40,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.View;
 
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -102,7 +103,7 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
     private String forcedOutputEncoding;
     private boolean guessCharacterEncodingFromContent = false;
     private boolean appendCharacterEncodingToContentType = true;
-
+    private Map staticHeaders = null;
 
     public void setContentFilters(TextContentFilter[] contentFilters) {
         this.contentFilters = contentFilters;
@@ -140,6 +141,11 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         this.propagateExceptions = propagateExceptions;
     }
 
+
+    public void setStaticHeaders(Map staticHeaders) {
+        this.staticHeaders = staticHeaders;
+    }
+    
 
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -243,6 +249,7 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
             contentType = contentType + ";charset=" + characterEncoding;
         }
 
+
         writeResponse(content.getBytes(characterEncoding), bufferedResponse,
                 contentType);
     }
@@ -258,14 +265,16 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
      */
     protected void writeResponse(BufferedResponseWrapper responseWrapper)
             throws Exception {
-        ServletResponse response = responseWrapper.getResponse();
-        ServletOutputStream outStream = response.getOutputStream();
+        HttpServletResponse response = responseWrapper.getHttpServletResponse();
+        writeStaticHeaders(response);
+
         byte[] content = responseWrapper.getContentBuffer();
         if (logger.isDebugEnabled()) {
             logger.debug("Write response: Content-Length: " + content.length
                     + ", unspecified content type");
         }
         response.setContentLength(content.length);
+        ServletOutputStream outStream = response.getOutputStream();
         outStream.write(content);
         outStream.flush();
         outStream.close();
@@ -275,7 +284,9 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
     protected void writeResponse(byte[] content,
             BufferedResponseWrapper responseWrapper, String contentType)
             throws Exception {
-        ServletResponse response = responseWrapper.getResponse();
+        HttpServletResponse response = responseWrapper.getHttpServletResponse();
+
+        writeStaticHeaders(response);
         ServletOutputStream outStream = response.getOutputStream();
 
         if (logger.isDebugEnabled()) {
@@ -289,6 +300,23 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         outStream.close();
     }
 
+
+    protected void writeStaticHeaders(HttpServletResponse response) throws Exception {
+        if (this.staticHeaders == null) {
+            return;
+        }
+
+        for (Iterator i = this.staticHeaders.entrySet().iterator(); i.hasNext();) {
+            
+            Map.Entry entry = (Map.Entry) i.next();
+            if (entry.getValue() instanceof Date) {
+                response.setDateHeader((String) entry.getKey(), ((Date) entry.getValue()).getTime());
+            } else {
+                response.setHeader((String) entry.getKey(), ((String) entry.getValue()));
+            }
+        }
+    }
+    
 
     public String toString() {
         StringBuffer sb = new StringBuffer();

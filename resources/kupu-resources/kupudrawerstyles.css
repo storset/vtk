@@ -1,0 +1,33 @@
+/*****************************************************************************
+ * Kupu drawer styles (Overrides kupudrawerstyles.css for Vortikal)
+ *
+ * Based on common/kupudrawerstyles.css in the kupu distribution.
+ *
+ * That file is copyright (c) 2003-2005 Kupu Contributors. See CREDITS.txt in
+ * the kupu distribution.
+ * 
+ * Modifications in this file are copyright (c) 2005 University of Oslo, Norway.
+ *
+ *****************************************************************************/
+
+input#kupu-searchbox-input {
+  display: none;
+}
+
+div#kupu-librariesitems {
+  width: 150px;
+}
+
+td#kupu-resourcespanel {
+  width: 225px;
+}
+
+div#kupu-resourceitems {
+  width: 225px;
+}
+
+img.library-icon-collection, img.library-icon-resource {
+  height: auto;
+  width: auto;
+}
+

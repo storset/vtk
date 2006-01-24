@@ -1,0 +1,168 @@
+/*****************************************************************************
+ * kupustyles.css Kupu styles overrides for Vortikal.
+ * 
+ * Based on common/kupustyles.css in the kupu distribution.
+ *
+ * That file is copyright (c) 2003-2005 Kupu Contributors. See CREDITS.txt in
+ * the kupu distribution.
+ * 
+ * Modifications in this file are copyright (c) 2005 University of Oslo, Norway.
+ * 
+ *****************************************************************************/
+
+div.kupu-fulleditor .kupu-editorframe {
+   margin: 0px;
+   margin-right: 0em;
+   border-top: 1px solid #999; 
+   padding: 0px;
+   /* Needed to remove the strange horizontal space between the toolbar and editor */
+   margin-top: 35px; 
+}
+
+* html div.kupu-fulleditor .kupu-editorframe {
+   margin-top: 10px; 
+}
+
+div.kupu-fulleditor {
+   margin-right: -0.75em;
+   margin-left: -0.75em;
+   margin-bottom: -0.75em;
+} 
+
+iframe.kupu-editor-iframe {
+  height: 310px;
+  width: 100%;
+  overflow: auto;
+}
+
+.kupu-editorframe form {width:100%;}
+
+.kupu-tb {
+  padding: 3px;
+  padding-bottom: 7px;
+  padding-left: 8px;
+  margin-top: -20px;
+  margin-bottom: 0.5em;
+  background-color: #efefef;
+  border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+}
+
+* html .kupu-tb {margin-top:-15px;}
+
+div.kupu-fulleditor-zoomed .kupu-tb {
+  margin-top: 0.0em;
+} 
+
+/* Center button-icons */            
+.kupu-tb-buttons button {
+  background-position: center center; 
+  border-color: #efefef;
+}
+
+* html .kupu-tb-buttons button {
+  background-color: #efefef;
+}
+
+.kupu-tb-buttons button:hover {
+  cursor: default;
+  border: 1px solid #999;      
+}
+
+.kupu-tb-buttons button:active {
+  border: 1px solid #999;
+  background-color: #999;
+}
+
+/* Put background color on buttons */
+.kupu-save,
+.kupu-bold, 
+.kupu-inthyperlink,
+.kupu-exthyperlink, 
+.kupu-italic,
+.kupu-subscript,
+.kupu-superscript,
+.kupu-underline,
+.kupu-zoom,
+.kupu-forecolor, 
+.kupu-justifyleft, 
+.kupu-justifycenter,
+.kupu-justifyright,
+.kupu-insertorderedlist,
+.kupu-insertunorderedlist,
+.kupu-outdent,
+.kupu-indent,
+.kupu-image,
+.kupu-table,
+.kupu-undo,
+.kupu-redo,
+.kupu-removelink {background-color: #efefef;}
+
+/* Put background color on pressed buttons */
+.kupu-bold-pressed, 
+.kupu-inthyperlink-pressed,
+.kupu-exthyperlink-pressed, 
+.kupu-italic-pressed,
+.kupu-subscript-pressed,
+.kupu-superscript-pressed,
+.kupu-underline-pressed,
+.kupu-zoom-pressed {background-color: #999;}
+
+span#kupu-logo, span#kupu-zoom, button#kupu-hilitecolor-button, 
+span#kupu-bg-definitionlist, span#kupu-spellchecker, span#kupu-source {
+  display: none;
+}
+
+div.kupu-toolboxes {
+  float:  none;
+  width: 99%;
+  margin: 0; padding: 0; 
+  border: 0px;
+}
+
+
+div.kupu-toolbox {
+  border: collapse;
+  padding: 0; margin: 0;
+}
+
+div#kupu-toolbox-links, div#kupu-toolbox-images, 
+div#kupu-toolbox-tables, div#kupu-toolbox-cleanupexpressions, 
+div#kupu-toolbox-debug {
+  display: none;
+}
+
+
+div.kupu-toolbox-label {
+  display: inline;
+  float: left;
+  font-weight: bold;                       
+  font-size: 120%;                       
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+h1.kupu-toolbox-heading {
+  display: none;
+}
+
+input#kupu-properties-title {
+/*  position: relative; 
+  top: -2.3em; 
+  left: 5em; */
+  float: left;
+  width: 200px; 
+}
+
+.vortikal-kupu-link {
+  font-size: 120%;                       
+  float: right;
+}
+
+textarea#kupu-properties-description {
+/*  position: relative; 
+  top: -1.6em; 
+  left: 9em; 
+  width: 300px; */
+  display:none;
+}
+

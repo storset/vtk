@@ -1,0 +1,59 @@
+/*****************************************************************************
+ *
+ * kupucontentstyles.css for the University of Oslo.
+ * 
+ * Based on kupucontentstyles.css in the kupu distribution.
+ * 
+ * All html documents to be edited with kupu at the University of Oslo
+ * should link to this stylesheet, which is available at:
+ *
+ *   http://www.uio.no/profil/kupu/kupucontentstyles.css
+ *
+ *****************************************************************************/
+
+.image-left {
+   float: left;
+   clear: both;
+}
+
+.image-inline {
+   float: none;
+}
+
+.image-right {
+   float: right;
+   clear: both;
+}
+
+
+/* Table stylings */
+
+table.ridge, table.solid, table.invert {
+    border-collapse: collapse;
+}
+
+table.ridge td, table.ridge th {
+    border: 3px ridge;
+    padding: 0.5em;
+    vertical-align: top;
+}
+
+table.ridge th, table.solid th {
+    background-color: #DDD;
+}
+
+
+table.solid td, table.solid th, table.invert td, table.invert th {
+    border: 1px solid black;
+    padding: 0.5em;
+    vertical-align: top;
+}
+
+table.invert th {
+    background-color: black;
+    color: white;
+}
+
+.repeatable {
+    background-color: pink;
+}

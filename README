@@ -17,7 +17,11 @@ are necessary:
 3. Run the command 'maven war:webapp' (standing in the project
    directory).
 
-4. Start resin using the configuration file in 'target/resin.conf'. 
+4. Start resin2 using the configuration file in
+   'target/resin.conf'. If you want to run with resin3 a the following
+   property to build.properties before running 'maven war:webapp':
+
+   resin3 = true
 
 5. You should now be able to access the web service on
    http:localhost:9322/ and the WebDAV service on

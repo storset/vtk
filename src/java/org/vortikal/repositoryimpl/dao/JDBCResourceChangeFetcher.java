@@ -45,13 +45,13 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.vortikal.index.observation.ResourceACLModification;
-import org.vortikal.index.observation.ResourceChange;
-import org.vortikal.index.observation.ResourceChangeFetcher;
-import org.vortikal.index.observation.ResourceContentModification;
-import org.vortikal.index.observation.ResourceCreation;
-import org.vortikal.index.observation.ResourceDeletion;
-import org.vortikal.index.observation.ResourcePropModification;
+import org.vortikal.repositoryimpl.index.observation.ResourceACLModification;
+import org.vortikal.repositoryimpl.index.observation.ResourceChange;
+import org.vortikal.repositoryimpl.index.observation.ResourceChangeFetcher;
+import org.vortikal.repositoryimpl.index.observation.ResourceContentModification;
+import org.vortikal.repositoryimpl.index.observation.ResourceCreation;
+import org.vortikal.repositoryimpl.index.observation.ResourceDeletion;
+import org.vortikal.repositoryimpl.index.observation.ResourcePropModification;
 
 /**
  * Fetch resource changes from a JDBC connected database.

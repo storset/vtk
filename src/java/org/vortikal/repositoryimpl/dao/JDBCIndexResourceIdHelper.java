@@ -36,7 +36,8 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.vortikal.index.util.IndexResourceIdHelper;
+
+import org.vortikal.repositoryimpl.index.util.IndexResourceIdHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

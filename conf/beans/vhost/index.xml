@@ -8,7 +8,7 @@
        Used to apply a filter criterion, before the index observer sees the list
        of changes. -->
   <bean id="dmsIndexObserverWrapper" 
-    class="org.vortikal.index.observation.FilteringResourceChangeObserverWrapper">
+    class="org.vortikal.repositoryimpl.index.observation.FilteringResourceChangeObserverWrapper">
     <property name="wrappedObservers">
       <list>
         <ref bean="dmsIndexResourceChangeObserver"/>
@@ -24,7 +24,7 @@
        If this is wrapped in a filter, a notifier should _not_ be set here, but
        in the wrapper (see above). -->
   <bean id="dmsIndexResourceChangeObserver"
-    class="org.vortikal.index.lucene.ResourceChangeObserverImpl">
+    class="org.vortikal.repositoryimpl.index.lucene.ResourceChangeObserverImpl">
     <property name="index" ref="dmsIndex"/>
     <!-- This observer is wrapped by another observer, so we don't want it to register
          itself with the master notifier, directly (the wrapper does this).--> 
@@ -33,7 +33,7 @@
 
 
   <!-- This is the main index definition. -->
-  <bean id="dmsIndex" class="org.vortikal.index.lucene.LuceneIndex">
+  <bean id="dmsIndex" class="org.vortikal.repositoryimpl.index.lucene.LuceneIndex">
     <property name="indexPath" value="${systemIndexPath}"/>
     <property name="optimizeInterval" value="500"/>
     <property name="forceUnlock" value="true"/>
@@ -46,7 +46,7 @@
        This filter looks up all results from an index query, and tests
        whether the user with the given token really has access to the resource. -->  
   <bean id="dmsSearchSecurityFilter"
-    class="org.vortikal.index.security.DMSResultSecurityFilter">
+    class="org.vortikal.repositoryimpl.index.security.DMSResultSecurityFilter">
     <property name="repository" ref="repository"/>
     <property name="noFilterPrincipals">
       <set>
@@ -60,7 +60,7 @@
 
   <!-- Generic extractor for all kinds of Vortex resources. Also extracts 
     collections. Used by DMS index.-->
-  <bean id="dmsExtractor" class="org.vortikal.index.dms.DMSExtractor">
+  <bean id="dmsExtractor" class="org.vortikal.repositoryimpl.index.dms.DMSExtractor">
     <property name="repository" ref="repository"/>
     <property name="token" ref="trustedToken"/>
   </bean>
@@ -73,7 +73,7 @@
        so it is better to keep this simple. Also, avoid using filters that
        need repository access to determine if a resource is filtered or not
        (ResourcePropertyFilterCriterion would be an example of that). -->
-  <bean id="dmsIndexFilter" class="org.vortikal.index.observation.URIPrefixFilterCriterion">
+  <bean id="dmsIndexFilter" class="org.vortikal.repositoryimpl.index.observation.URIPrefixFilterCriterion">
     <property name="exclusions">
       <list>
         <value>/noindex</value>
@@ -93,7 +93,7 @@
 
 
   <!-- Reindexer for the DMS index. -->
-  <bean id="dmsReindexer" class="org.vortikal.index.lucene.LuceneReindexer">
+  <bean id="dmsReindexer" class="org.vortikal.repositoryimpl.index.lucene.LuceneReindexer">
     <property name="repository" ref="repository"/>
     <property name="token" ref="trustedToken"/>
     <property name="index" ref="dmsIndex"/>
@@ -110,7 +110,7 @@
        and disabling/enabling observers. It can also be used to enumerate
        configured indexes at runtime, and get status information about them. -->
   <bean id="indexRuntimeManager"
-    class="org.vortikal.index.lucene.RuntimeManagerImpl"/>
+    class="org.vortikal.repositoryimpl.index.lucene.RuntimeManagerImpl"/>
   
 
   <!-- Temporary web-accessible index runtime manager controller. --> 
@@ -121,6 +121,11 @@
   </bean>
 
 
+  <!-- Query tester -->
+  <!--bean id="indexQueryTestingService" class="org.vortikal.index.test.QueryTester">
+    <property name="searcher" ref="dmsIndexSearcher"/>
+    <property name="token" ref="trustedToken"/>
+  </bean-->
   
   <!-- Index management service. Belongs in 'management.xml' ? -->
   <bean id="indexManagementService" class="org.vortikal.web.service.ServiceImpl">
@@ -161,7 +166,7 @@
   
   <!-- The new index searcher implementation type. -->
   <bean id="dmsIndexSearcher"
-    class="org.vortikal.index.lucene.SearcherImpl">
+    class="org.vortikal.repositoryimpl.index.lucene.SearcherImpl">
     <property name="securityFilter" ref="dmsSearchSecurityFilter"/>
     <property name="applySecurityFilter" value="true"/>
     <property name="index" ref="dmsIndex"/>
@@ -170,7 +175,7 @@
 
   <!-- Peforms DMS text (parsed) queries and returns XML. -->
   <bean id="dmsXmlQueryHelper"
-    class="org.vortikal.index.dms.DMSXmlQuery">
+    class="org.vortikal.repositoryimpl.index.dms.DMSXmlQuery">
     <property name="searcher" ref="dmsIndexSearcher"/>
   </bean>
 

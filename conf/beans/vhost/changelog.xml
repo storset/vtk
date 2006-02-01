@@ -33,7 +33,7 @@
        changes to any registered observers. Requires a Quartz scheduler trigger
        to call its pollChanges() method periodically -->
   <bean id="repository.resourceChangeNotifier"
-    class="org.vortikal.index.observation.ResourceChangeNotifierImpl">
+    class="org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifierImpl">
     <property name="changeFetcher" ref="repository.dbResourceChangeFetcher"/>
   </bean>
   

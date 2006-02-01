@@ -38,13 +38,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.index.dms.DMSXmlQuery;
-import org.vortikal.index.dms.DMSXslQuery;
+import org.vortikal.repositoryimpl.index.dms.DMSXmlQuery;
+import org.vortikal.repositoryimpl.index.dms.DMSXslQuery;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 
 /**
- * Provide an instance of a {@link org.vortikal.index.dms.DMSXslQuery}
+ * Provide an instance of a {@link org.vortikal.repositoryimpl.index.dms.DMSXslQuery}
  * object in the "xsltParameters" map in the model. Optionally,
  * provide a URL to the "raw" query service as well.
  *

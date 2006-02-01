@@ -44,7 +44,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.index.dms.DMSXmlQuery;
+import org.vortikal.repositoryimpl.index.dms.DMSXmlQuery;
 import org.vortikal.security.SecurityContext;
 
 /**

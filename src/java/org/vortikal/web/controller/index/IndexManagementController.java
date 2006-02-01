@@ -39,12 +39,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.index.Index;
-import org.vortikal.index.management.IndexStatus;
-import org.vortikal.index.management.ManagementException;
-import org.vortikal.index.management.Reindexer;
-import org.vortikal.index.management.RuntimeManager;
-import org.vortikal.index.observation.ResourceChangeObserver;
+import org.vortikal.repositoryimpl.index.Index;
+import org.vortikal.repositoryimpl.index.management.IndexStatus;
+import org.vortikal.repositoryimpl.index.management.ManagementException;
+import org.vortikal.repositoryimpl.index.management.Reindexer;
+import org.vortikal.repositoryimpl.index.management.RuntimeManager;
+import org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver;
 import org.vortikal.web.RequestContext;
 
 /**

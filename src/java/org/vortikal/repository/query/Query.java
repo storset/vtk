@@ -31,7 +31,7 @@
 package org.vortikal.repository.query;
 
 /**
- * 
+ * Class that contains query conditions and a sorting directive.
  *
  */
 public class Query {

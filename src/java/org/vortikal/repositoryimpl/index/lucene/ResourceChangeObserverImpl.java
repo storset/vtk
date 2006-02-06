@@ -72,7 +72,7 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
     /**
      * @see org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver#isEnabled()
      */
-    public synchronized boolean isEnabled() {
+    public boolean isEnabled() {
         return this.enabled;
     }
 

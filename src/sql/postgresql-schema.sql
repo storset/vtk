@@ -208,7 +208,7 @@ CREATE INDEX extra_prop_entry_index1 ON extra_prop_entry(resource_id);
 -----------------------------------------------------------------------------
 DROP SEQUENCE changelog_entry_seq_pk;
 
-CREATE SEQUENCE changelog_entry_seq_pk INCREMENT BY 1 START WITH 1000;
+CREATE SEQUENCE changelog_entry_seq_pk INCREMENT 1 START 1000;
 
 DROP TABLE changelog_entry;
 

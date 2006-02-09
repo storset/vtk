@@ -338,11 +338,13 @@ ul.tabMenu2 li.createDocumentService {
 ul.tabMenu2 li.moveResourcesService {
         background: transparent url(move.png) no-repeat 0px 2px;
         padding-top: 4px; /* Taller icon*/
+        padding-bottom: 1px;                              
 }
 
 ul.tabMenu2 li.copyResourcesService {
         background: transparent url(copy.png) no-repeat 0px 2px;
         padding-top: 4px; /* Taller icon*/
+        padding-bottom: 1px;                              
 }
 
 ul.tabMenu2 li.createCollectionService {

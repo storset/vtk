@@ -37,10 +37,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
@@ -116,7 +118,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("retrieve(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.RETRIEVE, "(" + uri + ")", "resource not found",
                 token, principal);
 
             throw new ResourceNotFoundException(uri);
@@ -125,7 +127,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("retrieve(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.RETRIEVE, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -139,19 +141,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             r.authorize(principal, privilege, roleManager);
             r.lockAuthorize(principal, privilege, roleManager);
 
-            OperationLog.success("retrieve(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.RETRIEVE, "(" + uri + ")", token, principal);
 
             return r.getResourceDTO(principal, principalManager, roleManager);
         } catch (ResourceLockedException e) {
-            OperationLog.failure("retrieve(" + uri + ")", "resource locked",
+            OperationLog.failure(OperationLog.RETRIEVE, "(" + uri + ")", "resource locked",
                 token, principal);
             throw new AuthorizationException();
         } catch (AuthorizationException e) {
-            OperationLog.failure("retrieve(" + uri + ")", "not authorized",
+            OperationLog.failure(OperationLog.RETRIEVE, "(" + uri + ")", "not authorized",
                 token, principal);
             throw e;
         } catch (AuthenticationException e) {
-            OperationLog.failure("retrieve(" + uri + ")", "not authenticated",
+            OperationLog.failure(OperationLog.RETRIEVE, "(" + uri + ")", "not authenticated",
                 token, principal);
             throw e;
         }
@@ -165,13 +167,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("create(" + uri + ")", "resource not found.",
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "resource not found.",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if ("/".equals(uri)) {
-            OperationLog.failure("create(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
                 "illegal operation. " +
                 "Cannot create the root resource ('/')", token, principal);
             throw new IllegalOperationException(
@@ -181,7 +183,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r != null) {
-            OperationLog.failure("create(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
                 "illegal operation. " + "Resource already existed", token,
                 principal);
             throw new IllegalOperationException();
@@ -196,7 +198,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         r = dao.load(parentURI);
 
         if ((r == null) || r instanceof Document) {
-            OperationLog.failure("create(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
                 "illegal operation: " +
                 "either parent is null or parent is document", token, principal);
             throw new IllegalOperationException();
@@ -208,11 +210,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ((Collection) r).lockAuthorize(principal,
                 PrivilegeDefinition.WRITE, roleManager);
         } catch (ResourceLockedException e) {
-            OperationLog.failure("create(" + uri + ")", "resource was locked",
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "resource was locked",
                 token, principal);
             throw e;
         } catch (AuthorizationException e) {
-            OperationLog.failure("create(" + uri + ")", "unauthorized", token,
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "unauthorized", token,
                 principal);
             throw e;
         }
@@ -220,7 +222,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                OperationLog.failure("create(" + uri + ")", "read-only", token,
+                OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "read-only", token,
                     principal);
                 throw new ReadOnlyException();
             }
@@ -228,7 +230,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             Document doc = (Document) ((Collection) r).create(principal, uri,
                     roleManager);
 
-            OperationLog.success("create(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.CREATE, "(" + uri + ")", token, principal);
 
             context.publishEvent(
                 new ResourceCreationEvent(
@@ -236,7 +238,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             return doc.getResourceDTO(principal, principalManager, roleManager);
         } catch (AclException e) {
-            OperationLog.failure("create(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
                 "tried to set an illegal ACL", token, principal);
             throw new IllegalOperationException(e.getMessage());
         }
@@ -250,14 +252,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("createCollection(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                 "illegal operation: " + "Invalid URI: '" + uri + "'", token,
                 principal);
             throw new IllegalOperationException("Invalid URI: '" + uri + "'");
         }
 
         if ("/".equals(uri)) {
-            OperationLog.failure("createCollection(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                 "illegal operation: " +
                 "Cannot create the root resource ('/')", token, principal);
 
@@ -273,7 +275,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (r != null) {
             // Resource already exists
-            OperationLog.failure("createCollection(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                 "illegal operation: " + "resource already exists", token,
                 principal);
             throw new IllegalOperationException();
@@ -290,7 +292,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if ((r == null) || r instanceof Document) {
             /* Parent does not exist or is a document */
-            OperationLog.failure("createCollection(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                 "illegal operation: " +
                 "either parent is null or parent is document", token, principal);
             throw new IllegalOperationException();
@@ -302,7 +304,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                OperationLog.failure("createCollection(" + uri + ")",
+                OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                     "read-only", token, principal);
                 throw new ReadOnlyException();
             }
@@ -310,18 +312,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             Resource newCollection = ((Collection) r).createCollection(principal,
                     path, roleManager);
 
-            OperationLog.success("createCollection(" + uri + ")", token,
+            OperationLog.success(OperationLog.CREATE_COLLECTION, "(" + uri + ")", token,
                 principal);
             context.publishEvent(
                 new ResourceCreationEvent(this, newCollection.getResourceDTO(principal, principalManager, roleManager)));
 
             return newCollection.getResourceDTO(principal, principalManager, roleManager);
         } catch (ResourceLockedException e) {
-            OperationLog.failure("createCollection(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                 "resource was locked", token, principal);
             throw e;
         } catch (AclException e) {
-            OperationLog.failure("createCollection(" + uri + ")",
+            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                 "tried to set an illegal ACL", token, principal);
             throw new IllegalOperationException(e.getMessage());
         }
@@ -336,13 +338,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(srcUri)) {
-            OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "source not found", token, principal);
             throw new ResourceNotFoundException(srcUri);
         }
 
         if (!validateURI(destUri)) {
-            OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "invalid URI: '" + destUri + "'", token, principal);
             throw new IllegalOperationException("Invalid URI: '" + destUri +
                 "'");
@@ -351,7 +353,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource src = dao.load(srcUri);
 
         if (src == null) {
-            OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "source not found", token, principal);
             throw new ResourceNotFoundException(srcUri);
         } else if (src instanceof Collection) {
@@ -365,7 +367,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ? destUri.substring(0, destUri.length() - 1) : destUri;
 
         if (destPath.equals(srcUri)) {
-            OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "trying to copy a resoure to itself", token, principal);
             throw new IllegalOperationException(
                 "Cannot copy a resource to itself");
@@ -374,7 +376,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         if (destPath.startsWith(srcUri)) {
             if (destPath.substring(srcUri.length(), destPath.length())
                             .startsWith("/")) {
-                OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+                OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                     "trying to copy a resoure into itself", token, principal);
                 throw new IllegalOperationException(
                     "Cannot copy a resource into itself");
@@ -398,7 +400,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource destCollection = dao.load(destParent);
 
         if ((destCollection == null) || destCollection instanceof Document) {
-            OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "destination is either a document or does not exist", token,
                 principal);
             throw new IllegalOperationException();
@@ -412,7 +414,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-            OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "read-only", token, principal);
             throw new ReadOnlyException();
         }
@@ -440,7 +442,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             //                 Resource copy = new Resource();
             //                 copy.store();
             //             }
-            OperationLog.success("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.success(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
             ResourceCreationEvent event = new ResourceCreationEvent(
@@ -448,7 +450,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             context.publishEvent(event);
         } catch (AclException e) {
-            OperationLog.failure("copy(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "tried to set an illegal ACL", token, principal);
             throw new IllegalOperationException(e.getMessage());
         }
@@ -463,20 +465,20 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(srcUri)) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "source not found", token, principal);
             throw new ResourceNotFoundException(srcUri);
         }
 
         if (!validateURI(destUri)) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "invalid URI: '" + destUri + "'", token, principal);
             throw new IllegalOperationException("Invalid URI: '" + destUri +
                 "'");
         }
 
         if ("/".equals(srcUri)) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "cannot move the root resource ('/')", token, principal);
             throw new IllegalOperationException(
                 "Cannot move the root resource ('/')");
@@ -485,7 +487,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource src = dao.load(srcUri);
 
         if (src == null) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "source not found", token, principal);
             throw new ResourceNotFoundException(srcUri);
         }
@@ -523,7 +525,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         if (destPath.equals(srcUri)) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "trying to move a resoure to itself", token, principal);
             throw new IllegalOperationException(
                 "Cannot move a resource to itself");
@@ -532,7 +534,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         if (destPath.startsWith(srcUri)) {
             if (destPath.substring(srcUri.length(), destPath.length())
                             .startsWith("/")) {
-                OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+                OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                     "trying to move a resoure into itself", token, principal);
                 throw new IllegalOperationException(
                     "Cannot move a resource into itself");
@@ -542,7 +544,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource dest = dao.load(destPath);
 
         if ((dest != null) && !overwrite) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "destination already existed, no overwrite", token, principal);
             throw new ResourceOverwriteException();
         } else if (dest != null) {
@@ -566,7 +568,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource destCollection = dao.load(destParent);
 
         if ((destCollection == null) || destCollection instanceof Document) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "destination collection either a document or does not exist",
                 token, principal);
             throw new IllegalOperationException("Invalid destination resource");
@@ -585,7 +587,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+                OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                     "read-only", token, principal);
                 throw new ReadOnlyException();
             }
@@ -595,7 +597,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             src.delete(principal, roleManager);
 
-            OperationLog.success("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.success(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
             Resource r = dao.load(destUri);
@@ -609,7 +611,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             context.publishEvent(creationEvent);
         } catch (AclException e) {
-            OperationLog.failure("move(" + srcUri + ", " + destUri + ")",
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "tried to set an illegal ACL", token, principal);
 
             throw new IllegalOperationException(e.getMessage());
@@ -624,13 +626,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("delete(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.DELETE, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if ("/".equals(uri)) {
-            OperationLog.failure("delete(" + uri + ")",
+            OperationLog.failure(OperationLog.DELETE, "(" + uri + ")",
                 "cannot delete the root resource ('/')", token, principal);
             throw new IllegalOperationException(
                 "Cannot delete the root resource ('/')");
@@ -639,7 +641,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("delete(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.DELETE, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -672,7 +674,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-            OperationLog.failure("delete(" + uri + ")", "read-only", token,
+            OperationLog.failure(OperationLog.DELETE, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
         }
@@ -684,7 +686,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                                    principal, principalManager, roleManager),
                                roleManager);
 
-        OperationLog.success("delete(" + uri + ")", token, principal);
+        OperationLog.success(OperationLog.DELETE, "(" + uri + ")", token, principal);
 
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), 
                                                                 r instanceof Collection);
@@ -697,7 +699,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.info("exists(" + uri + "): false", token, principal);
+            OperationLog.info(OperationLog.EXISTS, "(" + uri + "): false", token, principal);
 
             return false;
         }
@@ -705,12 +707,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.info("exists(" + uri + "): false", token, principal);
+            OperationLog.info(OperationLog.EXISTS, "(" + uri + "): false", token, principal);
 
             return false;
         }
 
-        OperationLog.info("exists(" + uri + "): true", token, principal);
+        OperationLog.info(OperationLog.EXISTS, "(" + uri + "): true", token, principal);
 
         return true;
     }
@@ -724,7 +726,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("lock(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -732,7 +734,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("lock(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -747,7 +749,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-            OperationLog.failure("lock(" + uri + ")", "read-only", token,
+            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
         }
@@ -773,19 +775,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                                       requestedTimeoutSeconds, roleManager,
                                       (lockToken != null));
 
-            OperationLog.success("lock(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.LOCK, "(" + uri + ")", token, principal);
 
             return newLockToken;
         } catch (AuthorizationException e) {
-            OperationLog.failure("lock(" + uri + ")", "permission denied",
+            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "permission denied",
                 token, principal);
             throw e;
         } catch (AuthenticationException e) {
-            OperationLog.failure("lock(" + uri + ")", "not authenticated",
+            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "not authenticated",
                 token, principal);
             throw e;
         } catch (ResourceLockedException e) {
-            OperationLog.failure("lock(" + uri + ")", "already locked", token,
+            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "already locked", token,
                 principal);
             throw e;
         }
@@ -798,7 +800,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("unlock(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -806,31 +808,31 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("unlock(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-            OperationLog.failure("unlock(" + uri + ")", "read-only", token,
+            OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
         }
 
         try {
             r.unlock(principal, lockToken, roleManager);
-            OperationLog.success("unlock(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.UNLOCK, "(" + uri + ")", token, principal);
         } catch (AuthorizationException e) {
-            OperationLog.failure("unlock(" + uri + ")", "permission denied",
+            OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "permission denied",
                 token, principal);
             throw e;
         } catch (AuthenticationException e) {
-            OperationLog.failure("unlock(" + uri + ")", "not authenticated",
+            OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "not authenticated",
                 token, principal);
             throw e;
         } catch (ResourceLockedException e) {
-            OperationLog.failure("unlock(" + uri + ")", "resource locked",
+            OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "resource locked",
                 token, principal);
             throw e;
         }
@@ -843,7 +845,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("listChildren(" + uri + ")",
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
                 "resource not found", token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -851,13 +853,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("listChildren(" + uri + ")",
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
                 "resource not found", token, principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if (r instanceof Document) {
-            OperationLog.failure("listChildren(" + uri + ")",
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
                 "uri is document", token, principal);
 
             return null;
@@ -881,11 +883,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 children[i] = child.getResourceDTO(principal, principalManager, roleManager);
             }
 
-            OperationLog.success("listChildren(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.LIST_CHILDREN, "(" + uri + ")", token, principal);
 
             return children;
         } catch (ResourceLockedException e) {
-            OperationLog.failure("listChildren(" + uri + ")",
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
                 "permission denied", token, principal);
             throw new AuthorizationException();
         }
@@ -899,7 +901,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (resource == null) {
             // FIXME: should throw java.lang.IllegalArgumentException
-            OperationLog.failure("store(null)", "resource null", token,
+            OperationLog.failure(OperationLog.STORE, "(null)", "resource null", token,
                 principal);
             throw new IllegalOperationException("I cannot store nothing.");
         }
@@ -907,7 +909,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         String uri = resource.getURI();
 
         if (!validateURI(uri)) {
-            OperationLog.failure("store(" + uri + ")", "invalid uri", token,
+            OperationLog.failure(OperationLog.STORE, "(" + uri + ")", "invalid uri", token,
                 principal);
             throw new IllegalOperationException("Invalid URI: " + uri);
         }
@@ -915,14 +917,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("store(" + uri + ")", "invalid uri", token,
+            OperationLog.failure(OperationLog.STORE, "(" + uri + ")", "invalid uri", token,
                 principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-            OperationLog.failure("store(" + uri + ")", "read-only", token,
+            OperationLog.failure(OperationLog.STORE, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
         }
@@ -931,7 +933,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             Resource original = (Resource) r.clone();
 
             r.store(principal, resource, roleManager);
-            OperationLog.success("store(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.STORE, "(" + uri + ")", token, principal);
 
             ResourceModificationEvent event = new ResourceModificationEvent(
                 this, r.getResourceDTO(principal, principalManager, roleManager),
@@ -939,7 +941,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             context.publishEvent(event);
         } catch (ResourceLockedException e) {
-            OperationLog.failure("store(" + uri + ")", "resource locked",
+            OperationLog.failure(OperationLog.STORE, "(" + uri + ")", "resource locked",
                 token, principal);
             throw e;
         } catch (CloneNotSupportedException e) {
@@ -955,7 +957,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("getInputStream(" + uri + ")",
+            OperationLog.failure(OperationLog.GET_INPUTSTREAM, "(" + uri + ")",
                 "resource not found", token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -963,13 +965,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("getInputStream(" + uri + ")",
+            OperationLog.failure(OperationLog.GET_INPUTSTREAM, "(" + uri + ")",
                 "resource not found", token, principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if (r instanceof Collection) {
-            OperationLog.failure("getInputStream(" + uri + ")",
+            OperationLog.failure(OperationLog.GET_INPUTSTREAM, "(" + uri + ")",
                 "resource is collection", token, principal);
             throw new IOException("resource is collection");
         }
@@ -981,7 +983,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         InputStream inStream = ((Document) r).getInputStream(principal,
                 privilege, roleManager);
 
-        OperationLog.success("getInputStream(" + uri + ")", token, principal);
+        OperationLog.success(OperationLog.GET_INPUTSTREAM, "(" + uri + ")", token, principal);
 
         return inStream;
     }
@@ -997,7 +999,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("storeContent(" + uri + ")",
+            OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")",
                 "resource not found", token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -1005,20 +1007,20 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("storeContent(" + uri + ")",
+            OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")",
                 "resource not found", token, principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if (r instanceof Collection) {
-            OperationLog.failure("storeContent(" + uri + ")",
+            OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")",
                 "resource is collection", token, principal);
             throw new IOException("Collections have no output stream");
         }
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-            OperationLog.failure("storeContent(" + uri + ")", "read-only",
+            OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")", "read-only",
                 token, principal);
             throw new ReadOnlyException();
         }
@@ -1042,7 +1044,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             stream.close();
             byteStream.close();
 
-            OperationLog.success("storeContent(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.STORE_CONTENT, "(" + uri + ")", token, principal);
 
             ContentModificationEvent event = new ContentModificationEvent(
                 this, r.getResourceDTO(principal, principalManager, roleManager),
@@ -1050,7 +1052,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             context.publishEvent(event);
         } catch (ResourceLockedException e) {
-            OperationLog.failure("storeContent(" + uri + ")",
+            OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")",
                 "resource locked", token, principal);
             throw e;
         } catch (CloneNotSupportedException e) {
@@ -1066,7 +1068,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("getACL(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.GET_ACL, "(" + uri + ")", "resource not found",
                 token, principal);
 
             throw new ResourceNotFoundException(uri);
@@ -1075,7 +1077,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("getACL(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.GET_ACL, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -1086,15 +1088,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ACL acl = r.getACL();
             org.vortikal.repository.Ace[] dtos = acl.toAceList();
 
-            OperationLog.success("getACL(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.GET_ACL, "(" + uri + ")", token, principal);
 
             return dtos;
         } catch (AuthorizationException e) {
-            OperationLog.failure("getACL(" + uri + ")", "permission denied",
+            OperationLog.failure(OperationLog.GET_ACL, "(" + uri + ")", "permission denied",
                 token, principal);
             throw e;
         } catch (AuthenticationException e) {
-            OperationLog.failure("getACL(" + uri + ")", "not authenticated",
+            OperationLog.failure(OperationLog.GET_ACL, "(" + uri + ")", "not authenticated",
                 token, principal);
             throw e;
         }
@@ -1108,7 +1110,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure("storeACL(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -1116,7 +1118,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         Resource r = dao.load(uri);
 
         if (r == null) {
-            OperationLog.failure("storeACL(" + uri + ")", "resource not found",
+            OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")", "resource not found",
                 token, principal);
             throw new ResourceNotFoundException(uri);
         }
@@ -1126,7 +1128,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                OperationLog.failure("storeACL(" + uri + ")", "read-only",
+                OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")", "read-only",
                     token, principal);
                 throw new ReadOnlyException();
             }
@@ -1136,7 +1138,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             boolean wasInheritedACL = original.getInheritedACL();
 
             r.storeACL(principal, acl, roleManager);
-            OperationLog.success("storeACL(" + uri + ")", token, principal);
+            OperationLog.success(OperationLog.STORE_ACL, "(" + uri + ")", token, principal);
 
             ACLModificationEvent event = new ACLModificationEvent(
                 this, r.getResourceDTO(principal, principalManager, roleManager),
@@ -1145,19 +1147,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             context.publishEvent(event);
         } catch (AuthorizationException e) {
-            OperationLog.failure("storeACL(" + uri + ")", "permission denied",
+            OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")", "permission denied",
                 token, principal);
             throw e;
         } catch (AuthenticationException e) {
-            OperationLog.failure("storeACL(" + uri + ")", "not authenticated",
+            OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")", "not authenticated",
                 token, principal);
             throw e;
         } catch (IllegalOperationException e) {
-            OperationLog.failure("storeACL(" + uri + ")", "illegal operation",
+            OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")", "illegal operation",
                 token, principal);
             throw e;
         } catch (AclException e) {
-            OperationLog.failure("storeACL(" + uri + ")",
+            OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")",
                 "illegal ACL operation", token, principal);
             throw e;
         } catch (CloneNotSupportedException e) {

@@ -12,6 +12,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Added operational log for logging write operations on the
+        repository separately.
+      </action>
+
+      <action dev="gormap" type="add">
         Integrated the Kupu client-side HTML editor as an extension
         (http://kupu.oscom.org).
       </action>

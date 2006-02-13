@@ -102,6 +102,42 @@ public class RequestPortAssertion
     }
 
 
+    public boolean processURL(URL url, Resource resource, Principal principal,
+                              boolean match) {
+
+        if (this.ports[0] != PORT_ANY) {
+            url.setPort(new Integer(this.ports[0]));
+        }
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext != null) {
+
+            int requestPort = requestContext.getServletRequest().getServerPort();
+
+            for (int i = 0; i < this.ports.length; i++) {
+                if (this.ports[i] == requestPort) {
+                    url.setPort(new Integer(requestPort));
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    public boolean matches(HttpServletRequest request, Resource resource,
+                           Principal principal) {
+        for (int i = 0; i < this.ports.length; i++) {
+            if (this.ports[i] == PORT_ANY) {
+                return true;
+            }
+            if (this.ports[i] == request.getServerPort()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(super.toString());
@@ -118,43 +154,5 @@ public class RequestPortAssertion
     }
 
 
-    public boolean processURL(URL url, Resource resource, Principal principal,
-                              boolean match) {
-
-
-        if (this.ports[0] != PORT_ANY) {
-
-
-            url.setPort(new Integer(this.ports[0]));
-        }
-
-        RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext != null) {
-
-            int requestPort = requestContext.getServletRequest().getServerPort();
-
-
-            for (int i = 0; i < this.ports.length; i++) {
-                if (this.ports[i] == requestPort) {
-                    url.setPort(new Integer(requestPort));
-                    break;
-                }
-            }
-        }
-        return true;
-    }
-
-
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        for (int i = 0; i < this.ports.length; i++) {
-            if (this.ports[i] == PORT_ANY) {
-                return true;
-            }
-            if (this.ports[i] == request.getServerPort()) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 }

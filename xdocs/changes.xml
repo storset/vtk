@@ -11,6 +11,10 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="oyviste" type="add">
+        Added request filter for normalizing dot-segments in request URIs.
+      </action>
+
       <action dev="gormap" type="add">
         Added operational log for logging write operations on the
         repository separately.

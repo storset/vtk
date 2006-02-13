@@ -111,27 +111,30 @@ public class RequestHostNameAssertion implements Assertion {
     }
 
 
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+    public boolean processURL(URL url, Resource resource,
+                              Principal principal, boolean match) {
 
         url.setHost(this.defaultHostName);
-
         RequestContext requestContext = RequestContext.getRequestContext();
 
         if (requestContext != null) {
             String requestHostName = requestContext.getServletRequest().getServerName();
             for (int i = 0; i < this.hostNames.length; i++) {
-                if (requestHostName.equals(this.hostNames[i])) {
+
+                if ("*".equals(this.hostNames[i])
+                    || requestHostName.equals(this.hostNames[i])) {
+
                     url.setHost(requestHostName);
                     break;
                 }
             }
         }
-
         return true;
     }
 
 
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+    public boolean matches(HttpServletRequest request,
+                           Resource resource, Principal principal) {
 
         for (int i = 0; i < this.hostNames.length; i++) {
 
@@ -143,7 +146,6 @@ public class RequestHostNameAssertion implements Assertion {
             if (this.hostNames[i].equals(requestHostName)) {
                 return true;
             }
-
         }
         return false;
     }

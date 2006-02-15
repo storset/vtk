@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!-- 
+     INTERFACES:
+     ResourceTypeManager
+     ResourceTypeDefinition
+     PropertyDefinition
+     ValueConstraint
+     Extractor
+     
+     CLASSES:
+     ResourceTypeManagerImpl
+     ResourceTypeDefinitionImpl
+     PropertyDefinitionImpl
+     XPathNodeExtractor
+     PropertyType
+     StringValueConstraint
+     NumericValueConstraint
+-->
+<beans>
+
+  <bean id="resourceTypeManager" class="org.vortikal.repositoryimpl.ResourceTypeManagerImpl">
+    <property name="rootResourceTypeDefinition" ref="rootResourceTypeDefinition"/>
+  </bean>
+
+  <!-- Root of resource type hierarchy ('Resource') -->
+  <bean id="rootResourceTypeDefinition" class="org.vortikal.repositoryimpl.ResourceTypeDefinitionImpl">
+    <property name="name" value="Resource"/>
+    <property name="namespace"><null/></property>
+
+    <!-- Properties valid for the resource type -->
+    <property name="properties">
+      <list>
+        <ref bean="foopropDef"/>
+        <ref bean="barpropDef"/>
+      </list>
+    </property>
+    
+    <!-- Not sure about this one.... -->
+    <property name="resourceTypeAssertions">
+      <list>
+        <!-- ... -->
+      </list>
+    </property>
+
+    <property name="parentResourceType"><null/></property>
+    
+    <!-- Point from parent to children, from child to parent or both ? -->
+    <property name="childResourceTypes">
+      <list>
+        <ref bean="collectionResourceTypeDefinition"/>
+        <ref bean="documentResourceTypeDefinition"/>
+      </list>
+    </property>
+    
+    <!-- List of mixin resource type definitions -->
+    <property name="mixinResourceTypes">
+      <list>
+        
+      </list>
+    </property>
+
+  </bean>
+
+
+  <!-- Collection resource type -->
+  <bean id="collectionResourceTypeDefinition" class="org.vortikal.repositoryimpl.ResourceTypeDefinitionImpl">
+    <property name="name" value="Collection"/>
+    <property name="namespace"><null/></property> <!-- not sure about namespace -->
+
+    <!-- Properties valid for the resource type -->
+    <property name="properties">
+      <list>
+        <!-- ... -->
+      </list>
+    </property>
+    
+    <!-- Not sure about this .... -->
+    <property name="resourceTypeAssertions">
+      <list>
+        <!-- ... -->
+      </list>
+    </property>
+
+    <!-- Ref to parent type -->
+    <property name="parentResourceType"><ref bean="rootResourceTypeDefinition"/></property>
+    
+    <!-- Mixin types -->
+    <property name="mixinResourceTypes"><null/></property>
+
+    <!-- Child types -->
+    <property name="childResourceTypes"><null/></property>
+  </bean>
+
+
+  <!-- Document resource type -->
+  <bean id="documentResourceTypeDefinition" class="org.vortikal.repositoryimpl.ResourceTypeDefinitionImpl">
+    <property name="name" value="Document"/>
+    <property name="namespace"><null/></property><!-- not sure about namespace -->
+
+    <property name="parentResourceType"><ref bean="rootResourceTypeDefinition"/></property>
+    
+    <property name="resourceTypeAssertions">
+      <list>
+        <!-- ... -->
+      </list>
+    </property>
+
+  </bean>
+
+
+  <!-- Markup document resource type (subtype of Document)  -->
+  <bean id="xmlDocumentResourceTypeDefinition" class="org.vortikal.repositoryimpl.ResourceTypeDefinitionImpl">
+    <property name="name" value="XMLDocument"/>
+
+    <!-- not sure about namespace -->
+    <property name="namespace"><value>http://vortex.uio.no/resource-type/document/xml</value></property>
+
+    <!-- Properties valid for the resource type -->
+    <property name="properties">
+      <list>
+        <ref bean="xmlschemaPropDef"/>
+      </list>
+    </property>
+
+    <property name="parentResourceType"><ref bean="documentResourceTypeDefinition"/></property>
+
+    <property name="mixinResourceTypes"><null/></property>
+    <property name="childResourceTypes"><null/></property>
+  </bean>
+
+
+  <!-- UHTML mixin type -->
+  <bean id="uhtmlResourceTypeDefinition" class="org.vortikal.repositoryimpl.ResourceTypeDefinitionImpl">
+    <property name="name" value="UHTML-resource"/>
+    <property name="mixinType" value="true"/>
+    <property name="namespace"><value>http://vortex.uio.no/resource-type/mixins/uhtml</value></property>
+    
+    <property name="properties">
+      <list>
+        <!-- ... -->
+      </list>
+    </property>
+
+    <property name="resourceTypeAssertions">
+      <list>
+        <!-- ... -->
+      </list>
+    </property>
+
+    <!-- Parent resource for mixins is defined by the mixin context resource type -->
+    <property name="parentResourceType"><null/></property>
+    <property name="childResourceTypes"><null/></property>
+
+  </bean>
+
+  <!-- Property definitions -->
+  <!-- 'fooprop' prop -->
+  <bean id="foopropDef" class="org.vortikal.repositoryimpl.PropertyDefinitionImpl">
+    <!-- Property name -->
+    <property name="name" value="fooprop"/>
+
+    <!-- Property type -->
+    <property name="type" ref="org.vortikal.repository.PropertyType.STRING"/>
+
+    <!-- Multivalued or not (list or not) -->
+    <property name="isMultiple" value="false"/>
+
+    <!-- Constraints on allowed values (if "multiple", the constraint(s) shall apply
+         on each element of the list)  -->
+    <property name="valueConstraints"><!-- probably not list -->
+      <list>
+        <bean class="org.vortikal.repositoryimpl.StringValueConstraint">
+          <property name="regexp">
+            <value>^foo[0-9]+</value>
+          </property>
+        </bean>
+      </list>
+    </property>
+
+  </bean>
+
+  <!-- 'barprop' prop -->
+  <bean id="barpropDef" class="org.vortikal.repositoryimpl.PropertyDefinitionImpl">
+    <!-- Property name -->
+    <property name="name" value="barprop"/>
+
+    <!-- Property type -->
+    <property name="type" ref="org.vortikal.repository.PropertyType.INTEGER"/>
+
+    <!-- Multivalued or not (list or not) -->
+    <property name="isMultiple" value="true"/>
+
+    <!-- Constraints on allowed -->
+    <property name="valueConstraints">
+      <list>
+        <!-- Property.getValueConstraint(); -->
+        <bean class="org.vortikal.repositoryimpl.NumericValueConstraint">
+          <property name="inclusive" value="true"/>
+          <property name="maxValue" value="2006"/>
+          <property name="minValue" value="1900"/>
+        </bean>
+      </list>
+    </property>
+
+    <!-- Resource assertions here ? -->
+    <!-- Not sure about this -->
+    <property name="extractor">
+      <bean class="org.vortikal.repositoryimpl.XPathNodeExtractor">
+        <property name="xpathExpression">
+          <value>//document/@fooprop</value>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <!-- 'schema' prop -->
+  <bean id="xmlschemaPropDef" class="org.vortikal.repositoryimpl.PropertyDefinitionImpl">
+    <!-- Property name -->
+    <property name="name" value="schema"/>
+
+    <!-- Property type -->
+    <property name="type" ref="org.vortikal.repository.PropertyType.URI"/>
+
+    <!-- Multivalued or not (list or not) -->
+    <property name="isMultiple" value="false"/>
+
+    <!-- Constraints on allowed values -->
+    <property name="valueConstraints">
+      <list>
+        <!-- hmm -->
+        <bean class="org.vortikal.repositoryimpl.XMLSchemaValueConstraint">
+        </bean>
+      </list>
+    </property>
+
+    <!-- Resource assertions here ? -->
+    <!-- Not sure about this -->
+    <property name="extractor">
+      <bean class="org.vortikal.repositoryimpl.XPathNodeExtractor">
+        <property name="xpathExpression">
+          <value>//document/@fooprop</value>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <!-- Property data types -->
+  <bean id="org.vortikal.repository.PropertyType.STRING"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+
+  <bean id="org.vortikal.repository.PropertyType.INTEGER"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+
+  <bean id="org.vortikal.repository.PropertyType.DATE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+
+  <bean id="org.vortikal.repository.PropertyType.BOOLEAN"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+
+  <bean id="org.vortikal.repository.PropertyType.XML"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+
+  <bean id="org.vortikal.repository.PropertyType.URI"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+
+</beans>

@@ -30,6 +30,13 @@
     <property name="viewName" value="collectionListing" />
     <property name="displayProcessed" value="true" />
   </bean>
+  
+  <bean id="collectionListingAsRssHandler" 
+    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="collectionListingAsRss" />
+  </bean>
+  
 
   <bean id="displayIndexHtmlHandler" 
     class="org.vortikal.web.controller.DisplayResourceController"

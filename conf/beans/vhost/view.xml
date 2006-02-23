@@ -33,6 +33,9 @@
         </entry>
         <entry key="displayHTMLResource" 
                value-ref="displayResourceView" />
+        <entry key="collectionListingAsRss" 
+          value-ref="collectionListingAsRssView" />        
+        
       </map>
     </property>
   </bean>
@@ -395,4 +398,29 @@
      </constructor-arg>
    </bean>
 
+  <bean id="romeFeedView" class="org.vortikal.web.view.RomeFeedView"  abstract="true" />
+
+    
+  <bean id="collectionListingAsRssView" parent="romeFeedView">
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="viewCollectionListingAsRssProvider"/>
+        <ref bean="viewRomeFeedProvider"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="viewCollectionListingAsRssProvider"
+    class="org.vortikal.web.referencedata.provider.CollectionListingAsRssProvider"
+    parent="requestLocalRepositoryAware" >
+    <property name="browsingService" ref="viewService" />
+  </bean>
+  
+  <bean id="viewRomeFeedProvider"
+    class="org.vortikal.web.referencedata.provider.RomeFeedProvider">
+    <property name="browsingService" ref="viewService" />
+    <property name="defaultFeedType" value="rss_1.0" />
+    <!-- <property name="charset" value="utf-8" /> -->
+  </bean>
+  
 </beans>

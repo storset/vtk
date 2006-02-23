@@ -191,7 +191,18 @@
     </property>
   </bean>
 
-
+  <bean id="collectionListingAsRssService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListingService" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="rssParameterSetAssertion" />
+        </list>
+    </property>
+    <property name="handler">
+      <ref bean="collectionListingAsRssHandler" />
+    </property>
+  </bean>
 
 
   <bean id="displayIndexHtmlFileService" class="org.vortikal.web.service.ServiceImpl">

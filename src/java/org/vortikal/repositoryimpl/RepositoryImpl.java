@@ -1225,13 +1225,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return true;
     }
 
-    public void destroy() throws IOException {
-        if (dao != null) {
-            logger.info("destroying database");
-            dao.destroy();
-        }
-    }
-
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }

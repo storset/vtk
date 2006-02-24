@@ -489,15 +489,9 @@ public interface Repository {
             AuthenticationException, AclException, IllegalOperationException, 
             ReadOnlyException, IOException;
 
-    /**
-     * Indicates to the repository that it no longer will be
-     * used. This allows implementations to perform clean-up
-     * operations such as getting rid of database connections, etc.
-     */
-    public void destroy() throws IOException;
     
     /**
-     * Get the repository id.
+     * Get the repository ID.
      */
     public String getId();
     

@@ -151,11 +151,6 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
-    public void destroy() throws IOException {
-        //wrappedAccessor.destroy();
-    }
-
-
     public Resource[] load(String[] uris) throws IOException {
         List found = new ArrayList();
         List notFound = new ArrayList();

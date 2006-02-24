@@ -50,9 +50,6 @@ public interface DataAccessor {
      */
     public boolean validate() throws IOException;
 
-    /* Called when the data accessor is brought down */
-    public void destroy() throws IOException;
-
     /* Loads a single resource */
     public Resource load(String uri) throws IOException;
 

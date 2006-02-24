@@ -291,10 +291,6 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         repository.storeACL(token, uri, acl);
     }
 
-    public void destroy() throws IOException {
-        repository.destroy();
-    }
-
     private void throwAppropriateException(String uri, Throwable t) throws 
         AclException, AuthenticationException, AuthorizationException,
         FailedDependencyException, IOException, IllegalOperationException,

@@ -44,6 +44,7 @@ import java.util.Stack;
 import java.util.Vector;
 
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.LockType;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -116,7 +117,7 @@ public class EditDocument extends Document {
         Principal principal = securityContext.getPrincipal();
         String uri = requestContext.getResourceURI();
         
-        String type = Lock.LOCKTYPE_EXCLUSIVE_WRITE;
+        String type = LockType.LOCKTYPE_EXCLUSIVE_WRITE;
         repository.lock(token, uri, type, principal.getQualifiedName(), "0", lockTimeoutSeconds, null);
 
         Resource resource = repository.retrieve(token, uri, false);

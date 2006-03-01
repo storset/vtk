@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.doomdark.uuid.UUIDGenerator;
 import org.vortikal.repository.Ace;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
@@ -62,6 +63,9 @@ import org.vortikal.util.repository.URIUtil;
 
 
 public class ResourceManager {
+
+    public final static long LOCK_DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    public final static long LOCK_MAX_TIMEOUT = LOCK_DEFAULT_TIMEOUT;
 
     private PrincipalManager principalManager;
     private RoleManager roleManager;
@@ -83,35 +87,36 @@ public class ResourceManager {
     
 
     public void lockAuthorize(Resource resource, Principal principal, String privilege)
-                  throws ResourceLockedException, IOException, AuthenticationException {
-        if (resource.getLock() != null) {
+                  throws ResourceLockedException, AuthenticationException {
 
-            if (!org.vortikal.repository.PrivilegeDefinition.WRITE.equals(
-                    privilege)) {
-                return;
-            }
+        if (resource.getLock() == null) {
+            return;
+        }
 
-            if (principal == null) {
-                throw new AuthenticationException();
-            }
+        if (!org.vortikal.repository.PrivilegeDefinition.WRITE.equals(privilege)) {
+            return;
+        }
 
-            if (!resource.getLock().getUser().equals(principal.getQualifiedName())) {
-                throw new org.vortikal.repository.ResourceLockedException();
-            }
+        if (principal == null) {
+            throw new AuthenticationException();
+        }
+
+        if (!resource.getLock().getUser().equals(principal.getQualifiedName())) {
+            throw new org.vortikal.repository.ResourceLockedException();
         }
     }
-
+    
     public void lockAuthorizeRecursively(Collection collection, Principal principal,
                                          String privilege) 
         throws ResourceLockedException, IOException, AuthenticationException {
 
-        this.lockAuthorize(collection, principal, privilege);
+        lockAuthorize(collection, principal, privilege);
 
         String[] uris = this.dao.discoverLocks(collection);
 
         for (int i = 0; i < uris.length;  i++) {
             Resource ancestor = this.dao.load(uris[i]);
-            this.lockAuthorize(ancestor, principal, privilege);
+            lockAuthorize(ancestor, principal, privilege);
         }
     }
 
@@ -124,25 +129,32 @@ public class ResourceManager {
             ResourceLockedException, IOException {
 
 
-        this.authorize(resource, principal,
-            org.vortikal.repository.PrivilegeDefinition.WRITE);
+        authorize(resource, principal, org.vortikal.repository.PrivilegeDefinition.WRITE);
 
-        if (resource.getLock() != null) {
-            this.lockAuthorize(resource, principal,
+        lockAuthorize(resource, principal,
                 org.vortikal.repository.PrivilegeDefinition.WRITE);
-        }
 
         if (!refresh) {
             resource.setLock(null);
         }
 
         if (resource.getLock() == null) {
-            resource.setLock(new Lock(principal, ownerInfo, depth,
-                new Date(System.currentTimeMillis() +
-                         (desiredTimeoutSeconds * 1000))));
+            String lockToken = "opaquelocktoken:" +
+                UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+
+            Date timeout = new Date(System.currentTimeMillis() + LOCK_DEFAULT_TIMEOUT);
+
+            if ((desiredTimeoutSeconds * 1000) > LOCK_MAX_TIMEOUT) {
+                timeout = new Date(System.currentTimeMillis() + LOCK_DEFAULT_TIMEOUT);
+            }
+
+            LockImpl lock = new LockImpl(lockToken,principal.getQualifiedName(), ownerInfo, depth, timeout);
+            resource.setLock(lock);
+                    
+            
         } else {
             resource.setLock(
-                new Lock(resource.getLock().getLockToken(), principal.getQualifiedName(),
+                new LockImpl(resource.getLock().getLockToken(), principal.getQualifiedName(),
                          ownerInfo, depth, 
                          new Date(System.currentTimeMillis() + (desiredTimeoutSeconds * 1000))));
         }
@@ -159,8 +171,7 @@ public class ResourceManager {
 
         if (resource.getLock() != null) {
             if (!this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                this.lockAuthorize(resource, principal,
-                                   org.vortikal.repository.PrivilegeDefinition.WRITE);
+                lockAuthorize(resource, principal, org.vortikal.repository.PrivilegeDefinition.WRITE);
             }
             resource.setLock(null);
             this.dao.store(resource);
@@ -174,7 +185,7 @@ public class ResourceManager {
         
         if (resource.getLock() != null) {
             // XXX: remove authorization here, 
-            this.lockAuthorize(resource, principal,
+            lockAuthorize(resource, principal,
                 org.vortikal.repository.PrivilegeDefinition.WRITE);
         }
         this.dao.delete(resource);
@@ -528,59 +539,77 @@ public class ResourceManager {
     }
 
     
-    
+    public org.vortikal.repository.Lock[] getActiveLocks(LockImpl lock) {
+        if (lock != null) {
+            // Is cloning neccessary and/or working?
+            LockImpl clone = (LockImpl)lock.clone();
+            clone.setPrincipal(principalManager.getPrincipal(clone.getUser()));
+            return new org.vortikal.repository.Lock[] { clone };
+        }
+        
+        return new org.vortikal.repository.Lock[] { };
+    }
+
+
     
     public org.vortikal.repository.Resource getResourceDTO(
             Resource resource, Principal principal) throws IOException {
-            org.vortikal.repository.Resource dto = new org.vortikal.repository.Resource();
 
-            dto.setURI(resource.getURI());
-            dto.setCreationTime(resource.getCreationTime());
-            dto.setContentLastModified(resource.getContentLastModified());
-            dto.setPropertiesLastModified(resource.getPropertiesLastModified());
-            dto.setContentModifiedBy(principalManager.getPrincipal(resource.getContentModifiedBy()));
-            dto.setPropertiesModifiedBy(principalManager.getPrincipal(resource.getPropertiesModifiedBy()));
-            dto.setContentType(resource.getContentType());
-            dto.setCharacterEncoding(resource.getCharacterEncoding());
-            dto.setDisplayName(resource.getDisplayName());
-            dto.setActiveLocks((resource.lock == null)
-                ? new org.vortikal.repository.Lock[] {  }
-                : new org.vortikal.repository.Lock[] { resource.lock.getLockDTO(principalManager) });
-            dto.setName(resource.name);
-            dto.setOwner(principalManager.getPrincipal(resource.owner));
-            dto.setProperties(resource.getPropertyDTOs());
+        org.vortikal.repository.Resource dto = new org.vortikal.repository.Resource();
 
-            try {
-                ACL originalACL = (ACL) resource.acl.clone();
+        dto.setURI(resource.getURI());
+        dto.setCreationTime(resource.getCreationTime());
+        dto.setContentLastModified(resource.getContentLastModified());
+        dto.setPropertiesLastModified(resource.getPropertiesLastModified());
+        dto.setContentType(resource.getContentType());
+        dto.setCharacterEncoding(resource.getCharacterEncoding());
+        dto.setDisplayName(resource.getDisplayName());
+        dto.setName(resource.name);
 
-                dto.setACL(addRolesToACL(resource, originalACL));
+        dto.setActiveLocks(getActiveLocks(resource.getLock()));
 
-                if ("/".equals(resource.getURI())) {
-                    dto.setParentACL(new Ace[0]);
-                } else {
-                    Resource parent = this.dao.load(URIUtil.getParentURI(resource.getURI()));
-                    ACL parentACL = (ACL) parent.getACL().clone();
+        dto.setOwner(principalManager.getPrincipal(resource.owner));
+        dto.setContentModifiedBy(principalManager.getPrincipal(resource
+                .getContentModifiedBy()));
+        dto.setPropertiesModifiedBy(principalManager.getPrincipal(resource
+                .getPropertiesModifiedBy()));
 
-                    dto.setParentACL(addRolesToACL(resource, parentACL));
-                    dto.setParentOwner(principalManager.getPrincipal(parent.getOwner()));
-                }
-            } catch (CloneNotSupportedException e) {
-            }
+        dto.setProperties(resource.getPropertyDTOs());
 
-            if (resource.isCollection()) {
-               dto.setChildURIs(((Collection)resource).getChildURIs());
+        try {
+            ACL originalACL = (ACL) resource.acl.clone();
+
+            dto.setACL(addRolesToACL(resource, originalACL));
+
+            if ("/".equals(resource.getURI())) {
+                dto.setParentACL(new Ace[0]);
             } else {
-               dto.setContentLength(dao.getContentLength(resource));
-               dto.setContentLocale(((Document)resource).getContentLocale());
+                Resource parent = this.dao.load(URIUtil.getParentURI(resource
+                        .getURI()));
+                ACL parentACL = (ACL) parent.getACL().clone();
+
+                dto.setParentACL(addRolesToACL(resource, parentACL));
+                dto.setParentOwner(principalManager.getPrincipal(parent
+                        .getOwner()));
             }
-            
-            return dto;
+        } catch (CloneNotSupportedException e) {
         }
+
+        if (resource.isCollection()) {
+            dto.setChildURIs(((Collection) resource).getChildURIs());
+        } else {
+            dto.setContentLength(dao.getContentLength(resource));
+            dto.setContentLocale(((Document) resource).getContentLocale());
+        }
+
+        return dto;
+    }
 
     /**
      * Adds root and read everything roles to ACL
-     *
-     * @param originalACL an <code>Ace[]</code> value
+     * 
+     * @param originalACL
+     *            an <code>Ace[]</code> value
      * @return an <code>Ace[]</code>
      */
     private Ace[] addRolesToACL(Resource resource, ACL originalACL) {

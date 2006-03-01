@@ -43,6 +43,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.LockType;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -170,7 +171,7 @@ public class PlaintextEditController extends SimpleFormController
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         
-        String type = Lock.LOCKTYPE_EXCLUSIVE_WRITE;
+        String type = LockType.LOCKTYPE_EXCLUSIVE_WRITE;
         repository.lock(token, uri, type, principal.getQualifiedName(), "0",
                         this.lockTimeoutSeconds, null);
 

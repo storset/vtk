@@ -34,7 +34,7 @@ package org.vortikal.security;
 /**
  * A representation of a principal.
  */
-public interface Principal extends Comparable {
+public interface Principal extends Comparable, java.io.Serializable {
     
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.

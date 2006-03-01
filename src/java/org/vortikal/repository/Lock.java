@@ -34,77 +34,21 @@ import org.vortikal.security.Principal;
 
 
 /**
- * This class encapsulates meta information about a lock.
+ * This interface defines the meta information about a lock.
  */
-public class Lock implements java.io.Serializable, Cloneable {
+public interface Lock extends java.io.Serializable, Cloneable {
 
-    private static final long serialVersionUID = 3546639889186633783L;
+    public String getLockType();
+
+    public String getDepth();
+
+    public Principal getPrincipal();
     
-    // Supported lock types:
-    public static final String LOCKTYPE_EXCLUSIVE_WRITE = "EXCLUSIVE_WRITE";
-    private String type;
-    private String depth;
-    private Principal principal;
-    private String ownerInfo;
-    private java.util.Date timeout;
-    private String token;
+    public String getOwnerInfo();
 
-    public Lock(String type, String depth, Principal principal, String ownerInfo,
-        java.util.Date timeout, String token) {
-        this.type = type;
-        this.depth = depth;
-        this.principal = principal;
-        this.ownerInfo = ownerInfo;
-        this.timeout = timeout;
-        this.token = token;
-    }
+    public java.util.Date getTimeout();
 
-    public String getLockType() {
-        return type;
-    }
-
-    public String getDepth() {
-        return depth;
-    }
-
-    /** 
-     * @deprecated
-     */
-    public String getUser() {
-        return principal.getQualifiedName();
-    }
-
-    public Principal getPrincipal() {
-        return principal;
-    }
+    public String getLockToken();
     
-    public String getOwnerInfo() {
-        return ownerInfo;
-    }
-
-    public java.util.Date getTimeout() {
-        return timeout;
-    }
-
-    public String getLockToken() {
-        return token;
-    }
-
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
-        sb.append("[");
-        sb.append("type = ").append(this.type);
-        sb.append(", depth =").append(this.depth);
-        sb.append(", principal = ").append(this.principal);
-        sb.append(", ownerInfo = ").append(this.ownerInfo);
-        sb.append(", timeout = ").append(this.timeout);
-        sb.append(", token = ").append(this.token);
-        sb.append("]");
-        return sb.toString();
-    }
-    
+    public Object clone() throws CloneNotSupportedException;
 }

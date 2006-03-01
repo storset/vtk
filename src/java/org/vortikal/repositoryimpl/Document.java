@@ -52,7 +52,7 @@ public class Document extends Resource implements Cloneable {
     protected Locale contentLocale = null;
 
     public Document(String uri, String owner, String contentModifiedBy,
-        String propertiesModifiedBy, ACL acl, boolean inheritedACL, Lock lock,
+        String propertiesModifiedBy, ACL acl, boolean inheritedACL, LockImpl lock,
         DataAccessor dao, PrincipalManager principalManager) {
         super(uri, owner, contentModifiedBy, propertiesModifiedBy, acl,
             inheritedACL, lock, dao, principalManager);
@@ -61,7 +61,7 @@ public class Document extends Resource implements Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
         ACL acl = (this.acl == null) ? null : (ACL) this.acl.clone();
-        Lock lock = (this.lock == null) ? null : (Lock) this.lock.clone();
+        LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock.clone();
 
         return new Document(uri, owner, contentModifiedBy,
             propertiesModifiedBy, acl, inheritedACL, lock, dao, principalManager);

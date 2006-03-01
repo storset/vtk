@@ -51,6 +51,7 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.web.servlet.View;
 
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.LockType;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.InvalidModelException;
 
@@ -132,7 +133,7 @@ public class LockView implements View {
         String type = "invalid";
         String scope = "invalid";
 
-        if (lockInfo.getLockType().equals(Lock.LOCKTYPE_EXCLUSIVE_WRITE)) {
+        if (lockInfo.getLockType().equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
             scope = "exclusive";
             type = "write";
         }

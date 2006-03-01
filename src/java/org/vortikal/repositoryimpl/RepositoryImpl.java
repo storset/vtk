@@ -33,12 +33,7 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -77,7 +72,6 @@ import org.vortikal.util.repository.URIUtil;
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware,
                                        InitializingBean {
-    private static Log logger = LogFactory.getLog(RepositoryImpl.class);
 
     public static final int MAX_URI_LENGTH = 1500;
     private boolean readOnly = false;
@@ -92,14 +86,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private String id;
 
     /* The CMS API implementation */
-    public org.vortikal.repository.Configuration getConfiguration()
-        throws IOException {
+    public org.vortikal.repository.Configuration getConfiguration() {
         return new Configuration(this.readOnly);
     }
 
     public void setConfiguration(String token,
-        org.vortikal.repository.Configuration c)
-        throws IOException {
+        org.vortikal.repository.Configuration c) {
 
         if (c == null) {
             throw new IllegalArgumentException("Configuration is null");

@@ -59,7 +59,7 @@ import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.Document;
-import org.vortikal.repositoryimpl.Lock;
+import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.LocaleHelper;
@@ -328,10 +328,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             boolean inherited = rs.getString("acl_inherited").equals("Y");
             ACL acl = new ACL();
 
-            Lock lock = null;
+            LockImpl lock = null;
 
             if (locks.containsKey(uri)) {
-                lock = (Lock) locks.get(uri);
+                lock = (LockImpl) locks.get(uri);
             }
 
             Resource resource = null;
@@ -615,7 +615,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             conn = getConnection();
 
             if (!(directory instanceof Collection)) {
-                Lock lock = loadLock(conn, directory.getURI());
+                LockImpl lock = loadLock(conn, directory.getURI());
 
                 return (lock != null) ? new String[] {directory.getURI()} : new String[0];
             }
@@ -674,7 +674,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return (String[]) result.toArray(new String[] {});
     }
 
-    private Lock loadLock(Connection conn, String uri)
+    private LockImpl loadLock(Connection conn, String uri)
             throws SQLException {
         String query = "select * from VORTEX_LOCK where resource_id in ("
                 + "select resource_id from VORTEX_RESOURCE where uri = ?)";
@@ -685,10 +685,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         ResultSet rs = stmt.executeQuery();
 
-        Lock lock = null;
+        LockImpl lock = null;
 
         if (rs.next()) {
-            lock = new Lock(rs.getString("token"), rs.getString("lock_owner"), rs
+            lock = new LockImpl(rs.getString("token"), rs.getString("lock_owner"), rs
                     .getString("lock_owner_info"), rs.getString("depth"), 
                     new Date(rs.getTimestamp("timeout").getTime()));
         }
@@ -723,7 +723,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         Map result = new HashMap();
 
         while (rs.next()) {
-            Lock lock = new Lock(
+            LockImpl lock = new LockImpl(
                 rs.getString("token"), rs.getString("lock_owner"),
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
@@ -1022,7 +1022,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private void storeLock(Connection conn, Resource r)
             throws SQLException {
-        Lock lock = r.getLock();
+        LockImpl lock = r.getLock();
 
         if (lock == null) {
             Statement stmt = conn.createStatement();
@@ -1479,10 +1479,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             boolean inherited = rs.getString("acl_inherited").equals("Y");
             ACL acl = new ACL();
 
-            Lock lock = null;
+            LockImpl lock = null;
 
             if (locks.containsKey(uri)) {
-                lock = (Lock) locks.get(uri);
+                lock = (LockImpl) locks.get(uri);
             }
 
             Resource resource = null;
@@ -1795,7 +1795,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         Map result = new HashMap();
 
         while (rs.next()) {
-            Lock lock = new Lock(
+            LockImpl lock = new LockImpl(
                 rs.getString("token"), rs.getString("lock_owner"),
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));

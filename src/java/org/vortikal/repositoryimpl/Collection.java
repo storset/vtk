@@ -30,35 +30,18 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
-import org.vortikal.repository.AclException;
-import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.FailedDependencyException;
-import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.PrivilegeDefinition;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
-import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.roles.RoleManager;
-import org.vortikal.util.repository.MimeHelper;
 
 
 public class Collection extends Resource implements Cloneable {
     private String[] childURIs = null;
 
     public Collection(String uri, String owner, String contentModifiedBy,
-        String propertiesModifiedBy, ACL acl, boolean inheritedACL, Lock lock,
+        String propertiesModifiedBy, ACL acl, boolean inheritedACL, LockImpl lock,
         DataAccessor dao, PrincipalManager principalManager, String[] childURIs) {
         super(uri, owner, contentModifiedBy, propertiesModifiedBy, acl,
             inheritedACL, lock, dao, principalManager);
@@ -68,7 +51,7 @@ public class Collection extends Resource implements Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
         ACL acl = (this.acl == null) ? null : (ACL) this.acl.clone();
-        Lock lock = (this.lock == null) ? null : (Lock) this.lock.clone();
+        LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock.clone();
         String[] clonedChildURIs = new String[childURIs.length];
 
         System.arraycopy(childURIs, 0, clonedChildURIs, 0, childURIs.length);

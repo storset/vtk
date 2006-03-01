@@ -49,6 +49,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.LockType;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
@@ -89,7 +90,7 @@ public class LockController extends AbstractWebdavController {
 
         try {
             
-            String type = Lock.LOCKTYPE_EXCLUSIVE_WRITE;
+            String type = LockType.LOCKTYPE_EXCLUSIVE_WRITE;
             String lockToken = null;
             String refreshLockToken = null;
             String ownerInfo = securityContext.getPrincipal().toString();

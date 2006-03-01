@@ -56,7 +56,7 @@ public abstract class Resource implements Cloneable {
     protected String propertiesModifiedBy = null;
     protected ACL acl = null;
     protected boolean inheritedACL = true;
-    protected Lock lock = null;
+    protected LockImpl lock = null;
     protected Date creationTime = null;
     protected Date contentLastModified = null;
     protected Date propertiesLastModified = null;
@@ -69,7 +69,7 @@ public abstract class Resource implements Cloneable {
     protected boolean dirtyACL = false;
 
     public Resource(String uri, String owner, String contentModifiedBy,
-        String propertiesModifiedBy, ACL acl, boolean inheritedACL, Lock lock,
+        String propertiesModifiedBy, ACL acl, boolean inheritedACL, LockImpl lock,
         DataAccessor dao, PrincipalManager principalManager) {
         this.uri = uri;
         this.owner = owner;
@@ -107,11 +107,11 @@ public abstract class Resource implements Cloneable {
         return this.acl;
     }
 
-    public Lock getLock() {
+    public LockImpl getLock() {
         return this.lock;
     }
 
-    public void setLock(Lock lock) {
+    public void setLock(LockImpl lock) {
         this.lock = lock;
     }
 

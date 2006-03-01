@@ -19,7 +19,6 @@
 
   <bean id="repository.repositoryContentStoreInterceptor" 
         class="org.vortikal.aop.interceptor.RepositoryContentStoreInterceptor">
-    <property name="resourceManager" ref="resourceManager" />
     <property name="contentHandlers">
       <list>
         <bean class="org.vortikal.aop.interceptor.XMLSchemaPropertyContentStoreHandler">
@@ -54,6 +53,7 @@
             </list>
           </property>
           <property name="principalManager" ref="principalManager" />
+          <property name="resourceManager" ref="resourceManager" />
           <property name="roleManager" ref="roleManager" />
         </bean>
       </list>

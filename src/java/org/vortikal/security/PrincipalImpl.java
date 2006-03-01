@@ -34,7 +34,7 @@ package org.vortikal.security;
 /**
  * Package local implementation of {@link Principal}.
  */
-class PrincipalImpl implements Principal, java.io.Serializable {
+class PrincipalImpl implements Principal {
 
     private static final long serialVersionUID = 3257848766467092530L;
 

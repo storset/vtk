@@ -467,7 +467,7 @@ public class Resource implements java.io.Serializable, Cloneable {
      * are defined in <code>Lock</code>
      */
     public String[] getSupportedLocks() {
-        return new String[] { Lock.LOCKTYPE_EXCLUSIVE_WRITE };
+        return new String[] { LockType.LOCKTYPE_EXCLUSIVE_WRITE };
     }
 
     /**

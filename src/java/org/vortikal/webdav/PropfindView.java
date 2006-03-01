@@ -59,6 +59,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
 
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.LockType;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -422,7 +423,7 @@ public class PropfindView implements View, InitializingBean {
 
             String type = "";
             String scope = "";
-            if (lock.getLockType().equals(Lock.LOCKTYPE_EXCLUSIVE_WRITE)) {
+            if (lock.getLockType().equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
                 scope = "exclusive";
                 type = "write";
             }
@@ -487,7 +488,7 @@ public class PropfindView implements View, InitializingBean {
 
         for (int i = 0; i < supportedLocks.length; i++) {
             
-            if (supportedLocks[i].equals(Lock.LOCKTYPE_EXCLUSIVE_WRITE)) {
+            if (supportedLocks[i].equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
                 Element lockEntry = new Element("lockentry", WebdavConstants.DAV_NAMESPACE);
                 lockEntry.addContent(
                     new Element("lockscope", WebdavConstants.DAV_NAMESPACE).addContent(

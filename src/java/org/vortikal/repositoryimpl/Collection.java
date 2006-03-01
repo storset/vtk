@@ -78,24 +78,6 @@ public class Collection extends Resource implements Cloneable {
             clonedChildURIs);
     }
 
-    public List getChildren() throws IOException {
-        long start = System.currentTimeMillis();
-
-        //Resource[] children = dao.load(childURIs);
-        Resource[] children = dao.loadChildren(this);
-        List retVal = new ArrayList();
-
-        for (int i = 0; i < children.length; i++) {
-            retVal.add(children[i]);
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loading " + childURIs.length + " resources took " +
-                (System.currentTimeMillis() - start) + " ms");
-        }
-
-        return retVal;
-    }
 
     public void setChildURIs(String[] childURIs) {
         this.childURIs = childURIs;
@@ -106,296 +88,24 @@ public class Collection extends Resource implements Cloneable {
     }
     
 
-    public Resource create(Principal principal, String path,
-        RoleManager roleManager)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
-        return create(principal, principal, path,
-            new ACL(new HashMap(), principalManager), true, roleManager);
-    }
-
-    public Resource create(Principal principal, Principal owner, String path,
-        ACL acl, boolean inheritedACL, RoleManager roleManager)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
-        authorize(principal, PrivilegeDefinition.WRITE, roleManager);
-
-        String childName = path.substring(path.indexOf(uri));
-
-        /* FIXME: if write access = "dav:all": who creates the resource? */
-        if (principal == null) {
-            throw new AuthenticationException(
-                "Principal must be specified in order to create a resource");
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("creating " + childName);
-        }
-
-        Resource r = new Document(path, owner.getQualifiedName(), principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(new HashMap(), principalManager),
-                true, null, dao, principalManager);
-
-        Date now = new Date();
-
-        r.setCreationTime(now);
-        r.setContentLastModified(now);
-        r.setPropertiesLastModified(now);
-
-        r.setContentType(MimeHelper.map(r.getName()));
-
-        dao.store(r);
-
-        try {
-            r = dao.load(path);
-        } catch (Exception e) {
-            throw new IOException(e.getMessage());
-        }
-
-        if (!inheritedACL) {
-            acl.setResource(r);
-            r.setInheritedACL(false);
-            r.storeACL(principal, acl.toAceList(), roleManager, false);
-        }
-
-        addChildURI(r.getURI());
-
-        // Update timestamps:
-        setContentLastModified(new Date());
-        setPropertiesLastModified(new Date());
-
-        // Update principal info:
-        setContentModifiedBy(principal.getQualifiedName());
-        setPropertiesModifiedBy(principal.getQualifiedName());
-
-        dao.store(this);
-
-        return r;
-    }
-
     /**
-     * Creates a collection with an inherited ACL
+     * Adds a URI to the child URI list.
      *
+     * @param childURI a <code>String</code> value
      */
-    public Resource createCollection(Principal principal, String path,
-        RoleManager roleManager)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
-        return createCollection(principal, principal.getQualifiedName(), path,
-            new ACL(new HashMap(), principalManager), true, roleManager);
-    }
+    public void addChildURI(String childURI) {
+        synchronized (childURIs) {
+            ArrayList l = new ArrayList();
 
-    /**
-     * Creates a collection with a specified owner and (possibly inherited) ACL.
-     */
-    public Resource createCollection(Principal principal, String owner,
-        String path, ACL acl, boolean inheritedACL, RoleManager roleManager)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
-        authorize(principal, PrivilegeDefinition.WRITE, roleManager);
+            l.addAll(Arrays.asList(childURIs));
+            l.add(childURI);
 
-        Resource r = new Collection(path, owner, principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(new HashMap(), principalManager),
-                true, null, dao, principalManager, new String[] {  });
+            String[] newChildren = (String[]) l.toArray(new String[] {  });
 
-        Date now = new Date();
-
-        r.setCreationTime(now);
-        r.setContentLastModified(now);
-        r.setPropertiesLastModified(now);
-        dao.store(r);
-        r = dao.load(path);
-
-        if (!inheritedACL) {
-            acl.setResource(r);
-            r.setInheritedACL(false);
-            r.storeACL(principal, acl.toAceList(), roleManager, false);
-        }
-
-        addChildURI(r.getURI());
-
-        // Update timestamps:
-        setContentLastModified(new Date());
-        setPropertiesLastModified(new Date());
-
-        // Update principal info:
-        setContentModifiedBy(principal.getQualifiedName());
-        setPropertiesModifiedBy(principal.getQualifiedName());
-
-        dao.store(this);
-
-        return r;
-    }
-
-    public void copy(Principal principal, Resource resource, String destUri,
-                     boolean preserveACL, boolean preserveOwner, PrincipalManager principalManager,
-                     RoleManager roleManager)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, IOException, ResourceLockedException, 
-            AclException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("copy(" + resource.getURI() + "," + destUri + "), " +
-                "principal = " + principal.getQualifiedName());
-        }
-
-        ACL acl = (!preserveACL || resource.getInheritedACL())
-            ? new ACL(new HashMap(), principalManager) : resource.getACL();
-
-        boolean aclInheritance = (!preserveACL || resource.getInheritedACL());
-
-//         Principal owner = (preserveOwner)
-//             ? new PrincipalImpl(resource.getOwner()) : principal;
-        Principal owner = (preserveOwner) ?
-            principalManager.getPrincipal(resource.getOwner()) : principal;
-
-        if (resource instanceof Collection) {
-            Collection child = (Collection) createCollection(
-                principal, owner.getQualifiedName(),
-                destUri, acl, aclInheritance, roleManager);
-
-            child.setProperties(resource.getPropertyDTOs());
-            dao.store(child);
-
-            for (Iterator i = ((Collection) resource).getChildren().iterator();
-                    i.hasNext();) {
-                Resource r = (Resource) i.next();
-
-                child.copy(principal, r,
-                    child.getURI() + "/" +
-                    r.getURI().substring(r.getURI().lastIndexOf("/") + 1),
-                           preserveACL, preserveOwner, principalManager, roleManager);
-            }
-
-            return;
-        }
-
-        Document src = (Document) resource;
-        Document doc = (Document) create(principal, owner, destUri, acl,
-                aclInheritance, roleManager);
-
-        doc.setContentType(src.getContentType());
-        doc.setContentLocale(src.getContentLocale());
-        doc.setCharacterEncoding(src.getCharacterEncoding());
-        doc.setProperties(src.getPropertyDTOs());
-
-        dao.store(doc);
-
-        InputStream input = src.getInputStream(owner, PrivilegeDefinition.READ,
-                roleManager);
-
-        OutputStream output = null;
-
-        output = dao.getOutputStream(doc);
-
-        byte[] buf = new byte[1024];
-        int bytesRead = 0;
-
-        while ((bytesRead = input.read(buf)) > 0) {
-            output.write(buf, 0, bytesRead);
-        }
-
-        input.close();
-        output.close();
-    }
-
-    public void delete(Principal principal, RoleManager roleManager)
-        throws AuthorizationException, AuthenticationException, 
-            ResourceLockedException, FailedDependencyException, IOException {
-        if (lock != null) {
-            recursiveLockAuthorize(principal, PrivilegeDefinition.WRITE,
-                roleManager);
-        }
-
-        dao.delete(this);
-    }
-
-    public void recursiveLockAuthorize(Principal principal, String privilege,
-        RoleManager roleManager)
-        throws ResourceLockedException, FailedDependencyException, IOException, 
-            AuthenticationException {
-        if (lock != null) {
-            lockAuthorize(principal, privilege, roleManager);
-        }
-
-        for (Iterator i = getChildren().iterator(); i.hasNext();) {
-            try {
-                Resource r = (Resource) i.next();
-
-                if (r instanceof Collection) {
-                    ((Collection) r).recursiveLockAuthorize(principal,
-                        privilege, roleManager);
-                } else {
-                    r.lockAuthorize(principal, privilege, roleManager);
-                }
-            } catch (ResourceLockedException e) {
-                throw new FailedDependencyException();
-            } catch (AuthenticationException e) {
-                throw new FailedDependencyException();
-            }
+            this.childURIs = newChildren;
         }
     }
 
-    public void recursiveAuthorize(Principal principal, String privilege,
-        RoleManager roleManager)
-        throws AuthorizationException, AuthenticationException, IOException {
-        authorize(principal, privilege, roleManager);
-
-        for (Iterator i = getChildren().iterator(); i.hasNext();) {
-            Resource r = (Resource) i.next();
-
-            if (r instanceof Document) {
-                r.authorize(principal, privilege, roleManager);
-            } else {
-                ((Collection) r).recursiveAuthorize(principal, privilege,
-                    roleManager);
-            }
-        }
-    }
-
-    public void store(Principal principal,
-        org.vortikal.repository.Resource dto, RoleManager roleManager)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IllegalOperationException, IOException {
-        acl.authorize(principal, PrivilegeDefinition.WRITE, dao, roleManager);
-
-        if (lock != null) {
-            lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
-        }
-
-        if (!this.owner.equals(dto.getOwner().getQualifiedName())) {
-            /* Attempt to take ownership, only the owner of a parent
-             * resource may do that, so do it in a secure manner: */
-            setOwner(principal, dto, dto.getOwner().getQualifiedName(), roleManager);
-        }
-
-        setPropertiesModifiedBy(principal.getQualifiedName());
-        setContentModifiedBy(principal.getQualifiedName());
-
-        if (!dto.getOverrideLiveProperties()) {
-            setContentLastModified(new Date());
-            setPropertiesLastModified(new Date());
-        } else {
-            setContentLastModified(dto.getContentLastModified());
-            setPropertiesLastModified(dto.getPropertiesLastModified());
-            setCreationTime(dto.getCreationTime());
-
-            if (logger.isDebugEnabled()) {
-                logger.debug(
-                    "Setting overriden live properties: "
-                    + "[propertiesLastModified:  " + dto.getPropertiesLastModified()
-                    + ", contentLastModified: " + dto.getContentLastModified()
-                    + ", creationTime: " + dto.getCreationTime() + "]");
-            }
-
-        }
-
-        setContentType(dto.getContentType());
-        setCharacterEncoding(null);
-        setDisplayName(dto.getDisplayName());
-        setProperties(dto.getProperties());
-
-        dao.store(this);
-    }
 
     /**
      * Overridden version of getResourceDTO(), adding child pointers.
@@ -420,21 +130,5 @@ public class Collection extends Resource implements Cloneable {
         return dto;
     }
 
-    /**
-     * Adds a URI to the child URI list.
-     *
-     * @param childURI a <code>String</code> value
-     */
-    private void addChildURI(String childURI) {
-        synchronized (childURIs) {
-            ArrayList l = new ArrayList();
 
-            l.addAll(Arrays.asList(childURIs));
-            l.add(childURI);
-
-            String[] newChildren = (String[]) l.toArray(new String[] {  });
-
-            this.childURIs = newChildren;
-        }
-    }
 }

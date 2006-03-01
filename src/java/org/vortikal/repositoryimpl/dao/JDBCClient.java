@@ -325,7 +325,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String contentModifiedBy = rs.getString("content_modified_by");
             String propertiesModifiedBy = rs.getString("properties_modified_by");
             boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL(new HashMap(), principalManager);
+            ACL acl = new ACL(new HashMap());
 
             Lock lock = null;
 
@@ -643,26 +643,32 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             throws SQLException {
         String uri = directory.getURI();
 
-        if (!uri.equals("/")) {
-            uri += "/";
-        }
-
         String query = "select r.uri, l.* from VORTEX_LOCK l inner join VORTEX_RESOURCE r "
                 + "on l.resource_id = r.resource_id "
                 + "where r.resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE where uri like ?";
+                + "select resource_id from VORTEX_RESOURCE where uri like ?)";
+        logger.info(query);
+        
+
         PreparedStatement stmt = conn.prepareStatement(query);
 
-        stmt.setString(1, uri + "/%");
+        if (!uri.equals("/")) {
+            uri += "/";
+        }
+        stmt.setString(1, uri + "%");
 
         ResultSet rs = stmt.executeQuery();
         List result = new ArrayList();
 
         while (rs.next()) {
             String lockURI = rs.getString("uri");
+            logger.info("URI: " + lockURI);
 
             result.add(lockURI);
         }
+
+        rs.close();
+        stmt.close();
 
         return (String[]) result.toArray(new String[] {});
     }
@@ -1104,7 +1110,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         existingResource = result[0];
 
-        if (existingResource.getInheritedACL() && r.getInheritedACL()) {
+        if (existingResource.isInheritedACL() && r.isInheritedACL()) {
             ACL newACL = r.getACL();
 
             if (existingResource.getACL().equals(newACL)) {
@@ -1134,7 +1140,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         deleteStatement.close();
 
-        if (r.getInheritedACL()) {
+        if (r.isInheritedACL()) {
             /*
              * The ACL is inherited. Update resource entry to reflect this
              * situation (and return)
@@ -1394,7 +1400,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             if (acl == null) {
 
-                acl = new ACL(new HashMap(), principalManager);
+                acl = new ACL(new HashMap());
                 acls.put(uri, acl);
             }
 
@@ -1469,7 +1475,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String contentModifiedBy = rs.getString("content_modified_by");
             String propertiesModifiedBy = rs.getString("properties_modified_by");
             boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL(new HashMap(), principalManager);
+            ACL acl = new ACL(new HashMap());
 
             Lock lock = null;
 
@@ -1599,7 +1605,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         for (int i = 0; i < resources.length; i++) {
 
             /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL(new HashMap(), principalManager);
+            ACL acl = new ACL(new HashMap());
             resources[i].setACL(acl);
         }
 
@@ -1640,7 +1646,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             if (acl == null) {
 
-                acl = new ACL(new HashMap(), principalManager);
+                acl = new ACL(new HashMap());
                 acls.put(uri, acl);
             }
 
@@ -1669,7 +1675,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             Resource resource = resources[i];
             ACL acl = null;
 
-            if (!resource.getInheritedACL()) {
+            if (!resource.isInheritedACL()) {
 
                 if (!acls.containsKey(resource.getURI())) {
                     throw new SQLException("Database inconsistency: resource "
@@ -1801,6 +1807,63 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.close();
 
         return result;
+    }
+
+    //------------- NEW STUFF
+
+    public String[] discoverACLs(Resource resource) throws IOException {
+        Connection conn = null;
+        String[] retVal = null;
+
+        try {
+            conn = getConnection();
+            retVal = discoverACLs(conn, resource);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred finding ACLs ", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+
+        return retVal;
+    }
+    
+    protected String[] discoverACLs(Connection conn, Resource resource)
+            throws SQLException {
+
+        String query = "select distinct r.uri as uri from ACL_ENTRY a inner join VORTEX_RESOURCE r "
+            + "on a.resource_id = r.resource_id "
+            + "where r.resource_id in ("
+            + "select resource_id  from VORTEX_RESOURCE where uri like ?)";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt = conn.prepareStatement(query);
+
+        String uri = resource.getURI();
+        if (!uri.equals("/")) {
+            uri += "/";
+        }
+        stmt.setString(1, uri + "%");
+        ResultSet rs = stmt.executeQuery();
+        
+        List uris = new ArrayList();
+
+        while (rs.next()) {
+            uris.add(rs.getString("uri"));
+        }
+
+        rs.close();
+        stmt.close();
+
+        return (String[]) uris.toArray(new String[uris.size()]);
+
     }
 
 }

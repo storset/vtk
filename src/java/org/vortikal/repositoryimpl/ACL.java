@@ -47,7 +47,6 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
-import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
@@ -64,33 +63,10 @@ public class ACL implements Cloneable {
      */
     private Map actionLists = new HashMap();
 
-    private Resource resource;
-
-    private PrincipalManager principalManager;
-
-    public ACL(PrincipalManager principalManager) {
-        if (principalManager == null) {
-            throw new IllegalArgumentException(
-                "principalManager cannot be null");
-        }
-
-        this.principalManager = principalManager;
-    }
-
-    public ACL(Map actionLists, PrincipalManager principalManager) {
-        if (principalManager == null) {
-            throw new IllegalArgumentException(
-                "principalManager cannot be null");
-        }
+    public ACL(Map actionLists) {
 
         validateActionMap(actionLists);
-
         this.actionLists = actionLists;
-        this.principalManager = principalManager;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     public Map getActionMap() {
@@ -102,8 +78,8 @@ public class ACL implements Cloneable {
         this.actionLists = actionLists;
     }
 
-    public void authorize(Principal principal, String action, DataAccessor dao,
-        RoleManager roleManager)
+    public void authorize(Principal principal, String action, Resource resource,
+                          PrincipalManager principalManager, RoleManager roleManager)
         throws AuthenticationException, AuthorizationException, IOException {
         /*
          * Special treatment for uio:read-processed needed:
@@ -111,7 +87,7 @@ public class ACL implements Cloneable {
          */
         if (action.equals(Resource.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
             try {
-                authorize(principal, PrivilegeDefinition.READ, dao, roleManager);
+                authorize(principal, PrivilegeDefinition.READ, resource, principalManager, roleManager);
 
                 return;
             } catch (AuthenticationException e) {
@@ -203,7 +179,7 @@ public class ACL implements Cloneable {
         }
 
         // Condition 6:
-        if (groupMatch(principalList, principal)) {
+        if (groupMatch(principalList, principal, principalManager)) {
             return;
         }
 
@@ -215,7 +191,7 @@ public class ACL implements Cloneable {
      *
      * @return an <code>Ace[]</code>
      */
-    public Ace[] toAceList() {
+    public Ace[] toAceList(Resource resource) {
         Set actions = actionLists.keySet();
 
         HashMap userMap = new HashMap();
@@ -301,8 +277,8 @@ public class ACL implements Cloneable {
             element.setPrivileges(privileges);
             element.setGranted(true);
 
-            if (this.resource.getInheritedACL()) {
-                element.setInheritedFrom(this.resource.getParentURI());
+            if (resource.isInheritedACL()) {
+                element.setInheritedFrom(resource.getParentURI());
             }
 
             acl[aclIndex++] = element;
@@ -326,7 +302,7 @@ public class ACL implements Cloneable {
         return false;
     }
 
-    public boolean groupMatch(List principalList, Principal principal)
+    public boolean groupMatch(List principalList, Principal principal, PrincipalManager principalManager)
         throws IOException {
         for (Iterator i = principalList.iterator(); i.hasNext();) {
             ACLPrincipal p = (ACLPrincipal) i.next();
@@ -353,7 +329,7 @@ public class ACL implements Cloneable {
      * @exception IllegalOperationException if an error occurs
      * @exception IOException if an error occurs
      */
-    public void validateACL(Ace[] aceList)
+    public static void validateACL(Ace[] aceList, PrincipalManager principalManager)
         throws AclException, IllegalOperationException, IOException {
         /*
          * Enforce ((dav:owner (dav:read dav:write dav:write-acl))
@@ -517,8 +493,10 @@ public class ACL implements Cloneable {
         return hashCode;
     }
 
-    protected Privilege[] getCurrentUserPrivileges(Principal principal,
-        DataAccessor dao, RoleManager roleManager) throws IOException {
+    protected Privilege[] getCurrentUserPrivileges(
+        Principal principal, Resource resource, PrincipalManager principalManager,
+        RoleManager roleManager) throws IOException {
+
         ArrayList privs = new ArrayList();
 
         String[] testedPrivileges = new String[] {
@@ -533,7 +511,7 @@ public class ACL implements Cloneable {
             /* Try to authorize against every privilege, and if it
              * works, add the privilege to the list: */
             try {
-                this.authorize(principal, action, dao, roleManager);
+                this.authorize(principal, action, resource, principalManager, roleManager);
 
                 Privilege priv = new Privilege();
 
@@ -580,7 +558,8 @@ public class ACL implements Cloneable {
      * trimmed of whitespace, since the principal manager may be
      * tolerant and pass these trough validation).
      */
-    ACL buildACL(Ace[] aceList) throws AclException {
+    public static ACL buildACL(Ace[] aceList, PrincipalManager principalManager)
+        throws AclException {
         HashMap privilegeMap = new HashMap();
 
         for (int i = 0; i < aceList.length; i++) {
@@ -638,7 +617,8 @@ public class ACL implements Cloneable {
             }
         }
 
-        ACL acl = new ACL(privilegeMap, principalManager);
+        //ACL acl = new ACL(privilegeMap, principalManager);
+        ACL acl = new ACL(privilegeMap);
 
         return acl;
     }
@@ -647,7 +627,7 @@ public class ACL implements Cloneable {
      * Checks if an ACL grants a given privilege to a given principal.
      *
      */
-    protected boolean containsUserPrivilege(Ace[] aceList,
+    protected static boolean containsUserPrivilege(Ace[] aceList,
         String privilegeName, String principalURL) {
         for (int i = 0; i < aceList.length; i++) {
             Ace ace = aceList[i];

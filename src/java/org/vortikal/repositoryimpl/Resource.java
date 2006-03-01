@@ -57,86 +57,6 @@ import org.vortikal.security.roles.RoleManager;
 
 
 public abstract class Resource implements Cloneable {
-    public final static org.vortikal.repository.PrivilegeDefinition standardPrivilegeDefinition;
-    public final static org.vortikal.repository.AclRestrictions standardRestrictions;
-    public final static String CUSTOM_NAMESPACE = "uio";
-    public final static String CUSTOM_PRIVILEGE_READ_PROCESSED = "read-processed";
-
-    static {
-        /*
-         * Declare the standard ACL supported privilege tree (will be
-         * the same for all resources):
-         *
-         * [dav:all] (abstract)
-         *     |
-         *     |---[dav:read]
-         *     |       |
-         *     |       `---[uio:read-processed]
-         *     |
-         *     |---[dav:write]
-         *     |
-         *     `---[dav:write-acl]
-         *
-         */
-        standardPrivilegeDefinition = new org.vortikal.repository.PrivilegeDefinition();
-
-        org.vortikal.repository.PrivilegeDefinition all = new org.vortikal.repository.PrivilegeDefinition();
-
-        all.setName(org.vortikal.repository.PrivilegeDefinition.ALL);
-        all.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        all.setAbstractACE(true);
-
-        org.vortikal.repository.PrivilegeDefinition read = new org.vortikal.repository.PrivilegeDefinition();
-
-        read.setName(org.vortikal.repository.PrivilegeDefinition.READ);
-        read.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        read.setAbstractACE(false);
-
-        org.vortikal.repository.PrivilegeDefinition readProcessed = new org.vortikal.repository.PrivilegeDefinition();
-
-        readProcessed.setName(CUSTOM_PRIVILEGE_READ_PROCESSED);
-        readProcessed.setNamespace(CUSTOM_NAMESPACE);
-        readProcessed.setAbstractACE(false);
-        read.setMembers(new org.vortikal.repository.PrivilegeDefinition[] {
-                readProcessed
-            });
-
-        org.vortikal.repository.PrivilegeDefinition write = new org.vortikal.repository.PrivilegeDefinition();
-
-        write.setName(org.vortikal.repository.PrivilegeDefinition.WRITE);
-        write.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        write.setAbstractACE(false);
-
-        org.vortikal.repository.PrivilegeDefinition writeACL = new org.vortikal.repository.PrivilegeDefinition();
-
-        writeACL.setName(org.vortikal.repository.PrivilegeDefinition.WRITE_ACL);
-        writeACL.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        writeACL.setAbstractACE(false);
-
-        org.vortikal.repository.PrivilegeDefinition[] members = new org.vortikal.repository.PrivilegeDefinition[3];
-
-        members[0] = read;
-        members[1] = write;
-        members[2] = writeACL;
-
-        all.setMembers(members);
-
-        /* Set ACL restrictions: */
-        standardRestrictions = new org.vortikal.repository.AclRestrictions();
-        standardRestrictions.setGrantOnly(true);
-        standardRestrictions.setNoInvert(true);
-        standardRestrictions.setPrincipalOnlyOneAce(true);
-
-        org.vortikal.repository.ACLPrincipal owner = new org.vortikal.repository.ACLPrincipal();
-
-        owner.setType(org.vortikal.repository.ACLPrincipal.TYPE_OWNER);
-
-        org.vortikal.repository.ACLPrincipal[] requiredPrincipals = new org.vortikal.repository.ACLPrincipal[] {
-                owner
-            };
-
-        standardRestrictions.setRequiredPrincipals(requiredPrincipals);
-    }
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
@@ -181,30 +101,15 @@ public abstract class Resource implements Cloneable {
 
         this.owner = owner;
         this.principalManager = principalManager;
-        acl.setResource(this);
+        //acl.setResource(this);
     }
 
     public abstract Object clone() throws CloneNotSupportedException;
 
-    /**
-     * Persists a resource.
-     *
-     * @param principal a <code>Principal</code> value
-     * @param dto a <code>org.vortikal.repository.Resource</code> value
-     * @exception AuthenticationException if an error occurs
-     * @exception AuthorizationException if an error occurs
-     * @exception ResourceLockedException if an error occurs
-     * @exception IllegalOperationException if an error occurs
-     * @exception IOException if an error occurs
-     */
-    public abstract void store(Principal principal,
-        org.vortikal.repository.Resource dto, RoleManager roleManager)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IllegalOperationException, IOException;
 
     public void setACL(ACL acl) {
         this.acl = acl;
-        acl.setResource(this);
+        //acl.setResource(this);
     }
 
     public void setDataAccessor(DataAccessor dao) {
@@ -247,72 +152,6 @@ public abstract class Resource implements Cloneable {
         this.propertiesModifiedBy = propertiesModifiedBy;
     }
 
-    /**
-     * Sets a lock on a resource.
-     *
-     * @param principal the <code>Principal</code> wishing to set the lock
-     * @param ownerInfo a user supplied value describing the owner
-     * (contact info, etc.)
-     * @param depth a <code>String</code> specifying the lock depth
-     * (legal values are 0, 1 or Infinite).
-     * @param desiredTimeoutSeconds the number of seconds before timeout
-     * @return the lock token
-     * @exception AuthenticationException if an error occurs
-     * @exception AuthorizationException if an error occurs
-     * @exception ResourceLockedException if an error occurs
-     * @exception IOException if an error occurs
-     */
-    public String lock(Principal principal, String ownerInfo, String depth,
-                       int desiredTimeoutSeconds, RoleManager roleManager, boolean refresh)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IOException {
-        authorize(principal,
-            org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
-
-        if (this.lock != null) {
-            lockAuthorize(principal,
-                org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
-            if (!refresh) {
-                this.lock = null;
-                this.dao.store(this);
-            }
-        }
-
-        if (this.lock == null) {
-            this.lock = new Lock(principal, ownerInfo, depth,
-                new Date(System.currentTimeMillis() +
-                         (desiredTimeoutSeconds * 1000)));
-        } else {
-            this.lock = new Lock(
-                this.lock.getLockToken(), principal.getQualifiedName(),
-                ownerInfo, depth, 
-                new Date(System.currentTimeMillis() + (desiredTimeoutSeconds * 1000)));
-        }
-
-//         setLock(new Lock(principal, ownerInfo, depth,
-//                 new Date(System.currentTimeMillis() +
-//                     (desiredTimeoutSeconds * 1000))));
-        this.dao.store(this);
-        return this.lock.getLockToken();
-    }
-
-    public void unlock(Principal principal, String lockToken,
-        RoleManager roleManager)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IOException {
-        this.authorize(
-            principal, org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
-
-        if (this.lock != null) {
-            if (!roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                this.lockAuthorize(principal, org.vortikal.repository.PrivilegeDefinition.WRITE,
-                                   roleManager);
-            }
-
-            this.lock = null;
-            this.dao.store(this);
-        }
-    }
 
     public String getURI() {
         return this.uri;
@@ -326,13 +165,22 @@ public abstract class Resource implements Cloneable {
         this.id = id;
     }
 
-    public boolean getInheritedACL() {
+    public boolean isInheritedACL() {
         return this.inheritedACL;
     }
 
     public void setInheritedACL(boolean inheritedACL) {
         this.inheritedACL = inheritedACL;
     }
+
+    public void setDirtyACL(boolean dirtyACL) {
+        this.dirtyACL = dirtyACL;
+    }
+
+    public boolean isDirtyACL() {
+        return this.dirtyACL;
+    }
+
 
     /**
      * Gets the creation time for this resource.
@@ -448,9 +296,13 @@ public abstract class Resource implements Cloneable {
         return getParent(this.uri);
     }
 
+    public boolean isCollection() {
+        return "application/x-vortex-collection".equals(getContentType());
+    }
+
     public static String getParent(String uri) {
         if (uri == null) {
-            return null;
+            throw new IllegalArgumentException("Unable to find parent of null");
         }
 
         if ("/".equals(uri)) {
@@ -579,7 +431,7 @@ public abstract class Resource implements Cloneable {
      * @return an <code>Ace[]</code>
      */
     private Ace[] addRolesToACL(ACL originalACL, RoleManager roleManager) {
-        List acl = new ArrayList(Arrays.asList(originalACL.toAceList()));
+        List acl = new ArrayList(Arrays.asList(originalACL.toAceList(this)));
         List rootPrincipals = roleManager.listPrincipals(RoleManager.ROOT);
 
         for (Iterator i = rootPrincipals.iterator(); i.hasNext();) {
@@ -652,136 +504,89 @@ public abstract class Resource implements Cloneable {
         return dto;
     }
 
-    public boolean isCollection() {
-        return "application/x-vortex-collection".equals(getContentType());
-    }
 
-    public void delete(Principal principal, RoleManager roleManager)
-        throws AuthorizationException, AuthenticationException, 
-            ResourceLockedException, FailedDependencyException, IOException {
-        if (this.lock != null) {
-            lockAuthorize(principal,
-                org.vortikal.repository.PrivilegeDefinition.WRITE, roleManager);
-        }
 
-        try {
-            this.dao.delete(this);
-        } catch (Exception e) {
-            throw new IOException(e.getMessage());
-        }
-    }
+    // (The crap below is to be removed)
 
-    protected void setOwner(Principal principal,
-        org.vortikal.repository.Resource dto, String owner,
-        RoleManager roleManager)
-        throws AuthorizationException, IllegalOperationException, IOException {
-        if ((owner == null) || owner.trim().equals("")) {
-            throw new IllegalOperationException(
-                "Unable to set owner of resource " + this +
-                ": invalid owner: '" + owner + "'");
-        }
+    public final static org.vortikal.repository.PrivilegeDefinition standardPrivilegeDefinition;
+    public final static org.vortikal.repository.AclRestrictions standardRestrictions;
+    public final static String CUSTOM_NAMESPACE = "uio";
+    public final static String CUSTOM_PRIVILEGE_READ_PROCESSED = "read-processed";
 
+    static {
         /*
-         * Only principals of the ROOT role or owners are allowed to
-         * set owner:
+         * Declare the standard ACL supported privilege tree (will be
+         * the same for all resources):
+         *
+         * [dav:all] (abstract)
+         *     |
+         *     |---[dav:read]
+         *     |       |
+         *     |       `---[uio:read-processed]
+         *     |
+         *     |---[dav:write]
+         *     |
+         *     `---[dav:write-acl]
+         *
          */
-        if (!(roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT) ||
-                principal.getQualifiedName().equals(this.owner))) {
-            throw new AuthorizationException("Principal " +
-                principal.getQualifiedName() + " is not allowed to set owner of " +
-                "resource " + this.uri);
-        }
+        standardPrivilegeDefinition = new org.vortikal.repository.PrivilegeDefinition();
 
-        Principal principal2 = null;
-        
-        try {
-            principal2 = principalManager.getPrincipal(owner);
-        } catch (InvalidPrincipalException e) {
-            throw new IllegalOperationException(
-                    "Unable to set owner of resource " + this.uri +
-                    ": invalid owner: '" + owner + "'");
-        }
-        
-        if (!principalManager.validatePrincipal(principal2)) {
-            throw new IllegalOperationException(
-                "Unable to set owner of resource " + this.uri +
-                ": invalid owner: '" + owner + "'");
-        }
+        org.vortikal.repository.PrivilegeDefinition all = new org.vortikal.repository.PrivilegeDefinition();
 
-        this.owner = owner;
+        all.setName(org.vortikal.repository.PrivilegeDefinition.ALL);
+        all.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        all.setAbstractACE(true);
+
+        org.vortikal.repository.PrivilegeDefinition read = new org.vortikal.repository.PrivilegeDefinition();
+
+        read.setName(org.vortikal.repository.PrivilegeDefinition.READ);
+        read.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        read.setAbstractACE(false);
+
+        org.vortikal.repository.PrivilegeDefinition readProcessed = new org.vortikal.repository.PrivilegeDefinition();
+
+        readProcessed.setName(CUSTOM_PRIVILEGE_READ_PROCESSED);
+        readProcessed.setNamespace(CUSTOM_NAMESPACE);
+        readProcessed.setAbstractACE(false);
+        read.setMembers(new org.vortikal.repository.PrivilegeDefinition[] {
+                readProcessed
+            });
+
+        org.vortikal.repository.PrivilegeDefinition write = new org.vortikal.repository.PrivilegeDefinition();
+
+        write.setName(org.vortikal.repository.PrivilegeDefinition.WRITE);
+        write.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        write.setAbstractACE(false);
+
+        org.vortikal.repository.PrivilegeDefinition writeACL = new org.vortikal.repository.PrivilegeDefinition();
+
+        writeACL.setName(org.vortikal.repository.PrivilegeDefinition.WRITE_ACL);
+        writeACL.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        writeACL.setAbstractACE(false);
+
+        org.vortikal.repository.PrivilegeDefinition[] members = new org.vortikal.repository.PrivilegeDefinition[3];
+
+        members[0] = read;
+        members[1] = write;
+        members[2] = writeACL;
+
+        all.setMembers(members);
+
+        /* Set ACL restrictions: */
+        standardRestrictions = new org.vortikal.repository.AclRestrictions();
+        standardRestrictions.setGrantOnly(true);
+        standardRestrictions.setNoInvert(true);
+        standardRestrictions.setPrincipalOnlyOneAce(true);
+
+        org.vortikal.repository.ACLPrincipal owner = new org.vortikal.repository.ACLPrincipal();
+
+        owner.setType(org.vortikal.repository.ACLPrincipal.TYPE_OWNER);
+
+        org.vortikal.repository.ACLPrincipal[] requiredPrincipals = new org.vortikal.repository.ACLPrincipal[] {
+                owner
+            };
+
+        standardRestrictions.setRequiredPrincipals(requiredPrincipals);
     }
 
-    public void storeACL(Principal principal,
-                         org.vortikal.repository.Ace[] aceList, RoleManager roleManager)
-        throws AuthorizationException, AuthenticationException, 
-        IllegalOperationException, IOException, AclException {
-
-        storeACL(principal, aceList, roleManager, true);
-    }
-    
-
-    public void storeACL(Principal principal,
-                         org.vortikal.repository.Ace[] aceList, RoleManager roleManager,
-                         boolean authorize)
-        throws AuthorizationException, AuthenticationException, 
-            IllegalOperationException, IOException, AclException {
-
-        if (authorize) {
-            
-            authorize(principal,
-                      org.vortikal.repository.PrivilegeDefinition.WRITE_ACL, roleManager);
-
-            acl.validateACL(aceList);
-        }
-        
-        this.acl = acl.buildACL(aceList);
-        this.acl.setResource(this);
-
-        /* If the first ACE has set inheritance, we know that the
-         * whole ACL has valid inheritance (ACL.validateACL() ensures
-         * this), so we can go ahead and set it here: */
-        this.inheritedACL = aceList[0].getInheritedFrom() != null;
-
-        if (!"/".equals(this.uri) && this.inheritedACL) {
-            /* When the ACL is inherited, make our ACL a copy of our
-             * parent's ACL, since the supplied one may contain other
-             * ACEs than the one we now inherit from. */
-            try {
-                ACL parentACL = (ACL) this.dao.load(getParentURI()).getACL().clone();
-
-                parentACL.setResource(this);
-                this.acl = parentACL;
-            } catch (CloneNotSupportedException e) {
-            }
-        }
-
-        try {
-            this.dirtyACL = true;
-
-            this.dao.store(this);
-        } catch (Exception e) {
-            
-            throw new IOException(e.getMessage());
-        } finally {
-            this.dirtyACL = false;
-        }
-    }
-
-    public boolean dirtyACL() {
-        return this.dirtyACL;
-    }
-
-    public void lockAuthorize(Principal principal, String privilege,
-        RoleManager roleManager)
-        throws AuthenticationException, ResourceLockedException {
-        if (this.lock != null) {
-            this.lock.authorize(principal, privilege, roleManager);
-        }
-    }
-
-    public void authorize(Principal principal, String privilege,
-        RoleManager roleManager)
-        throws AuthorizationException, AuthenticationException, IOException {
-        this.acl.authorize(principal, privilege, this.dao, roleManager);
-    }
 }

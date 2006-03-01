@@ -86,7 +86,7 @@ public abstract class AbstractDataAccessor
             }
 
             /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL(new HashMap(), principalManager);
+            ACL acl = new ACL(new HashMap());
             resources[i].setACL(acl);
         
         }
@@ -105,7 +105,7 @@ public abstract class AbstractDataAccessor
             Resource resource = resources[i];
             ACL acl = null;
 
-            if (!resource.getInheritedACL()) {
+            if (!resource.isInheritedACL()) {
             
                 if (!acls.containsKey(resource.getURI())) {
                     throw new SQLException(

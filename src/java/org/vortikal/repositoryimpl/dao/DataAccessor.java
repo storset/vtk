@@ -30,12 +30,13 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-import org.vortikal.repositoryimpl.Collection;
-import org.vortikal.repositoryimpl.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.vortikal.repositoryimpl.ACL;
+import org.vortikal.repositoryimpl.Collection;
+import org.vortikal.repositoryimpl.Resource;
 
 
 /**
@@ -101,6 +102,8 @@ public interface DataAccessor {
      * hierarchy, without the need to actually load all the resources
      * in the subtree. */
     public String[] discoverLocks(Resource directory) throws IOException;
+
+    public String[] discoverACLs(Resource resource) throws IOException;
 
     /* Stores a list of resources. */
 

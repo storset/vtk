@@ -359,7 +359,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
         uris.add(r.getURI());
 
-        if (r.isCollection() && r.dirtyACL()) {
+        if (r.isCollection() && r.isDirtyACL()) {
             String testURI = r.getURI();
 
             if (!testURI.equals("/")) {
@@ -694,4 +694,12 @@ public class Cache implements DataAccessor, InitializingBean {
             return this.resource;
         }
     }
+
+    // --------------  New Stuff
+
+    public String[] discoverACLs(Resource resource) throws IOException {
+        return this.wrappedAccessor.discoverACLs(resource);
+    }
+    
+
 }

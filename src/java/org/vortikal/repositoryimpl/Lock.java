@@ -113,23 +113,23 @@ public class Lock implements Cloneable {
             getOwnerInfo(), getTimeout(), getLockToken());
     }
 
-    public void authorize(Principal principal, String privilege,
-        RoleManager roleManager)
-        throws AuthenticationException, 
-            org.vortikal.repository.ResourceLockedException {
-        if (!org.vortikal.repository.PrivilegeDefinition.WRITE.equals(
-                    privilege)) {
-            return;
-        }
+//     public void authorize(Principal principal, String privilege,
+//         RoleManager roleManager)
+//         throws AuthenticationException, 
+//             org.vortikal.repository.ResourceLockedException {
+//         if (!org.vortikal.repository.PrivilegeDefinition.WRITE.equals(
+//                     privilege)) {
+//             return;
+//         }
 
-        if (principal == null) {
-            throw new AuthenticationException();
-        }
+//         if (principal == null) {
+//             throw new AuthenticationException();
+//         }
 
-        if (!user.equals(principal.getQualifiedName())) {
-            throw new org.vortikal.repository.ResourceLockedException();
-        }
-    }
+//         if (!user.equals(principal.getQualifiedName())) {
+//             throw new org.vortikal.repository.ResourceLockedException();
+//         }
+//     }
 
     public Object clone() {
         return new Lock(this.lockToken, this.user, this.ownerInfo, this.depth,

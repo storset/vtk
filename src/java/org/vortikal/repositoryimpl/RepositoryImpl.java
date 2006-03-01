@@ -84,6 +84,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private TokenManager tokenManager;
     private String id;
 
+    private ResourceManager resourceManager;
+    
+
     public void setApplicationContext(ApplicationContext context) {
         this.context = context;
     }
@@ -138,8 +141,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 ? Resource.CUSTOM_PRIVILEGE_READ_PROCESSED
                 : PrivilegeDefinition.READ;
 
-            r.authorize(principal, privilege, roleManager);
-            r.lockAuthorize(principal, privilege, roleManager);
+            this.resourceManager.authorize(r, principal, privilege);
+            this.resourceManager.lockAuthorize(r, principal, privilege);
 
             OperationLog.success(OperationLog.RETRIEVE, "(" + uri + ")", token, principal);
 
@@ -205,10 +208,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            ((Collection) r).authorize(principal, PrivilegeDefinition.WRITE,
-                roleManager);
-            ((Collection) r).lockAuthorize(principal,
-                PrivilegeDefinition.WRITE, roleManager);
+            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE);
+            this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
         } catch (ResourceLockedException e) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "resource was locked",
                 token, principal);
@@ -227,8 +228,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 throw new ReadOnlyException();
             }
 
-            Document doc = (Document) ((Collection) r).create(principal, uri,
-                    roleManager);
+            Document doc = (Document) this.resourceManager.create((Collection) r, principal, uri);
 
             OperationLog.success(OperationLog.CREATE, "(" + uri + ")", token, principal);
 
@@ -299,8 +299,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            r.authorize(principal, PrivilegeDefinition.WRITE, roleManager);
-            r.lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
+            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE);
+            this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
 
             if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
@@ -309,8 +309,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 throw new ReadOnlyException();
             }
 
-            Resource newCollection = ((Collection) r).createCollection(principal,
-                    path, roleManager);
+            Resource newCollection = this.resourceManager.createCollection(
+                (Collection) r, principal, path);
 
             OperationLog.success(OperationLog.CREATE_COLLECTION, "(" + uri + ")", token,
                 principal);
@@ -357,10 +357,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 "source not found", token, principal);
             throw new ResourceNotFoundException(srcUri);
         } else if (src instanceof Collection) {
-            ((Collection) src).recursiveAuthorize(principal,
-                PrivilegeDefinition.READ, roleManager);
+            this.resourceManager.authorizeRecursively(src, principal,
+                PrivilegeDefinition.READ);
         } else {
-            src.authorize(principal, PrivilegeDefinition.READ, roleManager);
+            this.resourceManager.authorize(src, principal, PrivilegeDefinition.READ);
         }
 
         String destPath = (destUri.charAt(destUri.length() - 1) == '/')
@@ -406,11 +406,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException();
         }
 
-        ((Collection) destCollection).authorize(principal,
-            PrivilegeDefinition.WRITE, roleManager);
+        this.resourceManager.authorize(destCollection, principal,
+                                       PrivilegeDefinition.WRITE);
 
-        destCollection.lockAuthorize(principal, PrivilegeDefinition.WRITE,
-            roleManager);
+        this.resourceManager.lockAuthorize(destCollection, principal, PrivilegeDefinition.WRITE);
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
@@ -421,27 +420,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (dest != null) {
             if (dest instanceof Collection) {
-                ((Collection) dest).recursiveLockAuthorize(principal,
-                    PrivilegeDefinition.WRITE, roleManager);
+                this.resourceManager.lockAuthorizeRecursively((Collection) dest, principal,
+                                                              PrivilegeDefinition.WRITE);
             } else {
-                dest.lockAuthorize(principal, PrivilegeDefinition.WRITE,
-                    roleManager);
+                this.resourceManager.lockAuthorize(dest, principal, PrivilegeDefinition.WRITE);
             }
 
-            dest.delete(principal, roleManager);
+            this.resourceManager.delete(dest, principal);
         }
 
         try {
-            ((Collection) destCollection).copy(
-                principal, src, destPath, preserveACL, false, principalManager, roleManager);
+            this.resourceManager.copy(
+                principal, src, destPath, preserveACL, false);
 
-            // FIXME: Should go something like this instead (for speed):
-            //             String[] uris = dao.listSubTree(srcUri);
-            //             Resource[] resources = dao.load(uris);
-            //             for (int i = 0; i < resources.length; i++) {
-            //                 Resource copy = new Resource();
-            //                 copy.store();
-            //             }
             OperationLog.success(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
@@ -493,10 +484,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         if (src instanceof Collection) {
-            ((Collection) src).recursiveLockAuthorize(principal,
-                PrivilegeDefinition.WRITE, roleManager);
+            this.resourceManager.lockAuthorizeRecursively((Collection) src, principal,
+                                                          PrivilegeDefinition.WRITE);
         } else {
-            src.lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
+            this.resourceManager.lockAuthorize(src, principal, PrivilegeDefinition.WRITE);
         }
 
         String srcParent = srcUri;
@@ -513,10 +504,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Resource srcCollection = dao.load(srcParent);
 
-        srcCollection.authorize(principal, PrivilegeDefinition.WRITE,
-            roleManager);
-        srcCollection.lockAuthorize(principal, PrivilegeDefinition.WRITE,
-            roleManager);
+        this.resourceManager.authorize(srcCollection, principal, PrivilegeDefinition.WRITE);
+        this.resourceManager.lockAuthorize(srcCollection, principal, PrivilegeDefinition.WRITE);
 
         String destPath = destUri;
 
@@ -549,11 +538,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceOverwriteException();
         } else if (dest != null) {
             if (dest instanceof Collection) {
-                ((Collection) dest).recursiveLockAuthorize(principal,
-                    PrivilegeDefinition.WRITE, roleManager);
+                this.resourceManager.lockAuthorizeRecursively((Collection) dest, principal,
+                                                               PrivilegeDefinition.WRITE);
             } else {
-                dest.lockAuthorize(principal, PrivilegeDefinition.WRITE,
-                    roleManager);
+                    this.resourceManager.lockAuthorize(dest, principal, PrivilegeDefinition.WRITE);
             }
         }
 
@@ -574,11 +562,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("Invalid destination resource");
         }
 
-        destCollection.authorize(principal, PrivilegeDefinition.WRITE,
-            roleManager);
+        this.resourceManager.authorize(destCollection, principal, PrivilegeDefinition.WRITE);
 
         if (dest != null) {
-            dest.delete(principal, roleManager);
+            this.resourceManager.delete(dest, principal);
             context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
                     dest instanceof Collection));
 
@@ -592,10 +579,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 throw new ReadOnlyException();
             }
 
-            ((Collection) destCollection).copy(
-                principal, src, destPath, true, true, principalManager, roleManager);
+            this.resourceManager.copy(principal, src, destPath, true, true);
 
-            src.delete(principal, roleManager);
+            this.resourceManager.delete(src, principal);
 
             OperationLog.success(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
@@ -647,10 +633,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         if (r instanceof Collection) {
-            ((Collection) r).recursiveLockAuthorize(principal,
-                PrivilegeDefinition.WRITE, roleManager);
+            this.resourceManager.lockAuthorizeRecursively((Collection) r, principal,
+                                                          PrivilegeDefinition.WRITE);
         } else {
-            r.lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
+            this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
         }
 
         String parent = new String(uri);
@@ -667,10 +653,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Resource parentCollection = dao.load(parent);
 
-        parentCollection.authorize(principal, PrivilegeDefinition.WRITE,
-            roleManager);
-        parentCollection.lockAuthorize(principal, PrivilegeDefinition.WRITE,
-            roleManager);
+        this.resourceManager.authorize(parentCollection, principal, PrivilegeDefinition.WRITE);
+        this.resourceManager.lockAuthorize(parentCollection, principal, PrivilegeDefinition.WRITE);
 
         if (this.readOnly &&
                 !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
@@ -679,12 +663,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ReadOnlyException();
         }
 
-        r.delete(principal, roleManager);
+        this.resourceManager.delete(r, principal);
 
-        parentCollection.store(principal,
+        this.resourceManager.storeProperties(parentCollection, principal,
                                parentCollection.getResourceDTO(
-                                   principal, principalManager, roleManager),
-                               roleManager);
+                                   principal, principalManager, roleManager));
 
         OperationLog.success(OperationLog.DELETE, "(" + uri + ")", token, principal);
 
@@ -769,11 +752,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
 
         try {
-            r.lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
+            this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
 
-            String newLockToken = r.lock(principal, ownerInfo, depth,
-                                      requestedTimeoutSeconds, roleManager,
-                                      (lockToken != null));
+            String newLockToken = this.resourceManager.lockResource(r, principal, ownerInfo, depth,
+                                      requestedTimeoutSeconds, (lockToken != null));
 
             OperationLog.success(OperationLog.LOCK, "(" + uri + ")", token, principal);
 
@@ -821,7 +803,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            r.unlock(principal, lockToken, roleManager);
+            this.resourceManager.unlockResource(r, principal, lockToken);
             OperationLog.success(OperationLog.UNLOCK, "(" + uri + ")", token, principal);
         } catch (AuthorizationException e) {
             OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "permission denied",
@@ -871,16 +853,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 ? Resource.CUSTOM_PRIVILEGE_READ_PROCESSED
                 : PrivilegeDefinition.READ;
 
-            r.authorize(principal, privilege, roleManager);
-            r.lockAuthorize(principal, privilege, roleManager);
+            this.resourceManager.authorize(r, principal, privilege);
+            this.resourceManager.lockAuthorize(r, principal, privilege);
 
-            List list = ((Collection) r).getChildren();
-            org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.size()];
+            Resource[] list = this.dao.loadChildren(((Collection) r));
+            org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
 
-            for (int i = 0; i < list.size(); i++) {
-                Resource child = (Resource) list.get(i);
-
-                children[i] = child.getResourceDTO(principal, principalManager, roleManager);
+            for (int i = 0; i < list.length; i++) {
+                children[i] = list[i].getResourceDTO(principal, principalManager, roleManager);
             }
 
             OperationLog.success(OperationLog.LIST_CHILDREN, "(" + uri + ")", token, principal);
@@ -932,7 +912,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             Resource original = (Resource) r.clone();
 
-            r.store(principal, resource, roleManager);
+            this.resourceManager.storeProperties(r, principal, resource);
             OperationLog.success(OperationLog.STORE, "(" + uri + ")", token, principal);
 
             ResourceModificationEvent event = new ResourceModificationEvent(
@@ -980,8 +960,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         String privilege = (forProcessing)
             ? Resource.CUSTOM_PRIVILEGE_READ_PROCESSED : PrivilegeDefinition.READ;
 
-        InputStream inStream = ((Document) r).getInputStream(principal,
-                privilege, roleManager);
+        InputStream inStream = this.resourceManager.getResourceInputStream(
+            ((Document) r), principal, privilege);
 
         OperationLog.success(OperationLog.GET_INPUTSTREAM, "(" + uri + ")", token, principal);
 
@@ -1030,7 +1010,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             Resource original = (Resource) r.clone();
 
-            stream = ((Document) r).getOutputStream(principal, roleManager);
+            stream = this.resourceManager.getResourceOutputStream(((Document) r), principal);
 
             /* Write the input data to the resource: */
             byte[] buffer = new byte[1000];
@@ -1083,10 +1063,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            r.authorize(principal, PrivilegeDefinition.READ, roleManager);
+            this.resourceManager.authorize(r, principal, PrivilegeDefinition.READ);
 
             ACL acl = r.getACL();
-            org.vortikal.repository.Ace[] dtos = acl.toAceList();
+            org.vortikal.repository.Ace[] dtos = acl.toAceList(r);
 
             OperationLog.success(OperationLog.GET_ACL, "(" + uri + ")", token, principal);
 
@@ -1124,7 +1104,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            r.authorize(principal, PrivilegeDefinition.WRITE_ACL, roleManager);
+            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
 
             if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
@@ -1135,15 +1115,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             Resource original = (Resource) r.clone();
             ACL origACL = original.getACL();
-            boolean wasInheritedACL = original.getInheritedACL();
+            boolean wasInheritedACL = original.isInheritedACL();
 
-            r.storeACL(principal, acl, roleManager);
+            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
+            ACL.validateACL(acl, this.principalManager);
+            this.resourceManager.storeACL(r, principal, acl);
             OperationLog.success(OperationLog.STORE_ACL, "(" + uri + ")", token, principal);
 
             ACLModificationEvent event = new ACLModificationEvent(
                 this, r.getResourceDTO(principal, principalManager, roleManager),
                 original.getResourceDTO(principal, principalManager, roleManager),
-                    r.getACL().toAceList(), origACL.toAceList(), wasInheritedACL);
+                    r.getACL().toAceList(r), origACL.toAceList(r), wasInheritedACL);
 
             context.publishEvent(event);
         } catch (AuthorizationException e) {
@@ -1279,6 +1261,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new BeanInitializationException(
                 "Bean property 'id' must be set");
         }
+
+        this.resourceManager = new ResourceManager(this.principalManager, this.roleManager, this.dao);
     }
 
 }

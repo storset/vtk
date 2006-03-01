@@ -58,32 +58,6 @@ public class Document extends Resource implements Cloneable {
             inheritedACL, lock, dao, principalManager);
     }
 
-    public InputStream getInputStream(Principal principal, String privilege,
-        RoleManager roleManager)
-        throws AuthenticationException, AuthorizationException, IOException, 
-            ResourceLockedException {
-        authorize(principal, privilege, roleManager);
-        lockAuthorize(principal, privilege, roleManager);
-
-        return dao.getInputStream(this);
-    }
-
-    public OutputStream getOutputStream(Principal principal,
-        RoleManager roleManager)
-        throws AuthenticationException, AuthorizationException, IOException, 
-            ResourceLockedException {
-        authorize(principal, PrivilegeDefinition.WRITE, roleManager);
-
-        if (lock != null) {
-            lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
-        }
-
-        setContentLastModified(new Date());
-        setContentModifiedBy(principal.getQualifiedName());
-        dao.store(this);
-
-        return dao.getOutputStream(this);
-    }
 
     public Object clone() throws CloneNotSupportedException {
         ACL acl = (this.acl == null) ? null : (ACL) this.acl.clone();
@@ -113,75 +87,6 @@ public class Document extends Resource implements Cloneable {
     }
 
 
-    public Resource retrieve(Principal principal, String path,
-        RoleManager roleManager)
-        throws AuthenticationException, AuthorizationException, IOException {
-        if (path.equals(uri)) {
-            acl.authorize(principal, PrivilegeDefinition.READ, dao, roleManager);
-
-            return this;
-        }
-        return null;
-    }
-
-    public void store(Principal principal,
-        org.vortikal.repository.Resource dto, RoleManager roleManager)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IllegalOperationException, IOException {
-        authorize(principal, PrivilegeDefinition.WRITE, roleManager);
-
-        if (lock != null) {
-            lockAuthorize(principal, PrivilegeDefinition.WRITE, roleManager);
-        }
-
-        if (!dto.getOverrideLiveProperties()) {
-            setPropertiesLastModified(new Date());
-        } else {
-            setPropertiesLastModified(dto.getPropertiesLastModified());
-            setContentLastModified(dto.getContentLastModified());
-            setCreationTime(dto.getCreationTime());
-
-            if (logger.isDebugEnabled()) {
-                logger.debug(
-                    "Setting overriden live properties: "
-                    + "[propertiesLastModified:  " + dto.getPropertiesLastModified()
-                    + ", contentLastModified: " + dto.getContentLastModified()
-                    + ", creationTime: " + dto.getCreationTime() + "]");
-            }
-        }
-
-        setContentType(dto.getContentType());
-        setCharacterEncoding(null);
-
-        if ((contentType != null) && ContentTypeHelper.isTextContentType(contentType) &&
-            (dto.getCharacterEncoding() != null)) {
-            try {
-                /* Force checking of encoding */
-                new String(new byte[0], dto.getCharacterEncoding());
-
-                setCharacterEncoding(dto.getCharacterEncoding());
-            } catch (java.io.UnsupportedEncodingException e) {
-                // FIXME: Ignore unsupported character encodings?
-            }
-        }
-
-        setDisplayName(dto.getDisplayName());
-
-        if (!this.owner.equals(dto.getOwner().getQualifiedName())) {
-            /* Attempt to delegate ownership, only the owner of
-             * a resource may do it (or root ...) */
-            setOwner(principal, dto, dto.getOwner().getQualifiedName(), roleManager);
-        }
-
-        setPropertiesModifiedBy(principal.getQualifiedName());
-        setProperties(dto.getProperties());
-
-        /* Specific for documents */
-        setContentLocale(dto.getContentLocale());
-
-        dao.store(this);
-    }
-
     public org.vortikal.repository.Resource getResourceDTO(
         Principal principal, PrincipalManager principalManager,
         RoleManager roleManager) throws IOException {
@@ -194,4 +99,6 @@ public class Document extends Resource implements Cloneable {
 
         return dto;
     }
+
+
 }

@@ -177,9 +177,10 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             /* Check if ACE (dav:all (UIO_READ_PROCESSED)) has changed: */
 
             List principalListBefore = AclUtil.listPrivilegedPrincipals(
-                originalACL, org.vortikal.repositoryimpl.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED);
+                originalACL, Resource.CUSTOM_PRIVILEGE_READ_PROCESSED);
             List principalListAfter = AclUtil.listPrivilegedPrincipals(
-                newACL, org.vortikal.repositoryimpl.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED);
+                newACL, Resource.CUSTOM_PRIVILEGE_READ_PROCESSED);
+           
 
             if (principalListBefore == null &&
                 principalListBefore == principalListAfter) {
@@ -197,15 +198,15 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             }
             
             if (AclUtil.hasPrivilege(originalACL, ACLPrincipal.NAME_DAV_ALL,
-                                     org.vortikal.repositoryimpl.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED) &&
+                                     Resource.CUSTOM_PRIVILEGE_READ_PROCESSED) &&
                 AclUtil.hasPrivilege(newACL, ACLPrincipal.NAME_DAV_ALL,
-                                     org.vortikal.repositoryimpl.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
+                                     Resource.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
                 return;
             }
 
             
             String op = AclUtil.hasPrivilege(newACL, ACLPrincipal.NAME_DAV_ALL,
-                                     org.vortikal.repositoryimpl.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED) ?
+                                     Resource.CUSTOM_PRIVILEGE_READ_PROCESSED) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), op, -1, resource.isCollection());

@@ -86,19 +86,4 @@ public class Document extends Resource implements Cloneable {
         this.contentLocale = contentLocale;
     }
 
-
-    public org.vortikal.repository.Resource getResourceDTO(
-        Principal principal, PrincipalManager principalManager,
-        RoleManager roleManager) throws IOException {
-
-        org.vortikal.repository.Resource dto =
-            super.getResourceDTO(principal, principalManager, roleManager);
-
-        dto.setContentLength(dao.getContentLength(this));
-        dto.setContentLocale(getContentLocale());
-
-        return dto;
-    }
-
-
 }

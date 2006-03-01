@@ -67,6 +67,7 @@ import org.vortikal.security.PrincipalStore;
  */
 public class Resource implements java.io.Serializable, Cloneable {
     
+    
     private static final long serialVersionUID = 3257286937366050105L;
 
     private boolean overrideLiveProperties = false;
@@ -81,11 +82,9 @@ public class Resource implements java.io.Serializable, Cloneable {
     private long contentLength;
     private String[] children = null;
     private Lock[] activeLocks = new Lock[] {  };
-    private PrivilegeDefinition supportedPrivileges = null;
     private Ace[] acl = null;
     private Ace[] parentACL = null;
     private Principal parentOwner = null;
-    private AclRestrictions aclRestrictions = null;
     private String serial = null;
     private String displayName = null;
     private String characterEncoding = null;
@@ -479,15 +478,7 @@ public class Resource implements java.io.Serializable, Cloneable {
      *
      */
     public PrivilegeDefinition getSupportedPrivileges() {
-        return this.supportedPrivileges;
-    }
-
-    /**
-     * Sets this resource's set of supported privileges.
-     *
-     */
-    public void setSupportedPrivileges(PrivilegeDefinition supportedPrivileges) {
-        this.supportedPrivileges = supportedPrivileges;
+        return standardPrivilegeDefinition;
     }
 
     /**
@@ -497,17 +488,7 @@ public class Resource implements java.io.Serializable, Cloneable {
      * @see AclRestrictions
      */
     public AclRestrictions getAclRestrictions() {
-        return this.aclRestrictions;
-    }
-
-    /**
-     * Sets this resource's ACL restrictions.
-     *
-     * @param aclRestrictions the restrictions to set.
-     * @see AclRestrictions
-     */
-    public void setAclRestrictions(AclRestrictions aclRestrictions) {
-        this.aclRestrictions = aclRestrictions;
+        return standardRestrictions;
     }
 
     /**
@@ -715,8 +696,6 @@ public class Resource implements java.io.Serializable, Cloneable {
 
         clone.activeLocks = cloneLocks;
 
-        clone.supportedPrivileges = (PrivilegeDefinition) this.supportedPrivileges.clone();
-
         Ace[] clonedACL = new Ace[this.acl.length];
 
         for (int i = 0; i < this.acl.length; i++) {
@@ -732,8 +711,6 @@ public class Resource implements java.io.Serializable, Cloneable {
         }
 
         clone.setParentACL(clonedParentACL);
-
-        clone.aclRestrictions = (AclRestrictions) this.aclRestrictions.clone();
 
         Property[] cloneProperties = new Property[this.properties.length];
 
@@ -774,12 +751,10 @@ public class Resource implements java.io.Serializable, Cloneable {
         sb.append(", contentLocale = ").append(contentLocale);
         sb.append(", contentType = ").append(contentType);
         sb.append(", activeLocks = ").append(activeLocks);
-        sb.append(", supportedPrivileges = ").append(supportedPrivileges);
 
         //sb.append(", currentUserPrivilegeSet = ").append(currentUserPrivilegeSet);
         sb.append(", acl = ").append(acl);
         sb.append(", parentACL").append(parentACL);
-        sb.append(", aclRestrictions = ").append(aclRestrictions);
         sb.append(", properties = ").append(properties);
         sb.append("]");
 
@@ -863,4 +838,93 @@ public class Resource implements java.io.Serializable, Cloneable {
 
         return (Privilege[]) privileges.toArray(new Privilege[0]);
     }
+    
+    
+    
+    // (The crap below is to be removed)
+
+    public final static org.vortikal.repository.PrivilegeDefinition standardPrivilegeDefinition;
+    public final static org.vortikal.repository.AclRestrictions standardRestrictions;
+    public final static String CUSTOM_NAMESPACE = "uio";
+    public final static String CUSTOM_PRIVILEGE_READ_PROCESSED = "read-processed";
+
+    static {
+        /*
+         * Declare the standard ACL supported privilege tree (will be
+         * the same for all resources):
+         *
+         * [dav:all] (abstract)
+         *     |
+         *     |---[dav:read]
+         *     |       |
+         *     |       `---[uio:read-processed]
+         *     |
+         *     |---[dav:write]
+         *     |
+         *     `---[dav:write-acl]
+         *
+         */
+        standardPrivilegeDefinition = new org.vortikal.repository.PrivilegeDefinition();
+
+        org.vortikal.repository.PrivilegeDefinition all = new org.vortikal.repository.PrivilegeDefinition();
+
+        all.setName(org.vortikal.repository.PrivilegeDefinition.ALL);
+        all.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        all.setAbstractACE(true);
+
+        org.vortikal.repository.PrivilegeDefinition read = new org.vortikal.repository.PrivilegeDefinition();
+
+        read.setName(org.vortikal.repository.PrivilegeDefinition.READ);
+        read.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        read.setAbstractACE(false);
+
+        org.vortikal.repository.PrivilegeDefinition readProcessed = new org.vortikal.repository.PrivilegeDefinition();
+
+        readProcessed.setName(CUSTOM_PRIVILEGE_READ_PROCESSED);
+        readProcessed.setNamespace(CUSTOM_NAMESPACE);
+        readProcessed.setAbstractACE(false);
+        read.setMembers(new org.vortikal.repository.PrivilegeDefinition[] {
+                readProcessed
+            });
+
+        org.vortikal.repository.PrivilegeDefinition write = new org.vortikal.repository.PrivilegeDefinition();
+
+        write.setName(org.vortikal.repository.PrivilegeDefinition.WRITE);
+        write.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        write.setAbstractACE(false);
+
+        org.vortikal.repository.PrivilegeDefinition writeACL = new org.vortikal.repository.PrivilegeDefinition();
+
+        writeACL.setName(org.vortikal.repository.PrivilegeDefinition.WRITE_ACL);
+        writeACL.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
+        writeACL.setAbstractACE(false);
+
+        org.vortikal.repository.PrivilegeDefinition[] members = new org.vortikal.repository.PrivilegeDefinition[3];
+
+        members[0] = read;
+        members[1] = write;
+        members[2] = writeACL;
+
+        all.setMembers(members);
+
+        /* Set ACL restrictions: */
+        standardRestrictions = new org.vortikal.repository.AclRestrictions();
+        standardRestrictions.setGrantOnly(true);
+        standardRestrictions.setNoInvert(true);
+        standardRestrictions.setPrincipalOnlyOneAce(true);
+
+        org.vortikal.repository.ACLPrincipal owner = new org.vortikal.repository.ACLPrincipal();
+
+        owner.setType(org.vortikal.repository.ACLPrincipal.TYPE_OWNER);
+
+        org.vortikal.repository.ACLPrincipal[] requiredPrincipals = new org.vortikal.repository.ACLPrincipal[] {
+                owner
+            };
+
+        standardRestrictions.setRequiredPrincipals(requiredPrincipals);
+    }
+    
+    
+    
+
 }

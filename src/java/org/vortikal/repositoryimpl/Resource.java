@@ -30,30 +30,17 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.Ace;
-import org.vortikal.repository.AclException;
-import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.Privilege;
-import org.vortikal.repository.PrivilegeDefinition;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
-import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.InvalidPrincipalException;
-import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.roles.RoleManager;
+import org.vortikal.util.web.URLUtil;
 
 
 public abstract class Resource implements Cloneable {
@@ -181,88 +168,41 @@ public abstract class Resource implements Cloneable {
         return this.dirtyACL;
     }
 
-
-    /**
-     * Gets the creation time for this resource.
-     *
-     * @return the <code>Date</code> object representing the creation
-     * time
-     */
     public Date getCreationTime() {
         return this.creationTime;
     }
 
-    /**
-     * Sets a resource's creation time.
-     *
-     * @param creationTime the date to set
-     */
     public void setCreationTime(Date creationTime) {
         this.creationTime = creationTime;
     }
 
-    /**
-     * Gets the date of this resource's last content modification.
-     *
-     * @return the time of last modification
-     */
     public Date getContentLastModified() {
         return this.contentLastModified;
     }
 
-    /**
-     * Sets a resource's content modification time.
-     *
-     * @param contentLastModified the date to set
-     */
     public void setContentLastModified(Date contentLastModified) {
         this.contentLastModified = contentLastModified;
     }
 
-    /**
-     * Gets the date of this resource's last properties modification.
-     *
-     * @return the time of last modification
-     */
     public Date getPropertiesLastModified() {
         return this.propertiesLastModified;
     }
 
-    /**
-     * Sets a resource's properties modification time.
-     *
-     * @param propertiesLastModified the date to set
-     */
     public void setPropertiesLastModified(Date propertiesLastModified) {
         this.propertiesLastModified = propertiesLastModified;
     }
 
-    /**
-     * Gets this resource's display name.
-     *
-     * @return the display name
-     */
     public String getDisplayName() {
         return ((this.displayName == null) || this.displayName.equals("")) ? this.name
                                                                  : this.displayName;
     }
 
-    /**
-     * Sets a resource's display name.
-     *
-     * @param displayName the name to set
-     */
     public void setDisplayName(String displayName) {
         if (!((displayName == null) || displayName.equals(""))) {
             this.displayName = displayName;
         }
     }
 
-    /**
-     * Gets a resource's content (MIME) type.
-     *
-     * @return the content type
-     */
     public String getContentType() {
         return this.contentType;
     }
@@ -279,11 +219,6 @@ public abstract class Resource implements Cloneable {
         this.characterEncoding = characterEncoding;
     }
 
-    /**
-     * Sets a resource's content (MIME) type.
-     *
-     * @param contentType the MIME type to set
-     */
     public void setContentType(String contentType) {
         if (!(this instanceof Collection)) {
             this.contentType = contentType;
@@ -292,30 +227,8 @@ public abstract class Resource implements Cloneable {
         }
     }
 
-    public String getParentURI() {
-        return getParent(this.uri);
-    }
-
     public boolean isCollection() {
         return "application/x-vortex-collection".equals(getContentType());
-    }
-
-    public static String getParent(String uri) {
-        if (uri == null) {
-            throw new IllegalArgumentException("Unable to find parent of null");
-        }
-
-        if ("/".equals(uri)) {
-            return null;
-        }
-
-        String parentURI = uri.substring(0, uri.lastIndexOf("/") + 1);
-
-        if (parentURI.endsWith("/") && !parentURI.equals("/")) {
-            parentURI = parentURI.substring(0, parentURI.length() - 1);
-        }
-
-        return parentURI;
     }
 
     public void addProperty(String namespace, String name, String value) {
@@ -390,203 +303,5 @@ public abstract class Resource implements Cloneable {
             dtoList.toArray(new org.vortikal.repository.Property[0]);
     }
 
-    private Privilege[] getRootPrivileges() {
-        Privilege read = new Privilege();
-
-        read.setName(PrivilegeDefinition.READ);
-
-        Privilege write = new Privilege();
-
-        write.setName(PrivilegeDefinition.WRITE);
-
-        Privilege writeACL = new Privilege();
-
-        writeACL.setName(PrivilegeDefinition.WRITE_ACL);
-
-        Privilege[] rootPrivs = new Privilege[3];
-
-        rootPrivs[0] = read;
-        rootPrivs[1] = write;
-        rootPrivs[2] = writeACL;
-
-        return rootPrivs;
-    }
-
-    private Privilege[] getReadPrivileges() {
-        Privilege read = new Privilege();
-
-        read.setName(PrivilegeDefinition.READ);
-
-        Privilege[] readPrivs = new Privilege[1];
-
-        readPrivs[0] = read;
-
-        return readPrivs;
-    }
-
-    /**
-     * Adds root and read everything roles to ACL
-     *
-     * @param originalACL an <code>Ace[]</code> value
-     * @return an <code>Ace[]</code>
-     */
-    private Ace[] addRolesToACL(ACL originalACL, RoleManager roleManager) {
-        List acl = new ArrayList(Arrays.asList(originalACL.toAceList(this)));
-        List rootPrincipals = roleManager.listPrincipals(RoleManager.ROOT);
-
-        for (Iterator i = rootPrincipals.iterator(); i.hasNext();) {
-            String root = (String) i.next();
-            org.vortikal.repository.ACLPrincipal aclPrincipal = org.vortikal.repository.ACLPrincipal.getInstance(org.vortikal.repository.ACLPrincipal.TYPE_URL,
-                    root, true);
-            Ace ace = new Ace();
-
-            ace.setPrincipal(aclPrincipal);
-            ace.setPrivileges(getRootPrivileges());
-            acl.add(ace);
-        }
-
-        List readPrincipals = roleManager.listPrincipals(RoleManager.READ_EVERYTHING);
-
-        for (Iterator i = readPrincipals.iterator(); i.hasNext();) {
-            String read = (String) i.next();
-            org.vortikal.repository.ACLPrincipal aclPrincipal = org.vortikal.repository.ACLPrincipal.getInstance(org.vortikal.repository.ACLPrincipal.TYPE_URL,
-                    read, true);
-            Ace ace = new Ace();
-
-            ace.setPrincipal(aclPrincipal);
-            ace.setPrivileges(getReadPrivileges());
-            acl.add(ace);
-        }
-
-        return (Ace[]) acl.toArray(new Ace[0]);
-    }
-
-    public org.vortikal.repository.Resource getResourceDTO(
-        Principal principal, PrincipalManager principalManager,
-        RoleManager roleManager) throws IOException {
-        org.vortikal.repository.Resource dto = new org.vortikal.repository.Resource();
-
-        dto.setURI(getURI());
-        dto.setCreationTime(getCreationTime());
-        dto.setContentLastModified(getContentLastModified());
-        dto.setPropertiesLastModified(getPropertiesLastModified());
-        dto.setContentModifiedBy(principalManager.getPrincipal(getContentModifiedBy()));
-        dto.setPropertiesModifiedBy(principalManager.getPrincipal(getPropertiesModifiedBy()));
-        dto.setContentType(getContentType());
-        dto.setCharacterEncoding(getCharacterEncoding());
-        dto.setDisplayName(getDisplayName());
-        dto.setActiveLocks((this.lock == null)
-            ? new org.vortikal.repository.Lock[] {  }
-            : new org.vortikal.repository.Lock[] { this.lock.getLockDTO(principalManager) });
-        dto.setName(this.name);
-        dto.setOwner(principalManager.getPrincipal(this.owner));
-        dto.setSupportedPrivileges(standardPrivilegeDefinition);
-        dto.setAclRestrictions(standardRestrictions);
-        dto.setProperties(getPropertyDTOs());
-
-        try {
-            ACL originalACL = (ACL) this.acl.clone();
-
-            dto.setACL(addRolesToACL(originalACL, roleManager));
-
-            if ("/".equals(this.uri)) {
-                dto.setParentACL(new Ace[0]);
-            } else {
-                Resource parent = this.dao.load(getParentURI());
-                ACL parentACL = (ACL) parent.getACL().clone();
-
-                dto.setParentACL(addRolesToACL(parentACL, roleManager));
-                dto.setParentOwner(principalManager.getPrincipal(parent.getOwner()));
-            }
-        } catch (CloneNotSupportedException e) {
-        }
-
-        return dto;
-    }
-
-
-
-    // (The crap below is to be removed)
-
-    public final static org.vortikal.repository.PrivilegeDefinition standardPrivilegeDefinition;
-    public final static org.vortikal.repository.AclRestrictions standardRestrictions;
-    public final static String CUSTOM_NAMESPACE = "uio";
-    public final static String CUSTOM_PRIVILEGE_READ_PROCESSED = "read-processed";
-
-    static {
-        /*
-         * Declare the standard ACL supported privilege tree (will be
-         * the same for all resources):
-         *
-         * [dav:all] (abstract)
-         *     |
-         *     |---[dav:read]
-         *     |       |
-         *     |       `---[uio:read-processed]
-         *     |
-         *     |---[dav:write]
-         *     |
-         *     `---[dav:write-acl]
-         *
-         */
-        standardPrivilegeDefinition = new org.vortikal.repository.PrivilegeDefinition();
-
-        org.vortikal.repository.PrivilegeDefinition all = new org.vortikal.repository.PrivilegeDefinition();
-
-        all.setName(org.vortikal.repository.PrivilegeDefinition.ALL);
-        all.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        all.setAbstractACE(true);
-
-        org.vortikal.repository.PrivilegeDefinition read = new org.vortikal.repository.PrivilegeDefinition();
-
-        read.setName(org.vortikal.repository.PrivilegeDefinition.READ);
-        read.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        read.setAbstractACE(false);
-
-        org.vortikal.repository.PrivilegeDefinition readProcessed = new org.vortikal.repository.PrivilegeDefinition();
-
-        readProcessed.setName(CUSTOM_PRIVILEGE_READ_PROCESSED);
-        readProcessed.setNamespace(CUSTOM_NAMESPACE);
-        readProcessed.setAbstractACE(false);
-        read.setMembers(new org.vortikal.repository.PrivilegeDefinition[] {
-                readProcessed
-            });
-
-        org.vortikal.repository.PrivilegeDefinition write = new org.vortikal.repository.PrivilegeDefinition();
-
-        write.setName(org.vortikal.repository.PrivilegeDefinition.WRITE);
-        write.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        write.setAbstractACE(false);
-
-        org.vortikal.repository.PrivilegeDefinition writeACL = new org.vortikal.repository.PrivilegeDefinition();
-
-        writeACL.setName(org.vortikal.repository.PrivilegeDefinition.WRITE_ACL);
-        writeACL.setNamespace(org.vortikal.repository.PrivilegeDefinition.STANDARD_NAMESPACE);
-        writeACL.setAbstractACE(false);
-
-        org.vortikal.repository.PrivilegeDefinition[] members = new org.vortikal.repository.PrivilegeDefinition[3];
-
-        members[0] = read;
-        members[1] = write;
-        members[2] = writeACL;
-
-        all.setMembers(members);
-
-        /* Set ACL restrictions: */
-        standardRestrictions = new org.vortikal.repository.AclRestrictions();
-        standardRestrictions.setGrantOnly(true);
-        standardRestrictions.setNoInvert(true);
-        standardRestrictions.setPrincipalOnlyOneAce(true);
-
-        org.vortikal.repository.ACLPrincipal owner = new org.vortikal.repository.ACLPrincipal();
-
-        owner.setType(org.vortikal.repository.ACLPrincipal.TYPE_OWNER);
-
-        org.vortikal.repository.ACLPrincipal[] requiredPrincipals = new org.vortikal.repository.ACLPrincipal[] {
-                owner
-            };
-
-        standardRestrictions.setRequiredPrincipals(requiredPrincipals);
-    }
 
 }

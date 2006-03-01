@@ -39,6 +39,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.repositoryimpl.index.util.IndexResourceIdHelper;
+import org.vortikal.util.repository.URIUtil;
 
 
 /**
@@ -90,7 +91,7 @@ public class RepositoryBackendIndexResourceIdHelper implements IndexResourceIdHe
             if (r == null) return null;
             
             String parent;
-            while ((parent = r.getParentURI()) != null) {
+            while ((parent = URIUtil.getParentURI(r.getURI())) != null) {
                 r = dao.load(parent);
                 idString.append(r.getID());
                 idString.append(" ");

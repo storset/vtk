@@ -48,6 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.util.repository.URIUtil;
 
 
 /**
@@ -413,7 +414,7 @@ public class Cache implements DataAccessor, InitializingBean {
             }
         }
 
-        String parentURI = Resource.getParent(r.getURI());
+        String parentURI = URIUtil.getParentURI(r.getURI());
 
         if ((parentURI != null) && this.items.containsURI(parentURI)) {
             uris.add(parentURI);

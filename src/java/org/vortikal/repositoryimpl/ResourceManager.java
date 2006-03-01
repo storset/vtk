@@ -33,12 +33,21 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.vortikal.repository.Ace;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
@@ -49,6 +58,7 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.MimeHelper;
+import org.vortikal.util.repository.URIUtil;
 
 
 public class ResourceManager {
@@ -57,32 +67,16 @@ public class ResourceManager {
     private RoleManager roleManager;
     private DataAccessor dao;
 
-
-    public ResourceManager(PrincipalManager principalManager,
-                           RoleManager roleManager, DataAccessor dao) {
-        this.principalManager = principalManager;
-        this.roleManager = roleManager;
-        this.dao = dao;
-    }
-    
-
-    public void authorize(Resource resource, Principal principal, String privilege)
-        throws IOException, AuthenticationException, AuthorizationException {
-        
-        resource.getACL().authorize(principal, privilege, resource,
-                                    this.principalManager, this.roleManager);
-    }
-    
     public void authorizeRecursively(Resource resource, Principal principal,
                                      String privilege)
         throws IOException, AuthenticationException, AuthorizationException {
 
-        this.authorize(resource, principal, privilege);
+        authorize(resource, principal, privilege);
         if (resource instanceof Collection) {
             String[] uris = this.dao.discoverACLs(resource);
             for (int i = 0; i < uris.length; i++) {
                 Resource ancestor = this.dao.load(uris[i]);
-                this.authorize(ancestor, principal, privilege);
+                authorize(ancestor, principal, privilege);
             }
         }
     }
@@ -195,13 +189,13 @@ public class ResourceManager {
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
         return this.createCollection(parent, principal, principal.getQualifiedName(), path,
-            new ACL(new HashMap()), true);
+            new ACL(), true);
     }
 
     /**
      * Creates a collection with a specified owner and (possibly inherited) ACL.
      */
-    public Resource createCollection(Collection parent, Principal principal, String owner,
+    private Resource createCollection(Collection parent, Principal principal, String owner,
         String path, ACL acl, boolean inheritedACL)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
@@ -209,7 +203,7 @@ public class ResourceManager {
         this.authorize(parent, principal, PrivilegeDefinition.WRITE);
 
         Resource r = new Collection(path, owner, principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(new HashMap()),
+                principal.getQualifiedName(), new ACL(),
                 true, null, dao, this.principalManager, new String[] {  });
 
         Date now = new Date();
@@ -223,7 +217,7 @@ public class ResourceManager {
         if (!inheritedACL) {
             //acl.setResource(r);
             r.setInheritedACL(false);
-            this.storeACL(r, principal, acl.toAceList(r));
+            this.storeACL(r, principal, toAceList(acl, null));
         }
 
         parent.addChildURI(r.getURI());
@@ -245,26 +239,17 @@ public class ResourceManager {
     public Resource create(Collection parent, Principal principal, String path)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
-        return this.create(parent, principal, principal, path,
-            new ACL(new HashMap()), true);
+        return this.create(parent, principal, principal, path, null, true);
     }
 
-    public Resource create(Collection parent, Principal principal,
+    private Resource create(Collection parent, Principal principal,
                            Principal owner, String path, ACL acl, boolean inheritedACL)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
-        this.authorize(parent, principal, PrivilegeDefinition.WRITE);
-
-        String childName = path.substring(path.indexOf(parent.getURI()));
-
-        /* FIXME: if write access = "dav:all": who creates the resource? */
-        if (principal == null) {
-            throw new AuthenticationException(
-                "Principal must be specified in order to create a resource");
-        }
+        authorize(parent, principal, PrivilegeDefinition.WRITE);
 
         Resource r = new Document(path, owner.getQualifiedName(), principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(new HashMap()),
+                principal.getQualifiedName(), new ACL(),
                 true, null, this.dao, this.principalManager);
 
         Date now = new Date();
@@ -285,7 +270,7 @@ public class ResourceManager {
 
         if (!inheritedACL) {
             r.setInheritedACL(false);
-            this.storeACL(r, principal, acl.toAceList(r));
+            this.storeACL(r, principal, toAceList(acl, null));
         }
 
         parent.addChildURI(r.getURI());
@@ -311,14 +296,14 @@ public class ResourceManager {
             AclException {
 
         ACL acl = (!preserveACL || resource.isInheritedACL())
-            ? new ACL(new HashMap()) : resource.getACL();
+            ? new ACL() : resource.getACL();
 
         boolean aclInheritance = (!preserveACL || resource.isInheritedACL());
 
         Principal owner = (preserveOwner) ?
             principalManager.getPrincipal(resource.getOwner()) : principal;
 
-        String parentURI = Resource.getParent(destUri);
+        String parentURI = URIUtil.getParentURI(destUri);
         Collection parent = (Collection) this.dao.load(parentURI);
 
 
@@ -485,10 +470,8 @@ public class ResourceManager {
         throws AuthorizationException, AuthenticationException, 
             IllegalOperationException, IOException, AclException {
 
-        ACL acl = ACL.buildACL(aceList, principalManager);
+        ACL acl = buildACL(aceList);
         resource.setACL(acl);
-
-        //this.acl.setResource(this);
 
         /* If the first ACE has set inheritance, we know that the
          * whole ACL has valid inheritance (ACL.validateACL() ensures
@@ -500,9 +483,8 @@ public class ResourceManager {
              * parent's ACL, since the supplied one may contain other
              * ACEs than the one we now inherit from. */
             try {
-                ACL parentACL = (ACL) this.dao.load(resource.getParentURI()).getACL().clone();
+                ACL parentACL = (ACL) this.dao.load(URIUtil.getParentURI(resource.getURI())).getACL().clone();
 
-                //parentACL.setResource(this);
                 resource.setACL(parentACL);
             } catch (CloneNotSupportedException e) {
             }
@@ -543,6 +525,523 @@ public class ResourceManager {
         this.dao.store(resource);
 
         return dao.getOutputStream(resource);
+    }
+
+    
+    
+    
+    public org.vortikal.repository.Resource getResourceDTO(
+            Resource resource, Principal principal) throws IOException {
+            org.vortikal.repository.Resource dto = new org.vortikal.repository.Resource();
+
+            dto.setURI(resource.getURI());
+            dto.setCreationTime(resource.getCreationTime());
+            dto.setContentLastModified(resource.getContentLastModified());
+            dto.setPropertiesLastModified(resource.getPropertiesLastModified());
+            dto.setContentModifiedBy(principalManager.getPrincipal(resource.getContentModifiedBy()));
+            dto.setPropertiesModifiedBy(principalManager.getPrincipal(resource.getPropertiesModifiedBy()));
+            dto.setContentType(resource.getContentType());
+            dto.setCharacterEncoding(resource.getCharacterEncoding());
+            dto.setDisplayName(resource.getDisplayName());
+            dto.setActiveLocks((resource.lock == null)
+                ? new org.vortikal.repository.Lock[] {  }
+                : new org.vortikal.repository.Lock[] { resource.lock.getLockDTO(principalManager) });
+            dto.setName(resource.name);
+            dto.setOwner(principalManager.getPrincipal(resource.owner));
+            dto.setProperties(resource.getPropertyDTOs());
+
+            try {
+                ACL originalACL = (ACL) resource.acl.clone();
+
+                dto.setACL(addRolesToACL(resource, originalACL));
+
+                if ("/".equals(resource.getURI())) {
+                    dto.setParentACL(new Ace[0]);
+                } else {
+                    Resource parent = this.dao.load(URIUtil.getParentURI(resource.getURI()));
+                    ACL parentACL = (ACL) parent.getACL().clone();
+
+                    dto.setParentACL(addRolesToACL(resource, parentACL));
+                    dto.setParentOwner(principalManager.getPrincipal(parent.getOwner()));
+                }
+            } catch (CloneNotSupportedException e) {
+            }
+
+            if (resource.isCollection()) {
+               dto.setChildURIs(((Collection)resource).getChildURIs());
+            } else {
+               dto.setContentLength(dao.getContentLength(resource));
+               dto.setContentLocale(((Document)resource).getContentLocale());
+            }
+            
+            return dto;
+        }
+
+    /**
+     * Adds root and read everything roles to ACL
+     *
+     * @param originalACL an <code>Ace[]</code> value
+     * @return an <code>Ace[]</code>
+     */
+    private Ace[] addRolesToACL(Resource resource, ACL originalACL) {
+
+        String inheritedFrom = null;
+        if (resource.isInheritedACL()) {
+            inheritedFrom = URIUtil.getParentURI(resource.getURI());
+        }
+
+        List acl = new ArrayList(Arrays.asList(toAceList(originalACL, inheritedFrom)));
+        List rootPrincipals = roleManager.listPrincipals(RoleManager.ROOT);
+
+        for (Iterator i = rootPrincipals.iterator(); i.hasNext();) {
+            String root = (String) i.next();
+            org.vortikal.repository.ACLPrincipal aclPrincipal = org.vortikal.repository.ACLPrincipal.getInstance(org.vortikal.repository.ACLPrincipal.TYPE_URL,
+                    root, true);
+            Ace ace = new Ace();
+
+            ace.setPrincipal(aclPrincipal);
+            ace.setPrivileges(getRootPrivileges());
+            acl.add(ace);
+        }
+
+        List readPrincipals = roleManager.listPrincipals(RoleManager.READ_EVERYTHING);
+
+        for (Iterator i = readPrincipals.iterator(); i.hasNext();) {
+            String read = (String) i.next();
+            org.vortikal.repository.ACLPrincipal aclPrincipal = org.vortikal.repository.ACLPrincipal.getInstance(org.vortikal.repository.ACLPrincipal.TYPE_URL,
+                    read, true);
+            Ace ace = new Ace();
+
+            ace.setPrincipal(aclPrincipal);
+            ace.setPrivileges(getReadPrivileges());
+            acl.add(ace);
+        }
+
+        return (Ace[]) acl.toArray(new Ace[0]);
+    }
+
+    
+    private Privilege[] getRootPrivileges() {
+        Privilege read = new Privilege();
+
+        read.setName(PrivilegeDefinition.READ);
+
+        Privilege write = new Privilege();
+
+        write.setName(PrivilegeDefinition.WRITE);
+
+        Privilege writeACL = new Privilege();
+
+        writeACL.setName(PrivilegeDefinition.WRITE_ACL);
+
+        Privilege[] rootPrivs = new Privilege[3];
+
+        rootPrivs[0] = read;
+        rootPrivs[1] = write;
+        rootPrivs[2] = writeACL;
+
+        return rootPrivs;
+    }
+
+    private Privilege[] getReadPrivileges() {
+        Privilege read = new Privilege();
+
+        read.setName(PrivilegeDefinition.READ);
+
+        Privilege[] readPrivs = new Privilege[1];
+
+        readPrivs[0] = read;
+
+        return readPrivs;
+    }
+
+    /**
+     * @param dao The dao to set.
+     */
+    public void setDao(DataAccessor dao) {
+        this.dao = dao;
+    }
+
+    /**
+     * @param principalManager The principalManager to set.
+     */
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+
+    /**
+     * @param roleManager The roleManager to set.
+     */
+    public void setRoleManager(RoleManager roleManager) {
+        this.roleManager = roleManager;
+    }
+
+    /*
+     * Build an ACL object from the Ace[] array (assumes valid
+     * input, except that principal names of URL-type principals are
+     * trimmed of whitespace, since the principal manager may be
+     * tolerant and pass these trough validation).
+     */
+    private ACL buildACL(Ace[] aceList)
+        throws AclException {
+
+        ACL acl = new ACL();
+        Map privilegeMap = acl.getActionMap();
+
+        for (int i = 0; i < aceList.length; i++) {
+            Ace ace = aceList[i];
+            org.vortikal.repository.ACLPrincipal principal = ace.getPrincipal();
+            String principalName = null;
+
+            if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_URL) {
+                //TODO: document behaviour where name = name@defaultdomain
+                if (principal.isUser())
+                    principalName = principalManager.getPrincipal(
+                            principal.getURL().trim()).getQualifiedName();
+                else 
+                    principalName = principal.getURL().trim();
+            } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_ALL) {
+                principalName = "dav:all";
+            } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_OWNER) {
+                principalName = "dav:owner";
+            } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_AUTHENTICATED) {
+                principalName = "dav:authenticated";
+            } else {
+                throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
+                    "Unknown principal: " + principal.getURL());
+            }
+
+            Privilege[] privileges = ace.getPrivileges();
+
+            for (int j = 0; j < privileges.length; j++) {
+                Privilege privilege = privileges[j];
+
+                /*
+                 * We don't store the required ACE
+                 * ((dav:owner (dav:read dav:write dav:write-acl))
+                 */
+
+                //                 if (principalName.equals("dav:owner") &&
+                //                     (privilege.getName().equals(PrivilegeDefinition.READ) ||
+                //                      privilege.getName().equals(PrivilegeDefinition.WRITE) ||
+                //                      privilege.getName().equals(PrivilegeDefinition.WRITE_ACL))) {
+                //                     continue;
+                //                 }
+                // Add an entry for (privilege, principal)
+                if (!privilegeMap.containsKey(privilege.getName())) {
+                    privilegeMap.put(privilege.getName(), new ArrayList());
+                }
+
+                List principals = (List) privilegeMap.get(privilege.getName());
+
+                ACLPrincipal p = new ACLPrincipal(principalName,
+                        !principal.isUser());
+
+                if (!principals.contains(p)) {
+                    principals.add(p);
+                }
+            }
+        }
+
+        return acl;
+    }
+    
+    
+
+    
+    /*
+     * From ACL: 
+     * 
+     */
+    
+    public void authorize(Resource resource, Principal principal, String action) 
+        throws AuthenticationException, AuthorizationException, IOException {
+ 
+        ACL acl = resource.getACL();
+        
+        /*
+         * Special treatment for uio:read-processed needed: dav:read also grants
+         * uio:read-processed
+         */
+        if (action
+                .equals(org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
+            try {
+                authorize(resource, principal, PrivilegeDefinition.READ);
+
+                return;
+            } catch (AuthenticationException e) {
+                /* Handle below */
+            } catch (AuthorizationException e) {
+                /* Handle below */
+            }
+        }
+
+        List principalList = acl.getPrincipalList(action);
+
+        /*
+         * A user is granted access if one of these conditions are met:
+         * 
+         * 
+         * 1) (dav:all, action) is present in the resource's ACL. 
+         * NOTE: Now limits this to read operations
+         * 
+         * The rest requires that the user is authenticated:
+         * 
+         * 2) user is authenticated and dav:authenticated is present
+         * 
+         * 3a) user has role ROOT
+         * 
+         * 3b) action = 'read' and user has role READ_EVERYTHING
+         * 
+         * 4a) dav:owner evaluates to user and action is dav:read, dav:write or
+         * dav:write-acl (COMMENTED OUT)
+         * 
+         * The rest is meaningless if principalList == null:
+         * 
+         * 4b) dav:owner evaluates to user and (dav:owner, action) is present in
+         * the resource's ACL
+         * 
+         * 5) (user, action) is present in the resource's ACL
+         * 
+         * 6) (g, action) is present in the resource's ACL, where g is a group
+         * identifier and the user is a member of that group
+         */
+
+        // Condition 1:
+        if (userMatch(principalList, "dav:all")
+                && (PrivilegeDefinition.READ.equals(action) 
+                    || org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED.equals(action))) {
+            return;
+        }
+
+        // If not condition 1 - needs to be authenticated
+        if (principal == null) {
+            throw new AuthenticationException();
+        }
+
+        // Condition 2:
+        if (userMatch(principalList, "dav:authenticated")) {
+            return;
+        }
+
+        // Condition 3a:
+        if (roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+            return;
+        }
+
+        // Condition 3b:
+        if (PrivilegeDefinition.READ.equals(action)
+                && roleManager.hasRole(principal.getQualifiedName(),
+                        RoleManager.READ_EVERYTHING)) {
+            return;
+        }
+
+        // Condition 4a:
+        // if (resource.getOwner().equals(principal.getQualifiedName())) {
+        // if (action.equals(PrivilegeDefinition.READ) ||
+        //                 action.equals(PrivilegeDefinition.WRITE) ||
+        //                 action.equals(PrivilegeDefinition.WRITE_ACL)) {
+        //                 return;
+        //             }
+        //         }
+        // Dont't need to test the remaining conditions if (principalList == null)
+        if (principalList == null) {
+            throw new AuthorizationException();
+        }
+
+        if (resource.getOwner().equals(principal.getQualifiedName())) {
+            if (userMatch(principalList, "dav:owner")) {
+                return;
+            }
+        }
+
+        // Condition 5:
+        if (userMatch(principalList, principal.getQualifiedName())) {
+            return;
+        }
+
+        // Condition 6:
+        if (groupMatch(principalList, principal)) {
+            return;
+        }
+
+        throw new AuthorizationException();
+    }
+
+    /**
+     * Decides whether a given principal exists in a principal list.
+     *
+     * @param principalList a <code>List</code> value
+     * @param username a <code>String</code> value
+     * @return a <code>boolean</code>
+     */
+    private boolean userMatch(List principalList, String username) {
+        if (principalList != null) {
+            return principalList.contains(new ACLPrincipal(username));
+        }
+
+        return false;
+    }
+
+    private boolean groupMatch(List principalList, Principal principal) {
+        
+        for (Iterator i = principalList.iterator(); i.hasNext();) {
+            ACLPrincipal p = (ACLPrincipal) i.next();
+
+            if (p.isGroup()) {
+                if (principalManager.isMember(principal, p.getUrl())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    
+    
+    /** To be removed...?
+     * 
+     * @deprecated
+     * @param principal
+     * @param resource
+     * @param principalManager
+     * @param roleManager
+     * @return
+     * @throws IOException
+     */
+    protected Privilege[] getCurrentUserPrivileges(
+        Principal principal, Resource resource, PrincipalManager principalManager,
+        RoleManager roleManager) throws IOException {
+
+        ArrayList privs = new ArrayList();
+
+        String[] testedPrivileges = new String[] {
+                PrivilegeDefinition.WRITE, PrivilegeDefinition.READ,
+                PrivilegeDefinition.WRITE_ACL,
+                org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED
+            };
+
+        for (int i = 0; i < testedPrivileges.length; i++) {
+            String action = testedPrivileges[i];
+
+            /* Try to authorize against every privilege, and if it
+             * works, add the privilege to the list: */
+            try {
+                authorize(resource, principal, action);
+
+                Privilege priv = new Privilege();
+
+                priv.setName(action);
+                privs.add(priv);
+            } catch (AuthenticationException e) {
+                // ignore
+            } catch (AuthorizationException e) {
+                // ignore
+            }
+        }
+
+        return (Privilege[]) privs.toArray(new Privilege[] {});
+    }
+
+    /**
+     * Generates a list of Ace objects (for data exchange).
+     *
+     * @return an <code>Ace[]</code>
+     */
+    public Ace[] toAceList(ACL acl, String inheritedFrom) {
+
+        Set actions = acl.getActionMap().keySet();
+
+        HashMap userMap = new HashMap();
+
+        /*
+         * Add ((dav:owner (dav:read dav:write dav:write-acl))
+         */
+
+        //         HashSet owner = new HashSet();
+        //         owner.add(PrivilegeDefinition.READ);
+        //         owner.add(PrivilegeDefinition.WRITE);
+        //         owner.add(PrivilegeDefinition.WRITE_ACL);
+        //         userMap.put(new ACLPrincipal("dav:owner"), owner);
+        for (Iterator i = actions.iterator(); i.hasNext();) {
+            String action = (String) i.next();
+
+            List principalList = acl.getPrincipalList(action);
+
+            for (Iterator j = principalList.iterator(); j.hasNext();) {
+                ACLPrincipal p = (ACLPrincipal) j.next();
+
+                if (!userMap.containsKey(p)) {
+                    HashSet actionSet = new HashSet();
+
+                    userMap.put(p, actionSet);
+                }
+
+                HashSet actionSet = (HashSet) userMap.get(p);
+
+                actionSet.add(action);
+            }
+        }
+
+        Ace[] aces = new Ace[userMap.size()];
+        int aclIndex = 0;
+
+        /* Create the ACE's  */
+        for (Iterator i = userMap.keySet().iterator(); i.hasNext();) {
+            ACLPrincipal p = (ACLPrincipal) i.next();
+
+            /* Create the principal */
+            org.vortikal.repository.ACLPrincipal principal = new org.vortikal.repository.ACLPrincipal();
+
+            if (p.getUrl().equals("dav:all")) {
+                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_ALL);
+            } else if (p.getUrl().equals("dav:owner")) {
+                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_OWNER);
+            } else if (p.getUrl().equals("dav:authenticated")) {
+                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_AUTHENTICATED);
+            } else {
+                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_URL);
+                principal.setIsUser(!p.isGroup());
+                principal.setURL(p.getUrl());
+            }
+
+            /* Create the ACE */
+            Ace element = new Ace();
+
+            element.setPrincipal(principal);
+
+            ArrayList privs = new ArrayList();
+
+            for (Iterator j = ((Set) userMap.get(p)).iterator(); j.hasNext();) {
+                String action = (String) j.next();
+                Privilege priv = new Privilege();
+
+                priv.setName(action);
+
+                // FIXME: Hack coming up:
+                if (action.equals(org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
+                    priv.setNamespace(org.vortikal.repository.Resource.CUSTOM_NAMESPACE);
+                } else {
+                    priv.setNamespace(PrivilegeDefinition.STANDARD_NAMESPACE);
+                }
+
+                privs.add(priv);
+            }
+
+            Privilege[] privileges = (Privilege[]) privs.toArray(new Privilege[] {
+                        
+                    });
+
+            element.setPrivileges(privileges);
+            element.setGranted(true);
+
+            element.setInheritedFrom(inheritedFrom);
+
+            aces[aclIndex++] = element;
+        }
+
+        return aces;
     }
 
 

@@ -86,7 +86,7 @@ public abstract class AbstractDataAccessor
             }
 
             /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL(new HashMap());
+            ACL acl = new ACL();
             resources[i].setACL(acl);
         
         }

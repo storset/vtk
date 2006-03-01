@@ -63,6 +63,7 @@ import org.vortikal.repositoryimpl.Lock;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.LocaleHelper;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 
 /**
@@ -325,7 +326,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String contentModifiedBy = rs.getString("content_modified_by");
             String propertiesModifiedBy = rs.getString("properties_modified_by");
             boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL(new HashMap());
+            ACL acl = new ACL();
 
             Lock lock = null;
 
@@ -825,7 +826,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     private void store(Connection conn, Resource r)
             throws SQLException, IOException {
         String uri = r.getURI();
-        String parent = r.getParentURI();
+        
+        String parent = URIUtil.getParentURI(uri);
 
         Date contentLastModified = r.getContentLastModified();
         Date propertiesLastModified = r.getPropertiesLastModified();
@@ -1400,7 +1402,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             if (acl == null) {
 
-                acl = new ACL(new HashMap());
+                acl = new ACL();
                 acls.put(uri, acl);
             }
 
@@ -1475,7 +1477,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String contentModifiedBy = rs.getString("content_modified_by");
             String propertiesModifiedBy = rs.getString("properties_modified_by");
             boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL(new HashMap());
+            ACL acl = new ACL();
 
             Lock lock = null;
 
@@ -1605,7 +1607,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         for (int i = 0; i < resources.length; i++) {
 
             /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL(new HashMap());
+            ACL acl = new ACL();
             resources[i].setACL(acl);
         }
 
@@ -1646,7 +1648,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             if (acl == null) {
 
-                acl = new ACL(new HashMap());
+                acl = new ACL();
                 acls.put(uri, acl);
             }
 

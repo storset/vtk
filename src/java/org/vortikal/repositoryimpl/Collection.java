@@ -107,28 +107,4 @@ public class Collection extends Resource implements Cloneable {
     }
 
 
-    /**
-     * Overridden version of getResourceDTO(), adding child pointers.
-     *
-     * @param principal a <code>Principal</code> value
-     * @param roleManager a <code>RoleManager</code> value
-     * @return a <code>org.vortikal.repository.Resource</code>
-     * @exception IOException if an error occurs
-     */
-    public org.vortikal.repository.Resource getResourceDTO(
-        Principal principal, PrincipalManager principalManager,
-        RoleManager roleManager) throws IOException {
-
-        org.vortikal.repository.Resource dto = super.getResourceDTO(
-            principal, principalManager, roleManager);
-        String[] children = new String[this.childURIs.length];
-
-        System.arraycopy(this.childURIs, 0, children, 0, childURIs.length);
-
-        dto.setChildURIs(children);
-
-        return dto;
-    }
-
-
 }

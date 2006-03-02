@@ -57,8 +57,6 @@ import org.springframework.beans.factory.DisposableBean;
 
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
-import org.vortikal.repositoryimpl.Collection;
-import org.vortikal.repositoryimpl.Document;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -339,13 +337,12 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             if (rs.getString("is_collection").equals("Y")) {
                 String[] children = null;
 
-                resource = new Collection(uri, owner, contentModifiedBy,
-                        propertiesModifiedBy, acl, inherited, lock, this,
-                        principalManager, children);
+                resource = new Resource(uri, owner, contentModifiedBy,
+                                        propertiesModifiedBy, acl, inherited, lock,
+                                        true, children);
             } else {
-                resource = new Document(uri, owner, contentModifiedBy,
-                        propertiesModifiedBy, acl, inherited, lock, this,
-                        principalManager);
+                resource = new Resource(uri, owner, contentModifiedBy,
+                                        propertiesModifiedBy, acl, inherited, lock, false, null);
             }
 
             resource.setCreationTime(rs.getTimestamp("creation_time"));
@@ -363,8 +360,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             resource.setCharacterEncoding(rs.getString("character_encoding"));
             resource.setID(rs.getInt("resource_id"));
 
-            if (resource instanceof Document) {
-                ((Document) resource).setContentLocale(
+            if (!resource.isCollection()) {
+                resource.setContentLocale(
                     LocaleHelper.getLocale(rs.getString("content_language")));
             }
 
@@ -428,7 +425,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.close();
 
         for (int i = 0; i < resources.length; i++) {
-            if (!(resources[i] instanceof Collection)) {
+            if (!resources[i].isCollection()) {
                 continue;
             }
 
@@ -441,7 +438,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 children = (String[]) entry.toArray(new String[] {});
             }
 
-            ((Collection) resources[i]).setChildURIs(children);
+            resources[i].setChildURIs(children);
         }
     }
 
@@ -614,7 +611,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         try {
             conn = getConnection();
 
-            if (!(directory instanceof Collection)) {
+            if (!directory.isCollection()) {
                 LockImpl lock = loadLock(conn, directory.getURI());
 
                 return (lock != null) ? new String[] {directory.getURI()} : new String[0];
@@ -739,7 +736,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return result;
     }
 
-    public String[] listSubTree(Collection parent)
+    public String[] listSubTree(Resource parent)
             throws IOException {
         Connection conn = null;
         String[] retVal = null;
@@ -765,7 +762,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
 
-    private String[] listSubTree(Connection conn, Collection parent)
+    private String[] listSubTree(Connection conn, Resource parent)
             throws SQLException {
         if (parent.getURI() == null) {
             return new String[] {};
@@ -871,8 +868,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         String contentLanguage = null;
 
-        if (r instanceof Document && ((Document) r).getContentLocale() != null) {
-            contentLanguage = ((Document) r).getContentLocale().toString();
+        if (!r.isCollection() && r.getContentLocale() != null) {
+            contentLanguage = r.getContentLocale().toString();
         }
 
         // FIXME: allow null values:
@@ -1427,7 +1424,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
      * 
      */
 
-    public Resource[] loadChildren(Collection parent)
+    public Resource[] loadChildren(Resource parent)
             throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("load children:" + parent.getURI());
@@ -1456,7 +1453,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
 
-    private Resource[] loadChildren(Connection conn, Collection parent)
+    private Resource[] loadChildren(Connection conn, Resource parent)
             throws SQLException {
 
         Map locks = loadLocksForChildren(conn, parent);
@@ -1490,13 +1487,13 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             if (rs.getString("is_collection").equals("Y")) {
                 String[] children = null;
 
-                resource = new Collection(uri, owner, contentModifiedBy,
-                        propertiesModifiedBy, acl, inherited, lock, this,
-                        principalManager, children);
+                resource = new Resource(uri, owner, contentModifiedBy,
+                                        propertiesModifiedBy, acl, inherited, lock,
+                                        true, children);
             } else {
-                resource = new Document(uri, owner, contentModifiedBy,
-                        propertiesModifiedBy, acl, inherited, lock, this,
-                        principalManager);
+                resource = new Resource(uri, owner, contentModifiedBy,
+                        propertiesModifiedBy, acl, inherited, lock, false,
+                        null);
             }
 
             resource.setCreationTime(rs.getTimestamp("creation_time"));
@@ -1514,8 +1511,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             resource.setCharacterEncoding(rs.getString("character_encoding"));
             resource.setID(rs.getInt("resource_id"));
 
-            if (resource instanceof Document) {
-                ((Document) resource).setContentLocale(
+            if (!resource.isCollection()) {
+                resource.setContentLocale(
                     LocaleHelper.getLocale(rs.getString("content_language")));
             }
 
@@ -1538,7 +1535,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return result;
     }
 
-    private void loadChildrenForChildren(Connection conn, Collection parent,
+    private void loadChildrenForChildren(Connection conn, Resource parent,
             Resource[] resources)
             throws SQLException {
 
@@ -1571,7 +1568,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.close();
 
         for (int i = 0; i < resources.length; i++) {
-            if (!(resources[i] instanceof Collection)) {
+            if (!resources[i].isCollection()) {
                 continue;
             }
 
@@ -1584,11 +1581,11 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 children = (String[]) entry.toArray(new String[0]);
             }
 
-            ((Collection) resources[i]).setChildURIs(children);
+            resources[i].setChildURIs(children);
         }
     }
 
-    protected void loadACLsForChildren(Connection conn, Collection parent,
+    protected void loadACLsForChildren(Connection conn, Resource parent,
             Resource[] resources)
             throws SQLException {
 
@@ -1721,7 +1718,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
-    private void loadPropertiesForChildren(Connection conn, Collection parent,
+    private void loadPropertiesForChildren(Connection conn, Resource parent,
             Resource[] resources)
             throws SQLException {
         if ((resources == null) || (resources.length == 0)) {
@@ -1781,7 +1778,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
-    private Map loadLocksForChildren(Connection conn, Collection parent)
+    private Map loadLocksForChildren(Connection conn, Resource parent)
             throws SQLException {
 
         String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "

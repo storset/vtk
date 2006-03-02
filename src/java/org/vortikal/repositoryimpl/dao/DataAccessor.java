@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.vortikal.repositoryimpl.ACL;
-import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.Resource;
 
 
@@ -58,7 +57,7 @@ public interface DataAccessor {
     public Resource[] load(String[] uris) throws IOException;
 
     /* Loads the children of a given resource */
-    public Resource[] loadChildren(Collection parent) throws IOException;
+    public Resource[] loadChildren(Resource parent) throws IOException;
 
     /* Stores a single resource */
     public void store(Resource r) throws IOException;
@@ -78,7 +77,7 @@ public interface DataAccessor {
     public long getContentLength(Resource resource) throws IOException;
 
     /* Lists all descendants of a collection resource, sorted by URI */
-    public String[] listSubTree(Collection parent) throws IOException;
+    public String[] listSubTree(Resource parent) throws IOException;
 
     /* Deletes all expired locks (should be called periodically) */
     public void deleteExpiredLocks() throws IOException;

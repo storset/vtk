@@ -46,7 +46,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.util.repository.URIUtil;
 
@@ -194,7 +193,6 @@ public class Cache implements DataAccessor, InitializingBean {
             Resource[] resources = wrappedAccessor.load(loadSet);
 
             for (int i = 0; i < resources.length; i++) {
-                resources[i].setDataAccessor(this);
                 enterResource(resources[i]);
                 found.add(resources[i]);
             }
@@ -210,7 +208,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
 
-    public Resource[] loadChildren(Collection parent) throws IOException {
+    public Resource[] loadChildren(Resource parent) throws IOException {
 
         List found = new ArrayList();
         List notFound = new ArrayList();
@@ -257,7 +255,6 @@ public class Cache implements DataAccessor, InitializingBean {
             resources = this.wrappedAccessor.loadChildren(parent);
 
             for (int i = 0; i < resources.length; i++) {
-                resources[i].setDataAccessor(this);
                 enterResource(resources[i]);
             }
         } finally {
@@ -337,7 +334,6 @@ public class Cache implements DataAccessor, InitializingBean {
                 logger.debug("miss: " + uri);
             }
 
-            r.setDataAccessor(this);
             enterResource(r);
 
             return r;
@@ -462,7 +458,7 @@ public class Cache implements DataAccessor, InitializingBean {
         return this.wrappedAccessor.getContentLength(resource);
     }
 
-    public String[] listSubTree(Collection parent) throws IOException {
+    public String[] listSubTree(Resource parent) throws IOException {
         return this.wrappedAccessor.listSubTree(parent);
     }
 

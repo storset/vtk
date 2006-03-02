@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.vortikal.repository.ACLPrincipal;
 import org.vortikal.repository.Ace;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Resource;
@@ -117,15 +118,15 @@ public class AclUtil {
         privileges = new Privilege[3];
         privilege = new Privilege();
         privilege.setName(PrivilegeDefinition.WRITE_ACL);
-        privilege.setNamespace(PrivilegeDefinition.STANDARD_NAMESPACE);
+        privilege.setNamespace(Namespace.STANDARD_NAMESPACE);
         privileges[0] = privilege;
         privilege = new Privilege();
         privilege.setName(PrivilegeDefinition.READ);
-        privilege.setNamespace(PrivilegeDefinition.STANDARD_NAMESPACE);
+        privilege.setNamespace(Namespace.STANDARD_NAMESPACE);
         privileges[1] = privilege;
         privilege = new Privilege();
         privilege.setName(PrivilegeDefinition.WRITE);
-        privilege.setNamespace(PrivilegeDefinition.STANDARD_NAMESPACE);
+        privilege.setNamespace(Namespace.STANDARD_NAMESPACE);
         privileges[2] = privilege;
         ace = new Ace();
         ace.setPrincipal(principal);
@@ -137,7 +138,7 @@ public class AclUtil {
         principal.setType(ACLPrincipal.TYPE_AUTHENTICATED);
         privilege = new Privilege();
         privilege.setName(PrivilegeDefinition.READ);
-        privilege.setNamespace(PrivilegeDefinition.STANDARD_NAMESPACE);
+        privilege.setNamespace(Namespace.STANDARD_NAMESPACE);
         ace = new Ace();
         ace.setPrincipal(principal);
         ace.setPrivileges(new Privilege[] { privilege });
@@ -199,7 +200,7 @@ public class AclUtil {
 
         String namespace = 
             ("read-processed".equals(privilegeName)) ? "uio" : 
-            PrivilegeDefinition.STANDARD_NAMESPACE;
+                Namespace.STANDARD_NAMESPACE;
 
         if (userIndex == -1) {
             Ace ace = new Ace();

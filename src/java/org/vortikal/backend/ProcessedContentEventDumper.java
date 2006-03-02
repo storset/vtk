@@ -37,6 +37,7 @@ import java.util.List;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.ACLPrincipal;
 import org.vortikal.repository.Ace;
+import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
@@ -177,9 +178,9 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             /* Check if ACE (dav:all (UIO_READ_PROCESSED)) has changed: */
 
             List principalListBefore = AclUtil.listPrivilegedPrincipals(
-                originalACL, Resource.CUSTOM_PRIVILEGE_READ_PROCESSED);
+                originalACL, PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
             List principalListAfter = AclUtil.listPrivilegedPrincipals(
-                newACL, Resource.CUSTOM_PRIVILEGE_READ_PROCESSED);
+                newACL, PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
            
 
             if (principalListBefore == null &&
@@ -198,15 +199,15 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             }
             
             if (AclUtil.hasPrivilege(originalACL, ACLPrincipal.NAME_DAV_ALL,
-                                     Resource.CUSTOM_PRIVILEGE_READ_PROCESSED) &&
+                    PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED) &&
                 AclUtil.hasPrivilege(newACL, ACLPrincipal.NAME_DAV_ALL,
-                                     Resource.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
+                        PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
                 return;
             }
 
             
             String op = AclUtil.hasPrivilege(newACL, ACLPrincipal.NAME_DAV_ALL,
-                                     Resource.CUSTOM_PRIVILEGE_READ_PROCESSED) ?
+                    PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), op, -1, resource.isCollection());

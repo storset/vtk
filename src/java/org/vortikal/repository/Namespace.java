@@ -34,6 +34,11 @@ package org.vortikal.repository;
 public class Namespace {
 
     public final static Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
+ 
+    // From old impl!:
+    public static final String STANDARD_NAMESPACE = "dav";
+    public final static String CUSTOM_NAMESPACE = "uio";
+
     
     private String prefix;
     private String uri;

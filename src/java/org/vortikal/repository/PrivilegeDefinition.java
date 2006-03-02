@@ -38,7 +38,6 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
     
     private static final long serialVersionUID = 3257289140717237808L;
 
-    public static final String STANDARD_NAMESPACE = "dav";
     public static final String READ = "read";
     public static final String WRITE = "write";
     public static final String WRITE_PROPERTIES = "write-properties";
@@ -48,6 +47,9 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
     public static final String READ_CURRENT_USER_PRIVILEGE_SET = "read-current-user-privilege-set";
     public static final String WRITE_ACL = "write-acl";
     public static final String ALL = "all";
+
+    public final static String CUSTOM_PRIVILEGE_READ_PROCESSED = "read-processed";
+
     private String name = null;
     private String namespace = null;
     private boolean abstractACE = false;
@@ -70,38 +72,18 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
         this.namespace = namespace;
     }
 
-    /**
-     * Gets the value of abstract
-     *
-     * @return the value of abstract
-     */
     public boolean isAbstractACE() {
         return this.abstractACE;
     }
 
-    /**
-     * Sets the value of abstract
-     *
-     * @param abstractACE Value to assign to this.abstract
-     */
     public void setAbstractACE(boolean abstractACE) {
         this.abstractACE = abstractACE;
     }
 
-    /**
-     * Gets the value of description
-     *
-     * @return the value of description
-     */
     public String getDescription() {
         return this.description;
     }
 
-    /**
-     * Sets the value of description
-     *
-     * @param description Value to assign to this.description
-     */
     public void setDescription(String description) {
         this.description = description;
     }
@@ -150,4 +132,83 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
 
         return sb.toString();
     }
+
+
+    // (The crap below is to be removed)
+
+    public final static PrivilegeDefinition standardPrivilegeDefinition;
+    public final static AclRestrictions standardRestrictions;
+
+    static {
+        /*
+         * Declare the standard ACL supported privilege tree (will be
+         * the same for all resources):
+         *
+         * [dav:all] (abstract)
+         *     |
+         *     |---[dav:read]
+         *     |       |
+         *     |       `---[uio:read-processed]
+         *     |
+         *     |---[dav:write]
+         *     |
+         *     `---[dav:write-acl]
+         *
+         */
+        standardPrivilegeDefinition = new PrivilegeDefinition();
+
+        PrivilegeDefinition all = new PrivilegeDefinition();
+
+        all.setName(PrivilegeDefinition.ALL);
+        all.setNamespace(Namespace.STANDARD_NAMESPACE);
+        all.setAbstractACE(true);
+
+        PrivilegeDefinition read = new PrivilegeDefinition();
+
+        read.setName(PrivilegeDefinition.READ);
+        read.setNamespace(Namespace.STANDARD_NAMESPACE);
+        read.setAbstractACE(false);
+
+        PrivilegeDefinition readProcessed = new PrivilegeDefinition();
+
+        readProcessed.setName(CUSTOM_PRIVILEGE_READ_PROCESSED);
+        readProcessed.setNamespace(Namespace.CUSTOM_NAMESPACE);
+        readProcessed.setAbstractACE(false);
+        read.setMembers(new PrivilegeDefinition[] { readProcessed });
+
+        PrivilegeDefinition write = new PrivilegeDefinition();
+
+        write.setName(PrivilegeDefinition.WRITE);
+        write.setNamespace(Namespace.STANDARD_NAMESPACE);
+        write.setAbstractACE(false);
+
+        PrivilegeDefinition writeACL = new PrivilegeDefinition();
+
+        writeACL.setName(PrivilegeDefinition.WRITE_ACL);
+        writeACL.setNamespace(Namespace.STANDARD_NAMESPACE);
+        writeACL.setAbstractACE(false);
+
+        PrivilegeDefinition[] members = new PrivilegeDefinition[3];
+
+        members[0] = read;
+        members[1] = write;
+        members[2] = writeACL;
+
+        all.setMembers(members);
+
+        /* Set ACL restrictions: */
+        standardRestrictions = new AclRestrictions();
+        standardRestrictions.setGrantOnly(true);
+        standardRestrictions.setNoInvert(true);
+        standardRestrictions.setPrincipalOnlyOneAce(true);
+
+        ACLPrincipal owner = new ACLPrincipal();
+
+        owner.setType(ACLPrincipal.TYPE_OWNER);
+
+        ACLPrincipal[] requiredPrincipals = new ACLPrincipal[] { owner };
+
+        standardRestrictions.setRequiredPrincipals(requiredPrincipals);
+    }
+
 }

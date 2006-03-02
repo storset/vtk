@@ -39,7 +39,7 @@ public class Privilege implements java.io.Serializable, Cloneable {
     private static final long serialVersionUID = 3978429109086926897L;
 
     private String name = null;
-    private String namespace = PrivilegeDefinition.STANDARD_NAMESPACE;
+    private String namespace = Namespace.STANDARD_NAMESPACE;
 
     /**
      * Gets the value of name

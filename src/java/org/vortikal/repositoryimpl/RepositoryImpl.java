@@ -43,6 +43,7 @@ import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.ReadOnlyException;
@@ -82,6 +83,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private PrincipalManager principalManager;
     private TokenManager tokenManager;
     private ResourceManager resourceManager;
+    private PermissionsManager permissionsManager;
     
     private String id;
 
@@ -130,10 +132,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             /* authorize for the right privilege */
             String privilege = (forProcessing)
-                ? org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED
+                ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
                 : PrivilegeDefinition.READ;
 
-            this.resourceManager.authorize(r, principal, privilege);
+            this.permissionsManager.authorize(r, principal, privilege);
             this.resourceManager.lockAuthorize(r, principal, privilege);
 
             OperationLog.success(OperationLog.RETRIEVE, "(" + uri + ")", token, principal);
@@ -200,7 +202,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE);
+            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
             this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
         } catch (ResourceLockedException e) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "resource was locked",
@@ -292,7 +294,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE);
+            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
             this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
 
             if (this.readOnly &&
@@ -356,7 +358,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.resourceManager.authorizeRecursively(src, principal,
                 PrivilegeDefinition.READ);
         } else {
-            this.resourceManager.authorize(src, principal, PrivilegeDefinition.READ);
+            this.permissionsManager.authorize(src, principal, PrivilegeDefinition.READ);
         }
 
         String destPath = (destUri.charAt(destUri.length() - 1) == '/')
@@ -402,7 +404,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException();
         }
 
-        this.resourceManager.authorize(destCollection, principal,
+        this.permissionsManager.authorize(destCollection, principal,
                                        PrivilegeDefinition.WRITE);
 
         this.resourceManager.lockAuthorize(destCollection, principal, PrivilegeDefinition.WRITE);
@@ -502,7 +504,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Resource srcCollection = dao.load(srcParent);
 
-        this.resourceManager.authorize(srcCollection, principal, PrivilegeDefinition.WRITE);
+        this.permissionsManager.authorize(srcCollection, principal, PrivilegeDefinition.WRITE);
         this.resourceManager.lockAuthorize(srcCollection, principal, PrivilegeDefinition.WRITE);
 
         String destPath = destUri;
@@ -560,7 +562,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("Invalid destination resource");
         }
 
-        this.resourceManager.authorize(destCollection, principal, PrivilegeDefinition.WRITE);
+        this.permissionsManager.authorize(destCollection, principal, PrivilegeDefinition.WRITE);
 
         if (dest != null) {
             this.resourceManager.delete(dest, principal);
@@ -654,7 +656,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Resource parentCollection = dao.load(parent);
 
-        this.resourceManager.authorize(parentCollection, principal, PrivilegeDefinition.WRITE);
+        this.permissionsManager.authorize(parentCollection, principal, PrivilegeDefinition.WRITE);
         this.resourceManager.lockAuthorize(parentCollection, principal, PrivilegeDefinition.WRITE);
 
         if (this.readOnly &&
@@ -850,10 +852,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             /* authorize for the right privilege: */
             String privilege = (forProcessing)
-                ? org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED
+                ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
                 : PrivilegeDefinition.READ;
 
-            this.resourceManager.authorize(r, principal, privilege);
+            this.permissionsManager.authorize(r, principal, privilege);
             this.resourceManager.lockAuthorize(r, principal, privilege);
 
             Resource[] list = this.dao.loadChildren(((Collection) r));
@@ -958,7 +960,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         /* authorize for the right privilege */
         String privilege = (forProcessing)
-            ? org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED : PrivilegeDefinition.READ;
+            ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED : PrivilegeDefinition.READ;
 
         InputStream inStream = this.resourceManager.getResourceInputStream(
             ((Document) r), principal, privilege);
@@ -1063,14 +1065,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            this.resourceManager.authorize(r, principal, PrivilegeDefinition.READ);
+            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.READ);
 
             String inheritedFrom = null;
             if (r.isInheritedACL()) {
                 inheritedFrom = URIUtil.getParentURI(r.getURI());
             }
             
-            org.vortikal.repository.Ace[] dtos = resourceManager.toAceList(r.getACL(), inheritedFrom);
+            org.vortikal.repository.Ace[] dtos = permissionsManager.toAceList(r.getACL(), inheritedFrom);
 
             OperationLog.success(OperationLog.GET_ACL, "(" + uri + ")", token, principal);
 
@@ -1108,7 +1110,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
+            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
 
             if (this.readOnly &&
                     !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
@@ -1121,7 +1123,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ACL origACL = original.getACL();
             boolean wasInheritedACL = original.isInheritedACL();
 
-            this.resourceManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
+            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
             validateACL(acl);
             this.resourceManager.storeACL(r, principal, acl);
             OperationLog.success(OperationLog.STORE_ACL, "(" + uri + ")", token, principal);
@@ -1134,8 +1136,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ACLModificationEvent event = new ACLModificationEvent(
                 this, resourceManager.getResourceDTO(r,principal),
                 resourceManager.getResourceDTO(original, principal),
-                    resourceManager.toAceList(r.getACL(), inheritedFrom), 
-                    resourceManager.toAceList(origACL, inheritedFrom), wasInheritedACL);
+                    permissionsManager.toAceList(r.getACL(), inheritedFrom), 
+                    permissionsManager.toAceList(origACL, inheritedFrom), wasInheritedACL);
 
             context.publishEvent(event);
         } catch (AuthorizationException e) {
@@ -1308,7 +1310,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             for (int j = 0; j < privileges.length; j++) {
                 Privilege privilege = privileges[j];
 
-                if (privilege.getNamespace().equals(PrivilegeDefinition.STANDARD_NAMESPACE)) {
+                if (privilege.getNamespace().equals(Namespace.STANDARD_NAMESPACE)) {
                     if (!(privilege.getName().equals(PrivilegeDefinition.WRITE) ||
                             privilege.getName().equals(PrivilegeDefinition.READ) ||
                             privilege.getName().equals(PrivilegeDefinition.WRITE_ACL))) {
@@ -1316,8 +1318,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                             "Unsupported privilege name: " +
                             privilege.getName());
                     }
-                } else if (privilege.getNamespace().equals(org.vortikal.repository.Resource.CUSTOM_NAMESPACE)) {
-                    if (!(privilege.getName().equals(org.vortikal.repository.Resource.CUSTOM_PRIVILEGE_READ_PROCESSED))) {
+                } else if (privilege.getNamespace().equals(Namespace.CUSTOM_NAMESPACE)) {
+                    if (!(privilege.getName().equals(PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED))) {
                         throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
                             "Unsupported privilege name: " +
                             privilege.getName());
@@ -1428,6 +1430,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new BeanInitializationException(
             "Bean property 'resourceManager' must be set");
         }
+    }
+
+    /**
+     * @param permissionsManager The permissionsManager to set.
+     */
+    public void setPermissionsManager(PermissionsManager permissionsManager) {
+        this.permissionsManager = permissionsManager;
     }
     
 }

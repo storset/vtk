@@ -39,7 +39,6 @@ import org.vortikal.repository.ACLPrincipal;
 import org.vortikal.repository.Ace;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.Collection;
 import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
 import org.vortikal.util.repository.AclUtil;
 

@@ -33,6 +33,7 @@ package org.vortikal.repositoryimpl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -43,13 +44,13 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.web.URLUtil;
 
 
-public abstract class Resource implements Cloneable {
+public class Resource implements Cloneable {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
     /* Numeric ID, required by database */
     private int id = -1;
-    protected DataAccessor dao;
+
     protected String uri = null;
     protected String owner = null;
     protected String contentModifiedBy = null;
@@ -61,16 +62,19 @@ public abstract class Resource implements Cloneable {
     protected Date contentLastModified = null;
     protected Date propertiesLastModified = null;
     protected String name;
-    protected PrincipalManager principalManager;
     protected String displayName = "";
     protected String contentType = "";
     protected String characterEncoding = null;
     protected Vector properties = new Vector();
     protected boolean dirtyACL = false;
-
+    private String[] childURIs = null;
+    private Locale contentLocale = null;
+    private boolean isCollection;
+    
     public Resource(String uri, String owner, String contentModifiedBy,
-        String propertiesModifiedBy, ACL acl, boolean inheritedACL, LockImpl lock,
-        DataAccessor dao, PrincipalManager principalManager) {
+        String propertiesModifiedBy, ACL acl, boolean inheritedACL, 
+        LockImpl lock, boolean isCollection, String[] childURIs) {
+
         this.uri = uri;
         this.owner = owner;
         this.contentModifiedBy = contentModifiedBy;
@@ -78,8 +82,13 @@ public abstract class Resource implements Cloneable {
         this.acl = acl;
         this.inheritedACL = inheritedACL;
         this.lock = lock;
-        this.dao = dao;
-
+        this.childURIs = childURIs;
+        this.isCollection = isCollection;
+        
+        if (isCollection) {
+            this.contentType = "application/x-vortex-collection";
+        }
+        
         if (this.uri.equals("/")) {
             this.name = uri;
         } else {
@@ -87,20 +96,26 @@ public abstract class Resource implements Cloneable {
         }
 
         this.owner = owner;
-        this.principalManager = principalManager;
         //acl.setResource(this);
     }
 
-    public abstract Object clone() throws CloneNotSupportedException;
+    public Object clone() throws CloneNotSupportedException {
+        ACL acl = (this.acl == null) ? null : (ACL) this.acl.clone();
+        LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
+                .clone();
+
+        Resource clone = new Resource(uri, owner, contentModifiedBy,
+                propertiesModifiedBy, acl, inheritedACL, lock, isCollection,
+                childURIs);
+        clone.setContentLocale(this.contentLocale);
+        return clone;
+    }
+
 
 
     public void setACL(ACL acl) {
         this.acl = acl;
         //acl.setResource(this);
-    }
-
-    public void setDataAccessor(DataAccessor dao) {
-        this.dao = dao;
     }
 
     public ACL getACL() {
@@ -220,10 +235,10 @@ public abstract class Resource implements Cloneable {
     }
 
     public void setContentType(String contentType) {
-        if (!(this instanceof Collection)) {
-            this.contentType = contentType;
-        } else {
+        if (isCollection()) {
             this.contentType = "application/x-vortex-collection";
+        } else {
+            this.contentType = contentType;
         }
     }
 
@@ -282,6 +297,15 @@ public abstract class Resource implements Cloneable {
         }
     }
 
+    public void setChildURIs(String[] childURIs) {
+        this.childURIs = childURIs;
+    }
+
+    public String[] getChildURIs() {
+        return this.childURIs;
+    }
+
+    
     protected org.vortikal.repository.Property[] getPropertyDTOs() {
         ArrayList dtoList = new ArrayList();
 
@@ -301,6 +325,20 @@ public abstract class Resource implements Cloneable {
 
         return (org.vortikal.repository.Property[])
             dtoList.toArray(new org.vortikal.repository.Property[0]);
+    }
+
+    /**
+     * @return Returns the contentLocale.
+     */
+    public Locale getContentLocale() {
+        return contentLocale;
+    }
+
+    /**
+     * @param contentLocale The contentLocale to set.
+     */
+    public void setContentLocale(Locale contentLocale) {
+        this.contentLocale = contentLocale;
     }
 
 

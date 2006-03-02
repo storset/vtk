@@ -33,7 +33,10 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.doomdark.uuid.UUIDGenerator;
 import org.vortikal.repository.AclException;
@@ -67,7 +70,7 @@ public class ResourceManager {
         throws IOException, AuthenticationException, AuthorizationException {
 
         permissionsManager.authorize(resource, principal, privilege);
-        if (resource instanceof Collection) {
+        if (resource.isCollection()) {
             String[] uris = this.dao.discoverACLs(resource);
             for (int i = 0; i < uris.length; i++) {
                 Resource ancestor = this.dao.load(uris[i]);
@@ -84,7 +87,7 @@ public class ResourceManager {
             return;
         }
 
-        if (!org.vortikal.repository.PrivilegeDefinition.WRITE.equals(privilege)) {
+        if (!PrivilegeDefinition.WRITE.equals(privilege)) {
             return;
         }
 
@@ -97,7 +100,7 @@ public class ResourceManager {
         }
     }
     
-    public void lockAuthorizeRecursively(Collection collection, Principal principal,
+    public void lockAuthorizeRecursively(Resource collection, Principal principal,
                                          String privilege) 
         throws ResourceLockedException, IOException, AuthenticationException {
 
@@ -122,8 +125,7 @@ public class ResourceManager {
 
         this.permissionsManager.authorize(resource, principal, org.vortikal.repository.PrivilegeDefinition.WRITE);
 
-        lockAuthorize(resource, principal,
-                org.vortikal.repository.PrivilegeDefinition.WRITE);
+        lockAuthorize(resource, principal, PrivilegeDefinition.WRITE);
 
         if (!refresh) {
             resource.setLock(null);
@@ -187,7 +189,7 @@ public class ResourceManager {
      * Creates a collection with an inherited ACL
      *
      */
-    public Resource createCollection(Collection parent, Principal principal, String path)
+    public Resource createCollection(Resource parent, Principal principal, String path)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
         return this.createCollection(parent, principal, principal.getQualifiedName(), path,
@@ -197,16 +199,16 @@ public class ResourceManager {
     /**
      * Creates a collection with a specified owner and (possibly inherited) ACL.
      */
-    private Resource createCollection(Collection parent, Principal principal, String owner,
+    private Resource createCollection(Resource parent, Principal principal, String owner,
         String path, ACL acl, boolean inheritedACL)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
 
         this.permissionsManager.authorize(parent, principal, PrivilegeDefinition.WRITE);
 
-        Resource r = new Collection(path, owner, principal.getQualifiedName(),
+        Resource r = new Resource(path, owner, principal.getQualifiedName(),
                 principal.getQualifiedName(), new ACL(),
-                true, null, dao, this.principalManager, new String[] {  });
+                true, null, true, new String[0]);
 
         Date now = new Date();
 
@@ -222,7 +224,7 @@ public class ResourceManager {
             this.storeACL(r, principal, permissionsManager.toAceList(acl, null));
         }
 
-        parent.addChildURI(r.getURI());
+        addChildURI(parent, r.getURI());
 
         // Update timestamps:
         parent.setContentLastModified(new Date());
@@ -238,21 +240,22 @@ public class ResourceManager {
     }
 
 
-    public Resource create(Collection parent, Principal principal, String path)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
-        return this.create(parent, principal, principal, path, null, true);
-    }
-
-    private Resource create(Collection parent, Principal principal,
+    public Resource create(Resource parent, Principal principal,
                            Principal owner, String path, ACL acl, boolean inheritedACL)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
         permissionsManager.authorize(parent, principal, PrivilegeDefinition.WRITE);
 
-        Resource r = new Document(path, owner.getQualifiedName(), principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(),
-                true, null, this.dao, this.principalManager);
+        Resource r = new Resource(
+                path, 
+                owner.getQualifiedName(), 
+                principal.getQualifiedName(),
+                principal.getQualifiedName(), 
+                new ACL(),
+                true, 
+                null, 
+                false, 
+                null);
 
         Date now = new Date();
 
@@ -275,7 +278,7 @@ public class ResourceManager {
             this.storeACL(r, principal, permissionsManager.toAceList(acl, null));
         }
 
-        parent.addChildURI(r.getURI());
+        addChildURI(parent,r.getURI());
 
         // Update timestamps:
         parent.setContentLastModified(new Date());
@@ -290,7 +293,28 @@ public class ResourceManager {
         return r;
     }
 
+    /**
+     * Adds a URI to the child URI list.
+     *
+     * @param childURI a <code>String</code> value
+     */
+    private void addChildURI(Resource parent, String childURI) {
+        synchronized (parent) {
+            List l = new ArrayList();
 
+            l.addAll(Arrays.asList(parent.getChildURIs()));
+            l.add(childURI);
+
+            String[] newChildren = (String[]) l.toArray(new String[l.size()]);
+
+            parent.setChildURIs(newChildren);
+        }
+    }
+
+
+
+    
+    
     public void copy(Principal principal, Resource resource, String destUri,
                      boolean preserveACL, boolean preserveOwner)
         throws IllegalOperationException, AuthenticationException, 
@@ -306,19 +330,19 @@ public class ResourceManager {
             principalManager.getPrincipal(resource.getOwner()) : principal;
 
         String parentURI = URIUtil.getParentURI(destUri);
-        Collection parent = (Collection) this.dao.load(parentURI);
+        Resource parent = this.dao.load(parentURI);
 
 
-        if (resource instanceof Collection) {
+        if (resource.isCollection()) {
 
-            Collection child = (Collection) this.createCollection(parent,
+            Resource child = this.createCollection(parent,
                 principal, owner.getQualifiedName(),
                 destUri, acl, aclInheritance);
 
             child.setProperties(resource.getPropertyDTOs());
             dao.store(child);
 
-            Resource[] children = this.dao.loadChildren((Collection) resource);
+            Resource[] children = this.dao.loadChildren(resource);
             for (int i = 0; i < children.length; i++) {
 
                 Resource r = children[i];
@@ -331,18 +355,17 @@ public class ResourceManager {
             return;
         }
 
-        Document src = (Document) resource;
-        Document doc = (Document) this.create(parent, principal, owner, destUri, acl,
+        Resource doc = this.create(parent, principal, owner, destUri, acl,
                                               aclInheritance);
 
-        doc.setContentType(src.getContentType());
-        doc.setContentLocale(src.getContentLocale());
-        doc.setCharacterEncoding(src.getCharacterEncoding());
-        doc.setProperties(src.getPropertyDTOs());
+        doc.setContentType(resource.getContentType());
+        doc.setContentLocale(resource.getContentLocale());
+        doc.setCharacterEncoding(resource.getCharacterEncoding());
+        doc.setProperties(resource.getPropertyDTOs());
 
         dao.store(doc);
 
-        InputStream input = this.getResourceInputStream(src, owner, PrivilegeDefinition.READ);
+        InputStream input = dao.getInputStream(resource);
 
         OutputStream output = null;
 
@@ -358,20 +381,6 @@ public class ResourceManager {
         input.close();
         output.close();
     }
-
-
-    public void delete(Resource resource, Principal principal)
-        throws AuthorizationException, AuthenticationException, 
-            ResourceLockedException, IOException {
-        if (resource.isCollection()) {
-            Collection collection = (Collection) resource;
-            if (collection.getLock() != null) {
-                this.lockAuthorizeRecursively(collection, principal, PrivilegeDefinition.WRITE);
-            }
-        }
-        this.dao.delete(resource);
-    }
-
 
     public void storeProperties(Resource resource, Principal principal,
                                 org.vortikal.repository.Resource dto)
@@ -401,7 +410,7 @@ public class ResourceManager {
 
             resource.setContentType(dto.getContentType());
             resource.setCharacterEncoding(null);
-            ((Document) resource).setContentLocale(dto.getContentLocale());
+            resource.setContentLocale(dto.getContentLocale());
 
             if ((resource.getContentType() != null)
                 && ContentTypeHelper.isTextContentType(resource.getContentType()) &&
@@ -505,18 +514,7 @@ public class ResourceManager {
         }
     }
 
-
-    public InputStream getResourceInputStream(Document resource,
-                                              Principal principal, String privilege)
-        throws AuthenticationException, AuthorizationException, IOException, 
-            ResourceLockedException {
-        this.permissionsManager.authorize(resource, principal, privilege);
-        this.lockAuthorize(resource, principal, privilege);
-
-        return dao.getInputStream(resource);
-    }
-
-    public OutputStream getResourceOutputStream(Document resource, Principal principal)
+    public OutputStream getResourceOutputStream(Resource resource, Principal principal)
         throws AuthenticationException, AuthorizationException, IOException, 
             ResourceLockedException {
         this.permissionsManager.authorize(resource, principal, PrivilegeDefinition.WRITE);
@@ -570,10 +568,10 @@ public class ResourceManager {
         permissionsManager.addPermissionsToDTO(resource, dto);
 
         if (resource.isCollection()) {
-            dto.setChildURIs(((Collection) resource).getChildURIs());
+            dto.setChildURIs(resource.getChildURIs());
         } else {
             dto.setContentLength(dao.getContentLength(resource));
-            dto.setContentLocale(((Document) resource).getContentLocale());
+            dto.setContentLocale(resource.getContentLocale());
         }
 
         return dto;

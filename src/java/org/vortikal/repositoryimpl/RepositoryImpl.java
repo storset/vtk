@@ -194,10 +194,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         r = dao.load(parentURI);
 
-        if ((r == null) || r instanceof Document) {
+        if ((r == null) || !r.isCollection()) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
                 "illegal operation: " +
-                "either parent is null or parent is document", token, principal);
+                "either parent doesn't exist or parent is document", token, principal);
             throw new IllegalOperationException();
         }
 
@@ -221,8 +221,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                     principal);
                 throw new ReadOnlyException();
             }
-
-            Document doc = (Document) this.resourceManager.create((Collection) r, principal, uri);
+            Resource doc = this.resourceManager.create(r, principal, principal, uri, null, true);
             OperationLog.success(OperationLog.CREATE, "(" + uri + ")", token, principal);
 
             org.vortikal.repository.Resource dto = resourceManager.getResourceDTO(doc,principal);
@@ -285,7 +284,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         r = dao.load(parentURI);
 
-        if ((r == null) || r instanceof Document) {
+        if (r == null || !r.isCollection()) {
             /* Parent does not exist or is a document */
             OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                 "illegal operation: " +
@@ -305,7 +304,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             }
 
             Resource newCollection = this.resourceManager.createCollection(
-                (Collection) r, principal, path);
+                    r, principal, path);
 
             OperationLog.success(OperationLog.CREATE_COLLECTION, "(" + uri + ")", token,
                 principal);
@@ -354,7 +353,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "source not found", token, principal);
             throw new ResourceNotFoundException(srcUri);
-        } else if (src instanceof Collection) {
+        } else if (src.isCollection()) {
             this.resourceManager.authorizeRecursively(src, principal,
                 PrivilegeDefinition.READ);
         } else {
@@ -397,7 +396,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Resource destCollection = dao.load(destParent);
 
-        if ((destCollection == null) || destCollection instanceof Document) {
+        if ((destCollection == null) || !destCollection.isCollection()) {
             OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "destination is either a document or does not exist", token,
                 principal);
@@ -417,14 +416,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         if (dest != null) {
-            if (dest instanceof Collection) {
-                this.resourceManager.lockAuthorizeRecursively((Collection) dest, principal,
+            if (dest.isCollection()) {
+                this.resourceManager.lockAuthorizeRecursively(dest, principal,
                                                               PrivilegeDefinition.WRITE);
             } else {
                 this.resourceManager.lockAuthorize(dest, principal, PrivilegeDefinition.WRITE);
             }
 
-            this.resourceManager.delete(dest, principal);
+            this.dao.delete(dest);
         }
 
         try {
@@ -483,11 +482,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(srcUri);
         }
 
-        if (src instanceof Collection) {
-            this.resourceManager.lockAuthorizeRecursively((Collection) src, principal,
+        if (src.isCollection()) {
+            this.resourceManager.lockAuthorizeRecursively(src, principal,
                                                           PrivilegeDefinition.WRITE);
+            this.resourceManager.authorizeRecursively(src, principal, PrivilegeDefinition.READ);
         } else {
             this.resourceManager.lockAuthorize(src, principal, PrivilegeDefinition.WRITE);
+            this.permissionsManager.authorize(src, principal, PrivilegeDefinition.READ);
         }
 
         String srcParent = srcUri;
@@ -537,8 +538,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 "destination already existed, no overwrite", token, principal);
             throw new ResourceOverwriteException();
         } else if (dest != null) {
-            if (dest instanceof Collection) {
-                this.resourceManager.lockAuthorizeRecursively((Collection) dest, principal,
+            if (dest.isCollection()) {
+                this.resourceManager.lockAuthorizeRecursively(dest, principal,
                                                                PrivilegeDefinition.WRITE);
             } else {
                     this.resourceManager.lockAuthorize(dest, principal, PrivilegeDefinition.WRITE);
@@ -555,7 +556,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Resource destCollection = dao.load(destParent);
 
-        if ((destCollection == null) || destCollection instanceof Document) {
+        if ((destCollection == null) || !destCollection.isCollection()) {
             OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "destination collection either a document or does not exist",
                 token, principal);
@@ -565,9 +566,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.permissionsManager.authorize(destCollection, principal, PrivilegeDefinition.WRITE);
 
         if (dest != null) {
-            this.resourceManager.delete(dest, principal);
+            this.dao.delete(dest);
             context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
-                    dest instanceof Collection));
+                    dest.isCollection()));
 
         }
 
@@ -581,14 +582,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             this.resourceManager.copy(principal, src, destPath, true, true);
 
-            this.resourceManager.delete(src, principal);
+            this.dao.delete(src);
 
             OperationLog.success(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
             Resource r = dao.load(destUri);
             ResourceDeletionEvent deletionEvent = new ResourceDeletionEvent(this, srcUri,
-                   src.getID(), src instanceof Collection);
+                   src.getID(), src.isCollection());
 
             context.publishEvent(deletionEvent);
 
@@ -635,8 +636,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (r instanceof Collection) {
-            this.resourceManager.lockAuthorizeRecursively((Collection) r, principal,
+        if (r.isCollection()) {
+            this.resourceManager.lockAuthorizeRecursively(r, principal,
                                                           PrivilegeDefinition.WRITE);
         } else {
             this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
@@ -666,7 +667,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ReadOnlyException();
         }
 
-        this.resourceManager.delete(r, principal);
+        this.dao.delete(r);
 
         this.resourceManager.storeProperties(parentCollection, principal,
                                resourceManager.getResourceDTO(parentCollection, principal));
@@ -674,7 +675,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         OperationLog.success(OperationLog.DELETE, "(" + uri + ")", token, principal);
 
         ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), 
-                                                                r instanceof Collection);
+                                                                r.isCollection());
 
         context.publishEvent(event);
     }
@@ -842,7 +843,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (r instanceof Document) {
+        if (!r.isCollection()) {
             OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
                 "uri is document", token, principal);
 
@@ -858,7 +859,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.permissionsManager.authorize(r, principal, privilege);
             this.resourceManager.lockAuthorize(r, principal, privilege);
 
-            Resource[] list = this.dao.loadChildren(((Collection) r));
+            Resource[] list = this.dao.loadChildren(r);
             org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
 
             for (int i = 0; i < list.length; i++) {
@@ -952,7 +953,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (r instanceof Collection) {
+        if (r.isCollection()) {
             OperationLog.failure(OperationLog.GET_INPUTSTREAM, "(" + uri + ")",
                 "resource is collection", token, principal);
             throw new IOException("resource is collection");
@@ -962,8 +963,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         String privilege = (forProcessing)
             ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED : PrivilegeDefinition.READ;
 
-        InputStream inStream = this.resourceManager.getResourceInputStream(
-            ((Document) r), principal, privilege);
+        this.permissionsManager.authorize(r, principal, privilege);
+
+        InputStream inStream = this.dao.getInputStream(r);
 
         OperationLog.success(OperationLog.GET_INPUTSTREAM, "(" + uri + ")", token, principal);
 
@@ -994,7 +996,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (r instanceof Collection) {
+        if (r.isCollection()) {
             OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")",
                 "resource is collection", token, principal);
             throw new IOException("Collections have no output stream");
@@ -1012,7 +1014,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             Resource original = (Resource) r.clone();
 
-            stream = this.resourceManager.getResourceOutputStream(((Document) r), principal);
+            stream = this.resourceManager.getResourceOutputStream(r, principal);
 
             /* Write the input data to the resource: */
             byte[] buffer = new byte[1000];

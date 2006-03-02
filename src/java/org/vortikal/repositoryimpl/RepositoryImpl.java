@@ -33,11 +33,13 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Ace;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
@@ -1010,12 +1012,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ReadOnlyException();
         }
 
+
         OutputStream stream = null;
 
         try {
+            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
+            this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
+        
             Resource original = (Resource) r.clone();
 
-            stream = this.resourceManager.getResourceOutputStream(r, principal);
+            stream = this.dao.getOutputStream(r);
 
             /* Write the input data to the resource: */
             byte[] buffer = new byte[1000];
@@ -1029,6 +1035,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             stream.close();
             byteStream.close();
 
+            // Update timestamps:
+            r.setContentLastModified(new Date());
+            r.setContentModifiedBy(principal.getQualifiedName());
+            this.dao.store(r);
+
             OperationLog.success(OperationLog.STORE_CONTENT, "(" + uri + ")", token, principal);
 
             ContentModificationEvent event = new ContentModificationEvent(
@@ -1039,6 +1050,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         } catch (ResourceLockedException e) {
             OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")",
                 "resource locked", token, principal);
+            throw e;
+        } catch (AuthorizationException e) {
+            OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")",
+                "not authorized", token, principal);
             throw e;
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +

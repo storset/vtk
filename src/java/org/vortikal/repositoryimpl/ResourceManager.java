@@ -463,20 +463,6 @@ public class ResourceManager {
         }
     }
 
-    public OutputStream getResourceOutputStream(Resource resource, Principal principal)
-        throws AuthenticationException, AuthorizationException, IOException, 
-            ResourceLockedException {
-        this.permissionsManager.authorize(resource, principal, PrivilegeDefinition.WRITE);
-        this.lockAuthorize(resource, principal, PrivilegeDefinition.WRITE);
-
-        resource.setContentLastModified(new Date());
-        resource.setContentModifiedBy(principal.getQualifiedName());
-        this.dao.store(resource);
-
-        return dao.getOutputStream(resource);
-    }
-
-    
     public org.vortikal.repository.Lock[] getActiveLocks(LockImpl lock) {
         if (lock != null) {
             // Is cloning neccessary and/or working?

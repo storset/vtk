@@ -221,7 +221,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                     principal);
                 throw new ReadOnlyException();
             }
-            Resource doc = this.resourceManager.create(r, principal, principal, uri, null, true);
+            Resource doc = this.resourceManager.create(
+                r, principal, false, principal.getQualifiedName(), uri, null, true);
             OperationLog.success(OperationLog.CREATE, "(" + uri + ")", token, principal);
 
             org.vortikal.repository.Resource dto = resourceManager.getResourceDTO(doc,principal);
@@ -303,8 +304,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 throw new ReadOnlyException();
             }
 
-            Resource newCollection = this.resourceManager.createCollection(
-                    r, principal, path);
+            Resource newCollection = this.resourceManager.create(
+                r, principal, true, principal.getQualifiedName(), path, new ACL(), true);
 
             OperationLog.success(OperationLog.CREATE_COLLECTION, "(" + uri + ")", token,
                 principal);

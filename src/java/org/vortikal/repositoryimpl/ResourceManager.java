@@ -186,40 +186,41 @@ public class ResourceManager {
 
 
     /**
-     * Creates a collection with an inherited ACL
-     *
-     */
-    public Resource createCollection(Resource parent, Principal principal, String path)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
-        return this.createCollection(parent, principal, principal.getQualifiedName(), path,
-            new ACL(), true);
-    }
-
-    /**
      * Creates a collection with a specified owner and (possibly inherited) ACL.
      */
-    private Resource createCollection(Resource parent, Principal principal, String owner,
-        String path, ACL acl, boolean inheritedACL)
+    public Resource create(Resource parent, Principal principal,
+                           boolean collection, String owner,
+                           String path, ACL acl, boolean inheritedACL)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
-
         this.permissionsManager.authorize(parent, principal, PrivilegeDefinition.WRITE);
 
-        Resource r = new Resource(path, owner, principal.getQualifiedName(),
-                principal.getQualifiedName(), new ACL(),
-                true, null, true, new String[0]);
+        Resource r = new Resource(
+            path,
+            owner,
+            principal.getQualifiedName(),
+            principal.getQualifiedName(),
+            new ACL(),
+            true,
+            null,
+            collection,
+            new String[0]);
 
         Date now = new Date();
 
         r.setCreationTime(now);
         r.setContentLastModified(now);
         r.setPropertiesLastModified(now);
+
+        if (!collection) {
+            r.setContentType(MimeHelper.map(r.getName()));
+        }
+
+
         this.dao.store(r);
         r = this.dao.load(path);
 
         if (!inheritedACL) {
-            //acl.setResource(r);
             r.setInheritedACL(false);
             this.storeACL(r, principal, permissionsManager.toAceList(acl, null));
         }
@@ -240,58 +241,6 @@ public class ResourceManager {
     }
 
 
-    public Resource create(Resource parent, Principal principal,
-                           Principal owner, String path, ACL acl, boolean inheritedACL)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
-        permissionsManager.authorize(parent, principal, PrivilegeDefinition.WRITE);
-
-        Resource r = new Resource(
-                path, 
-                owner.getQualifiedName(), 
-                principal.getQualifiedName(),
-                principal.getQualifiedName(), 
-                new ACL(),
-                true, 
-                null, 
-                false, 
-                null);
-
-        Date now = new Date();
-
-        r.setCreationTime(now);
-        r.setContentLastModified(now);
-        r.setPropertiesLastModified(now);
-
-        r.setContentType(MimeHelper.map(r.getName()));
-
-        this.dao.store(r);
-
-        try {
-            r = this.dao.load(path);
-        } catch (Exception e) {
-            throw new IOException(e.getMessage());
-        }
-
-        if (!inheritedACL) {
-            r.setInheritedACL(false);
-            this.storeACL(r, principal, permissionsManager.toAceList(acl, null));
-        }
-
-        addChildURI(parent,r.getURI());
-
-        // Update timestamps:
-        parent.setContentLastModified(new Date());
-        parent.setPropertiesLastModified(new Date());
-
-        // Update principal info:
-        parent.setContentModifiedBy(principal.getQualifiedName());
-        parent.setPropertiesModifiedBy(principal.getQualifiedName());
-
-        this.dao.store(parent);
-
-        return r;
-    }
 
     /**
      * Adds a URI to the child URI list.
@@ -335,8 +284,8 @@ public class ResourceManager {
 
         if (resource.isCollection()) {
 
-            Resource child = this.createCollection(parent,
-                principal, owner.getQualifiedName(),
+            Resource child = this.create(
+                parent, principal, true, owner.getQualifiedName(),
                 destUri, acl, aclInheritance);
 
             child.setProperties(resource.getPropertyDTOs());
@@ -355,8 +304,8 @@ public class ResourceManager {
             return;
         }
 
-        Resource doc = this.create(parent, principal, owner, destUri, acl,
-                                              aclInheritance);
+        Resource doc = this.create(
+            parent, principal, false, owner.getQualifiedName(), destUri, acl, aclInheritance);
 
         doc.setContentType(resource.getContentType());
         doc.setContentLocale(resource.getContentLocale());

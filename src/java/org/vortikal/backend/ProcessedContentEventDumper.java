@@ -87,10 +87,9 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 //}
                 
                 String[] descendants = dataAccessor.listSubTree(
-                    (Collection) dataAccessor.load(resource.getURI()));
+                    dataAccessor.load(resource.getURI()));
 
                 for (int i = 0; i < descendants.length; i++) {
-                    System.out.println("DESCENDANT: " + descendants[i]);
 
                     org.vortikal.repositoryimpl.Resource descendant =
                         dataAccessor.load(descendants[i]);
@@ -217,7 +216,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 //    dataAccessor.addChangeLogEntry(id, loggerType, childUris[i], op, -1, false);
                 //}
                 
-                org.vortikal.repositoryimpl.Resource[] childResources = dataAccessor.loadChildren((Collection) dataAccessor.load(resource.getURI()));
+                org.vortikal.repositoryimpl.Resource[] childResources =
+                    dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));
                 for (int i=0; i < childResources.length; i++) {
                     dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(), op, -1, childResources[i].isCollection());
                 }

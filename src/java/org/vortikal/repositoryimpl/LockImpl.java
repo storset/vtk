@@ -106,7 +106,7 @@ public class LockImpl implements Lock {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append("[");
         sb.append(", depth =").append(this.depth);
-        sb.append(", principal = ").append(this.principal);
+        sb.append(", user = ").append(this.user);
         sb.append(", ownerInfo = ").append(this.ownerInfo);
         sb.append(", timeout = ").append(this.timeout);
         sb.append(", token = ").append(this.lockToken);

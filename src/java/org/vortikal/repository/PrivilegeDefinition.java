@@ -40,15 +40,13 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
 
     public static final String READ = "read";
     public static final String WRITE = "write";
-    public static final String WRITE_PROPERTIES = "write-properties";
-    public static final String WRITE_CONTENT = "write-content";
-    public static final String UNLOCK = "unlock";
-    public static final String READ_ACL = "read-acl";
-    public static final String READ_CURRENT_USER_PRIVILEGE_SET = "read-current-user-privilege-set";
     public static final String WRITE_ACL = "write-acl";
     public static final String ALL = "all";
 
     public final static String CUSTOM_PRIVILEGE_READ_PROCESSED = "read-processed";
+
+    public final static PrivilegeDefinition standardPrivilegeDefinition;
+    public final static AclRestrictions standardRestrictions;
 
     private String name = null;
     private String namespace = null;
@@ -133,11 +131,6 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
         return sb.toString();
     }
 
-
-    // (The crap below is to be removed)
-
-    public final static PrivilegeDefinition standardPrivilegeDefinition;
-    public final static AclRestrictions standardRestrictions;
 
     static {
         /*

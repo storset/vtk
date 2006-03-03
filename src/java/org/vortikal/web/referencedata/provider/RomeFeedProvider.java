@@ -32,6 +32,7 @@ package org.vortikal.web.referencedata.provider;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -145,13 +146,15 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
             feedEntries.add(entry);
         }
        
-        
         feed.setFeedType(getFormatFromRequest(request, feed));
         feed.setEncoding(charset);
-        
-        // Add list with entries to the SyndFeed bean.
-        feed.setEntries(feedEntries);
 
+        // Maybe a better implemantation is to set publishedDate for the feed to the lastest of the
+        // updated
+        // dates for the entries.
+        feed.setPublishedDate(Calendar.getInstance().getTime());
+
+        feed.setEntries(feedEntries);
         model.put("romeFeed", feed);
     }
 
@@ -189,19 +192,21 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
         } else {
             entry.setTitle("title is missing");
         }
-
+        
+        entry.setAuthor(resource.getOwner().getName());
+     
         String link = browsingService.constructLink(resource, principal);
         entry.setLink(link);
 
         if (useTimestampInIdentifier) {
-            long now = Calendar.getInstance().getTime().getTime();
-            entry.setUri(link + "#" + now); 
+            long lastModified = resource.getLastModified().getTime();
+            entry.setUri(link + "#" + lastModified); 
         } else {
             entry.setUri(link); 
         }
         
-        //entry.setPublishedDate(resource.getCreationTime());
-        entry.setPublishedDate(resource.getLastModified());
+        entry.setPublishedDate(resource.getCreationTime());
+        //entry.setPublishedDate(resource.getLastModified());
         entry.setUpdatedDate(resource.getLastModified());
         return entry;
     }

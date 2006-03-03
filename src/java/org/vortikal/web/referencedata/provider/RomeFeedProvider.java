@@ -31,6 +31,8 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -53,8 +55,8 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 /**
  * <p>
- * Add data for the model so the model can be used to display a rssfeed based on the data that
- * already exists in the model. This provider is for preproccesing the model for the view
+ * Add data for the model so the model can be used to display a feed (atom/rss) based on the data
+ * that already exists in the model. This provider is for preproccesing the model for the view
  * {@link org.vortikal.web.view.RomeFeedView}.
  * </p>
  * <p>
@@ -69,19 +71,19 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
  * 
  * <p>
  * The model is first searched for an object of type <code>java.util.Map</code> and key
- * <code>rssModel</code>. If no such object exists in the model, this provider does not change
+ * <code>feedModel</code>. If no such object exists in the model, this provider does not change
  * the model.
  * </p>
  * <p>
- * rssModel can contain the following data:
+ * feedModel can contain the following data:
  * </p>
  * <ul>
  * <li><code>title</code> - title for the rssfeed to be used in
  * {@link com.sun.syndication.feed.synd.SyndFeed#setTitle}
  * <li><code>description</code> - description for the rssfeed to be used in
  * {@link com.sun.syndication.feed.synd.SyndFeed#setDescription}
- * <li><code>url</code> - url for the rssfeed to be used in
- * {@link com.sun.syndication.feed.synd.SyndFeed#setUri}
+ * <li><code>url</code> - url for the feed to be used in
+ * {@link com.sun.syndication.feed.synd.SyndFeed#setLink}
  * <li><code>rersources</code> - An array of {@link org.vortikal.repository.Resource} to be
  * included in the rssfeed
  * </ul>
@@ -97,6 +99,8 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
 
     private String defaultFeedType;
     
+    private boolean useTimestampInIdentifier = false;
+    
     private String charset = "utf-8";
     
     public void afterPropertiesSet() {
@@ -110,35 +114,35 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
 
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
-        Map rssModel = (Map) model.get("rssModel");
-        if (rssModel == null) {
+        Map feedModel = (Map) model.get("feedModel");
+        if (feedModel == null) {
             return;
         }
 
         // Generate and write RSS file:
         SyndFeed feed = new SyndFeedImpl();
 
-        String title = (String) rssModel.get("title");
+        String title = (String) feedModel.get("title");
         feed.setTitle(title);
 
-        String description = (String) rssModel.get("description");
+        String description = (String) feedModel.get("description");
         feed.setDescription(description);
 
-        String url = (String) rssModel.get("url");
+        String url = (String) feedModel.get("url");
         feed.setLink(url);
-        feed.setUri(url); // to set "rdf:about" for the feed
+        feed.setUri(url);
 
-        Resource[] resources = (Resource[]) rssModel.get("resources");
+        Resource[] resources = (Resource[]) feedModel.get("resources");
         // Created and add list of entries
         // (Each entry is set with a title, link, published date and a description)
         // ( -> Description can be plain text or HTML)
-        List rssEntries = new ArrayList();
+        List feedEntries = new ArrayList();
 
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         for (int i = 0; i < resources.length; i++) {
             SyndEntry entry = getSyndEntryForResource(resources[i], principal);
-            rssEntries.add(entry);
+            feedEntries.add(entry);
         }
        
         
@@ -146,7 +150,7 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
         feed.setEncoding(charset);
         
         // Add list with entries to the SyndFeed bean.
-        feed.setEntries(rssEntries);
+        feed.setEntries(feedEntries);
 
         model.put("romeFeed", feed);
     }
@@ -177,7 +181,7 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
         if (!title.equals("")) {
             // Throws FeedException if title exceeds 100 characters
             if (title.length() > 99) {
-                logger.warn("Title of current notice is too long for RSS");
+                logger.warn("Title of current notice is too long for the feed");
                 title = title.substring(0, 95) + "...";
                 entry.setTitle(formatTitle(title));
             } else
@@ -189,7 +193,15 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
         String link = browsingService.constructLink(resource, principal);
         entry.setLink(link);
 
-        entry.setPublishedDate(resource.getCreationTime());
+        if (useTimestampInIdentifier) {
+            long now = Calendar.getInstance().getTime().getTime();
+            entry.setUri(link + "#" + now); 
+        } else {
+            entry.setUri(link); 
+        }
+        
+        //entry.setPublishedDate(resource.getCreationTime());
+        entry.setPublishedDate(resource.getLastModified());
         entry.setUpdatedDate(resource.getLastModified());
         return entry;
     }
@@ -224,6 +236,10 @@ public class RomeFeedProvider implements ReferenceDataProvider, InitializingBean
      */
     public void setCharset(String charset) {
         this.charset = charset;
+    }
+
+    public void setUseTimestampInIdentifier(boolean useTimestampInIdentifier) {
+        this.useTimestampInIdentifier = useTimestampInIdentifier;
     }
 
 }

@@ -191,16 +191,16 @@
     </property>
   </bean>
 
-  <bean id="collectionListingAsRssService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="collectionListingAsFeedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListingService" />
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollectionAssertion" />
-        <ref bean="rssParameterSetAssertion" />
+        <ref bean="feedParameterSetAssertion" />
         </list>
     </property>
     <property name="handler">
-      <ref bean="collectionListingAsRssHandler" />
+      <ref bean="collectionListingAsFeedHandler" />
     </property>
   </bean>
 
@@ -307,6 +307,11 @@
     <property name="parameterValue" value="rss" />
   </bean>
 
+  <bean id="feedParameterSetAssertion" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="feed" />
+  </bean>
 
   <bean id="abstractResourcePrincipalPermissionAssertion" 
         class="org.vortikal.web.service.ResourcePrincipalPermissionAssertion"

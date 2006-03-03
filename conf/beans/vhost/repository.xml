@@ -51,7 +51,6 @@
   <bean id="permissionsManager" class="org.vortikal.repositoryimpl.PermissionsManager">
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
-    <property name="dao" ref="repository.backend" />
   </bean>
 
   <!-- Quartz scheduled jobs -->

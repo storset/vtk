@@ -60,6 +60,9 @@ public class ResourceManager {
     public final static long LOCK_DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30 minutes
     public final static long LOCK_MAX_TIMEOUT = LOCK_DEFAULT_TIMEOUT;
 
+    private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
+    private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
+    
     private PrincipalManager principalManager;
     private PermissionsManager permissionsManager;
     private RoleManager roleManager;
@@ -135,10 +138,10 @@ public class ResourceManager {
             String lockToken = "opaquelocktoken:" +
                 UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
 
-            Date timeout = new Date(System.currentTimeMillis() + LOCK_DEFAULT_TIMEOUT);
+            Date timeout = new Date(System.currentTimeMillis() + lockDefaultTimeout);
 
-            if ((desiredTimeoutSeconds * 1000) > LOCK_MAX_TIMEOUT) {
-                timeout = new Date(System.currentTimeMillis() + LOCK_DEFAULT_TIMEOUT);
+            if ((desiredTimeoutSeconds * 1000) > lockMaxTimeout) {
+                timeout = new Date(System.currentTimeMillis() + lockDefaultTimeout);
             }
 
             LockImpl lock = new LockImpl(lockToken,principal.getQualifiedName(), ownerInfo, depth, timeout);
@@ -342,7 +345,7 @@ public class ResourceManager {
         if (!resource.getOwner().equals(dto.getOwner().getQualifiedName())) {
             /* Attempt to take ownership, only the owner of a parent
              * resource may do that, so do it in a secure manner: */
-            this.setResourceOwner(resource, principal, dto, dto.getOwner().getQualifiedName());
+            this.setResourceOwner(resource, principal, dto.getOwner());
         }
 
         if (dto.getOverrideLiveProperties()) {
@@ -384,13 +387,12 @@ public class ResourceManager {
     
 
 
-    private void setResourceOwner(Resource resource, Principal principal,
-        org.vortikal.repository.Resource dto, String owner)
+    private void setResourceOwner(Resource resource, Principal principal, Principal newOwner)
         throws AuthorizationException, IllegalOperationException {
-        if ((owner == null) || owner.trim().equals("")) {
+        if (newOwner == null) {
             throw new IllegalOperationException(
-                "Unable to set owner of resource " + this +
-                ": invalid owner: '" + owner + "'");
+                "Unable to delete owner of resource" + resource +
+                ": All resources must have an owner.");
         }
 
         /*
@@ -405,23 +407,13 @@ public class ResourceManager {
                 + "resource " + resource.getURI());
         }
 
-        Principal principal2 = null;
-        
-        try {
-            principal2 = principalManager.getPrincipal(owner);
-        } catch (InvalidPrincipalException e) {
+        if (!principalManager.validatePrincipal(newOwner)) {
             throw new IllegalOperationException(
                 "Unable to set owner of resource " + resource.getURI()
-                + ": invalid owner: '" + owner + "'");
-        }
-        
-        if (!principalManager.validatePrincipal(principal2)) {
-            throw new IllegalOperationException(
-                "Unable to set owner of resource " + resource.getURI()
-                + ": invalid owner: '" + owner + "'");
+                + ": invalid owner: '" + newOwner + "'");
         }
 
-        resource.setOwner(owner);
+        resource.setOwner(newOwner.getQualifiedName());
     }
 
 
@@ -529,32 +521,28 @@ public class ResourceManager {
         return dto;
     }
 
-    /**
-     * @param dao The dao to set.
-     */
     public void setDao(DataAccessor dao) {
         this.dao = dao;
     }
 
-    /**
-     * @param principalManager The principalManager to set.
-     */
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
 
-    /**
-     * @param roleManager The roleManager to set.
-     */
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
     }
 
-    /**
-     * @param permissionsManager The permissionsManager to set.
-     */
     public void setPermissionsManager(PermissionsManager permissionsManager) {
         this.permissionsManager = permissionsManager;
+    }
+
+    public void setLockMaxTimeout(long lockMaxTimeout) {
+        this.lockMaxTimeout = lockMaxTimeout;
+    }
+
+    public void setLockDefaultTimeout(long lockDefaultTimeout) {
+        this.lockDefaultTimeout = lockDefaultTimeout;
     }
 
 }

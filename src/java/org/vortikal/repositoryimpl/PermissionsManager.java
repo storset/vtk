@@ -56,7 +56,6 @@ import org.vortikal.util.repository.URIUtil;
 public class PermissionsManager {
 
     private RoleManager roleManager;
-    private DataAccessor dao;
     private PrincipalManager principalManager;
 
     public void authorize(Resource resource, Principal principal, String action)
@@ -497,14 +496,6 @@ public class PermissionsManager {
         readPrivs[0] = read;
 
         return readPrivs;
-    }
-
-
-    /**
-     * @param dao The dao to set.
-     */
-    public void setDao(DataAccessor dao) {
-        this.dao = dao;
     }
 
 

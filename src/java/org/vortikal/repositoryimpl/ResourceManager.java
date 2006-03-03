@@ -46,7 +46,6 @@ import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
@@ -67,21 +66,6 @@ public class ResourceManager {
     private PermissionsManager permissionsManager;
     private RoleManager roleManager;
     private DataAccessor dao;
-
-    public void authorizeRecursively(Resource resource, Principal principal,
-                                     String privilege)
-        throws IOException, AuthenticationException, AuthorizationException {
-
-        permissionsManager.authorize(resource, principal, privilege);
-        if (resource.isCollection()) {
-            String[] uris = this.dao.discoverACLs(resource);
-            for (int i = 0; i < uris.length; i++) {
-                Resource ancestor = this.dao.load(uris[i]);
-                permissionsManager.authorize(ancestor, principal, privilege);
-            }
-        }
-    }
-    
 
     public void lockAuthorize(Resource resource, Principal principal, String privilege)
                   throws ResourceLockedException, AuthenticationException {
@@ -502,11 +486,10 @@ public class ResourceManager {
         String parentURI = URIUtil.getParentURI(resource.getURI());
         if (parentURI != null) {
             inheritedFrom = null;
-            if (resource.isInheritedACL()) {
-                // XXX: Should use parent, not resource
-                inheritedFrom = URIUtil.getParentURI(resource.getURI());
-            }
             Resource parent = this.dao.load(parentURI);
+            if (resource.isInheritedACL()) {
+                inheritedFrom = URIUtil.getParentURI(parent.getURI());
+            }
             dto.setParentOwner(principalManager.getPrincipal(parent.getOwner()));
             dto.setParentACL(permissionsManager.convertToACEArray(parent.getACL(),inheritedFrom));
         }

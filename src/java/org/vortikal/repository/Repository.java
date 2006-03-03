@@ -74,12 +74,11 @@ public interface Repository {
      * @exception AuthenticationException if the resource demands
      * authorization and the client does not supply a token
      * identifying a valid client session
-     * @exception ResourceLockedException if resource is read-locked
      * @exception IOException if an I/O error occurs
      */
     public Resource retrieve(String token, String uri, boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, ResourceLockedException, IOException;
+            AuthenticationException, IOException;
 
     /**
      * Returns a listing of the immediate children of a
@@ -177,13 +176,12 @@ public interface Repository {
      * @exception AuthenticationException if the resource demands
      * authorization and the client does not supply a token
      * identifying a valid client session
-     * @exception ResourceLockedException if resource is read-locked
      * @exception IOException if an I/O error occurs
      */
     public InputStream getInputStream(String token, String uri,
         boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, ResourceLockedException, IOException;
+            AuthenticationException, IOException;
 
     /**
      * Creates a new empty (document) resource in the repository.

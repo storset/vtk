@@ -138,15 +138,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 : PrivilegeDefinition.READ;
 
             this.permissionsManager.authorize(r, principal, privilege);
-            this.resourceManager.lockAuthorize(r, principal, privilege);
 
             OperationLog.success(OperationLog.RETRIEVE, "(" + uri + ")", token, principal);
 
             return resourceManager.getResourceDTO(r, principal);
-        } catch (ResourceLockedException e) {
-            OperationLog.failure(OperationLog.RETRIEVE, "(" + uri + ")", "resource locked",
-                token, principal);
-            throw new AuthorizationException();
+
         } catch (AuthorizationException e) {
             OperationLog.failure(OperationLog.RETRIEVE, "(" + uri + ")", "not authorized",
                 token, principal);
@@ -159,86 +155,82 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
     public org.vortikal.repository.Resource createDocument(String token,
-        String uri)
-        throws IllegalOperationException, AuthorizationException, 
-            AuthenticationException, ResourceLockedException, ReadOnlyException, 
-            IOException {
+            String uri) throws IllegalOperationException,
+            AuthorizationException, AuthenticationException,
+            ResourceLockedException, ReadOnlyException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!validateURI(uri)) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "resource not found.",
-                token, principal);
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
+                    "resource not found.", token, principal);
             throw new ResourceNotFoundException(uri);
         }
 
         if ("/".equals(uri)) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                "illegal operation. " +
-                "Cannot create the root resource ('/')", token, principal);
+                    "illegal operation. "
+                            + "Cannot create the root resource ('/')", token,
+                    principal);
             throw new IllegalOperationException(
-                "Cannot create the root resource ('/')");
+                    "Cannot create the root resource ('/')");
         }
 
         Resource r = dao.load(uri);
 
         if (r != null) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                "illegal operation. " + "Resource already existed", token,
-                principal);
+                    "illegal operation. " + "Resource already existed", token,
+                    principal);
             throw new IllegalOperationException();
         }
 
-        String parentURI = uri.substring(0, uri.lastIndexOf("/") + 1);
-
-        if (parentURI.endsWith("/") && !parentURI.equals("/")) {
-            parentURI = parentURI.substring(0, parentURI.length() - 1);
-        }
+        String parentURI = URIUtil.getParentURI(uri);
 
         r = dao.load(parentURI);
 
         if ((r == null) || !r.isCollection()) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                "illegal operation: " +
-                "either parent doesn't exist or parent is document", token, principal);
+            OperationLog
+                    .failure(
+                            OperationLog.CREATE,
+                            "(" + uri + ")",
+                            "illegal operation: "
+                                    + "either parent doesn't exist or parent is document",
+                            token, principal);
             throw new IllegalOperationException();
         }
 
         try {
-            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
-            this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
+            this.permissionsManager.authorize(r, principal,
+                    PrivilegeDefinition.WRITE);
+            this.resourceManager.lockAuthorize(r, principal,
+                    PrivilegeDefinition.WRITE);
         } catch (ResourceLockedException e) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "resource was locked",
-                token, principal);
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
+                    "resource was locked", token, principal);
             throw e;
         } catch (AuthorizationException e) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "unauthorized", token,
-                principal);
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
+                    "unauthorized", token, principal);
             throw e;
         }
 
-        try {
-            if (this.readOnly &&
-                    !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                OperationLog.failure(OperationLog.CREATE, "(" + uri + ")", "read-only", token,
-                    principal);
-                throw new ReadOnlyException();
-            }
-            Resource doc = this.resourceManager.create(
-                r, principal, false, principal.getQualifiedName(), uri, null, true);
-            OperationLog.success(OperationLog.CREATE, "(" + uri + ")", token, principal);
-
-            org.vortikal.repository.Resource dto = resourceManager.getResourceDTO(doc,principal);
-
-            context.publishEvent(
-                new ResourceCreationEvent(
-                    this, dto));
-
-            return dto;
-        } catch (AclException e) {
+        if (readOnly(principal)) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                "tried to set an illegal ACL", token, principal);
-            throw new IllegalOperationException(e.getMessage());
+                    "read-only", token, principal);
+            throw new ReadOnlyException();
         }
+
+        Resource doc = this.resourceManager.create(r, principal, false,
+                principal.getQualifiedName(), uri, null, true);
+        OperationLog.success(OperationLog.CREATE, "(" + uri + ")", token,
+                principal);
+
+        org.vortikal.repository.Resource dto = resourceManager.getResourceDTO(
+                doc, principal);
+
+        context.publishEvent(new ResourceCreationEvent(this, dto));
+
+        return dto;
     }
 
     public org.vortikal.repository.Resource createCollection(String token,
@@ -357,8 +349,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 "source not found", token, principal);
             throw new ResourceNotFoundException(srcUri);
         } else if (src.isCollection()) {
-            this.resourceManager.authorizeRecursively(src, principal,
-                PrivilegeDefinition.READ);
+            authorizeRecursively(src, principal, PrivilegeDefinition.READ);
         } else {
             this.permissionsManager.authorize(src, principal, PrivilegeDefinition.READ);
         }
@@ -488,7 +479,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         if (src.isCollection()) {
             this.resourceManager.lockAuthorizeRecursively(src, principal,
                                                           PrivilegeDefinition.WRITE);
-            this.resourceManager.authorizeRecursively(src, principal, PrivilegeDefinition.READ);
+            authorizeRecursively(src, principal, PrivilegeDefinition.READ);
         } else {
             this.resourceManager.lockAuthorize(src, principal, PrivilegeDefinition.WRITE);
             this.permissionsManager.authorize(src, principal, PrivilegeDefinition.READ);
@@ -576,8 +567,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            if (this.readOnly &&
-                    !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+            if (readOnly(principal)) {
                 OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                     "read-only", token, principal);
                 throw new ReadOnlyException();
@@ -646,25 +636,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
         }
 
-        String parent = new String(uri);
-
-        if (parent.endsWith("/")) {
-            parent = parent.substring(0, parent.length() - 1);
-        }
-
-        if (parent.lastIndexOf("/") == 0) {
-            parent = "/";
-        } else {
-            parent = uri.substring(0, uri.lastIndexOf("/"));
-        }
+        String parent = URIUtil.getParentURI(uri);
 
         Resource parentCollection = dao.load(parent);
 
         this.permissionsManager.authorize(parentCollection, principal, PrivilegeDefinition.WRITE);
         this.resourceManager.lockAuthorize(parentCollection, principal, PrivilegeDefinition.WRITE);
 
-        if (this.readOnly &&
-                !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (readOnly(principal)) {
             OperationLog.failure(OperationLog.DELETE, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
@@ -683,6 +662,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         context.publishEvent(event);
     }
 
+    /**
+     * - validate uri
+     *   -> throw exception if invalid
+     * - call exist
+     * - log:
+     *     - if exception thrown -> failure
+     *     - if false -> failure
+     *     - if true -> success
+     * 
+     * @see org.vortikal.repository.Repository#exists(java.lang.String, java.lang.String)
+     */
     public boolean exists(String token, String uri)
         throws AuthorizationException, AuthenticationException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
@@ -736,8 +726,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                                                 + depth);
         }
 
-        if (this.readOnly &&
-                !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (readOnly(principal)) {
             OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
@@ -1383,6 +1372,26 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         return false;
     }
+
+    private void authorizeRecursively(Resource resource, Principal principal,
+            String privilege) throws IOException, AuthenticationException,
+            AuthorizationException {
+
+        permissionsManager.authorize(resource, principal, privilege);
+        if (resource.isCollection()) {
+            String[] uris = this.dao.discoverACLs(resource);
+            for (int i = 0; i < uris.length; i++) {
+                Resource ancestor = this.dao.load(uris[i]);
+                permissionsManager.authorize(ancestor, principal, privilege);
+            }
+        }
+    }
+
+    private boolean readOnly(Principal principal) {
+        return this.readOnly && !roleManager.hasRole(
+                principal.getQualifiedName(), RoleManager.ROOT);
+    }
+    
 
 
 

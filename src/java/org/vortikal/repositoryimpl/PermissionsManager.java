@@ -276,28 +276,6 @@ public class PermissionsManager {
         return acl;
     }
     
-    public void addPermissionsToDTO(Resource resource, 
-            org.vortikal.repository.Resource dto) throws IOException {
-        try {
-            ACL originalACL = (ACL) resource.acl.clone();
-
-            dto.setACL(addRolesToACL(resource, originalACL));
-
-            if ("/".equals(resource.getURI())) {
-                dto.setParentACL(new Ace[0]);
-            } else {
-                Resource parent = 
-                    this.dao.load(URIUtil.getParentURI(resource.getURI()));
-                ACL parentACL = (ACL) parent.getACL().clone();
-
-                dto.setParentACL(addRolesToACL(resource, parentACL));
-                dto.setParentOwner(principalManager.getPrincipal(parent.getOwner()));
-            }
-        } catch (CloneNotSupportedException e) {
-        }
-        
-    }
-
     /**
      * Generates a list of Ace objects (for data exchange).
      *
@@ -447,18 +425,14 @@ public class PermissionsManager {
 
     
     /**
-     * Adds root and read everything roles to ACL
+     * Converts <code>ACL</code> to <code>ACE[]</code> and
+     * adds root and read everything roles to <code>ACE[]</code>
      * 
      * @param originalACL
      *            an <code>Ace[]</code> value
      * @return an <code>Ace[]</code>
      */
-    private Ace[] addRolesToACL(Resource resource, ACL originalACL) {
-
-        String inheritedFrom = null;
-        if (resource.isInheritedACL()) {
-            inheritedFrom = URIUtil.getParentURI(resource.getURI());
-        }
+    public Ace[] convertToACEArray(ACL originalACL, String inheritedFrom) {
 
         List acl = new ArrayList(Arrays.asList(toAceList(originalACL, inheritedFrom)));
         List rootPrincipals = roleManager.listPrincipals(RoleManager.ROOT);

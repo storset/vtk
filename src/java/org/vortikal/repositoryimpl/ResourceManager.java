@@ -384,7 +384,7 @@ public class ResourceManager {
     
 
 
-    protected void setResourceOwner(Resource resource, Principal principal,
+    private void setResourceOwner(Resource resource, Principal principal,
         org.vortikal.repository.Resource dto, String owner)
         throws AuthorizationException, IllegalOperationException {
         if ((owner == null) || owner.trim().equals("")) {
@@ -463,7 +463,7 @@ public class ResourceManager {
         }
     }
 
-    public org.vortikal.repository.Lock[] getActiveLocks(LockImpl lock) {
+    private org.vortikal.repository.Lock[] getActiveLocks(LockImpl lock) {
         if (lock != null) {
             // Is cloning neccessary and/or working?
             LockImpl clone = (LockImpl)lock.clone();
@@ -500,8 +500,25 @@ public class ResourceManager {
 
         dto.setProperties(resource.getPropertyDTOs());
 
-        permissionsManager.addPermissionsToDTO(resource, dto);
-
+        String inheritedFrom = null;
+        if (resource.isInheritedACL()) {
+            inheritedFrom = URIUtil.getParentURI(resource.getURI());
+        }
+        dto.setACL(permissionsManager.convertToACEArray(resource.getACL(), inheritedFrom));
+        
+        // Adding parent props: 
+        String parentURI = URIUtil.getParentURI(resource.getURI());
+        if (parentURI != null) {
+            inheritedFrom = null;
+            if (resource.isInheritedACL()) {
+                // XXX: Should use parent, not resource
+                inheritedFrom = URIUtil.getParentURI(resource.getURI());
+            }
+            Resource parent = this.dao.load(parentURI);
+            dto.setParentOwner(principalManager.getPrincipal(parent.getOwner()));
+            dto.setParentACL(permissionsManager.convertToACEArray(parent.getACL(),inheritedFrom));
+        }
+        
         if (resource.isCollection()) {
             dto.setChildURIs(resource.getChildURIs());
         } else {

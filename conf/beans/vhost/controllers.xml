@@ -31,10 +31,10 @@
     <property name="displayProcessed" value="true" />
   </bean>
   
-  <bean id="collectionListingAsRssHandler" 
+  <bean id="collectionListingAsFeedHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
-    <property name="viewName" value="collectionListingAsRss" />
+    <property name="viewName" value="collectionListingAsFeed" />
   </bean>
   
 

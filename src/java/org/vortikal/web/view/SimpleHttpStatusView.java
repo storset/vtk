@@ -36,15 +36,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.view.AbstractView;
+//import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.webdav.WebdavConstants;
 
 
 
-
-
 /**
  * Simple HTTP Status code view.
+ * 
+ * Expects the model to contain a property 
+ * <code>WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE</code> containing an 
+ * <code>Integer</code> object with the desired status code.
+ * 
+ * FIXME: some WebDAV status codes are not recognized by servlet container, and
+ * so the message "Internal Server Error" is appended. An example of this is
+ * "423 Locked", which is returned to clients as "423 Internal Server Error".
+ * The method HttpServletResponse.setStatus(int sc, String msg) is deprecated, 
+ * and the API suggests using HttpServletResponse.sendError(int sc, String msg) 
+ * instead. A solution might be to check if status code is >= 400, and if so, then
+ * use HttpServletResponse.sendError(sc, "Our WebDAV status message from HttpUtil").
  *
  */
 public class SimpleHttpStatusView extends AbstractView {
@@ -59,6 +70,20 @@ public class SimpleHttpStatusView extends AbstractView {
                 "No status code set in model. Expected an integer with key " +
                 "`" + WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE + "'");
         }
+        
         response.setStatus(status.intValue());
+
+//        int sc = status.intValue();
+//        // Send as error if sc >= 400. Note that with Resin 3, this gives the HTTP response 
+//        // a body, which might not be desired for SimpleHttpStatusView ?
+//        if (sc >= 400) {
+//            try {
+//                response.sendError(sc, HttpUtil.getStatusMessage(sc));
+//            } catch (IllegalArgumentException ia) {
+//                response.setStatus(sc);
+//            }
+//        } else {
+//            response.setStatus(sc);
+//        }
     }
 }

@@ -39,14 +39,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import org.vortikal.repository.Ace;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
@@ -60,9 +56,7 @@ import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
-import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.TokenManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
@@ -82,10 +76,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
     private DataAccessor dao;
     private RoleManager roleManager = null;
-    private PrincipalManager principalManager;
     private TokenManager tokenManager;
     private ResourceManager resourceManager;
     private PermissionsManager permissionsManager;
+    private ACLValidator aclValidator;
     
     private String id;
 
@@ -108,6 +102,32 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         this.readOnly = c.isReadOnly();
+    }
+
+    public boolean exists(String token, String uri)
+            throws AuthorizationException, AuthenticationException, IOException {
+        Principal principal = tokenManager.getPrincipal(token);
+
+        if (!validateURI(uri)) {
+            OperationLog.info(OperationLog.EXISTS, "(" + uri + "): false",
+                    token, principal);
+
+            return false;
+        }
+
+        Resource r = dao.load(uri);
+
+        if (r == null) {
+            OperationLog.info(OperationLog.EXISTS, "(" + uri + "): false",
+                    token, principal);
+
+            return false;
+        }
+
+        OperationLog.info(OperationLog.EXISTS, "(" + uri + "): true", token,
+                principal);
+
+        return true;
     }
 
     public org.vortikal.repository.Resource retrieve(String token, String uri,
@@ -154,6 +174,60 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
+    public org.vortikal.repository.Resource[] listChildren(String token,
+            String uri, boolean forProcessing)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IOException {
+        Principal principal = tokenManager.getPrincipal(token);
+
+        if (!validateURI(uri)) {
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
+                    "resource not found", token, principal);
+            throw new ResourceNotFoundException(uri);
+        }
+
+        Resource r = dao.load(uri);
+
+        if (r == null) {
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
+                    "resource not found", token, principal);
+            throw new ResourceNotFoundException(uri);
+        }
+
+        if (!r.isCollection()) {
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
+                    "uri is document", token, principal);
+
+            return null;
+        }
+
+        try {
+            /* authorize for the right privilege: */
+            String privilege = (forProcessing) ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
+                    : PrivilegeDefinition.READ;
+
+            this.permissionsManager.authorize(r, principal, privilege);
+            this.resourceManager.lockAuthorize(r, principal, privilege);
+
+            Resource[] list = this.dao.loadChildren(r);
+            org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
+
+            for (int i = 0; i < list.length; i++) {
+                children[i] = resourceManager
+                        .getResourceDTO(list[i], principal);
+            }
+
+            OperationLog.success(OperationLog.LIST_CHILDREN, "(" + uri + ")",
+                    token, principal);
+
+            return children;
+        } catch (ResourceLockedException e) {
+            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
+                    "permission denied", token, principal);
+            throw new AuthorizationException();
+        }
+    }
+
     public org.vortikal.repository.Resource createDocument(String token,
             String uri) throws IllegalOperationException,
             AuthorizationException, AuthenticationException,
@@ -168,9 +242,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if ("/".equals(uri)) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                    "illegal operation. "
-                            + "Cannot create the root resource ('/')", token,
-                    principal);
+                    "illegal operation. Cannot create the root resource ('/')",
+                    token, principal);
             throw new IllegalOperationException(
                     "Cannot create the root resource ('/')");
         }
@@ -179,9 +252,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (r != null) {
             OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                    "illegal operation. " + "Resource already existed", token,
+                    "illegal operation: Resource already exists", token,
                     principal);
-            throw new IllegalOperationException();
+            throw new IllegalOperationException("Resource already exists");
         }
 
         String parentURI = URIUtil.getParentURI(uri);
@@ -189,14 +262,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         r = dao.load(parentURI);
 
         if ((r == null) || !r.isCollection()) {
-            OperationLog
-                    .failure(
-                            OperationLog.CREATE,
-                            "(" + uri + ")",
-                            "illegal operation: "
-                                    + "either parent doesn't exist or parent is document",
-                            token, principal);
-            throw new IllegalOperationException();
+            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
+                    "illegal operation: either parent doesn't exist " +
+                    "or parent is document", token, principal);
+            throw new IllegalOperationException("Either parent doesn't exist " +
+                    "or parent is document");
         }
 
         try {
@@ -291,8 +361,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
             this.resourceManager.lockAuthorize(r, principal, PrivilegeDefinition.WRITE);
 
-            if (this.readOnly &&
-                    !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+            if (readOnly(principal)) {
                 OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
                     "read-only", token, principal);
                 throw new ReadOnlyException();
@@ -304,10 +373,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(OperationLog.CREATE_COLLECTION, "(" + uri + ")", token,
                 principal);
 
-            org.vortikal.repository.Resource dto = resourceManager.getResourceDTO(newCollection, principal);
+            org.vortikal.repository.Resource dto = 
+                resourceManager.getResourceDTO(newCollection, principal);
 
-            context.publishEvent(
-                new ResourceCreationEvent(this, dto));
+            context.publishEvent(new ResourceCreationEvent(this, dto));
 
             return dto;
         } catch (ResourceLockedException e) {
@@ -316,8 +385,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw e;
         } catch (AclException e) {
             OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                "tried to set an illegal ACL", token, principal);
-            throw new IllegalOperationException(e.getMessage());
+                "tried to set an illegal ACL: " + e.getMessage(), token, principal);
+            throw new IllegalOperationException("tried to set an illegal ACL: "
+                    + e.getMessage());
         }
     }
 
@@ -402,8 +472,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         this.resourceManager.lockAuthorize(destCollection, principal, PrivilegeDefinition.WRITE);
 
-        if (this.readOnly &&
-                !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (readOnly(principal)) {
             OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "read-only", token, principal);
             throw new ReadOnlyException();
@@ -662,39 +731,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         context.publishEvent(event);
     }
 
-    /**
-     * - validate uri
-     *   -> throw exception if invalid
-     * - call exist
-     * - log:
-     *     - if exception thrown -> failure
-     *     - if false -> failure
-     *     - if true -> success
-     * 
-     * @see org.vortikal.repository.Repository#exists(java.lang.String, java.lang.String)
-     */
-    public boolean exists(String token, String uri)
-        throws AuthorizationException, AuthenticationException, IOException {
-        Principal principal = tokenManager.getPrincipal(token);
-
-        if (!validateURI(uri)) {
-            OperationLog.info(OperationLog.EXISTS, "(" + uri + "): false", token, principal);
-
-            return false;
-        }
-
-        Resource r = dao.load(uri);
-
-        if (r == null) {
-            OperationLog.info(OperationLog.EXISTS, "(" + uri + "): false", token, principal);
-
-            return false;
-        }
-
-        OperationLog.info(OperationLog.EXISTS, "(" + uri + "): true", token, principal);
-
-        return true;
-    }
 
     public String lock(String token, String uri, String lockType,
             String ownerInfo, String depth, int requestedTimeoutSeconds, String lockToken)
@@ -790,8 +826,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (this.readOnly &&
-                !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (readOnly(principal)) {
             OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
@@ -812,59 +847,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "resource locked",
                 token, principal);
             throw e;
-        }
-    }
-
-    public org.vortikal.repository.Resource[] listChildren(String token,
-        String uri, boolean forProcessing)
-        throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IOException {
-        Principal principal = tokenManager.getPrincipal(token);
-
-        if (!validateURI(uri)) {
-            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
-                "resource not found", token, principal);
-            throw new ResourceNotFoundException(uri);
-        }
-
-        Resource r = dao.load(uri);
-
-        if (r == null) {
-            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
-                "resource not found", token, principal);
-            throw new ResourceNotFoundException(uri);
-        }
-
-        if (!r.isCollection()) {
-            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
-                "uri is document", token, principal);
-
-            return null;
-        }
-
-        try {
-            /* authorize for the right privilege: */
-            String privilege = (forProcessing)
-                ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
-                : PrivilegeDefinition.READ;
-
-            this.permissionsManager.authorize(r, principal, privilege);
-            this.resourceManager.lockAuthorize(r, principal, privilege);
-
-            Resource[] list = this.dao.loadChildren(r);
-            org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
-
-            for (int i = 0; i < list.length; i++) {
-                children[i] = resourceManager.getResourceDTO(list[i], principal);
-            }
-
-            OperationLog.success(OperationLog.LIST_CHILDREN, "(" + uri + ")", token, principal);
-
-            return children;
-        } catch (ResourceLockedException e) {
-            OperationLog.failure(OperationLog.LIST_CHILDREN, "(" + uri + ")",
-                "permission denied", token, principal);
-            throw new AuthorizationException();
         }
     }
 
@@ -897,8 +879,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (this.readOnly &&
-                !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (readOnly(principal)) {
             OperationLog.failure(OperationLog.STORE, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
@@ -994,8 +975,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IOException("Collections have no output stream");
         }
 
-        if (this.readOnly &&
-                !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (readOnly(principal)) {
             OperationLog.failure(OperationLog.STORE_CONTENT, "(" + uri + ")", "read-only",
                 token, principal);
             throw new ReadOnlyException();
@@ -1119,8 +1099,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
 
-            if (this.readOnly &&
-                    !roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+            if (readOnly(principal)) {
                 OperationLog.failure(OperationLog.STORE_ACL, "(" + uri + ")", "read-only",
                     token, principal);
                 throw new ReadOnlyException();
@@ -1131,7 +1110,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             boolean wasInheritedACL = original.isInheritedACL();
 
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
-            validateACL(acl);
+            aclValidator.validateACL(acl);
             this.resourceManager.storeACL(r, principal, acl);
             OperationLog.success(OperationLog.STORE_ACL, "(" + uri + ")", token, principal);
 
@@ -1226,153 +1205,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return true;
     }
     
-    /**
-     * Checks the validity of an ACL.
-     *
-     * @param aceList an <code>Ace[]</code> value
-     * @exception AclException if an error occurs
-     * @exception IllegalOperationException if an error occurs
-     * @exception IOException if an error occurs
-     */
-    public void validateACL(Ace[] aceList)
-        throws AclException, IllegalOperationException {
-        /*
-         * Enforce ((dav:owner (dav:read dav:write dav:write-acl))
-         */
-        if (!containsUserPrivilege(aceList, PrivilegeDefinition.WRITE,
-                    "dav:owner")) {
-            throw new IllegalOperationException(
-                "Owner must be granted write privilege in ACL.");
-        }
-
-        if (!containsUserPrivilege(aceList, PrivilegeDefinition.READ,
-                    "dav:owner")) {
-            throw new IllegalOperationException(
-                "Owner must be granted read privilege in ACL.");
-        }
-
-        if (!containsUserPrivilege(aceList, PrivilegeDefinition.WRITE_ACL,
-                    "dav:owner")) {
-            throw new IllegalOperationException(
-                "Owner must be granted write-acl privilege in ACL.");
-        }
-
-        boolean inheritance = aceList[0].getInheritedFrom() != null;
-
-        /*
-         * Walk trough the ACL, for every ACE, enforce that:
-         * 1) Privileges are never denied (only granted)
-         * 2) Either every ACE is inherited or none
-         * 3) Every principal is valid
-         * 4) Every privilege has a supported namespace and name
-         */
-        for (int i = 0; i < aceList.length; i++) {
-            Ace ace = aceList[i];
-
-            if (!ace.isGranted()) {
-                throw new AclException(AclException.GRANT_ONLY,
-                    "Privileges may only be granted, not denied.");
-            }
-
-            if ((ace.getInheritedFrom() != null) != inheritance) {
-                throw new IllegalOperationException(
-                    "Either every ACE must be inherited from a resource, " +
-                    "or none.");
-            }
-
-            org.vortikal.repository.ACLPrincipal principal = ace.getPrincipal();
-
-            if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_URL) {
-                boolean validPrincipal = false;
-
-                if (principal.isUser()) {
-                    Principal p = null;
-                    try {
-                        p = principalManager.getPrincipal(principal.getURL());
-                    } catch (InvalidPrincipalException e) {
-                        throw new AclException("Invalid principal '" 
-                                + principal.getURL() + "' in ACL");
-                    }
-                    validPrincipal = principalManager.validatePrincipal(p);
-                } else {
-                    validPrincipal = principalManager.validateGroup(principal.getURL());
-                }
-
-                if (!validPrincipal) {
-                    throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
-                        "Unknown principal: " + principal.getURL());
-                }
-            } else {
-                if ((principal.getType() != org.vortikal.repository.ACLPrincipal.TYPE_ALL) &&
-                        (principal.getType() != org.vortikal.repository.ACLPrincipal.TYPE_OWNER) &&
-                        (principal.getType() != org.vortikal.repository.ACLPrincipal.TYPE_AUTHENTICATED)) {
-                    throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
-                        "Allowed principal types are " +
-                        "either TYPE_ALL, TYPE_OWNER " + "OR  TYPE_URL.");
-                }
-            }
-
-            Privilege[] privileges = ace.getPrivileges();
-
-            for (int j = 0; j < privileges.length; j++) {
-                Privilege privilege = privileges[j];
-
-                if (privilege.getNamespace().equals(Namespace.STANDARD_NAMESPACE)) {
-                    if (!(privilege.getName().equals(PrivilegeDefinition.WRITE) ||
-                            privilege.getName().equals(PrivilegeDefinition.READ) ||
-                            privilege.getName().equals(PrivilegeDefinition.WRITE_ACL))) {
-                        throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
-                            "Unsupported privilege name: " +
-                            privilege.getName());
-                    }
-                } else if (privilege.getNamespace().equals(Namespace.CUSTOM_NAMESPACE)) {
-                    if (!(privilege.getName().equals(PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED))) {
-                        throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
-                            "Unsupported privilege name: " +
-                            privilege.getName());
-                    }
-                } else {
-                    throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
-                        "Unsupported privilege namespace: " +
-                        privilege.getNamespace());
-                }
-            }
-        }
-    }
-
-    /**
-     * Checks if an ACL grants a given privilege to a given principal.
-     *
-     */
-    protected static boolean containsUserPrivilege(Ace[] aceList,
-        String privilegeName, String principalURL) {
-        for (int i = 0; i < aceList.length; i++) {
-            Ace ace = aceList[i];
-
-            Privilege[] privileges = ace.getPrivileges();
-
-            for (int j = 0; j < privileges.length; j++) {
-                Privilege priv = privileges[j];
-
-                org.vortikal.repository.ACLPrincipal principal = ace.getPrincipal();
-
-                if ((principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_URL) &&
-                        principal.getURL().equals(principalURL) &&
-                        priv.getName().equals(privilegeName)) {
-                    return true;
-                } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_OWNER) {
-                    return true;
-                } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_ALL) {
-                    if (priv.getName().equals(privilegeName)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
     private void authorizeRecursively(Resource resource, Principal principal,
             String privilege) throws IOException, AuthenticationException,
             AuthorizationException {
@@ -1392,13 +1224,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 principal.getQualifiedName(), RoleManager.ROOT);
     }
     
-
-
-
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
@@ -1428,6 +1253,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.resourceManager = resourceManager;
     }
     
+    public void setPermissionsManager(PermissionsManager permissionsManager) {
+        this.permissionsManager = permissionsManager;
+    }
+
+    public void setAclValidator(ACLValidator aclValidator) {
+        this.aclValidator = aclValidator;
+    }
+
     public void setApplicationContext(ApplicationContext context) {
         this.context = context;
     }
@@ -1441,9 +1274,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new BeanInitializationException(
                 "Bean property 'roleManager' must be set");
         }
-        if (this.principalManager == null) {
+        if (this.aclValidator == null) {
             throw new BeanInitializationException(
-                "Bean property 'principalManager' must be set");
+                "Bean property 'aclValidator' must be set");
         }
         if (this.tokenManager == null) {
             throw new BeanInitializationException(
@@ -1457,13 +1290,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new BeanInitializationException(
             "Bean property 'resourceManager' must be set");
         }
-    }
-
-    /**
-     * @param permissionsManager The permissionsManager to set.
-     */
-    public void setPermissionsManager(PermissionsManager permissionsManager) {
-        this.permissionsManager = permissionsManager;
     }
     
 }

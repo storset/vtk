@@ -7,7 +7,7 @@
 
   <bean id="repository" class="org.vortikal.repositoryimpl.RepositoryImpl">
     <property name="id" value="${repositoryID}" />
-    <property name="principalManager" ref="principalManager"/>
+    <property name="aclValidator" ref="aclValidator"/>
     <property name="tokenManager" ref="tokenManager" />
     <property name="roleManager" ref="roleManager" />
     <property name="permissionsManager" ref="permissionsManager" />
@@ -51,6 +51,10 @@
   <bean id="permissionsManager" class="org.vortikal.repositoryimpl.PermissionsManager">
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
+  </bean>
+
+  <bean id="aclValidator" class="org.vortikal.repositoryimpl.ACLValidator">
+    <property name="principalManager" ref="principalManager" />
   </bean>
 
   <!-- Quartz scheduled jobs -->

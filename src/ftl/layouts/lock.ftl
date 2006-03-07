@@ -14,7 +14,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign lock=""/>
-<#if resourceContext.currentResource.activeLocks?size &gt; 0>
+<#if resourceContext.currentResource.activeLock?exists>
   <#assign lock="locked" />
 </#if>
 
@@ -23,9 +23,9 @@
 
   <ul class="lock">
     <li>
-      <#assign href = resourceContext.currentResource.activeLocks[0].principal.name />
-      <#if resourceContext.currentResource.activeLocks[0].principal.URL?exists>
-        <#assign href = '<a target="personsok" href="' + resourceContext.currentResource.activeLocks[0].principal.URL + '">' + resourceContext.currentResource.activeLocks[0].principal.name + '</a>' />
+      <#assign href = resourceContext.currentResource.activeLock.principal.name />
+      <#if resourceContext.currentResource.activeLock.principal.URL?exists>
+        <#assign href = '<a target="personsok" href="' + resourceContext.currentResource.activeLock.principal.URL + '">' + resourceContext.currentResource.activeLocks[0].principal.name + '</a>' />
       </#if>
       <@vrtx.msg code="actions.lockedBy" default="Locked by" />&nbsp;${href}
       <#if lockUnlockActions?exists>

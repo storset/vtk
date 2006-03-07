@@ -30,13 +30,7 @@
  */
 package org.vortikal.webdav;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
 import org.vortikal.util.web.HttpUtil;
 
 /**

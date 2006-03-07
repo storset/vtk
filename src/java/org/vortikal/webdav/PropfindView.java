@@ -443,8 +443,7 @@ public class PropfindView implements View, InitializingBean {
         activeLock.addContent(new Element("depth",
                 WebdavConstants.DAV_NAMESPACE).addContent(lock.getDepth()));
 
-        activeLock.addContent(WebdavConstants.buildLockOwnerElement(lock
-                .getOwnerInfo()));
+        activeLock.addContent(LockView.buildLockOwnerElement(lock.getOwnerInfo()));
 
         long timeout = lock.getTimeout().getTime() - System.currentTimeMillis();
 

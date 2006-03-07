@@ -67,14 +67,9 @@ public class ResourceManager {
     private RoleManager roleManager;
     private DataAccessor dao;
 
-    public void lockAuthorize(Resource resource, Principal principal, String privilege)
-                  throws ResourceLockedException, AuthenticationException {
+    public void lockAuthorize(Resource resource, Principal principal) throws ResourceLockedException, AuthenticationException {
 
         if (resource.getLock() == null) {
-            return;
-        }
-
-        if (!PrivilegeDefinition.WRITE.equals(privilege)) {
             return;
         }
 
@@ -83,24 +78,22 @@ public class ResourceManager {
         }
 
         if (!resource.getLock().getUser().equals(principal.getQualifiedName())) {
-            throw new org.vortikal.repository.ResourceLockedException();
+            throw new ResourceLockedException();
         }
     }
     
-    public void lockAuthorizeRecursively(Resource collection, Principal principal,
-                                         String privilege) 
+    public void lockAuthorizeRecursively(Resource collection, Principal principal) 
         throws ResourceLockedException, IOException, AuthenticationException {
 
-        lockAuthorize(collection, principal, privilege);
+        lockAuthorize(collection, principal);
 
         String[] uris = this.dao.discoverLocks(collection);
 
         for (int i = 0; i < uris.length;  i++) {
             Resource ancestor = this.dao.load(uris[i]);
-            lockAuthorize(ancestor, principal, privilege);
+            lockAuthorize(ancestor, principal);
         }
     }
-
 
 
     public String lockResource(Resource resource, Principal principal,
@@ -108,11 +101,6 @@ public class ResourceManager {
                                int desiredTimeoutSeconds, boolean refresh)
         throws AuthenticationException, AuthorizationException, 
             ResourceLockedException, IOException {
-
-
-        this.permissionsManager.authorize(resource, principal, org.vortikal.repository.PrivilegeDefinition.WRITE);
-
-        lockAuthorize(resource, principal, PrivilegeDefinition.WRITE);
 
         if (!refresh) {
             resource.setLock(null);
@@ -130,8 +118,6 @@ public class ResourceManager {
 
             LockImpl lock = new LockImpl(lockToken,principal.getQualifiedName(), ownerInfo, depth, timeout);
             resource.setLock(lock);
-                    
-            
         } else {
             resource.setLock(
                 new LockImpl(resource.getLock().getLockToken(), principal.getQualifiedName(),
@@ -142,31 +128,13 @@ public class ResourceManager {
         return resource.getLock().getLockToken();
     }
 
-    public void unlockResource(Resource resource, Principal principal, String lockToken)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IOException {
-
-        this.permissionsManager.authorize(
-            resource, principal, org.vortikal.repository.PrivilegeDefinition.WRITE);
-
-        if (resource.getLock() != null) {
-            if (!this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                lockAuthorize(resource, principal, org.vortikal.repository.PrivilegeDefinition.WRITE);
-            }
-            resource.setLock(null);
-            this.dao.store(resource);
-        }
-    }
-    
-
     public void deleteResource(Resource resource, Principal principal)
         throws AuthorizationException, AuthenticationException, 
             ResourceLockedException, IOException {
         
         if (resource.getLock() != null) {
             // XXX: remove authorization here, 
-            lockAuthorize(resource, principal,
-                org.vortikal.repository.PrivilegeDefinition.WRITE);
+            lockAuthorize(resource, principal);
         }
         this.dao.delete(resource);
     }
@@ -323,13 +291,10 @@ public class ResourceManager {
         throws AuthenticationException, AuthorizationException, 
             ResourceLockedException, IllegalOperationException, IOException {
 
-        this.permissionsManager.authorize(resource, principal, PrivilegeDefinition.WRITE);
-        this.lockAuthorize(resource, principal, PrivilegeDefinition.WRITE);
-        
         if (!resource.getOwner().equals(dto.getOwner().getQualifiedName())) {
             /* Attempt to take ownership, only the owner of a parent
              * resource may do that, so do it in a secure manner: */
-            this.setResourceOwner(resource, principal, dto.getOwner());
+            setResourceOwner(resource, principal, dto.getOwner());
         }
 
         if (dto.getOverrideLiveProperties()) {
@@ -439,15 +404,15 @@ public class ResourceManager {
         }
     }
 
-    private org.vortikal.repository.Lock[] getActiveLocks(LockImpl lock) {
+    private org.vortikal.repository.Lock getActiveLock(LockImpl lock) {
         if (lock != null) {
             // Is cloning neccessary and/or working?
             LockImpl clone = (LockImpl)lock.clone();
             clone.setPrincipal(principalManager.getPrincipal(clone.getUser()));
-            return new org.vortikal.repository.Lock[] { clone };
+            return clone;
         }
         
-        return new org.vortikal.repository.Lock[] { };
+        return null;
     }
 
 
@@ -466,7 +431,7 @@ public class ResourceManager {
         dto.setDisplayName(resource.getDisplayName());
         dto.setName(resource.name);
 
-        dto.setActiveLocks(getActiveLocks(resource.getLock()));
+        dto.setActiveLock(getActiveLock(resource.getLock()));
 
         dto.setOwner(principalManager.getPrincipal(resource.owner));
         dto.setContentModifiedBy(principalManager.getPrincipal(resource

@@ -87,7 +87,7 @@ public class LockResourceController extends AbstractController {
         Resource resource = repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
-        if (resource.getActiveLocks().length == 0) {
+        if (resource.getActiveLock() == null) {
             repository.lock(token, uri, LockType.LOCKTYPE_EXCLUSIVE_WRITE,
                             securityContext.getPrincipal().getQualifiedName(), "0",
                             this.requestedTimeoutSeconds, null);

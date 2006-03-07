@@ -133,12 +133,11 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Ace[] originalACL, Ace[] newACL,
-                            boolean wasInherited) {
+                            Ace[] originalACL, Ace[] newACL) {
         try {
 
             if (AclUtil.equal(originalACL, newACL) &&
-                AclUtil.isInherited(newACL) == wasInherited) {
+                AclUtil.isInherited(newACL) == AclUtil.isInherited(originalACL)) {
                 return;
             }
         

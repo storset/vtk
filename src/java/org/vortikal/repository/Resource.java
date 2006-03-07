@@ -81,7 +81,7 @@ public class Resource implements java.io.Serializable, Cloneable {
     private Principal propertiesModifiedBy = null;
     private long contentLength;
     private String[] children = null;
-    private Lock[] activeLocks = new Lock[] {  };
+    private Lock activeLock;
     private Ace[] acl = null;
     private Ace[] parentACL = null;
     private Principal parentOwner = null;
@@ -437,8 +437,8 @@ public class Resource implements java.io.Serializable, Cloneable {
      * @return an array of <code>Lock</code> objects representing
      * the active locks that are set on the resource
      */
-    public Lock[] getActiveLocks() {
-        return activeLocks;
+    public Lock getActiveLock() {
+        return activeLock;
     }
 
     /**
@@ -446,8 +446,8 @@ public class Resource implements java.io.Serializable, Cloneable {
      *
      * @param activeLocks an array of <code>Lock[]</code> objects
      */
-    public void setActiveLocks(Lock[] activeLocks) {
-        this.activeLocks = activeLocks;
+    public void setActiveLock(Lock activeLock) {
+        this.activeLock = activeLock;
     }
 
     /**
@@ -688,13 +688,9 @@ public class Resource implements java.io.Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         Resource clone = (Resource) super.clone();
 
-        Lock[] cloneLocks = new Lock[this.activeLocks.length];
-
-        for (int i = 0; i < activeLocks.length; i++) {
-            cloneLocks[i] = (Lock) activeLocks[i].clone();
+        if (this.activeLock != null) {
+            clone.setActiveLock((Lock)this.activeLock.clone());
         }
-
-        clone.activeLocks = cloneLocks;
 
         Ace[] clonedACL = new Ace[this.acl.length];
 
@@ -750,7 +746,7 @@ public class Resource implements java.io.Serializable, Cloneable {
         sb.append(", displayName = ").append(displayName);
         sb.append(", contentLocale = ").append(contentLocale);
         sb.append(", contentType = ").append(contentType);
-        sb.append(", activeLocks = ").append(activeLocks);
+        sb.append(", activeLocks = ").append(activeLock);
 
         //sb.append(", currentUserPrivilegeSet = ").append(currentUserPrivilegeSet);
         sb.append(", acl = ").append(acl);

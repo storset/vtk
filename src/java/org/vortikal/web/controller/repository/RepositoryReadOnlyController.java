@@ -37,7 +37,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-import org.vortikal.repository.Configuration;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 
@@ -105,9 +104,7 @@ public class RepositoryReadOnlyController
 
         boolean readOnly = "true".equals(readOnlyStr.trim());
         
-        Configuration config = repository.getConfiguration();
-        config.setReadOnly(readOnly);
-        repository.setConfiguration(token, config);
+        repository.setReadOnly(token, readOnly);
         return new ModelAndView(viewName);
     }
 

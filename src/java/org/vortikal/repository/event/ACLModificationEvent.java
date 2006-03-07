@@ -43,16 +43,14 @@ public class ACLModificationEvent extends RepositoryEvent {
     private Resource original = null;
     private Ace[] acl = null;
     private Ace[] originalACL = null;
-    private boolean wasInherited = false;
 
     public ACLModificationEvent(Repository source, Resource resource,
-        Resource original, Ace[] acl, Ace[] originalACL, boolean wasInherited) {
+        Resource original, Ace[] acl, Ace[] originalACL) {
         super(source);
         this.resource = resource;
         this.original = original;
         this.acl = acl;
         this.originalACL = originalACL;
-        this.wasInherited = wasInherited;
     }
 
     public Resource getResource() {
@@ -73,9 +71,5 @@ public class ACLModificationEvent extends RepositoryEvent {
 
     public Ace[] getOriginalACL() {
         return this.originalACL;
-    }
-
-    public boolean wasInherited() {
-        return this.wasInherited;
     }
 }

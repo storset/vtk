@@ -105,7 +105,7 @@ public class RepositoryReadOnlyMessageProvider
             throws Exception {
         String message = null;
 
-        if (this.repository.getConfiguration().isReadOnly()) {
+        if (this.repository.isReadOnly()) {
             org.springframework.web.servlet.support.RequestContext springContext =
                 new org.springframework.web.servlet.support.RequestContext(request);
             message = springContext.getMessage(this.messageKey, this.messageKey);

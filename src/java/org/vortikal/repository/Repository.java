@@ -42,19 +42,16 @@ import java.io.InputStream;
  */
 public interface Repository {
     /**
-     * Retrieves a description of various (runtime) repository configuration
-     * options.
-     * @exception IOException if an I/O error occurs
+     * Is the repository set to read only mode?
      */
-    public Configuration getConfiguration() throws IOException;
+    public boolean isReadOnly();
 
     /**
-     * Sets repository configuration options dynamically.
+     * Set repository read only option dynamically.
      * @exception AuthorizationException if an authenticated user is
      * not authorized to set repository properties
-     * @exception IOException if an I/O error occurs
      */
-    public void setConfiguration(String token, Configuration configuration)
+    public void setReadOnly(String token, boolean readOnly)
         throws AuthorizationException, IOException;
 
     /**

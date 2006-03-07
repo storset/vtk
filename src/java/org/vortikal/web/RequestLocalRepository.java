@@ -35,14 +35,11 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Ace;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.Configuration;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.ReadOnlyException;
@@ -71,18 +68,6 @@ public class RequestLocalRepository implements InitializingBean, Repository {
                 "Bean property 'repository' must be set");
         }
     }
-
-
-    public Configuration getConfiguration() throws IOException {
-        return repository.getConfiguration();
-    }
-
-
-    public void setConfiguration(String token, Configuration configuration)
-        throws AuthorizationException, IOException {
-        repository.setConfiguration(token, configuration);
-    }
-
 
     public Resource retrieve(String token, String uri, boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
@@ -338,4 +323,15 @@ public class RequestLocalRepository implements InitializingBean, Repository {
     public String getId() {
         return this.repository.getId();
     }
+
+
+    public boolean isReadOnly() {
+        return this.repository.isReadOnly();
+    }
+
+
+    public void setReadOnly(String token, boolean readOnly) throws AuthorizationException, IOException {
+        this.repository.setReadOnly(token, readOnly);
+    }
+
 }

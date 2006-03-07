@@ -56,10 +56,10 @@ public class ResourceNotLockedAssertion
 
     public boolean matches(Resource resource, Principal principal) {
         Principal principalLockedBy = null;
-        Lock locks[] = resource.getActiveLocks();
+        Lock lock = resource.getActiveLock();
 
-        if (locks.length > 0) {
-            principalLockedBy = locks[0].getPrincipal();
+        if (lock != null) {
+            principalLockedBy = lock.getPrincipal();
         } else
             return true;
 

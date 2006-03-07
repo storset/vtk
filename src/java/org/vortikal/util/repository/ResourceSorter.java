@@ -181,12 +181,12 @@ public class ResourceSorter {
             String owner1 = "";
             String owner2 = "";
 
-            if (r1.getActiveLocks().length > 0) {
-                owner1 = r1.getActiveLocks()[0].getOwnerInfo();
+            if (r1.getActiveLock() != null) {
+                owner1 = r1.getActiveLock().getOwnerInfo();
             }
 
-            if (r2.getActiveLocks().length > 0) {
-                owner2 = r2.getActiveLocks()[0].getOwnerInfo();
+            if (r2.getActiveLock() != null) {
+                owner2 = r2.getActiveLock().getOwnerInfo();
             }
 
             if (!invert) {

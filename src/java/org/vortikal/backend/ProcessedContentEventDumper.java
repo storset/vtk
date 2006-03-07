@@ -160,8 +160,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Ace[] originalACL, Ace[] newACL,
-                            boolean wasInherited) {
+                            Ace[] originalACL, Ace[] newACL) {
         
 //         logger.info("ACL_MODIFIED: " + resource.getURI() + ", BEFORE: " +
 //                     originalACL + ", AFTER: " + newACL);
@@ -169,7 +168,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
         try {
             if (AclUtil.equal(originalACL, newACL) &&
-                AclUtil.isInherited(newACL) == wasInherited) {
+                AclUtil.isInherited(newACL) == AclUtil.isInherited(originalACL)) {
                 return;
             }
         

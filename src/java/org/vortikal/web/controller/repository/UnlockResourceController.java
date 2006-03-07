@@ -75,7 +75,7 @@ public class UnlockResourceController extends AbstractController {
 
         Resource resource = repository.retrieve(token, uri, false);
 
-        if (resource.getActiveLocks().length > 0) {
+        if (resource.getActiveLock() != null) {
             repository.unlock(token, uri, null);
         }
         

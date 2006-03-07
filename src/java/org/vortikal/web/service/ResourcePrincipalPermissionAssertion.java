@@ -190,7 +190,7 @@ public class ResourcePrincipalPermissionAssertion
                     return true;
                 }
 
-                if (repository.getConfiguration().isReadOnly()) {
+                if (repository.isReadOnly()) {
                     return false;
                 }
 
@@ -198,8 +198,8 @@ public class ResourcePrincipalPermissionAssertion
 
                 Resource parent = this.repository.retrieve(this.trustedToken,
                                                            resource.getParent(), true);
-                Lock parentLock = (parent.getActiveLocks().length > 0) ?
-                    parent.getActiveLocks()[0] : null;
+                Lock parentLock = (parent.getActiveLock() != null) ?
+                    parent.getActiveLock() : null;
 
                 if (parentLock != null && !parentLock.getPrincipal().equals(principal)) {
                     if (logger.isDebugEnabled()) {
@@ -247,7 +247,7 @@ public class ResourcePrincipalPermissionAssertion
             return true;
         }
 
-        if (repository.getConfiguration().isReadOnly()) {
+        if (repository.isReadOnly()) {
             return false;
         }
 
@@ -267,7 +267,7 @@ public class ResourcePrincipalPermissionAssertion
                 return true;
             }
 
-            if (repository.getConfiguration().isReadOnly()) {
+            if (repository.isReadOnly()) {
                 return false;
             }
 
@@ -289,7 +289,7 @@ public class ResourcePrincipalPermissionAssertion
                 return true;
             }
 
-            if (repository.getConfiguration().isReadOnly()) {
+            if (repository.isReadOnly()) {
                 return false;
             }
 
@@ -312,7 +312,7 @@ public class ResourcePrincipalPermissionAssertion
             return true;
         }
 
-        if (repository.getConfiguration().isReadOnly()) {
+        if (repository.isReadOnly()) {
             return false;
         }
 
@@ -352,7 +352,7 @@ public class ResourcePrincipalPermissionAssertion
             return true;
         }
 
-        if (repository.getConfiguration().isReadOnly()
+        if (repository.isReadOnly()
             && (this.permission.equals("write")
                 || this.permission.equals("write-acl")
                 || this.permission.equals("parent-write")
@@ -414,8 +414,8 @@ public class ResourcePrincipalPermissionAssertion
         if (this.requiresAuthentication && principal == null)
             throw new AuthenticationException();
         
-        Lock lock = (resource.getActiveLocks().length > 0) ?
-            resource.getActiveLocks()[0] : null;
+        Lock lock = (resource.getActiveLock() != null) ?
+            resource.getActiveLock() : null;
         
         
         try {

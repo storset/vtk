@@ -117,8 +117,7 @@ public abstract class AbstractRepositoryEventDumper
             aclModified(((ACLModificationEvent) event).getResource(),
                         ((ACLModificationEvent) event).getOriginal(),
                         ((ACLModificationEvent) event).getACL(),
-                        ((ACLModificationEvent) event).getOriginalACL(),
-                        ((ACLModificationEvent) event).wasInherited());
+                        ((ACLModificationEvent) event).getOriginalACL());
         }
     }
 
@@ -133,6 +132,6 @@ public abstract class AbstractRepositoryEventDumper
     public abstract void contentModified(Resource resource);
 
     public abstract void aclModified(Resource resource, Resource originalResource,
-                                     Ace[] originalACL, Ace[] newACL, boolean wasInherited);
+                                     Ace[] originalACL, Ace[] newACL);
     
 }

@@ -182,7 +182,7 @@ public class PropfindView implements View, InitializingBean {
             Resource currentResource = (Resource) iter.next();
         
             if (!currentResource.isCollection()
-                && currentResource.getActiveLocks().length > 0
+                && currentResource.getActiveLock() != null
                 && currentResource.getContentLength() == 0) {
 
                 /* resource is lock-null (avoid listing), unless
@@ -412,62 +412,57 @@ public class PropfindView implements View, InitializingBean {
      * @return a JDOM lockdiscovery element
      */
     private Element buildLockDiscoveryElement(Resource resource) {
-        Element lockDiscovery = new Element("lockdiscovery", WebdavConstants.DAV_NAMESPACE);
+        Element lockDiscovery = new Element("lockdiscovery",
+                WebdavConstants.DAV_NAMESPACE);
 
-        Lock[] activeLocks = resource.getActiveLocks();   
-      
-        for (int i = 0; i < activeLocks.length; i++) {
-            
-            Lock lock = activeLocks[i];
-            Element activeLock = new Element("activelock", WebdavConstants.DAV_NAMESPACE);
+        Lock lock = resource.getActiveLock();
 
-            String type = "";
-            String scope = "";
-            if (lock.getLockType().equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
-                scope = "exclusive";
-                type = "write";
-            }
+        Element activeLock = new Element("activelock",
+                WebdavConstants.DAV_NAMESPACE);
 
-            activeLock.addContent(
-                new Element("locktype", WebdavConstants.DAV_NAMESPACE).addContent(
-                    new Element(type, WebdavConstants.DAV_NAMESPACE)));
-
-            activeLock.addContent(
-                new Element("lockscope", WebdavConstants.DAV_NAMESPACE).addContent(
-                    new Element(scope, WebdavConstants.DAV_NAMESPACE)));
-
-            activeLock.addContent(
-                new Element("depth", WebdavConstants.DAV_NAMESPACE).addContent(
-                    lock.getDepth()));
-
-            activeLock.addContent(
-                WebdavConstants.buildLockOwnerElement(lock.getOwnerInfo()));
-
-
-            long timeout = lock.getTimeout().getTime() -
-                System.currentTimeMillis();
-            
-            if (timeout < 0) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Lock's timeout was: " + lock.getTimeout()
-                                 + ", (has already timed out) ");
-                }
-                return null;
-            }
-            
-            String timeoutStr = "Second-" + (timeout / 1000);
-
-            activeLock.addContent(
-                new Element("timeout", WebdavConstants.DAV_NAMESPACE).addContent(
-                    timeoutStr));
-
-            activeLock.addContent(
-                new Element("locktoken", WebdavConstants.DAV_NAMESPACE).addContent(
-                        new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(
-                        lock.getLockToken())));
-         
-           lockDiscovery.addContent(activeLock);
+        String type = "";
+        String scope = "";
+        if (lock.getLockType().equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
+            scope = "exclusive";
+            type = "write";
         }
+
+        activeLock.addContent(new Element("locktype",
+                WebdavConstants.DAV_NAMESPACE).addContent(new Element(type,
+                WebdavConstants.DAV_NAMESPACE)));
+
+        activeLock.addContent(new Element("lockscope",
+                WebdavConstants.DAV_NAMESPACE).addContent(new Element(scope,
+                WebdavConstants.DAV_NAMESPACE)));
+
+        activeLock.addContent(new Element("depth",
+                WebdavConstants.DAV_NAMESPACE).addContent(lock.getDepth()));
+
+        activeLock.addContent(WebdavConstants.buildLockOwnerElement(lock
+                .getOwnerInfo()));
+
+        long timeout = lock.getTimeout().getTime() - System.currentTimeMillis();
+
+        if (timeout < 0) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Lock's timeout was: " + lock.getTimeout()
+                        + ", (has already timed out) ");
+            }
+            return null;
+        }
+
+        String timeoutStr = "Second-" + (timeout / 1000);
+
+        activeLock.addContent(new Element("timeout",
+                WebdavConstants.DAV_NAMESPACE).addContent(timeoutStr));
+
+        activeLock
+                .addContent(new Element("locktoken",
+                        WebdavConstants.DAV_NAMESPACE).addContent(new Element(
+                        "href", WebdavConstants.DAV_NAMESPACE).addContent(lock
+                        .getLockToken())));
+
+        lockDiscovery.addContent(activeLock);
 
         return lockDiscovery;
     }
@@ -478,8 +473,9 @@ public class PropfindView implements View, InitializingBean {
 
     /**
      * Builds a WebDAV "supportedlock" JDOM element for a resource.
-     *
-     * @param resource the resource in question
+     * 
+     * @param resource
+     *            the resource in question
      * @return a JDOM supportedlock element
      */
     private Element buildSupportedLockElement(Resource resource) {

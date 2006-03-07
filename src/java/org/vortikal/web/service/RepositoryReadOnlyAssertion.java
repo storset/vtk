@@ -89,15 +89,10 @@ public class RepositoryReadOnlyAssertion
     
 
     public boolean matches(Resource resource, Principal principal) {
-        try {
-            if (this.invert) {
-                return !this.repository.getConfiguration().isReadOnly();
-            }
-            return this.repository.getConfiguration().isReadOnly();
-        } catch (IOException e) {
-            throw new RuntimeException(
-                "Unable to perform matching on read-only state", e);
+        if (this.invert) {
+            return !this.repository.isReadOnly();
         }
+        return this.repository.isReadOnly();
     }
     
     public String toString() {

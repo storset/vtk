@@ -78,14 +78,12 @@ public class LockView implements View {
                 " `" + WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE + "')");
         }
 
-        // FIXME: assumes only one lock
-        if (resource.getActiveLocks() == null
-            || resource.getActiveLocks().length != 1) {
+        Lock lock = resource.getActiveLock();
+
+        if (lock == null) {
             throw new InvalidModelException(
                 "Unable to render non-locked resource " + resource.getURI());
         }
-
-        Lock lock = resource.getActiveLocks()[0];
 
         Element lockDiscovery = buildLockDiscovery(lock);
 

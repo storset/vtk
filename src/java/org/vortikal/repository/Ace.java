@@ -171,15 +171,14 @@ public class Ace implements java.io.Serializable, Cloneable {
     }
 
     public boolean equals(Object o) {
-        if ((!(o instanceof Ace)) || (o == null)) {
+        if (o == null || !(o instanceof Ace)) {
             return false;
         }
 
         Ace other = (Ace) o;
 
-        if (((this.principal == null) && (other.principal != null)) ||
-                ((this.principal != null) && (other.principal == null))) {
-            return false;
+        if (this.principal == null || other.principal == null) {
+            throw new IllegalStateException("An ACE must have a principal");
         }
 
         if (!this.principal.equals(other.principal)) {
@@ -212,13 +211,13 @@ public class Ace implements java.io.Serializable, Cloneable {
             return false;
         }
 
-        if (((this.inheritedFrom == null) && (other.inheritedFrom != null)) ||
-                ((this.inheritedFrom != null) && (other.inheritedFrom == null))) {
+        if ((this.inheritedFrom == null && other.inheritedFrom != null) ||
+                (this.inheritedFrom != null && other.inheritedFrom == null)) {
             return false;
         }
 
-        if (!(this.inheritedFrom == null && other.inheritedFrom == null)
-            && !(this.inheritedFrom.equals(other.inheritedFrom))) {
+        if (this.inheritedFrom != null
+            && !this.inheritedFrom.equals(other.inheritedFrom)) {
             return false;
         }
 

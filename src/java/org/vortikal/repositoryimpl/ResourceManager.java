@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
 import org.doomdark.uuid.UUIDGenerator;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
@@ -52,6 +52,7 @@ import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.repository.URIUtil;
+import org.vortikal.repository.ResourceNotFoundException;
 
 
 public class ResourceManager {
@@ -220,71 +221,16 @@ public class ResourceManager {
     
     
     public void copy(Principal principal, Resource resource, String destUri,
-                     boolean preserveACL, boolean preserveOwner)
+                     boolean preserveACLs, boolean preserveOwner)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, IOException, ResourceLockedException, 
             AclException {
-
-        ACL acl = (!preserveACL || resource.isInheritedACL())
-            ? new ACL() : resource.getACL();
-
-        boolean aclInheritance = (!preserveACL || resource.isInheritedACL());
-
-        Principal owner = (preserveOwner) ?
-            principalManager.getPrincipal(resource.getOwner()) : principal;
-
-        String parentURI = URIUtil.getParentURI(destUri);
-        Resource parent = this.dao.load(parentURI);
-
-
-        if (resource.isCollection()) {
-
-            Resource child = this.create(
-                parent, principal, true, owner.getQualifiedName(),
-                destUri, acl, aclInheritance);
-
-            child.setProperties(resource.getPropertyDTOs());
-            dao.store(child);
-
-            Resource[] children = this.dao.loadChildren(resource);
-            for (int i = 0; i < children.length; i++) {
-
-                Resource r = children[i];
-                this.copy(principal, r,
-                    child.getURI() + "/" +
-                    r.getURI().substring(r.getURI().lastIndexOf("/") + 1),
-                           preserveACL, preserveOwner);
-            }
-
-            return;
-        }
-
-        Resource doc = this.create(
-            parent, principal, false, owner.getQualifiedName(), destUri, acl, aclInheritance);
-
-        doc.setContentType(resource.getContentType());
-        doc.setContentLocale(resource.getContentLocale());
-        doc.setCharacterEncoding(resource.getCharacterEncoding());
-        doc.setProperties(resource.getPropertyDTOs());
-
-        dao.store(doc);
-
-        InputStream input = dao.getInputStream(resource);
-
-        OutputStream output = null;
-
-        output = dao.getOutputStream(doc);
-
-        byte[] buf = new byte[1024];
-        int bytesRead = 0;
-
-        while ((bytesRead = input.read(buf)) > 0) {
-            output.write(buf, 0, bytesRead);
-        }
-
-        input.close();
-        output.close();
+        
+        this.dao.copy(resource, destUri, preserveACLs, preserveOwner,
+                      principal.getQualifiedName());
     }
+    
+
 
     public void storeProperties(Resource resource, Principal principal,
                                 org.vortikal.repository.Resource dto)
@@ -452,6 +398,13 @@ public class ResourceManager {
         if (parentURI != null) {
             inheritedFrom = null;
             Resource parent = this.dao.load(parentURI);
+            // XXX if loading the parent fails, the resource itself
+            // has been removed
+            if (parent == null) {
+                throw new ResourceNotFoundException(
+                    "Resource " + resource.getURI() + " has no parent (possibly removed)");
+            }
+
             if (resource.isInheritedACL()) {
                 inheritedFrom = URIUtil.getParentURI(parent.getURI());
             }

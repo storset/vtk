@@ -70,19 +70,16 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     
     public void created(Resource resource) {
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), CREATED, -1, resource.isCollection());
-            //if (resource.isCollection()) {
-            //    String[] childUris = dataAccessor.listSubTree((Collection) dataAccessor.load(resource.getURI()));
-            //for (int i = 0; i < childUris.length; i++) {
-            //        dataAccessor.addChangeLogEntry(id, loggerType, childUris[i], CREATED);
-            //    }
-            //}
+            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
+                                           CREATED, -1, resource.isCollection(), false);
 
             if (resource.isCollection()) {
                 org.vortikal.repositoryimpl.Resource[] childResources =
                     dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));
                 for (int i = 0; i < childResources.length; i++) {
-                    dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(), CREATED, -1, childResources[i].isCollection());
+                    dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(),
+                                                   CREATED, -1, childResources[i].isCollection(),
+                                                   false);
                 }
             }
         } catch (IOException e) {
@@ -98,7 +95,8 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void deleted(String uri, int resourceId, boolean collection) {
         
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, uri, DELETED, resourceId, collection);
+            dataAccessor.addChangeLogEntry(id, loggerType, uri, DELETED, resourceId,
+                                           collection, false);
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting resource deletion " +
@@ -111,7 +109,8 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void modified(Resource resource, Resource originalResource) {
 
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), MODIFIED_PROPS, -1, resource.isCollection());
+            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), MODIFIED_PROPS,
+                                           -1, resource.isCollection(), false);
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting property modification " +
@@ -123,7 +122,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void contentModified(Resource resource) {
         try {
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
-                                 MODIFIED_CONTENT, -1, resource.isCollection());
+                                           MODIFIED_CONTENT, -1, resource.isCollection(), false);
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting content modification " +
@@ -141,7 +140,8 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
                 return;
             }
         
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), MODIFIED_ACL, -1, resource.isCollection());
+            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
+                                           MODIFIED_ACL, -1, resource.isCollection(), false);
             
         } catch (IOException e) {
             logger.warn(

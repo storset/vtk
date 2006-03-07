@@ -78,39 +78,29 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
     public void created(Resource resource) {
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), CREATED, -1, resource.isCollection());
-            if (resource.isCollection()) {
+
+            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), CREATED, -1,
+                                           resource.isCollection(), true);
+
+//             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), CREATED, -1,
+//                                            resource.isCollection(), false);
+//             if (resource.isCollection()) {
                 
-                //String[] childUris = dataAccessor.listSubTree((Collection) dataAccessor.load(resource.getURI()));
-                //for (int i = 0; i < childUris.length; i++) {
-                //    dataAccessor.addChangeLogEntry(id, loggerType, childUris[i], CREATED, -1, false);
-                //}
                 
-                String[] descendants = dataAccessor.listSubTree(
-                    dataAccessor.load(resource.getURI()));
+//                 String[] descendants = dataAccessor.listSubTree(
+//                     dataAccessor.load(resource.getURI()));
 
-                for (int i = 0; i < descendants.length; i++) {
+//                 for (int i = 0; i < descendants.length; i++) {
 
-                    org.vortikal.repositoryimpl.Resource descendant =
-                        dataAccessor.load(descendants[i]);
-                    dataAccessor.addChangeLogEntry(
-                        id, loggerType, descendant.getURI(),
-                        CREATED, -1, descendant.isCollection());
-                }
-
-
-
-
-//                 // Need to determine if child URI's are collections or not.
-//                 org.vortikal.repositoryimpl.Resource[] childResources =
-//                     dataAccessor.loadChildren((Collection) dataAccessor.load(
-//                                                   resource.getURI()));
-//                 for (int i=0; i < childResources.length; i++) {
+//                     org.vortikal.repositoryimpl.Resource descendant =
+//                         dataAccessor.load(descendants[i]);
 //                     dataAccessor.addChangeLogEntry(
-//                         id, loggerType, childResources[i].getURI(), CREATED, -1,
-//                         childResources[i].isCollection());
+//                         id, loggerType, descendant.getURI(),
+//                         CREATED, -1, descendant.isCollection());
 //                 }
-            }
+
+
+//             }
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting resource creation " +
@@ -124,7 +114,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void deleted(String uri, int resourceId, boolean collection) {
         
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, uri, DELETED, resourceId, collection);
+            dataAccessor.addChangeLogEntry(id, loggerType, uri, DELETED, resourceId,
+                                           collection, false);
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting resource deletion " +
@@ -138,7 +129,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
         try {
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), MODIFIED_PROPS, -1, 
-                                           resource.isCollection());
+                                           resource.isCollection(), false);
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting property modification " +
@@ -150,7 +141,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void contentModified(Resource resource) {
         try {
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
-                                 MODIFIED_CONTENT, -1, resource.isCollection());
+                                           MODIFIED_CONTENT, -1, resource.isCollection(), false);
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting content modification " +
@@ -207,7 +198,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                     PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), op, -1, resource.isCollection());
+            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), op, -1,
+                                           resource.isCollection(), false);
             
             if (resource.isCollection()) {
                 //String[] childUris = dataAccessor.listSubTree((Collection) dataAccessor.load(resource.getURI()));
@@ -218,7 +210,9 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 org.vortikal.repositoryimpl.Resource[] childResources =
                     dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));
                 for (int i=0; i < childResources.length; i++) {
-                    dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(), op, -1, childResources[i].isCollection());
+                    dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(),
+                                                   op, -1, childResources[i].isCollection(),
+                                                   false);
                 }
             }
 

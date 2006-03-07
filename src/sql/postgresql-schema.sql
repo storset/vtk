@@ -16,7 +16,9 @@ DROP TABLE vortex_resource CASCADE;
 CREATE TABLE vortex_resource
 (
     resource_id int NOT NULL,
+    prev_resource_id int NULL,
     uri VARCHAR (2048) NOT NULL,
+    depth int NOT NULL,
     creation_time TIMESTAMP NOT NULL,
     content_last_modified TIMESTAMP NOT NULL,
     properties_last_modified TIMESTAMP NOT NULL,
@@ -36,6 +38,7 @@ ALTER TABLE vortex_resource
     ADD CONSTRAINT vortex_resource_PK
 PRIMARY KEY (resource_id);
 
+
 -----------------------------------------------------------------------------
 -- parent_child
 -----------------------------------------------------------------------------
@@ -45,27 +48,27 @@ CREATE SEQUENCE parent_child_seq_pk INCREMENT 1 START 1000;
 
 DROP TABLE parent_child CASCADE;
 
-CREATE TABLE parent_child
-(
-    parent_child_id int NOT NULL,
-    parent_resource_id int NOT NULL,
-    child_resource_id int NOT NULL,
-    CONSTRAINT parent_child_unique1_index UNIQUE (parent_resource_id, child_resource_id)
-);
+-- CREATE TABLE parent_child
+-- (
+--     parent_child_id int NOT NULL,
+--     parent_resource_id int NOT NULL,
+--     child_resource_id int NOT NULL,
+--     CONSTRAINT parent_child_unique1_index UNIQUE (parent_resource_id, child_resource_id)
+-- );
 
-ALTER TABLE parent_child
-    ADD CONSTRAINT parent_child_PK
-PRIMARY KEY (parent_child_id);
+-- ALTER TABLE parent_child
+--     ADD CONSTRAINT parent_child_PK
+-- PRIMARY KEY (parent_child_id);
 
-ALTER TABLE parent_child
-    ADD CONSTRAINT parent_child_FK_1 FOREIGN KEY (parent_resource_id)
-    REFERENCES vortex_resource (resource_id)
-;
+-- ALTER TABLE parent_child
+--     ADD CONSTRAINT parent_child_FK_1 FOREIGN KEY (parent_resource_id)
+--     REFERENCES vortex_resource (resource_id)
+-- ;
 
-ALTER TABLE parent_child
-    ADD CONSTRAINT parent_child_FK_2 FOREIGN KEY (child_resource_id)
-    REFERENCES vortex_resource (resource_id)
-;
+-- ALTER TABLE parent_child
+--     ADD CONSTRAINT parent_child_FK_2 FOREIGN KEY (child_resource_id)
+--     REFERENCES vortex_resource (resource_id)
+-- ;
 
 -----------------------------------------------------------------------------
 -- lock_type
@@ -253,7 +256,9 @@ VALUES (1, 'EXCLUSIVE_WRITE');
 
 INSERT INTO VORTEX_RESOURCE (
     resource_id,
+    tmp_resource_id,
     uri,
+    depth,
     creation_time,
     content_last_modified,
     properties_last_modified,
@@ -268,7 +273,9 @@ INSERT INTO VORTEX_RESOURCE (
     acl_inherited)
 VALUES (
     nextval('vortex_resource_seq_pk'),
+    NULL,
     '/',
+    0,
     current_timestamp,
     current_timestamp,
     current_timestamp,

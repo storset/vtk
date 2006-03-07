@@ -30,10 +30,15 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
+
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -41,20 +46,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
 import org.apache.commons.dbcp.BasicDataSource;
-
 import org.springframework.beans.factory.DisposableBean;
-
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
@@ -208,8 +212,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             conn = getConnection();
             exists = ((tableExists(conn, "vortex_resource") || tableExists(conn,
                     "VORTEX_RESOURCE"))
-                    && (tableExists(conn, "parent_child") || tableExists(conn,
-                            "PARENT_CHILD"))
                     && (tableExists(conn, "lock_type") || tableExists(conn, "LOCK_TYPE"))
                     && (tableExists(conn, "vortex_lock") || tableExists(conn,
                             "VORTEX_LOCK"))
@@ -250,33 +252,15 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
+
     public Resource load(String uri)
             throws IOException {
-        Resource[] result = load(new String[] {uri});
-
-        if (result.length == 0) {
-            return null;
-        }
-
-        if (result.length == 1) {
-            return result[0];
-        }
-
-        throw new IOException("Load URI " + uri
-                + ": size of result should be 0 or 1, was " + result.length);
-    }
-
-    public Resource[] load(String[] uris)
-            throws IOException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("load uris:" + uris[0] + "++");
-        }
         Connection conn = null;
-        Resource[] retVal = null;
+        Resource retVal = null;
 
         try {
             conn = getConnection();
-            retVal = load(conn, uris);
+            retVal = load(conn, uri);
             conn.commit();
         } catch (SQLException e) {
             logger.warn("Error occurred while loading resource(s)", e);
@@ -295,31 +279,20 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
 
-    private Resource[] load(Connection conn, String[] uris)
+    private Resource load(Connection conn, String uri)
             throws SQLException {
-        if (uris.length == 0) {
-            return new Resource[0];
-        }
 
-        Map locks = loadLocks(conn, uris);
+        Map locks = loadLocks(conn, new String[] {uri});
 
-        String query = "select r.* from VORTEX_RESOURCE r where r.uri in (";
-
-        for (int i = 0; i < uris.length; i++) {
-            query += ((i < (uris.length - 1)) ? "?, " : "?)");
-        }
-
+        String query = "select r.* from VORTEX_RESOURCE r where r.uri = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
-
-        for (int i = 0; i < uris.length; i++) {
-            stmt.setString(i + 1, uris[i]);
-        }
-
+        stmt.setString(1, uri);
+        
         ResultSet rs = stmt.executeQuery();
-        List resources = new ArrayList();
 
-        while (rs.next()) {
-            String uri = rs.getString("uri");
+        Resource resource = null;
+
+        if (rs.next()) {
             String owner = rs.getString("resource_owner");
             String contentModifiedBy = rs.getString("content_modified_by");
             String propertiesModifiedBy = rs.getString("properties_modified_by");
@@ -331,8 +304,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             if (locks.containsKey(uri)) {
                 lock = (LockImpl) locks.get(uri);
             }
-
-            Resource resource = null;
 
             if (rs.getString("is_collection").equals("Y")) {
                 String[] children = null;
@@ -365,114 +336,54 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                     LocaleHelper.getLocale(rs.getString("content_language")));
             }
 
-            resources.add(resource);
         }
 
         rs.close();
         stmt.close();
 
-        Resource[] result = (Resource[]) resources.toArray(new Resource[] {});
-
-        loadChildren(conn, result);
-        loadACLs(conn, result);
-        loadProperties(conn, result);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loaded " + result.length + " resources");
+        if (resource != null) {
+            loadChildURIs(conn, resource);
+            loadACLs(conn, new Resource[] {resource});
+            loadProperties(conn, resource);
         }
 
-        return result;
+
+        return resource;
     }
 
-    /**
-     * Loads children for the given resources.
-     */
-    private void loadChildren(Connection conn, Resource[] resources)
-            throws SQLException {
-        if ((resources == null) || (resources.length == 0)) {
-            return;
+    private String getURIWildcard(String uri) {
+        if ("/".equals(uri)) {
+            return uri + "%";
         }
+        return uri + "/%";
+    }
+    
 
-        String query = "select r.uri, pc.parent_resource_id as parent_id "
-                + "from vortex_resource r inner join parent_child pc "
-                + "on r.resource_id = pc.child_resource_id "
-                + "where pc.parent_resource_id in (";
-
-        for (int i = 0; i < resources.length; i++) {
-            query += ((i < (resources.length - 1)) ? (resources[i].getID() + ", ")
-                    : (resources[i].getID() + ")"));
+    private int getURIDepth(String uri) {
+        if ("/".equals(uri)) {
+            return 0;
         }
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-        Map tempMap = new HashMap();
-
-        while (rs.next()) {
-            Long parentID = new Long(rs.getLong("parent_id"));
-            String uri = rs.getString("uri");
-
-            List entry = (List) tempMap.get(parentID);
-
-            if (entry == null) {
-                entry = new ArrayList();
-                tempMap.put(parentID, entry);
-            }
-
-            entry.add(uri);
-        }
-
-        rs.close();
-        stmt.close();
-
-        for (int i = 0; i < resources.length; i++) {
-            if (!resources[i].isCollection()) {
-                continue;
-            }
-
-            Long parentID = new Long(resources[i].getID());
-            List entry = (List) tempMap.get(parentID);
-
-            String[] children = new String[0];
-
-            if (entry != null) {
-                children = (String[]) entry.toArray(new String[] {});
-            }
-
-            resources[i].setChildURIs(children);
-        }
+        int count = 0;
+        for (int index = 0; (index = uri.indexOf('/', index)) != -1; count++, index ++);
+        return count;
     }
 
-    private void loadProperties(Connection conn, Resource[] resources)
+
+    private void loadProperties(Connection conn, Resource resource)
             throws SQLException {
-        if ((resources == null) || (resources.length == 0)) {
-            return;
-        }
 
-        String query = "select * from EXTRA_PROP_ENTRY where resource_id in (";
-
-        for (int i = 0; i < resources.length; i++) {
-            query += ((i < (resources.length - 1)) ? (resources[i].getID() + ", ")
-                    : (resources[i].getID() + ")"));
-        }
+        String query = "select * from EXTRA_PROP_ENTRY where resource_id in (select resource_id from vortex_resource where uri = '" + resource.getURI() + "')";
 
         Statement propStmt = conn.createStatement();
         ResultSet rs = propStmt.executeQuery(query);
-        Map resourceMap = new HashMap();
 
         final int namespace = 0;
         final int name = 1;
         final int value = 2;
 
+        List propertyList = new ArrayList();
+
         while (rs.next()) {
-            // FIXME: type conversion
-            Integer resourceID = new Integer((int) rs.getLong("resource_id"));
-
-            Map propertyMap = (Map) resourceMap.get(resourceID);
-
-            if (propertyMap == null) {
-                propertyMap = new HashMap();
-                resourceMap.put(resourceID, propertyMap);
-            }
 
             String[] prop = new String[3];
 
@@ -480,27 +391,15 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             prop[name] = rs.getString("name");
             prop[value] = rs.getString("value");
 
-            propertyMap.put(new Integer(rs.getInt("extra_prop_entry_id")), prop);
+            propertyList.add(prop);
         }
 
         rs.close();
         propStmt.close();
 
-        for (int i = 0; i < resources.length; i++) {
-            Map propertyMap = (Map) resourceMap.get(new Integer(resources[i].getID()));
-
-            if (propertyMap == null) {
-                continue;
-            }
-
-            for (Iterator j = propertyMap.keySet().iterator(); j.hasNext();) {
-                Integer key = (Integer) j.next();
-                String[] prop = (String[]) propertyMap.get(key);
-
-                if (prop != null) {
-                    resources[i].addProperty(prop[namespace], prop[name], prop[value]);
-                }
-            }
+        for (Iterator i = propertyList.iterator(); i.hasNext();) {
+            String[] prop = (String[]) i.next();
+            resource.addProperty(prop[namespace], prop[name], prop[value]);
         }
     }
 
@@ -544,13 +443,14 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
 
     public void addChangeLogEntry(String loggerID, String loggerType, String uri,
-            String operation, int resourceId, boolean collection)
-            throws IOException {
+                                  String operation, int resourceId, boolean collection,
+                                  boolean recurse) throws IOException {
         Connection conn = null;
 
         try {
             conn = getConnection();
-            addChangeLogEntry(conn, loggerID, loggerType, uri, operation, resourceId, collection);
+            addChangeLogEntry(conn, loggerID, loggerType, uri, operation, resourceId,
+                              collection, recurse);
             conn.commit();
         } catch (SQLException e) {
             logger.warn("Error occurred while adding changelog entry for " + uri, e);
@@ -568,40 +468,68 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
     private void addChangeLogEntry(Connection conn, String loggerID, String loggerType,
-            String uri, String operation, int resourceId, boolean collection)
-            throws SQLException {
-        try {
+                                   String uri, String operation, int resourceId,
+                                   boolean collection, boolean recurse) throws SQLException {
+        if (collection && recurse) {
+
             int id = Integer.parseInt(loggerID);
             int type = Integer.parseInt(loggerType);
 
             String statement = "INSERT INTO changelog_entry "
+                + "(changelog_entry_id, logger_id, logger_type, "
+                + "operation, timestamp, uri, resource_id, is_collection) "
+                + "select nextval('changelog_entry_seq_pk'), " + id + ", " + type + ", "
+                + "'" + operation + "', now(), uri, ";
+            if (resourceId == -1) {
+                statement += "NULL, ";
+            } else {
+                statement += "resource_id, ";
+            }
+            statement += "is_collection from vortex_resource "
+                + "where uri = '" + uri + "' or uri like '" + getURIWildcard(uri) + "'";
+            
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(statement);
+            stmt.close();
+
+        } else {
+
+
+            try {
+                int id = Integer.parseInt(loggerID);
+                int type = Integer.parseInt(loggerType);
+
+                String statement = "INSERT INTO changelog_entry "
                     + "(changelog_entry_id, logger_id, logger_type, "
                     + "operation, timestamp, uri, resource_id, is_collection) "
                     + "VALUES (nextval('changelog_entry_seq_pk'), ?, ?, ?, ?, ?, ?, ?)";
 
-            PreparedStatement stmt = conn.prepareStatement(statement);
+                PreparedStatement stmt = conn.prepareStatement(statement);
 
-            stmt.setInt(1, id);
-            stmt.setInt(2, type);
-            stmt.setString(3, operation);
-            stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-            stmt.setString(5, uri);
+                stmt.setInt(1, id);
+                stmt.setInt(2, type);
+                stmt.setString(3, operation);
+                stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+                stmt.setString(5, uri);
 
-            // resourceId of -1 indicates that resourceId should be set to SQL NULL
-            if (resourceId == -1) {
-                stmt.setNull(6, java.sql.Types.NUMERIC);
-            } else {
-                stmt.setInt(6, resourceId);
+                // resourceId of -1 indicates that resourceId should be set to SQL NULL
+                if (resourceId == -1) {
+                    stmt.setNull(6, java.sql.Types.NUMERIC);
+                } else {
+                    stmt.setInt(6, resourceId);
+                }
+            
+                stmt.setString(7, collection ? "Y" : "N");
+            
+                stmt.executeUpdate();
+                stmt.close();
+            } catch (NumberFormatException e) {
+                logger.warn("No changelog entry added! Only numerical types and "
+                            + "IDs are supported by this database backend.");
             }
-            
-            stmt.setString(7, collection ? "Y" : "N");
-            
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (NumberFormatException e) {
-            logger.warn("No changelog entry added! Only numerical types and "
-                    + "IDs are supported by this database backend.");
+
         }
+
     }
 
     public String[] discoverLocks(Resource directory)
@@ -645,22 +573,16 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 + "on l.resource_id = r.resource_id "
                 + "where r.resource_id in ("
                 + "select resource_id from VORTEX_RESOURCE where uri like ?)";
-        logger.info(query);
         
 
         PreparedStatement stmt = conn.prepareStatement(query);
-
-        if (!uri.equals("/")) {
-            uri += "/";
-        }
-        stmt.setString(1, uri + "%");
+        stmt.setString(1, getURIWildcard(uri));
 
         ResultSet rs = stmt.executeQuery();
         List result = new ArrayList();
 
         while (rs.next()) {
             String lockURI = rs.getString("uri");
-            logger.info("URI: " + lockURI);
 
             result.add(lockURI);
         }
@@ -768,18 +690,12 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             return new String[] {};
         }
 
-        String uri = parent.getURI();
-
-        if (!"/".equals(uri)) {
-            uri += "/";
-        }
-
         String query = "select uri from VORTEX_RESOURCE "
                 + "where uri like ? order by uri asc";
 
         PreparedStatement stmt = conn.prepareStatement(query);
 
-        stmt.setString(1, uri + "%");
+        stmt.setString(1, getURIWildcard(parent.getURI()));
 
         ResultSet rs = stmt.executeQuery();
 
@@ -832,43 +748,14 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         String displayName = r.getDisplayName();
 
-        if ((displayName == null) || displayName.trim().equals("")) {
-            // r.displayname should not return null or "" anymore, but
-            // clients might mess this up ?
-            displayName = "shouldn't happen!";
-
-            /* displayName = r.getURI(); */
-        }
-
         String contentType = r.getContentType();
         String characterEncoding = r.getCharacterEncoding();
-
-
-        if ((contentType == null) || !ContentTypeHelper.isTextContentType(contentType)) {
-            characterEncoding = null;
-        }
-
         String owner = r.getOwner();
-
-        if ((owner == null) || owner.trim().equals("")) {
-            throw new SQLException("Owner must be set");
-        }
-
         String contentModifiedBy = r.getContentModifiedBy();
-
-        if ((contentModifiedBy == null) || contentModifiedBy.trim().equals("")) {
-            throw new SQLException("Field 'contentModifiedBy'must be set");
-        }
-
         String propertiesModifiedBy = r.getPropertiesModifiedBy();
-
-        if ((propertiesModifiedBy == null) || propertiesModifiedBy.trim().equals("")) {
-            throw new SQLException("Field 'propertiesModifiedBy'must be set");
-        }
-
         String contentLanguage = null;
 
-        if (!r.isCollection() && r.getContentLocale() != null) {
+        if (r.getContentLocale() != null) {
             contentLanguage = r.getContentLocale().toString();
         }
 
@@ -938,66 +825,36 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String contentlanguage, String contenttype, String characterEncoding,
             boolean isCollection, String parent)
             throws SQLException, IOException {
+        int depth = getURIDepth(uri);
+
         String statement = "insert into VORTEX_RESOURCE "
-                + "(resource_id, uri, creation_time, content_last_modified, properties_last_modified, "
+                + "(resource_id, uri, depth, creation_time, content_last_modified, properties_last_modified, "
                 + "content_modified_by, properties_modified_by, "
                 + "resource_owner, display_name, "
                 + "content_language, content_type, character_encoding, is_collection, acl_inherited) "
                 + "values (nextval('vortex_resource_seq_pk'), "
-                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement stmt = conn.prepareStatement(statement);
 
         stmt.setString(1, uri);
-        stmt.setTimestamp(2, new java.sql.Timestamp(creationTime.getTime()));
-        stmt.setTimestamp(3, new java.sql.Timestamp(contentLastModified.getTime()));
-        stmt.setTimestamp(4, new java.sql.Timestamp(propertiesLastModified.getTime()));
-        stmt.setString(5, contentModifiedBy);
-        stmt.setString(6, propertiesModifiedBy);
-        stmt.setString(7, owner);
-        stmt.setString(8, displayname);
-        stmt.setString(9, contentlanguage);
-        stmt.setString(10, contenttype);
-        stmt.setString(11, characterEncoding);
-        stmt.setString(12, isCollection ? "Y" : "N");
-        stmt.setString(13, "Y");
+        stmt.setInt(2, depth);
+        stmt.setTimestamp(3, new java.sql.Timestamp(creationTime.getTime()));
+        stmt.setTimestamp(4, new java.sql.Timestamp(contentLastModified.getTime()));
+        stmt.setTimestamp(5, new java.sql.Timestamp(propertiesLastModified.getTime()));
+        stmt.setString(6, contentModifiedBy);
+        stmt.setString(7, propertiesModifiedBy);
+        stmt.setString(8, owner);
+        stmt.setString(9, displayname);
+        stmt.setString(10, contentlanguage);
+        stmt.setString(11, contenttype);
+        stmt.setString(12, characterEncoding);
+        stmt.setString(13, isCollection ? "Y" : "N");
+        stmt.setString(14, "Y");
 
         stmt.executeUpdate();
         stmt.close();
 
-        int parentID;
-        int childID;
-
-        stmt = conn.prepareStatement("select parent.resource_id as parent_id, "
-                + "child.resource_id as child_id from VORTEX_RESOURCE parent, "
-                + "VORTEX_RESOURCE child " + "where parent.uri = ? "
-                + "and child.uri = ?");
-
-        stmt.setString(1, parent);
-        stmt.setString(2, uri);
-
-        ResultSet rs = stmt.executeQuery();
-
-        if (!rs.next()) {
-            rs.close();
-            stmt.close();
-            throw new SQLException("Database inconsistency!");
-        }
-
-        parentID = rs.getInt("parent_id");
-        childID = rs.getInt("child_id");
-        rs.close();
-        stmt.close();
-
-        stmt = conn.prepareStatement("insert into PARENT_CHILD "
-                + "(parent_child_id, parent_resource_id, child_resource_id) "
-                + "values (nextval('parent_child_seq_pk'), ?, ?)");
-
-        stmt.setInt(1, parentID);
-        stmt.setInt(2, childID);
-
-        stmt.executeUpdate();
-        stmt.close();
 
         String fileName = this.repositoryDataDirectory
                 + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
@@ -1099,15 +956,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     private void storeACL(Connection conn, Resource r)
             throws SQLException {
         // first, check if existing ACL is inherited:
-        Resource existingResource = null;
-
-        Resource[] result = load(conn, new String[] {r.getURI()});
-
-        if (result.length != 1) {
-            throw new SQLException("Database inconsistency. FIXME.");
-        }
-
-        existingResource = result[0];
+        Resource existingResource = load(conn, r.getURI());
 
         if (existingResource.isInheritedACL() && r.isInheritedACL()) {
             ACL newACL = r.getACL();
@@ -1279,7 +1128,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 + "where uri like ? or resource_id = ?)";
         PreparedStatement stmt = conn.prepareStatement(query);
 
-        stmt.setString(1, resource.getURI() + "/%");
+        stmt.setString(1, getURIWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
@@ -1288,16 +1137,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 + "select resource_id from VORTEX_RESOURCE "
                 + "where uri like ? or resource_id = ?)";
         stmt = conn.prepareStatement(query);
-        stmt.setString(1, resource.getURI() + "/%");
-        stmt.setInt(2, resource.getID());
-        stmt.executeUpdate();
-        stmt.close();
-
-        query = "delete from PARENT_CHILD where child_resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE "
-                + "where uri like ? or resource_id = ?)";
-        stmt = conn.prepareStatement(query);
-        stmt.setString(1, resource.getURI() + "/%");
+        stmt.setString(1, getURIWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
@@ -1306,7 +1146,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 + "select resource_id from VORTEX_RESOURCE "
                 + "where uri like ? or resource_id = ?)";
         stmt = conn.prepareStatement(query);
-        stmt.setString(1, resource.getURI() + "/%");
+        stmt.setString(1, getURIWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
@@ -1315,7 +1155,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 + "select resource_id from VORTEX_RESOURCE "
                 + "where uri like ? or resource_id = ?)";
         stmt = conn.prepareStatement(query);
-        stmt.setString(1, resource.getURI() + "/%");
+        stmt.setString(1, getURIWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
@@ -1411,18 +1251,16 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 actionMap.put(action, actionEntry);
             }
 
-            actionEntry.add(new ACLPrincipal(rs.getString("user_or_group_name"), rs
-                    .getString("is_user").equals("N")));
+            actionEntry.add(
+                new ACLPrincipal(rs.getString("user_or_group_name"),
+                                 rs.getString("is_user").equals("N")));
         }
 
         rs.close();
         stmt.close();
     }
 
-    /*
-     * New Stuff (implementing DataAccessor.loadChildren())
-     * 
-     */
+
 
     public Resource[] loadChildren(Resource parent)
             throws IOException {
@@ -1453,18 +1291,44 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
 
-    private Resource[] loadChildren(Connection conn, Resource parent)
+
+    /**
+     * Loads children for a given resource.
+     */
+    private void loadChildURIs(Connection conn, Resource parent)
             throws SQLException {
+
+        StringBuffer query = new StringBuffer();
+        query.append("select uri from vortex_resource where ");
+        query.append("uri like '").append(getURIWildcard(parent.getURI())).append("'");
+        query.append("and depth = ").append(getURIDepth(parent.getURI()) + 1);
+
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(query.toString());
+        Map tempMap = new HashMap();
+
+        List childURIs = new ArrayList();
+        while (rs.next()) {
+            String uri = rs.getString("uri");
+            childURIs.add(uri);
+        }
+        rs.close();
+        stmt.close();
+        parent.setChildURIs((String[]) childURIs.toArray(new String[childURIs.size()]));
+    }
+
+    private Resource[] loadChildren(Connection conn, Resource parent)
+        throws SQLException {
 
         Map locks = loadLocksForChildren(conn, parent);
 
-        String query = 
-          "SELECT vr.* FROM vortex_resource vr INNER JOIN parent_child pc " +
-          "ON vr.resource_id=pc.child_resource_id " +
-          "WHERE pc.parent_resource_id=?";
-        
-        PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setInt(1, parent.getID());
+        StringBuffer query = new StringBuffer();
+        query.append("select * from vortex_resource where ");
+        query.append("uri like ? and depth = ?");
+
+        PreparedStatement stmt = conn.prepareStatement(query.toString());
+        stmt.setString(1, getURIWildcard(parent.getURI()));
+        stmt.setInt(2, getURIDepth(parent.getURI()) + 1);
         ResultSet rs = stmt.executeQuery();
         List resources = new ArrayList();
 
@@ -1535,188 +1399,180 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return result;
     }
 
-    private void loadChildrenForChildren(Connection conn, Resource parent,
-            Resource[] resources)
-            throws SQLException {
 
-        String query = "select r.uri as uri, pc.parent_resource_id as parent_id "
-                + "from vortex_resource r inner join parent_child pc "
-                + "on r.resource_id = pc.child_resource_id "
-                + "and pc.parent_resource_id in "
-                + "(select CHILD_RESOURCE_ID from PARENT_CHILD "
-                + "where parent_resource_id = " + parent.getID() + ")";
+    private void loadChildrenForChildren(Connection conn, Resource parent,
+            Resource[] children)
+            throws SQLException {
+        
+        // Initialize a map from child.URI to the set of grandchildren's URIs:
+        Map childMap = new HashMap();
+        for (int i = 0; i < children.length; i++) {
+            childMap.put(children[i].getURI(), new HashSet());
+        }
+
+
+        String query = "select uri from vortex_resource where uri like '"
+            + getURIWildcard(parent.getURI()) + "' and depth = "
+            + (getURIDepth(parent.getURI()) + 2);
+
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         Map tempMap = new HashMap();
 
         while (rs.next()) {
-            Long parentID = new Long(rs.getLong("parent_id"));
+            
+//             Long parentID = new Long(rs.getLong("parent_id"));
             String uri = rs.getString("uri");
-
-            List entry = (List) tempMap.get(parentID);
-
-            if (entry == null) {
-                entry = new ArrayList();
-                tempMap.put(parentID, entry);
-            }
-
-            entry.add(uri);
+            String parentURI = URIUtil.getParentURI(uri);
+            ((Set) childMap.get(parentURI)).add(uri);
         }
 
         rs.close();
         stmt.close();
 
-        for (int i = 0; i < resources.length; i++) {
-            if (!resources[i].isCollection()) {
-                continue;
-            }
-
-            Long parentID = new Long(resources[i].getID());
-            List entry = (List) tempMap.get(parentID);
-
-            String[] children = new String[0];
-
-            if (entry != null) {
-                children = (String[]) entry.toArray(new String[0]);
-            }
-
-            resources[i].setChildURIs(children);
+        for (int i = 0; i < children.length; i++) {
+            if (!children[i].isCollection()) continue;
+            Set childURIs = (Set) childMap.get(children[i].getURI());
+            children[i].setChildURIs((String[]) childURIs.toArray(new String[childURIs.size()]));
         }
+
     }
 
-    protected void loadACLsForChildren(Connection conn, Resource parent,
-            Resource[] resources)
-            throws SQLException {
+//     protected void loadACLsForChildren(Connection conn, Resource parent,
+//             Resource[] children)
+//             throws SQLException {
 
-        if (resources == null || resources.length == 0) {
-            return;
-        }
+//         if (children == null || children.length == 0) {
+//             return;
+//         }
 
-        Map acls = new HashMap();
-        String[] parentPath = URLUtil.splitUriIncrementally(parent.getURI());
-        for (int i = parentPath.length - 1; i >= 0; i--) {
-            if (!acls.containsKey(parentPath[i])) {
-                acls.put(parentPath[i], null);
-            }
-        }
+//         Map acls = new HashMap();
+//         String[] parentPath = URLUtil.splitUriIncrementally(parent.getURI());
+//         for (int i = parentPath.length - 1; i >= 0; i--) {
+//             if (!acls.containsKey(parentPath[i])) {
+//                 acls.put(parentPath[i], null);
+//             }
+//         }
 
-        for (int i = 0; i < resources.length; i++) {
+//         /* Initialize (empty) ACL for resource: */
+//         for (int i = 0; i < children.length; i++) {
+//             children[i].setACL(new ACL());
+//         }
 
-            /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL();
-            resources[i].setACL(acl);
-        }
+//         if (acls.size() == 0) {
+//             throw new SQLException("No ancestor path");
+//         }
 
-        if (acls.size() == 0) {
-            throw new SQLException("No ancestor path");
-        }
+//         /*
+//          * Populate the parent ACL map (these are all the ACLs that will be
+//          * needed)
+//          */
 
-        /*
-         * Populate the parent ACL map (these are all the ACLs that will be
-         * needed)
-         */
+//         String query = "select r.uri, a.*, t.namespace as action_namespace, "
+//                 + "t.name as action_name from ACL_ENTRY a "
+//                 + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
+//                 + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
+//                 + "where r.resource_id in (select resource_id from vortex_resource "
+//             + "where uri in (?, ";
+        
+//         int n = acls.size();
+//         for (int i = 0; i < n; i++) {
+//             query += (i < n - 1) ? "?, " : "?)";
+//         }
+//         PreparedStatement stmt = conn.prepareStatement(query);
 
-        String query = "select r.uri, a.*, t.namespace as action_namespace, "
-                + "t.name as action_name from ACL_ENTRY a "
-                + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
-                + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
-                + "where r.resource_id in "
-                + "(select child_resource_id from parent_child "
-                + "where parent_resource_id = " + parent.getID() + ") " + "or r.uri in (";
+//         logger.info("--- " + query + "[" + acls.keySet() + "]");
+        
 
-        int n = acls.size();
-        for (int i = 0; i < n; i++) {
-            query += (i < n - 1) ? "?, " : "?)";
-        }
-        PreparedStatement stmt = conn.prepareStatement(query);
-        for (Iterator i = acls.keySet().iterator(); i.hasNext();) {
-            String uri = (String) i.next();
-            stmt.setString(n--, uri);
-        }
-        ResultSet rs = stmt.executeQuery();
+//         stmt.setString(1, parent.getURI());
+//         for (Iterator i = acls.keySet().iterator(); i.hasNext();) {
+//             String uri = (String) i.next();
+//             stmt.setString(n--, uri);
+//         }
+//         ResultSet rs = stmt.executeQuery();
 
-        while (rs.next()) {
+//         while (rs.next()) {
 
-            String uri = rs.getString("uri");
-            String action = rs.getString("action_name");
+//             String uri = rs.getString("uri");
+//             String action = rs.getString("action_name");
 
-            ACL acl = (ACL) acls.get(uri);
+//             ACL acl = (ACL) acls.get(uri);
 
-            if (acl == null) {
+//             if (acl == null) {
 
-                acl = new ACL();
-                acls.put(uri, acl);
-            }
+//                 acl = new ACL();
+//                 acls.put(uri, acl);
+//             }
 
-            Map actionMap = acl.getActionMap();
+//             Map actionMap = acl.getActionMap();
 
-            List actionEntry = (List) actionMap.get(action);
-            if (actionEntry == null) {
-                actionEntry = new ArrayList();
-                actionMap.put(action, actionEntry);
-            }
+//             List actionEntry = (List) actionMap.get(action);
+//             if (actionEntry == null) {
+//                 actionEntry = new ArrayList();
+//                 actionMap.put(action, actionEntry);
+//             }
 
-            actionEntry.add(new ACLPrincipal(rs.getString("user_or_group_name"), rs
-                    .getString("is_user").equals("N")));
-        }
+//             actionEntry.add(new ACLPrincipal(rs.getString("user_or_group_name"), rs
+//                     .getString("is_user").equals("N")));
+//         }
 
-        rs.close();
-        stmt.close();
+//         rs.close();
+//         stmt.close();
 
-        /*
-         * The ACL map is now populated. Walk trough every resource and see if
-         * there is an ACL entry:
-         */
+//         /*
+//          * The ACL map is now populated. Walk trough every resource and see if
+//          * there is an ACL entry:
+//          */
 
-        for (int i = 0; i < resources.length; i++) {
+//         for (int i = 0; i < children.length; i++) {
 
-            Resource resource = resources[i];
-            ACL acl = null;
+//             Resource resource = children[i];
+//             ACL acl = null;
 
-            if (!resource.isInheritedACL()) {
+//             if (!resource.isInheritedACL()) {
 
-                if (!acls.containsKey(resource.getURI())) {
-                    throw new SQLException("Database inconsistency: resource "
-                            + resource.getURI() + " claims  ACL is inherited, "
-                            + "but no ACL exists");
-                }
+//                 if (!acls.containsKey(resource.getURI())) {
+//                     throw new SQLException("Database inconsistency: resource "
+//                             + resource.getURI() + " claims  ACL is inherited, "
+//                             + "but no ACL exists");
+//                 }
 
-                acl = (ACL) acls.get(resource.getURI());
+//                 acl = (ACL) acls.get(resource.getURI());
 
-            } else {
+//             } else {
 
-                String[] path = URLUtil.splitUriIncrementally(resource.getURI());
+//                 String[] path = URLUtil.splitUriIncrementally(resource.getURI());
 
-                for (int j = path.length - 2; j >= 0; j--) {
+//                 for (int j = path.length - 2; j >= 0; j--) {
 
-                    ACL found = (ACL) acls.get(path[j]);
+//                     ACL found = (ACL) acls.get(path[j]);
 
-                    if (found != null) {
-                        try {
-                            /*
-                             * We have to clone the ACL here, because ACLs and
-                             * resources are "doubly linked".
-                             */
-                            acl = (ACL) found.clone();
-                        } catch (CloneNotSupportedException e) {
-                            throw new SQLException(e.getMessage());
-                        }
+//                     if (found != null) {
+//                         try {
+//                             /*
+//                              * We have to clone the ACL here, because ACLs and
+//                              * children are "doubly linked".
+//                              */
+//                             acl = (ACL) found.clone();
+//                         } catch (CloneNotSupportedException e) {
+//                             throw new SQLException(e.getMessage());
+//                         }
 
-                        break;
-                    }
-                }
+//                         break;
+//                     }
+//                 }
 
-                if (acl == null) {
-                    throw new SQLException("Resource " + resource.getURI()
-                            + ": no ACL to inherit! At least root "
-                            + "resource should contain an ACL");
-                }
-            }
+//                 if (acl == null) {
+//                     throw new SQLException("Resource " + resource.getURI()
+//                             + ": no ACL to inherit! At least root "
+//                             + "resource should contain an ACL");
+//                 }
+//             }
 
-            resource.setACL(acl);
-        }
-    }
+//             resource.setACL(acl);
+//         }
+//     }
 
     private void loadPropertiesForChildren(Connection conn, Resource parent,
             Resource[] resources)
@@ -1726,8 +1582,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
 
         String query = "select * from EXTRA_PROP_ENTRY where resource_id in ("
-                + "select child_resource_id from parent_child "
-                + "where parent_resource_id = " + parent.getID() + ")";
+            + "select resource_id from vortex_resource "
+            + "where uri like '" + getURIWildcard(parent.getURI()) + "' and depth = "
+            + (getURIDepth(parent.getURI()) + 1) + ")";
 
         Statement propStmt = conn.createStatement();
         ResultSet rs = propStmt.executeQuery(query);
@@ -1782,9 +1639,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             throws SQLException {
 
         String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
-                + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
-                + "where r.resource_id in (select child_resource_id from parent_child "
-                + "where parent_resource_id = " + parent.getID() + ")";
+            + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
+            + "where r.resource_id in (select resource_id from vortex_resource "
+            + "where uri like '" + getURIWildcard(parent.getURI()) + "' and depth = "
+            + (getURIDepth(parent.getURI()) + 1) + ")";
 
         PreparedStatement stmt = conn.prepareStatement(query);
 
@@ -1844,12 +1702,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             + "select resource_id  from VORTEX_RESOURCE where uri like ?)";
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt = conn.prepareStatement(query);
-
-        String uri = resource.getURI();
-        if (!uri.equals("/")) {
-            uri += "/";
-        }
-        stmt.setString(1, uri + "%");
+        stmt.setString(1, getURIWildcard(resource.getURI()));
         ResultSet rs = stmt.executeQuery();
         
         List uris = new ArrayList();
@@ -1864,5 +1717,158 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return (String[]) uris.toArray(new String[uris.size()]);
 
     }
+
+
+    public void copy(Resource resource, String destURI, boolean copyACLs,
+                     boolean setOwner, String owner) throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = getConnection();
+            copy(conn, resource, destURI, copyACLs, setOwner, owner);
+            long timestamp = System.currentTimeMillis();
+            conn.commit();
+            long duration = System.currentTimeMillis() - timestamp;
+            System.out.println("__COPY: " + resource.getURI() + " -> " + destURI
+                               + ": commit took " + duration + " ms");
+            
+        } catch (SQLException e) {
+            logger.warn("Error occurred while copying resource " + resource, e);
+            throw new IOException(e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Error occurred while copying resource " + resource, e);
+            throw e;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+    
+    private void copy(Connection conn, Resource resource, String destURI, boolean copyACLs,
+                      boolean setOwner, String owner) throws SQLException, IOException {
+
+        int depthDiff = getURIDepth(destURI) - getURIDepth(resource.getURI());
+        int idx = resource.getURI().length() + 1;
+    
+        String ownerVal = setOwner ? "'" + owner + "'" : "resource_owner";
+
+        String query = "insert into vortex_resource (resource_id, prev_resource_id, "
+            + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
+            + "content_modified_by, properties_modified_by, resource_owner, "
+            + "display_name, description, content_language, content_type, character_encoding, "
+            + "is_collection, acl_inherited) "
+            + "select nextval('vortex_resource_seq_pk'), resource_id, "
+            + "'" + destURI + "' || substring(uri, " + idx + ", length(uri)), "
+            + "depth + " + depthDiff + ", creation_time, content_last_modified, "
+            + "properties_last_modified, " 
+            + "content_modified_by, properties_modified_by, " + ownerVal + ", display_name, "
+            + "description, content_language, content_type, character_encoding, is_collection, "
+            + "acl_inherited from vortex_resource "
+            + "where uri = '" + resource.getURI() + "'"
+            + "or uri like '" + getURIWildcard(resource.getURI()) + "'";
+        
+        System.out.println("__: " + query);
+        
+
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(query);
+        stmt.close();
+
+        query = "insert into extra_prop_entry (extra_prop_entry_id, "
+            + "resource_id, name_space, name, value) "
+            + "select nextval('extra_prop_entry_seq_pk'), r.resource_id, p.name_space, "
+            + "p.name, p.value from vortex_resource r inner join extra_prop_entry p "
+            + "on r.prev_resource_id = p.resource_id where r.uri = '" + destURI
+            + "' or r.uri like '" + getURIWildcard(destURI) + "' "
+            + "and r.prev_resource_id is not null";
+        
+        
+        stmt = conn.createStatement();
+        stmt.executeUpdate(query);
+        stmt.close();
+
+
+        if (copyACLs) {
+
+            query = "insert into acl_entry (acl_entry_id, resource_id, "
+                + "action_type_id, user_or_group_name, is_user, granted_by_user_name, "
+                + "granted_date) "
+                + "select nextval('acl_entry_seq_pk'), r.resource_id, a.action_type_id, "
+                + "a.user_or_group_name, a.is_user, a.granted_by_user_name, a.granted_date "
+                + "from vortex_resource r inner join acl_entry a "
+                + "on r.prev_resource_id = a.resource_id "
+                + "where r.uri = '" + destURI
+                + "' or r.uri like '" + getURIWildcard(destURI) + "' "
+                + "and r.prev_resource_id is not null";
+        }
+
+
+        query = "update vortex_resource set prev_resource_id = null "
+            + "where uri = '" + destURI + "' or uri like '" + destURI + "/%'";
+
+        System.out.println("__: " + query);
+
+        stmt = conn.createStatement();
+        stmt.executeUpdate(query);
+        stmt.close();
+
+        String fileNameFrom = this.repositoryDataDirectory
+            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
+               : resource.getURI());
+        String fileNameTo = this.repositoryDataDirectory
+            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(destURI)
+               : destURI);
+
+        long timestamp = System.currentTimeMillis();
+        if (resource.isCollection()) {
+            copyDir(new File(fileNameFrom), new File(fileNameTo));
+        } else {
+            copyFile(new File(fileNameFrom), new File(fileNameTo));
+        }
+        long duration = System.currentTimeMillis() - timestamp;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Successfully copied '" + fileNameFrom + "' to '"
+                         + fileNameTo + "' in " + duration + " ms");
+        }
+            System.out.println("Successfully copied '" + fileNameFrom + "' to '"
+                               + fileNameTo + "' in " + duration + " ms");
+    }
+    
+
+    private void copyDir(File fromDir, File toDir) throws IOException {
+
+        if (!fromDir.isDirectory()) {
+            throw new IllegalArgumentException("File " + fromDir + " is not a directory");
+        }
+        toDir.mkdir();
+
+        File[] children = fromDir.listFiles();
+        for (int i = 0; i < children.length; i++) {
+            File newFile = new File(toDir.getCanonicalPath()
+                                  + File.separator + children[i].getName());
+            if (children[i].isFile()) {
+                copyFile(children[i], newFile);
+            } else {
+                copyDir(children[i], newFile);
+            }
+        }
+    }
+    
+
+    private void copyFile(File from, File to) throws IOException {
+
+        FileChannel srcChannel = new FileInputStream(from).getChannel();
+        FileChannel dstChannel = new FileOutputStream(to).getChannel();
+        dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+        srcChannel.close();
+        dstChannel.close();
+    }
+
 
 }

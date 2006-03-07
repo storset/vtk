@@ -151,63 +151,6 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
-    public Resource[] load(String[] uris) throws IOException {
-        List found = new ArrayList();
-        List notFound = new ArrayList();
-
-        for (int i = 0; i < uris.length; i++) {
-            Resource r = this.items.get(uris[i]);
-
-            boolean lockTimedOut =
-                (r != null && r.getLock() != null
-                 && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
-
-            if (logger.isInfoEnabled() && lockTimedOut) {
-                logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
-            }
-
-            if (r == null || lockTimedOut) {
-                notFound.add(uris[i]);
-            } else {
-                found.add(r);
-            }
-        }
-
-        if (this.gatherStatistics) {
-            updateStatistics(found.size(), notFound.size());
-        }
-
-        if (notFound.size() == 0) {
-            return (Resource[]) found.toArray(new Resource[] {  });
-        }
-
-        String[] loadSet = (String[]) notFound.toArray(new String[] {  });
-
-        try {
-            this.lockManager.lock(loadSet);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Loading " + loadSet.length + " resources");
-            }
-
-            Resource[] resources = wrappedAccessor.load(loadSet);
-
-            for (int i = 0; i < resources.length; i++) {
-                enterResource(resources[i]);
-                found.add(resources[i]);
-            }
-        } finally {
-            this.lockManager.unlock(loadSet);
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("cache size : " + items.size());
-        }
-
-        return (Resource[]) found.toArray(new Resource[] {  });
-    }
-
-
     public Resource[] loadChildren(Resource parent) throws IOException {
 
         List found = new ArrayList();
@@ -394,6 +337,53 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
+    public void copy(Resource r, String destURI, boolean copyACLs,
+                     boolean setOwner, String owner) throws IOException {
+        
+        List uris = new ArrayList();
+        uris.add(r.getURI());
+        uris.add(destURI);
+
+        String destParentURI = URIUtil.getParentURI(destURI);
+        if ((destParentURI != null) && this.items.containsURI(destParentURI)) {
+            uris.add(destParentURI);
+        }
+
+        String srcParentURI = URIUtil.getParentURI(r.getURI());
+        if ((srcParentURI != null) && !uris.contains(srcParentURI) &&
+            this.items.containsURI(srcParentURI)) {
+            uris.add(srcParentURI);
+        }
+
+        long timestamp = System.currentTimeMillis();
+        this.lockManager.lock(uris);
+        long duration = System.currentTimeMillis() - timestamp;
+        System.out.println("CACHE__COPY: " + r.getURI() + " -> " + destURI
+                           + ": lock took " + duration + " ms");
+
+        try {
+            this.wrappedAccessor.copy(r, destURI, copyACLs, setOwner, owner);
+
+            if (this.items.containsURI(destParentURI)) {
+                this.items.remove(destParentURI);
+            }
+
+        } finally {
+            timestamp = System.currentTimeMillis();
+            this.lockManager.unlock(uris);
+
+            duration = System.currentTimeMillis() - timestamp;
+            System.out.println("CACHE__COPY: " + r.getURI() + " -> " + destURI
+                               + ": unlock took " + duration + " ms");
+            if (logger.isDebugEnabled()) {
+                logger.debug("cache size : " + items.size());
+            }
+        }
+
+    }
+    
+
+
     public void delete(Resource r) throws IOException {
         List uris = new ArrayList();
 
@@ -472,9 +462,10 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     public void addChangeLogEntry(String loggerID, String loggerType,
-        String uri, String operation, int resourceId, boolean collection) throws IOException {
+                                  String uri, String operation, int resourceId,
+                                  boolean collection, boolean recurse) throws IOException {
         this.wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation,
-                                               resourceId, collection);
+                                               resourceId, collection, recurse);
     }
 
     /**

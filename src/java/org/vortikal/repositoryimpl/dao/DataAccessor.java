@@ -54,7 +54,7 @@ public interface DataAccessor {
     public Resource load(String uri) throws IOException;
 
     /* Loads a list of resources. */
-    public Resource[] load(String[] uris) throws IOException;
+//     public Resource[] load(String[] uris) throws IOException;
 
     /* Loads the children of a given resource */
     public Resource[] loadChildren(Resource parent) throws IOException;
@@ -84,7 +84,8 @@ public interface DataAccessor {
 
     /* Used externally to report a resource modification */
     public void addChangeLogEntry(String loggerID, String recordType,
-        String uri, String operation, int resourceId, boolean collection) throws IOException;
+                                  String uri, String operation, int resourceId,
+                                  boolean collection, boolean recurse) throws IOException;
 
     /**
      * Proposed new methods: copy(), move().  These are currently
@@ -94,7 +95,8 @@ public interface DataAccessor {
      * collections. */
 
     //public void move(Resource resource, String destURI);
-    //public void copy(Resource resource, String destURI);
+    public void copy(Resource resource, String destURI, boolean copyACLs,
+                     boolean setOwner, String owner) throws IOException;
 
     /**
      * A faster way of discovering locks on resources deep down in the
@@ -104,7 +106,4 @@ public interface DataAccessor {
 
     public String[] discoverACLs(Resource resource) throws IOException;
 
-    /* Stores a list of resources. */
-
-    //public void store(Resource[] resources) throws IOException;
 }

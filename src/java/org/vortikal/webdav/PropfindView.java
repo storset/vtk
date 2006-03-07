@@ -416,7 +416,12 @@ public class PropfindView implements View, InitializingBean {
                 WebdavConstants.DAV_NAMESPACE);
 
         Lock lock = resource.getActiveLock();
-
+        
+        if (lock == null) {
+            // No lock on resource, return empty 'lockdiscovery' element.
+            return lockDiscovery;
+        }
+        
         Element activeLock = new Element("activelock",
                 WebdavConstants.DAV_NAMESPACE);
 

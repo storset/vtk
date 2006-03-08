@@ -69,6 +69,11 @@ public class LockController extends AbstractWebdavController {
     /* Value (in seconds) of infinite timeout */
     private static final int INFINITE_TIMEOUT = 410000000; 
     
+    /* Max length of lock owner info string. If the actual client supplied
+     * content exceeds this value, an <code>InvalidRequestException</code> will
+     * be thrown.
+     */
+    private static final int MAX_LOCKOWNER_INFO_LENGTH = 128;
 
     /**
      * Performs the WebDAV 'LOCK' method.
@@ -283,7 +288,8 @@ public class LockController extends AbstractWebdavController {
     }
 
 
-    protected String getLockOwner(Document requestBody) {
+    protected String getLockOwner(Document requestBody) 
+        throws InvalidRequestException {
         Element lockInfo = requestBody.getRootElement();
         Element lockOwner = lockInfo.getChild("owner", WebdavConstants.DAV_NAMESPACE);
         String owner = "";
@@ -304,6 +310,11 @@ public class LockController extends AbstractWebdavController {
 
         } else {
             owner = lockOwner.getText();
+        }
+        
+        if (owner.length() > MAX_LOCKOWNER_INFO_LENGTH) {
+            throw new InvalidRequestException("Length of owner info data exceeded " +
+                                          "maximum of " + MAX_LOCKOWNER_INFO_LENGTH);
         }
         
         return owner;

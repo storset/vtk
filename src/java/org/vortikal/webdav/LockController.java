@@ -37,8 +37,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -53,10 +55,10 @@ import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.security.AuthenticationException;
 
 
 /**
@@ -68,6 +70,11 @@ public class LockController extends AbstractWebdavController {
     /* Value (in seconds) of infinite timeout */
     private static final int INFINITE_TIMEOUT = 410000000; 
     
+    /* Max length of lock owner info string. If the actual client supplied
+     * content exceeds this value, an <code>InvalidRequestException</code> will
+     * be thrown.
+     */
+    private static final int MAX_LOCKOWNER_INFO_LENGTH = 128;
 
     /**
      * Performs the WebDAV 'LOCK' method.
@@ -282,7 +289,8 @@ public class LockController extends AbstractWebdavController {
     }
 
 
-    protected String getLockOwner(Document requestBody) {
+    protected String getLockOwner(Document requestBody) 
+        throws InvalidRequestException {
         Element lockInfo = requestBody.getRootElement();
         Element lockOwner = lockInfo.getChild("owner", WebdavConstants.DAV_NAMESPACE);
         String owner = "";
@@ -303,6 +311,11 @@ public class LockController extends AbstractWebdavController {
 
         } else {
             owner = lockOwner.getText();
+        }
+        
+        if (owner.length() > MAX_LOCKOWNER_INFO_LENGTH) {
+            throw new InvalidRequestException("Length of owner info data exceeded " +
+                                          "maximum of " + MAX_LOCKOWNER_INFO_LENGTH);
         }
         
         return owner;

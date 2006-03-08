@@ -94,8 +94,8 @@ CREATE TABLE vortex_lock
     resource_id int NOT NULL,
     token VARCHAR (128) NOT NULL,
     lock_type_id int NOT NULL,
-    lock_owner VARCHAR (64) NOT NULL,
-    lock_owner_info VARCHAR (64) NOT NULL,
+    lock_owner VARCHAR (128) NOT NULL,
+    lock_owner_info VARCHAR (128) NOT NULL,
     depth CHAR (1) DEFAULT '1' NOT NULL,
     timeout TIMESTAMP NOT NULL
 );

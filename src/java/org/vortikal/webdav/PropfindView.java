@@ -40,12 +40,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -53,11 +53,9 @@ import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
-
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
@@ -439,8 +437,7 @@ public class PropfindView implements View, InitializingBean {
                 new Element("depth", WebdavConstants.DAV_NAMESPACE).addContent(
                     lock.getDepth()));
 
-            activeLock.addContent(
-                WebdavConstants.buildLockOwnerElement(lock.getOwnerInfo()));
+        activeLock.addContent(LockView.buildLockOwnerElement(lock.getOwnerInfo()));
 
 
             long timeout = lock.getTimeout().getTime() -

@@ -35,21 +35,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
 import org.springframework.web.servlet.View;
-
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.InvalidModelException;
@@ -194,32 +192,31 @@ public class LockView implements View {
             if (!content.startsWith("<")) {
                 // Simple content:
                 ownerElement.addContent(content);
-
             } else {
                 // XML content:
-                String xmlContent =
-                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + content;
+                StringBuffer xmlContent = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                xmlContent.append(content);
+                
                 SAXBuilder builder = new SAXBuilder();
                 org.jdom.Document doc = builder.build(
-                    new ByteArrayInputStream(xmlContent.getBytes()));
-
-                Element rootElement = doc.getRootElement();
-
-                rootElement.setNamespace(WebdavConstants.DAV_NAMESPACE);
+                    new ByteArrayInputStream(xmlContent.toString().getBytes()));
+                
+                Element rootElement = (Element) doc.getRootElement().detach();
 
                 ownerElement.addContent(rootElement);
             }
             
         } catch (RuntimeException e) {
-            // FIXME:
+            logger.warn("Run time exception building lock owner info element: " 
+                    + e.getMessage()); 
             ownerElement.addContent(content);
-
         } catch (JDOMException e) {
-            // FIXME:
+            logger.warn("JDOMException while building lock owner info element: " 
+                    + e.getMessage());
             ownerElement.addContent(content);
-
         } catch (IOException e) {
-            // FIXME:
+            logger.warn("IOException while building lock owner info: " 
+                       + e.getMessage());
             ownerElement.addContent(content);
         } 
         return ownerElement;

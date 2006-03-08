@@ -30,13 +30,7 @@
  */
 package org.vortikal.webdav;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
 import org.vortikal.util.web.HttpUtil;
 
 /**
@@ -101,48 +95,48 @@ public class WebdavConstants {
 
 
 
-    /**
-     * Describe <code>buildLockDiscovery</code> method here.
-     *
-     * @param content a <code>String</code> value
-     * @return an <code>Element</code>
-     * @deprecated Should be in LockRenderer
-     */
-    public static Element buildLockOwnerElement(String content) {
-        Element ownerElement = new Element("owner", DAV_NAMESPACE);
-        
-        try {
-            if (!content.startsWith("<")) {
-                // Simple content:
-                ownerElement.addContent(content);
-
-            } else {
-                // XML content:
-                String xmlContent =
-                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + content;
-                SAXBuilder builder = new SAXBuilder();
-                org.jdom.Document doc = builder.build(
-                    new ByteArrayInputStream(xmlContent.getBytes()));
-
-                Element rootElement = doc.getRootElement();
-
-                rootElement.setNamespace(DAV_NAMESPACE);
-
-                ownerElement.addContent(rootElement);
-            }
-            
-        } catch (RuntimeException e) {
-            // FIXME:
-            ownerElement.addContent(content);
-
-        } catch (JDOMException e) {
-            // FIXME:
-            ownerElement.addContent(content);
-
-        } catch (IOException e) {
-            // FIXME:
-            ownerElement.addContent(content);
-        } 
-        return ownerElement;
-    }
+//    /**
+//     * Describe <code>buildLockDiscovery</code> method here.
+//     *
+//     * @param content a <code>String</code> value
+//     * @return an <code>Element</code>
+//     * @deprecated Should be in LockRenderer
+//     */
+//    public static Element buildLockOwnerElement(String content) {
+//        Element ownerElement = new Element("owner", DAV_NAMESPACE);
+//        
+//        try {
+//            if (!content.startsWith("<")) {
+//                // Simple content:
+//                ownerElement.addContent(content);
+//
+//            } else {
+//                // XML content:
+//                String xmlContent =
+//                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + content;
+//                SAXBuilder builder = new SAXBuilder();
+//                org.jdom.Document doc = builder.build(
+//                    new ByteArrayInputStream(xmlContent.getBytes()));
+//
+//                Element rootElement = doc.getRootElement();
+//
+//                rootElement.setNamespace(DAV_NAMESPACE);
+//
+//                ownerElement.addContent(rootElement);
+//            }
+//            
+//        } catch (RuntimeException e) {
+//            // FIXME:
+//            ownerElement.addContent(content);
+//
+//        } catch (JDOMException e) {
+//            // FIXME:
+//            ownerElement.addContent(content);
+//
+//        } catch (IOException e) {
+//            // FIXME:
+//            ownerElement.addContent(content);
+//        } 
+//        return ownerElement;
+//    }
 }

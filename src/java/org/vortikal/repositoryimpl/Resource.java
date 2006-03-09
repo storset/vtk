@@ -33,13 +33,11 @@ package org.vortikal.repositoryimpl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.util.web.URLUtil;
+import org.vortikal.repository.Property;
 
 
 public class Resource implements Cloneable {
@@ -59,19 +57,19 @@ public class Resource implements Cloneable {
     protected Date creationTime = null;
     protected Date contentLastModified = null;
     protected Date propertiesLastModified = null;
-    protected String name;
-    protected String displayName = "";
-    protected String contentType = "";
+    protected String displayName;
+    protected String contentType;
     protected String characterEncoding = null;
-    protected Vector properties = new Vector();
+// XXX: shouldn't do it like this!:
+    protected List properties = new ArrayList();
     protected boolean dirtyACL = false;
     private String[] childURIs = null;
-    private Locale contentLocale = null;
-    private boolean isCollection;
+    private String contentLocale = null;
+    private boolean collection;
     
     public Resource(String uri, String owner, String contentModifiedBy,
-        String propertiesModifiedBy, ACL acl, boolean inheritedACL, 
-        LockImpl lock, boolean isCollection, String[] childURIs) {
+        String propertiesModifiedBy, ACL acl, boolean inheritedACL,
+        boolean collection) {
 
         this.uri = uri;
         this.owner = owner;
@@ -79,22 +77,8 @@ public class Resource implements Cloneable {
         this.propertiesModifiedBy = propertiesModifiedBy;
         this.acl = acl;
         this.inheritedACL = inheritedACL;
-        this.lock = lock;
-        this.childURIs = childURIs;
-        this.isCollection = isCollection;
-        
-        if (isCollection) {
-            this.contentType = "application/x-vortex-collection";
-        }
-        
-        if (this.uri.equals("/")) {
-            this.name = uri;
-        } else {
-            this.name = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
-        }
-
+        this.collection = collection;
         this.owner = owner;
-        //acl.setResource(this);
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -103,9 +87,19 @@ public class Resource implements Cloneable {
                 .clone();
 
         Resource clone = new Resource(uri, owner, contentModifiedBy,
-                propertiesModifiedBy, acl, inheritedACL, lock, isCollection,
-                childURIs);
+                propertiesModifiedBy, acl, inheritedACL, collection);
+        clone.setLock(lock);
+        clone.setChildURIs(this.childURIs);
         clone.setContentLocale(this.contentLocale);
+
+        List props = new ArrayList();
+        
+        for (Iterator iter = this.properties.iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            props.add(prop.clone());
+        }
+        clone.setProperties(props);
+
         return clone;
     }
 
@@ -113,7 +107,6 @@ public class Resource implements Cloneable {
 
     public void setACL(ACL acl) {
         this.acl = acl;
-        //acl.setResource(this);
     }
 
     public ACL getACL() {
@@ -206,14 +199,11 @@ public class Resource implements Cloneable {
     }
 
     public String getDisplayName() {
-        return ((this.displayName == null) || this.displayName.equals("")) ? this.name
-                                                                 : this.displayName;
+        return this.displayName;
     }
 
     public void setDisplayName(String displayName) {
-        if (!((displayName == null) || displayName.equals(""))) {
-            this.displayName = displayName;
-        }
+        this.displayName = displayName;
     }
 
     public String getContentType() {
@@ -221,7 +211,12 @@ public class Resource implements Cloneable {
     }
 
     public String getName() {
-        return this.name;
+        if (uri.equals("/")) {
+            return uri;
+        } 
+        
+        return uri.substring(uri.lastIndexOf("/") + 1);
+        
     }
 
     public String getCharacterEncoding() {
@@ -233,66 +228,21 @@ public class Resource implements Cloneable {
     }
 
     public void setContentType(String contentType) {
-        if (isCollection()) {
-            this.contentType = "application/x-vortex-collection";
-        } else {
-            this.contentType = contentType;
-        }
+        this.contentType = contentType;
     }
 
     public boolean isCollection() {
-        return "application/x-vortex-collection".equals(getContentType());
+        return this.collection;
     }
 
-    public void addProperty(String namespace, String name, String value) {
-        Vector property = null;
-
-        for (Iterator i = this.properties.iterator(); i.hasNext();) {
-            Vector v = (Vector) i.next();
-            String existingNamespace = (String) v.get(0);
-            String existingName = (String) v.get(1);
-
-            if (existingNamespace.equals(namespace) &&
-                    existingName.equals(name)) {
-                property = v;
-            }
-        }
-
-        if (property == null) {
-            property = new Vector();
-            property.add(namespace);
-            property.add(name);
-            property.add(value);
-            this.properties.add(property);
-        } else {
-            property.remove(2);
-            property.add(value);
-        }
-    }
-
-    public Vector getProperties() {
+    public List getProperties() {
         return this.properties;
     }
 
-    public void setProperties(org.vortikal.repository.Property[] properties) {
-        this.properties = new Vector();
-
-        for (int i = 0; i < properties.length; i++) {
-            String namespace = properties[i].getNamespace();
-
-            // FIXME handle the protected DAV: namespace this in a
-            // more formalized manner:
-            if ("dav".equals(namespace.toLowerCase())) {
-                throw new IllegalOperationException("Cannot set property '" +
-                    properties[i].getNamespace() + ":" +
-                    properties[i].getName() + "': namespace is protected.");
-            }
-
-            String name = properties[i].getName();
-            String value = properties[i].getValue();
-
-            addProperty(namespace, name, value);
-        }
+    public void setProperties(List properties) {
+        // XXX: shouldn't do it like this:
+        if (properties != null)
+            this.properties = properties;
     }
 
     public void setChildURIs(String[] childURIs) {
@@ -303,39 +253,11 @@ public class Resource implements Cloneable {
         return this.childURIs;
     }
 
-    
-    protected org.vortikal.repository.Property[] getPropertyDTOs() {
-        ArrayList dtoList = new ArrayList();
-
-        for (Iterator i = this.properties.iterator(); i.hasNext();) {
-            org.vortikal.repository.Property dto = new org.vortikal.repository.Property();
-            Vector element = (Vector) i.next();
-            String namespace = (String) element.get(0);
-            String name = (String) element.get(1);
-            String value = (String) element.get(2);
-
-            dto.setNamespace(namespace);
-            dto.setName(name);
-            dto.setValue(value);
-
-            dtoList.add(dto);
-        }
-
-        return (org.vortikal.repository.Property[])
-            dtoList.toArray(new org.vortikal.repository.Property[0]);
+    public String getContentLocale() {
+        return this.contentLocale;
     }
 
-    /**
-     * @return Returns the contentLocale.
-     */
-    public Locale getContentLocale() {
-        return contentLocale;
-    }
-
-    /**
-     * @param contentLocale The contentLocale to set.
-     */
-    public void setContentLocale(Locale contentLocale) {
+    public void setContentLocale(String contentLocale) {
         this.contentLocale = contentLocale;
     }
 

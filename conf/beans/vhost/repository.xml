@@ -31,11 +31,15 @@
     <property name="databaseUser" value="${jdbcUsername}" />
     <property name="databasePassword" value="${jdbcPassword}" />
 
+    <property name="contentStore" ref="repository.contentStore" />
     <property name="principalManager" ref="principalManager" />
+  </bean>
+
+  <bean id="repository.contentStore" 
+        class="org.vortikal.repositoryimpl.dao.SimpleFileSystemContentStore">
     <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
   </bean>
-
 
   <bean id="repository.requestLocal" class="org.vortikal.web.RequestLocalRepository">
     <property name="repository" ref="repository"/>

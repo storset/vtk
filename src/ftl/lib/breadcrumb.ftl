@@ -32,7 +32,7 @@
       ${name} &gt;
     </#if>
   </#list>
-    ${resourceContext.currentResource.displayName?html}
+    ${resourceContext.currentResource.name?html}
 </div>
 </#if>
 

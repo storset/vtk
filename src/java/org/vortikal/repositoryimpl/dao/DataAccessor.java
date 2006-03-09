@@ -69,8 +69,8 @@ public interface DataAccessor {
     public InputStream getInputStream(Resource resource)
         throws IOException;
 
-    /* Opens an output stream for writing from a resource */
-    public OutputStream getOutputStream(Resource resource)
+    /* Writes content for a resource */
+    public void storeContent(Resource resource, InputStream stream)
         throws IOException;
 
     /* Gets the content length (in bytes) of a resource */

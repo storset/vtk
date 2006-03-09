@@ -115,13 +115,13 @@
           <#case "name">
             <#if collectionListing.browsingLinks[child_index]?exists>
               <a href="${collectionListing.browsingLinks[child_index]?html}">
-                <span class="authorizedListedResource">${child.displayName}</span>
+                <span class="authorizedListedResource">${child.name}</span>
               </a>
               <#if withForm>
                </td><td class="checkbox" align="center"><input name="${child.URI?html}" type="checkbox"/>
               </#if>
             <#else>
-              <span class="unauthorizedListedResource">${child.displayName}</span>
+              <span class="unauthorizedListedResource">${child.name}</span>
               <#if withForm>
                 </td><td class="checkbox" align="center">&nbsp;
               </#if>

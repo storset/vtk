@@ -24,7 +24,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <library id="library:${resourceContext.currentResource.URI}">
-  <title>${resourceContext.currentResource.displayName}</title>
+  <title>${resourceContext.currentResource.name}</title>
   <#if viewService.url?exists>
   <uri>${viewService.url?html}</uri>
   </#if>
@@ -36,7 +36,7 @@
 
     <#if collectionListing.browsingLinks[child_index]?exists>
       <collection id="resource:${child.URI}">
-        <title>${child.displayName}</title>
+        <title>${child.name}</title>
         <#if collectionListing.childLinks[child_index]['view']?has_content>
         <uri>${collectionListing.childLinks[child_index]['view']?html}</uri>
         </#if>
@@ -45,7 +45,7 @@
       </collection>
     <#else>
       <resource id="${child.URI}">
-        <title>${child.displayName}</title>
+        <title>${child.name}</title>
         <#if collectionListing.childLinks[child_index]['view']?has_content>
         <uri>${collectionListing.childLinks[child_index]['view']?html}</uri>
         </#if>

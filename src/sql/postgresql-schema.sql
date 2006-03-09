@@ -4,7 +4,6 @@
 
 -----------------------------------------------------------------------------
 -- resource
--- TODO: allow null values for content_language
 -----------------------------------------------------------------------------
 
 DROP SEQUENCE vortex_resource_seq_pk;
@@ -27,7 +26,7 @@ CREATE TABLE vortex_resource
     resource_owner VARCHAR (64) NOT NULL,
     display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,
-    content_type VARCHAR (64) NOT NULL,
+    content_type VARCHAR (64) NULL,
     character_encoding VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,
     acl_inherited CHAR(1) DEFAULT 'Y' NOT NULL,

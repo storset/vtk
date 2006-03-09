@@ -145,17 +145,8 @@ public class RepositoryContentStoreInterceptor implements MethodInterceptor {
                 bufferStream, resource);
         }
 
-        OutputStream outStream = dao.getOutputStream(resource);
-        byte[] outBuffer = new byte[1000];
-        int n = 0;
-
-        while ((n = bufferStream.read(outBuffer, 0, 1000)) > 0) {
-            outStream.write(outBuffer, 0, n);
-        }
-
-        outStream.flush();
-        outStream.close();
-
+        // XXX: what's happening here?
+        dao.storeContent(resource, bufferStream);
         dao.store(resource);
         return result;
     }

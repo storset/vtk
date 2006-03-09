@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Date;
 
 import org.springframework.beans.factory.BeanInitializationException;
@@ -69,13 +68,12 @@ import org.vortikal.util.repository.URIUtil;
  * <code>org.vortikal.repository.Repository</code> interface.
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware,
-                                       InitializingBean {
+        InitializingBean {
 
-    private boolean readOnly = false;
-    private ApplicationContext context = null;
+    private ApplicationContext context;
 
     private DataAccessor dao;
-    private RoleManager roleManager = null;
+    private RoleManager roleManager;
     private TokenManager tokenManager;
     private ResourceManager resourceManager;
     private PermissionsManager permissionsManager;
@@ -83,6 +81,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private URIValidator uriValidator = new URIValidator();
     
     private String id;
+    private boolean readOnly = false;
 
     public boolean isReadOnly() {
         return readOnly;
@@ -99,14 +98,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.readOnly = readOnly;
     }
 
-    public boolean exists(String token, String uri)
-            throws AuthorizationException, AuthenticationException, IOException {
+    public boolean exists(String token, String uri) throws IOException {
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!uriValidator.validateURI(uri)) {
             OperationLog.info(OperationLog.EXISTS, "(" + uri + "): false",
                     token, principal);
-
             return false;
         }
 
@@ -201,7 +198,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 : PrivilegeDefinition.READ;
 
         this.permissionsManager.authorize(r, principal, privilege);
-        this.resourceManager.lockAuthorize(r, principal);
 
         Resource[] list = this.dao.loadChildren(r);
         org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
@@ -220,26 +216,42 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             String uri) throws IllegalOperationException,
             AuthorizationException, AuthenticationException,
             ResourceLockedException, ReadOnlyException, IOException {
+        return create(token, uri, false);
+    }
+
+    public org.vortikal.repository.Resource createCollection(String token, 
+            String uri) throws IllegalOperationException, 
+            AuthorizationException, AuthenticationException, 
+            ResourceLockedException, ReadOnlyException, IOException {
+
+        return create(token, uri, true);
+    }
+
+    private org.vortikal.repository.Resource create(String token, String uri, boolean collection)
+    throws AuthorizationException, AuthenticationException, 
+    IllegalOperationException, ResourceLockedException, 
+    ReadOnlyException, IOException {
+
+        String logMethod = (collection) ? OperationLog.CREATE_COLLECTION : OperationLog.CREATE;
+        
         Principal principal = tokenManager.getPrincipal(token);
 
-        if (!uriValidator.validateURI(uri)) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                    "resource not found.", token, principal);
-            throw new ResourceNotFoundException(uri);
+        if (readOnly(principal)) {
+            OperationLog.failure(logMethod, "(" + uri + ")",
+                    "read-only", token, principal);
+            throw new ReadOnlyException();
         }
 
-        if ("/".equals(uri)) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                    "illegal operation. Cannot create the root resource ('/')",
-                    token, principal);
-            throw new IllegalOperationException(
-                    "Cannot create the root resource ('/')");
+        if (!uriValidator.validateURI(uri)) {
+            OperationLog.failure(logMethod, "(" + uri + ")",
+                    "resource not found.", token, principal);
+            throw new ResourceNotFoundException(uri);
         }
 
         Resource r = dao.load(uri);
 
         if (r != null) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
+            OperationLog.failure(logMethod, "(" + uri + ")",
                     "illegal operation: Resource already exists", token,
                     principal);
             throw new IllegalOperationException("Resource already exists");
@@ -250,7 +262,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         r = dao.load(parentURI);
 
         if ((r == null) || !r.isCollection()) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
+            OperationLog.failure(logMethod, "(" + uri + ")",
                     "illegal operation: either parent doesn't exist " +
                     "or parent is document", token, principal);
             throw new IllegalOperationException("Either parent doesn't exist " +
@@ -258,125 +270,29 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            this.permissionsManager.authorize(r, principal,
+            this.permissionsManager.authorize(r, principal, 
                     PrivilegeDefinition.WRITE);
-            this.resourceManager.lockAuthorize(r, principal);
+            this.resourceManager.lockAuthorize(r, principal, false);
         } catch (ResourceLockedException e) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                    "resource was locked", token, principal);
+            OperationLog.failure(logMethod, "(" + uri + ")",
+                    "the parent resource was locked", token, principal);
             throw e;
         } catch (AuthorizationException e) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
+            OperationLog.failure(logMethod, "(" + uri + ")",
                     "unauthorized", token, principal);
             throw e;
         }
 
-        if (readOnly(principal)) {
-            OperationLog.failure(OperationLog.CREATE, "(" + uri + ")",
-                    "read-only", token, principal);
-            throw new ReadOnlyException();
-        }
-
-        Resource doc = this.resourceManager.create(r, principal, false,
-                principal.getQualifiedName(), uri, null, true);
-        OperationLog.success(OperationLog.CREATE, "(" + uri + ")", token,
+        org.vortikal.repository.Resource dto = 
+            this.resourceManager.create(r, principal, collection, uri);
+        
+        OperationLog.success(logMethod, "(" + uri + ")", token,
                 principal);
-
-        org.vortikal.repository.Resource dto = resourceManager.getResourceDTO(
-                doc, principal);
 
         context.publishEvent(new ResourceCreationEvent(this, dto));
 
         return dto;
-    }
-
-    public org.vortikal.repository.Resource createCollection(String token,
-        String uri)
-        throws AuthorizationException, AuthenticationException, 
-            IllegalOperationException, ResourceLockedException, 
-            ReadOnlyException, IOException {
-        Principal principal = tokenManager.getPrincipal(token);
-
-        if (!uriValidator.validateURI(uri)) {
-            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                "illegal operation: " + "Invalid URI: '" + uri + "'", token,
-                principal);
-            throw new IllegalOperationException("Invalid URI: '" + uri + "'");
-        }
-
-        if ("/".equals(uri)) {
-            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                "illegal operation: " +
-                "Cannot create the root resource ('/')", token, principal);
-
-            throw new IllegalOperationException(
-                "Cannot create the root resource ('/')");
-        }
-
-        String path = (uri.charAt(uri.length() - 1) == '/')
-            ? uri.substring(0, uri.length() - 1) : uri;
-
-        /* try to load the resource to see if it exists: */
-        Resource r = dao.load(path);
-
-        if (r != null) {
-            // Resource already exists
-            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                "illegal operation: " + "resource already exists", token,
-                principal);
-            throw new IllegalOperationException();
-        }
-
-        /* try to load the parent: */
-        String parentURI = uri.substring(0, uri.lastIndexOf("/") + 1);
-
-        if (parentURI.endsWith("/") && !parentURI.equals("/")) {
-            parentURI = parentURI.substring(0, parentURI.length() - 1);
-        }
-
-        r = dao.load(parentURI);
-
-        if (r == null || !r.isCollection()) {
-            /* Parent does not exist or is a document */
-            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                "illegal operation: " +
-                "either parent is null or parent is document", token, principal);
-            throw new IllegalOperationException();
-        }
-
-        try {
-            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
-            this.resourceManager.lockAuthorize(r, principal);
-
-            if (readOnly(principal)) {
-                OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                    "read-only", token, principal);
-                throw new ReadOnlyException();
-            }
-
-            Resource newCollection = this.resourceManager.create(
-                r, principal, true, principal.getQualifiedName(), path, new ACL(), true);
-
-            OperationLog.success(OperationLog.CREATE_COLLECTION, "(" + uri + ")", token,
-                principal);
-
-            org.vortikal.repository.Resource dto = 
-                resourceManager.getResourceDTO(newCollection, principal);
-
-            context.publishEvent(new ResourceCreationEvent(this, dto));
-
-            return dto;
-        } catch (ResourceLockedException e) {
-            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                "resource was locked", token, principal);
-            throw e;
-        } catch (AclException e) {
-            OperationLog.failure(OperationLog.CREATE_COLLECTION, "(" + uri + ")",
-                "tried to set an illegal ACL: " + e.getMessage(), token, principal);
-            throw new IllegalOperationException("tried to set an illegal ACL: "
-                    + e.getMessage());
-        }
-    }
+    }    
 
     public void copy(String token, String srcUri, String destUri, String depth,
         boolean overwrite, boolean preserveACL)
@@ -385,6 +301,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ResourceOverwriteException, ResourceLockedException, 
             ResourceNotFoundException, ReadOnlyException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
+
+        if (readOnly(principal)) {
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
+                "read-only", token, principal);
+            throw new ReadOnlyException();
+        }
 
         if (!uriValidator.validateURI(srcUri)) {
             OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
@@ -399,6 +321,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 "'");
         }
 
+        try {
+            uriValidator.validateCopyURIs(srcUri, destUri);
+        } catch (IllegalOperationException e) {
+            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
+                    e.getMessage(), token, principal);
+            throw e;
+        }
+        
         Resource src = dao.load(srcUri);
 
         if (src == null) {
@@ -411,79 +341,42 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.permissionsManager.authorize(src, principal, PrivilegeDefinition.READ);
         }
 
-        String destPath = (destUri.charAt(destUri.length() - 1) == '/')
-            ? destUri.substring(0, destUri.length() - 1) : destUri;
+        Resource dest = dao.load(destUri);
 
-        if (destPath.equals(srcUri)) {
-            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
-                "trying to copy a resoure to itself", token, principal);
-            throw new IllegalOperationException(
-                "Cannot copy a resource to itself");
+        if (dest != null) {
+            if (!overwrite)
+                throw new ResourceOverwriteException();
+            
+            this.resourceManager.lockAuthorize(dest, principal, true);
         }
 
-        if (destPath.startsWith(srcUri)) {
-            if (destPath.substring(srcUri.length(), destPath.length())
-                            .startsWith("/")) {
-                OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
-                    "trying to copy a resoure into itself", token, principal);
-                throw new IllegalOperationException(
-                    "Cannot copy a resource into itself");
-            }
-        }
+        String destParentUri = URIUtil.getParentURI(destUri);
 
-        Resource dest = dao.load(destPath);
+        Resource destParent = dao.load(destParentUri);
 
-        if ((dest != null) && !overwrite) {
-            throw new ResourceOverwriteException();
-        }
-
-        String destParent = destPath;
-
-        if (destParent.lastIndexOf("/") == 0) {
-            destParent = "/";
-        } else {
-            destParent = destPath.substring(0, destPath.lastIndexOf("/"));
-        }
-
-        Resource destCollection = dao.load(destParent);
-
-        if ((destCollection == null) || !destCollection.isCollection()) {
+        if ((destParent == null) || !destParent.isCollection()) {
             OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 "destination is either a document or does not exist", token,
                 principal);
             throw new IllegalOperationException();
         }
 
-        this.permissionsManager.authorize(destCollection, principal,
+        this.permissionsManager.authorize(destParent, principal,
                                        PrivilegeDefinition.WRITE);
 
-        this.resourceManager.lockAuthorize(destCollection, principal);
-
-        if (readOnly(principal)) {
-            OperationLog.failure(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
-                "read-only", token, principal);
-            throw new ReadOnlyException();
-        }
-
-        if (dest != null) {
-            if (dest.isCollection()) {
-                this.resourceManager.lockAuthorizeRecursively(dest, principal);
-            } else {
-                this.resourceManager.lockAuthorize(dest, principal);
-            }
-
-            this.dao.delete(dest);
-        }
+        this.resourceManager.lockAuthorize(destParent, principal, false);
 
         try {
-            this.resourceManager.copy(
-                principal, src, destPath, preserveACL, false);
+            if (dest != null) {
+                this.dao.delete(dest);
+            }
+            this.resourceManager.copy(principal, src, destUri, preserveACL, false);
 
             OperationLog.success(OperationLog.COPY, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
             org.vortikal.repository.Resource dto = 
-                resourceManager.getResourceDTO(dao.load(destPath), principal);
+                resourceManager.getResourceDTO(dao.load(destUri), principal);
 
             ResourceCreationEvent event = new ResourceCreationEvent(this, dto);
 
@@ -495,6 +388,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
+    // XXX: Missing a lot of operation logging!
     public void move(String token, String srcUri, String destUri,
         boolean overwrite)
         throws IllegalOperationException, AuthorizationException, 
@@ -502,6 +396,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ResourceOverwriteException, ResourceLockedException, 
             ResourceNotFoundException, ReadOnlyException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
+
+        if (readOnly(principal)) {
+            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
+                "read-only", token, principal);
+            throw new ReadOnlyException();
+        }
 
         if (!uriValidator.validateURI(srcUri)) {
             OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
@@ -516,13 +416,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 "'");
         }
 
-        if ("/".equals(srcUri)) {
+        try {
+            uriValidator.validateCopyURIs(srcUri, destUri);
+        } catch (IllegalOperationException e) {
             OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
-                "cannot move the root resource ('/')", token, principal);
-            throw new IllegalOperationException(
-                "Cannot move the root resource ('/')");
+                    e.getMessage(), token, principal);
+            throw e;
         }
-
+        
+        // Loading and checking source resource
         Resource src = dao.load(srcUri);
 
         if (src == null) {
@@ -531,121 +433,71 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(srcUri);
         }
 
+        this.resourceManager.lockAuthorize(src, principal, true);
+
         if (src.isCollection()) {
-            this.resourceManager.lockAuthorizeRecursively(src, principal);
             authorizeRecursively(src, principal, PrivilegeDefinition.READ);
         } else {
-            this.resourceManager.lockAuthorize(src, principal);
             this.permissionsManager.authorize(src, principal, PrivilegeDefinition.READ);
         }
 
-        String srcParent = srcUri;
+        // Loading and checking srcParent
+        String srcParentURI = URIUtil.getParentURI(srcUri);
 
-        if (srcParent.endsWith("/")) {
-            srcParent = srcParent.substring(0, srcParent.length() - 1);
-        }
+        Resource srcParent = dao.load(srcParentURI);
 
-        if (srcParent.lastIndexOf("/") == 0) {
-            srcParent = "/";
-        } else {
-            srcParent = srcParent.substring(0, srcParent.lastIndexOf("/"));
-        }
+        this.permissionsManager.authorize(srcParent, principal, PrivilegeDefinition.WRITE);
+        this.resourceManager.lockAuthorize(srcParent, principal, false);
 
-        Resource srcCollection = dao.load(srcParent);
+        // Checking dest
+        Resource dest = dao.load(destUri);
 
-        this.permissionsManager.authorize(srcCollection, principal, PrivilegeDefinition.WRITE);
-        this.resourceManager.lockAuthorize(srcCollection, principal);
-
-        String destPath = destUri;
-
-        if (destPath.endsWith("/")) {
-            destPath = destPath.substring(0, destPath.length() - 1);
-        }
-
-        if (destPath.equals(srcUri)) {
-            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
-                "trying to move a resoure to itself", token, principal);
-            throw new IllegalOperationException(
-                "Cannot move a resource to itself");
-        }
-
-        if (destPath.startsWith(srcUri)) {
-            if (destPath.substring(srcUri.length(), destPath.length())
-                            .startsWith("/")) {
+        if (dest != null) {
+            if (!overwrite) {
                 OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
-                    "trying to move a resoure into itself", token, principal);
-                throw new IllegalOperationException(
-                    "Cannot move a resource into itself");
+                        "destination already existed, no overwrite", token, principal);
+                throw new ResourceOverwriteException();
             }
-        }
+            
+            this.resourceManager.lockAuthorize(dest, principal, true);
+        } 
 
-        Resource dest = dao.load(destPath);
+        // checking destParent 
+        String destParentUri = URIUtil.getParentURI(destUri);
 
-        if ((dest != null) && !overwrite) {
-            OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
-                "destination already existed, no overwrite", token, principal);
-            throw new ResourceOverwriteException();
-        } else if (dest != null) {
-            if (dest.isCollection()) {
-                this.resourceManager.lockAuthorizeRecursively(dest, principal);
-            } else {
-                    this.resourceManager.lockAuthorize(dest, principal);
-            }
-        }
+        Resource destParent = dao.load(destParentUri);
 
-        String destParent = destPath;
-
-        if (destParent.lastIndexOf("/") == 0) {
-            destParent = "/";
-        } else {
-            destParent = destPath.substring(0, destPath.lastIndexOf("/"));
-        }
-
-        Resource destCollection = dao.load(destParent);
-
-        if ((destCollection == null) || !destCollection.isCollection()) {
+        if ((destParent == null) || !destParent.isCollection()) {
             OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "destination collection either a document or does not exist",
                 token, principal);
             throw new IllegalOperationException("Invalid destination resource");
         }
 
-        this.permissionsManager.authorize(destCollection, principal, PrivilegeDefinition.WRITE);
+        this.permissionsManager.authorize(destParent, principal, PrivilegeDefinition.WRITE);
 
-        if (dest != null) {
-            this.dao.delete(dest);
-            context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
-                    dest.isCollection()));
-
-        }
-
+        
+        // Performing move operation
         try {
-            if (readOnly(principal)) {
-                OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
-                    "read-only", token, principal);
-                throw new ReadOnlyException();
+            if (dest != null) {
+                this.dao.delete(dest);
+                context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
+                        dest.isCollection()));
+
             }
-
-            this.resourceManager.copy(principal, src, destPath, true, true);
-
+            this.resourceManager.copy(principal, src, destUri, true, true);
             this.dao.delete(src);
+            context.publishEvent(new ResourceDeletionEvent(this, srcUri,
+                    src.getID(), src.isCollection()));
 
             OperationLog.success(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
             Resource r = dao.load(destUri);
-            ResourceDeletionEvent deletionEvent = new ResourceDeletionEvent(this, srcUri,
-                   src.getID(), src.isCollection());
-
-            context.publishEvent(deletionEvent);
-
             org.vortikal.repository.Resource dto = 
                 resourceManager.getResourceDTO(r, principal);
 
-            ResourceCreationEvent creationEvent = new ResourceCreationEvent(
-                this, dto);
-
-            context.publishEvent(creationEvent);
+            context.publishEvent(new ResourceCreationEvent(this, dto));
         } catch (AclException e) {
             OperationLog.failure(OperationLog.MOVE, "(" + srcUri + ", " + destUri + ")",
                 "tried to set an illegal ACL", token, principal);
@@ -682,18 +534,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (r.isCollection()) {
-            this.resourceManager.lockAuthorizeRecursively(r, principal);
-        } else {
-            this.resourceManager.lockAuthorize(r, principal);
-        }
+        this.resourceManager.lockAuthorize(r, principal, true);
 
         String parent = URIUtil.getParentURI(uri);
 
         Resource parentCollection = dao.load(parent);
 
         this.permissionsManager.authorize(parentCollection, principal, PrivilegeDefinition.WRITE);
-        this.resourceManager.lockAuthorize(parentCollection, principal);
+        this.resourceManager.lockAuthorize(parentCollection, principal, false);
 
         if (readOnly(principal)) {
             OperationLog.failure(OperationLog.DELETE, "(" + uri + ")", "read-only", token,
@@ -729,14 +577,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
-
-        if (r == null) {
-            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "resource not found",
-                token, principal);
-            throw new ResourceNotFoundException(uri);
-        }
-
         if ("0".equals(depth) || "infinity".equals(depth)) {
             // FIXME: implement locking of depth 'infinity'
             depth = "0";
@@ -749,6 +589,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "read-only", token,
                 principal);
             throw new ReadOnlyException();
+        }
+
+        Resource r = dao.load(uri);
+
+        if (r == null) {
+            OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "resource not found",
+                token, principal);
+            throw new ResourceNotFoundException(uri);
         }
 
         if (lockToken != null) {
@@ -767,14 +615,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         try {
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
-            this.resourceManager.lockAuthorize(r, principal);
-
-            String newLockToken = this.resourceManager.lockResource(r, principal, ownerInfo, depth,
-                                      requestedTimeoutSeconds, (lockToken != null));
-
-            OperationLog.success(OperationLog.LOCK, "(" + uri + ")", token, principal);
-
-            return newLockToken;
+            this.resourceManager.lockAuthorize(r, principal, false);
         } catch (AuthorizationException e) {
             OperationLog.failure(OperationLog.LOCK, "(" + uri + ")", "permission denied",
                 token, principal);
@@ -788,6 +629,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 principal);
             throw e;
         }
+
+        String newLockToken = this.resourceManager.lockResource(r, principal, ownerInfo, depth,
+                requestedTimeoutSeconds, (lockToken != null));
+
+        OperationLog.success(OperationLog.LOCK, "(" + uri + ")", token, principal);
+
+        return newLockToken;
     }
 
     public void unlock(String token, String uri, String lockToken)
@@ -820,14 +668,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
             // Root role has permission to remove all locks
             if (!this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-                this.resourceManager.lockAuthorize(r, principal);
+                this.resourceManager.lockAuthorize(r, principal, false);
             }
-            
-            if (r.getLock() != null) {
-                r.setLock(null);
-                this.dao.store(r);
-            }
-            OperationLog.success(OperationLog.UNLOCK, "(" + uri + ")", token, principal);
         } catch (AuthorizationException e) {
             OperationLog.failure(OperationLog.UNLOCK, "(" + uri + ")", "permission denied",
                 token, principal);
@@ -841,6 +683,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 token, principal);
             throw e;
         }
+
+        if (r.getLock() != null) {
+            r.setLock(null);
+            this.dao.store(r);
+        }
+
+        OperationLog.success(OperationLog.UNLOCK, "(" + uri + ")", token,
+                principal);
     }
 
     public void store(String token, org.vortikal.repository.Resource resource)
@@ -881,7 +731,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             // Fix me: log authexceptions...
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
-            this.resourceManager.lockAuthorize(r, principal);
+            this.resourceManager.lockAuthorize(r, principal, false);
             
             Resource original = (Resource) r.clone();
 
@@ -978,28 +828,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ReadOnlyException();
         }
 
-
-        OutputStream stream = null;
-
         try {
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
-            this.resourceManager.lockAuthorize(r, principal);
+            this.resourceManager.lockAuthorize(r, principal, false);
         
             Resource original = (Resource) r.clone();
 
-            stream = this.dao.getOutputStream(r);
-
-            /* Write the input data to the resource: */
-            byte[] buffer = new byte[1000];
-            int n = 0;
-
-            while ((n = byteStream.read(buffer, 0, 1000)) > 0) {
-                stream.write(buffer, 0, n);
-            }
-
-            stream.flush();
-            stream.close();
-            byteStream.close();
+            this.dao.storeContent(r, byteStream);
 
             // Update timestamps:
             r.setContentLastModified(new Date());
@@ -1108,7 +943,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             Ace[] originalACL = permissionsManager.toAceList(r.getACL(), inheritedFrom);
 
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
-            this.resourceManager.lockAuthorize(r, principal);
+            this.resourceManager.lockAuthorize(r, principal, false);
             aclValidator.validateACL(acl);
             this.resourceManager.storeACL(r, principal, acl);
             OperationLog.success(OperationLog.STORE_ACL, "(" + uri + ")", token, principal);

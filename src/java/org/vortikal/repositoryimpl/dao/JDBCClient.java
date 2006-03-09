@@ -32,13 +32,8 @@ package org.vortikal.repositoryimpl.dao;
 
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -46,7 +41,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,17 +50,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
+
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.beans.factory.DisposableBean;
+import org.vortikal.repository.Property;
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.Resource;
-import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.repository.URIUtil;
-import org.vortikal.util.web.URLUtil;
 
 /**
  * This class is going to be a "generic" JDBC database accessor. Currently, only
@@ -76,23 +68,16 @@ import org.vortikal.util.web.URLUtil;
 public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private String databaseDriver;
-
     private int maxDatabaseConnections = 6;
-
     private String databaseURL;
-
     private String databaseUser;
-
     private String databasePassword;
 
-    private String repositoryDataDirectory;
-
-    private boolean urlEncodeFileNames = false;
-
     private BasicDataSource pool;
+    private ContentStore contentStore;
     
-    public void setRepositoryDataDirectory(String repositoryDataDirectory) {
-        this.repositoryDataDirectory = repositoryDataDirectory;
+    public void setContentStore(ContentStore contentStore) {
+        this.contentStore = contentStore;
     }
 
     public void setDatabaseDriver(String databaseDriver) {
@@ -115,32 +100,16 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         this.maxDatabaseConnections = maxDatabaseConnections;
     }
 
-    public void setUrlEncodeFileNames(boolean urlEncodeFileNames) {
-        this.urlEncodeFileNames = urlEncodeFileNames;
-    }
-
     public void afterPropertiesSet()
             throws Exception {
         super.afterPropertiesSet();
 
         logger.info("Setting up database");
 
-        if (repositoryDataDirectory == null) {
-            throw new IOException("Missing property \"repositoryDataDirectory\"");
+        if (contentStore == null) {
+            throw new IOException("Missing property 'fileStore'");
         }
-
-        File root = new File(this.repositoryDataDirectory);
-
-        if (!root.isAbsolute()) {
-            this.repositoryDataDirectory = System.getProperty("vortex.home") + File.separator
-                    + repositoryDataDirectory;
-            root = new File(this.repositoryDataDirectory);
-        }
-
-        if (!root.exists()) {
-            root.mkdir();
-        }
-
+        
         if (databaseURL == null) {
             throw new IOException("Missing property \"databaseURL\"");
         }
@@ -243,8 +212,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return exists;
     }
 
-    public void destroy()
-            throws IOException {
+    public void destroy() {
         try {
             pool.close();
         } catch (SQLException e) {
@@ -253,8 +221,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    public Resource load(String uri)
-            throws IOException {
+    public Resource load(String uri) throws IOException {
         Connection conn = null;
         Resource retVal = null;
 
@@ -279,10 +246,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
 
-    private Resource load(Connection conn, String uri)
-            throws SQLException {
-
-        Map locks = loadLocks(conn, new String[] {uri});
+    private Resource load(Connection conn, String uri) throws SQLException {
 
         String query = "select r.* from VORTEX_RESOURCE r where r.uri = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
@@ -293,64 +257,66 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         Resource resource = null;
 
         if (rs.next()) {
-            String owner = rs.getString("resource_owner");
-            String contentModifiedBy = rs.getString("content_modified_by");
-            String propertiesModifiedBy = rs.getString("properties_modified_by");
-            boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL();
-
-            LockImpl lock = null;
-
-            if (locks.containsKey(uri)) {
-                lock = (LockImpl) locks.get(uri);
-            }
-
-            if (rs.getString("is_collection").equals("Y")) {
-                String[] children = null;
-
-                resource = new Resource(uri, owner, contentModifiedBy,
-                                        propertiesModifiedBy, acl, inherited, lock,
-                                        true, children);
-            } else {
-                resource = new Resource(uri, owner, contentModifiedBy,
-                                        propertiesModifiedBy, acl, inherited, lock, false, null);
-            }
-
-            resource.setCreationTime(rs.getTimestamp("creation_time"));
-            resource.setOwner(rs.getString("resource_owner"));
-
-            Date contentLastModified = // rs.getTimestamp("content_last_modified");
-            new Date(rs.getTimestamp("content_last_modified").getTime());
-            Date propertiesLastModified = // rs.getTimestamp("properties_last_modified");
-            new Date(rs.getTimestamp("properties_last_modified").getTime());
-
-            resource.setContentLastModified(contentLastModified);
-            resource.setPropertiesLastModified(propertiesLastModified);
-            resource.setDisplayName(rs.getString("display_name"));
-            resource.setContentType(rs.getString("content_type"));
-            resource.setCharacterEncoding(rs.getString("character_encoding"));
-            resource.setID(rs.getInt("resource_id"));
-
-            if (!resource.isCollection()) {
-                resource.setContentLocale(
-                    LocaleHelper.getLocale(rs.getString("content_language")));
-            }
-
+            resource = populateResource(uri, rs);
         }
 
         rs.close();
         stmt.close();
 
-        if (resource != null) {
-            loadChildURIs(conn, resource);
-            loadACLs(conn, new Resource[] {resource});
-            loadProperties(conn, resource);
+        if (resource == null) {
+            return null;
         }
+       
+        Map locks = loadLocks(conn, new String[] {uri});
+        LockImpl lock = null;
+        if (locks.containsKey(uri)) {
+            lock = (LockImpl) locks.get(uri);
+        }
+        resource.setLock(lock);
 
+        String[] childURIs = loadChildURIs(conn, resource.getURI());
+        resource.setChildURIs(childURIs);
+        
+        loadACLs(conn, new Resource[] {resource});
+        List properties = loadProperties(conn, resource.getURI());
+        resource.setProperties(properties);
 
         return resource;
     }
 
+    private Resource populateResource(String uri, ResultSet rs) 
+        throws SQLException {
+
+        String owner = rs.getString("resource_owner");
+        String contentModifiedBy = rs.getString("content_modified_by");
+        String propertiesModifiedBy = rs.getString("properties_modified_by");
+        boolean inherited = rs.getString("acl_inherited").equals("Y");
+        boolean isCollection = rs.getString("is_collection").equals("Y");
+        ACL acl = new ACL();
+
+        Resource resource = new Resource(uri, owner, contentModifiedBy,
+                                    propertiesModifiedBy, acl, inherited, 
+                                    isCollection);
+
+        resource.setCreationTime(rs.getTimestamp("creation_time"));
+        resource.setOwner(rs.getString("resource_owner"));
+        resource.setDisplayName(rs.getString("display_name"));
+        resource.setContentType(rs.getString("content_type"));
+        resource.setCharacterEncoding(rs.getString("character_encoding"));
+        resource.setID(rs.getInt("resource_id"));
+        resource.setContentLocale(rs.getString("content_language"));
+
+        Date contentLastModified = 
+            new Date(rs.getTimestamp("content_last_modified").getTime());
+        Date propertiesLastModified = 
+            new Date(rs.getTimestamp("properties_last_modified").getTime());
+
+        resource.setContentLastModified(contentLastModified);
+        resource.setPropertiesLastModified(propertiesLastModified);
+
+        return resource;
+    }
+    
     private String getURIWildcard(String uri) {
         if ("/".equals(uri)) {
             return uri + "%";
@@ -369,27 +335,23 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    private void loadProperties(Connection conn, Resource resource)
+    private List loadProperties(Connection conn, String uri)
             throws SQLException {
 
-        String query = "select * from EXTRA_PROP_ENTRY where resource_id in (select resource_id from vortex_resource where uri = '" + resource.getURI() + "')";
+        String query = "select * from EXTRA_PROP_ENTRY where resource_id in " + 
+        "(select resource_id from vortex_resource where uri = '" + uri + "')";
 
         Statement propStmt = conn.createStatement();
         ResultSet rs = propStmt.executeQuery(query);
-
-        final int namespace = 0;
-        final int name = 1;
-        final int value = 2;
 
         List propertyList = new ArrayList();
 
         while (rs.next()) {
 
-            String[] prop = new String[3];
-
-            prop[namespace] = rs.getString("name_space");
-            prop[name] = rs.getString("name");
-            prop[value] = rs.getString("value");
+            Property prop = new Property();
+            prop.setNamespace(rs.getString("name_space"));
+            prop.setName(rs.getString("name"));
+            prop.setValue(rs.getString("value"));
 
             propertyList.add(prop);
         }
@@ -397,10 +359,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         rs.close();
         propStmt.close();
 
-        for (Iterator i = propertyList.iterator(); i.hasNext();) {
-            String[] prop = (String[]) i.next();
-            resource.addProperty(prop[namespace], prop[name], prop[value]);
-        }
+        return propertyList;
     }
 
     public void deleteExpiredLocks() throws IOException {
@@ -753,17 +712,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         String owner = r.getOwner();
         String contentModifiedBy = r.getContentModifiedBy();
         String propertiesModifiedBy = r.getPropertiesModifiedBy();
-        String contentLanguage = null;
-
-        if (r.getContentLocale() != null) {
-            contentLanguage = r.getContentLocale().toString();
-        }
-
-        // FIXME: allow null values:
-        if ((contentLanguage == null) || contentLanguage.trim().equals("")) {
-            contentLanguage = "unknown";
-        }
-
+        String contentLanguage = r.getContentLocale();
+        boolean collection = r.isCollection();
+        
         String query = "select * from VORTEX_RESOURCE where uri = ?";
         PreparedStatement existStmt = conn.prepareStatement(query);
 
@@ -805,8 +756,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             insertResourceEntry(conn, uri, creationTime, contentLastModified,
                     propertiesLastModified, displayName, owner, contentModifiedBy,
                     propertiesModifiedBy, contentLanguage, contentType,
-                    characterEncoding, "application/x-vortex-collection"
-                            .equals(contentType), parent);
+                    characterEncoding, collection, parent);
         }
 
         // Save the ACL:
@@ -839,9 +789,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         stmt.setString(1, uri);
         stmt.setInt(2, depth);
-        stmt.setTimestamp(3, new java.sql.Timestamp(creationTime.getTime()));
-        stmt.setTimestamp(4, new java.sql.Timestamp(contentLastModified.getTime()));
-        stmt.setTimestamp(5, new java.sql.Timestamp(propertiesLastModified.getTime()));
+        stmt.setTimestamp(3, new Timestamp(creationTime.getTime()));
+        stmt.setTimestamp(4, new Timestamp(contentLastModified.getTime()));
+        stmt.setTimestamp(5, new Timestamp(propertiesLastModified.getTime()));
         stmt.setString(6, contentModifiedBy);
         stmt.setString(7, propertiesModifiedBy);
         stmt.setString(8, owner);
@@ -855,23 +805,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.executeUpdate();
         stmt.close();
 
-
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
-
-        if (isCollection) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Creating directory " + fileName);
-            }
-
-            new File(fileName).mkdir();
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Creating file " + fileName);
-            }
-
-            new File(fileName).createNewFile();
-        }
+        contentStore.createResource(uri, isCollection);
     }
 
     private void storeLock(Connection conn, Resource r)
@@ -926,7 +860,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 updateStmt.setString(2, user);
                 updateStmt.setString(3, ownerInfo);
                 updateStmt.setString(4, depth);
-                updateStmt.setTimestamp(5, new java.sql.Timestamp(timeout.getTime()));
+                updateStmt.setTimestamp(5, new Timestamp(timeout.getTime()));
                 updateStmt.setString(6, lockToken);
 
                 updateStmt.executeUpdate();
@@ -945,7 +879,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 insertStmt.setString(4, user);
                 insertStmt.setString(5, ownerInfo);
                 insertStmt.setString(6, depth);
-                insertStmt.setTimestamp(7, new java.sql.Timestamp(timeout.getTime()));
+                insertStmt.setTimestamp(7, new Timestamp(timeout.getTime()));
 
                 insertStmt.executeUpdate();
                 insertStmt.close();
@@ -1054,7 +988,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         insertStmt.setString(3, p.getUrl());
         insertStmt.setString(4, p.isGroup() ? "N" : "Y");
         insertStmt.setString(5, resource.getOwner());
-        insertStmt.setTimestamp(6, new java.sql.Timestamp(System.currentTimeMillis()));
+        insertStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
 
         insertStmt.executeUpdate();
         insertStmt.close();
@@ -1062,7 +996,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private void storeProperties(Connection conn, Resource r)
             throws SQLException {
-        Vector properties = r.getProperties();
 
         Statement deleteStatement = conn.createStatement();
 
@@ -1071,19 +1004,17 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         deleteStatement.close();
 
-        for (Iterator i = properties.iterator(); i.hasNext();) {
-            Vector property = (Vector) i.next();
+        List properties = r.getProperties();
 
-            String namespace = (String) property.get(0);
-            String name = (String) property.get(1);
-            String value = (String) property.get(2);
-
-            insertPropertyEntry(conn, r, namespace, name, value);
+        if (properties != null) {
+            for (Iterator iter = properties.iterator(); iter.hasNext();) {
+                Property property = (Property) iter.next();
+                insertPropertyEntry(conn, r, property);
+            }
         }
     }
-
-    private void insertPropertyEntry(Connection conn, Resource r, String namespace,
-            String name, String value)
+    
+    private void insertPropertyEntry(Connection conn, Resource r, Property property)
             throws SQLException {
         PreparedStatement stmt = conn
                 .prepareStatement("insert into EXTRA_PROP_ENTRY (extra_prop_entry_id, resource_id, "
@@ -1091,9 +1022,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                         + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)");
 
         stmt.setInt(1, r.getID());
-        stmt.setString(2, namespace);
-        stmt.setString(3, name);
-        stmt.setString(4, value);
+        stmt.setString(2, property.getNamespace());
+        stmt.setString(3, property.getName());
+        stmt.setString(4, property.getValue());
 
         stmt.executeUpdate();
         stmt.close();
@@ -1160,56 +1091,23 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.executeUpdate();
         stmt.close();
 
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                        : resource.getURI());
-
-        deleteFiles(new File(fileName));
+        contentStore.deleteFiles(resource.getURI());
     }
-
-    private void deleteFiles(File f) {
-        if (!f.isDirectory()) {
-            f.delete();
-
-            return;
-        }
-
-        File[] children = f.listFiles();
-
-        for (int i = 0; i < children.length; i++) {
-            deleteFiles(children[i]);
-        }
-
-        f.delete();
-    }
-
+    
     public InputStream getInputStream(Resource resource)
             throws IOException {
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                        : resource.getURI());
-
-        return new java.io.FileInputStream(new File(fileName));
+        return contentStore.getInputStream(resource);
     }
 
-    public OutputStream getOutputStream(Resource resource)
+    public void storeContent(Resource resource, InputStream inputStream)
             throws IOException {
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                        : resource.getURI());
-
-        return new java.io.FileOutputStream(new File(fileName));
+        contentStore.storeContent(resource, inputStream);
     }
 
-    public long getContentLength(Resource resource)
-            throws IOException {
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                        : resource.getURI());
-
-        return new File(fileName).length();
+    public long getContentLength(Resource resource) {
+        return this.contentStore.getContentLength(resource);
     }
-
+    
     protected void executeACLQuery(Connection conn, Map acls)
             throws SQLException {
 
@@ -1295,26 +1193,26 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     /**
      * Loads children for a given resource.
      */
-    private void loadChildURIs(Connection conn, Resource parent)
+    private String[] loadChildURIs(Connection conn, String uri)
             throws SQLException {
 
         StringBuffer query = new StringBuffer();
         query.append("select uri from vortex_resource where ");
-        query.append("uri like '").append(getURIWildcard(parent.getURI())).append("'");
-        query.append("and depth = ").append(getURIDepth(parent.getURI()) + 1);
+        query.append("uri like '").append(getURIWildcard(uri)).append("'");
+        query.append("and depth = ").append(getURIDepth(uri) + 1);
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query.toString());
-        Map tempMap = new HashMap();
 
         List childURIs = new ArrayList();
         while (rs.next()) {
-            String uri = rs.getString("uri");
-            childURIs.add(uri);
+            String childUri = rs.getString("uri");
+            childURIs.add(childUri);
         }
         rs.close();
         stmt.close();
-        parent.setChildURIs((String[]) childURIs.toArray(new String[childURIs.size()]));
+
+        return (String[]) childURIs.toArray(new String[childURIs.size()]);
     }
 
     private Resource[] loadChildren(Connection conn, Resource parent)
@@ -1334,60 +1232,18 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         while (rs.next()) {
             String uri = rs.getString("uri");
-            String owner = rs.getString("resource_owner");
-            String contentModifiedBy = rs.getString("content_modified_by");
-            String propertiesModifiedBy = rs.getString("properties_modified_by");
-            boolean inherited = rs.getString("acl_inherited").equals("Y");
-            ACL acl = new ACL();
 
-            LockImpl lock = null;
-
+            Resource resource = populateResource(uri, rs);
             if (locks.containsKey(uri)) {
-                lock = (LockImpl) locks.get(uri);
-            }
-
-            Resource resource = null;
-
-            if (rs.getString("is_collection").equals("Y")) {
-                String[] children = null;
-
-                resource = new Resource(uri, owner, contentModifiedBy,
-                                        propertiesModifiedBy, acl, inherited, lock,
-                                        true, children);
-            } else {
-                resource = new Resource(uri, owner, contentModifiedBy,
-                        propertiesModifiedBy, acl, inherited, lock, false,
-                        null);
-            }
-
-            resource.setCreationTime(rs.getTimestamp("creation_time"));
-            resource.setOwner(rs.getString("resource_owner"));
-
-            Date contentLastModified = // rs.getTimestamp("content_last_modified");
-            new Date(rs.getTimestamp("content_last_modified").getTime());
-            Date propertiesLastModified = // rs.getTimestamp("properties_last_modified");
-            new Date(rs.getTimestamp("properties_last_modified").getTime());
-
-            resource.setContentLastModified(contentLastModified);
-            resource.setPropertiesLastModified(propertiesLastModified);
-            resource.setDisplayName(rs.getString("display_name"));
-            resource.setContentType(rs.getString("content_type"));
-            resource.setCharacterEncoding(rs.getString("character_encoding"));
-            resource.setID(rs.getInt("resource_id"));
-
-            if (!resource.isCollection()) {
-                resource.setContentLocale(
-                    LocaleHelper.getLocale(rs.getString("content_language")));
+                resource.setLock((LockImpl) locks.get(uri));
             }
 
             resources.add(resource);
         }
-
         rs.close();
         stmt.close();
 
         Resource[] result = (Resource[]) resources.toArray(new Resource[0]);
-
         loadChildrenForChildren(conn, parent, result);
         loadACLs(conn, result);
         loadPropertiesForChildren(conn, parent, result);
@@ -1418,7 +1274,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);
-        Map tempMap = new HashMap();
 
         while (rs.next()) {
             
@@ -1439,140 +1294,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     }
 
-//     protected void loadACLsForChildren(Connection conn, Resource parent,
-//             Resource[] children)
-//             throws SQLException {
-
-//         if (children == null || children.length == 0) {
-//             return;
-//         }
-
-//         Map acls = new HashMap();
-//         String[] parentPath = URLUtil.splitUriIncrementally(parent.getURI());
-//         for (int i = parentPath.length - 1; i >= 0; i--) {
-//             if (!acls.containsKey(parentPath[i])) {
-//                 acls.put(parentPath[i], null);
-//             }
-//         }
-
-//         /* Initialize (empty) ACL for resource: */
-//         for (int i = 0; i < children.length; i++) {
-//             children[i].setACL(new ACL());
-//         }
-
-//         if (acls.size() == 0) {
-//             throw new SQLException("No ancestor path");
-//         }
-
-//         /*
-//          * Populate the parent ACL map (these are all the ACLs that will be
-//          * needed)
-//          */
-
-//         String query = "select r.uri, a.*, t.namespace as action_namespace, "
-//                 + "t.name as action_name from ACL_ENTRY a "
-//                 + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
-//                 + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
-//                 + "where r.resource_id in (select resource_id from vortex_resource "
-//             + "where uri in (?, ";
-        
-//         int n = acls.size();
-//         for (int i = 0; i < n; i++) {
-//             query += (i < n - 1) ? "?, " : "?)";
-//         }
-//         PreparedStatement stmt = conn.prepareStatement(query);
-
-//         logger.info("--- " + query + "[" + acls.keySet() + "]");
-        
-
-//         stmt.setString(1, parent.getURI());
-//         for (Iterator i = acls.keySet().iterator(); i.hasNext();) {
-//             String uri = (String) i.next();
-//             stmt.setString(n--, uri);
-//         }
-//         ResultSet rs = stmt.executeQuery();
-
-//         while (rs.next()) {
-
-//             String uri = rs.getString("uri");
-//             String action = rs.getString("action_name");
-
-//             ACL acl = (ACL) acls.get(uri);
-
-//             if (acl == null) {
-
-//                 acl = new ACL();
-//                 acls.put(uri, acl);
-//             }
-
-//             Map actionMap = acl.getActionMap();
-
-//             List actionEntry = (List) actionMap.get(action);
-//             if (actionEntry == null) {
-//                 actionEntry = new ArrayList();
-//                 actionMap.put(action, actionEntry);
-//             }
-
-//             actionEntry.add(new ACLPrincipal(rs.getString("user_or_group_name"), rs
-//                     .getString("is_user").equals("N")));
-//         }
-
-//         rs.close();
-//         stmt.close();
-
-//         /*
-//          * The ACL map is now populated. Walk trough every resource and see if
-//          * there is an ACL entry:
-//          */
-
-//         for (int i = 0; i < children.length; i++) {
-
-//             Resource resource = children[i];
-//             ACL acl = null;
-
-//             if (!resource.isInheritedACL()) {
-
-//                 if (!acls.containsKey(resource.getURI())) {
-//                     throw new SQLException("Database inconsistency: resource "
-//                             + resource.getURI() + " claims  ACL is inherited, "
-//                             + "but no ACL exists");
-//                 }
-
-//                 acl = (ACL) acls.get(resource.getURI());
-
-//             } else {
-
-//                 String[] path = URLUtil.splitUriIncrementally(resource.getURI());
-
-//                 for (int j = path.length - 2; j >= 0; j--) {
-
-//                     ACL found = (ACL) acls.get(path[j]);
-
-//                     if (found != null) {
-//                         try {
-//                             /*
-//                              * We have to clone the ACL here, because ACLs and
-//                              * children are "doubly linked".
-//                              */
-//                             acl = (ACL) found.clone();
-//                         } catch (CloneNotSupportedException e) {
-//                             throw new SQLException(e.getMessage());
-//                         }
-
-//                         break;
-//                     }
-//                 }
-
-//                 if (acl == null) {
-//                     throw new SQLException("Resource " + resource.getURI()
-//                             + ": no ACL to inherit! At least root "
-//                             + "resource should contain an ACL");
-//                 }
-//             }
-
-//             resource.setACL(acl);
-//         }
-//     }
 
     private void loadPropertiesForChildren(Connection conn, Resource parent,
             Resource[] resources)
@@ -1590,48 +1311,32 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         ResultSet rs = propStmt.executeQuery(query);
         Map resourceMap = new HashMap();
 
-        final int namespace = 0;
-        final int name = 1;
-        final int value = 2;
-
         while (rs.next()) {
             // FIXME: type conversion
             Integer resourceID = new Integer((int) rs.getLong("resource_id"));
 
-            Map propertyMap = (Map) resourceMap.get(resourceID);
+            List propertyList = (List) resourceMap.get(resourceID);
 
-            if (propertyMap == null) {
-                propertyMap = new HashMap();
-                resourceMap.put(resourceID, propertyMap);
+            if (propertyList == null) {
+                propertyList = new ArrayList();
+                resourceMap.put(resourceID, propertyList);
             }
 
-            String[] prop = new String[3];
+            Property prop = new Property();
+            prop.setNamespace(rs.getString("name_space"));
+            prop.setName(rs.getString("name"));
+            prop.setValue(rs.getString("value"));
 
-            prop[namespace] = rs.getString("name_space");
-            prop[name] = rs.getString("name");
-            prop[value] = rs.getString("value");
-
-            propertyMap.put(new Integer(rs.getInt("extra_prop_entry_id")), prop);
+            propertyList.add(prop);
         }
 
         rs.close();
         propStmt.close();
 
         for (int i = 0; i < resources.length; i++) {
-            Map propertyMap = (Map) resourceMap.get(new Integer(resources[i].getID()));
+            List propertyList = (List) resourceMap.get(new Integer(resources[i].getID()));
 
-            if (propertyMap == null) {
-                continue;
-            }
-
-            for (Iterator j = propertyMap.keySet().iterator(); j.hasNext();) {
-                Integer key = (Integer) j.next();
-                String[] prop = (String[]) propertyMap.get(key);
-
-                if (prop != null) {
-                    resources[i].addProperty(prop[namespace], prop[name], prop[value]);
-                }
-            }
+            resources[i].setProperties(propertyList);
         }
     }
 
@@ -1754,21 +1459,20 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                       boolean setOwner, String owner) throws SQLException, IOException {
 
         int depthDiff = getURIDepth(destURI) - getURIDepth(resource.getURI());
-        int idx = resource.getURI().length() + 1;
     
         String ownerVal = setOwner ? "'" + owner + "'" : "resource_owner";
 
         String query = "insert into vortex_resource (resource_id, prev_resource_id, "
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
-            + "display_name, description, content_language, content_type, character_encoding, "
+            + "display_name, content_language, content_type, character_encoding, "
             + "is_collection, acl_inherited) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "
-            + "'" + destURI + "' || substring(uri, " + idx + ", length(uri)), "
+            + "'" + destURI + "' || substring(uri, length('" + resource.getURI() + "') + 1), "
             + "depth + " + depthDiff + ", creation_time, content_last_modified, "
             + "properties_last_modified, " 
             + "content_modified_by, properties_modified_by, " + ownerVal + ", display_name, "
-            + "description, content_language, content_type, character_encoding, is_collection, "
+            + "content_language, content_type, character_encoding, is_collection, "
             + "acl_inherited from vortex_resource "
             + "where uri = '" + resource.getURI() + "'"
             + "or uri like '" + getURIWildcard(resource.getURI()) + "'";
@@ -1818,57 +1522,16 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.executeUpdate(query);
         stmt.close();
 
-        String fileNameFrom = this.repositoryDataDirectory
-            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-               : resource.getURI());
-        String fileNameTo = this.repositoryDataDirectory
-            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(destURI)
-               : destURI);
-
         long timestamp = System.currentTimeMillis();
-        if (resource.isCollection()) {
-            copyDir(new File(fileNameFrom), new File(fileNameTo));
-        } else {
-            copyFile(new File(fileNameFrom), new File(fileNameTo));
-        }
+        contentStore.copy(resource.getURI(), destURI);
         long duration = System.currentTimeMillis() - timestamp;
+
         if (logger.isDebugEnabled()) {
-            logger.debug("Successfully copied '" + fileNameFrom + "' to '"
-                         + fileNameTo + "' in " + duration + " ms");
+            logger.debug("Successfully copied '" + resource.getURI() + "' to '"
+                         + destURI + "' in " + duration + " ms");
         }
-            System.out.println("Successfully copied '" + fileNameFrom + "' to '"
-                               + fileNameTo + "' in " + duration + " ms");
+            System.out.println("Successfully copied '" + resource.getURI() + "' to '"
+                               + destURI + "' in " + duration + " ms");
     }
     
-
-    private void copyDir(File fromDir, File toDir) throws IOException {
-
-        if (!fromDir.isDirectory()) {
-            throw new IllegalArgumentException("File " + fromDir + " is not a directory");
-        }
-        toDir.mkdir();
-
-        File[] children = fromDir.listFiles();
-        for (int i = 0; i < children.length; i++) {
-            File newFile = new File(toDir.getCanonicalPath()
-                                  + File.separator + children[i].getName());
-            if (children[i].isFile()) {
-                copyFile(children[i], newFile);
-            } else {
-                copyDir(children[i], newFile);
-            }
-        }
-    }
-    
-
-    private void copyFile(File from, File to) throws IOException {
-
-        FileChannel srcChannel = new FileInputStream(from).getChannel();
-        FileChannel dstChannel = new FileOutputStream(to).getChannel();
-        dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-        srcChannel.close();
-        dstChannel.close();
-    }
-
-
 }

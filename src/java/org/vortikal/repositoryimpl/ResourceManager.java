@@ -32,27 +32,28 @@ package org.vortikal.repositoryimpl;
 
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
 import org.doomdark.uuid.UUIDGenerator;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.PrivilegeDefinition;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.repository.URIUtil;
-import org.vortikal.repository.ResourceNotFoundException;
 
 
 public class ResourceManager {
@@ -68,7 +69,8 @@ public class ResourceManager {
     private RoleManager roleManager;
     private DataAccessor dao;
 
-    public void lockAuthorize(Resource resource, Principal principal) throws ResourceLockedException, AuthenticationException {
+    private void lockAuthorize(Resource resource, Principal principal) 
+        throws ResourceLockedException, AuthenticationException {
 
         if (resource.getLock() == null) {
             return;
@@ -83,16 +85,18 @@ public class ResourceManager {
         }
     }
     
-    public void lockAuthorizeRecursively(Resource collection, Principal principal) 
+    public void lockAuthorize(Resource resource, Principal principal, boolean deep) 
         throws ResourceLockedException, IOException, AuthenticationException {
 
-        lockAuthorize(collection, principal);
+        lockAuthorize(resource, principal);
 
-        String[] uris = this.dao.discoverLocks(collection);
+        if (resource.isCollection() && deep) {
+            String[] uris = this.dao.discoverLocks(resource);
 
-        for (int i = 0; i < uris.length;  i++) {
-            Resource ancestor = this.dao.load(uris[i]);
-            lockAuthorize(ancestor, principal);
+            for (int i = 0; i < uris.length;  i++) {
+                Resource ancestor = this.dao.load(uris[i]);
+                lockAuthorize(ancestor, principal);
+            }
         }
     }
 
@@ -129,63 +133,45 @@ public class ResourceManager {
         return resource.getLock().getLockToken();
     }
 
-    public void deleteResource(Resource resource, Principal principal)
-        throws AuthorizationException, AuthenticationException, 
-            ResourceLockedException, IOException {
-        
-        if (resource.getLock() != null) {
-            // XXX: remove authorization here, 
-            lockAuthorize(resource, principal);
-        }
-        this.dao.delete(resource);
-    }
-
-
     /**
-     * Creates a collection with a specified owner and (possibly inherited) ACL.
+     * Creates a resource.
      */
-    public Resource create(Resource parent, Principal principal,
-                           boolean collection, String owner,
-                           String path, ACL acl, boolean inheritedACL)
+    public org.vortikal.repository.Resource create(Resource parent, Principal principal,
+                           boolean collection, String path)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
         this.permissionsManager.authorize(parent, principal, PrivilegeDefinition.WRITE);
 
         Resource r = new Resource(
             path,
-            owner,
+            principal.getQualifiedName(),
             principal.getQualifiedName(),
             principal.getQualifiedName(),
             new ACL(),
             true,
-            null,
-            collection,
-            new String[0]);
+            collection);
 
+        if (collection) {
+            r.setContentType("application/x-vortex-collection");
+        } else {
+            r.setContentType(MimeHelper.map(r.getName()));
+        }
+
+        
         Date now = new Date();
-
         r.setCreationTime(now);
         r.setContentLastModified(now);
         r.setPropertiesLastModified(now);
-
-        if (!collection) {
-            r.setContentType(MimeHelper.map(r.getName()));
-        }
 
 
         this.dao.store(r);
         r = this.dao.load(path);
 
-        if (!inheritedACL) {
-            r.setInheritedACL(false);
-            this.storeACL(r, principal, permissionsManager.toAceList(acl, null));
-        }
-
         addChildURI(parent, r.getURI());
 
         // Update timestamps:
-        parent.setContentLastModified(new Date());
-        parent.setPropertiesLastModified(new Date());
+        parent.setContentLastModified(now);
+        parent.setPropertiesLastModified(now);
 
         // Update principal info:
         parent.setContentModifiedBy(principal.getQualifiedName());
@@ -193,7 +179,7 @@ public class ResourceManager {
 
         this.dao.store(parent);
 
-        return r;
+        return getResourceDTO(r, principal);
     }
 
 
@@ -257,7 +243,10 @@ public class ResourceManager {
 
             resource.setContentType(dto.getContentType());
             resource.setCharacterEncoding(null);
-            resource.setContentLocale(dto.getContentLocale());
+
+            resource.setContentLocale(null);
+            if (dto.getContentLocale() != null)
+                resource.setContentLocale(dto.getContentLocale().toString());
 
             if ((resource.getContentType() != null)
                 && ContentTypeHelper.isTextContentType(resource.getContentType()) &&
@@ -275,7 +264,7 @@ public class ResourceManager {
         }
 
         resource.setDisplayName(dto.getDisplayName());
-        resource.setProperties(dto.getProperties());
+        resource.setProperties(Arrays.asList(dto.getProperties()));
         
         this.dao.store(resource);
     }
@@ -375,7 +364,7 @@ public class ResourceManager {
         dto.setContentType(resource.getContentType());
         dto.setCharacterEncoding(resource.getCharacterEncoding());
         dto.setDisplayName(resource.getDisplayName());
-        dto.setName(resource.name);
+        dto.setName(resource.getName());
 
         dto.setActiveLock(getActiveLock(resource.getLock()));
 
@@ -385,7 +374,7 @@ public class ResourceManager {
         dto.setPropertiesModifiedBy(principalManager.getPrincipal(resource
                 .getPropertiesModifiedBy()));
 
-        dto.setProperties(resource.getPropertyDTOs());
+        dto.setProperties((Property[])resource.getProperties().toArray(new Property[resource.getProperties().size()]));
 
         String inheritedFrom = null;
         if (resource.isInheritedACL()) {
@@ -398,7 +387,7 @@ public class ResourceManager {
         if (parentURI != null) {
             inheritedFrom = null;
             Resource parent = this.dao.load(parentURI);
-            // XXX if loading the parent fails, the resource itself
+            // FIXME: if loading the parent fails, the resource itself
             // has been removed
             if (parent == null) {
                 throw new ResourceNotFoundException(
@@ -416,7 +405,7 @@ public class ResourceManager {
             dto.setChildURIs(resource.getChildURIs());
         } else {
             dto.setContentLength(dao.getContentLength(resource));
-            dto.setContentLocale(resource.getContentLocale());
+            dto.setContentLocale(LocaleHelper.getLocale(resource.getContentLocale()));
         }
 
         return dto;

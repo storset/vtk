@@ -34,6 +34,7 @@ package org.vortikal.aop.interceptor;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -157,46 +158,27 @@ public class XMLSchemaPropertyContentStoreHandler
             Namespace ns = Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
             String schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);
             
-            Vector properties = resource.getProperties();
-            List newProperties = new ArrayList();
+            List properties = resource.getProperties();
 
-            boolean foundInDocument = schemaLocation != null;
-            boolean propertyAlreadyExisted = false;
-
-            for (int i = 0; i < properties.size(); i++) {
-                Vector prop = (Vector) properties.get(i);
-
-                String namespace = (String) prop.get(0);
-                String name = (String) prop.get(1);
-                String value = (String) prop.get(2);
-                
-                Property newProp = new Property();
-                newProp.setNamespace(namespace);
-                newProp.setName(name);
-                newProp.setValue(value);
-                
-                if (prop.get(0).equals(Property.LOCAL_NAMESPACE)
-                    && prop.get(1).equals(this.schemaPropertyName)) {
-                    propertyAlreadyExisted = true;
-                    newProp.setValue(schemaLocation);
-                    if (! (propertyAlreadyExisted && !foundInDocument))
-                        newProperties.add(newProp);
-                } else {
-                    newProperties.add(newProp);
+            for (Iterator iter = properties.iterator(); iter.hasNext();) {
+                Property prop = (Property) iter.next();
+                                
+                if (prop.getNamespace().equals(Property.LOCAL_NAMESPACE)
+                    && prop.getName().equals(this.schemaPropertyName)) {
+                    properties.remove(prop);
                 }
             }
-
-
-            if (!propertyAlreadyExisted && foundInDocument) {
+            
+            if (schemaLocation != null) {
                 Property newProp = new Property();
                 newProp.setNamespace(Property.LOCAL_NAMESPACE);
                 newProp.setName(this.schemaPropertyName);
                 newProp.setValue(schemaLocation);
-                newProperties.add(newProp);
-            } 
+                properties.add(newProp);
+            }
 
-
-            resource.setProperties((Property[]) newProperties.toArray(new Property[0]));
+            // XXX: necessary?
+            resource.setProperties(properties);
 
         } catch (Throwable t) {
 

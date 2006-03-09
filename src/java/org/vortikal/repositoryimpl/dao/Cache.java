@@ -32,22 +32,20 @@ package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.util.repository.URIUtil;
+
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
 
 
 /**
@@ -432,13 +430,13 @@ public class Cache implements DataAccessor, InitializingBean {
         return this.wrappedAccessor.getInputStream(resource);
     }
 
-    public OutputStream getOutputStream(Resource resource)
+    public void storeContent(Resource resource, InputStream stream)
         throws IOException {
         try {
             this.lockManager.lock(resource.getURI());
             this.items.remove(resource.getURI());
 
-            return this.wrappedAccessor.getOutputStream(resource);
+            this.wrappedAccessor.storeContent(resource, stream);
         } finally {
             this.lockManager.unlock(resource.getURI());
         }

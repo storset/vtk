@@ -44,7 +44,7 @@ PRIMARY KEY (resource_id);
 -----------------------------------------------------------------------------
 DROP SEQUENCE parent_child_seq_pk;
 
-CREATE SEQUENCE parent_child_seq_pk INCREMENT 1 START 1000;
+-- CREATE SEQUENCE parent_child_seq_pk INCREMENT 1 START 1000;
 
 DROP TABLE parent_child CASCADE;
 
@@ -256,7 +256,7 @@ VALUES (1, 'EXCLUSIVE_WRITE');
 
 INSERT INTO VORTEX_RESOURCE (
     resource_id,
-    tmp_resource_id,
+    prev_resource_id,
     uri,
     depth,
     creation_time,

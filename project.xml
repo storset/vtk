@@ -300,6 +300,7 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
+    <!-- 
     <dependency>
       <id>hsqldb</id>
       <version>1.8.0.1</version>
@@ -307,6 +308,7 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
+    -->
     <!-- These dependencies are needed in order to build the
           project: -->
     <dependency>

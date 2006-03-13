@@ -66,7 +66,7 @@ import org.vortikal.util.repository.URIUtil;
  * the values provided in the resource. The repository implementation
  * may still choose to ignore some of these properties.
  */
-public class Resource implements java.io.Serializable, Cloneable {
+public class OldResource implements java.io.Serializable, Cloneable {
     
     
     private static final long serialVersionUID = 3257286937366050105L;

@@ -28,18 +28,49 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository;
+package org.vortikal.repository.resourcetype;
 
-import java.util.List;
+import java.util.Date;
 
-public interface PropertySet {
 
-   public String getURI();
+public final class Value {
 
-   public List getProperties();
+    private int type = PropertyType.TYPE_STRING;
+    
+    private String value;
+    private Date dateValue;
+    private boolean booleanValue;
 
-   public Property getProperty(Namespace namespace, String name);
+    public boolean getBooleanValue() {
+        return booleanValue;
+    }
 
-   public List getProperties(Namespace namespace);
+    public void setBooleanValue(boolean booleanValue) {
+        this.type = PropertyType.TYPE_BOOLEAN;
+        this.booleanValue = booleanValue;
+    }
+
+    public Date getDateValue() {
+        return dateValue;
+    }
+
+    public void setDateValue(Date dateValue) {
+        this.type = PropertyType.TYPE_DATE;
+        this.dateValue = dateValue;
+    }
+
+    public void setValue(String value) {
+        this.type = PropertyType.TYPE_STRING;
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+    
+    
+    public int getType() {
+        return type;
+    }
 
 }

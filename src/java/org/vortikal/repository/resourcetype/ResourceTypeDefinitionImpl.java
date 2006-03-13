@@ -30,8 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.vortikal.web.service.Assertion;
 import org.vortikal.repository.Namespace;
+import org.vortikal.web.service.RepositoryAssertion;
 
 
 public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition {
@@ -41,7 +41,7 @@ public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition {
     private ResourceTypeDefinition parentTypeDefinition;
     private ResourceTypeDefinition[] mixinTypeDefinitions;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
-    private Assertion[] assertions;
+    private RepositoryAssertion[] assertions;
     
 
 
@@ -85,11 +85,11 @@ public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition {
         this.propertyTypeDefinitions = propertyTypeDefinitions;
     }
 
-    public Assertion[] getAssertions() {
+    public RepositoryAssertion[] getAssertions() {
         return this.assertions;
     }
 
-    public void setAssertions(Assertion[] assertions) {
+    public void setAssertions(RepositoryAssertion[] assertions) {
         this.assertions = assertions;
     }
 

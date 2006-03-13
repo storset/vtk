@@ -57,6 +57,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
+import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.util.repository.URIUtil;
 
@@ -74,11 +75,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     private String databasePassword;
 
     private BasicDataSource pool;
-    private ContentStore contentStore;
-    
-    public void setContentStore(ContentStore contentStore) {
-        this.contentStore = contentStore;
-    }
 
     public void setDatabaseDriver(String databaseDriver) {
         this.databaseDriver = databaseDriver;
@@ -278,8 +274,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         resource.setChildURIs(childURIs);
         
         loadACLs(conn, new Resource[] {resource});
-        List properties = loadProperties(conn, resource.getURI());
-        resource.setProperties(properties);
+        loadProperties(conn, resource);
 
         return resource;
     }
@@ -294,25 +289,39 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         boolean isCollection = rs.getString("is_collection").equals("Y");
         ACL acl = new ACL();
 
-        Resource resource = new Resource(uri, owner, contentModifiedBy,
-                                    propertiesModifiedBy, acl, inherited, 
-                                    isCollection);
-
-        resource.setCreationTime(rs.getTimestamp("creation_time"));
-        resource.setOwner(rs.getString("resource_owner"));
-        resource.setDisplayName(rs.getString("display_name"));
-        resource.setContentType(rs.getString("content_type"));
-        resource.setCharacterEncoding(rs.getString("character_encoding"));
+        Resource resource = new Resource(uri);
         resource.setID(rs.getInt("resource_id"));
-        resource.setContentLocale(rs.getString("content_language"));
 
-        Date contentLastModified = 
-            new Date(rs.getTimestamp("content_last_modified").getTime());
-        Date propertiesLastModified = 
-            new Date(rs.getTimestamp("properties_last_modified").getTime());
+        Property prop = this.propertyManager.createProperty(null, "collection", new Boolean(isCollection));
+        resource.addProperty(prop);
+        // XXX:, owner, contentModifiedBy,propertiesModifiedBy, acl, inherited, 
+        
+        prop = this.propertyManager.createProperty(null, "creationTime", new Date(rs.getTimestamp("creation_time").getTime()));
+        resource.addProperty(prop);
 
-        resource.setContentLastModified(contentLastModified);
-        resource.setPropertiesLastModified(propertiesLastModified);
+        prop = this.propertyManager.createProperty(null, "owner", rs.getString("resource_owner"));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(null, "displayName", rs.getString("display_name"));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(null, "contentType", rs.getString("content_type"));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(null, "contentType", rs.getString("content_type"));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(null, "characterEncoding", rs.getString("character_encoding"));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(null, "contentLocale", rs.getString("content_language"));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(null, "contentLastModified", new Date(rs.getTimestamp("content_last_modified").getTime()));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(null, "propertiesLastModified", new Date(rs.getTimestamp("properties_last_modified").getTime()));
+        resource.addProperty(prop);
 
         return resource;
     }
@@ -335,31 +344,30 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    private List loadProperties(Connection conn, String uri)
+    private void loadProperties(Connection conn, Resource resource)
             throws SQLException {
 
+        String uri = resource.getURI();
+        
         String query = "select * from EXTRA_PROP_ENTRY where resource_id in " + 
         "(select resource_id from vortex_resource where uri = '" + uri + "')";
 
         Statement propStmt = conn.createStatement();
         ResultSet rs = propStmt.executeQuery(query);
 
-        List propertyList = new ArrayList();
-
         while (rs.next()) {
 
-            Property prop = new Property();
-            prop.setNamespace(rs.getString("name_space"));
-            prop.setName(rs.getString("name"));
-            prop.setValue(rs.getString("value"));
+            String ns = rs.getString("name_space");
+            String name = rs.getString("name");
+            String value = rs.getString("value");
 
-            propertyList.add(prop);
+            Property prop = this.propertyManager.createProperty(ns, name, value);
+            resource.addProperty(prop);
         }
 
         rs.close();
         propStmt.close();
 
-        return propertyList;
     }
 
     public void deleteExpiredLocks() throws IOException {
@@ -1024,7 +1032,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.setInt(1, r.getID());
         stmt.setString(2, property.getNamespace());
         stmt.setString(3, property.getName());
-        stmt.setString(4, property.getValue());
+        stmt.setString(4, property.getStringValue());
 
         stmt.executeUpdate();
         stmt.close();
@@ -1311,33 +1319,23 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         ResultSet rs = propStmt.executeQuery(query);
         Map resourceMap = new HashMap();
 
+        for (int i = 0; i < resources.length; i++) {
+            resourceMap.put(new Integer(resources[i].getID()), resources[i]);
+        }
+        
         while (rs.next()) {
             // FIXME: type conversion
             Integer resourceID = new Integer((int) rs.getLong("resource_id"));
 
-            List propertyList = (List) resourceMap.get(resourceID);
-
-            if (propertyList == null) {
-                propertyList = new ArrayList();
-                resourceMap.put(resourceID, propertyList);
-            }
-
-            Property prop = new Property();
-            prop.setNamespace(rs.getString("name_space"));
-            prop.setName(rs.getString("name"));
-            prop.setValue(rs.getString("value"));
-
-            propertyList.add(prop);
+            Property prop = this.propertyManager.createProperty(
+                    rs.getString("name_space"), rs.getString("name"), rs.getString("value"));
+            Resource r = (Resource) resourceMap.get(resourceID);
+            r.addProperty(prop);
         }
 
         rs.close();
         propStmt.close();
 
-        for (int i = 0; i < resources.length; i++) {
-            List propertyList = (List) resourceMap.get(new Integer(resources[i].getID()));
-
-            resources[i].setProperties(propertyList);
-        }
     }
 
     private Map loadLocksForChildren(Connection conn, Resource parent)

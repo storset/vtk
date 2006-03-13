@@ -30,19 +30,25 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.vortikal.repository.PropertySet;
+import org.vortikal.security.Principal;
 
-public final class PropertyType {
 
-    // Protection levels
-    public static final int PROTECTION_LEVEL_EDITABLE = 0;
-    public static final int PROTECTION_LEVEL_PROTECTED = 1;
-    public static final int PROTECTION_LEVEL_UNEDITABLE = 2;
-    public static final int PROTECTION_LEVEL_ROOT_EDITABLE = 3;
+public interface PropertyEvaluator {
+
+    // Need different modes for: create, copy, store and storeContent
     
-    // Data types
-    public static final int TYPE_STRING = 0;
-    public static final int TYPE_INT = 1;
-    public static final int TYPE_LONG = 2;
-    public static final int TYPE_DATE = 3;
+    // Create need principal, isCollection, newPropertySet (earlier eval. props)
+    // Copy is unspecified as of yet...
+    // storeContent - needs principal, content, oldvalue
+    // store needs principal, newPropertySet ( + dead props?), newValue, oldValue
+    
+    
+    public Value extractFromContent(String operation, Principal principal,
+            Content content, Value currentValue) throws Exception;
+    
+    
+    public Value evaluateProperties(String operation, Principal principal,
+            PropertySet newProperties, Value currentValue, Value oldValue) throws Exception;
 
 }

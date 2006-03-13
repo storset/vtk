@@ -32,7 +32,7 @@
     <property name="databasePassword" value="${jdbcPassword}" />
 
     <property name="contentStore" ref="repository.contentStore" />
-    <property name="principalManager" ref="principalManager" />
+    <property name="propertyManager" ref="propertyManager" />
   </bean>
 
   <bean id="repository.contentStore" 
@@ -50,6 +50,14 @@
     <property name="roleManager" ref="roleManager" />
     <property name="permissionsManager" ref="permissionsManager" />
     <property name="dao" ref="repository.backend" />
+    <property name="propertyManager" ref="propertyManager" />
+  </bean>
+
+  <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">
+    <property name="principalManager" ref="principalManager" />
+    <property name="roleManager" ref="roleManager" />
+    <property name="permissionsManager" ref="permissionsManager" />
+    <property name="rootResourceTypeDefinition" ref="rootResourceTypeDefinition"/>
   </bean>
 
   <bean id="permissionsManager" class="org.vortikal.repositoryimpl.PermissionsManager">

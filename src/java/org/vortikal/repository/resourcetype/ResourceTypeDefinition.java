@@ -30,25 +30,22 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.vortikal.repository.Namespace;
+import org.vortikal.web.service.RepositoryAssertion;
 
-public interface PropertyTypeDefinition {
-    
+
+public interface ResourceTypeDefinition {
+
     public String getName();
 
-    public int getType();
-    
-    public boolean isMultiple();
+    public Namespace getNamespace();
 
-    public int getProtectionLevel();
-    
-    public boolean isMandatory();
+    public ResourceTypeDefinition getParentTypeDefinition();
 
-    public Constraint getConstraint();
+    public ResourceTypeDefinition[] getMixinTypeDefinitions();
 
-    public PropertyEvaluation getPropertyEvaluation();
-    
+    public PropertyTypeDefinition[] getPropertyTypeDefinitions();
+
+    public RepositoryAssertion[] getAssertions();
+
 }
-
-
-
-

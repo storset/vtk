@@ -30,55 +30,37 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.NuResource;
 import org.vortikal.repository.Property;
 
 
-public class Resource implements Cloneable {
+public class Resource implements NuResource, Cloneable {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
     /* Numeric ID, required by database */
     private int id = -1;
 
-    protected String uri = null;
-    protected String owner = null;
-    protected String contentModifiedBy = null;
-    protected String propertiesModifiedBy = null;
-    protected ACL acl = null;
-    protected boolean inheritedACL = true;
-    protected LockImpl lock = null;
-    protected Date creationTime = null;
-    protected Date contentLastModified = null;
-    protected Date propertiesLastModified = null;
-    protected String displayName;
-    protected String contentType;
-    protected String characterEncoding = null;
-// XXX: shouldn't do it like this!:
-    protected List properties = new ArrayList();
-    protected boolean dirtyACL = false;
+    private String uri = null;
+    private ACL acl = null;
+    private boolean inheritedACL = true;
+    private LockImpl lock = null;
+    private boolean dirtyACL = false;
     private String[] childURIs = null;
-    private String contentLocale = null;
-    private boolean collection;
     
-    public Resource(String uri, String owner, String contentModifiedBy,
-        String propertiesModifiedBy, ACL acl, boolean inheritedACL,
-        boolean collection) {
-
+    private Map propertyMap = new HashMap();
+    
+    public Resource(String uri) {
         this.uri = uri;
-        this.owner = owner;
-        this.contentModifiedBy = contentModifiedBy;
-        this.propertiesModifiedBy = propertiesModifiedBy;
-        this.acl = acl;
-        this.inheritedACL = inheritedACL;
-        this.collection = collection;
-        this.owner = owner;
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -86,23 +68,102 @@ public class Resource implements Cloneable {
         LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
                 .clone();
 
-        Resource clone = new Resource(uri, owner, contentModifiedBy,
-                propertiesModifiedBy, acl, inheritedACL, collection);
+        Resource clone = new Resource(uri);
+        clone.setID(id);
+        clone.setACL(acl);
+        clone.setInheritedACL(inheritedACL);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
-        clone.setContentLocale(this.contentLocale);
-
-        List props = new ArrayList();
         
-        for (Iterator iter = this.properties.iterator(); iter.hasNext();) {
+        for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
-            props.add(prop.clone());
+            clone.addProperty((Property) prop.clone());
         }
-        clone.setProperties(props);
 
         return clone;
     }
 
+    private String getPropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(null)).get(name);
+        if (prop == null) return null;
+        return prop.getStringValue();
+    }
+
+    private Date getDatePropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(null)).get(name);
+        if (prop == null) return null;
+        return prop.getDateValue();
+    }
+
+    private boolean getBooleanPropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(null)).get(name);
+        return prop.getBooleanValue();
+    }
+
+    public String getOwner() {
+        return getPropValue("owner");
+    }
+
+    public String getContentModifiedBy() {
+        return getPropValue("contentModifiedBy");
+    }
+
+    public String getPropertiesModifiedBy() {
+        return getPropValue("propertiesModifiedBy");
+    }
+
+    public Date getCreationTime() {
+        return getDatePropValue("creationTime");
+    }
+
+    public Date getContentLastModified() {
+        return getDatePropValue("contentLastModified");
+    }
+
+    public Date getPropertiesLastModified() {
+        return getDatePropValue("propertiesLastModified");
+    }
+
+    public String getDisplayName() {
+        return getPropValue("displayName");
+    }
+
+    public String getContentType() {
+        return getPropValue("contentType");
+    }
+
+    public String getCharacterEncoding() {
+        return getPropValue("characterEncoding");
+    }
+
+    public boolean isCollection() {
+        return getBooleanPropValue("collection");
+    }
+
+    public String getContentLocale() {
+        return getPropValue("contentLocale");
+    }
+
+
+    public void setChildURIs(String[] childURIs) {
+        this.childURIs = childURIs;
+    }
+
+    public String[] getChildURIs() {
+        return this.childURIs;
+    }
+
+    public void setDirtyACL(boolean dirtyACL) {
+        this.dirtyACL = dirtyACL;
+    }
+
+    public boolean isDirtyACL() {
+        return this.dirtyACL;
+    }
+
+
+
+    
 
 
     public void setACL(ACL acl) {
@@ -120,31 +181,6 @@ public class Resource implements Cloneable {
     public void setLock(LockImpl lock) {
         this.lock = lock;
     }
-
-    public String getOwner() {
-        return this.owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public String getContentModifiedBy() {
-        return this.contentModifiedBy;
-    }
-
-    public void setContentModifiedBy(String contentModifiedBy) {
-        this.contentModifiedBy = contentModifiedBy;
-    }
-
-    public String getPropertiesModifiedBy() {
-        return this.propertiesModifiedBy;
-    }
-
-    public void setPropertiesModifiedBy(String propertiesModifiedBy) {
-        this.propertiesModifiedBy = propertiesModifiedBy;
-    }
-
 
     public String getURI() {
         return this.uri;
@@ -166,50 +202,6 @@ public class Resource implements Cloneable {
         this.inheritedACL = inheritedACL;
     }
 
-    public void setDirtyACL(boolean dirtyACL) {
-        this.dirtyACL = dirtyACL;
-    }
-
-    public boolean isDirtyACL() {
-        return this.dirtyACL;
-    }
-
-    public Date getCreationTime() {
-        return this.creationTime;
-    }
-
-    public void setCreationTime(Date creationTime) {
-        this.creationTime = creationTime;
-    }
-
-    public Date getContentLastModified() {
-        return this.contentLastModified;
-    }
-
-    public void setContentLastModified(Date contentLastModified) {
-        this.contentLastModified = contentLastModified;
-    }
-
-    public Date getPropertiesLastModified() {
-        return this.propertiesLastModified;
-    }
-
-    public void setPropertiesLastModified(Date propertiesLastModified) {
-        this.propertiesLastModified = propertiesLastModified;
-    }
-
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getContentType() {
-        return this.contentType;
-    }
-
     public String getName() {
         if (uri.equals("/")) {
             return uri;
@@ -219,47 +211,39 @@ public class Resource implements Cloneable {
         
     }
 
-    public String getCharacterEncoding() {
-        return this.characterEncoding;
+    public void addProperty(Property property) {
+        Map map = (Map)propertyMap.get(property.getNamespace());
+        if (map == null) {
+            map = new HashMap();
+            propertyMap.put(property.getNamespace(), map);
+        }
+        map.put(property.getName(), property);
+    }
+    
+    public Property getProperty(String namespace, String name) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public void setCharacterEncoding(String characterEncoding) {
-        this.characterEncoding = characterEncoding;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public boolean isCollection() {
-        return this.collection;
+    public List getProperties(String namespace) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public List getProperties() {
-        return this.properties;
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public void setProperties(List properties) {
-        // XXX: shouldn't do it like this:
-        if (properties != null)
-            this.properties = properties;
+    public Property createProperty(String namespace, String name) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public void setChildURIs(String[] childURIs) {
-        this.childURIs = childURIs;
+    public void deleteProperty(Property property) {
+        // TODO Auto-generated method stub
+        
     }
 
-    public String[] getChildURIs() {
-        return this.childURIs;
-    }
-
-    public String getContentLocale() {
-        return this.contentLocale;
-    }
-
-    public void setContentLocale(String contentLocale) {
-        this.contentLocale = contentLocale;
-    }
-
-
+    
 }

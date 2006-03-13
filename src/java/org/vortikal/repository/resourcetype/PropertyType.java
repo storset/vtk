@@ -31,16 +31,35 @@
 package org.vortikal.repository.resourcetype;
 
 
-public class PropertyEvaluationImpl implements PropertyEvaluation {
+public final class PropertyType {
 
-    private Extractor extractor;
-
-    public void setExtractor(Extractor extractor) {
-        this.extractor = extractor;
-    }
+    /*
+     * Property data types
+     */ 
     
-    public Extractor getExtractor() {
-        return this.extractor;
-    }
+    public static final int TYPE_STRING = 0;
+    public static final int TYPE_INT = 1;
+    public static final int TYPE_LONG = 2;
+    public static final int TYPE_DATE = 3;
+    public static final int TYPE_BOOLEAN = 4;
+
+    /*
+     *  Protection levels
+     */
+    
+    // Write privilege needed to edit prop
+    public static final int PROTECTION_LEVEL_EDITABLE = 0;
+
+    // Principals with admin permissions can edit property
+    public static final int PROTECTION_LEVEL_PROTECTED = 1;
+
+    // Only principals of the ROOT role or owners are allowed to set property
+    public static final int PROTECTION_LEVEL_OWNER_EDITABLE = 2;
+    
+    // Only principals of the ROOT role  are allowed to set property
+    public static final int PROTECTION_LEVEL_ROOT_EDITABLE = 3;
+
+    //  Property is uneditable
+    public static final int PROTECTION_LEVEL_UNEDITABLE = 4;
     
 }

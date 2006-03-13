@@ -31,6 +31,25 @@
 package org.vortikal.repository.resourcetype;
 
 
-public final class Value {
+
+public interface PropertyTypeDefinition {
     
+    public String getName();
+
+    public int getType();
+    
+    public boolean isMultiple();
+
+    public int getProtectionLevel();
+    
+    public boolean isMandatory();
+
+    public Constraint getConstraint();
+
+    public PropertyEvaluator getPropertyEvaluator();
+
 }
+
+
+
+

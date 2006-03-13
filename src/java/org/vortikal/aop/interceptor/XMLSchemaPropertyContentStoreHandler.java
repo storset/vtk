@@ -33,22 +33,15 @@ package org.vortikal.aop.interceptor;
 
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repositoryimpl.Resource;
 import org.vortikal.repositoryimpl.ResourceManager;
@@ -157,28 +150,16 @@ public class XMLSchemaPropertyContentStoreHandler
 
             Namespace ns = Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
             String schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);
-            
-            List properties = resource.getProperties();
 
-            for (Iterator iter = properties.iterator(); iter.hasNext();) {
-                Property prop = (Property) iter.next();
-                                
-                if (prop.getNamespace().equals(Property.LOCAL_NAMESPACE)
-                    && prop.getName().equals(this.schemaPropertyName)) {
-                    properties.remove(prop);
-                }
+            Property prop = resource.getProperty(Property.LOCAL_NAMESPACE, this.schemaPropertyName);
+            if (prop != null) {
+                resource.deleteProperty(prop);
             }
             
             if (schemaLocation != null) {
-                Property newProp = new Property();
-                newProp.setNamespace(Property.LOCAL_NAMESPACE);
-                newProp.setName(this.schemaPropertyName);
-                newProp.setValue(schemaLocation);
-                properties.add(newProp);
+                prop = resource.createProperty(Property.LOCAL_NAMESPACE, this.schemaPropertyName);
+                prop.setValue(schemaLocation);
             }
-
-            // XXX: necessary?
-            resource.setProperties(properties);
 
         } catch (Throwable t) {
 

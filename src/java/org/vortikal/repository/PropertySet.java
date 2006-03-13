@@ -28,24 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype;
+package org.vortikal.repository;
 
-import org.vortikal.web.service.Assertion;
-import org.vortikal.repository.Namespace;
+import java.util.List;
 
+public interface PropertySet {
 
-public interface ResourceTypeDefinition {
+   public String getURI();
 
-    public String getName();
+   public String getName();
+   
+   public List getProperties();
 
-    public Namespace getNamespace();
+   public Property getProperty(String namespace, String name);
 
-    public ResourceTypeDefinition getParentTypeDefinition();
-
-    public ResourceTypeDefinition[] getMixinTypeDefinitions();
-
-    public PropertyTypeDefinition[] getPropertyTypeDefinitions();
-
-    public Assertion[] getAssertions();
+   public List getProperties(String namespace);
 
 }

@@ -32,6 +32,7 @@ package org.vortikal.repositoryimpl;
 
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -41,7 +42,6 @@ import org.doomdark.uuid.UUIDGenerator;
 import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -69,6 +69,8 @@ public class ResourceManager {
     private RoleManager roleManager;
     private DataAccessor dao;
 
+    private PropertyManagerImpl propertyManager;
+    
     private void lockAuthorize(Resource resource, Principal principal) 
         throws ResourceLockedException, AuthenticationException {
 
@@ -140,46 +142,24 @@ public class ResourceManager {
                            boolean collection, String path)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException {
-        this.permissionsManager.authorize(parent, principal, PrivilegeDefinition.WRITE);
 
-        Resource r = new Resource(
-            path,
-            principal.getQualifiedName(),
-            principal.getQualifiedName(),
-            principal.getQualifiedName(),
-            new ACL(),
-            true,
-            collection);
-
-        if (collection) {
-            r.setContentType("application/x-vortex-collection");
-        } else {
-            r.setContentType(MimeHelper.map(r.getName()));
-        }
-
+        Resource resource = null;
         
-        Date now = new Date();
-        r.setCreationTime(now);
-        r.setContentLastModified(now);
-        r.setPropertiesLastModified(now);
+        try {
+            propertyManager.create(principal, path, collection);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+        this.dao.store(resource);
+        resource = this.dao.load(path);
 
-
-        this.dao.store(r);
-        r = this.dao.load(path);
-
-        addChildURI(parent, r.getURI());
-
-        // Update timestamps:
-        parent.setContentLastModified(now);
-        parent.setPropertiesLastModified(now);
-
-        // Update principal info:
-        parent.setContentModifiedBy(principal.getQualifiedName());
-        parent.setPropertiesModifiedBy(principal.getQualifiedName());
-
+        addChildURI(parent, resource.getURI());
+        propertyManager.collectionContentModified(parent, principal);
+        
         this.dao.store(parent);
 
-        return getResourceDTO(r, principal);
+        return getResourceDTO(resource, principal);
     }
 
 
@@ -222,85 +202,23 @@ public class ResourceManager {
                                 org.vortikal.repository.Resource dto)
         throws AuthenticationException, AuthorizationException, 
             ResourceLockedException, IllegalOperationException, IOException {
-
-        if (!resource.getOwner().equals(dto.getOwner().getQualifiedName())) {
-            /* Attempt to take ownership, only the owner of a parent
-             * resource may do that, so do it in a secure manner: */
-            setResourceOwner(resource, principal, dto.getOwner());
-        }
-
-        if (dto.getOverrideLiveProperties()) {
-            resource.setPropertiesLastModified(dto.getPropertiesLastModified());
-            resource.setContentLastModified(dto.getContentLastModified());
-            resource.setCreationTime(dto.getCreationTime());
-
-        } else {
-            resource.setPropertiesLastModified(new Date());
-            resource.setPropertiesModifiedBy(principal.getQualifiedName());
-        }
-        
-        if (!resource.isCollection()) {
-
-            resource.setContentType(dto.getContentType());
-            resource.setCharacterEncoding(null);
-
-            resource.setContentLocale(null);
-            if (dto.getContentLocale() != null)
-                resource.setContentLocale(dto.getContentLocale().toString());
-
-            if ((resource.getContentType() != null)
-                && ContentTypeHelper.isTextContentType(resource.getContentType()) &&
-                (dto.getCharacterEncoding() != null)) {
-                try {
-                    /* Force checking of encoding */
-                    new String(new byte[0], dto.getCharacterEncoding());
-
-                    resource.setCharacterEncoding(dto.getCharacterEncoding());
-                } catch (java.io.UnsupportedEncodingException e) {
-                    // FIXME: Ignore unsupported character encodings?
-                }
-            }
-
-        }
-
-        resource.setDisplayName(dto.getDisplayName());
-        resource.setProperties(Arrays.asList(dto.getProperties()));
-        
+        this.propertyManager.storeProperties(resource, principal, dto);
         this.dao.store(resource);
     }
     
-
-
-    private void setResourceOwner(Resource resource, Principal principal, Principal newOwner)
-        throws AuthorizationException, IllegalOperationException {
-        if (newOwner == null) {
-            throw new IllegalOperationException(
-                "Unable to delete owner of resource" + resource +
-                ": All resources must have an owner.");
-        }
-
-        /*
-         * Only principals of the ROOT role or owners are allowed to
-         * set owner:
-         */
-        if (!(this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT) ||
-              principal.getQualifiedName().equals(resource.getOwner()))) {
-            throw new AuthorizationException(
-                "Principal " + principal.getQualifiedName()
-                + " is not allowed to set owner of "
-                + "resource " + resource.getURI());
-        }
-
-        if (!principalManager.validatePrincipal(newOwner)) {
-            throw new IllegalOperationException(
-                "Unable to set owner of resource " + resource.getURI()
-                + ": invalid owner: '" + newOwner + "'");
-        }
-
-        resource.setOwner(newOwner.getQualifiedName());
+    public void collectionContentModification(Resource resource, Principal principal) throws IOException {
+        this.propertyManager.collectionContentModified(resource, principal);
+        this.dao.store(resource);
     }
 
+    public void resourceContentModification(Resource resource, 
+            Principal principal, InputStream inputStream) throws IOException {
 
+        this.propertyManager.resourceContentModification(resource, principal, inputStream);
+
+        this.dao.store(resource);
+    }
+    
     public void storeACL(Resource resource, Principal principal,
                          org.vortikal.repository.Ace[] aceList)
         throws AuthorizationException, AuthenticationException, 
@@ -340,14 +258,14 @@ public class ResourceManager {
     }
 
     private org.vortikal.repository.Lock getActiveLock(LockImpl lock) {
-        if (lock != null) {
-            // Is cloning neccessary and/or working?
-            LockImpl clone = (LockImpl)lock.clone();
-            clone.setPrincipal(principalManager.getPrincipal(clone.getUser()));
-            return clone;
-        }
         
-        return null;
+        if (lock == null) return null;
+
+        // Is cloning neccessary and/or working?
+        LockImpl clone = (LockImpl)lock.clone();
+        clone.setPrincipal(principalManager.getPrincipal(clone.getUser()));
+
+        return clone;
     }
 
 
@@ -368,7 +286,7 @@ public class ResourceManager {
 
         dto.setActiveLock(getActiveLock(resource.getLock()));
 
-        dto.setOwner(principalManager.getPrincipal(resource.owner));
+        dto.setOwner(principalManager.getPrincipal(resource.getOwner()));
         dto.setContentModifiedBy(principalManager.getPrincipal(resource
                 .getContentModifiedBy()));
         dto.setPropertiesModifiedBy(principalManager.getPrincipal(resource
@@ -433,6 +351,13 @@ public class ResourceManager {
 
     public void setLockDefaultTimeout(long lockDefaultTimeout) {
         this.lockDefaultTimeout = lockDefaultTimeout;
+    }
+
+    /**
+     * @param propertyManager The propertyManager to set.
+     */
+    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+        this.propertyManager = propertyManager;
     }
 
 }

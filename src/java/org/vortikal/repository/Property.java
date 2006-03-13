@@ -30,6 +30,11 @@
  */
 package org.vortikal.repository;
 
+import java.util.Date;
+
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Value;
+
 
 /**
  * This class represents meta information about resources. A resource
@@ -44,62 +49,68 @@ public class Property implements java.io.Serializable, Cloneable {
     
     private static final long serialVersionUID = 3762531209208410417L;
     
-    private String namespace = null;
-    private String name = null;
-    private String value = null;
+    private String namespaceUri;
+    private String name;
+    private Value value;
 
-    /**
-     * Gets this property's namespace.
-     *
-     * @return the namespace
-     */
     public String getNamespace() {
-        return this.namespace;
+        return this.namespaceUri;
     }
 
-    /**
-     * Sets this property's namespace
-     *
-     * @param namespace the namespace to set
-     */
     public void setNamespace(String namespace) {
-        this.namespace = namespace;
+        this.namespaceUri = namespace;
     }
 
-    /**
-     * Gets this property's name
-     *
-     * @return the name
-     */
     public String getName() {
         return this.name;
     }
 
-    /**
-     * Sets this property's name
-     *
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * Gets this property's value.
-     *
-     * @return the value as a <code>String</code>
-     */
-    public String getValue() {
+    public Value getValue() {
         return this.value;
     }
 
-    /**
-     * Sets this property's value.
-     *
-     * @param value the value to set.
-     */
-    public void setValue(String value) {
+    public void setValue(Value value) {
         this.value = value;
+    }
+
+    public Date getDateValue() {
+        if (value == null || value.getType() != PropertyType.TYPE_DATE) {
+            throw new IllegalOperationException();
+        }
+        return value.getDateValue();
+    }
+
+    public void setDateValue(Date dateValue) {
+        value = new Value();
+        value.setDateValue(dateValue);
+    }
+
+    public String getStringValue() {
+        if (value == null || value.getType() != PropertyType.TYPE_STRING) {
+            throw new IllegalOperationException();
+        }
+        return value.getValue();
+    }
+
+    public void setStringValue(String stringValue) {
+        value = new Value();
+        value.setValue(stringValue);
+    }
+
+    public boolean getBooleanValue() {
+        if (value == null || value.getType() != PropertyType.TYPE_BOOLEAN) {
+            throw new IllegalOperationException();
+        }
+        return value.getBooleanValue();
+    }
+
+    public void setBooleanValue(boolean booleanValue) {
+        value = new Value();
+        value.setBooleanValue(booleanValue);
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -110,7 +121,7 @@ public class Property implements java.io.Serializable, Cloneable {
         StringBuffer sb = new StringBuffer();
 
         sb.append(this.getClass().getName()).append(": ");
-        sb.append("[ ").append(this.namespace);
+        sb.append("[ ").append(this.namespaceUri);
         sb.append(":").append(this.name);
         sb.append(" = ").append(this.value);
         sb.append("]");

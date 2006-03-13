@@ -41,6 +41,7 @@ import java.util.Locale;
 
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalStore;
+import org.vortikal.util.repository.URIUtil;
 
 
 
@@ -132,19 +133,7 @@ public class Resource implements java.io.Serializable, Cloneable {
      * @return the URI
      */
     public String getParent() {
-        String uri = getURI();
-
-        if (uri.equals("/")) {
-            return null;
-        }
-
-        String parentURI = uri.substring(0, uri.lastIndexOf("/") + 1);
-
-        if (parentURI.endsWith("/") && !parentURI.equals("/")) {
-            parentURI = parentURI.substring(0, parentURI.length() - 1);
-        }
-
-        return parentURI;
+        return URIUtil.getParentURI(this.uri);
     }
 
     /**

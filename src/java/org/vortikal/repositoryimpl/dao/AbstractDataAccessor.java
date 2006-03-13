@@ -37,11 +37,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.ACL;
+import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.Resource;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.web.URLUtil;
 
 
@@ -50,18 +49,20 @@ public abstract class AbstractDataAccessor
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    protected PrincipalManager principalManager = null;
+    protected ContentStore contentStore;
     
-    public final void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
+    protected PropertyManagerImpl propertyManager;
+    
+    public void setContentStore(ContentStore contentStore) {
+        this.contentStore = contentStore;
     }
-    
-    public void afterPropertiesSet() throws Exception {
 
-        if (this.principalManager == null) {
-            throw new BeanInitializationException(
-                "Property `principalManager' not set");
-        }
+    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+        this.propertyManager = propertyManager;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        // FIXME: Implement
     }
     
     protected void loadACLs(Connection conn, Resource[] resources)

@@ -296,10 +296,13 @@ public class PropfindController extends AbstractWebdavController {
             }
 
             /* Custom properties: */
-            Property[] customProperties = res.getProperties();
-            for (int i = 0; i < customProperties.length; i++) {
-                String namespace = customProperties[i].getNamespace();
-                String name = customProperties[i].getName();
+            // XXX: now returns all properties!
+            List customProperties = res.getOtherProperties();
+            for (Iterator iter = customProperties.iterator(); iter.hasNext();) {
+                Property prop = (Property) iter.next();
+                
+                String namespace = prop.getNamespace();
+                String name = prop.getName();
 
                 Element e = new Element(name, namespace);
                 if (isSupportedProperty(name, e.getNamespace())) {

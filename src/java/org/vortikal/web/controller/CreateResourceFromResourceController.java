@@ -46,6 +46,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -94,56 +95,52 @@ public class CreateResourceFromResourceController implements Controller,
 
         String uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
-        
+
         Resource resource = repository.retrieve(token, uri, false);
-        String newResourceUri = uri.substring(0, uri.lastIndexOf("/") + 1) + resourceName;
+        String newResourceUri = uri.substring(0, uri.lastIndexOf("/") + 1)
+                + resourceName;
 
         boolean exists = repository.exists(token, newResourceUri);
         if (exists) {
             model.put("createErrorMessage", "minutes.exists");
             return new ModelAndView(errorView, model);
         }
-            
-//    	    repository.lock(token,newResourceUri,Lock.LOCKTYPE_EXCLUSIVE_WRITE,"ownerInfo","0",5);
 
-    	    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-    	    InputStream inStream = repository.getInputStream(token, uri, true);
+        // repository.lock(token,newResourceUri,Lock.LOCKTYPE_EXCLUSIVE_WRITE,"ownerInfo","0",5);
 
-    	    
-    	    Transformer transformer = transformerManager.getTransformer(stylesheetIdentifier);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        InputStream inStream = repository.getInputStream(token, uri, true);
 
-    	    transformer.transform(new StreamSource(inStream), new StreamResult(outStream));
+        Transformer transformer = transformerManager
+                .getTransformer(stylesheetIdentifier);
 
-    	    InputStream in = new ByteArrayInputStream(outStream.toByteArray());
-    	    
-    	    // Setting DAV-properties for webedit and transform-view til yes
-    	    Property[] p = new Property[3];
+        transformer.transform(new StreamSource(inStream), new StreamResult(
+                outStream));
 
-    	    p[0] = new Property();
-    	    p[0].setNamespace("http://www.uio.no/vortex/custom-properties");
-    	    p[0].setName("web-edit");
-    	    p[0].setValue("yes");
+        InputStream in = new ByteArrayInputStream(outStream.toByteArray());
 
-    	    p[1] = new Property();
-    	    p[1].setNamespace("http://www.uio.no/vortex/custom-properties");
-    	    p[1].setName("transform-view");
-    	    p[1].setValue("yes");
-    	    
-    	    p[2] = new Property();
-    	    p[2].setNamespace("http://www.uio.no/vortex/custom-properties");
-    	    p[2].setName("visual-profile");
-    	    p[2].setValue("yes");
+        Resource newResource = repository.createDocument(token, newResourceUri);
 
-    	 	Resource newResource = repository.createDocument(token, newResourceUri);
-    	    newResource.setProperties(p);
-    	    repository.store(token, newResource);
-    	    repository.storeContent(token, newResourceUri, in);
+        String namespace = "http://www.uio.no/vortex/custom-properties";
+
+        // Setting DAV-properties for webedit and transform-view til yes
+        Property p = newResource.createProperty(namespace, "web-edit");
+        p.setStringValue("yes");
+
+        p = newResource.createProperty(namespace, "transform-view");
+        p.setStringValue("yes");
+
+        p = newResource.createProperty(namespace, "visual-profile");
+        p.setStringValue("yes");
+
+        repository.store(token, newResource);
+        repository.storeContent(token, newResourceUri, in);
 
         Resource parent = null;
         String parentUri = resource.getParent();
         parent = repository.retrieve(token, parentUri, false);
         model.put("resource", parent);
-        
+
         return new ModelAndView(successView, model);
     }
 

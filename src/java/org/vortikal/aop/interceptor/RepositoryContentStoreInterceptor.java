@@ -43,7 +43,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.RepositoryImpl;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.util.io.StreamUtil;
 
@@ -102,7 +102,7 @@ public class RepositoryContentStoreInterceptor implements MethodInterceptor {
         String uri = (String) args[1];
         InputStream inStream = (InputStream) args[2];
 
-        Resource resource = dao.load(uri);
+        ResourceImpl resource = dao.load(uri);
             
         List applicableHandlers = new ArrayList();
         for (int i = 0; i < this.contentHandlers.length; i++) {

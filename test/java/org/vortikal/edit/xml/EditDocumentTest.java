@@ -65,16 +65,17 @@ public class EditDocumentTest extends TestCase {
                 true);
 
         try {
-            URL testXML = this.getClass().getClassLoader()
-                    .getResource(TEST_XML);
+            URL testXML = 
+                this.getClass().getClassLoader().getResource(TEST_XML);
 
             Document d = builder.build(testXML);
+            Element root = d.getRootElement();
+            root.detach();
+            // XXX: will tests run without a resource?
+            testDocument = new EditDocument(root, d.getDocType(), null);
 
-            testDocument = EditDocument.createEditDocument(d.getRootElement(),
-                    d.getDocType(), new Resource());
-
-            URL testXSD = this.getClass().getClassLoader()
-                    .getResource(TEST_XSD);
+            URL testXSD = 
+                this.getClass().getClassLoader().getResource(TEST_XSD);
             definition = new SchemaDocumentDefinition("test", testXSD);
 
         } catch (Exception e) {

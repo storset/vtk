@@ -103,7 +103,7 @@ public class DMSExtractor extends AbstractRepositoryExtractor {
         Property prop = resource.getProperty(namespace, name);
 
         if (prop != null && prop.getValue() != null)
-            return prop.getValue();
+            return prop.getStringValue();
         
         return "";
     }

@@ -16,7 +16,7 @@ public class ContentLastModifiedEvaluator implements PropertyEvaluator {
     }
 
     public Value extractFromProperties(String operation, Principal principal,
-            PropertySet newProperties, Value currentValue) throws Exception {
+            PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
         return currentValue;
     }
 

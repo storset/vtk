@@ -484,26 +484,18 @@ public class PropfindView implements View, InitializingBean {
      */
     private Element buildSupportedLockElement(Resource resource) {
         Element supportedLock = new Element("supportedlock", WebdavConstants.DAV_NAMESPACE);
-        String[] supportedLocks = resource.getSupportedLocks();
-
-        for (int i = 0; i < supportedLocks.length; i++) {
-            
-            if (supportedLocks[i].equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
-                Element lockEntry = new Element("lockentry", WebdavConstants.DAV_NAMESPACE);
-                lockEntry.addContent(
-                    new Element("lockscope", WebdavConstants.DAV_NAMESPACE).addContent(
+        Element lockEntry = new Element("lockentry", WebdavConstants.DAV_NAMESPACE);
+        lockEntry.addContent(
+                new Element("lockscope", WebdavConstants.DAV_NAMESPACE).addContent(
                         new Element("exclusive", WebdavConstants.DAV_NAMESPACE)));
-                lockEntry.addContent(
-                    new Element("locktype", WebdavConstants.DAV_NAMESPACE).addContent(
+        lockEntry.addContent(
+                new Element("locktype", WebdavConstants.DAV_NAMESPACE).addContent(
                         new Element("write", WebdavConstants.DAV_NAMESPACE)));
 
-                supportedLock.addContent(lockEntry);
-            }
-        }
+        supportedLock.addContent(lockEntry);
+
         return supportedLock;
     }
-   
-
 
 
     /**
@@ -518,7 +510,7 @@ public class PropfindView implements View, InitializingBean {
          * fails, we assume it is a 'name = value' style property, and
          * build a simple JDOM element from it. */
 
-        String value = property.getValue();
+        String value = property.getStringValue();
 
         /* If the value does not contain both "<" and ">" we know for
          * sure that it is not an XML fragment: */
@@ -558,7 +550,7 @@ public class PropfindView implements View, InitializingBean {
             Namespace.getNamespace(property.getNamespace());
         Element propElement = new Element(property.getName(),
                                           customNamespace);
-        propElement.setText(property.getValue());
+        propElement.setText(property.getStringValue());
         return propElement;
 
     }

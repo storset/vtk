@@ -110,7 +110,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             return false;
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.info(operation, "(" + uri + "): false",
@@ -140,7 +140,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")", "resource not found",
@@ -158,7 +158,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
-            return resourceManager.getResourceDTO(r, principal);
+            return resourceManager.getResourceClone(r);
 
         } catch (AuthorizationException e) {
             OperationLog.failure(operation, "(" + uri + ")", "not authorized",
@@ -185,7 +185,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")",
@@ -206,11 +206,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         this.permissionsManager.authorize(r, principal, privilege);
 
-        Resource[] list = this.dao.loadChildren(r);
+        ResourceImpl[] list = this.dao.loadChildren(r);
         org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
 
         for (int i = 0; i < list.length; i++) {
-            children[i] = resourceManager.getResourceDTO(list[i], principal);
+            children[i] = resourceManager.getResourceClone(list[i]);
         }
 
         OperationLog.success(operation, "(" + uri + ")",
@@ -255,9 +255,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource parent = dao.load(uri);
+        ResourceImpl resource = dao.load(uri);
 
-        if (parent != null) {
+        if (resource != null) {
             OperationLog.failure(operation, "(" + uri + ")",
                     "illegal operation: Resource already exists", token,
                     principal);
@@ -266,7 +266,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         String parentURI = URIUtil.getParentURI(uri);
 
-        parent = dao.load(parentURI);
+        ResourceImpl parent = dao.load(parentURI);
 
         if ((parent == null) || !parent.isCollection()) {
             OperationLog.failure(operation, "(" + uri + ")",
@@ -338,7 +338,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw e;
         }
         
-        Resource src = dao.load(srcUri);
+        ResourceImpl src = dao.load(srcUri);
 
         if (src == null) {
             OperationLog.failure(operation, "(" + srcUri + ", " + destUri + ")",
@@ -350,7 +350,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.permissionsManager.authorize(src, principal, PrivilegeDefinition.READ);
         }
 
-        Resource dest = dao.load(destUri);
+        ResourceImpl dest = dao.load(destUri);
 
         if (dest != null) {
             if (!overwrite)
@@ -361,7 +361,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         String destParentUri = URIUtil.getParentURI(destUri);
 
-        Resource destParent = dao.load(destParentUri);
+        ResourceImpl destParent = dao.load(destParentUri);
 
         if ((destParent == null) || !destParent.isCollection()) {
             OperationLog.failure(operation, "(" + srcUri + ", " + destUri + ")",
@@ -385,7 +385,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 token, principal);
 
             org.vortikal.repository.Resource dto = 
-                resourceManager.getResourceDTO(dao.load(destUri), principal);
+                resourceManager.getResourceClone(dao.load(destUri));
 
             ResourceCreationEvent event = new ResourceCreationEvent(this, dto);
 
@@ -436,7 +436,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
         
         // Loading and checking source resource
-        Resource src = dao.load(srcUri);
+        ResourceImpl src = dao.load(srcUri);
 
         if (src == null) {
             OperationLog.failure(operation, "(" + srcUri + ", " + destUri + ")",
@@ -455,13 +455,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         // Loading and checking srcParent
         String srcParentURI = URIUtil.getParentURI(srcUri);
 
-        Resource srcParent = dao.load(srcParentURI);
+        ResourceImpl srcParent = dao.load(srcParentURI);
 
         this.permissionsManager.authorize(srcParent, principal, PrivilegeDefinition.WRITE);
         this.resourceManager.lockAuthorize(srcParent, principal, false);
 
         // Checking dest
-        Resource dest = dao.load(destUri);
+        ResourceImpl dest = dao.load(destUri);
 
         if (dest != null) {
             if (!overwrite) {
@@ -476,7 +476,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         // checking destParent 
         String destParentUri = URIUtil.getParentURI(destUri);
 
-        Resource destParent = dao.load(destParentUri);
+        ResourceImpl destParent = dao.load(destParentUri);
 
         if ((destParent == null) || !destParent.isCollection()) {
             OperationLog.failure(operation, "(" + srcUri + ", " + destUri + ")",
@@ -504,9 +504,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(operation, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
-            Resource r = dao.load(destUri);
+            ResourceImpl r = dao.load(destUri);
             org.vortikal.repository.Resource dto = 
-                resourceManager.getResourceDTO(r, principal);
+                resourceManager.getResourceClone(r);
 
             context.publishEvent(new ResourceCreationEvent(this, dto));
         } catch (AclException e) {
@@ -539,7 +539,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 "Cannot delete the root resource ('/')");
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")", "resource not found",
@@ -551,7 +551,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         String parent = URIUtil.getParentURI(uri);
 
-        Resource parentCollection = dao.load(parent);
+        ResourceImpl parentCollection = dao.load(parent);
 
         this.permissionsManager.authorize(parentCollection, principal, PrivilegeDefinition.WRITE);
         this.resourceManager.lockAuthorize(parentCollection, principal, false);
@@ -605,7 +605,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ReadOnlyException();
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")", "resource not found",
@@ -672,7 +672,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")", "resource not found",
@@ -732,7 +732,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("Invalid URI: " + uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")", "invalid uri", token,
@@ -751,14 +751,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
             this.resourceManager.lockAuthorize(r, principal, false);
             
-            Resource original = (Resource) r.clone();
+            ResourceImpl original = (ResourceImpl) r.clone();
 
             this.resourceManager.storeProperties(r, principal, resource);
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             ResourceModificationEvent event = new ResourceModificationEvent(
-                this, resourceManager.getResourceDTO(r, principal),
-                resourceManager.getResourceDTO(original, principal));
+                this, resourceManager.getResourceClone(r),
+                resourceManager.getResourceClone(original));
 
             context.publishEvent(event);
         } catch (ResourceLockedException e) {
@@ -785,7 +785,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")",
@@ -830,7 +830,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")",
@@ -854,7 +854,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
             this.resourceManager.lockAuthorize(r, principal, false);
         
-            Resource original = (Resource) r.clone();
+            ResourceImpl original = (ResourceImpl) r.clone();
 
             this.dao.storeContent(r, byteStream);
             
@@ -863,8 +863,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             ContentModificationEvent event = new ContentModificationEvent(
-                this, resourceManager.getResourceDTO(r, principal),
-                resourceManager.getResourceDTO(original, principal));
+                this, resourceManager.getResourceClone(r),
+                resourceManager.getResourceClone(original));
 
             context.publishEvent(event);
         } catch (ResourceLockedException e) {
@@ -896,7 +896,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")", "resource not found",
@@ -942,7 +942,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        Resource r = dao.load(uri);
+        ResourceImpl r = dao.load(uri);
 
         if (r == null) {
             OperationLog.failure(operation, "(" + uri + ")", "resource not found",
@@ -958,7 +958,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         try {
             org.vortikal.repository.Resource originalResource = 
-                resourceManager.getResourceDTO(r, principal);
+                resourceManager.getResourceClone(r);
             String inheritedFrom = null;
             if (r.isInheritedACL()) {
                 inheritedFrom = URIUtil.getParentURI(r.getURI());
@@ -972,7 +972,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             ACLModificationEvent event = new ACLModificationEvent(
-                this, resourceManager.getResourceDTO(r,principal),
+                this, resourceManager.getResourceClone(r),
                 originalResource, acl, originalACL);
 
             context.publishEvent(event);
@@ -1000,7 +1000,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return this.dao;
     }
 
-    private void authorizeRecursively(Resource resource, Principal principal,
+    private void authorizeRecursively(ResourceImpl resource, Principal principal,
             String privilege) throws IOException, AuthenticationException,
             AuthorizationException {
 
@@ -1008,7 +1008,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         if (resource.isCollection()) {
             String[] uris = this.dao.discoverACLs(resource);
             for (int i = 0; i < uris.length; i++) {
-                Resource ancestor = this.dao.load(uris[i]);
+                ResourceImpl ancestor = this.dao.load(uris[i]);
                 permissionsManager.authorize(ancestor, principal, privilege);
             }
         }

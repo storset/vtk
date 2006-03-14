@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.vortikal.repositoryimpl.ACL;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 
 
 /**
@@ -51,33 +51,33 @@ public interface DataAccessor {
     public boolean validate() throws IOException;
 
     /* Loads a single resource */
-    public Resource load(String uri) throws IOException;
+    public ResourceImpl load(String uri) throws IOException;
 
     /* Loads a list of resources. */
 //     public Resource[] load(String[] uris) throws IOException;
 
     /* Loads the children of a given resource */
-    public Resource[] loadChildren(Resource parent) throws IOException;
+    public ResourceImpl[] loadChildren(ResourceImpl parent) throws IOException;
 
     /* Stores a single resource */
-    public void store(Resource r) throws IOException;
+    public void store(ResourceImpl r) throws IOException;
 
     /* Deletes a single resource (and any children) */
-    public void delete(Resource resource) throws IOException;
+    public void delete(ResourceImpl resource) throws IOException;
 
     /* Opens an input stream for reading from a resource */
-    public InputStream getInputStream(Resource resource)
+    public InputStream getInputStream(ResourceImpl resource)
         throws IOException;
 
     /* Writes content for a resource */
-    public void storeContent(Resource resource, InputStream stream)
+    public void storeContent(ResourceImpl resource, InputStream stream)
         throws IOException;
 
     /* Gets the content length (in bytes) of a resource */
-    public long getContentLength(Resource resource) throws IOException;
+    public long getContentLength(ResourceImpl resource) throws IOException;
 
     /* Lists all descendants of a collection resource, sorted by URI */
-    public String[] listSubTree(Resource parent) throws IOException;
+    public String[] listSubTree(ResourceImpl parent) throws IOException;
 
     /* Deletes all expired locks (should be called periodically) */
     public void deleteExpiredLocks() throws IOException;
@@ -95,15 +95,15 @@ public interface DataAccessor {
      * collections. */
 
     //public void move(Resource resource, String destURI);
-    public void copy(Resource resource, String destURI, boolean copyACLs,
+    public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
                      boolean setOwner, String owner) throws IOException;
 
     /**
      * A faster way of discovering locks on resources deep down in the
      * hierarchy, without the need to actually load all the resources
      * in the subtree. */
-    public String[] discoverLocks(Resource directory) throws IOException;
+    public String[] discoverLocks(ResourceImpl directory) throws IOException;
 
-    public String[] discoverACLs(Resource resource) throws IOException;
+    public String[] discoverACLs(ResourceImpl resource) throws IOException;
 
 }

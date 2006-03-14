@@ -262,8 +262,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 String name = this.titleOverrideNames[i];
                 
                 Property property = resource.getProperty(namespace, name);
-                if (property != null && property.getValue() != null) {
-                    return property.getValue();
+                if (property != null && property.getStringValue() != null) {
+                    return property.getStringValue();
                 }
             }
         }

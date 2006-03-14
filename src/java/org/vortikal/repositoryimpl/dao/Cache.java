@@ -42,7 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.repository.URIUtil;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
@@ -149,7 +149,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
-    public Resource[] loadChildren(Resource parent) throws IOException {
+    public ResourceImpl[] loadChildren(ResourceImpl parent) throws IOException {
 
         List found = new ArrayList();
         List notFound = new ArrayList();
@@ -158,7 +158,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
         for (int i = 0; i < uris.length; i++) {
 
-            Resource r = items.get(uris[i]);
+            ResourceImpl r = items.get(uris[i]);
             boolean lockTimedOut =
                 (r != null && r.getLock() != null
                  && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
@@ -179,12 +179,12 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         if (notFound.size() == 0) {
-            return (Resource[]) found.toArray(new Resource[] {  });
+            return (ResourceImpl[]) found.toArray(new ResourceImpl[] {  });
         }
 
         found = new ArrayList();
         
-        Resource[] resources = null;
+        ResourceImpl[] resources = null;
         
         try {
             this.lockManager.lock(uris);
@@ -219,10 +219,10 @@ public class Cache implements DataAccessor, InitializingBean {
      * @return a <code>Resource</code> value
      * @exception IOException if an error occurs
      */
-    public Resource load(String uri) throws IOException {
+    public ResourceImpl load(String uri) throws IOException {
         long start = System.currentTimeMillis();
 
-        Resource r = items.get(uri);
+        ResourceImpl r = items.get(uri);
 
         boolean lockTimedOut =
             (r != null && r.getLock() != null
@@ -292,7 +292,7 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public void store(Resource r) throws IOException {
+    public void store(ResourceImpl r) throws IOException {
         List uris = new ArrayList();
 
         uris.add(r.getURI());
@@ -335,7 +335,7 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public void copy(Resource r, String destURI, boolean copyACLs,
+    public void copy(ResourceImpl r, String destURI, boolean copyACLs,
                      boolean setOwner, String owner) throws IOException {
         
         List uris = new ArrayList();
@@ -382,7 +382,7 @@ public class Cache implements DataAccessor, InitializingBean {
     
 
 
-    public void delete(Resource r) throws IOException {
+    public void delete(ResourceImpl r) throws IOException {
         List uris = new ArrayList();
 
         uris.add(r.getURI());
@@ -425,12 +425,12 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public InputStream getInputStream(Resource resource)
+    public InputStream getInputStream(ResourceImpl resource)
         throws IOException {
         return this.wrappedAccessor.getInputStream(resource);
     }
 
-    public void storeContent(Resource resource, InputStream stream)
+    public void storeContent(ResourceImpl resource, InputStream stream)
         throws IOException {
         try {
             this.lockManager.lock(resource.getURI());
@@ -442,11 +442,11 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public long getContentLength(Resource resource) throws IOException {
+    public long getContentLength(ResourceImpl resource) throws IOException {
         return this.wrappedAccessor.getContentLength(resource);
     }
 
-    public String[] listSubTree(Resource parent) throws IOException {
+    public String[] listSubTree(ResourceImpl parent) throws IOException {
         return this.wrappedAccessor.listSubTree(parent);
     }
 
@@ -455,7 +455,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
-    public String[] discoverLocks(Resource r) throws IOException {
+    public String[] discoverLocks(ResourceImpl r) throws IOException {
         return this.wrappedAccessor.discoverLocks(r);
     }
 
@@ -490,7 +490,7 @@ public class Cache implements DataAccessor, InitializingBean {
      *
      * @param item a <code>Resource</code> value
      */
-    private void enterResource(Resource item) {
+    private void enterResource(ResourceImpl item) {
         synchronized (this.items) {
             if (this.items.size() > (this.maxItems - 1)) {
 
@@ -541,7 +541,7 @@ public class Cache implements DataAccessor, InitializingBean {
             this.in = this.out = null;
         }
 
-        public Resource get(String uri) {
+        public ResourceImpl get(String uri) {
             Item i = (Item) this.map.get(uri);
 
             if (i != null) {
@@ -551,7 +551,7 @@ public class Cache implements DataAccessor, InitializingBean {
             return null;
         }
 
-        public synchronized void put(String uri, Resource resource) {
+        public synchronized void put(String uri, ResourceImpl resource) {
             Item i = new Item(resource);
 
             this.map.put(uri, i);
@@ -670,20 +670,20 @@ public class Cache implements DataAccessor, InitializingBean {
     private class Item {
         Item older = null;
         Item newer = null;
-        Resource resource;
+        ResourceImpl resource;
 
-        Item(Resource resource) {
+        Item(ResourceImpl resource) {
             this.resource = resource;
         }
 
-        Resource getResource() {
+        ResourceImpl getResource() {
             return this.resource;
         }
     }
 
     // --------------  New Stuff
 
-    public String[] discoverACLs(Resource resource) throws IOException {
+    public String[] discoverACLs(ResourceImpl resource) throws IOException {
         return this.wrappedAccessor.discoverACLs(resource);
     }
     

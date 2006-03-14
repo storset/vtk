@@ -73,23 +73,21 @@ public class PropertyIncrementer implements InitializingBean {
         Property p = resource.getProperty(_namespace, _propertyName);
 
         if (p == null) {
-            p = new Property();
-            p.setNamespace(_namespace);
-            p.setName(_propertyName);
-            p.setValue("0");
+            p = resource.createProperty(_namespace, _propertyName);
+            p.setStringValue("0");
         }
         
         // check that property is a number
-        int propValue = Integer.parseInt(p.getValue());
+        // XXX: add int to value, but this code should be removed alltogether
+        int propValue = Integer.parseInt(p.getStringValue());
         
         // increment property
         propValue += _increment;
         
         // write property
         logger.debug("property incremented to " + propValue);
-        p.setValue(Integer.toString(propValue));
+        p.setStringValue(Integer.toString(propValue));
 
-        resource.setProperty(p);
         storeResource(resource);
         return Integer.toString(propValue);
     }

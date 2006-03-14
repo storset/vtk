@@ -15,7 +15,7 @@ public class CollectionEvaluator implements PropertyEvaluator {
     }
 
     public Value extractFromProperties(String operation, Principal principal,
-            PropertySet newProperties, Value currentValue) throws Exception {
+            PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
         Value value = new Value();
         
         if (operation.equals(RepositoryOperations.CREATE)) {

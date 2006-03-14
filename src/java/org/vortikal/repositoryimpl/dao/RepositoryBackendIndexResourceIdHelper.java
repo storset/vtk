@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.repositoryimpl.index.util.IndexResourceIdHelper;
 import org.vortikal.util.repository.URIUtil;
 
@@ -86,7 +86,7 @@ public class RepositoryBackendIndexResourceIdHelper implements IndexResourceIdHe
         // Generate String with parent IDs
         StringBuffer idString = new StringBuffer();
         try {
-            Resource r = dao.load(uri);
+            ResourceImpl r = dao.load(uri);
             
             if (r == null) return null;
             
@@ -118,7 +118,7 @@ public class RepositoryBackendIndexResourceIdHelper implements IndexResourceIdHe
         }
 
         try {
-            Resource r = dao.load(uri);
+            ResourceImpl r = dao.load(uri);
             return Integer.toString(r.getID());
         } catch (IOException io) {
             logger.warn("IOException while fetching ID for resource " + uri, io);

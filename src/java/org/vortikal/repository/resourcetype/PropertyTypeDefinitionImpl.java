@@ -1,21 +1,14 @@
 package org.vortikal.repository.resourcetype;
 
-import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.NuResource;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryOperations;
-import org.vortikal.repositoryimpl.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.roles.RoleManager;
 
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
 
     // XXX: Default values?
     private String name;
     private int type = PropertyType.TYPE_STRING;
-    private boolean isMultiple = false;
+    private boolean multiple = false;
     private int protectionLevel = PropertyType.PROTECTION_LEVEL_EDITABLE;
-    private boolean isMandatory = false; // Is this interesting?
+    private boolean mandatory = false; // Is this interesting?
     private Constraint constraint;
     private PropertyEvaluator propertyEvaluator;
 
@@ -28,19 +21,19 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
     }
 
     public boolean isMandatory() {
-        return isMandatory;
+        return this.mandatory;
     }
 
-    public void setMandatory(boolean isMandatory) {
-        this.isMandatory = isMandatory;
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
     }
 
     public boolean isMultiple() {
-        return isMultiple;
+        return multiple;
     }
 
-    public void setMultiple(boolean isMultiple) {
-        this.isMultiple = isMultiple;
+    public void setMultiple(boolean multiple) {
+        this.multiple = multiple;
     }
 
     public String getName() {

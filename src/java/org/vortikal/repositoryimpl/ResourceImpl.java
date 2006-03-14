@@ -34,16 +34,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.NuResource;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.Property;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
+import org.vortikal.util.repository.LocaleHelper;
 
 
-public class Resource implements NuResource, Cloneable {
+public class ResourceImpl implements Resource, Cloneable {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
@@ -59,8 +63,11 @@ public class Resource implements NuResource, Cloneable {
     
     private Map propertyMap = new HashMap();
     
-    public Resource(String uri) {
+    private PrincipalManager principalManager;
+    
+    public ResourceImpl(String uri, PrincipalManager principalManager) {
         this.uri = uri;
+        this.principalManager = principalManager;
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -68,7 +75,7 @@ public class Resource implements NuResource, Cloneable {
         LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
                 .clone();
 
-        Resource clone = new Resource(uri);
+        ResourceImpl clone = new ResourceImpl(uri, principalManager);
         clone.setID(id);
         clone.setACL(acl);
         clone.setInheritedACL(inheritedACL);
@@ -100,16 +107,16 @@ public class Resource implements NuResource, Cloneable {
         return prop.getBooleanValue();
     }
 
-    public String getOwner() {
-        return getPropValue("owner");
+    public Principal getOwner() {
+        return principalManager.getPrincipal(getPropValue("owner"));
     }
 
-    public String getContentModifiedBy() {
-        return getPropValue("contentModifiedBy");
+    public Principal getContentModifiedBy() {
+        return principalManager.getPrincipal(getPropValue("contentModifiedBy"));
     }
 
-    public String getPropertiesModifiedBy() {
-        return getPropValue("propertiesModifiedBy");
+    public Principal getPropertiesModifiedBy() {
+        return principalManager.getPrincipal(getPropValue("propertiesModifiedBy"));
     }
 
     public Date getCreationTime() {
@@ -140,8 +147,8 @@ public class Resource implements NuResource, Cloneable {
         return getBooleanPropValue("collection");
     }
 
-    public String getContentLocale() {
-        return getPropValue("contentLocale");
+    public Locale getContentLocale() {
+        return LocaleHelper.getLocale(getPropValue("contentLocale"));
     }
 
 

@@ -88,13 +88,11 @@ public class ResourcePropertyRegexpAssertion
             Property property = resource.getProperty(namespace, name);
 
             if (property != null) {
-                Matcher m = pattern.matcher(property.getValue());
-                //return m.matches();
+                Matcher m = pattern.matcher(property.getStringValue());
                 return invert != m.matches();
             }
         }
         
-        //return false;
         return invert;
     }
 

@@ -33,20 +33,20 @@ package org.vortikal.repositoryimpl.dao;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 
 public interface ContentStore {
 
     public void createResource(String uri, boolean isCollection)
             throws IOException;
 
-    public long getContentLength(Resource resource);
+    public long getContentLength(ResourceImpl resource);
 
     public void deleteFiles(String uri);
 
-    public InputStream getInputStream(Resource resource) throws IOException;
+    public InputStream getInputStream(ResourceImpl resource) throws IOException;
 
-    public void storeContent(Resource resource, InputStream inputStream)
+    public void storeContent(ResourceImpl resource, InputStream inputStream)
             throws IOException;
 
     public void copy(String srcURI, String destURI) throws IOException;

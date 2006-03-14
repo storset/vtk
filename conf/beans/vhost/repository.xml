@@ -33,6 +33,7 @@
 
     <property name="contentStore" ref="repository.contentStore" />
     <property name="propertyManager" ref="propertyManager" />
+    <property name="principalManager" ref="principalManager" />
   </bean>
 
   <bean id="repository.contentStore" 

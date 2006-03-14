@@ -74,7 +74,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
                                            CREATED, -1, resource.isCollection(), false);
 
             if (resource.isCollection()) {
-                org.vortikal.repositoryimpl.Resource[] childResources =
+                org.vortikal.repositoryimpl.ResourceImpl[] childResources =
                     dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));
                 for (int i = 0; i < childResources.length; i++) {
                     dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(),

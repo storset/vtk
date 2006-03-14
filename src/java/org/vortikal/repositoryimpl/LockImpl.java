@@ -41,7 +41,6 @@ public class LockImpl implements Lock {
 
     private static final long serialVersionUID = 3546639889186633783L;
     
-    private String user;
     private Principal principal;
     
     private String ownerInfo;
@@ -49,10 +48,10 @@ public class LockImpl implements Lock {
     private Date timeout;
     private String lockToken;
     
-    public LockImpl(String lockToken, String user, String ownerInfo, String depth,
+    public LockImpl(String lockToken, Principal principal, String ownerInfo, String depth,
         Date timeout) {
         this.lockToken = lockToken;
-        this.user = user;
+        this.principal = principal;
 
         this.timeout = timeout;
         this.ownerInfo = ownerInfo;
@@ -79,10 +78,6 @@ public class LockImpl implements Lock {
         return timeout;
     }
 
-    public String getUser() {
-        return user;
-    }
-
     public Principal getPrincipal() {
         return this.principal;
     }
@@ -96,9 +91,8 @@ public class LockImpl implements Lock {
 //    }
 //
     public Object clone() {
-        LockImpl lock = new LockImpl(this.lockToken, this.user, this.ownerInfo, this.depth,
+        LockImpl lock = new LockImpl(this.lockToken, this.principal, this.ownerInfo, this.depth,
             (Date) this.timeout.clone());
-        lock.setPrincipal(this.principal);
         return lock;
     }
     
@@ -106,7 +100,7 @@ public class LockImpl implements Lock {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append("[");
         sb.append(", depth =").append(this.depth);
-        sb.append(", user = ").append(this.user);
+        sb.append(", principal = ").append(this.principal);
         sb.append(", ownerInfo = ").append(this.ownerInfo);
         sb.append(", timeout = ").append(this.timeout);
         sb.append(", token = ").append(this.lockToken);

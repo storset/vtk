@@ -676,36 +676,36 @@ public class OldResource implements java.io.Serializable, Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
         Resource clone = (Resource) super.clone();
-
-        if (this.activeLock != null) {
-            clone.setActiveLock((Lock)this.activeLock.clone());
-        }
-
-        Ace[] clonedACL = new Ace[this.acl.length];
-
-        for (int i = 0; i < this.acl.length; i++) {
-            clonedACL[i] = (Ace) this.acl[i].clone();
-        }
-
-        clone.setACL(clonedACL);
-
-        Ace[] clonedParentACL = new Ace[this.parentACL.length];
-
-        for (int i = 0; i < this.parentACL.length; i++) {
-            clonedParentACL[i] = (Ace) this.parentACL[i].clone();
-        }
-
-        clone.setParentACL(clonedParentACL);
-
-        Property[] cloneProperties = new Property[this.properties.length];
-
-        for (int i = 0; i < properties.length; i++) {
-            cloneProperties[i] = (Property) properties[i].clone();
-        }
-
-        clone.properties = cloneProperties;
-
         return clone;
+//        if (this.activeLock != null) {
+//            clone.setActiveLock((Lock)this.activeLock.clone());
+//        }
+//
+//        Ace[] clonedACL = new Ace[this.acl.length];
+//
+//        for (int i = 0; i < this.acl.length; i++) {
+//            clonedACL[i] = (Ace) this.acl[i].clone();
+//        }
+//
+//        clone.setACL(clonedACL);
+//
+//        Ace[] clonedParentACL = new Ace[this.parentACL.length];
+//
+//        for (int i = 0; i < this.parentACL.length; i++) {
+//            clonedParentACL[i] = (Ace) this.parentACL[i].clone();
+//        }
+//
+//        clone.setParentACL(clonedParentACL);
+//
+//        Property[] cloneProperties = new Property[this.properties.length];
+//
+//        for (int i = 0; i < properties.length; i++) {
+//            cloneProperties[i] = (Property) properties[i].clone();
+//        }
+//
+//        clone.properties = cloneProperties;
+//
+//        return clone;
     }
 
     public String toString() {

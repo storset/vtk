@@ -43,7 +43,8 @@ import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Property;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repository.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.repositoryimpl.ResourceManager;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
@@ -112,17 +113,17 @@ public class XMLSchemaPropertyContentStoreHandler
     }
 
 
-    public boolean isApplicableHandler(Resource resource) {
+    public boolean isApplicableHandler(ResourceImpl resource) {
         if (! ContentTypeHelper.isXMLContentType(resource.getContentType())) {
             return false;
         }
 
         if (this.assertions != null) {
 
-            org.vortikal.repository.Resource dto = null;
+            Resource dto = null;
             try {
                 
-                dto = resourceManager.getResourceDTO(resource, null);
+                dto = resourceManager.getResourceClone(resource);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -140,7 +141,7 @@ public class XMLSchemaPropertyContentStoreHandler
 
 
     public ByteArrayInputStream processContent(
-        ByteArrayInputStream contentStream, Resource resource) {
+        ByteArrayInputStream contentStream, ResourceImpl resource) {
 
         try {
 
@@ -158,7 +159,7 @@ public class XMLSchemaPropertyContentStoreHandler
             
             if (schemaLocation != null) {
                 prop = resource.createProperty(Property.LOCAL_NAMESPACE, this.schemaPropertyName);
-                prop.setValue(schemaLocation);
+//                prop.setValue(schemaLocation);
             }
 
         } catch (Throwable t) {

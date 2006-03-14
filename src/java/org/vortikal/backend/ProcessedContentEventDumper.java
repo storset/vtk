@@ -207,7 +207,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 //    dataAccessor.addChangeLogEntry(id, loggerType, childUris[i], op, -1, false);
                 //}
                 
-                org.vortikal.repositoryimpl.Resource[] childResources =
+                org.vortikal.repositoryimpl.ResourceImpl[] childResources =
                     dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));
                 for (int i=0; i < childResources.length; i++) {
                     dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(),

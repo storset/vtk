@@ -56,7 +56,7 @@ public class PermissionsManager {
     private RoleManager roleManager;
     private PrincipalManager principalManager;
 
-    public void authorize(Resource resource, Principal principal, String action)
+    public void authorize(ResourceImpl resource, Principal principal, String action)
             throws AuthenticationException, AuthorizationException, IOException {
 
         ACL acl = resource.getACL();
@@ -385,7 +385,7 @@ public class PermissionsManager {
      * @throws IOException
      */
     protected Privilege[] getCurrentUserPrivileges(
-        Principal principal, Resource resource, PrincipalManager principalManager,
+        Principal principal, ResourceImpl resource, PrincipalManager principalManager,
         RoleManager roleManager) throws IOException {
 
         ArrayList privs = new ArrayList();

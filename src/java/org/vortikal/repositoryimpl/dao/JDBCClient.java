@@ -58,7 +58,7 @@ import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.repository.URIUtil;
 
 /**
@@ -217,9 +217,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    public Resource load(String uri) throws IOException {
+    public ResourceImpl load(String uri) throws IOException {
         Connection conn = null;
-        Resource retVal = null;
+        ResourceImpl retVal = null;
 
         try {
             conn = getConnection();
@@ -242,7 +242,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
 
-    private Resource load(Connection conn, String uri) throws SQLException {
+    private ResourceImpl load(Connection conn, String uri) throws SQLException {
 
         String query = "select r.* from VORTEX_RESOURCE r where r.uri = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
@@ -250,7 +250,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         
         ResultSet rs = stmt.executeQuery();
 
-        Resource resource = null;
+        ResourceImpl resource = null;
 
         if (rs.next()) {
             resource = populateResource(uri, rs);
@@ -273,13 +273,13 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         String[] childURIs = loadChildURIs(conn, resource.getURI());
         resource.setChildURIs(childURIs);
         
-        loadACLs(conn, new Resource[] {resource});
+        loadACLs(conn, new ResourceImpl[] {resource});
         loadProperties(conn, resource);
 
         return resource;
     }
 
-    private Resource populateResource(String uri, ResultSet rs) 
+    private ResourceImpl populateResource(String uri, ResultSet rs) 
         throws SQLException {
 
         String owner = rs.getString("resource_owner");
@@ -289,7 +289,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         boolean isCollection = rs.getString("is_collection").equals("Y");
         ACL acl = new ACL();
 
-        Resource resource = new Resource(uri);
+        ResourceImpl resource = new ResourceImpl(uri, principalManager);
         resource.setID(rs.getInt("resource_id"));
 
         Property prop = this.propertyManager.createProperty(null, "collection", new Boolean(isCollection));
@@ -344,7 +344,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    private void loadProperties(Connection conn, Resource resource)
+    private void loadProperties(Connection conn, ResourceImpl resource)
             throws SQLException {
 
         String uri = resource.getURI();
@@ -499,7 +499,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     }
 
-    public String[] discoverLocks(Resource directory)
+    public String[] discoverLocks(ResourceImpl directory)
             throws IOException {
         Connection conn = null;
 
@@ -532,7 +532,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
-    private String[] discoverLocks(Connection conn, Resource directory)
+    private String[] discoverLocks(Connection conn, ResourceImpl directory)
             throws SQLException {
         String uri = directory.getURI();
 
@@ -574,8 +574,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         LockImpl lock = null;
 
         if (rs.next()) {
-            lock = new LockImpl(rs.getString("token"), rs.getString("lock_owner"), rs
-                    .getString("lock_owner_info"), rs.getString("depth"), 
+            lock = new LockImpl(rs.getString("token"), 
+                    principalManager.getPrincipal(rs.getString("lock_owner")), 
+                    rs.getString("lock_owner_info"), rs.getString("depth"), 
                     new Date(rs.getTimestamp("timeout").getTime()));
         }
 
@@ -609,8 +610,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         Map result = new HashMap();
 
         while (rs.next()) {
-            LockImpl lock = new LockImpl(
-                rs.getString("token"), rs.getString("lock_owner"),
+            LockImpl lock = new LockImpl(rs.getString("token"), 
+                    principalManager.getPrincipal(rs.getString("lock_owner")),
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 
@@ -625,7 +626,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return result;
     }
 
-    public String[] listSubTree(Resource parent)
+    public String[] listSubTree(ResourceImpl parent)
             throws IOException {
         Connection conn = null;
         String[] retVal = null;
@@ -651,7 +652,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
 
-    private String[] listSubTree(Connection conn, Resource parent)
+    private String[] listSubTree(Connection conn, ResourceImpl parent)
             throws SQLException {
         if (parent.getURI() == null) {
             return new String[] {};
@@ -680,7 +681,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return (String[]) l.toArray(new String[] {});
     }
 
-    public void store(Resource r)
+    public void store(ResourceImpl r)
             throws IOException {
         Connection conn = null;
 
@@ -703,7 +704,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
-    private void store(Connection conn, Resource r)
+    private void store(Connection conn, ResourceImpl r)
             throws SQLException, IOException {
         String uri = r.getURI();
         
@@ -717,10 +718,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         String contentType = r.getContentType();
         String characterEncoding = r.getCharacterEncoding();
-        String owner = r.getOwner();
-        String contentModifiedBy = r.getContentModifiedBy();
-        String propertiesModifiedBy = r.getPropertiesModifiedBy();
-        String contentLanguage = r.getContentLocale();
+        String owner = r.getOwner().getQualifiedName();
+        String contentModifiedBy = r.getContentModifiedBy().getQualifiedName();
+        String propertiesModifiedBy = r.getPropertiesModifiedBy().getQualifiedName();
+        String contentLanguage = r.getContentLocale().toString();
         boolean collection = r.isCollection();
         
         String query = "select * from VORTEX_RESOURCE where uri = ?";
@@ -816,7 +817,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         contentStore.createResource(uri, isCollection);
     }
 
-    private void storeLock(Connection conn, Resource r)
+    private void storeLock(Connection conn, ResourceImpl r)
             throws SQLException {
         LockImpl lock = r.getLock();
 
@@ -831,7 +832,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String lockToken = lock.getLockToken();
             Date timeout = lock.getTimeout();
             String type = lock.getLockType();
-            String user = lock.getUser();
+            String user = lock.getPrincipal().getQualifiedName();
             String ownerInfo = lock.getOwnerInfo();
             String depth = lock.getDepth();
 
@@ -895,10 +896,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
-    private void storeACL(Connection conn, Resource r)
+    private void storeACL(Connection conn, ResourceImpl r)
             throws SQLException {
         // first, check if existing ACL is inherited:
-        Resource existingResource = load(conn, r.getURI());
+        ResourceImpl existingResource = load(conn, r.getURI());
 
         if (existingResource.isInheritedACL() && r.isInheritedACL()) {
             ACL newACL = r.getACL();
@@ -914,7 +915,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         insertACL(conn, r);
     }
 
-    private void insertACL(Connection conn, Resource r)
+    private void insertACL(Connection conn, ResourceImpl r)
             throws SQLException {
         Map aclMap = r.getACL().getActionMap();
 
@@ -966,7 +967,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         updateStmt.close();
     }
 
-    private void insertACLEntry(Connection conn, String action, Resource resource,
+    private void insertACLEntry(Connection conn, String action, ResourceImpl resource,
             ACLPrincipal p)
             throws SQLException {
         Statement stmt = conn.createStatement();
@@ -995,14 +996,16 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         insertStmt.setInt(2, resource.getID());
         insertStmt.setString(3, p.getUrl());
         insertStmt.setString(4, p.isGroup() ? "N" : "Y");
-        insertStmt.setString(5, resource.getOwner());
+
+        // XXX: Shouldn't this be principal, not owner?
+        insertStmt.setString(5, resource.getOwner().getQualifiedName());
         insertStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
 
         insertStmt.executeUpdate();
         insertStmt.close();
     }
 
-    private void storeProperties(Connection conn, Resource r)
+    private void storeProperties(Connection conn, ResourceImpl r)
             throws SQLException {
 
         Statement deleteStatement = conn.createStatement();
@@ -1022,7 +1025,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
     
-    private void insertPropertyEntry(Connection conn, Resource r, Property property)
+    private void insertPropertyEntry(Connection conn, ResourceImpl r, Property property)
             throws SQLException {
         PreparedStatement stmt = conn
                 .prepareStatement("insert into EXTRA_PROP_ENTRY (extra_prop_entry_id, resource_id, "
@@ -1038,7 +1041,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.close();
     }
 
-    public void delete(Resource resource)
+    public void delete(ResourceImpl resource)
             throws IOException {
         Connection conn = null;
 
@@ -1060,7 +1063,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
 
-    public void delete(Connection conn, Resource resource)
+    public void delete(Connection conn, ResourceImpl resource)
             throws SQLException {
         String query = "delete from ACL_ENTRY where resource_id in ("
                 + "select resource_id from VORTEX_RESOURCE "
@@ -1102,17 +1105,17 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         contentStore.deleteFiles(resource.getURI());
     }
     
-    public InputStream getInputStream(Resource resource)
+    public InputStream getInputStream(ResourceImpl resource)
             throws IOException {
         return contentStore.getInputStream(resource);
     }
 
-    public void storeContent(Resource resource, InputStream inputStream)
+    public void storeContent(ResourceImpl resource, InputStream inputStream)
             throws IOException {
         contentStore.storeContent(resource, inputStream);
     }
 
-    public long getContentLength(Resource resource) {
+    public long getContentLength(ResourceImpl resource) {
         return this.contentStore.getContentLength(resource);
     }
     
@@ -1168,13 +1171,13 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
 
 
-    public Resource[] loadChildren(Resource parent)
+    public ResourceImpl[] loadChildren(ResourceImpl parent)
             throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("load children:" + parent.getURI());
         }
         Connection conn = null;
-        Resource[] retVal = null;
+        ResourceImpl[] retVal = null;
 
         try {
             conn = getConnection();
@@ -1223,7 +1226,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return (String[]) childURIs.toArray(new String[childURIs.size()]);
     }
 
-    private Resource[] loadChildren(Connection conn, Resource parent)
+    private ResourceImpl[] loadChildren(Connection conn, ResourceImpl parent)
         throws SQLException {
 
         Map locks = loadLocksForChildren(conn, parent);
@@ -1241,7 +1244,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         while (rs.next()) {
             String uri = rs.getString("uri");
 
-            Resource resource = populateResource(uri, rs);
+            ResourceImpl resource = populateResource(uri, rs);
             if (locks.containsKey(uri)) {
                 resource.setLock((LockImpl) locks.get(uri));
             }
@@ -1251,7 +1254,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         rs.close();
         stmt.close();
 
-        Resource[] result = (Resource[]) resources.toArray(new Resource[0]);
+        ResourceImpl[] result = (ResourceImpl[]) resources.toArray(new ResourceImpl[0]);
         loadChildrenForChildren(conn, parent, result);
         loadACLs(conn, result);
         loadPropertiesForChildren(conn, parent, result);
@@ -1264,8 +1267,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    private void loadChildrenForChildren(Connection conn, Resource parent,
-            Resource[] children)
+    private void loadChildrenForChildren(Connection conn, ResourceImpl parent,
+            ResourceImpl[] children)
             throws SQLException {
         
         // Initialize a map from child.URI to the set of grandchildren's URIs:
@@ -1303,8 +1306,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    private void loadPropertiesForChildren(Connection conn, Resource parent,
-            Resource[] resources)
+    private void loadPropertiesForChildren(Connection conn, ResourceImpl parent,
+            ResourceImpl[] resources)
             throws SQLException {
         if ((resources == null) || (resources.length == 0)) {
             return;
@@ -1329,7 +1332,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
             Property prop = this.propertyManager.createProperty(
                     rs.getString("name_space"), rs.getString("name"), rs.getString("value"));
-            Resource r = (Resource) resourceMap.get(resourceID);
+            ResourceImpl r = (ResourceImpl) resourceMap.get(resourceID);
             r.addProperty(prop);
         }
 
@@ -1338,7 +1341,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     }
 
-    private Map loadLocksForChildren(Connection conn, Resource parent)
+    private Map loadLocksForChildren(Connection conn, ResourceImpl parent)
             throws SQLException {
 
         String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
@@ -1353,8 +1356,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         Map result = new HashMap();
 
         while (rs.next()) {
-            LockImpl lock = new LockImpl(
-                rs.getString("token"), rs.getString("lock_owner"),
+            LockImpl lock = new LockImpl(rs.getString("token"), 
+                    principalManager.getPrincipal(rs.getString("lock_owner")),
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 
@@ -1371,7 +1374,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     //------------- NEW STUFF
 
-    public String[] discoverACLs(Resource resource) throws IOException {
+    public String[] discoverACLs(ResourceImpl resource) throws IOException {
         Connection conn = null;
         String[] retVal = null;
 
@@ -1396,7 +1399,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return retVal;
     }
     
-    protected String[] discoverACLs(Connection conn, Resource resource)
+    protected String[] discoverACLs(Connection conn, ResourceImpl resource)
             throws SQLException {
 
         String query = "select distinct r.uri as uri from ACL_ENTRY a inner join VORTEX_RESOURCE r "
@@ -1422,7 +1425,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    public void copy(Resource resource, String destURI, boolean copyACLs,
+    public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
                      boolean setOwner, String owner) throws IOException {
         Connection conn = null;
 
@@ -1453,7 +1456,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
     }
     
-    private void copy(Connection conn, Resource resource, String destURI, boolean copyACLs,
+    private void copy(Connection conn, ResourceImpl resource, String destURI, boolean copyACLs,
                       boolean setOwner, String owner) throws SQLException, IOException {
 
         int depthDiff = getURIDepth(destURI) - getURIDepth(resource.getURI());

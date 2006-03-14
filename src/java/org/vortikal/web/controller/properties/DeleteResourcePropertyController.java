@@ -123,7 +123,6 @@ public class DeleteResourcePropertyController
         }
 
         Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
-        Property[] newProperties = resource.getProperties();
         Property property = resource.getProperty(propertyCommand.getNamespace(), propertyCommand.getName());
         if (property == null) {
             if (logger.isDebugEnabled())
@@ -134,21 +133,7 @@ public class DeleteResourcePropertyController
             propertyCommand.setDone(true);
             return;
         }
-        Property[] oldProperties = resource.getProperties();
-        List newPropertyList = new ArrayList();
-        for (int i = 0; i < oldProperties.length; i++) {
-            if (!oldProperties[i].equals(property)) {
-                newPropertyList.add(oldProperties[i]);
-            }
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Deleting " + propertyCommand.getNamespace() + ":" +
-                         propertyCommand.getName() + " from resource " +
-                         resource);
-        }
-        newProperties = (Property[]) newPropertyList.toArray(new Property[0]);
-        property.setValue(propertyCommand.getValue());
-        resource.setProperties(newProperties);
+        resource.deleteProperty(property);
         repository.store(token, resource);
         propertyCommand.setDone(true);
     }

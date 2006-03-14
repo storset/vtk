@@ -31,6 +31,8 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -214,13 +216,13 @@ public class ResourcePropertiesValueProvider
 
             if (this.namespaces[i] != null && "*".equals(this.names[i])) {
 
-                Property[] expandedProps = resource.getPropertiesByNamespace(this.namespaces[i]);
-                for (int j = 0; j < expandedProps.length; j++) {
-                    
-                    subModel.put(expandedProps[j].getName(),
-                                 maybeLocalizeValue(expandedProps[j].getNamespace(),
-                                                    expandedProps[j].getName(),
-                                                    expandedProps[j].getValue(),
+                List expandedProps = resource.getProperties(this.namespaces[i]);
+                for (Iterator iter = expandedProps.iterator(); iter.hasNext();) {
+                    Property prop = (Property) iter.next();
+                    subModel.put(prop.getName(),
+                                 maybeLocalizeValue(prop.getNamespace(),
+                                                    prop.getName(),
+                                                    prop.getStringValue(),
                                                     request));
                 }
 

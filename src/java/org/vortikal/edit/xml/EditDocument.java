@@ -89,22 +89,12 @@ public class EditDocument extends Document {
 
     private Resource resource;
 
-    private EditDocument(Element root, DocType docType, Resource resource) {
+    EditDocument(Element root, DocType docType, Resource resource) {
         super(root, docType);
         this.resource = resource;
         this.uri = resource.getURI();
         this.setBaseURI(resource.getURI());
     }
-
-
-
-    public static EditDocument createEditDocument(Element root,
-            DocType docType, Resource resource) {
-        root.detach();
-        return new EditDocument(root, docType, resource);
-    }
-
-
 
 
     public static EditDocument createEditDocument(Repository repository, int lockTimeoutSeconds)

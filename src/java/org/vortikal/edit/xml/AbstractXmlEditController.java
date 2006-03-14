@@ -366,7 +366,7 @@ public abstract class AbstractXmlEditController implements Controller {
 
         /* The property web-edit should be 'true' or 'yes' */
         String webEdit = 
-            resource.getProperty(Property.LOCAL_NAMESPACE, EDIT_PROPERTY).getValue();
+            resource.getProperty(Property.LOCAL_NAMESPACE, EDIT_PROPERTY).getStringValue();
 
         if (webEdit == null || !(webEdit.equals("true") || webEdit.equals("yes"))) {
             throw new XMLEditException("Xml resource is not set to web editable");

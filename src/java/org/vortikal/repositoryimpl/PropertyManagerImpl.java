@@ -43,8 +43,8 @@ public class PropertyManagerImpl implements InitializingBean {
         return (ResourceTypeDefinition[])resourceTypeDefinitions.get(rt);
     }
     
-    private ResourceTypeDefinition evaluateProperties(Principal principal, 
-            Resource newResource, Resource oldResource, 
+    private ResourceTypeDefinition evaluateProperties(Principal principal, List properties,
+            ResourceImpl newResource, ResourceImpl oldResource, 
             String operation, ResourceTypeDefinition rt) throws Exception {
 
 
@@ -59,38 +59,39 @@ public class PropertyManagerImpl implements InitializingBean {
         }
 
         // Get authorization for principal on resource
-        Authorization authorization = new Authorization(p, oldResource);
+        Authorization authorization = new Authorization(principal, oldResource,
+                this.principalManager);
 
         // Evaluating resource type properties
-
+        List newProps = new ArrayList();
         PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
-        List properties = new ArrayList();
         for (int i = 0; i < def.length; i++) {
             PropertyTypeDefinition propertyDef = def[i];
 
             Property oldProp = oldResource.getProperty(rt.getNamespace().getURI(), propertyDef.getName());
-
+            Property newProp = newResource.getProperty(rt.getNamespace().getURI(), propertyDef.getName());
+            
+            
             if (oldProp != newProp) {
                 authorization.authorize(propertyDef.getProtectionLevel());
             }
+            
+            Value value = propertyDef.getPropertyEvaluator().
+                extractFromProperties(operation, principal, newResource, 
+                        oldProp.getValue());
 
-            Value value = propertyDef.getPropertyEvaluator().extractFromProperties(operation, p, newResource, oldProp.getValue());
             if (value != null) {
                 String namespaceUri = (rt.getNamespace() == null) ? null : rt.getNamespace().getURI();
                 Property property = createProperty(namespaceUri, propertyDef.getName(), value);
-                properties.add(property);
+                newProps.add(property);
             }
         }
 
-        for (Iterator iter = properties.iterator(); iter.hasNext();) {
-            Property property = (Property) iter.next();
-            newResource.addProperty(property);
-        }
-        
+        properties.addAll(newProps);
         
         ResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
         for (int i = 0; i < children.length; i++) {
-            ResourceTypeDefinition resourceType = evaluateProperties(p, newResource, oldResource, operation, children[i]);
+            ResourceTypeDefinition resourceType = evaluateProperties(principal, properties, newResource, oldResource, operation, children[i]);
             if (resourceType != null) {
                 return resourceType;
             }
@@ -99,8 +100,8 @@ public class PropertyManagerImpl implements InitializingBean {
         return rt;
     }
     
-    public Resource create(Principal principal, String uri, boolean collection) throws Exception {
-        Resource r = new Resource(uri);
+    public ResourceImpl create(Principal principal, String uri, boolean collection) throws Exception {
+        ResourceImpl r = new ResourceImpl(uri, this.principalManager);
         
         evaluateProperties(principal, r, null, RepositoryOperations.CREATE, rootResourceTypeDefinition);
         
@@ -110,7 +111,7 @@ public class PropertyManagerImpl implements InitializingBean {
         return r;
     }
 
-    public void storeProperties(Resource resource, Principal principal,
+    public void storeProperties(ResourceImpl resource, Principal principal,
             org.vortikal.repository.Resource dto)
 throws AuthenticationException, AuthorizationException, 
 ResourceLockedException, IllegalOperationException, IOException {
@@ -160,7 +161,7 @@ ResourceLockedException, IllegalOperationException, IOException {
     
 }
     
-    public void collectionContentModified(Resource resource, Principal principal) {
+    public void collectionContentModified(ResourceImpl resource, Principal principal) {
         Date now = new Date();
         // Update timestamps:
 //        resource.setContentLastModified(now);
@@ -172,7 +173,7 @@ ResourceLockedException, IllegalOperationException, IOException {
    
     }
     
-    public void resourceContentModification(Resource resource, 
+    public void resourceContentModification(ResourceImpl resource, 
             Principal principal, InputStream inputStream) {
 
         // Update timestamps:
@@ -222,7 +223,7 @@ ResourceLockedException, IllegalOperationException, IOException {
         
     }
 
-    public void authorize(Principal principal, Resource resource, 
+    public void authorize(Principal principal, ResourceImpl resource, 
             int protectionLevel) throws AuthorizationException {
 
         boolean owner = principal.getQualifiedName().equals(resource.getOwner());

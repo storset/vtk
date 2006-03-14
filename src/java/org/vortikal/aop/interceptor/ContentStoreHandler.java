@@ -32,7 +32,7 @@
 package org.vortikal.aop.interceptor;
 
 import java.io.ByteArrayInputStream;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 
 
 /**
@@ -42,7 +42,7 @@ import org.vortikal.repositoryimpl.Resource;
 public interface ContentStoreHandler {
 
     
-    public boolean isApplicableHandler(Resource resource);
+    public boolean isApplicableHandler(ResourceImpl resource);
     
     
 
@@ -58,7 +58,7 @@ public interface ContentStoreHandler {
      * @exception Exception if an error occurs
      */
     public ByteArrayInputStream processContent(ByteArrayInputStream contentStream,
-                                               Resource resource);
+                                               ResourceImpl resource);
         
 
 }

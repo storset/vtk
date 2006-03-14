@@ -114,7 +114,7 @@ public class EditResourcePropertyController extends SimpleFormController
         String value = descriptor.getDefaultValue();
         Property property = resource.getProperty(namespace, name);
         if (property != null) {
-            value = property.getValue();
+            value = property.getStringValue();
         }
 
         Map parameters = new HashMap();
@@ -152,15 +152,19 @@ public class EditResourcePropertyController extends SimpleFormController
         Resource resource = repository.retrieve(
             token, requestContext.getResourceURI(), false);
         String value = propertyCommand.getValue();
+        Property prop = resource.getProperty(
+                propertyCommand.getNamespace(),propertyCommand.getName());
+        
         if ("".equals(value)) {
-            resource.removeProperty(propertyCommand.getNamespace(),
-                                    propertyCommand.getName());
+            if (prop != null) {
+                resource.deleteProperty(prop);
+            }
         } else {
-            Property property = new Property();
-            property.setNamespace(propertyCommand.getNamespace());
-            property.setName(propertyCommand.getName());
-            property.setValue(propertyCommand.getValue());
-            resource.setProperty(property);
+            if (prop == null) {
+                prop = resource.createProperty(
+                        propertyCommand.getNamespace(), propertyCommand.getName());
+            }
+            prop.setStringValue(propertyCommand.getValue());
         }
         repository.store(token, resource);
         propertyCommand.setDone(true);

@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Iterator;
+import java.util.List;
 
 import org.vortikal.repository.Ace;
 import org.vortikal.repository.Property;
@@ -95,11 +97,14 @@ public class StandardResourceAnalyzer implements ResourceAnalyzer {
         
         
         // Add custom properties:
-        Property[] properties = resource.getProperties();
-        for (int i = 0; i < properties.length; i++) {
-            String key = properties[i].getName() + ":" +
-                properties[i].getNamespace();
-            String value = properties[i].getValue();
+        // XXX: props now contains all properties... What to do?
+        List properties = resource.getOtherProperties();
+
+        for (Iterator iter = properties.iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            String key = prop.getName() + ":" +
+                prop.getNamespace();
+            String value = prop.getStringValue();
             logger.debug("Adding custom property " + key + " = " + value + 
                          " to indexed resource " + resource.getURI());
             doc.add(Field.Keyword(key, value));

@@ -321,7 +321,7 @@ public class DisplayResourceView extends AbstractView
 
                 try {
                     long expiresMilliseconds = new Long(
-                        expiresProperty.getValue().trim()).longValue() * 1000;
+                        expiresProperty.getStringValue().trim()).longValue() * 1000;
                     Date expires = new Date(new Date().getTime() + expiresMilliseconds);
                     response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
 

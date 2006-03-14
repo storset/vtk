@@ -107,7 +107,7 @@ public class SetResourcePropertyController
                                                 requestContext.getResourceURI(), false);
         Property property = resource.getProperty(namespace, name);
         if (property != null)
-            value = property.getValue();
+            value = property.getStringValue();
 
         String url = service.constructLink(resource, securityContext.getPrincipal());
 
@@ -134,24 +134,14 @@ public class SetResourcePropertyController
 
         Resource resource = repository.retrieve(
             token, requestContext.getResourceURI(), false);
-        Property[] newProperties = null;
+
         Property property = resource.getProperty(propertyCommand.getNamespace(),
                                                  propertyCommand.getName());
-        if (property != null) {
-            property.setValue(propertyCommand.getValue());
-        } else {
-            Property[] oldProperties = resource.getProperties();
-            newProperties = new Property[oldProperties.length + 1];
-            for (int i = 0; i < oldProperties.length; i++) {
-                newProperties[i] = oldProperties[i];
-            }
-            property = new Property();
-            property.setNamespace(propertyCommand.getNamespace());
-            property.setName(propertyCommand.getName());
-            property.setValue(propertyCommand.getValue());
-            newProperties[newProperties.length - 1] = property;
-            resource.setProperties(newProperties);
-        } 
+        if (property == null) {
+            property = resource.createProperty(propertyCommand.getNamespace(),
+                    propertyCommand.getName());
+        }
+        property.setStringValue(propertyCommand.getValue());
 
         repository.store(token, resource);
         propertyCommand.setDone(true);

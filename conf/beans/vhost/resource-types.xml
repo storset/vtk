@@ -17,7 +17,7 @@
 
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="owner" />
-    <property name="protectionLevel" value="PROTECTION_LEVEL_OWNER_EDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_OWNER_EDITABLE" />
     <property name="isMandatory" value="true" />
     <property name="propertyEvaluator">
       <bean class="org.vortikal.repository.resourcetype.property.OwnerEvaluator">
@@ -27,7 +27,7 @@
     
   <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="collection" />
-    <property name="protectionLevel" value="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="isMandatory" value="true" />
     <property name="propertyEvaluator">
       <bean class="org.vortikal.repository.resourcetype.property.CollectionEvaluator" />

@@ -40,7 +40,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.ACL;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.web.URLUtil;
 
 
@@ -52,6 +53,7 @@ public abstract class AbstractDataAccessor
     protected ContentStore contentStore;
     
     protected PropertyManagerImpl propertyManager;
+    protected PrincipalManager principalManager;
     
     public void setContentStore(ContentStore contentStore) {
         this.contentStore = contentStore;
@@ -65,7 +67,7 @@ public abstract class AbstractDataAccessor
         // FIXME: Implement
     }
     
-    protected void loadACLs(Connection conn, Resource[] resources)
+    protected void loadACLs(Connection conn, ResourceImpl[] resources)
         throws SQLException {
 
         if (resources == null || resources.length == 0) {
@@ -103,7 +105,7 @@ public abstract class AbstractDataAccessor
 
         for (int i = 0; i < resources.length; i++) {
 
-            Resource resource = resources[i];
+            ResourceImpl resource = resources[i];
             ACL acl = null;
 
             if (!resource.isInheritedACL()) {
@@ -151,5 +153,12 @@ public abstract class AbstractDataAccessor
     }
 
     protected abstract void executeACLQuery(Connection conn, Map acls) throws SQLException;
+
+    /**
+     * @param principalManager The principalManager to set.
+     */
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
 
 }

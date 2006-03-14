@@ -365,37 +365,19 @@ public class ProppatchController extends AbstractWebdavController {
 
         } else {
 
-            ArrayList properties = new ArrayList(
-                Arrays.asList(resource.getProperties()));
+            Property theProperty = resource.getProperty(nameSpace, propertyName);
 
-            Property theProperty = null;
-
-            for (Iterator i = properties.iterator(); i.hasNext();) {
-                Property currProperty = (Property) i.next();
-
-                if (currProperty.getName().equals(propertyName) &&
-                    currProperty.getNamespace().equals(nameSpace)) {
-                    theProperty = currProperty;
-                }
-            }
-            
             if (theProperty == null) {
-
                 /* Create a new property: */
-                theProperty = new Property();
-                theProperty.setNamespace(nameSpace);
-                theProperty.setName(propertyName);
-                properties.add(theProperty);
+                theProperty = resource.createProperty(nameSpace, propertyName);
             }
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Setting property " + theProperty + 
                              " on resource " + resource.getURI());
             }
-            theProperty.setValue(elementToString(property));
+            theProperty.setStringValue(elementToString(property));
             
-            resource.setProperties((Property[])
-                                   properties.toArray(new Property[]{}));
         }
         
         
@@ -422,43 +404,11 @@ public class ProppatchController extends AbstractWebdavController {
         String propertyName = propElement.getName();
         String namespace = propElement.getNamespace().getURI();
 
-        ArrayList properties = new ArrayList(
-            Arrays.asList(resource.getProperties()));
-
-        Property theProperty = null;
-
-        for (Iterator i = properties.iterator(); i.hasNext();) {
-            Property currProperty = (Property) i.next();
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Checking property to remove: " + currProperty.getName());
-            }
-            if (currProperty.getName().equals(propertyName) &&
-                currProperty.getNamespace().equals(namespace)) {
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found property to remove: " + propElement.getName());
-                }
-                
-                theProperty = currProperty;
-            }
-        }
+        Property theProperty = resource.getProperty(namespace, propertyName);
             
-        if (theProperty == null) {
-            return;
+        if (theProperty != null) {
+            resource.deleteProperty(theProperty);
         }
-            
-        if (logger.isDebugEnabled()) {
-            logger.debug("properties before: " + properties.size());
-        }
-        properties.remove(theProperty);
-        if (logger.isDebugEnabled()) {
-            logger.debug("properties after: " + properties.size());
-        }
-
-        resource.setProperties((Property[])
-                               properties.toArray(new Property[]{}));
-        
     }
     
 

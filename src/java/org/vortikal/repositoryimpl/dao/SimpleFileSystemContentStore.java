@@ -41,7 +41,7 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.web.URLUtil;
 
 public class SimpleFileSystemContentStore implements InitializingBean, ContentStore {
@@ -73,7 +73,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
     
-    public long getContentLength(Resource resource) {
+    public long getContentLength(ResourceImpl resource) {
         String fileName = this.repositoryDataDirectory
                 + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
                         : resource.getURI());
@@ -104,7 +104,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         f.delete();
     }
 
-    public InputStream getInputStream(Resource resource) throws IOException {
+    public InputStream getInputStream(ResourceImpl resource) throws IOException {
         String fileName = this.repositoryDataDirectory
                 + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource
                         .getURI()) : resource.getURI());
@@ -112,7 +112,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         return new java.io.FileInputStream(new File(fileName));
     }
 
-    public void storeContent(Resource resource, InputStream inputStream)
+    public void storeContent(ResourceImpl resource, InputStream inputStream)
             throws IOException {
         String fileName = this.repositoryDataDirectory
                 + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource

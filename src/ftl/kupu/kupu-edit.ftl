@@ -52,10 +52,14 @@
     <!--script type="text/javascript" src="kupuinit.js"> </script-->
     <script type="text/javascript" src="${kupuLocalBase}/kupuinit.js"> </script>
     <script type="text/javascript" src="kupustart.js"> </script>
-    <script type="text/javascript" src="kupusaveonpart.js"> </script>
+    <script type="text/javascript" src="kupusaveonpart.js"> </script>  <!-- NB: Denne er blitt modifisert og endringene skal meldes inn til Kupu-prosjektet! Ta hensyn hvis Kupu-versjon blir oppdatert i mellomtiden. -->
     <script type="text/javascript" src="kupusourceedit.js"> </script>
     <script type="text/javascript" src="kupuspellchecker.js"> </script>
     <script type="text/javascript" src="kupudrawers.js"> </script>
+    
+    
+    <!-- NEW STUFF FOR RESIZING KUPU-EDIT IFRAME -->
+    <script type="text/javascript" src="${kupuLocalBase}/dynamic-css-to-resize-iframe.js"> </script>
 
 
   </head>
@@ -116,8 +120,8 @@
           </cleanup_expressions>
           <image_xsl_uri>${kupuDrawerService.url?html}</image_xsl_uri>
           <link_xsl_uri>${kupuDrawerService.url?html}</link_xsl_uri>
-          <image_libraries_uri><#if (kupuImageLibraries.URL)?exists>${kupuImageLibraries.URL?html}</#if></image_libraries_uri>
-          <link_libraries_uri><#if (kupuLinkLibraries.URL)?exists>${kupuLinkLibraries.URL?html}</#if></link_libraries_uri>
+          <image_libraries_uri>${kupuImageLibraries.URL?html}</image_libraries_uri>
+          <link_libraries_uri>${kupuLinkLibraries.URL?html}</link_libraries_uri>
           <search_images_uri> </search_images_uri>
           <search_links_uri> </search_links_uri>
 
@@ -255,7 +259,7 @@
               </tr>
               <tr>
                 <td colspan="2" align="center">
-                  <iframe frameborder="1" scrolling="auto" width="440" height="198" class="kupu-linkdrawer-preview" src="kupublank.html">
+                  <iframe frameborder="1" scrolling="auto" class="kupu-linkdrawer-preview" src="kupublank.html">
         </iframe>
                 </td>
               </tr>
@@ -481,7 +485,7 @@
     </table>
       <div class="kupu-editorframe">
         <form>
-          <iframe id="kupu-editor" class="kupu-editor-iframe" frameborder="0" src="${kupuSrc.srcURL?html}" scrolling="yes">
+          <iframe name="kupu-editor" id="kupu-editor" class="kupu-editor-iframe" frameborder="0" src="${kupuSrc.srcURL?html}" scrolling="yes">
         </iframe>
           <textarea class="kupu-editor-textarea" id="kupu-editor-textarea"> </textarea>
         </form>

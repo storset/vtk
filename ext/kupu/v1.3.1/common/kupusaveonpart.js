@@ -10,11 +10,24 @@
 
 // $Id: kupusaveonpart.js 9879 2005-03-18 12:04:00Z yuppie $
 
+var iframeid = "kupu-editor";
+
 function saveOnPart() {
-    /* ask the user if (s)he wants to save the document before leaving */
-    if (kupu.content_changed && 
-        confirm(_('You have unsaved changes. Do you want to save before leaving the page?'))) {
-        kupu.config.reload_src = 0;
-        kupu.saveDocument(false, true);
+    // ask the user if (s)he wants to save the document before leaving
+    if( kupu.content_changed ) {
+        if( confirm(_('You are leaving this page. \n Press OK to save or CANCEL to discard unsaved changes.')) ) {
+            kupu.config.reload_src = 0;
+            kupu.saveDocument(false, true);
+        }
     };
+    
+    // ensure that latest version of document is cached by web browser before leaving edit window
+    // (to avoid browser fetching old version of the document if 'back' button is used)
+    var editIframe = document.getElementById(iframeid);
+    if (!editIframe) {
+        return false;
+    }
+    else {
+        editIframe.src = editIframe.src;
+    }    
 };

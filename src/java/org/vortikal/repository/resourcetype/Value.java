@@ -36,10 +36,12 @@ import java.util.Date;
 public final class Value {
 
     private int type = PropertyType.TYPE_STRING;
-    
+
     private String value;
     private Date dateValue;
     private boolean booleanValue;
+    private int intValue;
+    private long longValue;
 
     public boolean getBooleanValue() {
         return booleanValue;
@@ -48,10 +50,6 @@ public final class Value {
     public void setBooleanValue(boolean booleanValue) {
         this.type = PropertyType.TYPE_BOOLEAN;
         this.booleanValue = booleanValue;
-    }
-
-    public Date getDateValue() {
-        return dateValue;
     }
 
     public void setDateValue(Date dateValue) {
@@ -63,14 +61,35 @@ public final class Value {
         this.type = PropertyType.TYPE_STRING;
         this.value = value;
     }
+    
+    public void setLongValue(long longValue) {
+        this.type = PropertyType.TYPE_LONG;
+        this.longValue = longValue;
+    }
+    
+    public void setIntValue(int intValue) {
+        this.type = PropertyType.TYPE_INT;
+        this.intValue = intValue;
+    }
 
     public String getValue() {
         return value;
     }
     
-    
     public int getType() {
         return type;
+    }
+    
+    public Date getDateValue() {
+        return dateValue;
+    }
+    
+    public long getLongValue() {
+        return this.longValue;
+    }
+    
+    public int getIntValue() {
+        return this.intValue;
     }
 
 }

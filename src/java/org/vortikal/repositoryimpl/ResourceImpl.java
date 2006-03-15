@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,14 +47,16 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PrincipalStore;
 import org.vortikal.util.repository.LocaleHelper;
+import org.vortikal.util.repository.URIUtil;
 
 
 public class ResourceImpl implements Resource, Cloneable {
-
+    
     protected Log logger = LogFactory.getLog(this.getClass());
 
     /* Numeric ID, required by database */
@@ -75,84 +78,12 @@ public class ResourceImpl implements Resource, Cloneable {
         this.principalManager = principalManager;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        AclImpl acl = (this.acl == null) ? null : (AclImpl) this.acl.clone();
-        LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
-                .clone();
-
-        ResourceImpl clone = new ResourceImpl(uri, principalManager);
-        clone.setID(id);
-        clone.setACL(acl);
-        clone.setInheritedACL(inheritedACL);
-        clone.setLock(lock);
-        clone.setChildURIs(this.childURIs);
-        for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
-            clone.addProperty((Property) prop.clone());
-        }
-
-        return clone;
-    }
-
-    private String getPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(null)).get(name);
-        if (prop == null) return null;
-        return prop.getStringValue();
-    }
-
-    private Date getDatePropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(null)).get(name);
-        if (prop == null) return null;
-        return prop.getDateValue();
-    }
-
-    private boolean getBooleanPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(null)).get(name);
-        return prop.getBooleanValue();
-    }
-
-    public Principal getOwner() {
-        return principalManager.getPrincipal(getPropValue("owner"));
-    }
-
-    public Principal getContentModifiedBy() {
-        return principalManager.getPrincipal(getPropValue("contentModifiedBy"));
-    }
-
-    public Principal getPropertiesModifiedBy() {
-        return principalManager.getPrincipal(getPropValue("propertiesModifiedBy"));
-    }
-
-    public Date getCreationTime() {
-        return getDatePropValue("creationTime");
-    }
-
-    public Date getContentLastModified() {
-        return getDatePropValue("contentLastModified");
-    }
-
-    public Date getPropertiesLastModified() {
-        return getDatePropValue("propertiesLastModified");
-    }
-
-    public String getDisplayName() {
-        return getPropValue("displayName");
-    }
-
-    public String getContentType() {
-        return getPropValue("contentType");
-    }
-
-    public String getCharacterEncoding() {
-        return getPropValue("characterEncoding");
-    }
-
-    public boolean isCollection() {
-        return getBooleanPropValue("collection");
+    public String getParent() {
+        return URIUtil.getParentURI(this.uri);
     }
 
     public Locale getContentLocale() {
-        return LocaleHelper.getLocale(getPropValue("contentLocale"));
+        return LocaleHelper.getLocale(getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME));
     }
 
 
@@ -172,17 +103,12 @@ public class ResourceImpl implements Resource, Cloneable {
         return this.dirtyACL;
     }
 
-
-
-    
-
+    public Acl getAcl() {
+        return this.acl;
+    }
 
     public void setACL(Acl acl) {
         this.acl = acl;
-    }
-
-    public Acl getACL() {
-        return this.acl;
     }
 
     public LockImpl getLock() {
@@ -217,9 +143,7 @@ public class ResourceImpl implements Resource, Cloneable {
         if (uri.equals("/")) {
             return uri;
         } 
-        
         return uri.substring(uri.lastIndexOf("/") + 1);
-        
     }
 
     public void addProperty(Property property) {
@@ -232,18 +156,25 @@ public class ResourceImpl implements Resource, Cloneable {
     }
     
     public Property getProperty(String namespace, String name) {
-        // TODO Auto-generated method stub
-        return null;
+        Map map = (Map)propertyMap.get(namespace);
+
+        if (map == null) return null;
+        
+        return (Property)map.get(name);
     }
 
     public List getProperties(String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+        Map map = (Map)propertyMap.get(namespace);
+        return new ArrayList(map.entrySet());
     }
 
     public List getProperties() {
-        // TODO Auto-generated method stub
-        return null;
+        List props = new ArrayList();
+        for (Iterator iter = propertyMap.entrySet().iterator(); iter.hasNext();) {
+            Map map = (Map) iter.next();
+            props.addAll(map.entrySet());
+        }
+        return props;
     }
 
     public Property createProperty(String namespace, String name) {
@@ -271,24 +202,85 @@ public class ResourceImpl implements Resource, Cloneable {
         return null;
     }
 
-    public String getParent() {
-        // TODO Auto-generated method stub
-        return null;
+
+    
+    
+    
+    
+
+    public Principal getOwner() {
+        return principalManager.getPrincipal(getPropValue(PropertyType.OWNER_PROP_NAME));
     }
 
+    public Principal getContentModifiedBy() {
+        return principalManager.getPrincipal(getPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME));
+    }
+
+    public Principal getPropertiesModifiedBy() {
+        return principalManager.getPrincipal(getPropValue(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME));
+    }
+
+    public Date getCreationTime() {
+        return getDatePropValue(PropertyType.CREATIONTIME_PROP_NAME);
+    }
+
+    public Date getContentLastModified() {
+        return getDatePropValue(PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
+    }
+
+    public Date getPropertiesLastModified() {
+        return getDatePropValue(PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
+    }
+
+    public String getDisplayName() {
+        return getPropValue(PropertyType.DISPLAYNAME_PROP_NAME);
+    }
+
+    public String getContentType() {
+        return getPropValue(PropertyType.CONTENTTYPE_PROP_NAME);
+    }
+
+    public String getCharacterEncoding() {
+        return getPropValue(PropertyType.CHARACTERENCODING_PROP_NAME);
+    }
+
+    public boolean isCollection() {
+        return getBooleanPropValue(PropertyType.COLLECTION_PROP_NAME);
+    }
+
+    /**
+     * Gets the date of this resource's last modification. The date
+     * returned is either that of the
+     * <code>getContentLastModified()</code> or the
+     * <code>getPropertiesLastModified()</code> method, depending on
+     * which one is the most recent.
+     *
+     * @return the time of last modification
+     */
     public Date getLastModified() {
-        // TODO Auto-generated method stub
-        return null;
+        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
+            return getContentLastModified();
+        }
+
+        return getPropertiesLastModified();
     }
 
+    /**
+     * Gets the name of the principal that last modified either the
+     * content or the properties of this resource.
+     *
+     * @return the name of the principal
+     */
     public Principal getModifiedBy() {
-        // TODO Auto-generated method stub
-        return null;
+        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
+            return getContentModifiedBy();
+        }
+
+        return getPropertiesModifiedBy();
     }
 
     public long getContentLength() {
-        // TODO Auto-generated method stub
-        return 0;
+        return getLongPropValue(PropertyType.CONTENTLENGTH_PROP_NAME);
     }
 
     public Lock getActiveLock() {
@@ -321,10 +313,6 @@ public class ResourceImpl implements Resource, Cloneable {
         
     }
 
-    public Acl getAcl() {
-        return this.acl;
-    }
-
     public void setContentLocale(Locale locale) {
         // TODO Auto-generated method stub
         
@@ -345,5 +333,46 @@ public class ResourceImpl implements Resource, Cloneable {
         
     }
 
-    
+    public Object clone() throws CloneNotSupportedException {
+        AclImpl acl = (this.acl == null) ? null : (AclImpl) this.acl.clone();
+        LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
+                .clone();
+
+        ResourceImpl clone = new ResourceImpl(uri, principalManager);
+        clone.setID(id);
+        clone.setACL(acl);
+        clone.setInheritedACL(inheritedACL);
+        clone.setLock(lock);
+        clone.setChildURIs(this.childURIs);
+        for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            clone.addProperty((Property) prop.clone());
+        }
+
+        return clone;
+    }
+
+    private String getPropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        if (prop == null) return null;
+        return prop.getStringValue();
+    }
+
+    private Date getDatePropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        if (prop == null) return null;
+        return prop.getDateValue();
+    }
+
+    private long getLongPropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        if (prop == null) return -1;
+        return prop.getLongValue();
+    }
+
+    private boolean getBooleanPropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        return prop.getBooleanValue();
+    }
+
 }

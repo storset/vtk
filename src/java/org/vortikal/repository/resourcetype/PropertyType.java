@@ -61,5 +61,23 @@ public final class PropertyType {
 
     //  Property is uneditable
     public static final int PROTECTION_LEVEL_UNEDITABLE = 4;
+ 
     
+    /*
+     * Special properties
+     */
+    public static final String DEFAULT_NAMESPACE_URI = null;
+    
+    public static final String COLLECTION_PROP_NAME = "collection";
+    public static final String OWNER_PROP_NAME = "owner";
+    public static final String CREATIONTIME_PROP_NAME = "creationTime";
+    public static final String DISPLAYNAME_PROP_NAME = "displayName";
+    public static final String CONTENTTYPE_PROP_NAME = "contentType";
+    public static final String CHARACTERENCODING_PROP_NAME = "characterEncoding";
+    public static final String CONTENTLOCALE_PROP_NAME = "contentLocale";
+    public static final String CONTENTLASTMODIFIED_PROP_NAME = "contentLastModified";
+    public static final String CONTENTMODIFIEDBY_PROP_NAME = "contentModifiedBy";
+    public static final String PROPERTIESLASTMODIFIED_PROP_NAME = "propertiesLastModified";
+    public static final String PROPERTIESMODIFIEDBY_PROP_NAME = "propertiesModifiedBy";
+    public static final String CONTENTLENGTH_PROP_NAME = "contentLength";
 }

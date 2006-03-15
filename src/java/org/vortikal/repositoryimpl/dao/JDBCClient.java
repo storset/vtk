@@ -56,6 +56,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
@@ -284,50 +285,51 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     private ResourceImpl populateResource(String uri, ResultSet rs) 
         throws SQLException {
 
-        String owner = rs.getString("resource_owner");
-        String contentModifiedBy = rs.getString("content_modified_by");
-        String propertiesModifiedBy = rs.getString("properties_modified_by");
+        // XXX: what to do with these:
         boolean inherited = rs.getString("acl_inherited").equals("Y");
-        boolean isCollection = rs.getString("is_collection").equals("Y");
         AclImpl acl = new AclImpl();
 
         ResourceImpl resource = new ResourceImpl(uri, principalManager);
         resource.setID(rs.getInt("resource_id"));
-
-        Property prop = this.propertyManager.createProperty(null, "collection", new Boolean(isCollection));
-        resource.addProperty(prop);
-        // XXX:, owner, contentModifiedBy,propertiesModifiedBy, acl, inherited, 
+        resource.setACL(acl);
+        resource.setInheritedACL(inherited);
         
-        prop = this.propertyManager.createProperty(null, "creationTime", new Date(rs.getTimestamp("creation_time").getTime()));
+        Property prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.COLLECTION_PROP_NAME, new Boolean(rs.getString("is_collection").equals("Y")));
+        resource.addProperty(prop);
+        
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CREATIONTIME_PROP_NAME, new Date(rs.getTimestamp("creation_time").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "owner", rs.getString("resource_owner"));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.OWNER_PROP_NAME, rs.getString("resource_owner"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "displayName", rs.getString("display_name"));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.DISPLAYNAME_PROP_NAME, rs.getString("display_name"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "contentType", rs.getString("content_type"));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTTYPE_PROP_NAME, rs.getString("content_type"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "contentType", rs.getString("content_type"));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CHARACTERENCODING_PROP_NAME, rs.getString("character_encoding"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "characterEncoding", rs.getString("character_encoding"));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTLOCALE_PROP_NAME, rs.getString("content_language"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "contentLocale", rs.getString("content_language"));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("content_last_modified").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "contentLastModified", new Date(rs.getTimestamp("content_last_modified").getTime()));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTMODIFIEDBY_PROP_NAME, rs.getString("content_modified_by"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(null, "propertiesLastModified", new Date(rs.getTimestamp("properties_last_modified").getTime()));
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("properties_last_modified").getTime()));
+        resource.addProperty(prop);
+
+        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, rs.getString("properties_modified_by"));
         resource.addProperty(prop);
 
         try {
             long contentLength = contentStore.getContentLength(resource.getURI());
-            prop = this.propertyManager.createProperty(null, "contentLength", new Long(contentLength));
+            prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTLENGTH_PROP_NAME, new Long(contentLength));
             resource.addProperty(prop);
         } catch (IllegalOperationException e) {
             // Probably a collection

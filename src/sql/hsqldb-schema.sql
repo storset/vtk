@@ -36,7 +36,9 @@ CREATE ALIAS nextval FOR "java.lang.System.getProperty"
 CREATE TABLE vortex_resource
 (
     resource_id IDENTITY NOT NULL PRIMARY KEY,
+    prev_resource_id int NULL,
     uri VARCHAR (2048) NOT NULL,
+    depth int NOT NULL,
     creation_time DATE NOT NULL,
     content_last_modified DATETIME NOT NULL,
     properties_last_modified DATETIME NOT NULL,
@@ -45,12 +47,13 @@ CREATE TABLE vortex_resource
     resource_owner VARCHAR (64) NOT NULL,
     display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,
-    content_type VARCHAR (64) NOT NULL,
+    content_type VARCHAR (64) NULL,
     character_encoding VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,
     acl_inherited CHAR(1) DEFAULT 'Y' NOT NULL,
     CONSTRAINT resource_uri_index UNIQUE (uri)
 );
+
 
 
 -----------------------------------------------------------------------------
@@ -187,7 +190,9 @@ VALUES (1, 'EXCLUSIVE_WRITE');
 
 INSERT INTO VORTEX_RESOURCE (
     resource_id,
+    prev_resource_id,
     uri,
+    depth,
     creation_time,
     content_last_modified,
     properties_last_modified,
@@ -202,10 +207,12 @@ INSERT INTO VORTEX_RESOURCE (
     acl_inherited)
 VALUES (
     1,
+    null,
     '/',
-    now(),
-    now(),
-    now(),
+    0,
+    current_timestamp,
+    current_timestamp,
+    current_timestamp,
     'vortex@localhost',
     'vortex@localhost',
     'vortex@localhost',
@@ -216,6 +223,7 @@ VALUES (
     'Y',
     'N'
 );
+
 
 
 -- ACE: (dav:authenticated (dav:read))

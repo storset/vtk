@@ -198,7 +198,7 @@
        default="${defaultHeader}"/>
   </h2>
   <div class="permissionsToggleAction">
-    <#if aclInfo.aclInheritedFrom?exists>
+    <#if aclInfo.aclInherited>
       <@vrtx.msg code="permissions.isInherited" default="Inherited"/>
     <#else>
       <@vrtx.msg code="permissions.notInherited.${resourceContext.currentResource.contentType}" default="${defaultNotInherited}"/>
@@ -223,12 +223,12 @@
     <ul class="inheritance">
     <li>
       <input id="permissions.isInherited" type="radio" name="inherited" value="true"
-               <#if aclInfo.aclInheritedFrom?exists>checked="checked"</#if>>
+               <#if aclInfo.aclInherited>checked="checked"</#if>>
       <label for="permissions.isInherited"><@vrtx.msg code="permissions.isInherited" default="Inherited"/></label>
     </li>
     <li>
       <input id="permissions.notInherited" type="radio" name="inherited" value="false"
-             <#if !aclInfo.aclInheritedFrom?exists>checked="checked"</#if>>
+             <#if !aclInfo.aclInherited>checked="checked"</#if>>
       <label for="permissions.notInherited"><@vrtx.msg code="permissions.notInherited" default="Custom"/></label>
     </li>
     </ul>
@@ -254,7 +254,7 @@
     <#else>
       <@listPrincipals users=aclInfo.readAuthorizedUsers groups=aclInfo.readAuthorizedGroups />
     </#if>
-    <#if !aclInfo.aclInheritedFrom?exists &&
+    <#if !aclInfo.aclInherited &&
          aclInfo.editReadPermissionsServiceURL?exists>
       (&nbsp;<a href="${aclInfo.editReadPermissionsServiceURL?html}"><@vrtx.msg code="permissions.privilege.read.edit" default="edit"/></a>&nbsp;)
     </#if>
@@ -276,7 +276,7 @@
     <#else>
       <@listPrincipals users=aclInfo.writeAuthorizedUsers groups=aclInfo.writeAuthorizedGroups />
     </#if>
-    <#if !aclInfo.aclInheritedFrom?exists &&
+    <#if !aclInfo.aclInherited &&
          aclInfo.editWritePermissionsServiceURL?exists>
       (&nbsp;<a href="${aclInfo.editWritePermissionsServiceURL?html}"><@vrtx.msg code="permissions.privilege.write.edit" default="edit"/></a>&nbsp;)
     </#if>
@@ -298,7 +298,7 @@
     <#else>
       <@listPrincipals users=aclInfo.writeAclAuthorizedUsers groups=aclInfo.writeAclAuthorizedGroups />
     </#if>
-    <#if !aclInfo.aclInheritedFrom?exists &&
+    <#if !aclInfo.aclInherited &&
          aclInfo.editWriteACLPermissionsServiceURL?exists>
       (&nbsp;<a href="${aclInfo.editWriteACLPermissionsServiceURL?html}"><@vrtx.msg code="permissions.privilege.write-acl.edit" default="edit"/></a>&nbsp;)
     </#if>

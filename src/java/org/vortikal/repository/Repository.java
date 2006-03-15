@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import org.vortikal.repositoryimpl.AclException;
 import org.vortikal.security.AuthenticationException;
 
 import java.io.IOException;
@@ -457,7 +458,7 @@ public interface Repository {
      * identifying a valid client session
      * @exception IOException if an I/O error occurs
      */
-    public Ace[] getACL(String token, String uri)
+    public Acl getACL(String token, String uri)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IOException;
 
@@ -479,7 +480,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception IOException if an I/O error occurs
      */
-    public void storeACL(String token, String uri, Ace[] acl)
+    public void storeACL(String token, String uri, Acl acl)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, AclException, IllegalOperationException, 
             ReadOnlyException, IOException;

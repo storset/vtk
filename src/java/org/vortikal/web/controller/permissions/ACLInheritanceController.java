@@ -33,7 +33,7 @@ package org.vortikal.web.controller.permissions;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.repository.Ace;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -65,11 +65,11 @@ public class ACLInheritanceController extends SimpleFormController {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         Resource resource = repository.retrieve(token, uri, false);
-        Ace[] acl = repository.getACL(token, uri);
+        Acl acl = repository.getACL(token, uri);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
         UpdateACLInheritanceCommand command =
-            new UpdateACLInheritanceCommand(acl[0].getInheritedFrom() == null, url);
+            new UpdateACLInheritanceCommand(acl.isInherited(), url);
         return command;
     }
 
@@ -96,30 +96,15 @@ public class ACLInheritanceController extends SimpleFormController {
         
         String token = securityContext.getToken();
 
-        Ace[] acl = repository.getACL(token, uri);
+        Acl acl = repository.getACL(token, uri);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Update inheritance: input = "
                          + updateCommand.isInherited());
         }
 
-        if (updateCommand.isInherited()) {
-            String[] path = URLUtil.splitUriIncrementally(uri);
-            if (logger.isDebugEnabled())
-                logger.debug("Setting ACL inheritance for resource '" + uri
-                             + "' to '" + path[path.length - 2] + "'");
-            for (int i = 0; i < acl.length; i++) {
-                acl[i].setInheritedFrom(path[path.length - 2]);
-            }
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting ACL inheritance for resource '" + uri
-                             + "' to null");
-            }
-            for (int i = 0; i < acl.length; i++) {
-                acl[i].setInheritedFrom(null);
-            }
-        }
+        acl.setInherited(updateCommand.isInherited());
+
         repository.storeACL(token, uri, acl);
         updateCommand.setDone(true);
     }

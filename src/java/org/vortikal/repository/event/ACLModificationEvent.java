@@ -30,7 +30,7 @@
  */
 package org.vortikal.repository.event;
 
-import org.vortikal.repository.Ace;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 
@@ -41,11 +41,11 @@ public class ACLModificationEvent extends RepositoryEvent {
     
     private Resource resource = null;
     private Resource original = null;
-    private Ace[] acl = null;
-    private Ace[] originalACL = null;
+    private Acl acl = null;
+    private Acl originalACL = null;
 
     public ACLModificationEvent(Repository source, Resource resource,
-        Resource original, Ace[] acl, Ace[] originalACL) {
+        Resource original, Acl acl, Acl originalACL) {
         super(source);
         this.resource = resource;
         this.original = original;
@@ -65,11 +65,11 @@ public class ACLModificationEvent extends RepositoryEvent {
         return this.original;
     }
 
-    public Ace[] getACL() {
+    public Acl getACL() {
         return this.acl;
     }
 
-    public Ace[] getOriginalACL() {
+    public Acl getOriginalACL() {
         return this.originalACL;
     }
 }

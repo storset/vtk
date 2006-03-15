@@ -32,7 +32,6 @@ package org.vortikal.repository;
 
 import org.vortikal.security.Principal;
 
-
 /**
  * This interface defines the meta information about a lock.
  */

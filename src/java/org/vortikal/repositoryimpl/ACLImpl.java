@@ -36,8 +36,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.Privilege;
+import org.vortikal.security.Principal;
 
-public class ACL implements Cloneable {
+
+public class ACLImpl implements Acl {
 
     /**
      * map: [action --> List(ACLPrincipal)]
@@ -53,11 +57,11 @@ public class ACL implements Cloneable {
     }
 
     public boolean equals(Object o) {
-        if (!(o instanceof ACL)) {
+        if (!(o instanceof ACLImpl)) {
             return false;
         }
 
-        ACL acl = (ACL) o;
+        ACLImpl acl = (ACLImpl) o;
 
         Set actions = actionLists.keySet();
 
@@ -144,6 +148,53 @@ public class ACL implements Cloneable {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    // New methods
+    
+    public void addPrivilegeToACL(String username, String privilegeName, boolean isUser) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void withdrawPrivilegeFromACL(String username, String privilegeName) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public Principal[] listPrivilegedUsers(String privilegeName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String[] listPrivilegedGroups(String privilegeName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List listPrivilegedPrincipals(String privilegeName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isInherited() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void setInherited(boolean inherited) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public boolean hasPrivilege(Principal principal, String privilegeName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public Privilege[] getPrivilegeSet(Principal principal) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

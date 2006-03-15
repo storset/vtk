@@ -37,13 +37,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.vortikal.repository.Ace;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.AclUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -161,34 +160,31 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         
-        Ace[] acl = repository.getACL(token, uri);
+        Acl acl = repository.getACL(token, uri);
 
-        Principal[] readAuthorizedUsers = AclUtil.listPrivilegedUsers(
-            acl, "read", this.principalManager);
+        Principal[] readAuthorizedUsers = acl.listPrivilegedUsers("read");
         aclModel.put("readAuthorizedUsers", readAuthorizedUsers);
-        String[] readAuthorizedGroups = AclUtil.listPrivilegedGroups(acl, "read");
+        String[] readAuthorizedGroups = acl.listPrivilegedGroups("read");
         aclModel.put("readAuthorizedGroups", readAuthorizedGroups);
 
-        Principal[] writeAuthorizedUsers = AclUtil.listPrivilegedUsers(
-            acl, "write", this.principalManager);
+        Principal[] writeAuthorizedUsers = acl.listPrivilegedUsers("write");
         aclModel.put("writeAuthorizedUsers", writeAuthorizedUsers);
-        String[] writeAuthorizedGroups = AclUtil.listPrivilegedGroups(acl, "write");
+        String[] writeAuthorizedGroups = acl.listPrivilegedGroups("write");
         aclModel.put("writeAuthorizedGroups", writeAuthorizedGroups);
 
-        Principal[] writeAclAuthorizedUsers = AclUtil.listPrivilegedUsers(
-            acl, "write-acl", this.principalManager);
+        Principal[] writeAclAuthorizedUsers = acl.listPrivilegedUsers("write-acl");
         aclModel.put("writeAclAuthorizedUsers", writeAclAuthorizedUsers);
-        String[] writeAclAuthorizedGroups = AclUtil.listPrivilegedGroups(acl, "write-acl");
+        String[] writeAclAuthorizedGroups = acl.listPrivilegedGroups("write-acl");
         aclModel.put("writeAclAuthorizedGroups", writeAclAuthorizedGroups);
 
         aclModel.put("everyoneReadAuthorized" , new Boolean(
-                         AclUtil.hasPrivilege(acl, "dav:authenticated", "read")));
+                         acl.hasPrivilege("dav:authenticated", "read")));
         aclModel.put("everyoneWriteAuthorized", new Boolean(
-                         AclUtil.hasPrivilege(acl, "dav:authenticated", "write")));
+                         acl.hasPrivilege("dav:authenticated", "write")));
         aclModel.put("everyoneWriteAclAuthorized", new Boolean(
-                         AclUtil.hasPrivilege(acl, "dav:authenticated", "write-acl")));
+                         acl.hasPrivilege("dav:authenticated", "write-acl")));
 
-        aclModel.put("aclInheritedFrom", acl[0].getInheritedFrom());
+        aclModel.put("aclInherited", new Boolean(acl.isInherited()));
 
         Resource resource = repository.retrieve(token, uri, false);
 

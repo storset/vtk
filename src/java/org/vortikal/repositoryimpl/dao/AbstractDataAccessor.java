@@ -38,7 +38,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.ACL;
+import org.vortikal.repositoryimpl.ACLImpl;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.PrincipalManager;
@@ -89,7 +89,7 @@ public abstract class AbstractDataAccessor
             }
 
             /* Initialize (empty) ACL for resource: */
-            ACL acl = new ACL();
+            ACLImpl acl = new ACLImpl();
             resources[i].setACL(acl);
         
         }
@@ -106,7 +106,7 @@ public abstract class AbstractDataAccessor
         for (int i = 0; i < resources.length; i++) {
 
             ResourceImpl resource = resources[i];
-            ACL acl = null;
+            ACLImpl acl = null;
 
             if (!resource.isInheritedACL()) {
             
@@ -117,7 +117,7 @@ public abstract class AbstractDataAccessor
                         "but no ACL exists");
                 }
                 
-                acl = (ACL) acls.get(resource.getURI());
+                acl = (ACLImpl) acls.get(resource.getURI());
 
             } else {
 
@@ -126,13 +126,13 @@ public abstract class AbstractDataAccessor
 
                 for (int j = path.length - 2; j >= 0; j--) {
 
-                    ACL found = (ACL) acls.get(path[j]);
+                    ACLImpl found = (ACLImpl) acls.get(path[j]);
 
                     if (found != null) {
                         try {
                             /* We have to clone the ACL here, because ACLs
                              * and resources are "doubly linked". */
-                            acl = (ACL) found.clone();
+                            acl = (ACLImpl) found.clone();
                         } catch (CloneNotSupportedException e) {
                             throw new SQLException(e.getMessage());
                         }

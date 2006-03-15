@@ -9,7 +9,7 @@ public class Authorization {
     private PrincipalManager principalManager;
     private Principal principal;
     private Principal owner;
-    private ACL acl;
+    private ACLImpl acl;
     
     Authorization(Principal principal, ResourceImpl resource, 
             PrincipalManager principalManager) {

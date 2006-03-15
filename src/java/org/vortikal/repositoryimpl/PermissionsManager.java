@@ -40,8 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.repository.Ace;
-import org.vortikal.repository.AclException;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
@@ -59,7 +58,7 @@ public class PermissionsManager {
     public void authorize(ResourceImpl resource, Principal principal, String action)
             throws AuthenticationException, AuthorizationException, IOException {
 
-        ACL acl = resource.getACL();
+        ACLImpl acl = resource.getACL();
 
         /*
          * Special treatment for uio:read-processed needed: dav:read also grants
@@ -109,7 +108,9 @@ public class PermissionsManager {
          */
 
         // Condition 1:
-        if (userMatch(principalList, "dav:all")
+        Principal p = principalManager.getPrincipal("dav:all");
+        
+        if (acl.hasPrivilege(p, action)
                 && (PrivilegeDefinition.READ.equals(action) 
                         || PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
                         .equals(action))) {
@@ -122,7 +123,8 @@ public class PermissionsManager {
         }
 
         // Condition 2:
-        if (userMatch(principalList, "dav:authenticated")) {
+        p = principalManager.getPrincipal("dav:authenticated");
+        if (acl.hasPrivilege(p, action)) {
             return;
         }
 
@@ -153,13 +155,14 @@ public class PermissionsManager {
         }
 
         if (resource.getOwner().equals(principal.getQualifiedName())) {
-            if (userMatch(principalList, "dav:owner")) {
+            p = principalManager.getPrincipal("dav:owner");
+            if (acl.hasPrivilege(p,action)) {
                 return;
             }
         }
 
         // Condition 5:
-        if (userMatch(principalList, principal.getQualifiedName())) {
+        if (acl.hasPrivilege(principal, action)) {
             return;
         }
 
@@ -172,293 +175,35 @@ public class PermissionsManager {
     }
 
     /**
-     * Decides whether a given principal exists in a principal list.
+     * Adds root and read everything roles to <code>Acl</code>
      * 
-     * @param principalList
-     *            a <code>List</code> value
-     * @param username
-     *            a <code>String</code> value
-     * @return a <code>boolean</code>
+     * @param originalACL an <code>Acl</code>
+     * @return a new <code>Acl</code>
      */
-    private boolean userMatch(List principalList, String username) {
-        if (principalList != null) {
-            return principalList.contains(new ACLPrincipal(username));
-        }
+    public Acl addRolesToAcl(Acl originalACL) throws CloneNotSupportedException {
 
-        return false;
-    }
-
-    private boolean groupMatch(List principalList, Principal principal) {
-
-        for (Iterator i = principalList.iterator(); i.hasNext();) {
-            ACLPrincipal p = (ACLPrincipal) i.next();
-
-            if (p.isGroup()) {
-                if (principalManager.isMember(principal, p.getUrl())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /*
-     * Build an ACL object from the Ace[] array (assumes valid
-     * input, except that principal names of URL-type principals are
-     * trimmed of whitespace, since the principal manager may be
-     * tolerant and pass these trough validation).
-     */
-    public ACL buildACL(Ace[] aceList)
-        throws AclException {
-
-        ACL acl = new ACL();
-        Map privilegeMap = acl.getActionMap();
-
-        for (int i = 0; i < aceList.length; i++) {
-            Ace ace = aceList[i];
-            org.vortikal.repository.ACLPrincipal principal = ace.getPrincipal();
-            String principalName = null;
-
-            if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_URL) {
-                //TODO: document behaviour where name = name@defaultdomain
-                if (principal.isUser())
-                    principalName = principalManager.getPrincipal(
-                            principal.getURL().trim()).getQualifiedName();
-                else 
-                    principalName = principal.getURL().trim();
-            } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_ALL) {
-                principalName = "dav:all";
-            } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_OWNER) {
-                principalName = "dav:owner";
-            } else if (principal.getType() == org.vortikal.repository.ACLPrincipal.TYPE_AUTHENTICATED) {
-                principalName = "dav:authenticated";
-            } else {
-                throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
-                    "Unknown principal: " + principal.getURL());
-            }
-
-            Privilege[] privileges = ace.getPrivileges();
-
-            for (int j = 0; j < privileges.length; j++) {
-                Privilege privilege = privileges[j];
-
-                /*
-                 * We don't store the required ACE
-                 * ((dav:owner (dav:read dav:write dav:write-acl))
-                 */
-
-                //                 if (principalName.equals("dav:owner") &&
-                //                     (privilege.getName().equals(PrivilegeDefinition.READ) ||
-                //                      privilege.getName().equals(PrivilegeDefinition.WRITE) ||
-                //                      privilege.getName().equals(PrivilegeDefinition.WRITE_ACL))) {
-                //                     continue;
-                //                 }
-                // Add an entry for (privilege, principal)
-                if (!privilegeMap.containsKey(privilege.getName())) {
-                    privilegeMap.put(privilege.getName(), new ArrayList());
-                }
-
-                List principals = (List) privilegeMap.get(privilege.getName());
-
-                ACLPrincipal p = new ACLPrincipal(principalName,
-                        !principal.isUser());
-
-                if (!principals.contains(p)) {
-                    principals.add(p);
-                }
-            }
-        }
-
-        return acl;
-    }
-    
-    /**
-     * Generates a list of Ace objects (for data exchange).
-     *
-     * @return an <code>Ace[]</code>
-     */
-    public Ace[] toAceList(ACL acl, String inheritedFrom) {
-
-        Set actions = acl.getActionMap().keySet();
-
-        HashMap userMap = new HashMap();
-
-        /*
-         * Add ((dav:owner (dav:read dav:write dav:write-acl))
-         */
-
-        //         HashSet owner = new HashSet();
-        //         owner.add(PrivilegeDefinition.READ);
-        //         owner.add(PrivilegeDefinition.WRITE);
-        //         owner.add(PrivilegeDefinition.WRITE_ACL);
-        //         userMap.put(new ACLPrincipal("dav:owner"), owner);
-        for (Iterator i = actions.iterator(); i.hasNext();) {
-            String action = (String) i.next();
-
-            List principalList = acl.getPrincipalList(action);
-
-            for (Iterator j = principalList.iterator(); j.hasNext();) {
-                ACLPrincipal p = (ACLPrincipal) j.next();
-
-                if (!userMap.containsKey(p)) {
-                    HashSet actionSet = new HashSet();
-
-                    userMap.put(p, actionSet);
-                }
-
-                HashSet actionSet = (HashSet) userMap.get(p);
-
-                actionSet.add(action);
-            }
-        }
-
-        Ace[] aces = new Ace[userMap.size()];
-        int aclIndex = 0;
-
-        /* Create the ACE's  */
-        for (Iterator i = userMap.keySet().iterator(); i.hasNext();) {
-            ACLPrincipal p = (ACLPrincipal) i.next();
-
-            /* Create the principal */
-            org.vortikal.repository.ACLPrincipal principal = new org.vortikal.repository.ACLPrincipal();
-
-            if (p.getUrl().equals("dav:all")) {
-                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_ALL);
-            } else if (p.getUrl().equals("dav:owner")) {
-                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_OWNER);
-            } else if (p.getUrl().equals("dav:authenticated")) {
-                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_AUTHENTICATED);
-            } else {
-                principal.setType(org.vortikal.repository.ACLPrincipal.TYPE_URL);
-                principal.setIsUser(!p.isGroup());
-                principal.setURL(p.getUrl());
-            }
-
-            /* Create the ACE */
-            Ace element = new Ace();
-
-            element.setPrincipal(principal);
-
-            ArrayList privs = new ArrayList();
-
-            for (Iterator j = ((Set) userMap.get(p)).iterator(); j.hasNext();) {
-                String action = (String) j.next();
-                Privilege priv = new Privilege();
-
-                priv.setName(action);
-
-                // FIXME: Hack coming up:
-                if (action.equals(PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
-                    priv.setNamespace(Namespace.CUSTOM_NAMESPACE);
-                } else {
-                    priv.setNamespace(Namespace.STANDARD_NAMESPACE);
-                }
-
-                privs.add(priv);
-            }
-
-            Privilege[] privileges = (Privilege[]) privs.toArray(new Privilege[] {
-                        
-                    });
-
-            element.setPrivileges(privileges);
-            element.setGranted(true);
-
-            element.setInheritedFrom(inheritedFrom);
-
-            aces[aclIndex++] = element;
-        }
-
-        return aces;
-    }
-
-
-    /** To be removed...?
-     * 
-     * @deprecated
-     * @param principal
-     * @param resource
-     * @param principalManager
-     * @param roleManager
-     * @return
-     * @throws IOException
-     */
-    protected Privilege[] getCurrentUserPrivileges(
-        Principal principal, ResourceImpl resource, PrincipalManager principalManager,
-        RoleManager roleManager) throws IOException {
-
-        ArrayList privs = new ArrayList();
-
-        String[] testedPrivileges = new String[] {
-                PrivilegeDefinition.WRITE, PrivilegeDefinition.READ,
-                PrivilegeDefinition.WRITE_ACL,
-                PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
-            };
-
-        for (int i = 0; i < testedPrivileges.length; i++) {
-            String action = testedPrivileges[i];
-
-            /* Try to authorize against every privilege, and if it
-             * works, add the privilege to the list: */
-            try {
-                authorize(resource, principal, action);
-
-                Privilege priv = new Privilege();
-
-                priv.setName(action);
-                privs.add(priv);
-            } catch (AuthenticationException e) {
-                // ignore
-            } catch (AuthorizationException e) {
-                // ignore
-            }
-        }
-
-        return (Privilege[]) privs.toArray(new Privilege[] {});
-    }
-
-
-
-    
-    /**
-     * Converts <code>ACL</code> to <code>ACE[]</code> and
-     * adds root and read everything roles to <code>ACE[]</code>
-     * 
-     * @param originalACL
-     *            an <code>Ace[]</code> value
-     * @return an <code>Ace[]</code>
-     */
-    public Ace[] convertToACEArray(ACL originalACL, String inheritedFrom) {
-
-        List acl = new ArrayList(Arrays.asList(toAceList(originalACL, inheritedFrom)));
+        Acl acl = (Acl)originalACL.clone();
         List rootPrincipals = roleManager.listPrincipals(RoleManager.ROOT);
 
         for (Iterator i = rootPrincipals.iterator(); i.hasNext();) {
             String root = (String) i.next();
-            org.vortikal.repository.ACLPrincipal aclPrincipal = org.vortikal.repository.ACLPrincipal.getInstance(org.vortikal.repository.ACLPrincipal.TYPE_URL,
-                    root, true);
-            Ace ace = new Ace();
-
-            ace.setPrincipal(aclPrincipal);
-            ace.setPrivileges(getRootPrivileges());
-            acl.add(ace);
+            Privilege[] rootPriv = getRootPrivileges();
+            for (int j = 0; j < rootPriv.length; j++) {
+                acl.addPrivilegeToACL(root, rootPriv[j].getName(), true);
+            }
         }
 
         List readPrincipals = roleManager.listPrincipals(RoleManager.READ_EVERYTHING);
 
         for (Iterator i = readPrincipals.iterator(); i.hasNext();) {
             String read = (String) i.next();
-            org.vortikal.repository.ACLPrincipal aclPrincipal = org.vortikal.repository.ACLPrincipal.getInstance(org.vortikal.repository.ACLPrincipal.TYPE_URL,
-                    read, true);
-            Ace ace = new Ace();
-
-            ace.setPrincipal(aclPrincipal);
-            ace.setPrivileges(getReadPrivileges());
-            acl.add(ace);
+            Privilege[] readPriv = getReadPrivileges();
+            for (int j = 0; j < readPriv.length; j++) {
+                acl.addPrivilegeToACL(read, readPriv[j].getName(), true);
+            }
         }
 
-        return (Ace[]) acl.toArray(new Ace[0]);
+        return acl;
     }
 
     
@@ -496,21 +241,27 @@ public class PermissionsManager {
         return readPrivs;
     }
 
+    private boolean groupMatch(List principalList, Principal principal) {
 
-    /**
-     * @param principalManager The principalManager to set.
-     */
+        for (Iterator i = principalList.iterator(); i.hasNext();) {
+            ACLPrincipal p = (ACLPrincipal) i.next();
+
+            if (p.isGroup()) {
+                if (principalManager.isMember(principal, p.getUrl())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
 
-
-    /**
-     * @param roleManager The roleManager to set.
-     */
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
     }
-
 
 }

@@ -45,7 +45,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
-import org.vortikal.repository.ACLPrincipal;
+import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.util.cache.SimpleCacheImpl;
 
 

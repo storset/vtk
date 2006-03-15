@@ -31,16 +31,70 @@
 package org.vortikal.repositoryimpl;
 
 public class ACLPrincipal {
+
+    /**
+     * Indicates that this ACLPrincipal represents a named user or
+     * group identified by a URL.
+     */
+    public static final int TYPE_URL = 0;
+
+    /**
+     * Indicates that this ACLPrincipal represents all (both
+     * authenticated and unauthenticated) users.
+     */
+    public static final int TYPE_ALL = 1;
+    public static final String NAME_DAV_ALL = "dav:all";
+
+    /**
+     * Indicates that this ACLPrincipal represents all authenticated
+     * users.
+     */
+    public static final int TYPE_AUTHENTICATED = 2;
+    public static final String NAME_DAV_AUTHENTICATED = "dav:authenticated";
+
+    /**
+     * Indicates that this ACLPrincipal represents all unauthenticated
+     * users.
+     */
+    public static final int TYPE_UNAUTHENTICATED = 3;
+    public static final String NAME_DAV_UNAUTHENTICATED = "dav:unauthenticated";
+
+    /**
+     * Indicates that this ACLPrincipal represents the current
+     * authenticated user.
+     */
+    public static final int TYPE_SELF = 4;
+    public static final String NAME_DAV_SELF = "dav:self";
+
+    /**
+     * Indicates that this ACLPrincipal represents the owner of a
+     * resource.
+     *
+     * Note: to obtain the actual URL of the owner of the resource,
+     * use <code>Resource.getOwner()</code>
+     */
+    public static final int TYPE_OWNER = 5;
+    public static final String NAME_DAV_OWNER = "dav:owner";
+    private int type = TYPE_URL;
+    
+    
     private boolean isGroup = false;
     private String url = null;
-
-    public ACLPrincipal(String url) {
-        this.url = url;
-    }
-
+    
+    
     public ACLPrincipal(String url, boolean isGroup) {
-        this(url);
+        this.url = url;
         this.isGroup = isGroup;
+    
+        if (url.equals("dav:all")) {
+            type = TYPE_ALL;
+        } else if (url.equals("dav:owner")) {
+            type = TYPE_OWNER;
+        } else if (url.equals("dav:authenticated")) {
+            type = TYPE_AUTHENTICATED;
+        } else {
+            this.type = TYPE_URL;
+        }
     }
 
     public String getUrl() {
@@ -51,6 +105,10 @@ public class ACLPrincipal {
         return this.isGroup;
     }
 
+    public int getType() {
+        return this.type;
+    }
+    
     public boolean equals(Object o) {
         if (!(o instanceof ACLPrincipal)) {
             return false;

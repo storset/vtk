@@ -105,7 +105,7 @@ public class PropertyManagerImpl implements InitializingBean {
         
         evaluateProperties(principal, r, null, RepositoryOperations.CREATE, rootResourceTypeDefinition);
         
-        r.setACL(new ACL());
+        r.setACL(new ACLImpl());
         r.setInheritedACL(true);
 
         return r;

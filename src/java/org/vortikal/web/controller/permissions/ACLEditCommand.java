@@ -30,8 +30,8 @@
  */
 package org.vortikal.web.controller.permissions;
 
-import org.vortikal.repository.Ace;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.repository.Acl;
 import org.vortikal.security.Principal;
 
 
@@ -50,7 +50,7 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
     private String[] withdrawGroupURLs;
     private String userNames[];
     private String groupNames[];
-    private Ace[] editedACL;
+    private Acl editedACL;
     
 
     public ACLEditCommand(String submitURL) {
@@ -245,7 +245,7 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
      *
      * @return the value of editedACL
      */
-    public Ace[] getEditedACL() {
+    public Acl getEditedACL() {
         return this.editedACL;
     }
 
@@ -254,7 +254,7 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
      *
      * @param editedACL Value to assign to this.editedACL
      */
-    public void setEditedACL(Ace[] editedACL)  {
+    public void setEditedACL(Acl editedACL)  {
         this.editedACL = editedACL;
     }
 

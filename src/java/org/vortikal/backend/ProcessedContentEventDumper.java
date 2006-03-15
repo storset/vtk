@@ -35,14 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanInitializationException;
-import org.vortikal.repository.ACLPrincipal;
-import org.vortikal.repository.Ace;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Resource;
+import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
-import org.vortikal.util.repository.AclUtil;
-
-
 
 
 public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
@@ -151,24 +148,23 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Ace[] originalACL, Ace[] newACL) {
+                            Acl originalACL, Acl newACL) {
         
 //         logger.info("ACL_MODIFIED: " + resource.getURI() + ", BEFORE: " +
 //                     originalACL + ", AFTER: " + newACL);
 
 
         try {
-            if (AclUtil.equal(originalACL, newACL) &&
-                AclUtil.isInherited(newACL) == AclUtil.isInherited(originalACL)) {
+            if (originalACL.equals(newACL)) {
                 return;
             }
         
             /* Check if ACE (dav:all (UIO_READ_PROCESSED)) has changed: */
 
-            List principalListBefore = AclUtil.listPrivilegedPrincipals(
-                originalACL, PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
-            List principalListAfter = AclUtil.listPrivilegedPrincipals(
-                newACL, PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
+            List principalListBefore = originalACL.listPrivilegedPrincipals(
+                PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
+            List principalListAfter = newACL.listPrivilegedPrincipals(
+                PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
            
 
             if (principalListBefore == null &&
@@ -186,15 +182,15 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 return;
             }
             
-            if (AclUtil.hasPrivilege(originalACL, ACLPrincipal.NAME_DAV_ALL,
+            if (originalACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
                     PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED) &&
-                AclUtil.hasPrivilege(newACL, ACLPrincipal.NAME_DAV_ALL,
+                newACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
                         PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
                 return;
             }
 
             
-            String op = AclUtil.hasPrivilege(newACL, ACLPrincipal.NAME_DAV_ALL,
+            String op = newACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
                     PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
@@ -202,10 +198,6 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                                            resource.isCollection(), false);
             
             if (resource.isCollection()) {
-                //String[] childUris = dataAccessor.listSubTree((Collection) dataAccessor.load(resource.getURI()));
-                //for (int i = 0; i < childUris.length; i++) {
-                //    dataAccessor.addChangeLogEntry(id, loggerType, childUris[i], op, -1, false);
-                //}
                 
                 org.vortikal.repositoryimpl.ResourceImpl[] childResources =
                     dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));

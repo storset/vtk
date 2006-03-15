@@ -38,8 +38,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.vortikal.repository.Ace;
-import org.vortikal.repository.AclException;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
@@ -882,7 +881,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
 
-    public org.vortikal.repository.Ace[] getACL(String token, String uri)
+    public Acl getACL(String token, String uri)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
@@ -912,11 +911,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 inheritedFrom = URIUtil.getParentURI(r.getURI());
             }
             
-            org.vortikal.repository.Ace[] dtos = permissionsManager.toAceList(r.getACL(), inheritedFrom);
+            Acl acl = permissionsManager.toAceList(r.getACL(), inheritedFrom);
 
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
-            return dtos;
+            return acl;
         } catch (AuthorizationException e) {
             OperationLog.failure(operation, "(" + uri + ")", "permission denied",
                 token, principal);
@@ -928,7 +927,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
-    public void storeACL(String token, String uri, Ace[] acl)
+    public void storeACL(String token, String uri, Acl acl)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException, AclException, 
             ReadOnlyException, IOException {
@@ -936,6 +935,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         String operation = RepositoryOperations.STORE_ACL;
         
+        if (readOnly(principal)) {
+            OperationLog.failure(operation, "(" + uri + ")", "read-only",
+                token, principal);
+            throw new ReadOnlyException();
+        }
+
         if (!uriValidator.validateURI(uri)) {
             OperationLog.failure(operation, "(" + uri + ")", "resource not found",
                 token, principal);
@@ -950,10 +955,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (readOnly(principal)) {
-            OperationLog.failure(operation, "(" + uri + ")", "read-only",
-                token, principal);
-            throw new ReadOnlyException();
+        if ("/".equals(r.getURI()) && acl.isInherited()) {
+            OperationLog.failure(operation, "(" + uri + ")", "Can't make root acl inherited.",
+                    token, principal);
+            throw new IllegalOperationException("Can't make root acl inherited.");
         }
 
         try {
@@ -963,7 +968,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             if (r.isInheritedACL()) {
                 inheritedFrom = URIUtil.getParentURI(r.getURI());
             }
-            Ace[] originalACL = permissionsManager.toAceList(r.getACL(), inheritedFrom);
+            Acl originalACL = permissionsManager.toAceList(r.getACL(), inheritedFrom);
 
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
             this.resourceManager.lockAuthorize(r, principal, false);

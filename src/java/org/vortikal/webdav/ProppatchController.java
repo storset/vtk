@@ -50,7 +50,6 @@ import org.jdom.output.XMLOutputter;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import org.vortikal.repository.AclException;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
@@ -58,6 +57,7 @@ import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repositoryimpl.AclException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;

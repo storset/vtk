@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository;
 
+import org.vortikal.repositoryimpl.ACLPrincipal;
+
 
 /**
  * This class represents the privileges supported on a resource.
@@ -195,9 +197,7 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
         standardRestrictions.setNoInvert(true);
         standardRestrictions.setPrincipalOnlyOneAce(true);
 
-        ACLPrincipal owner = new ACLPrincipal();
-
-        owner.setType(ACLPrincipal.TYPE_OWNER);
+        ACLPrincipal owner = new ACLPrincipal("dav:owner", false);
 
         ACLPrincipal[] requiredPrincipals = new ACLPrincipal[] { owner };
 

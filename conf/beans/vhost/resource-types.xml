@@ -24,7 +24,8 @@
         <property name="principalManager" ref="principalManager" />
       </bean>
     </property>
-    
+  </bean>
+
   <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="collection" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

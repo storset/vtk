@@ -40,18 +40,17 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
 
-import org.vortikal.repository.Ace;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.search.SearchException;
-import org.vortikal.util.io.StreamUtil;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.search.SearchException;
+import org.vortikal.util.io.StreamUtil;
 
 
 
@@ -76,9 +75,9 @@ public class StandardResourceAnalyzer implements ResourceAnalyzer {
         doc.add(Field.Keyword("modifiedBy", resource.getModifiedBy().getQualifiedName()));
 
         try {
-            Ace[] acl = repository.getACL(token, resource.getURI());
+            Acl acl = repository.getACL(token, resource.getURI());
             // FIXME:
-            boolean inheritedACL = (acl[0].getInheritedFrom() != null);
+            boolean inheritedACL = acl.isInherited();
             doc.add(Field.Keyword("inheritedACL",
                                   new Boolean(inheritedACL).toString()));
         } catch (IOException e) {

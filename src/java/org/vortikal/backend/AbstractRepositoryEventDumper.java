@@ -31,7 +31,7 @@
 package org.vortikal.backend;
 
 
-import org.vortikal.repository.Ace;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.event.ACLModificationEvent;
@@ -132,6 +132,6 @@ public abstract class AbstractRepositoryEventDumper
     public abstract void contentModified(Resource resource);
 
     public abstract void aclModified(Resource resource, Resource originalResource,
-                                     Ace[] originalACL, Ace[] newACL);
+                                     Acl originalACL, Acl newACL);
     
 }

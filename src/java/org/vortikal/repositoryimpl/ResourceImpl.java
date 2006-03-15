@@ -39,11 +39,16 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.AclRestrictions;
+import org.vortikal.repository.Lock;
+import org.vortikal.repository.Privilege;
+import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalStore;
 import org.vortikal.util.repository.LocaleHelper;
 
 
@@ -55,7 +60,7 @@ public class ResourceImpl implements Resource, Cloneable {
     private int id = -1;
 
     private String uri = null;
-    private ACL acl = null;
+    private ACLImpl acl = null;
     private boolean inheritedACL = true;
     private LockImpl lock = null;
     private boolean dirtyACL = false;
@@ -71,7 +76,7 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        ACL acl = (this.acl == null) ? null : (ACL) this.acl.clone();
+        ACLImpl acl = (this.acl == null) ? null : (ACLImpl) this.acl.clone();
         LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
                 .clone();
 
@@ -173,11 +178,11 @@ public class ResourceImpl implements Resource, Cloneable {
     
 
 
-    public void setACL(ACL acl) {
+    public void setACL(ACLImpl acl) {
         this.acl = acl;
     }
 
-    public ACL getACL() {
+    public ACLImpl getACL() {
         return this.acl;
     }
 
@@ -250,6 +255,75 @@ public class ResourceImpl implements Resource, Cloneable {
     public void deleteProperty(Property property) {
         // TODO Auto-generated method stub
         
+    }
+
+    public void removeProperty(String namespace, String name) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public List getOtherProperties() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getSerial() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getParent() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Date getLastModified() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Principal getModifiedBy() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public long getContentLength() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public Lock getActiveLock() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PrivilegeDefinition getSupportedPrivileges() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public AclRestrictions getAclRestrictions() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Privilege[] getPrivilegeSet(Principal principal, PrincipalStore principalStore) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Privilege[] getParentPrivilegeSet(Principal principal, PrincipalStore principalStore) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setCharacterEncoding(String characterEncoding) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public Acl getAcl() {
+        return this.acl;
     }
 
     

@@ -30,12 +30,14 @@
  */
 package org.vortikal.repository;
 
+import org.vortikal.repositoryimpl.ACLPrincipal;
+
 
 /**
  * This class represents the various restrictions put upon instances
  * of access control lists (ACLs).
  */
-public class AclRestrictions implements java.io.Serializable, Cloneable {
+public class AclRestrictions implements java.io.Serializable/*, Cloneable */{
 
     private static final long serialVersionUID = 3256720680303997238L;
     
@@ -86,18 +88,18 @@ public class AclRestrictions implements java.io.Serializable, Cloneable {
         this.requiredPrincipals = requiredPrincipals;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        AclRestrictions clone = (AclRestrictions) super.clone();
-        ACLPrincipal[] principals = new ACLPrincipal[requiredPrincipals.length];
-
-        for (int i = 0; i < requiredPrincipals.length; i++) {
-            principals[i] = (ACLPrincipal) requiredPrincipals[i].clone();
-        }
-
-        clone.requiredPrincipals = principals;
-
-        return clone;
-    }
+//    public Object clone() throws CloneNotSupportedException {
+//        AclRestrictions clone = (AclRestrictions) super.clone();
+//        ACLPrincipal[] principals = new ACLPrincipal[requiredPrincipals.length];
+//
+//        for (int i = 0; i < requiredPrincipals.length; i++) {
+//            principals[i] = (ACLPrincipal) requiredPrincipals[i].clone();
+//        }
+//
+//        clone.requiredPrincipals = principals;
+//
+//        return clone;
+//    }
 
     public String toString() {
         StringBuffer sb = new StringBuffer();

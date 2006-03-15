@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.doomdark.uuid.UUIDGenerator;
-import org.vortikal.repository.AclException;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
@@ -220,25 +220,21 @@ public class ResourceManager {
         this.dao.store(resource);
     }
     
-    public void storeACL(ResourceImpl resource, Principal principal,
-                         org.vortikal.repository.Ace[] aceList)
+    public void storeACL(ResourceImpl resource, Principal principal, Acl acl)
         throws AuthorizationException, AuthenticationException, 
             IllegalOperationException, IOException, AclException {
 
-        ACL acl = permissionsManager.buildACL(aceList);
-        resource.setACL(acl);
+        Acl acl2 = permissionsManager.buildACL(acl);
+        resource.setACL(acl2);
 
-        /* If the first ACE has set inheritance, we know that the
-         * whole ACL has valid inheritance (ACL.validateACL() ensures
-         * this), so we can go ahead and set it here: */
-        boolean inheritedACL = aceList[0].getInheritedFrom() != null;
+        boolean inheritedACL = acl.isInherited();
 
-        if (!"/".equals(resource.getURI()) && inheritedACL) {
+        if (inheritedACL) {
             /* When the ACL is inherited, make our ACL a copy of our
              * parent's ACL, since the supplied one may contain other
              * ACEs than the one we now inherit from. */
             try {
-                ACL parentACL = (ACL) this.dao.load(URIUtil.getParentURI(resource.getURI())).getACL().clone();
+                ACLImpl parentACL = (ACLImpl) this.dao.load(URIUtil.getParentURI(resource.getURI())).getACL().clone();
 
                 resource.setACL(parentACL);
             } catch (CloneNotSupportedException e) {

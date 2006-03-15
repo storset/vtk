@@ -169,18 +169,8 @@ public interface Resource extends PropertySet {
      */
     public AclRestrictions getAclRestrictions();
 
-    /**
-     * Gets the set of privileges on this resource for a given principal.
-     */
-    public Privilege[] getPrivilegeSet(Principal principal,
-                                       PrincipalStore principalStore);
+    public Acl getAcl();
     
-    /**
-     * Gets the set of privileges on this resource's parent for a given principal.
-     */
-    public Privilege[] getParentPrivilegeSet(Principal principal,
-                                            PrincipalStore principalStore);
-
     /**
      * Gets the character encoding. This value is only relevant if the
      * resource type is 'textResource'.

@@ -32,10 +32,9 @@ package org.vortikal.backend;
 
 import java.io.IOException;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.vortikal.repository.Ace;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
-import org.vortikal.util.repository.AclUtil;
 
 
 
@@ -132,13 +131,13 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
 
     public void aclModified(Resource resource, Resource originalResource,
-                            Ace[] originalACL, Ace[] newACL) {
+                            Acl originalACL, Acl newACL) {
         try {
 
-            if (AclUtil.equal(originalACL, newACL) &&
-                AclUtil.isInherited(newACL) == AclUtil.isInherited(originalACL)) {
-                return;
-            }
+//            if (AclUtil.equal(originalACL, newACL) &&
+//                AclUtil.isInherited(newACL) == AclUtil.isInherited(originalACL)) {
+//                return;
+//            }
         
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
                                            MODIFIED_ACL, -1, resource.isCollection(), false);

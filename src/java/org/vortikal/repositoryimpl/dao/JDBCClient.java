@@ -54,7 +54,7 @@ import java.util.Set;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.vortikal.repository.Property;
-import org.vortikal.repositoryimpl.ACL;
+import org.vortikal.repositoryimpl.ACLImpl;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
@@ -287,7 +287,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         String propertiesModifiedBy = rs.getString("properties_modified_by");
         boolean inherited = rs.getString("acl_inherited").equals("Y");
         boolean isCollection = rs.getString("is_collection").equals("Y");
-        ACL acl = new ACL();
+        ACLImpl acl = new ACLImpl();
 
         ResourceImpl resource = new ResourceImpl(uri, principalManager);
         resource.setID(rs.getInt("resource_id"));
@@ -902,7 +902,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         ResourceImpl existingResource = load(conn, r.getURI());
 
         if (existingResource.isInheritedACL() && r.isInheritedACL()) {
-            ACL newACL = r.getACL();
+            ACLImpl newACL = r.getACL();
 
             if (existingResource.getACL().equals(newACL)) {
                 /* No need to insert ACL, is inherited and not modified */
@@ -1144,11 +1144,11 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String uri = rs.getString("uri");
             String action = rs.getString("action_name");
 
-            ACL acl = (ACL) acls.get(uri);
+            ACLImpl acl = (ACLImpl) acls.get(uri);
 
             if (acl == null) {
 
-                acl = new ACL();
+                acl = new ACLImpl();
                 acls.put(uri, acl);
             }
 
@@ -1357,7 +1357,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         while (rs.next()) {
             LockImpl lock = new LockImpl(rs.getString("token"), 
-                    principalManager.getPrincipal(rs.getString("lock_owner")),
+                    this.principalManager.getPrincipal(rs.getString("lock_owner")),
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 

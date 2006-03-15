@@ -182,6 +182,8 @@ public class ResourcePrincipalPermissionAssertion
 
     private boolean checkParentWritePermission(Resource resource, Lock lock,
                                                Principal principal) {
+        Resource parent = null;
+        
         if (!"/".equals(resource.getURI())) {
 
             try {
@@ -196,7 +198,7 @@ public class ResourcePrincipalPermissionAssertion
 
                 // If parent resource is locked by another principal, we fail:
 
-                Resource parent = this.repository.retrieve(this.trustedToken,
+                parent = this.repository.retrieve(this.trustedToken,
                                                            resource.getParent(), true);
                 Lock parentLock = (parent.getActiveLock() != null) ?
                     parent.getActiveLock() : null;
@@ -217,8 +219,7 @@ public class ResourcePrincipalPermissionAssertion
         }
 
 
-        Privilege[] parentPrivilegeSet = resource.getParentPrivilegeSet(
-            principal, this.principalManager);
+        Privilege[] parentPrivilegeSet = parent.getAcl().getPrivilegeSet(principal);
                 
         for (int i = 0; i < parentPrivilegeSet.length; i++) {
 
@@ -293,8 +294,7 @@ public class ResourcePrincipalPermissionAssertion
                 return false;
             }
 
-            Privilege[] privilegeSet = resource.getPrivilegeSet(
-                principal, this.principalManager);
+            Privilege[] privilegeSet = resource.getAcl().getPrivilegeSet(principal);
 
             for (int i = 0; i < privilegeSet.length; i++) {
                 if (privilegeSet[i].getName().equals("write"))
@@ -366,8 +366,7 @@ public class ResourcePrincipalPermissionAssertion
 
 
 
-        Privilege[] privileges = resource.getPrivilegeSet(principal,
-                                                          this.principalManager);
+        Privilege[] privileges = resource.getAcl().getPrivilegeSet(principal);
 
         for (int i = 0; i < privileges.length; i++) {
             boolean match = false;

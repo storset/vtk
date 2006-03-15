@@ -1,5 +1,6 @@
 package org.vortikal.repositoryimpl;
 
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -9,7 +10,7 @@ public class Authorization {
     private PrincipalManager principalManager;
     private Principal principal;
     private Principal owner;
-    private ACLImpl acl;
+    private Acl acl;
     
     Authorization(Principal principal, ResourceImpl resource, 
             PrincipalManager principalManager) {

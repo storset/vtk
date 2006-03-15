@@ -14,9 +14,7 @@ public class PropertiesModifiedByEvaluator implements PropertyEvaluator {
         return currentValue;
     }
 
-    public Value extractFromProperties(String operation, Principal principal,
-            PropertySet newProperties, Value currentValue) throws Exception {
-
+    public Value evaluateProperties(String operation, Principal principal, PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
         if (operation == RepositoryOperations.CREATE ||
                 operation == RepositoryOperations.CREATE_COLLECTION ||
                 operation == RepositoryOperations.STORE) {

@@ -182,5 +182,12 @@ public interface Resource extends PropertySet {
     
     public void setCharacterEncoding(String characterEncoding);
 
+    public void setContentLocale(Locale locale);
 
+    public void setContentType(String string);
+
+    public void setOwner(Principal principal);
+
+    public void setDisplayName(String text);
+    
 }

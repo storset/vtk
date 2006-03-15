@@ -46,6 +46,7 @@ import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryOperations;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
@@ -167,6 +168,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(operation, "(" + uri + ")", "not authenticated",
                 token, principal);
             throw e;
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("An internal error occurred: unable to " +
+                "clone() resource: " + r);
         }
     }
 
@@ -209,7 +213,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
 
         for (int i = 0; i < list.length; i++) {
-            children[i] = resourceManager.getResourceClone(list[i]);
+            try {
+                children[i] = resourceManager.getResourceClone(list[i]);
+            } catch (CloneNotSupportedException e) {
+                throw new IOException("An internal error occurred: unable to " +
+                    "clone() resource: " + list[i]);
+            }
+
         }
 
         OperationLog.success(operation, "(" + uri + ")",
@@ -275,10 +285,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                     "or parent is document");
         }
 
+        Resource newResource = null;
+
         try {
             this.permissionsManager.authorize(parent, principal, 
                     PrivilegeDefinition.WRITE);
             this.resourceManager.lockAuthorize(parent, principal, false);
+            newResource = 
+                this.resourceManager.create(parent, principal, collection, uri);
         } catch (ResourceLockedException e) {
             OperationLog.failure(operation, "(" + uri + ")",
                     "the parent resource was locked", token, principal);
@@ -287,17 +301,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(operation, "(" + uri + ")",
                     "unauthorized", token, principal);
             throw e;
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("An internal error occurred: unable to " +
+                "clone() resource: " + uri);
         }
 
-        org.vortikal.repository.Resource dto = 
-            this.resourceManager.create(parent, principal, collection, uri);
-        
         OperationLog.success(operation, "(" + uri + ")", token,
                 principal);
 
-        context.publishEvent(new ResourceCreationEvent(this, dto));
+        context.publishEvent(new ResourceCreationEvent(this, newResource));
 
-        return dto;
+        return newResource;
     }    
 
     public void copy(String token, String srcUri, String destUri, String depth,
@@ -393,6 +407,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(operation, "(" + srcUri + ", " + destUri + ")",
                 "tried to set an illegal ACL", token, principal);
             throw new IllegalOperationException(e.getMessage());
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("An internal error occurred: unable to " +
+                "clone() resource: " + destUri);
         }
     }
 
@@ -513,6 +530,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 "tried to set an illegal ACL", token, principal);
 
             throw new IllegalOperationException(e.getMessage());
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("An internal error occurred: unable to " +
+                "clone() resource: " + destUri);
         }
     }
 
@@ -906,12 +926,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.READ);
 
-            String inheritedFrom = null;
-            if (r.isInheritedACL()) {
-                inheritedFrom = URIUtil.getParentURI(r.getURI());
-            }
-            
-            Acl acl = permissionsManager.toAceList(r.getACL(), inheritedFrom);
+            Acl acl = (Acl)r.getACL().clone();
 
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
@@ -924,6 +939,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(operation, "(" + uri + ")", "not authenticated",
                 token, principal);
             throw e;
+        } catch (CloneNotSupportedException e) {
+            OperationLog.failure(operation, "(" + uri + ")", "not able to clone",
+                    token, principal);
+            throw new IOException(e.getMessage());
         }
     }
 
@@ -968,7 +987,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             if (r.isInheritedACL()) {
                 inheritedFrom = URIUtil.getParentURI(r.getURI());
             }
-            Acl originalACL = permissionsManager.toAceList(r.getACL(), inheritedFrom);
+            Acl originalACL = (Acl)r.getACL().clone();
 
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
             this.resourceManager.lockAuthorize(r, principal, false);
@@ -997,6 +1016,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.failure(operation, "(" + uri + ")",
                 "illegal ACL operation", token, principal);
             throw e;
+        } catch (CloneNotSupportedException e) {
+            OperationLog.failure(operation, "(" + uri + ")",
+                    "unable to clone", token, principal);
+            throw new IOException(e.getMessage());
         }
     }
 

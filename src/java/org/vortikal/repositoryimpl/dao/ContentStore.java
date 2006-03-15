@@ -33,6 +33,8 @@ package org.vortikal.repositoryimpl.dao;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.vortikal.repository.IllegalOperationException;
+
 /**
  * Defines a pure content store. It is organized hierachically and 
  * resource nodes are adressed by their URIs. The behaviour shall be equal
@@ -47,7 +49,7 @@ public interface ContentStore {
     public void createResource(String uri, boolean isCollection)
             throws IOException;
 
-    public long getContentLength(String uri);
+    public long getContentLength(String uri) throws IllegalOperationException;
 
     public void deleteResource(String uri);
 

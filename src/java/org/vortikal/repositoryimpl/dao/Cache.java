@@ -442,10 +442,6 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public long getContentLength(ResourceImpl resource) throws IOException {
-        return this.wrappedAccessor.getContentLength(resource);
-    }
-
     public String[] listSubTree(ResourceImpl parent) throws IOException {
         return this.wrappedAccessor.listSubTree(parent);
     }

@@ -41,6 +41,9 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.web.URLUtil;
 
 public class SimpleFileSystemContentStore implements InitializingBean, ContentStore {
@@ -72,11 +75,15 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
     
-    public long getContentLength(String uri) {
+    public long getContentLength(String uri) throws IllegalOperationException {
         String fileName = this.repositoryDataDirectory
                 + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
 
-        return new File(fileName).length();
+        File f = new File(fileName);
+        if (f.isFile())
+            return f.length();
+        
+        throw new IllegalOperationException("Collections don't have legth");
     }
 
     public void deleteResource(String uri) {
@@ -133,20 +140,18 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     public void copy(String srcURI, String destURI) throws IOException {
         String fileNameFrom = this.repositoryDataDirectory
-        + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(srcURI)
-           : srcURI);
-    String fileNameTo = this.repositoryDataDirectory
-        + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(destURI)
-           : destURI);
+            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(srcURI)
+                    : srcURI);
+        String fileNameTo = this.repositoryDataDirectory
+            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(destURI)
+                    : destURI);
 
-    File fromDir = new File(fileNameFrom);
-    if (fromDir.isDirectory()) {
-        copyDir(fromDir, new File(fileNameTo));
-    } else {
-        copyFile(new File(fileNameFrom), new File(fileNameTo));
-    }
-
-        
+        File fromDir = new File(fileNameFrom);
+        if (fromDir.isDirectory()) {
+            copyDir(fromDir, new File(fileNameTo));
+        } else {
+            copyFile(new File(fileNameFrom), new File(fileNameTo));
+        }
     }
     
     private void copyDir(File fromDir, File toDir) throws IOException {

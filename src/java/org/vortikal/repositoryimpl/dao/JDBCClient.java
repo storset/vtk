@@ -53,8 +53,10 @@ import java.util.Set;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.beans.factory.DisposableBean;
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
-import org.vortikal.repositoryimpl.ACLImpl;
+import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
@@ -287,7 +289,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         String propertiesModifiedBy = rs.getString("properties_modified_by");
         boolean inherited = rs.getString("acl_inherited").equals("Y");
         boolean isCollection = rs.getString("is_collection").equals("Y");
-        ACLImpl acl = new ACLImpl();
+        AclImpl acl = new AclImpl();
 
         ResourceImpl resource = new ResourceImpl(uri, principalManager);
         resource.setID(rs.getInt("resource_id"));
@@ -323,6 +325,14 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         prop = this.propertyManager.createProperty(null, "propertiesLastModified", new Date(rs.getTimestamp("properties_last_modified").getTime()));
         resource.addProperty(prop);
 
+        try {
+            long contentLength = contentStore.getContentLength(resource.getURI());
+            prop = this.propertyManager.createProperty(null, "contentLength", new Long(contentLength));
+            resource.addProperty(prop);
+        } catch (IllegalOperationException e) {
+            // Probably a collection
+        }
+        
         return resource;
     }
     
@@ -898,11 +908,12 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private void storeACL(Connection conn, ResourceImpl r)
             throws SQLException {
+        // XXX: do not belong here!?
         // first, check if existing ACL is inherited:
         ResourceImpl existingResource = load(conn, r.getURI());
 
         if (existingResource.isInheritedACL() && r.isInheritedACL()) {
-            ACLImpl newACL = r.getACL();
+            Acl newACL = r.getACL();
 
             if (existingResource.getACL().equals(newACL)) {
                 /* No need to insert ACL, is inherited and not modified */
@@ -917,7 +928,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private void insertACL(Connection conn, ResourceImpl r)
             throws SQLException {
-        Map aclMap = r.getACL().getActionMap();
+        Map aclMap = r.getACL().getPrivilegeMap();
 
         Set actions = aclMap.keySet();
 
@@ -1115,10 +1126,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         contentStore.storeContent(resource.getURI(), inputStream);
     }
 
-    public long getContentLength(ResourceImpl resource) {
-        return this.contentStore.getContentLength(resource.getURI());
-    }
-    
     protected void executeACLQuery(Connection conn, Map acls)
             throws SQLException {
 
@@ -1144,15 +1151,15 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String uri = rs.getString("uri");
             String action = rs.getString("action_name");
 
-            ACLImpl acl = (ACLImpl) acls.get(uri);
+            AclImpl acl = (AclImpl) acls.get(uri);
 
             if (acl == null) {
 
-                acl = new ACLImpl();
+                acl = new AclImpl();
                 acls.put(uri, acl);
             }
 
-            Map actionMap = acl.getActionMap();
+            Map actionMap = acl.getPrivilegeMap();
 
             List actionEntry = (List) actionMap.get(action);
             if (actionEntry == null) {

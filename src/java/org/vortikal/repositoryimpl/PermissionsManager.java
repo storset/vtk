@@ -45,6 +45,7 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -55,10 +56,10 @@ public class PermissionsManager {
     private RoleManager roleManager;
     private PrincipalManager principalManager;
 
-    public void authorize(ResourceImpl resource, Principal principal, String action)
+    public void authorize(Resource resource, Principal principal, String action)
             throws AuthenticationException, AuthorizationException, IOException {
 
-        ACLImpl acl = resource.getACL();
+        Acl acl = resource.getAcl();
 
         /*
          * Special treatment for uio:read-processed needed: dav:read also grants

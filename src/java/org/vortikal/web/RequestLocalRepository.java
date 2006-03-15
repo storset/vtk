@@ -37,7 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Ace;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
@@ -258,13 +258,13 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         repository.unlock(token, uri, lockToken);
     }
 
-    public Ace[] getACL(String token, String uri)
+    public Acl getACL(String token, String uri)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, IOException {
         return repository.getACL(token, uri);
     }
 
-    public void storeACL(String token, String uri, Ace[] acl)
+    public void storeACL(String token, String uri, Acl acl)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, AclException, IllegalOperationException, 
         ReadOnlyException, IOException {

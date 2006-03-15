@@ -34,7 +34,7 @@ package org.vortikal.repositoryimpl.dao;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.vortikal.repositoryimpl.ACLImpl;
+import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 
 
@@ -72,9 +72,6 @@ public interface DataAccessor {
     /* Writes content for a resource */
     public void storeContent(ResourceImpl resource, InputStream stream)
         throws IOException;
-
-    /* Gets the content length (in bytes) of a resource */
-    public long getContentLength(ResourceImpl resource) throws IOException;
 
     /* Lists all descendants of a collection resource, sorted by URI */
     public String[] listSubTree(ResourceImpl parent) throws IOException;

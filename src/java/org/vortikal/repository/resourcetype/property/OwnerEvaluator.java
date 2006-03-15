@@ -18,24 +18,6 @@ public class OwnerEvaluator implements PropertyEvaluator {
         return currentValue;
     }
 
-    public Value extractFromProperties(String operation, Principal principal,
-            PropertySet newProperties, Value currentValue) throws Exception {
-
-        Value value = currentValue;
-        Principal newOwner = null;
-        
-        if (operation.equals(RepositoryOperations.CREATE) ||
-            operation.equals(RepositoryOperations.CREATE_COLLECTION) ) {
-            newOwner = principal;
-        }
-        
-        if (newOwner != null) {
-            validateOwner(newOwner);
-            value.setValue(newOwner.getQualifiedName());
-        }
-        
-        return value;
-    }
 
     private void validateOwner(Principal newOwner) {
         if (newOwner == null) {
@@ -55,6 +37,24 @@ public class OwnerEvaluator implements PropertyEvaluator {
      */
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+    }
+
+
+    public Value evaluateProperties(String operation, Principal principal, PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
+        Value value = currentValue;
+        Principal newOwner = null;
+        
+        if (operation.equals(RepositoryOperations.CREATE) ||
+            operation.equals(RepositoryOperations.CREATE_COLLECTION) ) {
+            newOwner = principal;
+        }
+        
+        if (newOwner != null) {
+            validateOwner(newOwner);
+            value.setValue(newOwner.getQualifiedName());
+        }
+        
+        return value;
     }
 
 }

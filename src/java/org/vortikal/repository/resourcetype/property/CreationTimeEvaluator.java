@@ -15,9 +15,7 @@ public class CreationTimeEvaluator implements PropertyEvaluator {
         return currentValue;
     }
 
-    public Value extractFromProperties(String operation, Principal principal,
-            PropertySet newProperties, Value currentValue) throws Exception {
-
+    public Value evaluateProperties(String operation, Principal principal, PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
         Value value = currentValue;
 
         if (operation.equals(RepositoryOperations.CREATE)) {
@@ -32,5 +30,6 @@ public class CreationTimeEvaluator implements PropertyEvaluator {
         
         return value;
     }
+
 
 }

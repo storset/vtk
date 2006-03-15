@@ -41,14 +41,14 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.security.Principal;
 
 
-public class ACLImpl implements Acl {
+public class AclImpl implements Acl {
 
     /**
      * map: [action --> List(ACLPrincipal)]
      */
     private Map actionLists = new HashMap();
 
-    public Map getActionMap() {
+    public Map getPrivilegeMap() {
         return actionLists;
     }
 
@@ -57,11 +57,11 @@ public class ACLImpl implements Acl {
     }
 
     public boolean equals(Object o) {
-        if (!(o instanceof ACLImpl)) {
+        if (!(o instanceof AclImpl)) {
             return false;
         }
 
-        ACLImpl acl = (ACLImpl) o;
+        AclImpl acl = (AclImpl) o;
 
         Set actions = actionLists.keySet();
 
@@ -188,6 +188,11 @@ public class ACLImpl implements Acl {
     }
 
     public boolean hasPrivilege(Principal principal, String privilegeName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean hasPrivilege(String principalName, String privilegeName) {
         // TODO Auto-generated method stub
         return false;
     }

@@ -77,7 +77,7 @@ public class PropertyManagerImpl implements InitializingBean {
             }
             
             Value value = propertyDef.getPropertyEvaluator().
-                extractFromProperties(operation, principal, newResource, 
+                evaluateProperties(operation, principal, newResource, newProp.getValue(), 
                         oldProp.getValue());
 
             if (value != null) {
@@ -102,10 +102,11 @@ public class PropertyManagerImpl implements InitializingBean {
     
     public ResourceImpl create(Principal principal, String uri, boolean collection) throws Exception {
         ResourceImpl r = new ResourceImpl(uri, this.principalManager);
+        List properties = new ArrayList();
         
-        evaluateProperties(principal, r, null, RepositoryOperations.CREATE, rootResourceTypeDefinition);
+        evaluateProperties(principal, properties, r, null, RepositoryOperations.CREATE, rootResourceTypeDefinition);
         
-        r.setACL(new ACLImpl());
+        r.setACL(new AclImpl());
         r.setInheritedACL(true);
 
         return r;

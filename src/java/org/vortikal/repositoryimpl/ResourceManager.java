@@ -142,7 +142,7 @@ public class ResourceManager {
     public org.vortikal.repository.Resource create(ResourceImpl parent, Principal principal,
                            boolean collection, String path)
         throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException {
+            AuthorizationException, AclException, IOException, CloneNotSupportedException {
 
         ResourceImpl resource = null;
         
@@ -222,9 +222,9 @@ public class ResourceManager {
     
     public void storeACL(ResourceImpl resource, Principal principal, Acl acl)
         throws AuthorizationException, AuthenticationException, 
-            IllegalOperationException, IOException, AclException {
+            IllegalOperationException, IOException, AclException, CloneNotSupportedException {
 
-        Acl acl2 = permissionsManager.buildACL(acl);
+        Acl acl2 = (Acl)acl.clone();
         resource.setACL(acl2);
 
         boolean inheritedACL = acl.isInherited();
@@ -234,7 +234,7 @@ public class ResourceManager {
              * parent's ACL, since the supplied one may contain other
              * ACEs than the one we now inherit from. */
             try {
-                ACLImpl parentACL = (ACLImpl) this.dao.load(URIUtil.getParentURI(resource.getURI())).getACL().clone();
+                AclImpl parentACL = (AclImpl) this.dao.load(URIUtil.getParentURI(resource.getURI())).getACL().clone();
 
                 resource.setACL(parentACL);
             } catch (CloneNotSupportedException e) {
@@ -255,44 +255,12 @@ public class ResourceManager {
     }
     
     public Resource getResourceClone(
-            ResourceImpl resource) throws IOException {
-
-        ResourceImpl dto = (ResourceImpl)resource.clone();
+            ResourceImpl resource) throws CloneNotSupportedException, IOException {
+        ResourceImpl clone = (ResourceImpl)resource.clone();
         
-        dto.setLock((LockImpl)resource.getLock().clone());
-
-        String inheritedFrom = null;
-        if (resource.isInheritedACL()) {
-            inheritedFrom = URIUtil.getParentURI(resource.getURI());
-        }
-        dto.setACL(permissionsManager.convertToACEArray(resource.getACL(), inheritedFrom));
-        
-        // Adding parent props: 
-        String parentURI = URIUtil.getParentURI(resource.getURI());
-        if (parentURI != null) {
-            inheritedFrom = null;
-            ResourceImpl parent = this.dao.load(parentURI);
-            // FIXME: if loading the parent fails, the resource itself
-            // has been removed
-            if (parent == null) {
-                throw new ResourceNotFoundException(
-                    "Resource " + resource.getURI() + " has no parent (possibly removed)");
-            }
-
-            if (resource.isInheritedACL()) {
-                inheritedFrom = URIUtil.getParentURI(parent.getURI());
-            }
-            dto.setParentOwner(parent.getOwner());
-            dto.setParentACL(permissionsManager.convertToACEArray(parent.getACL(),inheritedFrom));
-        }
-        
-        if (resource.isCollection()) {
-            dto.setChildURIs(resource.getChildURIs());
-        } else {
-            dto.setContentLength(dao.getContentLength(resource));
-        }
-
-        return dto;
+        clone.setACL(permissionsManager.addRolesToAcl(clone.getACL()));
+                
+        return clone;
     }
 
     public void setDao(DataAccessor dao) {

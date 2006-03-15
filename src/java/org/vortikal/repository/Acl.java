@@ -1,6 +1,7 @@
 package org.vortikal.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.vortikal.security.Principal;
 
@@ -40,8 +41,17 @@ public interface Acl extends Cloneable {
 
     public void setInherited(boolean inherited);
     
+    public boolean hasPrivilege(Principal principal, String privilegeName);
+
     public boolean hasPrivilege(String principalName, String privilegeName);
 
     public Object clone() throws CloneNotSupportedException;
     
+    
+    // XXX: From impl...
+
+    public List getPrincipalList(String action);
+
+    public Map getPrivilegeMap();
+
 }

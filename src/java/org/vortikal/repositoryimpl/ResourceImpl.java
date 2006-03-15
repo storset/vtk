@@ -59,8 +59,8 @@ public class ResourceImpl implements Resource, Cloneable {
     /* Numeric ID, required by database */
     private int id = -1;
 
-    private String uri = null;
-    private ACLImpl acl = null;
+    private String uri;
+    private Acl acl;
     private boolean inheritedACL = true;
     private LockImpl lock = null;
     private boolean dirtyACL = false;
@@ -76,7 +76,7 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        ACLImpl acl = (this.acl == null) ? null : (ACLImpl) this.acl.clone();
+        AclImpl acl = (this.acl == null) ? null : (AclImpl) this.acl.clone();
         LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
                 .clone();
 
@@ -86,7 +86,6 @@ public class ResourceImpl implements Resource, Cloneable {
         clone.setInheritedACL(inheritedACL);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
-        
         for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             clone.addProperty((Property) prop.clone());
@@ -178,11 +177,11 @@ public class ResourceImpl implements Resource, Cloneable {
     
 
 
-    public void setACL(ACLImpl acl) {
+    public void setACL(Acl acl) {
         this.acl = acl;
     }
 
-    public ACLImpl getACL() {
+    public Acl getACL() {
         return this.acl;
     }
 
@@ -324,6 +323,26 @@ public class ResourceImpl implements Resource, Cloneable {
 
     public Acl getAcl() {
         return this.acl;
+    }
+
+    public void setContentLocale(Locale locale) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setContentType(String string) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setOwner(Principal principal) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setDisplayName(String text) {
+        // TODO Auto-generated method stub
+        
     }
 
     

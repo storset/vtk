@@ -11,6 +11,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="oyviste" type="fix">
+        Fix WebDAV bugs preventing Dreamweaver/Contribute from working 
+        properly.
+      </action>
+
       <action dev="oyviste" type="add">
         Added request filter for normalizing dot-segments in request URIs.
       </action>

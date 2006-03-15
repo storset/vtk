@@ -41,7 +41,6 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.web.URLUtil;
 
 public class SimpleFileSystemContentStore implements InitializingBean, ContentStore {
@@ -73,15 +72,14 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
     
-    public long getContentLength(ResourceImpl resource) {
+    public long getContentLength(String uri) {
         String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource.getURI())
-                        : resource.getURI());
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
 
         return new File(fileName).length();
     }
 
-    public void deleteFiles(String uri) {
+    public void deleteResource(String uri) {
         String fileName = this.repositoryDataDirectory
                 + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
 
@@ -104,19 +102,17 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         f.delete();
     }
 
-    public InputStream getInputStream(ResourceImpl resource) throws IOException {
+    public InputStream getInputStream(String uri) throws IOException {
         String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource
-                        .getURI()) : resource.getURI());
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
 
         return new java.io.FileInputStream(new File(fileName));
     }
 
-    public void storeContent(ResourceImpl resource, InputStream inputStream)
+    public void storeContent(String uri, InputStream inputStream)
             throws IOException {
         String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(resource
-                        .getURI()) : resource.getURI());
+                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
 
         OutputStream stream = new java.io.FileOutputStream(new File(fileName));
 

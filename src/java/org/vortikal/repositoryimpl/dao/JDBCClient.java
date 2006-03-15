@@ -1102,21 +1102,21 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.executeUpdate();
         stmt.close();
 
-        contentStore.deleteFiles(resource.getURI());
+        contentStore.deleteResource(resource.getURI());
     }
     
     public InputStream getInputStream(ResourceImpl resource)
             throws IOException {
-        return contentStore.getInputStream(resource);
+        return contentStore.getInputStream(resource.getURI());
     }
 
     public void storeContent(ResourceImpl resource, InputStream inputStream)
             throws IOException {
-        contentStore.storeContent(resource, inputStream);
+        contentStore.storeContent(resource.getURI(), inputStream);
     }
 
     public long getContentLength(ResourceImpl resource) {
-        return this.contentStore.getContentLength(resource);
+        return this.contentStore.getContentLength(resource.getURI());
     }
     
     protected void executeACLQuery(Connection conn, Map acls)

@@ -33,21 +33,27 @@ package org.vortikal.repositoryimpl.dao;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.vortikal.repositoryimpl.ResourceImpl;
-
+/**
+ * Defines a pure content store. It is organized hierachically and 
+ * resource nodes are adressed by their URIs. The behaviour shall be equal
+ * to that of a common file system. Every node must have an 
+ * existing parent collection resource node, except the root node. 
+ * The root collection node shall always exist, and should not need to be 
+ * created upon intialization.
+ * 
+ */
 public interface ContentStore {
 
     public void createResource(String uri, boolean isCollection)
             throws IOException;
 
-    public long getContentLength(ResourceImpl resource);
+    public long getContentLength(String uri);
 
-    public void deleteFiles(String uri);
+    public void deleteResource(String uri);
 
-    public InputStream getInputStream(ResourceImpl resource) throws IOException;
+    public InputStream getInputStream(String uri) throws IOException;
 
-    public void storeContent(ResourceImpl resource, InputStream inputStream)
-            throws IOException;
+    public void storeContent(String uri, InputStream inputStream) throws IOException;
 
     public void copy(String srcURI, String destURI) throws IOException;
 

@@ -186,7 +186,7 @@ ResourceLockedException, IllegalOperationException, IOException {
     
 
     public Property createProperty(String namespaceUri, String name, Object value) {
-        Property prop = new Property();
+        Property prop = new PropertyImpl();
         prop.setNamespace(namespaceUri);
         prop.setName(name);
         

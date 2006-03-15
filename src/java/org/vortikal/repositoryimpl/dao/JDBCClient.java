@@ -915,9 +915,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         ResourceImpl existingResource = load(conn, r.getURI());
 
         if (existingResource.isInheritedACL() && r.isInheritedACL()) {
-            Acl newACL = r.getACL();
+            Acl newACL = r.getAcl();
 
-            if (existingResource.getACL().equals(newACL)) {
+            if (existingResource.getAcl().equals(newACL)) {
                 /* No need to insert ACL, is inherited and not modified */
                 return;
             }
@@ -930,7 +930,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private void insertACL(Connection conn, ResourceImpl r)
             throws SQLException {
-        Map aclMap = r.getACL().getPrivilegeMap();
+        Map aclMap = r.getAcl().getPrivilegeMap();
 
         Set actions = aclMap.keySet();
 

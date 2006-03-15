@@ -202,10 +202,6 @@ public class ResourceImpl implements Resource, Cloneable {
         return null;
     }
 
-
-    
-    
-    
     
 
     public Principal getOwner() {

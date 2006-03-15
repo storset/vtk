@@ -926,7 +926,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.READ);
 
-            Acl acl = (Acl)r.getACL().clone();
+            Acl acl = (Acl)r.getAcl().clone();
 
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
@@ -987,7 +987,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             if (r.isInheritedACL()) {
                 inheritedFrom = URIUtil.getParentURI(r.getURI());
             }
-            Acl originalACL = (Acl)r.getACL().clone();
+            Acl originalACL = (Acl)r.getAcl().clone();
 
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
             this.resourceManager.lockAuthorize(r, principal, false);

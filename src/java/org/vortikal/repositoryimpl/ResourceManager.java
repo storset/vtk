@@ -234,7 +234,7 @@ public class ResourceManager {
              * parent's ACL, since the supplied one may contain other
              * ACEs than the one we now inherit from. */
             try {
-                AclImpl parentACL = (AclImpl) this.dao.load(URIUtil.getParentURI(resource.getURI())).getACL().clone();
+                AclImpl parentACL = (AclImpl) this.dao.load(URIUtil.getParentURI(resource.getURI())).getAcl().clone();
 
                 resource.setACL(parentACL);
             } catch (CloneNotSupportedException e) {
@@ -258,7 +258,7 @@ public class ResourceManager {
             ResourceImpl resource) throws CloneNotSupportedException, IOException {
         ResourceImpl clone = (ResourceImpl)resource.clone();
         
-        clone.setACL(permissionsManager.addRolesToAcl(clone.getACL()));
+        clone.setACL(permissionsManager.addRolesToAcl(clone.getAcl()));
                 
         return clone;
     }

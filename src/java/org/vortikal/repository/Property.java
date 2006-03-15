@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,100 +32,51 @@ package org.vortikal.repository;
 
 import java.util.Date;
 
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 
-
 /**
- * This class represents meta information about resources. A resource
+ * This interface represents meta information about resources. A resource
  * may have several properties set on it, each of which are identified
  * by a namespace and a name. Properties may contain arbitrary string
  * values, such as XML. The application programmer is responsible for
  * the interpretation and processing of properties.
  */
-public class Property implements java.io.Serializable, Cloneable {
+public interface Property extends Cloneable {
 
     public static final String LOCAL_NAMESPACE = "http://www.uio.no/vortex/custom-properties";
+
+    public String getNamespace();
+
+    public void setNamespace(String namespace);
+
+    public String getName();
+
+    public void setName(String name);
+
+    public Value getValue();
+
+    public void setValue(Value value);
+
+    public Date getDateValue();
+
+    public void setDateValue(Date dateValue);
+
+    public String getStringValue();
+
+    public void setStringValue(String stringValue);
+
+    public boolean getBooleanValue();
+
+    public void setBooleanValue(boolean booleanValue);
     
-    private static final long serialVersionUID = 3762531209208410417L;
+    public void setLongValue(long longValue);
     
-    private String namespaceUri;
-    private String name;
-    private Value value;
+    public long getLongValue();
+    
+    public void setIntValue(int intValue);
+    
+    public int getIntValue();
+    
+    public Object clone() throws CloneNotSupportedException;
 
-    public String getNamespace() {
-        return this.namespaceUri;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespaceUri = namespace;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Value getValue() {
-        return this.value;
-    }
-
-    public void setValue(Value value) {
-        this.value = value;
-    }
-
-    public Date getDateValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_DATE) {
-            throw new IllegalOperationException();
-        }
-        return value.getDateValue();
-    }
-
-    public void setDateValue(Date dateValue) {
-        value = new Value();
-        value.setDateValue(dateValue);
-    }
-
-    public String getStringValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_STRING) {
-            throw new IllegalOperationException();
-        }
-        return value.getValue();
-    }
-
-    public void setStringValue(String stringValue) {
-        value = new Value();
-        value.setValue(stringValue);
-    }
-
-    public boolean getBooleanValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_BOOLEAN) {
-            throw new IllegalOperationException();
-        }
-        return value.getBooleanValue();
-    }
-
-    public void setBooleanValue(boolean booleanValue) {
-        value = new Value();
-        value.setBooleanValue(booleanValue);
-    }
-
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-
-        sb.append(this.getClass().getName()).append(": ");
-        sb.append("[ ").append(this.namespaceUri);
-        sb.append(":").append(this.name);
-        sb.append(" = ").append(this.value);
-        sb.append("]");
-
-        return sb.toString();
-    }
 }

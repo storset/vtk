@@ -43,10 +43,11 @@ public final class Value {
     private int intValue;
     private long longValue;
 
-    public boolean getBooleanValue() {
-        return booleanValue;
+    public void setValue(String value) {
+        this.type = PropertyType.TYPE_STRING;
+        this.value = value;
     }
-
+    
     public void setBooleanValue(boolean booleanValue) {
         this.type = PropertyType.TYPE_BOOLEAN;
         this.booleanValue = booleanValue;
@@ -57,11 +58,6 @@ public final class Value {
         this.dateValue = dateValue;
     }
 
-    public void setValue(String value) {
-        this.type = PropertyType.TYPE_STRING;
-        this.value = value;
-    }
-    
     public void setLongValue(long longValue) {
         this.type = PropertyType.TYPE_LONG;
         this.longValue = longValue;
@@ -80,6 +76,10 @@ public final class Value {
         return type;
     }
     
+    public boolean getBooleanValue() {
+        return booleanValue;
+    }
+
     public Date getDateValue() {
         return dateValue;
     }

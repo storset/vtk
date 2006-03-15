@@ -17,7 +17,7 @@ public class Authorization {
         this.principal = principal;
         this.principalManager = principalManager;
         this.owner = resource.getOwner();
-        this.acl = resource.getACL();
+        this.acl = resource.getAcl();
     }
     
     void authorize(int protectionLevel) {

@@ -128,7 +128,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         byte[] buffer = new byte[1000];
         int n = 0;
 
-        while ((n = inputStream.read(buffer, 0, 1000)) > 0) {
+        while ((n = inputStream.read(buffer, 0, buffer.length)) != -1) {
             stream.write(buffer, 0, n);
         }
 
@@ -137,7 +137,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         inputStream.close();
 
     }
-
+    
     public void copy(String srcURI, String destURI) throws IOException {
         String fileNameFrom = this.repositoryDataDirectory
             + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(srcURI)

@@ -178,10 +178,16 @@ ResourceLockedException, IllegalOperationException, IOException {
     }
     
     
-    
+    public Property createProperty(String namespaceUri, String name) {
+        // XXX: do LOTS of stuff
+        PropertyImpl prop = new PropertyImpl();
+        prop.setNamespace(namespaceUri);
+        prop.setName(name);
+        return prop;
+    }
 
     public Property createProperty(String namespaceUri, String name, Object value) {
-        Property prop = new PropertyImpl();
+        PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespaceUri);
         prop.setName(name);
         

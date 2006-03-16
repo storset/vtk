@@ -47,11 +47,7 @@ public interface Property extends Cloneable {
 
     public String getNamespace();
 
-    public void setNamespace(String namespace);
-
     public String getName();
-
-    public void setName(String name);
 
     public Value getValue();
 

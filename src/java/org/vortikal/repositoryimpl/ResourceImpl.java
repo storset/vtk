@@ -42,16 +42,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.AclRestrictions;
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.Privilege;
-import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.PrincipalStore;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.repository.URIUtil;
 
@@ -80,6 +76,33 @@ public class ResourceImpl implements Resource, Cloneable {
         this.uri = uri;
         this.principalManager = principalManager;
         this.propertyManager = propertyManager;
+    }
+
+    public Property createProperty(String namespace, String name) {
+        return propertyManager.createProperty(namespace, name);
+    }
+
+    public void deleteProperty(Property property) {
+        List props = (List)propertyMap.get(property.getNamespace());
+        
+        if (props != null && props.contains(property)) 
+            props.remove(property);
+    }
+
+    public void removeProperty(String namespace, String name) {
+        List props = (List)propertyMap.get(namespace);
+        
+        if (props == null) return;
+        
+        Property prop = null;
+        for (Iterator iter = props.iterator(); iter.hasNext();) {
+            prop = (Property) iter.next();
+            if (prop.getName().equals(name)) {
+                break;
+            }
+            prop = null;
+        }
+        if (prop != null) props.remove(prop);
     }
 
     public String getParent() {
@@ -179,21 +202,6 @@ public class ResourceImpl implements Resource, Cloneable {
             props.addAll(map.entrySet());
         }
         return props;
-    }
-
-    public Property createProperty(String namespace, String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void deleteProperty(Property property) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void removeProperty(String namespace, String name) {
-        // TODO Auto-generated method stub
-        
     }
 
     public List getOtherProperties() {

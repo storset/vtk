@@ -76,7 +76,7 @@ public class LockView implements View {
                 " `" + WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE + "')");
         }
 
-        Lock lock = resource.getActiveLock();
+        Lock lock = resource.getLock();
 
         if (lock == null) {
             throw new InvalidModelException(

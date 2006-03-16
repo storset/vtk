@@ -120,17 +120,16 @@ public class XMLSchemaPropertyContentStoreHandler
 
         if (this.assertions != null) {
 
-            Resource dto = null;
-            try {
-                
-                dto = resourceManager.getResourceClone(resource);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
+//            try {
+//                
+//                resource = resourceManager.getResourceClone(resource);
+//
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//
             for (int i = 0; i < this.assertions.length; i++) {
-                if (!this.assertions[i].matches(dto, null)) {
+                if (!this.assertions[i].matches(resource, null)) {
                     return false;
                 }
             }

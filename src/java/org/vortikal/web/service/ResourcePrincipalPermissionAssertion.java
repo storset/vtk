@@ -200,8 +200,8 @@ public class ResourcePrincipalPermissionAssertion
 
                 parent = this.repository.retrieve(this.trustedToken,
                                                            resource.getParent(), true);
-                Lock parentLock = (parent.getActiveLock() != null) ?
-                    parent.getActiveLock() : null;
+                Lock parentLock = (parent.getLock() != null) ?
+                    parent.getLock() : null;
 
                 if (parentLock != null && !parentLock.getPrincipal().equals(principal)) {
                     if (logger.isDebugEnabled()) {
@@ -413,8 +413,8 @@ public class ResourcePrincipalPermissionAssertion
         if (this.requiresAuthentication && principal == null)
             throw new AuthenticationException();
         
-        Lock lock = (resource.getActiveLock() != null) ?
-            resource.getActiveLock() : null;
+        Lock lock = (resource.getLock() != null) ?
+            resource.getLock() : null;
         
         
         try {

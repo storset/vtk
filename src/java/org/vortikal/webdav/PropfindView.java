@@ -182,7 +182,7 @@ public class PropfindView implements View, InitializingBean {
             Resource currentResource = (Resource) iter.next();
         
             if (!currentResource.isCollection()
-                && currentResource.getActiveLock() != null
+                && currentResource.getLock() != null
                 && currentResource.getContentLength() == 0) {
 
                 /* resource is lock-null (avoid listing), unless
@@ -415,7 +415,7 @@ public class PropfindView implements View, InitializingBean {
         Element lockDiscovery = new Element("lockdiscovery",
                 WebdavConstants.DAV_NAMESPACE);
 
-        Lock lock = resource.getActiveLock();
+        Lock lock = resource.getLock();
         
         if (lock == null) {
             // No lock on resource, return empty 'lockdiscovery' element.

@@ -77,6 +77,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private RoleManager roleManager;
     private TokenManager tokenManager;
     private ResourceManager resourceManager;
+    private PropertyManagerImpl propertyManager;
     private PermissionsManager permissionsManager;
     private ACLValidator aclValidator;
     private URIValidator uriValidator = new URIValidator();
@@ -158,7 +159,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
-            return resourceManager.getResourceClone(r);
+            ResourceImpl clone = (ResourceImpl)r.clone();
+            permissionsManager.addRolesToAcl(clone.getAcl());
+            
+            return clone;
 
         } catch (AuthorizationException e) {
             OperationLog.failure(operation, "(" + uri + ")", "not authorized",
@@ -214,7 +218,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         for (int i = 0; i < list.length; i++) {
             try {
-                children[i] = resourceManager.getResourceClone(list[i]);
+                children[i] = (ResourceImpl)list[i].clone();
+                permissionsManager.addRolesToAcl(children[i].getAcl());
+
             } catch (CloneNotSupportedException e) {
                 throw new IOException("An internal error occurred: unable to " +
                     "clone() resource: " + list[i]);
@@ -392,15 +398,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             if (dest != null) {
                 this.dao.delete(dest);
             }
-            this.resourceManager.copy(principal, src, destUri, preserveACL, false);
+            this.dao.copy(src, destUri, preserveACL, false, principal.getQualifiedName());
 
             OperationLog.success(operation, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
-            org.vortikal.repository.Resource dto = 
-                resourceManager.getResourceClone(dao.load(destUri));
+            dest = (ResourceImpl)dao.load(destUri).clone();
 
-            ResourceCreationEvent event = new ResourceCreationEvent(this, dto);
+            ResourceCreationEvent event = new ResourceCreationEvent(this, dest);
 
             context.publishEvent(event);
         } catch (AclException e) {
@@ -512,7 +517,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                         dest.isCollection()));
 
             }
-            this.resourceManager.copy(principal, src, destUri, true, true);
+            this.dao.copy(src, destUri, true, true, principal.getQualifiedName());
             this.dao.delete(src);
             context.publishEvent(new ResourceDeletionEvent(this, srcUri,
                     src.getID(), src.isCollection()));
@@ -520,11 +525,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(operation, "(" + srcUri + ", " + destUri + ")",
                 token, principal);
 
-            ResourceImpl r = dao.load(destUri);
-            org.vortikal.repository.Resource dto = 
-                resourceManager.getResourceClone(r);
+            dest = (ResourceImpl) dao.load(destUri).clone();
 
-            context.publishEvent(new ResourceCreationEvent(this, dto));
+            context.publishEvent(new ResourceCreationEvent(this, dest));
         } catch (AclException e) {
             OperationLog.failure(operation, "(" + srcUri + ", " + destUri + ")",
                 "tried to set an illegal ACL", token, principal);
@@ -728,7 +731,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 principal);
     }
 
-    public void store(String token, org.vortikal.repository.Resource resource)
+    public void store(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
             ResourceLockedException, AuthenticationException, 
             IllegalOperationException, ReadOnlyException, IOException {
@@ -751,9 +754,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("Invalid URI: " + uri);
         }
 
-        ResourceImpl r = dao.load(uri);
+        ResourceImpl original = dao.load(uri);
 
-        if (r == null) {
+        if (original == null) {
             OperationLog.failure(operation, "(" + uri + ")", "invalid uri", token,
                 principal);
             throw new ResourceNotFoundException(uri);
@@ -767,17 +770,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         try {
             // Fix me: log authexceptions...
-            this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE);
-            this.resourceManager.lockAuthorize(r, principal, false);
+            this.permissionsManager.authorize(original, principal, PrivilegeDefinition.WRITE);
+            this.resourceManager.lockAuthorize(original, principal, false);
             
-            ResourceImpl original = (ResourceImpl) r.clone();
+            ResourceImpl originalClone = (ResourceImpl) original.clone();
 
-            this.resourceManager.storeProperties(r, principal, resource);
+            this.propertyManager.storeProperties(original, principal, resource);
+            this.dao.store(original);
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
+            Resource newResource = (Resource)this.dao.load(uri).clone();
+            // XXX: this must be inaccurate? Must be loaded back
             ResourceModificationEvent event = new ResourceModificationEvent(
-                this, resourceManager.getResourceClone(r),
-                resourceManager.getResourceClone(original));
+                this, newResource, originalClone);
 
             context.publishEvent(event);
         } catch (ResourceLockedException e) {
@@ -786,7 +791,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw e;
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
-                "clone() resource: " + r);
+                "clone() resource: " + original);
         }
     }
 
@@ -882,8 +887,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             ContentModificationEvent event = new ContentModificationEvent(
-                this, resourceManager.getResourceClone(r),
-                resourceManager.getResourceClone(original));
+                this, (Resource) r.clone(), (Resource) original.clone());
 
             context.publishEvent(event);
         } catch (ResourceLockedException e) {
@@ -946,7 +950,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
-    public void storeACL(String token, String uri, Acl acl)
+    public void storeACL(String token, String uri, Acl newAcl)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException, AclException, 
             ReadOnlyException, IOException {
@@ -974,30 +978,24 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if ("/".equals(r.getURI()) && acl.isInherited()) {
+        if ("/".equals(r.getURI()) && newAcl.isInherited()) {
             OperationLog.failure(operation, "(" + uri + ")", "Can't make root acl inherited.",
                     token, principal);
             throw new IllegalOperationException("Can't make root acl inherited.");
         }
 
         try {
-            org.vortikal.repository.Resource originalResource = 
-                resourceManager.getResourceClone(r);
-            String inheritedFrom = null;
-            if (r.isInheritedACL()) {
-                inheritedFrom = URIUtil.getParentURI(r.getURI());
-            }
-            Acl originalACL = (Acl)r.getAcl().clone();
+            Resource originalResource = (Resource)r.clone();
 
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
             this.resourceManager.lockAuthorize(r, principal, false);
-            aclValidator.validateACL(acl);
-            this.resourceManager.storeACL(r, principal, acl);
+            aclValidator.validateACL(newAcl);
+            this.resourceManager.storeACL(r, principal, newAcl);
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             ACLModificationEvent event = new ACLModificationEvent(
-                this, resourceManager.getResourceClone(r),
-                originalResource, acl, originalACL);
+                this, (Resource)r.clone(),
+                originalResource, newAcl, originalResource.getAcl());
 
             context.publishEvent(event);
         } catch (AuthorizationException e) {
@@ -1113,6 +1111,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new BeanInitializationException(
             "Bean property 'resourceManager' must be set");
         }
+        if (this.propertyManager == null) {
+            throw new BeanInitializationException(
+            "Bean property 'propertyManager' must be set");
+        }
+    }
+
+    /**
+     * @param propertyManager The propertyManager to set.
+     */
+    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+        this.propertyManager = propertyManager;
     }
 
 }

@@ -42,6 +42,7 @@ import org.doomdark.uuid.UUIDGenerator;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Lock;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
@@ -72,10 +73,10 @@ public class ResourceManager {
 
     private PropertyManagerImpl propertyManager;
     
-    private void lockAuthorize(ResourceImpl resource, Principal principal) 
+    private void lockAuthorize(Lock lock, Principal principal) 
         throws ResourceLockedException, AuthenticationException {
 
-        if (resource.getLock() == null) {
+        if (lock == null) {
             return;
         }
 
@@ -83,7 +84,7 @@ public class ResourceManager {
             throw new AuthenticationException();
         }
 
-        if (!resource.getLock().getPrincipal().equals(principal)) {
+        if (!lock.getPrincipal().equals(principal)) {
             throw new ResourceLockedException();
         }
     }
@@ -91,14 +92,14 @@ public class ResourceManager {
     public void lockAuthorize(ResourceImpl resource, Principal principal, boolean deep) 
         throws ResourceLockedException, IOException, AuthenticationException {
 
-        lockAuthorize(resource, principal);
+        lockAuthorize(resource.getLock(), principal);
 
         if (resource.isCollection() && deep) {
             String[] uris = this.dao.discoverLocks(resource);
 
             for (int i = 0; i < uris.length;  i++) {
-                ResourceImpl ancestor = this.dao.load(uris[i]);
-                lockAuthorize(ancestor, principal);
+                Resource ancestor = this.dao.load(uris[i]);
+                lockAuthorize(ancestor.getLock(), principal);
             }
         }
     }
@@ -139,7 +140,7 @@ public class ResourceManager {
     /**
      * Creates a resource.
      */
-    public org.vortikal.repository.Resource create(ResourceImpl parent, Principal principal,
+    public Resource create(ResourceImpl parent, Principal principal,
                            boolean collection, String path)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException, CloneNotSupportedException {
@@ -160,7 +161,10 @@ public class ResourceManager {
         
         this.dao.store(parent);
 
-        return getResourceClone(resource);
+        ResourceImpl clone = (ResourceImpl)resource.clone();
+        permissionsManager.addRolesToAcl(clone.getAcl());
+
+        return clone;
     }
 
 
@@ -183,30 +187,6 @@ public class ResourceManager {
         }
     }
 
-
-
-    
-    
-    public void copy(Principal principal, ResourceImpl resource, String destUri,
-                     boolean preserveACLs, boolean preserveOwner)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, IOException, ResourceLockedException, 
-            AclException {
-        
-        this.dao.copy(resource, destUri, preserveACLs, preserveOwner,
-                      principal.getQualifiedName());
-    }
-    
-
-
-    public void storeProperties(ResourceImpl resource, Principal principal,
-                                org.vortikal.repository.Resource dto)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IllegalOperationException, IOException {
-        this.propertyManager.storeProperties(resource, principal, dto);
-        this.dao.store(resource);
-    }
-    
     public void collectionContentModification(ResourceImpl resource, Principal principal) throws IOException {
         this.propertyManager.collectionContentModified(resource, principal);
         this.dao.store(resource);
@@ -216,7 +196,6 @@ public class ResourceManager {
             Principal principal, InputStream inputStream) throws IOException {
 
         this.propertyManager.resourceContentModification(resource, principal, inputStream);
-
         this.dao.store(resource);
     }
     
@@ -224,43 +203,27 @@ public class ResourceManager {
         throws AuthorizationException, AuthenticationException, 
             IllegalOperationException, IOException, AclException, CloneNotSupportedException {
 
-        Acl acl2 = (Acl)acl.clone();
-        resource.setACL(acl2);
-
-        boolean inheritedACL = acl.isInherited();
-
-        if (inheritedACL) {
+        Acl newAcl = null;
+        if (acl.isInherited()) {
             /* When the ACL is inherited, make our ACL a copy of our
              * parent's ACL, since the supplied one may contain other
              * ACEs than the one we now inherit from. */
-            try {
-                AclImpl parentACL = (AclImpl) this.dao.load(URIUtil.getParentURI(resource.getURI())).getAcl().clone();
-
-                resource.setACL(parentACL);
-            } catch (CloneNotSupportedException e) {
-            }
+            newAcl = (Acl) this.dao.load(
+                    URIUtil.getParentURI(resource.getURI())).getAcl().clone();
+            newAcl.setInherited(true);
+        } else {
+            newAcl = (Acl)acl.clone();
         }
+        
+        resource.setACL(newAcl);
+        resource.setInheritedACL(acl.isInherited());
+        resource.setDirtyACL(true);
 
         try {
-            resource.setInheritedACL(inheritedACL);
-            resource.setDirtyACL(true);
-
             this.dao.store(resource);
-        } catch (Exception e) {
-            
-            throw new IOException(e.getMessage());
         } finally {
             resource.setDirtyACL(false);
         }
-    }
-    
-    public Resource getResourceClone(
-            ResourceImpl resource) throws CloneNotSupportedException, IOException {
-        ResourceImpl clone = (ResourceImpl)resource.clone();
-        
-        clone.setACL(permissionsManager.addRolesToAcl(clone.getAcl()));
-                
-        return clone;
     }
 
     public void setDao(DataAccessor dao) {

@@ -133,8 +133,8 @@ public class LockController extends AbstractWebdavController {
             if (existed && refreshLockToken != null) {
                 Resource lockedResource = repository.retrieve(
                     token, uri, false);
-                if (lockedResource.getActiveLock() != null) {
-                    String existingToken = lockedResource.getActiveLock().getLockToken();
+                if (lockedResource.getLock() != null) {
+                    String existingToken = lockedResource.getLock().getLockToken();
                     if (refreshLockToken.equals(existingToken)) {
                         lockToken = refreshLockToken;
                     }

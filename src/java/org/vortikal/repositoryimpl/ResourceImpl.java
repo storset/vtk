@@ -72,10 +72,13 @@ public class ResourceImpl implements Resource, Cloneable {
     private Map propertyMap = new HashMap();
     
     private PrincipalManager principalManager;
+    private PropertyManagerImpl propertyManager;
     
-    public ResourceImpl(String uri, PrincipalManager principalManager) {
+    public ResourceImpl(String uri, PrincipalManager principalManager, 
+            PropertyManagerImpl propertyManager) {
         this.uri = uri;
         this.principalManager = principalManager;
+        this.propertyManager = propertyManager;
     }
 
     public String getParent() {
@@ -111,7 +114,7 @@ public class ResourceImpl implements Resource, Cloneable {
         this.acl = acl;
     }
 
-    public LockImpl getLock() {
+    public Lock getLock() {
         return this.lock;
     }
 
@@ -198,7 +201,7 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public String getSerial() {
-        // TODO Auto-generated method stub
+        // XXX: Implement me.
         return null;
     }
 
@@ -279,54 +282,29 @@ public class ResourceImpl implements Resource, Cloneable {
         return getLongPropValue(PropertyType.CONTENTLENGTH_PROP_NAME);
     }
 
-    public Lock getActiveLock() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PrivilegeDefinition getSupportedPrivileges() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public AclRestrictions getAclRestrictions() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Privilege[] getPrivilegeSet(Principal principal, PrincipalStore principalStore) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Privilege[] getParentPrivilegeSet(Principal principal, PrincipalStore principalStore) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public void setCharacterEncoding(String characterEncoding) {
-        // TODO Auto-generated method stub
-        
+        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+                PropertyType.CHARACTERENCODING_PROP_NAME, characterEncoding);
     }
 
     public void setContentLocale(Locale locale) {
-        // TODO Auto-generated method stub
-        
+        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+                PropertyType.CONTENTLOCALE_PROP_NAME, locale.toString());
     }
 
-    public void setContentType(String string) {
-        // TODO Auto-generated method stub
-        
+    public void setContentType(String contentType) {
+        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+                PropertyType.CONTENTTYPE_PROP_NAME, contentType);
     }
 
     public void setOwner(Principal principal) {
-        // TODO Auto-generated method stub
-        
+        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+                PropertyType.OWNER_PROP_NAME, principal.getQualifiedName());
     }
 
     public void setDisplayName(String text) {
-        // TODO Auto-generated method stub
-        
+        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+                PropertyType.DISPLAYNAME_PROP_NAME, text);
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -334,7 +312,7 @@ public class ResourceImpl implements Resource, Cloneable {
         LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
                 .clone();
 
-        ResourceImpl clone = new ResourceImpl(uri, principalManager);
+        ResourceImpl clone = new ResourceImpl(uri, principalManager, propertyManager);
         clone.setID(id);
         clone.setACL(acl);
         clone.setInheritedACL(inheritedACL);
@@ -370,5 +348,16 @@ public class ResourceImpl implements Resource, Cloneable {
         Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
         return prop.getBooleanValue();
     }
+
+    private void setProperty(String namespace, String name, String value) {
+        Property prop = getProperty(namespace, name);
+        if (prop == null) {
+            prop = createProperty(PropertyType.DEFAULT_NAMESPACE_URI,
+                    PropertyType.CHARACTERENCODING_PROP_NAME);
+        }
+        prop.setStringValue(value);
+    
+    }
+    
 
 }

@@ -32,7 +32,9 @@ package org.vortikal.repositoryimpl.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -74,8 +76,8 @@ public abstract class AbstractDataAccessor
             return;
         }
 
-        Map acls = new HashMap();
-
+        List uris = new ArrayList();
+        
         for (int i = 0; i < resources.length; i++) {
 
             String[] path = URLUtil.splitUriIncrementally(
@@ -83,25 +85,20 @@ public abstract class AbstractDataAccessor
 
             for (int j = path.length -1; j >= 0; j--) {
 
-                if (!acls.containsKey(path[j])) {
-                    acls.put(path[j], null);
+                if (!uris.contains(path[j])) {
+                    uris.add(path[j]);
                 }
             }
-
-            /* Initialize (empty) ACL for resource: */
-            AclImpl acl = new AclImpl();
-            resources[i].setACL(acl);
-        
         }
 
-        if (acls.size() == 0) {
+        if (uris.size() == 0) {
             throw new SQLException("No ancestor path");
         }
     
 
         /* Populate the parent ACL map (these are all the ACLs that
          * will be needed) */
-        executeACLQuery(conn, acls);
+        Map acls = executeACLQuery(conn, uris);
 
         for (int i = 0; i < resources.length; i++) {
 
@@ -147,12 +144,12 @@ public abstract class AbstractDataAccessor
                                            "resource should contain an ACL");
                 }
             }
-
+            acl.setInherited(resource.isInheritedACL());
             resource.setACL(acl);
         }
     }
 
-    protected abstract void executeACLQuery(Connection conn, Map acls) throws SQLException;
+    protected abstract Map executeACLQuery(Connection conn, List uris) throws SQLException;
 
     /**
      * @param principalManager The principalManager to set.

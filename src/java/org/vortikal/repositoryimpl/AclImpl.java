@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,15 +40,25 @@ import java.util.Set;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 
 
 public class AclImpl implements Acl {
 
+    private boolean inherited;
+    
+    private PrincipalManager principalManager;
+    
     /**
      * map: [action --> List(ACLPrincipal)]
      */
     private Map actionLists = new HashMap();
 
+    public AclImpl(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+    
+    
     public Map getPrivilegeMap() {
         return actionLists;
     }
@@ -56,6 +67,70 @@ public class AclImpl implements Acl {
         return (List) actionLists.get(action);
     }
 
+    public void addEntry(String action, String name, boolean isGroup) {
+
+        List actionEntry = (List) this.actionLists.get(action);
+        if (actionEntry == null) {
+            actionEntry = new ArrayList();
+            this.actionLists.put(action, actionEntry);
+        }
+
+        actionEntry.add(new ACLPrincipal(name, isGroup));
+
+    }
+    
+    // New methods
+    
+    public void addPrivilegeToACL(String username, String privilegeName, boolean isUser) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void withdrawPrivilegeFromACL(String username, String privilegeName) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public Principal[] listPrivilegedUsers(String privilegeName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String[] listPrivilegedGroups(String privilegeName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List listPrivilegedPrincipals(String privilegeName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isInherited() {
+        return this.inherited;
+    }
+
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
+    }
+
+    public boolean hasPrivilege(Principal principal, String privilegeName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean hasPrivilege(String principalName, String privilegeName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public Privilege[] getPrivilegeSet(Principal principal) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    
     public boolean equals(Object o) {
         if (!(o instanceof AclImpl)) {
             return false;
@@ -148,58 +223,6 @@ public class AclImpl implements Acl {
         }
         sb.append("]");
         return sb.toString();
-    }
-
-    // New methods
-    
-    public void addPrivilegeToACL(String username, String privilegeName, boolean isUser) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void withdrawPrivilegeFromACL(String username, String privilegeName) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public Principal[] listPrivilegedUsers(String privilegeName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String[] listPrivilegedGroups(String privilegeName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List listPrivilegedPrincipals(String privilegeName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean isInherited() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void setInherited(boolean inherited) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public boolean hasPrivilege(Principal principal, String privilegeName) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean hasPrivilege(String principalName, String privilegeName) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public Privilege[] getPrivilegeSet(Principal principal) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

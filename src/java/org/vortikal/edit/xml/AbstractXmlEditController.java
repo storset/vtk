@@ -197,7 +197,7 @@ public abstract class AbstractXmlEditController implements Controller {
             String token = SecurityContext.getSecurityContext().getToken();
             Principal principal = SecurityContext.getSecurityContext().getPrincipal();
             Resource resource = repository.retrieve(token, uri, false);
-            Lock lock = resource.getActiveLock();
+            Lock lock = resource.getLock();
             if (lock == null || (!lock.getPrincipal().equals(principal))) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Stored xml edit session data is out of date.");

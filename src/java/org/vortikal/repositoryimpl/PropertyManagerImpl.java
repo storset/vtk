@@ -101,14 +101,9 @@ public class PropertyManagerImpl implements InitializingBean {
     }
     
     public ResourceImpl create(Principal principal, String uri, boolean collection) throws Exception {
-        ResourceImpl r = new ResourceImpl(uri, this.principalManager);
+        ResourceImpl r = new ResourceImpl(uri, this.principalManager, this);
         List properties = new ArrayList();
-        
         evaluateProperties(principal, properties, r, null, RepositoryOperations.CREATE, rootResourceTypeDefinition);
-        
-        r.setACL(new AclImpl());
-        r.setInheritedACL(true);
-
         return r;
     }
 

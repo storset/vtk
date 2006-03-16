@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalStore;
-import org.vortikal.util.repository.URIUtil;
 
 public interface Resource extends PropertySet {
 
@@ -137,12 +135,12 @@ public interface Resource extends PropertySet {
     public String getContentType();
     
     /**
-     * Returns a listing of lock information for the resource.
+     * Returns a lock for the resource, if one is set.
      *
-     * @return an array of <code>Lock</code> objects representing
-     * the active locks that are set on the resource
+     * @return a <code>Lock</code> object representing
+     * the active lock that are set on the resource
      */
-    public Lock getActiveLock();
+    public Lock getLock();
     
     /**
      * Determines whether this resource is a collection.
@@ -152,23 +150,6 @@ public interface Resource extends PropertySet {
      */
     public boolean isCollection();
     
-    /**
-     * Gets this resource's set of supported privileges.
-     *
-     * @return a <code>PrivilegeDefinition</code> tree structure
-     * representing the supported privilege set.
-     *
-     */
-    public PrivilegeDefinition getSupportedPrivileges();
-    
-    /**
-     * Gets the ACL restrictions of a resource.
-     *
-     * @return the ACL restrictions object.
-     * @see AclRestrictions
-     */
-    public AclRestrictions getAclRestrictions();
-
     public Acl getAcl();
     
     /**

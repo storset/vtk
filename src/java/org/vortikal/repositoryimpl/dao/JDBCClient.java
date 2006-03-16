@@ -55,6 +55,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Lock;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repositoryimpl.AclImpl;
@@ -273,8 +274,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         }
         resource.setLock(lock);
 
-        String[] childURIs = loadChildURIs(conn, resource.getURI());
-        resource.setChildURIs(childURIs);
+        resource.setChildURIs(loadChildURIs(conn, resource.getURI()));
         
         loadACLs(conn, new ResourceImpl[] {resource});
         loadProperties(conn, resource);
@@ -285,14 +285,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     private ResourceImpl populateResource(String uri, ResultSet rs) 
         throws SQLException {
 
-        // XXX: what to do with these:
-        boolean inherited = rs.getString("acl_inherited").equals("Y");
-        AclImpl acl = new AclImpl();
-
-        ResourceImpl resource = new ResourceImpl(uri, principalManager);
+        ResourceImpl resource = new ResourceImpl(uri, principalManager, propertyManager);
         resource.setID(rs.getInt("resource_id"));
-        resource.setACL(acl);
-        resource.setInheritedACL(inherited);
+        resource.setInheritedACL(rs.getString("acl_inherited").equals("Y"));
         
         Property prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.COLLECTION_PROP_NAME, new Boolean(rs.getString("is_collection").equals("Y")));
         resource.addProperty(prop);
@@ -831,7 +826,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private void storeLock(Connection conn, ResourceImpl r)
             throws SQLException {
-        LockImpl lock = r.getLock();
+        Lock lock = r.getLock();
 
         if (lock == null) {
             Statement stmt = conn.createStatement();
@@ -1128,21 +1123,22 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         contentStore.storeContent(resource.getURI(), inputStream);
     }
 
-    protected void executeACLQuery(Connection conn, Map acls)
+    protected Map executeACLQuery(Connection conn, List uris)
             throws SQLException {
-
+        Map acls = new HashMap();
+        
         String query = "select r.uri, a.*, t.namespace as action_namespace, "
                 + "t.name as action_name from ACL_ENTRY a "
                 + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
                 + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
                 + "where r.uri in (";
 
-        int n = acls.size();
+        int n = uris.size();
         for (int i = 0; i < n; i++) {
             query += (i < n - 1) ? "?, " : "?)";
         }
         PreparedStatement stmt = conn.prepareStatement(query);
-        for (Iterator i = acls.keySet().iterator(); i.hasNext();) {
+        for (Iterator i = uris.iterator(); i.hasNext();) {
             String uri = (String) i.next();
             stmt.setString(n--, uri);
         }
@@ -1153,29 +1149,18 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String uri = rs.getString("uri");
             String action = rs.getString("action_name");
 
-            AclImpl acl = (AclImpl) acls.get(uri);
+            AclImpl acl = new AclImpl(this.principalManager);
+            acls.put(uri, acl);
+            
 
-            if (acl == null) {
-
-                acl = new AclImpl();
-                acls.put(uri, acl);
-            }
-
-            Map actionMap = acl.getPrivilegeMap();
-
-            List actionEntry = (List) actionMap.get(action);
-            if (actionEntry == null) {
-                actionEntry = new ArrayList();
-                actionMap.put(action, actionEntry);
-            }
-
-            actionEntry.add(
-                new ACLPrincipal(rs.getString("user_or_group_name"),
-                                 rs.getString("is_user").equals("N")));
+            acl.addEntry(action,rs.getString("user_or_group_name"),
+                    rs.getString("is_user").equals("N"));
         }
 
         rs.close();
         stmt.close();
+    
+        return acls;
     }
 
 
@@ -1263,8 +1248,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         rs.close();
         stmt.close();
 
-        ResourceImpl[] result = (ResourceImpl[]) resources.toArray(new ResourceImpl[0]);
-        loadChildrenForChildren(conn, parent, result);
+        ResourceImpl[] result = (ResourceImpl[]) resources.toArray(new ResourceImpl[resources.size()]);
+        loadChildUrisForChildren(conn, parent, result);
         loadACLs(conn, result);
         loadPropertiesForChildren(conn, parent, result);
 
@@ -1276,7 +1261,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    private void loadChildrenForChildren(Connection conn, ResourceImpl parent,
+    private void loadChildUrisForChildren(Connection conn, ResourceImpl parent,
             ResourceImpl[] children)
             throws SQLException {
         

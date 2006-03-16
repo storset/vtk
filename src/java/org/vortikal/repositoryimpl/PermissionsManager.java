@@ -181,9 +181,8 @@ public class PermissionsManager {
      * @param originalACL an <code>Acl</code>
      * @return a new <code>Acl</code>
      */
-    public Acl addRolesToAcl(Acl originalACL) throws CloneNotSupportedException {
+    public void addRolesToAcl(Acl acl) throws CloneNotSupportedException {
 
-        Acl acl = (Acl)originalACL.clone();
         List rootPrincipals = roleManager.listPrincipals(RoleManager.ROOT);
 
         for (Iterator i = rootPrincipals.iterator(); i.hasNext();) {
@@ -204,7 +203,6 @@ public class PermissionsManager {
             }
         }
 
-        return acl;
     }
 
     

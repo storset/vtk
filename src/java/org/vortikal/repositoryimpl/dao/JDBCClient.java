@@ -1127,17 +1127,19 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             throws SQLException {
         Map acls = new HashMap();
         
-        String query = "select r.uri, a.*, t.namespace as action_namespace, "
-                + "t.name as action_name from ACL_ENTRY a "
-                + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
-                + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
-                + "where r.uri in (";
+        StringBuffer query = 
+            new StringBuffer("select r.uri, a.*, t.namespace as action_namespace, "
+                           + "t.name as action_name from ACL_ENTRY a "
+                           + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
+                           + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
+                           + "where r.uri in (");
 
         int n = uris.size();
         for (int i = 0; i < n; i++) {
-            query += (i < n - 1) ? "?, " : "?)";
+            query.append((i < n - 1) ? "?, " : "?)");
         }
-        PreparedStatement stmt = conn.prepareStatement(query);
+        
+        PreparedStatement stmt = conn.prepareStatement(query.toString());
         for (Iterator i = uris.iterator(); i.hasNext();) {
             String uri = (String) i.next();
             stmt.setString(n--, uri);

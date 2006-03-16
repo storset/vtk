@@ -55,8 +55,17 @@ public interface ContentStore {
 
     public InputStream getInputStream(String uri) throws IOException;
 
+    /**
+     * Store content in the resource given by the URI.
+     * The supplied <code>InputStream</code> should be closed by this
+     * method, after it has been read.
+     * 
+     * @param uri
+     * @param inputStream
+     * @throws IOException
+     */
     public void storeContent(String uri, InputStream inputStream) throws IOException;
 
     public void copy(String srcURI, String destURI) throws IOException;
-
+    
 }

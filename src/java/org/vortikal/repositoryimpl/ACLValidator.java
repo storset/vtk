@@ -2,11 +2,7 @@ package org.vortikal.repositoryimpl;
 
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
-import org.vortikal.security.InvalidPrincipalException;
-import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
 public class ACLValidator {

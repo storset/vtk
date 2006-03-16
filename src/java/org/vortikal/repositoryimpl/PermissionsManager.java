@@ -31,19 +31,11 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
@@ -183,9 +175,9 @@ public class PermissionsManager {
 
         for (Iterator i = rootPrincipals.iterator(); i.hasNext();) {
             String root = (String) i.next();
-            Privilege[] rootPriv = getRootPrivileges();
+            String[] rootPriv = getRootPrivileges();
             for (int j = 0; j < rootPriv.length; j++) {
-                acl.addEntry(rootPriv[j].getName(), root, false);
+                acl.addEntry(rootPriv[j], root, false);
             }
         }
 
@@ -193,45 +185,30 @@ public class PermissionsManager {
 
         for (Iterator i = readPrincipals.iterator(); i.hasNext();) {
             String read = (String) i.next();
-            Privilege[] readPriv = getReadPrivileges();
+            String[] readPriv = getReadPrivileges();
             for (int j = 0; j < readPriv.length; j++) {
-                acl.addEntry(readPriv[j].getName(), read, false);
+                acl.addEntry(readPriv[j], read, false);
             }
         }
 
     }
 
     
-    private Privilege[] getRootPrivileges() {
-        Privilege read = new Privilege();
+    private String[] getRootPrivileges() {
 
-        read.setName(PrivilegeDefinition.READ);
+        String[] rootPrivs = new String[3];
 
-        Privilege write = new Privilege();
-
-        write.setName(PrivilegeDefinition.WRITE);
-
-        Privilege writeACL = new Privilege();
-
-        writeACL.setName(PrivilegeDefinition.WRITE_ACL);
-
-        Privilege[] rootPrivs = new Privilege[3];
-
-        rootPrivs[0] = read;
-        rootPrivs[1] = write;
-        rootPrivs[2] = writeACL;
+        rootPrivs[0] = PrivilegeDefinition.READ;
+        rootPrivs[1] = PrivilegeDefinition.WRITE;
+        rootPrivs[2] = PrivilegeDefinition.WRITE_ACL;
 
         return rootPrivs;
     }
 
-    private Privilege[] getReadPrivileges() {
-        Privilege read = new Privilege();
+    private String[] getReadPrivileges() {
+        String[] readPrivs = new String[1];
 
-        read.setName(PrivilegeDefinition.READ);
-
-        Privilege[] readPrivs = new Privilege[1];
-
-        readPrivs[0] = read;
+        readPrivs[0] = PrivilegeDefinition.READ;
 
         return readPrivs;
     }

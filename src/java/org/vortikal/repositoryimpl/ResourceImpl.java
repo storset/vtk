@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -196,8 +197,26 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public List getOtherProperties() {
-        // TODO Auto-generated method stub
-        return null;
+        List otherProps = new ArrayList();
+        
+        for (Iterator iter = this.propertyMap.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry element = (Map.Entry) iter.next();
+            String namespace = (String)element.getKey();
+            List props = (List)element.getValue();
+            if (namespace.equals(PropertyType.DEFAULT_NAMESPACE_URI)) {
+                List specialProps =  Arrays.asList(PropertyType.SPECIAL_PROPERTIES);
+                for (Iterator iterator = props.iterator(); iterator
+                        .hasNext();) {
+                    Property prop = (Property) iterator.next();
+                    if (!specialProps.contains(prop.getName())) {
+                        otherProps.add(prop);
+                    }
+                }
+            } else {
+                otherProps.addAll(props);
+            }
+        }
+        return otherProps;
     }
 
     public String getSerial() {

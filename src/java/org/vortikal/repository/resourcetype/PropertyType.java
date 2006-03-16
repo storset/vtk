@@ -30,6 +30,9 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public final class PropertyType {
 
@@ -80,4 +83,13 @@ public final class PropertyType {
     public static final String PROPERTIESLASTMODIFIED_PROP_NAME = "propertiesLastModified";
     public static final String PROPERTIESMODIFIEDBY_PROP_NAME = "propertiesModifiedBy";
     public static final String CONTENTLENGTH_PROP_NAME = "contentLength";
+    
+    public static final String[] SPECIAL_PROPERTIES = 
+        new String[] {COLLECTION_PROP_NAME, OWNER_PROP_NAME, 
+        CREATIONTIME_PROP_NAME, DISPLAYNAME_PROP_NAME, CONTENTTYPE_PROP_NAME,
+        CHARACTERENCODING_PROP_NAME, CONTENTLOCALE_PROP_NAME, 
+        CONTENTLASTMODIFIED_PROP_NAME, CONTENTMODIFIEDBY_PROP_NAME,
+        PROPERTIESLASTMODIFIED_PROP_NAME, PROPERTIESMODIFIEDBY_PROP_NAME, 
+        CONTENTLENGTH_PROP_NAME};
+    
 }

@@ -82,7 +82,7 @@ public interface Repository {
      * Returns a listing of the immediate children of a
      * resource.
      *
-     * FIXME: clarify semantics of this operation: if the user is not
+     * XXX:: clarify semantics of this operation: if the user is not
      * allowed to retrieve ALL children, what should this method
      * return? A list of only the accessible resources, or some kind
      * of "multi"-status object? With today's RepositoryImpl the

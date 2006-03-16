@@ -13,6 +13,7 @@
     <property name="permissionsManager" ref="permissionsManager" />
     <property name="dao" ref="repository.backend" />
     <property name="resourceManager" ref="resourceManager" />
+    <property name="permissionsManager" ref="permissionsManager" />
     <property name="readOnly" value="${repositoryReadOnly}" />
   </bean>
 
@@ -47,8 +48,6 @@
   </bean>
 
   <bean id="resourceManager" class="org.vortikal.repositoryimpl.ResourceManager">
-    <property name="principalManager" ref="principalManager" />
-    <property name="roleManager" ref="roleManager" />
     <property name="permissionsManager" ref="permissionsManager" />
     <property name="dao" ref="repository.backend" />
     <property name="propertyManager" ref="propertyManager" />

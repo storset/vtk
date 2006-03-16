@@ -7,15 +7,15 @@ import org.vortikal.security.Principal;
 
 public interface Acl extends Cloneable {
 
+    public void addEntry(String action, String name, boolean isGroup);
+
+    public void removeEntry(String username, String privilegeName);
+
     /**
      * Gets the set of privileges on this resource for a given principal.
      */
-    public Privilege[] getPrivilegeSet(Principal principal);
+    public String[] getPrivilegeSet(Principal principal);
         
-    public void addPrivilegeToACL(String username, String privilegeName, boolean isUser);
-
-    public void withdrawPrivilegeFromACL(String username, String privilegeName);
-
     /**
      * @param privilegeName
      * @return a list of <code>Principal</code> objects
@@ -41,8 +41,6 @@ public interface Acl extends Cloneable {
 
     public void setInherited(boolean inherited);
     
-    public boolean hasPrivilege(Principal principal, String privilegeName);
-
     public boolean hasPrivilege(String principalName, String privilegeName);
 
     public Object clone() throws CloneNotSupportedException;

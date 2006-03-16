@@ -158,7 +158,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
         if (id.equals(""))
             throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
         
-        // FIXME: merge org.vortikal.repository.ACLPrincipal and
+        // XXX: merge org.vortikal.repository.ACLPrincipal and
         // org.vortikal.security.Principal to avoid hacks like this:
         if (id.startsWith("dav:")) {
             return getSystemPrincipal(id);

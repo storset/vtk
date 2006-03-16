@@ -145,6 +145,7 @@ public abstract class AbstractDataAccessor
                 }
             }
             acl.setInherited(resource.isInheritedACL());
+            acl.setOwner(resource.getOwner());
             resource.setACL(acl);
         }
     }

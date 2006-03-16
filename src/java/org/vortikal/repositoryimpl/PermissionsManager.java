@@ -109,9 +109,7 @@ public class PermissionsManager {
          */
 
         // Condition 1:
-        Principal p = principalManager.getPrincipal("dav:all");
-        
-        if (acl.hasPrivilege(p, action)
+        if (acl.hasPrivilege("dav:all", action)
                 && (PrivilegeDefinition.READ.equals(action) 
                         || PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
                         .equals(action))) {
@@ -124,8 +122,7 @@ public class PermissionsManager {
         }
 
         // Condition 2:
-        p = principalManager.getPrincipal("dav:authenticated");
-        if (acl.hasPrivilege(p, action)) {
+        if (acl.hasPrivilege("dav:authenticated", action)) {
             return;
         }
 
@@ -156,14 +153,13 @@ public class PermissionsManager {
         }
 
         if (resource.getOwner().equals(principal.getQualifiedName())) {
-            p = principalManager.getPrincipal("dav:owner");
-            if (acl.hasPrivilege(p,action)) {
+            if (acl.hasPrivilege("dav:owner",action)) {
                 return;
             }
         }
 
         // Condition 5:
-        if (acl.hasPrivilege(principal, action)) {
+        if (acl.hasPrivilege(principal.getQualifiedName(), action)) {
             return;
         }
 
@@ -189,7 +185,7 @@ public class PermissionsManager {
             String root = (String) i.next();
             Privilege[] rootPriv = getRootPrivileges();
             for (int j = 0; j < rootPriv.length; j++) {
-                acl.addPrivilegeToACL(root, rootPriv[j].getName(), true);
+                acl.addEntry(rootPriv[j].getName(), root, false);
             }
         }
 
@@ -199,7 +195,7 @@ public class PermissionsManager {
             String read = (String) i.next();
             Privilege[] readPriv = getReadPrivileges();
             for (int j = 0; j < readPriv.length; j++) {
-                acl.addPrivilegeToACL(read, readPriv[j].getName(), true);
+                acl.addEntry(readPriv[j].getName(), read, false);
             }
         }
 

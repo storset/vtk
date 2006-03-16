@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -67,6 +66,15 @@ import org.vortikal.util.repository.URIUtil;
 /**
  * A (still non-transactional) implementation of the
  * <code>org.vortikal.repository.Repository</code> interface.
+ * 
+ * XXX: Missing a lot of operation logging
+ * XXX: implement locking of depth 'infinity'
+ * XXX: Evaluate cloning practice
+ * XXX: namespace locking/concurrency
+ * XXX: Evaluate exception practice, handling and propagation
+ * XXX: transcation demarcation
+ * XXX: split dao into multiple daos
+ * XXX: externalize caching
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware,
         InitializingBean {
@@ -418,7 +426,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
-    // XXX: Missing a lot of operation logging!
     public void move(String token, String srcUri, String destUri,
         boolean overwrite)
         throws IllegalOperationException, AuthorizationException, 
@@ -614,7 +621,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         if ("0".equals(depth) || "infinity".equals(depth)) {
-            // FIXME: implement locking of depth 'infinity'
             depth = "0";
         } else {
             throw new IllegalOperationException("Invalid depth parameter: "
@@ -740,13 +746,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         String operation = RepositoryOperations.STORE;
         
         if (resource == null) {
-            // FIXME: should throw java.lang.IllegalArgumentException
             OperationLog.failure(operation, "(null)", "resource null", token,
                 principal);
-            throw new IllegalOperationException("I cannot store nothing.");
+            throw new IllegalOperationException("Can't store nothing.");
         }
 
         String uri = resource.getURI();
+
+        if (readOnly(principal)) {
+            OperationLog.failure(operation, "(" + uri + ")", "read-only", token,
+                principal);
+            throw new ReadOnlyException();
+        }
 
         if (!uriValidator.validateURI(uri)) {
             OperationLog.failure(operation, "(" + uri + ")", "invalid uri", token,
@@ -762,12 +773,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if (readOnly(principal)) {
-            OperationLog.failure(operation, "(" + uri + ")", "read-only", token,
-                principal);
-            throw new ReadOnlyException();
-        }
-
         try {
             // Fix me: log authexceptions...
             this.permissionsManager.authorize(original, principal, PrivilegeDefinition.WRITE);
@@ -780,7 +785,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             Resource newResource = (Resource)this.dao.load(uri).clone();
-            // XXX: this must be inaccurate? Must be loaded back
+
             ResourceModificationEvent event = new ResourceModificationEvent(
                 this, newResource, originalClone);
 

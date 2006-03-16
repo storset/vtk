@@ -40,6 +40,10 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
     
     private static final long serialVersionUID = 3257289140717237808L;
 
+    public static final String STANDARD_NAMESPACE = "dav";
+    public final static String CUSTOM_NAMESPACE = "uio";
+
+    
     public static final String READ = "read";
     public static final String WRITE = "write";
     public static final String WRITE_ACL = "write-acl";
@@ -155,32 +159,32 @@ public class PrivilegeDefinition implements java.io.Serializable, Cloneable {
         PrivilegeDefinition all = new PrivilegeDefinition();
 
         all.setName(PrivilegeDefinition.ALL);
-        all.setNamespace(Namespace.STANDARD_NAMESPACE);
+        all.setNamespace(STANDARD_NAMESPACE);
         all.setAbstractACE(true);
 
         PrivilegeDefinition read = new PrivilegeDefinition();
 
         read.setName(PrivilegeDefinition.READ);
-        read.setNamespace(Namespace.STANDARD_NAMESPACE);
+        read.setNamespace(STANDARD_NAMESPACE);
         read.setAbstractACE(false);
 
         PrivilegeDefinition readProcessed = new PrivilegeDefinition();
 
         readProcessed.setName(CUSTOM_PRIVILEGE_READ_PROCESSED);
-        readProcessed.setNamespace(Namespace.CUSTOM_NAMESPACE);
+        readProcessed.setNamespace(CUSTOM_NAMESPACE);
         readProcessed.setAbstractACE(false);
         read.setMembers(new PrivilegeDefinition[] { readProcessed });
 
         PrivilegeDefinition write = new PrivilegeDefinition();
 
         write.setName(PrivilegeDefinition.WRITE);
-        write.setNamespace(Namespace.STANDARD_NAMESPACE);
+        write.setNamespace(STANDARD_NAMESPACE);
         write.setAbstractACE(false);
 
         PrivilegeDefinition writeACL = new PrivilegeDefinition();
 
         writeACL.setName(PrivilegeDefinition.WRITE_ACL);
-        writeACL.setNamespace(Namespace.STANDARD_NAMESPACE);
+        writeACL.setNamespace(STANDARD_NAMESPACE);
         writeACL.setAbstractACE(false);
 
         PrivilegeDefinition[] members = new PrivilegeDefinition[3];

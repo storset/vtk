@@ -32,20 +32,25 @@ package org.vortikal.repositoryimpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
 
 public class AclImpl implements Acl {
 
+    // XXX: These are duplicated from resource, check consistency!
     private boolean inherited;
+    private Principal owner;
     
     private PrincipalManager principalManager;
     
@@ -79,16 +84,20 @@ public class AclImpl implements Acl {
 
     }
     
-    // New methods
-    
-    public void addPrivilegeToACL(String username, String privilegeName, boolean isUser) {
-        // TODO Auto-generated method stub
+    public void removeEntry(String username, String action) {
+        List actionEntry = (List) this.actionLists.get(action);
         
-    }
-
-    public void withdrawPrivilegeFromACL(String username, String privilegeName) {
-        // TODO Auto-generated method stub
+        if (actionEntry == null) return;
         
+        ACLPrincipal a = null;
+        for (Iterator iter = actionEntry.iterator(); iter.hasNext();) {
+            ACLPrincipal p = (ACLPrincipal) iter.next();
+            if (p.getUrl().equals(username)) {
+                a = p;
+                break;
+            }
+        }
+        if (a != null) actionEntry.remove(a);
     }
 
     public Principal[] listPrivilegedUsers(String privilegeName) {
@@ -114,19 +123,65 @@ public class AclImpl implements Acl {
         this.inherited = inherited;
     }
 
-    public boolean hasPrivilege(Principal principal, String privilegeName) {
-        // TODO Auto-generated method stub
+    public boolean hasPrivilege(String principalName, String action) {
+        List actionEntry = (List) this.actionLists.get(action);
+        
+        if (actionEntry == null) return false;
+        
+        for (Iterator iter = actionEntry.iterator(); iter.hasNext();) {
+            ACLPrincipal p = (ACLPrincipal) iter.next();
+            if (p.getUrl().equals(principalName)) {
+                return true;
+            }
+        }
         return false;
     }
 
-    public boolean hasPrivilege(String principalName, String privilegeName) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public String[] getPrivilegeSet(Principal principal) {
+        Set actions = new HashSet();
+        
+        // XXX: Unfinished: root and the likes?
+        for (Iterator iter = this.actionLists.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String action = (String)entry.getKey();
+            List actionEntries = (List)entry.getValue();
 
-    public Privilege[] getPrivilegeSet(Principal principal) {
-        // TODO Auto-generated method stub
-        return null;
+            boolean finished = false;
+            for (Iterator iterator = actionEntries.iterator(); !finished && iterator.hasNext();) {
+                ACLPrincipal p = (ACLPrincipal) iterator.next();
+
+                switch (p.getType()) {
+
+                case ACLPrincipal.TYPE_URL:
+                
+                    if (principal != null && p.getUrl().equals(principal.getQualifiedName())) {
+                        actions.add(action);
+                        finished = true;
+                    } else if (principal != null && p.isGroup() && principalManager.isMember(principal, p.getUrl())) {
+                        actions.add(action);
+                        finished = true;
+                    }
+                    break;
+                case ACLPrincipal.TYPE_ALL:
+                    actions.add(action);
+                    finished = true;
+                    break;
+                case ACLPrincipal.TYPE_AUTHENTICATED:
+                    if (principal != null) {
+                        actions.add(action);
+                        finished = true;
+                    }
+                    break;
+                case ACLPrincipal.TYPE_OWNER:
+                    if (this.owner.equals(principal)) {
+                        actions.add(action);
+                        finished = true;
+                    }
+                }
+            }
+        }
+        
+        return (String[])actions.toArray(new String[actions.size()]);
     }
 
 
@@ -223,6 +278,14 @@ public class AclImpl implements Acl {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+
+    /**
+     * @param owner The owner to set.
+     */
+    public void setOwner(Principal owner) {
+        this.owner = owner;
     }
 
 }

@@ -219,22 +219,22 @@ public class ResourcePrincipalPermissionAssertion
         }
 
 
-        Privilege[] parentPrivilegeSet = parent.getAcl().getPrivilegeSet(principal);
+        String[] parentPrivilegeSet = parent.getAcl().getPrivilegeSet(principal);
                 
         for (int i = 0; i < parentPrivilegeSet.length; i++) {
 
-            if (parentPrivilegeSet[i].getName().equals("write")) {
+            if (parentPrivilegeSet[i].equals("write")) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Testing parent-write permission for principal "
                                  + principal + ": "
-                                 + parentPrivilegeSet[i].getName() + ": true");
+                                 + parentPrivilegeSet[i] + ": true");
                 }
                 return true;
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("Testing parent-write permission for principal "
                              + principal + ": "
-                             + parentPrivilegeSet[i].getName() + ": false");
+                             + parentPrivilegeSet[i] + ": false");
             }
         }
         return false;
@@ -294,10 +294,10 @@ public class ResourcePrincipalPermissionAssertion
                 return false;
             }
 
-            Privilege[] privilegeSet = resource.getAcl().getPrivilegeSet(principal);
+            String[] privilegeSet = resource.getAcl().getPrivilegeSet(principal);
 
             for (int i = 0; i < privilegeSet.length; i++) {
-                if (privilegeSet[i].getName().equals("write"))
+                if (privilegeSet[i].equals("write"))
                     return true;
             }
         }
@@ -366,12 +366,12 @@ public class ResourcePrincipalPermissionAssertion
 
 
 
-        Privilege[] privileges = resource.getAcl().getPrivilegeSet(principal);
+        String[] privileges = resource.getAcl().getPrivilegeSet(principal);
 
         for (int i = 0; i < privileges.length; i++) {
             boolean match = false;
 
-            if (privileges[i].getName().equals(this.permission)) {
+            if (privileges[i].equals(this.permission)) {
                 match = true;
             }
                 
@@ -383,7 +383,7 @@ public class ResourcePrincipalPermissionAssertion
             if (logger.isDebugEnabled()) {
                 logger.debug("Matching permissions for resource " + resource
                              + ": [" + this.permission + " against "
-                             + privileges[i].getName() + " = " + match + "]");
+                             + privileges[i] + " = " + match + "]");
             }
 
             if (match) {

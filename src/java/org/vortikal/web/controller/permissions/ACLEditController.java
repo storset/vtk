@@ -42,6 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -211,19 +212,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
             if (editCommand.isEveryone()) {
                 if ("read".equals(privilege)) {
-                    editCommand.getEditedACL().addPrivilegeToACL(
-                            "dav:all", "read-processed", true);
+                    editCommand.getEditedACL().addEntry(
+                            PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED,
+                            "dav:all", false);
                 }
-                editCommand.getEditedACL().addPrivilegeToACL("dav:authenticated", privilege, true);
+                editCommand.getEditedACL().addEntry(privilege, "dav:authenticated", false);
             }
         } else {
 
             if (!editCommand.isEveryone()) {
                 if ("read".equals(privilege)) 
-                    editCommand.getEditedACL().withdrawPrivilegeFromACL(
+                    editCommand.getEditedACL().removeEntry(
                             "dav:all", "read-processed");
                 
-                editCommand.getEditedACL().withdrawPrivilegeFromACL(
+                editCommand.getEditedACL().removeEntry(
                                              "dav:authenticated", privilege);
             }
         }
@@ -243,7 +245,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 Principal principal = principalManager.getPrincipal(userNames[i]);
                 String qualifiedName = principal.getQualifiedName();
 
-                newACL.withdrawPrivilegeFromACL(qualifiedName, this.privilege);
+                newACL.removeEntry(qualifiedName, this.privilege);
             }
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),
@@ -254,7 +256,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             String[] groupNames = editCommand.getGroupNames();
             
             for (int i = 0; i < groupNames.length; i++) {
-                newACL.withdrawPrivilegeFromACL(groupNames[i], this.privilege);
+                newACL.removeEntry(groupNames[i], this.privilege);
             }
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),
@@ -267,7 +269,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 Principal principal = principalManager.getPrincipal(userNames[i]);
                 String qualifiedName = principal.getQualifiedName();
             
-                newACL.addPrivilegeToACL(qualifiedName, this.privilege, true);
+                newACL.addEntry(this.privilege, qualifiedName, false);
             }
             ModelAndView mv =  showForm(
                 request, response, new BindException(
@@ -280,7 +282,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             String[] groupNames = editCommand.getGroupNames();
             
             for (int i = 0; i < groupNames.length; i++) {
-                newACL.addPrivilegeToACL(groupNames[i], this.privilege, false);
+                newACL.addEntry(this.privilege, groupNames[i], true);
             }
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),

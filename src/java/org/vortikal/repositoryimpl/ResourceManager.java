@@ -33,7 +33,6 @@ package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -43,18 +42,11 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.roles.RoleManager;
-import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.repository.LocaleHelper;
-import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.repository.URIUtil;
 
 
@@ -66,76 +58,9 @@ public class ResourceManager {
     private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
     private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
     
-    private PrincipalManager principalManager;
     private PermissionsManager permissionsManager;
-    private RoleManager roleManager;
     private DataAccessor dao;
-
     private PropertyManagerImpl propertyManager;
-    
-    private void lockAuthorize(Lock lock, Principal principal) 
-        throws ResourceLockedException, AuthenticationException {
-
-        if (lock == null) {
-            return;
-        }
-
-        if (principal == null) {
-            throw new AuthenticationException();
-        }
-
-        if (!lock.getPrincipal().equals(principal)) {
-            throw new ResourceLockedException();
-        }
-    }
-    
-    public void lockAuthorize(ResourceImpl resource, Principal principal, boolean deep) 
-        throws ResourceLockedException, IOException, AuthenticationException {
-
-        lockAuthorize(resource.getLock(), principal);
-
-        if (resource.isCollection() && deep) {
-            String[] uris = this.dao.discoverLocks(resource);
-
-            for (int i = 0; i < uris.length;  i++) {
-                Resource ancestor = this.dao.load(uris[i]);
-                lockAuthorize(ancestor.getLock(), principal);
-            }
-        }
-    }
-
-
-    public String lockResource(ResourceImpl resource, Principal principal,
-                               String ownerInfo, String depth,
-                               int desiredTimeoutSeconds, boolean refresh)
-        throws AuthenticationException, AuthorizationException, 
-            ResourceLockedException, IOException {
-
-        if (!refresh) {
-            resource.setLock(null);
-        }
-
-        if (resource.getLock() == null) {
-            String lockToken = "opaquelocktoken:" +
-                UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
-
-            Date timeout = new Date(System.currentTimeMillis() + lockDefaultTimeout);
-
-            if ((desiredTimeoutSeconds * 1000) > lockMaxTimeout) {
-                timeout = new Date(System.currentTimeMillis() + lockDefaultTimeout);
-            }
-
-            LockImpl lock = new LockImpl(lockToken,principal, ownerInfo, depth, timeout);
-            resource.setLock(lock);
-        } else {
-            resource.setLock(
-                new LockImpl(resource.getLock().getLockToken(), principal,
-                         ownerInfo, depth, 
-                         new Date(System.currentTimeMillis() + (desiredTimeoutSeconds * 1000))));
-        }
-        this.dao.store(resource);
-        return resource.getLock().getLockToken();
-    }
 
     /**
      * Creates a resource.
@@ -165,26 +90,6 @@ public class ResourceManager {
         permissionsManager.addRolesToAcl(clone.getAcl());
 
         return clone;
-    }
-
-
-
-    /**
-     * Adds a URI to the child URI list.
-     *
-     * @param childURI a <code>String</code> value
-     */
-    private void addChildURI(ResourceImpl parent, String childURI) {
-        synchronized (parent) {
-            List l = new ArrayList();
-
-            l.addAll(Arrays.asList(parent.getChildURIs()));
-            l.add(childURI);
-
-            String[] newChildren = (String[]) l.toArray(new String[l.size()]);
-
-            parent.setChildURIs(newChildren);
-        }
     }
 
     public void collectionContentModification(ResourceImpl resource, Principal principal) throws IOException {
@@ -226,22 +131,97 @@ public class ResourceManager {
         }
     }
 
-    public void setDao(DataAccessor dao) {
-        this.dao = dao;
+    /**
+     * XXX: overkill to suddenly be concerned about concurrency?!
+     * Adds a URI to the child URI list.
+     *
+     * @param childURI a <code>String</code> value
+     */
+    private void addChildURI(ResourceImpl parent, String childURI) {
+        synchronized (parent) {
+            List l = Arrays.asList(parent.getChildURIs());
+            l.add(childURI);
+
+            String[] newChildren = (String[]) l.toArray(new String[l.size()]);
+
+            parent.setChildURIs(newChildren);
+        }
     }
 
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
+
+    
+    // Locks:
+    
+    public void lockAuthorize(ResourceImpl resource, Principal principal,
+            boolean deep) throws ResourceLockedException, IOException,
+            AuthenticationException {
+
+        lockAuthorize(resource.getLock(), principal);
+
+        if (resource.isCollection() && deep) {
+            String[] uris = this.dao.discoverLocks(resource);
+
+            for (int i = 0; i < uris.length; i++) {
+                Resource ancestor = this.dao.load(uris[i]);
+                lockAuthorize(ancestor.getLock(), principal);
+            }
+        }
     }
 
-    public void setRoleManager(RoleManager roleManager) {
-        this.roleManager = roleManager;
+    public String lockResource(ResourceImpl resource, Principal principal,
+            String ownerInfo, String depth, int desiredTimeoutSeconds,
+            boolean refresh) throws AuthenticationException,
+            AuthorizationException, ResourceLockedException, IOException {
+
+        if (!refresh) {
+            resource.setLock(null);
+        }
+
+        if (resource.getLock() == null) {
+            String lockToken = "opaquelocktoken:"
+                    + UUIDGenerator.getInstance().generateRandomBasedUUID()
+                            .toString();
+
+            Date timeout = new Date(System.currentTimeMillis()
+                    + lockDefaultTimeout);
+
+            if ((desiredTimeoutSeconds * 1000) > lockMaxTimeout) {
+                timeout = new Date(System.currentTimeMillis()
+                        + lockDefaultTimeout);
+            }
+
+            LockImpl lock = new LockImpl(lockToken, principal, ownerInfo,
+                    depth, timeout);
+            resource.setLock(lock);
+        } else {
+            resource.setLock(new LockImpl(resource.getLock().getLockToken(),
+                    principal, ownerInfo, depth, new Date(System
+                            .currentTimeMillis()
+                            + (desiredTimeoutSeconds * 1000))));
+        }
+        this.dao.store(resource);
+        return resource.getLock().getLockToken();
     }
 
-    public void setPermissionsManager(PermissionsManager permissionsManager) {
-        this.permissionsManager = permissionsManager;
+    private void lockAuthorize(Lock lock, Principal principal)
+            throws ResourceLockedException, AuthenticationException {
+
+        if (lock == null) {
+            return;
+        }
+
+        if (principal == null) {
+            throw new AuthenticationException();
+        }
+
+        if (!lock.getPrincipal().equals(principal)) {
+            throw new ResourceLockedException();
+        }
     }
 
+
+
+    
     public void setLockMaxTimeout(long lockMaxTimeout) {
         this.lockMaxTimeout = lockMaxTimeout;
     }
@@ -250,11 +230,17 @@ public class ResourceManager {
         this.lockDefaultTimeout = lockDefaultTimeout;
     }
 
-    /**
-     * @param propertyManager The propertyManager to set.
-     */
+    public void setDao(DataAccessor dao) {
+        this.dao = dao;
+    }
+
+    public void setPermissionsManager(PermissionsManager permissionsManager) {
+        this.permissionsManager = permissionsManager;
+    }
+
     public void setPropertyManager(PropertyManagerImpl propertyManager) {
         this.propertyManager = propertyManager;
     }
+
 
 }

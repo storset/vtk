@@ -3,46 +3,73 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryOperations;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
-import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.repository.MimeHelper;
-import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.RepositoryAssertion;
 
-public class PropertyManagerImpl implements InitializingBean {
+public class PropertyManagerImpl implements InitializingBean, ApplicationContextAware {
 
     private RoleManager roleManager;
     private PermissionsManager permissionsManager;
     private PrincipalManager principalManager;
 
     private ResourceTypeDefinition rootResourceTypeDefinition;
+    
+    // Currently maps a parent resource type def. to its children (arrays)
     private Map resourceTypeDefinitions;
+    
+    // Currently maps namespaceUris to maps which map property names to defs.
+    private Map propertyTypeDefinitions;
+    
+    private ApplicationContext applicationContext;
     
     private ResourceTypeDefinition[] getResourceTypeDefinitionChildren(ResourceTypeDefinition rt) {
         return (ResourceTypeDefinition[])resourceTypeDefinitions.get(rt);
     }
     
+    public void afterPropertiesSet() throws Exception {
+        // XXX: validate bean properties
+        // XXX: this.resourceTypeDefinitions is not populated !
+        
+        List resourceTypeDefinitions = 
+            new ArrayList(applicationContext.getBeansOfType(ResourceTypeDefinition.class, 
+                false, false).values());
+
+        // Populate map of property type definitions
+        this.propertyTypeDefinitions = new HashMap();
+        for (Iterator i = resourceTypeDefinitions.iterator(); i.hasNext();) {
+            ResourceTypeDefinition def = (ResourceTypeDefinition)i.next();
+            PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
+            String namespaceUri = def.getNamespace().getURI();
+            Map propDefMap = new HashMap();
+            this.propertyTypeDefinitions.put(namespaceUri, propDefMap);
+            for (int u=0; u<propDefs.length; u++) {
+                propDefMap.put(propDefs[u].getName(), propDefs[u]);
+            }
+        }
+    }        
+
     private ResourceTypeDefinition evaluateProperties(Principal principal, List properties,
             ResourceImpl newResource, ResourceImpl oldResource, 
             String operation, ResourceTypeDefinition rt) throws Exception {
@@ -179,18 +206,32 @@ ResourceLockedException, IllegalOperationException, IOException {
     
     
     public Property createProperty(String namespaceUri, String name) {
-        // XXX: do LOTS of stuff
-        PropertyImpl prop = new PropertyImpl();
-        prop.setNamespace(namespaceUri);
-        prop.setName(name);
-        return prop;
-    }
 
-    public Property createProperty(String namespaceUri, String name, Object value) {
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespaceUri);
         prop.setName(name);
         
+        // XXX: huge risk of nullpointer exception
+        PropertyTypeDefinition propDef = (PropertyTypeDefinition)
+            ((Map)propertyTypeDefinitions.get(namespaceUri)).get(name);
+        prop.setPropertyTypeDefinition(propDef);
+        
+        
+        return prop;
+    }
+
+    public Property createProperty(String namespaceUri, String name, Object value) 
+        throws ValueFormatException {
+        PropertyImpl prop = new PropertyImpl();
+        prop.setNamespace(namespaceUri);
+        prop.setName(name);
+        
+        // XXX: huge risk of nullpointer exception
+        PropertyTypeDefinition propDef = (PropertyTypeDefinition)
+            ((Map)propertyTypeDefinitions.get(namespaceUri)).get(name);
+        prop.setPropertyTypeDefinition(propDef);
+        
+        // XXX: complete this
         if (value instanceof Date) {
             Date date = (Date) value;
             prop.setDateValue(date);
@@ -220,10 +261,6 @@ ResourceLockedException, IllegalOperationException, IOException {
         this.rootResourceTypeDefinition = rootResourceTypeDefinition;
     }
 
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
 
     public void authorize(Principal principal, ResourceImpl resource, 
             int protectionLevel) throws AuthorizationException {
@@ -246,6 +283,10 @@ ResourceLockedException, IllegalOperationException, IOException {
 //                        + resource.getURI());
 //            }
 //        }
+    }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
 }

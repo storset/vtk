@@ -33,6 +33,7 @@ package org.vortikal.repository;
 import java.util.Date;
 
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 
 /**
  * This interface represents meta information about resources. A resource
@@ -51,27 +52,27 @@ public interface Property extends Cloneable {
 
     public Value getValue();
 
-    public void setValue(Value value);
+    public void setValue(Value value) throws ValueFormatException;
 
-    public Date getDateValue();
+    public void setDateValue(Date dateValue) throws ValueFormatException;
 
-    public void setDateValue(Date dateValue);
+    public void setStringValue(String stringValue) throws ValueFormatException;
 
-    public String getStringValue();
-
-    public void setStringValue(String stringValue);
-
-    public boolean getBooleanValue();
-
-    public void setBooleanValue(boolean booleanValue);
+    public void setBooleanValue(boolean booleanValue) throws ValueFormatException;
     
-    public void setLongValue(long longValue);
+    public void setLongValue(long longValue) throws ValueFormatException;
     
-    public long getLongValue();
+    public void setIntValue(int intValue) throws ValueFormatException;
+
+    public int getIntValue() throws IllegalOperationException;
     
-    public void setIntValue(int intValue);
-    
-    public int getIntValue();
+    public Date getDateValue() throws IllegalOperationException;
+
+    public String getStringValue() throws IllegalOperationException;
+
+    public boolean getBooleanValue() throws IllegalOperationException;
+
+    public long getLongValue() throws IllegalOperationException; 
     
     public Object clone() throws CloneNotSupportedException;
 

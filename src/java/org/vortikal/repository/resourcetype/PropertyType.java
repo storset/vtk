@@ -46,9 +46,18 @@ public final class PropertyType {
     public static final int TYPE_DATE = 3;
     public static final int TYPE_BOOLEAN = 4;
 
+    public static final String[] PROPERTY_TYPE_NAMES = {
+        "String",
+        "Integer",
+        "Long",
+        "Date",
+        "Boolean"
+        };
+    
     /*
      *  Protection levels
      */
+    
     
     // Write privilege needed to edit prop
     public static final int PROTECTION_LEVEL_EDITABLE = 0;
@@ -84,12 +93,19 @@ public final class PropertyType {
     public static final String PROPERTIESMODIFIEDBY_PROP_NAME = "propertiesModifiedBy";
     public static final String CONTENTLENGTH_PROP_NAME = "contentLength";
     
-    public static final String[] SPECIAL_PROPERTIES = 
-        new String[] {COLLECTION_PROP_NAME, OWNER_PROP_NAME, 
-        CREATIONTIME_PROP_NAME, DISPLAYNAME_PROP_NAME, CONTENTTYPE_PROP_NAME,
-        CHARACTERENCODING_PROP_NAME, CONTENTLOCALE_PROP_NAME, 
-        CONTENTLASTMODIFIED_PROP_NAME, CONTENTMODIFIEDBY_PROP_NAME,
-        PROPERTIESLASTMODIFIED_PROP_NAME, PROPERTIESMODIFIEDBY_PROP_NAME, 
-        CONTENTLENGTH_PROP_NAME};
+    public static final String[] SPECIAL_PROPERTIES = { 
+        COLLECTION_PROP_NAME,
+        OWNER_PROP_NAME, 
+        CREATIONTIME_PROP_NAME,
+        DISPLAYNAME_PROP_NAME,
+        CONTENTTYPE_PROP_NAME,
+        CHARACTERENCODING_PROP_NAME,
+        CONTENTLOCALE_PROP_NAME, 
+        CONTENTLASTMODIFIED_PROP_NAME,
+        CONTENTMODIFIEDBY_PROP_NAME,
+        PROPERTIESLASTMODIFIED_PROP_NAME,
+        PROPERTIESMODIFIEDBY_PROP_NAME, 
+        CONTENTLENGTH_PROP_NAME
+        };
     
 }

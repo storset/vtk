@@ -335,7 +335,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     
     private String getURIWildcard(String uri) {
         if ("/".equals(uri)) {
-            return uri + "%";
+            return "/%";
         }
         return uri + "/%";
     }

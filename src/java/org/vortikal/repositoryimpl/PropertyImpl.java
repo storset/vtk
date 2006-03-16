@@ -35,7 +35,9 @@ import java.util.Date;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 
 
 /**
@@ -49,10 +51,15 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     private static final long serialVersionUID = 3762531209208410417L;
     
+    private PropertyTypeDefinition propertyTypeDefinition;
     private String namespaceUri;
     private String name;
     private Value value;
 
+    public PropertyImpl() {
+        value = new Value();
+    }
+    
     public String getNamespace() {
         return this.namespaceUri;
     }
@@ -73,68 +80,90 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value;
     }
 
+    private void validateValue(Value value) throws ValueFormatException  {
+
+        if (value == null) return; // XXX: desired behaviour ?
+        
+        if (value.getType() != this.propertyTypeDefinition.getType()) {
+            throw new ValueFormatException("Illegal value type: " + 
+                    PropertyType.PROPERTY_TYPE_NAMES[value.getType()]);
+        }
+    }
+    
     public void setValue(Value value) {
+        validateValue(value);
         this.value = value;
     }
 
-    public Date getDateValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_DATE) {
+    public Date getDateValue() throws IllegalOperationException {
+        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_DATE) {
             throw new IllegalOperationException();
         }
+        
         return value.getDateValue();
     }
 
-    public void setDateValue(Date dateValue) {
-        value = new Value();
-        value.setDateValue(dateValue);
+    public void setDateValue(Date dateValue) throws ValueFormatException {
+        Value v = new Value();
+        v.setDateValue(dateValue);
+        validateValue(v);
+        this.value = v;
     }
 
-    public String getStringValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_STRING) {
+    public String getStringValue() throws IllegalOperationException {
+        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_STRING) {
             throw new IllegalOperationException();
         }
         return value.getValue();
     }
 
-    public void setStringValue(String stringValue) {
-        value = new Value();
-        value.setValue(stringValue);
+    public void setStringValue(String stringValue) throws ValueFormatException {
+        Value v = new Value();
+        v.setValue(stringValue);
+        validateValue(v);
+        this.value = v;
     }
     
-    public void setLongValue(long longValue) {
-        value = new Value();
-        value.setLongValue(longValue);
+    public void setLongValue(long longValue) throws ValueFormatException {
+        Value v = new Value();
+        v.setLongValue(longValue);
+        validateValue(v);
+        this.value = v;
     }
 
-    public long getLongValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_LONG) {
+    public long getLongValue() throws IllegalOperationException {
+        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_LONG) {
             throw new IllegalOperationException();
         }
         return value.getLongValue();
     }
 
-    public void setIntValue(int intValue) {
-        value = new Value();
-        value.setIntValue(intValue);
+    public void setIntValue(int intValue) throws ValueFormatException {
+        Value v = new Value();
+        v.setIntValue(intValue);
+        validateValue(v);
+        this.value = v;
     }
 
-    public int getIntValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_INT) {
+    public int getIntValue() throws IllegalOperationException {
+        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_INT) {
             throw new IllegalOperationException();
         }
         return value.getIntValue();
     }
         
-    public boolean getBooleanValue() {
-        if (value == null || value.getType() != PropertyType.TYPE_BOOLEAN) {
+    public boolean getBooleanValue() throws IllegalOperationException {
+        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_BOOLEAN) {
             throw new IllegalOperationException();
         }
         return value.getBooleanValue();
     }
 
-    public void setBooleanValue(boolean booleanValue) {
-        value = new Value();
-        value.setBooleanValue(booleanValue);
+    public void setBooleanValue(boolean booleanValue) throws ValueFormatException {
+        Value v = new Value();
+        v.setBooleanValue(booleanValue);
+        validateValue(v);
+        this.value = v;
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -151,5 +180,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         sb.append("]");
 
         return sb.toString();
+    }
+
+    public PropertyTypeDefinition getPropertyTypeDefinition() {
+        return propertyTypeDefinition;
+    }
+
+    public void setPropertyTypeDefinition(PropertyTypeDefinition propertyTypeDefinition) {
+        this.propertyTypeDefinition = propertyTypeDefinition;
     }
 }

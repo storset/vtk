@@ -80,10 +80,10 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
                 + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
 
         File f = new File(fileName);
-        if (f.isFile())
+        if (f.isFile()) {
             return f.length();
-        
-        throw new IllegalOperationException("Collections don't have legth");
+        }
+        throw new IllegalOperationException("Collections don't have length");
     }
 
     public void deleteResource(String uri) {

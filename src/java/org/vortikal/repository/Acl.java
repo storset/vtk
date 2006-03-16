@@ -28,15 +28,6 @@ public interface Acl extends Cloneable {
      */
     public String[] listPrivilegedGroups(String privilegeName);
     
-    /**
-     * Lists principals (users and groups) having a given privilege.
-     *
-     * @param acl an <code>Ace[]</code> value
-     * @param privilegeName a <code>String</code> value
-     * @return a <code>List</code> of group names
-     */
-    public List listPrivilegedPrincipals(String privilegeName);
-
     public boolean isInherited();
 
     public void setInherited(boolean inherited);

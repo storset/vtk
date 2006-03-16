@@ -39,9 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Privilege;
-import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
@@ -100,19 +97,36 @@ public class AclImpl implements Acl {
         if (a != null) actionEntry.remove(a);
     }
 
-    public Principal[] listPrivilegedUsers(String privilegeName) {
-        // TODO Auto-generated method stub
-        return null;
+    public Principal[] listPrivilegedUsers(String action) {
+        List principals = (List)this.actionLists.get(action);
+   
+        List userList = new ArrayList();
+        for (Iterator iter = principals.iterator(); iter.hasNext();) {
+            ACLPrincipal p = (ACLPrincipal) iter.next();
+
+            // Don't include user = "dav:authenticated" or groups
+            if (p.getType() != ACLPrincipal.TYPE_AUTHENTICATED && !p.isGroup()) {
+                Principal principal = principalManager.getPrincipal(p.getUrl());
+                userList.add(principal);
+            }
+            
+        }
+        return (Principal[]) userList.toArray(new Principal[userList.size()]);
     }
 
-    public String[] listPrivilegedGroups(String privilegeName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public String[] listPrivilegedGroups(String action) {
+        List principals = (List)this.actionLists.get(action);
+        
+        List groupList = new ArrayList();
+        for (Iterator iter = principals.iterator(); iter.hasNext();) {
+            ACLPrincipal p = (ACLPrincipal) iter.next();
 
-    public List listPrivilegedPrincipals(String privilegeName) {
-        // TODO Auto-generated method stub
-        return null;
+            if (p.isGroup()) {
+                groupList.add(p.getUrl());
+            }
+            
+        }
+        return (String[]) groupList.toArray(new String[groupList.size()]);
     }
 
     public boolean isInherited() {

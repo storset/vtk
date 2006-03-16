@@ -67,9 +67,9 @@ import org.vortikal.util.repository.URIUtil;
  * A (still non-transactional) implementation of the
  * <code>org.vortikal.repository.Repository</code> interface.
  * 
+ * XXX: Cloning and equals must be checked for all domain objects!
  * XXX: Missing a lot of operation logging
  * XXX: implement locking of depth 'infinity'
- * XXX: Evaluate cloning practice
  * XXX: namespace locking/concurrency
  * XXX: Evaluate exception practice, handling and propagation
  * XXX: transcation demarcation

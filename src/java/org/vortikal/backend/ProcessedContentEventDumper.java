@@ -159,23 +159,25 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 return;
             }
         
-            /* Check if ACE (dav:all (UIO_READ_PROCESSED)) has changed: */
+            /* Check if ACE (dav:all (UIO_READ_PROCESSED)) has changed:
+             * XXX: WHY!?
+             */
 
-            List principalListBefore = originalACL.listPrivilegedPrincipals(
+            List principalListBefore = originalACL.getPrincipalList(
                 PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
-            List principalListAfter = newACL.listPrivilegedPrincipals(
+            List principalListAfter = newACL.getPrincipalList(
                 PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
            
 
             if (principalListBefore == null &&
-                principalListBefore == principalListAfter) {
+                principalListAfter == null) {
                 return;
             }
             
-            principalListBefore = principalListBefore == null ?
+            principalListBefore = (principalListBefore == null) ?
                 new ArrayList() : principalListBefore;
             
-            principalListAfter = principalListAfter == null ?
+            principalListAfter = (principalListAfter == null) ?
                 new ArrayList() : principalListAfter;
 
             if (principalListBefore.equals(principalListAfter)) {

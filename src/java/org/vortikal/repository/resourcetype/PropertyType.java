@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 public final class PropertyType {

@@ -71,6 +71,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
     }        
 
+    // Prop is created by manager if it don't exist..
     private ResourceTypeDefinition evaluateProperties(Principal principal, List properties,
             ResourceImpl newResource, ResourceImpl oldResource, 
             String operation, ResourceTypeDefinition rt) throws Exception {
@@ -104,15 +105,15 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 authorization.authorize(propertyDef.getProtectionLevel());
             }
             
-            Value value = propertyDef.getPropertyEvaluator().
-                evaluateProperties(operation, principal, newResource, newProp.getValue(), 
-                        oldProp.getValue());
-
-            if (value != null) {
-                String namespaceUri = (rt.getNamespace() == null) ? null : rt.getNamespace().getURI();
-                Property property = createProperty(namespaceUri, propertyDef.getName(), value);
-                newProps.add(property);
-            }
+//            Value value = propertyDef.getPropertyEvaluator().
+//                evaluateProperties(operation, principal, newResource, newProp.getValue(), 
+//                        oldProp.getValue());
+//
+//            if (value != null) {
+//                String namespaceUri = (rt.getNamespace() == null) ? null : rt.getNamespace().getURI();
+//                Property property = createProperty(namespaceUri, propertyDef.getName(), value);
+//                newProps.add(property);
+//            }
         }
 
         properties.addAll(newProps);

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -58,9 +59,14 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
     
     public void afterPropertiesSet() throws Exception {
-        // XXX: validate bean properties
-        // XXX: this.resourceTypeDefinitions is not populated !
-        
+        if (roleManager == null) {
+            throw new BeanInitializationException("Property 'roleManager' not set.");
+        } else if (principalManager == null) {
+            throw new BeanInitializationException("Property 'principalManager' not set.");
+        } else if (rootResourceTypeDefinition == null) {
+            throw new BeanInitializationException("Property 'rootResourceTypeDefinition' not set.");
+        }
+
         List resourceTypeDefinitionList = 
             new ArrayList(applicationContext.getBeansOfType(ResourceTypeDefinition.class, 
                 false, false).values());

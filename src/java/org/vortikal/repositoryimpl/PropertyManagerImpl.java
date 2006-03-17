@@ -94,8 +94,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             // Array append (or create if not exists for given parent)
             ResourceTypeDefinition[] newChildren = null;
             if (children == null) {
-                children = new ResourceTypeDefinition[1];
-                children[0] = def;
+                newChildren = new ResourceTypeDefinition[1];
+                newChildren[0] = def;
             } else {
                 newChildren = new ResourceTypeDefinition[children.length+1];
                 System.arraycopy(children, 0, newChildren, 0, children.length);

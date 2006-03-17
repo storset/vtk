@@ -44,7 +44,7 @@ import org.vortikal.repository.resourcetype.Content;
  * 
  * NOTE: returned representations are <em>not</em> cloned. Modifications from the
  * outside will remain permanent for any given representation, and if the binary
- * representations are modified (<code>byte[] or ByteByffer</code>), the changes will 
+ * representations are modified (<code>byte[] or ByteBuffer</code>), the changes will 
  * be reflected in any subsequent creations of new and un-cached representations.
  * Beware of this.
  * 

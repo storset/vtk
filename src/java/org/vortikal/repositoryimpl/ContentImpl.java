@@ -90,9 +90,9 @@ public class ContentImpl implements Content {
         initializeContent();
         
         // We don't cache InputStream representations
-        if (clazz == InputStream.class) {
+        if (clazz == java.io.InputStream.class) {
             return 
-            ContentRepresentationFactory.createRepresentation(InputStream.class, 
+            ContentRepresentationFactory.createRepresentation(java.io.InputStream.class, 
                                                               this.content);
         }
         

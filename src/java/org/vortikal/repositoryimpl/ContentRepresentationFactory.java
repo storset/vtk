@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 import org.jdom.input.SAXBuilder;
 
@@ -45,6 +44,7 @@ public final class ContentRepresentationFactory {
     public static final Class[] SUPPORTED_REPRESENTATIONS = {
         org.jdom.Document.class,
         String.class,
+        java.io.InputStream.class,
         byte[].class
     };
     
@@ -58,7 +58,7 @@ public final class ContentRepresentationFactory {
             return content;
         } else if (clazz == String.class) {
             return new String(content); // Hmm.. default encoding only ..
-        } else if (clazz == InputStream.class) {
+        } else if (clazz == java.io.InputStream.class) {
             return new ByteArrayInputStream(content);
         }
         

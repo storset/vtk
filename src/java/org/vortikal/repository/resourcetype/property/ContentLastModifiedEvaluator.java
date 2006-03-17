@@ -12,14 +12,18 @@ import org.vortikal.security.Principal;
 public class ContentLastModifiedEvaluator implements CreatePropertyEvaluator, 
     ContentModificationPropertyEvaluator {
 
-    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+    public boolean create(Principal principal, 
+                           Property property, 
+                           PropertySet ancestorPropertySet, 
+                           boolean isCollection, 
+                           Date time) throws PropertyEvaluationException {
         property.setDateValue(time);
-        return property;
+        return true;
     }
 
-    public Property contentModification(Principal principal, Property property, PropertySet ancestorPropertySet, Content content, Date time) throws PropertyEvaluationException {
+    public boolean contentModification(Principal principal, Property property, PropertySet ancestorPropertySet, Content content, Date time) throws PropertyEvaluationException {
         property.setDateValue(time);
-        return property;
+        return true;
     }
 
 }

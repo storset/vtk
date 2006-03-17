@@ -11,14 +11,14 @@ import org.vortikal.security.Principal;
 public class PropertiesModifiedByEvaluator implements CreatePropertyEvaluator, 
     PropertiesModificationPropertyEvaluator {
 
-    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+    public boolean create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
         property.setStringValue(principal.getQualifiedName());
-        return property;
+        return true;
     }
 
-    public Property propertiesModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
+    public boolean propertiesModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
         property.setDateValue(time);
-        return property;
+        return true;
     }
 
 }

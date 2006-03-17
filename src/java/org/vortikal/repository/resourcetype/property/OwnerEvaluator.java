@@ -15,9 +15,9 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
 
     private PrincipalManager principalManager;
     
-    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+    public boolean create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
         property.setStringValue(principal.getQualifiedName());
-        return property;
+        return true;
     }
 
     public void validate(Principal principal, PropertySet ancestorPropertySet, Property property) throws ConstraintViolationException {

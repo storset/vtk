@@ -10,7 +10,7 @@ import org.vortikal.util.repository.MimeHelper;
 
 public class ContentTypeEvaluator implements CreatePropertyEvaluator {
 
-    public Property create(Principal principal, Property property, 
+    public boolean create(Principal principal, Property property, 
             PropertySet ancestorPropertySet, boolean isCollection, Date time) 
     throws PropertyEvaluationException {
         if (!isCollection) {
@@ -18,7 +18,7 @@ public class ContentTypeEvaluator implements CreatePropertyEvaluator {
         } else {
             property.setStringValue("application/x-vortex-collection");
         }
-        return property;
+        return true;
     }
 
 }

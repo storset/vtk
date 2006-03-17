@@ -9,7 +9,7 @@ import org.vortikal.security.Principal;
 
 public interface CreatePropertyEvaluator {
 
-    public Property create(Principal principal, Property property, 
+    public boolean create(Principal principal, Property property, 
             PropertySet ancestorPropertySet, boolean isCollection, Date time)
         throws PropertyEvaluationException;
     

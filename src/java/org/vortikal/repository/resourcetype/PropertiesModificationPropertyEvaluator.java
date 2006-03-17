@@ -9,7 +9,7 @@ import org.vortikal.security.Principal;
 
 public interface PropertiesModificationPropertyEvaluator {
 
-    public Property propertiesModification(Principal principal, 
+    public boolean propertiesModification(Principal principal, 
             Property property, PropertySet ancestorPropertySet, Date time) 
         throws PropertyEvaluationException;
 

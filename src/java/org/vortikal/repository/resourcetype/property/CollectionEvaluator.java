@@ -9,9 +9,9 @@ import org.vortikal.security.Principal;
 
 public class CollectionEvaluator implements CreatePropertyEvaluator {
 
-    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+    public boolean create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
         property.setBooleanValue(isCollection);
-        return property;
+        return true;
     }
 
     

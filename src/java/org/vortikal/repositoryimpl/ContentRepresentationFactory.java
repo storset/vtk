@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
 
 import org.jdom.input.SAXBuilder;
 
@@ -45,6 +46,7 @@ public final class ContentRepresentationFactory {
         org.jdom.Document.class,
         String.class,
         java.io.InputStream.class,
+        java.nio.ByteBuffer.class,
         byte[].class
     };
     
@@ -60,6 +62,8 @@ public final class ContentRepresentationFactory {
             return new String(content); // Hmm.. default encoding only ..
         } else if (clazz == java.io.InputStream.class) {
             return new ByteArrayInputStream(content);
+        } else if (clazz == java.nio.ByteBuffer.class) {
+            return ByteBuffer.wrap(content);
         }
         
         throw new UnsupportedContentRepresentationException("Content type '" + 

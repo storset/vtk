@@ -42,4 +42,7 @@ public interface Content {
     
     // Equivalent to calling getContentRepresentation(InputStream.class)
     public InputStream getContentInputStream() throws IOException;
+    
+    // Get all supported representations
+    public Class[] getSupportedRepresentations();
 }

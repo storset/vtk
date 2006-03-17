@@ -44,8 +44,9 @@ import org.vortikal.repository.resourcetype.Content;
  * 
  * NOTE: returned representations are <em>not</em> cloned. Modifications from the
  * outside will remain permanent for any given representation, and if the binary
- * representation is modified (<code>byte[]</code>), the changes will be reflected in 
- * any subsequent creations of new and un-cached representations.
+ * representations are modified (<code>byte[] or ByteByffer</code>), the changes will 
+ * be reflected in any subsequent creations of new and un-cached representations.
+ * Beware of this.
  * 
  * The <code>java.io.InputStream</code> representation is not cached, a new stream
  * is returned every time. This is the only exception.

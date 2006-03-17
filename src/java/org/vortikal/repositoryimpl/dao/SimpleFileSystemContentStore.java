@@ -82,8 +82,13 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         File f = new File(fileName);
         if (f.isFile()) {
             return f.length();
-        }
-        throw new IllegalOperationException("Collections don't have length");
+        } 
+        
+        if (f.isDirectory()) {
+            throw new IllegalOperationException("Length is undefined for collections");
+        }  
+        
+        return 0L; // Same as java.io.File#length() when file does not exist 
     }
 
     public void deleteResource(String uri) {

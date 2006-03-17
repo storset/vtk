@@ -76,8 +76,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.propertyTypeDefinitions = new HashMap();
         this.resourceTypeDefinitions = new HashMap();
         for (Iterator i = resourceTypeDefinitionList.iterator(); i.hasNext();) {
-            // Populate map of property type definitions
             ResourceTypeDefinition def = (ResourceTypeDefinition)i.next();
+            
+            // Populate map of property type definitions
             PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
             String namespaceUri = def.getNamespace().getURI();
             Map propDefMap = new HashMap();

@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +46,9 @@ import org.vortikal.repository.resourcetype.Content;
  * outside will remain permanent for any given representation, and if the binary
  * representation is modified (<code>byte[]</code>), the changes will be reflected in 
  * any subsequent creations of new and un-cached representations.
+ * 
+ * The <code>java.io.InputStream</code> representation is not cached, a new stream
+ * is returned every time. This is the only exception.
  * 
  * Representations are created and cached lazily, when requested.
  * 
@@ -87,6 +89,13 @@ public class ContentImpl implements Content {
         // before we do anything else. This closes the input stream.
         initializeContent();
         
+        // We don't cache InputStream representations
+        if (clazz == InputStream.class) {
+            return 
+            ContentRepresentationFactory.createRepresentation(InputStream.class, 
+                                                              this.content);
+        }
+        
         Object representation = representations.get(clazz);
         if (representation == null) {
             // Lazy load representation
@@ -99,11 +108,11 @@ public class ContentImpl implements Content {
     }
     
     public InputStream getContentInputStream() throws IOException {
-        // Make sure we have original content from inputstream 
-        // before we do anything else. This closes the input stream.
-        initializeContent();
-        
-        return new ByteArrayInputStream(this.content);
+        try {
+            return (InputStream) getContentRepresentation(InputStream.class);
+        } catch (Exception e) {
+            throw new IOException("Unable to create input stream representation: " + e.getMessage());
+        }
     }
     
     public Class[] getSupportedRepresentations() {

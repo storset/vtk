@@ -59,7 +59,8 @@ public final class ContentRepresentationFactory {
             return new String(content); // Hmm.. default encoding only ..
         }
         
-        throw new UnsupportedContentRepresentationException();
+        throw new UnsupportedContentRepresentationException("Content type '" + 
+                clazz.getCanonicalName() + "' not supported.");
     }
     
     private static org.jdom.Document createJDOMRepresentation(byte[] content) 

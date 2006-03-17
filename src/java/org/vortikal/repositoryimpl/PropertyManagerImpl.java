@@ -15,13 +15,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.RepositoryOperations;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Content;
+import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -29,10 +30,17 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.web.service.RepositoryAssertion;
 
+/**
+ * XXX: What to do about swapping old resource with new?
+ * XXX: Add resource type to resource
+ * XXX: Validation is missing
+ * XXX: Don't currently handle controlled but not evaluated properties
+ * XXX: catch or declare evaluation and authorization exceptions on a reasonable level
+ * XXX: implement authorization and contentimpl
+ */
 public class PropertyManagerImpl implements InitializingBean, ApplicationContextAware {
 
     private RoleManager roleManager;
-    private PermissionsManager permissionsManager;
     private PrincipalManager principalManager;
 
     private ResourceTypeDefinition rootResourceTypeDefinition;
@@ -71,56 +79,57 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
     }        
 
-    // Prop is created by manager if it don't exist..
-    private ResourceTypeDefinition evaluateProperties(Principal principal, List properties,
-            ResourceImpl newResource, ResourceImpl oldResource, 
-            String operation, ResourceTypeDefinition rt) throws Exception {
-
-
-        // Checking if resourceType matches
-        
+    private boolean checkAssertions(ResourceTypeDefinition rt, Resource resource, Principal principal) {
         RepositoryAssertion[] assertions = rt.getAssertions();
 
         if (assertions != null) {
             for (int i = 0; i < assertions.length; i++) {
-// Tmp-removed differing resources               if (!assertions[i].matches(newResource, p)) return null;
+                if (!assertions[i].matches(resource, principal))
+                    return false;
             }
         }
+        return true;
+    }
 
-        // Get authorization for principal on resource
-        Authorization authorization = 
-            new Authorization(principal, oldResource.getAcl());
+    public ResourceImpl create(Principal principal, String uri, boolean collection) throws Exception {
+        // XXX: Add resource type to resource
+        ResourceImpl newResource = new ResourceImpl(uri, this.principalManager, this);
+        ResourceTypeDefinition rt = create(principal, newResource, new Date(), 
+                collection, rootResourceTypeDefinition);
+        return newResource;
+    }
+
+    private ResourceTypeDefinition create(Principal principal, 
+            ResourceImpl newResource, Date time, boolean isCollection, 
+            ResourceTypeDefinition rt) throws Exception {
+
+        // Checking if resource type matches
+        if (!checkAssertions(rt, newResource, principal)) return null;
 
         // Evaluating resource type properties
         List newProps = new ArrayList();
         PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
         for (int i = 0; i < def.length; i++) {
             PropertyTypeDefinition propertyDef = def[i];
-
-            Property oldProp = oldResource.getProperty(rt.getNamespace().getURI(), propertyDef.getName());
-            Property newProp = newResource.getProperty(rt.getNamespace().getURI(), propertyDef.getName());
             
-            
-            if (oldProp != newProp) {
-                authorization.authorize(propertyDef.getProtectionLevel());
+            CreatePropertyEvaluator evaluator = propertyDef.getCreateEvaluator();
+            if (evaluator != null) {
+                Property prop = createProperty(rt.getNamespace().getURI(), propertyDef.getName());
+                if (evaluator.create(principal, prop, newResource, isCollection, time)) {
+                    newProps.add(prop);
+                }
+                
             }
-            
-//            Value value = propertyDef.getPropertyEvaluator().
-//                evaluateProperties(operation, principal, newResource, newProp.getValue(), 
-//                        oldProp.getValue());
-//
-//            if (value != null) {
-//                String namespaceUri = (rt.getNamespace() == null) ? null : rt.getNamespace().getURI();
-//                Property property = createProperty(namespaceUri, propertyDef.getName(), value);
-//                newProps.add(property);
-//            }
+        }
+        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            newResource.addProperty(prop);
         }
 
-        properties.addAll(newProps);
-        
+        // Checking child resource types by delegating
         ResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
         for (int i = 0; i < children.length; i++) {
-            ResourceTypeDefinition resourceType = evaluateProperties(principal, properties, newResource, oldResource, operation, children[i]);
+            ResourceTypeDefinition resourceType = create(principal, newResource, time, isCollection, children[i]);
             if (resourceType != null) {
                 return resourceType;
             }
@@ -129,22 +138,89 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         return rt;
     }
     
-    public ResourceImpl create(Principal principal, String uri, boolean collection) throws Exception {
-        // Evaluate resource tree, supplying date
-        ResourceImpl r = new ResourceImpl(uri, this.principalManager, this);
-        List properties = new ArrayList();
-        evaluateProperties(principal, properties, r, null, RepositoryOperations.CREATE, rootResourceTypeDefinition);
-        return r;
-    }
+    private void addToPropsMap(Map parent, Property property) {
+        Map map = (Map) parent.get(property.getNamespace());
+        if (map == null) {
+            map = new HashMap();
+            parent.put(property.getNamespace(), map);
+        }
+        map.put(property.getName(), property);
 
+    }
+    
     public void storeProperties(ResourceImpl resource, Principal principal,
             Resource dto) throws AuthenticationException, AuthorizationException, 
             ResourceLockedException, IllegalOperationException, IOException {
         // For all properties, check if they are modified, deleted or created
-        // if user isn't allowed, throw exception
-        // Otherwise set properties
+        Map allreadySetProperties = new HashMap();
+        List deadProperties = new ArrayList();
+        Authorization authorization = new Authorization(principal, resource.getAcl(), this.roleManager);
+        for (Iterator iter = resource.getProperties().iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            Property userProp = dto.getProperty(prop.getNamespace(), prop.getName());
+
+            if (userProp == null) {
+                // Deleted
+                if (prop.getDefinition() == null) {
+                    // Dead - ok
+                } else {
+                    // check if allowed
+                    authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    addToPropsMap(allreadySetProperties, userProp);
+                }
+            } else if (!prop.equals(userProp)) {
+                // Changed value
+                if (prop.getDefinition() == null) {
+                    // Dead
+                    deadProperties.add(userProp);
+                } else {
+                    // check if allowed
+                    authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    addToPropsMap(allreadySetProperties, userProp);
+                }
+            } else {
+                // Unchanged - to be evaluated
+            }
+        }
+        for (Iterator iter = dto.getProperties().iterator(); iter.hasNext();) {
+            Property userProp = (Property) iter.next();
+            Property prop = resource.getProperty(userProp.getNamespace(), userProp.getName());
+
+            if (prop == null) {
+                // Added
+                if (userProp.getDefinition() == null) {
+                    // Dead
+                    deadProperties.add(userProp);
+                } else {
+                    // check if allowed
+                    authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    addToPropsMap(allreadySetProperties, userProp);
+                }
+                // Added - - check if dead - check if allowed - set prop
+            }
+        }
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
+                this.principalManager, this);
+        newResource.setID(resource.getID());
+        newResource.setACL(resource.getAcl());
+        newResource.setLock(resource.getLock());
+        
         // Evaluate resource tree, for all live props not overridden, evaluate
-        // For live props changed by user, DON'T evaluate
+        ResourceTypeDefinition rt = propertiesModification(principal, newResource, 
+                new Date(), allreadySetProperties, rootResourceTypeDefinition);
+
+        for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            newResource.addProperty(prop);
+        }
+        for (Iterator iter = allreadySetProperties.values().iterator(); iter.hasNext();) {
+            Map map = (Map) iter.next();
+            for (Iterator iterator = map.values().iterator(); iterator
+                    .hasNext();) {
+                Property prop = (Property) iterator.next();
+                newResource.addProperty(prop);
+            }
+        }
         
 //    if (!resource.getOwner().equals(dto.getOwner().getQualifiedName())) {
 //        /* Attempt to take ownership, only the owner of a parent
@@ -191,29 +267,128 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     
 }
     
-    public void collectionContentModification(ResourceImpl resource, Principal principal) {
-        // evaluate resource tree, supplying date
-        
-        Date now = new Date();
-        // Update timestamps:
-//        resource.setContentLastModified(now);
-//        resource.setPropertiesLastModified(now);
+    private ResourceTypeDefinition propertiesModification(Principal principal, 
+            ResourceImpl newResource, Date time, Map allreadySetProperties, 
+            ResourceTypeDefinition rt) {
 
-        // Update principal info:
-//        resource.setContentModifiedBy(principal.getQualifiedName());
-//        resource.setPropertiesModifiedBy(principal.getQualifiedName());
-   
+        // Checking if resource type matches
+        if (!checkAssertions(rt, newResource, principal)) return null;
+
+        // Evaluating resource type properties
+        List newProps = new ArrayList();
+        PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
+        for (int i = 0; i < def.length; i++) {
+            PropertyTypeDefinition propertyDef = def[i];
+            
+            // If property allready set, don't evaluate
+            Map propsMap = (Map)allreadySetProperties.get(rt.getNamespace());
+            if (propsMap != null) {
+                Property p = (Property) propsMap.get(propertyDef.getName());
+                if (p != null) {
+                    newProps.add(p);
+                    propsMap.remove(propertyDef.getName());
+                    continue;
+                }
+            }
+
+            // Not set, evaluate
+            PropertiesModificationPropertyEvaluator evaluator = propertyDef.getPropertiesModificationEvaluator();
+            if (evaluator != null) {
+                Property prop = createProperty(rt.getNamespace().getURI(), propertyDef.getName());
+                if (evaluator.propertiesModification(principal, prop, newResource, time)) {
+                    newProps.add(prop);
+                }
+                
+            }
+        }
+        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            newResource.addProperty(prop);
+        }
+
+        // Checking child resource types by delegating
+        ResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
+        for (int i = 0; i < children.length; i++) {
+            ResourceTypeDefinition resourceType = 
+                propertiesModification(principal, newResource, time, allreadySetProperties, children[i]);
+            if (resourceType != null) {
+                return resourceType;
+            }
+        }
+
+        return rt;
     }
     
-    public void fileContentModification(ResourceImpl resource, 
-            Principal principal, InputStream inputStream) {
-        // evaluate resource tree, supplying date
-        
-        
-        // Update timestamps:
-//        resource.setContentLastModified(new Date());
-//        resource.setContentModifiedBy(principal.getQualifiedName());
+    public ResourceImpl collectionContentModification(ResourceImpl resource, 
+            Principal principal) {
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
+                this.principalManager, this);
+        newResource.setID(resource.getID());
+        newResource.setACL(resource.getAcl());
+        newResource.setLock(resource.getLock());
+        ResourceTypeDefinition rt = contentModification(principal, newResource, 
+                null, new Date(), rootResourceTypeDefinition);
+        return newResource;
     }
+
+
+    public ResourceImpl fileContentModification(ResourceImpl resource, 
+            Principal principal, InputStream inputStream) {
+        // XXX: What to do about swapping old resource with new?
+        // XXX: Add resource type to resource
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
+                this.principalManager, this);
+        newResource.setID(resource.getID());
+        newResource.setACL(resource.getAcl());
+        newResource.setLock(resource.getLock());
+        ResourceTypeDefinition rt = contentModification(principal, newResource, 
+                new ContentImpl(inputStream), new Date(), rootResourceTypeDefinition);
+        return newResource;
+    }
+    
+    
+    private ResourceTypeDefinition contentModification(Principal principal, 
+            ResourceImpl newResource, Content content, Date time, ResourceTypeDefinition rt) {
+
+        // Checking if resource type matches
+        if (!checkAssertions(rt, newResource, principal)) return null;
+
+        // Evaluating resource type properties
+        List newProps = new ArrayList();
+        PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
+        for (int i = 0; i < def.length; i++) {
+            PropertyTypeDefinition propertyDef = def[i];
+            
+            ContentModificationPropertyEvaluator evaluator = propertyDef.getContentModificationEvaluator();
+            if (evaluator != null) {
+                Property prop = createProperty(rt.getNamespace().getURI(), propertyDef.getName());
+                if (evaluator.contentModification(principal, prop, newResource, content, time)) {
+                    newProps.add(prop);
+                }
+                
+            }
+        }
+        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            newResource.addProperty(prop);
+        }
+
+        // Checking child resource types by delegating
+        ResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
+        for (int i = 0; i < children.length; i++) {
+            ResourceTypeDefinition resourceType = 
+                contentModification(principal, newResource, content, time, children[i]);
+            if (resourceType != null) {
+                return resourceType;
+            }
+        }
+
+        return rt;
+    }
+
+    
+    
+    
     
     
     public Property createProperty(String namespaceUri, String name) {
@@ -255,10 +430,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         return prop;
     }
     
-    public void setPermissionsManager(PermissionsManager permissionsManager) {
-        this.permissionsManager = permissionsManager;
-    }
-
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
@@ -272,30 +443,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.rootResourceTypeDefinition = rootResourceTypeDefinition;
     }
 
-
-    public void authorize(Principal principal, ResourceImpl resource, 
-            int protectionLevel) throws AuthorizationException {
-
-        boolean owner = principal.getQualifiedName().equals(resource.getOwner());
-        boolean root = this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT);
-        boolean admin = false;
-        
-//        if (protectionLevel == PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE ||
-//                protectionLevel == PropertyType.PROTECTION_LEVEL_ROOT_EDITABLE) {
-//            if (this.roleManager.hasRole(principal.getQualifiedName(),
-//                    RoleManager.ROOT)) {
-//                return;
-//            }
-//                    
-//            if (!principal.getQualifiedName().equals(resource.getOwner())) {
-//                throw new AuthorizationException("Principal "
-//                        + principal.getQualifiedName()
-//                        + " is not allowed to set owner of " + "resource "
-//                        + resource.getURI());
-//            }
-//        }
-    }
-    
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }

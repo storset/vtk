@@ -31,21 +31,44 @@
 package org.vortikal.repositoryimpl;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.roles.RoleManager;
 
 public class Authorization {
 
     private Principal principal;
     private Acl acl;
+    private RoleManager roleManager;
     
-    Authorization(Principal principal, Acl acl) {
+    Authorization(Principal principal, Acl acl, RoleManager roleManager) {
         this.principal = principal;
         this.acl = acl;
+        this.roleManager = roleManager;
     }
     
-    void authorize(int protectionLevel) {
-        // XXX: Implement me...
+    public void authorize(int protectionLevel) throws AuthorizationException {
+
+        boolean owner = principal.getQualifiedName().equals(acl.getOwner());
+        boolean root = this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT);
+        boolean admin = false;
+        
+//        if (protectionLevel == PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE ||
+//                protectionLevel == PropertyType.PROTECTION_LEVEL_ROOT_EDITABLE) {
+//            if (this.roleManager.hasRole(principal.getQualifiedName(),
+//                    RoleManager.ROOT)) {
+//                return;
+//            }
+//                    
+//            if (!principal.getQualifiedName().equals(resource.getOwner())) {
+//                throw new AuthorizationException("Principal "
+//                        + principal.getQualifiedName()
+//                        + " is not allowed to set owner of " + "resource "
+//                        + resource.getURI());
+//            }
+//        }
     }
+    
 }

@@ -62,7 +62,7 @@ public class ResourceImpl implements Resource, Cloneable {
     private String uri;
     private Acl acl;
     private boolean inheritedACL = true;
-    private LockImpl lock = null;
+    private Lock lock = null;
     private boolean dirtyACL = false;
     private String[] childURIs = null;
     
@@ -142,7 +142,7 @@ public class ResourceImpl implements Resource, Cloneable {
         return this.lock;
     }
 
-    public void setLock(LockImpl lock) {
+    public void setLock(Lock lock) {
         this.lock = lock;
     }
 

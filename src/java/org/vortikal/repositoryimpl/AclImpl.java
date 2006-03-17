@@ -302,4 +302,9 @@ public class AclImpl implements Acl {
         this.owner = owner;
     }
 
+
+    public Principal getOwner() {
+        return this.owner;
+    }
+
 }

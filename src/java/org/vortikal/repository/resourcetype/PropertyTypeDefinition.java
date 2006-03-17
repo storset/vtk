@@ -46,8 +46,11 @@ public interface PropertyTypeDefinition {
 
     public Constraint getConstraint();
 
-    public PropertyEvaluator getPropertyEvaluator();
+    public CreatePropertyEvaluator getCreateEvaluator();
 
+    public ContentModificationPropertyEvaluator getContentModificationEvaluator();
+
+    public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator();
 }
 
 

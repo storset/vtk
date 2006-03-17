@@ -11,6 +11,8 @@ public interface Acl extends Cloneable {
 
     public void removeEntry(String username, String privilegeName);
 
+    public Principal getOwner();
+    
     /**
      * Gets the set of privileges on this resource for a given principal.
      */

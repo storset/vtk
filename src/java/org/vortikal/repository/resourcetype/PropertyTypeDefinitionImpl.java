@@ -10,7 +10,35 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
     private int protectionLevel = PropertyType.PROTECTION_LEVEL_EDITABLE;
     private boolean mandatory = false; // Is this interesting?
     private Constraint constraint;
-    private PropertyEvaluator propertyEvaluator;
+    private CreatePropertyEvaluator createEvaluator;
+    private ContentModificationPropertyEvaluator contentModificationEvaluator;
+    private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
+    
+    public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
+        return contentModificationEvaluator;
+    }
+
+    public void setContentModificationEvaluator(
+            ContentModificationPropertyEvaluator contentModificationEvaluator) {
+        this.contentModificationEvaluator = contentModificationEvaluator;
+    }
+
+    public CreatePropertyEvaluator getCreateEvaluator() {
+        return createEvaluator;
+    }
+
+    public void setCreateEvaluator(CreatePropertyEvaluator createEvaluator) {
+        this.createEvaluator = createEvaluator;
+    }
+
+    public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator() {
+        return propertiesModificationEvaluator;
+    }
+
+    public void setPropertiesModificationEvaluator(
+            PropertiesModificationPropertyEvaluator propertiesModificationEvaluator) {
+        this.propertiesModificationEvaluator = propertiesModificationEvaluator;
+    }
 
     public Constraint getConstraint() {
         return constraint;
@@ -42,14 +70,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public PropertyEvaluator getPropertyEvaluator() {
-        return propertyEvaluator;
-    }
-
-    public void setPropertyEvaluator(PropertyEvaluator propertyEvaluator) {
-        this.propertyEvaluator = propertyEvaluator;
     }
 
     public int getProtectionLevel() {

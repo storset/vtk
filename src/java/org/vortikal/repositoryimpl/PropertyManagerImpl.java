@@ -225,7 +225,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         // XXX: huge risk of nullpointer exception
         PropertyTypeDefinition propDef = (PropertyTypeDefinition)
             ((Map)propertyTypeDefinitions.get(namespaceUri)).get(name);
-        prop.setPropertyTypeDefinition(propDef);
+        prop.setDefinition(propDef);
         
         
         return prop;
@@ -240,7 +240,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         // XXX: huge risk of nullpointer exception
         PropertyTypeDefinition propDef = (PropertyTypeDefinition)
             ((Map)propertyTypeDefinitions.get(namespaceUri)).get(name);
-        prop.setPropertyTypeDefinition(propDef);
+        prop.setDefinition(propDef);
         
         // XXX: complete this
         if (value instanceof Date) {

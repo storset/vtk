@@ -182,11 +182,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return sb.toString();
     }
 
-    public PropertyTypeDefinition getPropertyTypeDefinition() {
+    public PropertyTypeDefinition getDefinition() {
         return propertyTypeDefinition;
     }
 
-    public void setPropertyTypeDefinition(PropertyTypeDefinition propertyTypeDefinition) {
+    public void setDefinition(PropertyTypeDefinition propertyTypeDefinition) {
         this.propertyTypeDefinition = propertyTypeDefinition;
     }
+    
 }

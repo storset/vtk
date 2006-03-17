@@ -32,6 +32,7 @@ package org.vortikal.repository;
 
 import java.util.Date;
 
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
@@ -73,6 +74,8 @@ public interface Property extends Cloneable {
     public boolean getBooleanValue() throws IllegalOperationException;
 
     public long getLongValue() throws IllegalOperationException; 
+    
+    public PropertyTypeDefinition getDefinition();
     
     public Object clone() throws CloneNotSupportedException;
 

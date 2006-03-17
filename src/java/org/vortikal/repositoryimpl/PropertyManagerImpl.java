@@ -61,13 +61,15 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         // XXX: validate bean properties
         // XXX: this.resourceTypeDefinitions is not populated !
         
-        List resourceTypeDefinitions = 
+        List resourceTypeDefinitionList = 
             new ArrayList(applicationContext.getBeansOfType(ResourceTypeDefinition.class, 
                 false, false).values());
 
-        // Populate map of property type definitions
+        
         this.propertyTypeDefinitions = new HashMap();
-        for (Iterator i = resourceTypeDefinitions.iterator(); i.hasNext();) {
+        this.resourceTypeDefinitions = new HashMap();
+        for (Iterator i = resourceTypeDefinitionList.iterator(); i.hasNext();) {
+            // Populate map of property type definitions
             ResourceTypeDefinition def = (ResourceTypeDefinition)i.next();
             PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
             String namespaceUri = def.getNamespace().getURI();
@@ -76,6 +78,24 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             for (int u=0; u<propDefs.length; u++) {
                 propDefMap.put(propDefs[u].getName(), propDefs[u]);
             }
+            
+            // Populate map of resourceTypeDefiniton parent -> children
+            ResourceTypeDefinition parent = def.getParentTypeDefinition();
+            ResourceTypeDefinition[] children = 
+                    (ResourceTypeDefinition[]) this.resourceTypeDefinitions.get(parent);
+            
+            // Array append (or create if not exists for given parent)
+            ResourceTypeDefinition[] newChildren = null;
+            if (children == null) {
+                children = new ResourceTypeDefinition[1];
+                children[0] = def;
+            } else {
+                newChildren = new ResourceTypeDefinition[children.length+1];
+                System.arraycopy(children, 0, newChildren, 0, children.length);
+                newChildren[newChildren.length-1] = def;
+            }
+            this.resourceTypeDefinitions.put(parent, newChildren);
+           
         }
     }        
 

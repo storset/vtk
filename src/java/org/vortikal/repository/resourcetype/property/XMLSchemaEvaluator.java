@@ -32,28 +32,57 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.security.Principal;
 
-public class ContentLastModifiedEvaluator implements CreatePropertyEvaluator, 
-    ContentModificationPropertyEvaluator {
+/**
+ * Evaluate XML schema property on content modification.
+ * 
+ * XXX: When to throw PropertyEvaluationException and when to just return false ??
+ * @author oyviste
+ *
+ */
+public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator {
 
-    public boolean create(Principal principal, 
-                           Property property, 
-                           PropertySet ancestorPropertySet, 
-                           boolean isCollection, 
-                           Date time) throws PropertyEvaluationException {
-        property.setDateValue(time);
-        return true;
-    }
+    private String xmlSchemaAttributeNamespace = "http://www.w3.org/2001/XMLSchema-instance";
+    private String xmlSchemaAttributeName = "noNamespaceSchemaLocation";
 
-    public boolean contentModification(Principal principal, Property property, PropertySet ancestorPropertySet, Content content, Date time) throws PropertyEvaluationException {
-        property.setDateValue(time);
-        return true;
+    public boolean contentModification(Principal principal, 
+                                       Property property, 
+                                       PropertySet ancestorPropertySet, 
+                                       Content content, 
+                                       Date time)
+            throws PropertyEvaluationException {
+        
+        // XXX: Check ancestor PropertySet for correct content type (XML) first ?
+        String schemaLocation = null;
+        try {
+            
+            Document doc = (Document)content.getContentRepresentation(org.jdom.Document.class);
+            
+            Element root = doc.getRootElement();
+
+            Namespace ns = Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
+            schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);
+
+        } catch (Exception e) {
+            throw new PropertyEvaluationException("Could not evaluate schema property from content", e);
+            // XXX: or return false ?
+        }
+
+        if (schemaLocation != null) {
+            property.setStringValue(schemaLocation);
+            return true;
+        } else {
+            //throw new PropertyEvaluationException("No schema specified in document.");
+            return false; // XXX: desired behaviour ?
+        }
     }
 
 }

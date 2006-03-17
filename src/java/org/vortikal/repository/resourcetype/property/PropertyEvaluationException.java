@@ -36,4 +36,12 @@ public class PropertyEvaluationException extends RepositoryException {
 
     private static final long serialVersionUID = 3174323728521355972L;
 
+    public PropertyEvaluationException(String msg) {
+        super(msg);
+    }
+    
+    public PropertyEvaluationException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+    
 }

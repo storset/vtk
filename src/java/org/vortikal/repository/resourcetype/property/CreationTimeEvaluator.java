@@ -1,34 +1,17 @@
 package org.vortikal.repository.resourcetype.property;
 
+import java.util.Date;
+
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.RepositoryOperations;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.security.Principal;
-import org.vortikal.util.repository.MimeHelper;
 
-public class CreationTimeEvaluator implements PropertyEvaluator {
+public class CreationTimeEvaluator implements CreatePropertyEvaluator {
 
-    public Value extractFromContent(String operation, Principal principal,
-            Content content, Value currentValue) throws Exception {
-        return currentValue;
-    }
-
-    public Value evaluateProperties(String operation, Principal principal, PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
-        Value value = currentValue;
-
-        if (operation.equals(RepositoryOperations.CREATE)) {
-            value = new Value();
-            value.setValue(MimeHelper.map(newProperties.getName()));
-        }
-        
-        if (operation.equals(RepositoryOperations.CREATE_COLLECTION) ) {
-            value = new Value();
-            value.setValue("application/x-vortex-collection");
-        }
-        
-        return value;
+    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+        property.setDateValue(time);
+        return property;
     }
 
 

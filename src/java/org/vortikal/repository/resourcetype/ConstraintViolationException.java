@@ -30,10 +30,28 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.vortikal.repository.RepositoryException;
 
-public class ConstraintViolationException extends RuntimeException {
-    
-    
 
+public class ConstraintViolationException extends RepositoryException {
+
+    private static final long serialVersionUID = -9028654759270752131L;
+
+    public ConstraintViolationException() {
+        super();
+    }
+
+    public ConstraintViolationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ConstraintViolationException(String message) {
+        super(message);
+    }
+
+    public ConstraintViolationException(Throwable cause) {
+        super(cause);
+    }
+    
 }
 

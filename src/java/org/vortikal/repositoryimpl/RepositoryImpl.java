@@ -87,7 +87,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private ResourceManager resourceManager;
     private PropertyManagerImpl propertyManager;
     private PermissionsManager permissionsManager;
-    private ACLValidator aclValidator;
+    private AclValidator aclValidator;
     private URIValidator uriValidator = new URIValidator();
     
     private String id;
@@ -1083,7 +1083,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.permissionsManager = permissionsManager;
     }
 
-    public void setAclValidator(ACLValidator aclValidator) {
+    public void setAclValidator(AclValidator aclValidator) {
         this.aclValidator = aclValidator;
     }
 

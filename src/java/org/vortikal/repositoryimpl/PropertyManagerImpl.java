@@ -16,6 +16,7 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryOperations;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -86,8 +87,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
 
         // Get authorization for principal on resource
-        Authorization authorization = new Authorization(principal, oldResource,
-                this.principalManager);
+        Authorization authorization = 
+            new Authorization(principal, oldResource.getAcl());
 
         // Evaluating resource type properties
         List newProps = new ArrayList();
@@ -128,6 +129,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
     
     public ResourceImpl create(Principal principal, String uri, boolean collection) throws Exception {
+        // Evaluate resource tree, supplying date
         ResourceImpl r = new ResourceImpl(uri, this.principalManager, this);
         List properties = new ArrayList();
         evaluateProperties(principal, properties, r, null, RepositoryOperations.CREATE, rootResourceTypeDefinition);
@@ -135,10 +137,14 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
 
     public void storeProperties(ResourceImpl resource, Principal principal,
-            org.vortikal.repository.Resource dto)
-throws AuthenticationException, AuthorizationException, 
-ResourceLockedException, IllegalOperationException, IOException {
-
+            Resource dto) throws AuthenticationException, AuthorizationException, 
+            ResourceLockedException, IllegalOperationException, IOException {
+        // For all properties, check if they are modified, deleted or created
+        // if user isn't allowed, throw exception
+        // Otherwise set properties
+        // Evaluate resource tree, for all live props not overridden, evaluate
+        // For live props changed by user, DON'T evaluate
+        
 //    if (!resource.getOwner().equals(dto.getOwner().getQualifiedName())) {
 //        /* Attempt to take ownership, only the owner of a parent
 //         * resource may do that, so do it in a secure manner: */
@@ -184,7 +190,9 @@ ResourceLockedException, IllegalOperationException, IOException {
     
 }
     
-    public void collectionContentModified(ResourceImpl resource, Principal principal) {
+    public void collectionContentModification(ResourceImpl resource, Principal principal) {
+        // evaluate resource tree, supplying date
+        
         Date now = new Date();
         // Update timestamps:
 //        resource.setContentLastModified(now);
@@ -196,9 +204,11 @@ ResourceLockedException, IllegalOperationException, IOException {
    
     }
     
-    public void resourceContentModification(ResourceImpl resource, 
+    public void fileContentModification(ResourceImpl resource, 
             Principal principal, InputStream inputStream) {
-
+        // evaluate resource tree, supplying date
+        
+        
         // Update timestamps:
 //        resource.setContentLastModified(new Date());
 //        resource.setContentModifiedBy(principal.getQualifiedName());

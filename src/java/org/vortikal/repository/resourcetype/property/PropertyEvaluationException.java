@@ -28,24 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl;
+package org.vortikal.repository.resourcetype.property;
 
-import org.vortikal.repository.Acl;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.repository.RepositoryException;
 
-public class Authorization {
+public class PropertyEvaluationException extends RepositoryException {
 
-    private Principal principal;
-    private Acl acl;
-    
-    Authorization(Principal principal, Acl acl) {
-        this.principal = principal;
-        this.acl = acl;
-    }
-    
-    void authorize(int protectionLevel) {
-        // XXX: Implement me...
-    }
+    private static final long serialVersionUID = 3174323728521355972L;
+
 }

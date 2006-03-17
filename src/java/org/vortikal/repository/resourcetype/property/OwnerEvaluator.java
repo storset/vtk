@@ -1,60 +1,40 @@
 package org.vortikal.repository.resourcetype.property;
 
-import org.vortikal.repository.IllegalOperationException;
+import java.util.Date;
+import java.util.List;
+
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.RepositoryOperations;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ConstraintViolationException;
+import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
-public class OwnerEvaluator implements PropertyEvaluator {
+public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidator {
 
     private PrincipalManager principalManager;
     
-    public Value extractFromContent(String operation, Principal principal,
-            Content content, Value currentValue) throws Exception {
-        return currentValue;
+    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+        property.setStringValue(principal.getQualifiedName());
+        return property;
     }
 
-
-    private void validateOwner(Principal newOwner) {
-        if (newOwner == null) {
-            throw new IllegalOperationException("Unable to delete owner of " +
-                    "resource: All resources must have an owner.");
+    public void validate(Principal principal, PropertySet ancestorPropertySet, Property property) throws ConstraintViolationException {
+        if (property.getStringValue() == null) {
+            throw new ConstraintViolationException("All resources must have an owner.");
         }
 
-        if (!principalManager.validatePrincipal(newOwner)) {
-            throw new IllegalOperationException(
-                    "Unable to set owner of resource to invalid owner: '" + newOwner + "'");
+        Principal owner = principalManager.getPrincipal(property.getStringValue());
+        if (!principalManager.validatePrincipal(owner)) {
+            throw new ConstraintViolationException(
+                    "Unable to set owner of resource to invalid owner: '" 
+                    + principal.getQualifiedName() + "'");
         }
-        
     }
 
-    /**
-     * @param principalManager The principalManager to set.
-     */
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
-    }
-
-
-    public Value evaluateProperties(String operation, Principal principal, PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
-        Value value = currentValue;
-        Principal newOwner = null;
-        
-        if (operation.equals(RepositoryOperations.CREATE) ||
-            operation.equals(RepositoryOperations.CREATE_COLLECTION) ) {
-            newOwner = principal;
-        }
-        
-        if (newOwner != null) {
-            validateOwner(newOwner);
-            value.setValue(newOwner.getQualifiedName());
-        }
-        
-        return value;
     }
 
 }

@@ -1,28 +1,24 @@
 package org.vortikal.repository.resourcetype.property;
 
+import java.util.Date;
+
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.RepositoryOperations;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.security.Principal;
 
-public class PropertiesModifiedByEvaluator implements PropertyEvaluator {
+public class PropertiesModifiedByEvaluator implements CreatePropertyEvaluator, 
+    PropertiesModificationPropertyEvaluator {
 
-    public Value extractFromContent(String operation, Principal principal,
-            Content content, Value currentValue) throws Exception {
-        return currentValue;
+    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+        property.setStringValue(principal.getQualifiedName());
+        return property;
     }
 
-    public Value evaluateProperties(String operation, Principal principal, PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
-        if (operation == RepositoryOperations.CREATE ||
-                operation == RepositoryOperations.CREATE_COLLECTION ||
-                operation == RepositoryOperations.STORE) {
-            Value value = new Value();
-            value.setValue(principal.getQualifiedName());
-            return value;
-        }
-        return currentValue;
+    public Property propertiesModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
+        property.setDateValue(time);
+        return property;
     }
 
 }

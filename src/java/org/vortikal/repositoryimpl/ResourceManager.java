@@ -82,7 +82,7 @@ public class ResourceManager {
         resource = this.dao.load(path);
 
         addChildURI(parent, resource.getURI());
-        propertyManager.collectionContentModified(parent, principal);
+        propertyManager.collectionContentModification(parent, principal);
         
         this.dao.store(parent);
 
@@ -93,14 +93,14 @@ public class ResourceManager {
     }
 
     public void collectionContentModification(ResourceImpl resource, Principal principal) throws IOException {
-        this.propertyManager.collectionContentModified(resource, principal);
+        this.propertyManager.collectionContentModification(resource, principal);
         this.dao.store(resource);
     }
 
     public void resourceContentModification(ResourceImpl resource, 
             Principal principal, InputStream inputStream) throws IOException {
 
-        this.propertyManager.resourceContentModification(resource, principal, inputStream);
+        this.propertyManager.fileContentModification(resource, principal, inputStream);
         this.dao.store(resource);
     }
     

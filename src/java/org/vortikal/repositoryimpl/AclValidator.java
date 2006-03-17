@@ -5,7 +5,7 @@ import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.security.PrincipalManager;
 
-public class ACLValidator {
+public class AclValidator {
 
     private PrincipalManager principalManager;
     

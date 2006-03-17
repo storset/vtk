@@ -30,25 +30,16 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.vortikal.repository.PropertySet;
-import org.vortikal.security.Principal;
-
-
-public interface PropertyEvaluator {
-
-    // Need different modes for: create, copy, store and storeContent
-    
-    // Create need principal, isCollection, newPropertySet (earlier eval. props)
-    // Copy is unspecified as of yet...
-    // storeContent - needs principal, content, oldvalue
-    // store needs principal, newPropertySet ( + dead props?), newValue, oldValue
-    
-    
-    public Value extractFromContent(String operation, Principal principal,
-            Content content, Value currentValue) throws Exception;
-    
-    
-    public Value evaluateProperties(String operation, Principal principal,
-            PropertySet newProperties, Value currentValue, Value oldValue) throws Exception;
-
+/**
+ * Aggregates all the property evaluation and validation interfaces into one...
+ * 
+ * XXX: Would like copy, aclChanged and lockChange as well...
+ *
+ */
+public interface PropertyEvaluator extends 
+    CreatePropertyEvaluator, 
+    ContentModificationPropertyEvaluator, 
+    PropertiesModificationPropertyEvaluator,
+    PropertyValidator {
+        
 }

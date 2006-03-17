@@ -1,22 +1,25 @@
 package org.vortikal.repository.resourcetype.property;
 
+import java.util.Date;
+
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.security.Principal;
 
-public class ContentModifiedByEvaluator implements PropertyEvaluator {
+public class ContentModifiedByEvaluator implements CreatePropertyEvaluator, 
+    ContentModificationPropertyEvaluator {
 
-    public Value extractFromContent(String operation, Principal principal,
-            Content content, Value currentValue) throws Exception {
-        Value value = new Value();
-        value.setValue(principal.getQualifiedName());
-        return value;
+    public Property create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+        property.setStringValue(principal.getQualifiedName());
+        return property;
     }
 
-    public Value evaluateProperties(String operation, Principal principal, PropertySet newProperties, Value currentValue, Value oldValue) throws Exception {
-        return currentValue;
+    public Property contentModification(Principal principal, Property property, PropertySet ancestorPropertySet, Content content, Date time) throws PropertyEvaluationException {
+        property.setStringValue(principal.getQualifiedName());
+        return property;
     }
 
 }

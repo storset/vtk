@@ -18,6 +18,7 @@ import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
@@ -35,7 +36,7 @@ import org.vortikal.web.service.RepositoryAssertion;
  * XXX: What to do about swapping old resource with new?
  * XXX: Add resource type to resource
  * XXX: Validation is missing
- * XXX: Don't currently handle controlled but not evaluated properties
+ * XXX: Validate logic!
  * XXX: catch or declare evaluation and authorization exceptions on a reasonable level
  * XXX: implement authorization and contentimpl
  */
@@ -190,6 +191,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 if (prop.getDefinition() == null) {
                     // Dead - ok
                 } else {
+                    if (prop.getDefinition().isMandatory()) {
+                        throw new ConstraintViolationException("Property is mandatory: " + prop);
+                    }
                     // check if allowed
                     authorization.authorize(prop.getDefinition().getProtectionLevel());
                     addToPropsMap(allreadySetProperties, userProp);
@@ -222,7 +226,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     authorization.authorize(prop.getDefinition().getProtectionLevel());
                     addToPropsMap(allreadySetProperties, userProp);
                 }
-                // Added - - check if dead - check if allowed - set prop
             }
         }
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
@@ -232,7 +235,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         newResource.setLock(resource.getLock());
         
         // Evaluate resource tree, for all live props not overridden, evaluate
-        ResourceTypeDefinition rt = propertiesModification(principal, newResource, 
+        ResourceTypeDefinition rt = propertiesModification(principal, newResource, dto,
                 new Date(), allreadySetProperties, rootResourceTypeDefinition);
 
         for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
@@ -294,7 +297,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 }
     
     private ResourceTypeDefinition propertiesModification(Principal principal, 
-            ResourceImpl newResource, Date time, Map allreadySetProperties, 
+            ResourceImpl newResource, Resource dto, Date time, Map allreadySetProperties, 
             ResourceTypeDefinition rt) {
 
         // Checking if resource type matches
@@ -318,13 +321,17 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             }
 
             // Not set, evaluate
+            Property prop = dto.getProperty(rt.getNamespace().getURI(), propertyDef.getName());
             PropertiesModificationPropertyEvaluator evaluator = propertyDef.getPropertiesModificationEvaluator();
             if (evaluator != null) {
-                Property prop = createProperty(rt.getNamespace().getURI(), propertyDef.getName());
+                if (prop == null) 
+                    prop = createProperty(rt.getNamespace().getURI(), propertyDef.getName());
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
                     newProps.add(prop);
                 }
                 
+            } else if (prop != null) {
+                newProps.add(prop);
             }
         }
         for (Iterator iter = newProps.iterator(); iter.hasNext();) {
@@ -336,7 +343,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         ResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
         for (int i = 0; i < children.length; i++) {
             ResourceTypeDefinition resourceType = 
-                propertiesModification(principal, newResource, time, allreadySetProperties, children[i]);
+                propertiesModification(principal, newResource, dto, time, allreadySetProperties, children[i]);
             if (resourceType != null) {
                 return resourceType;
             }
@@ -353,7 +360,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(principal, newResource, 
-                null, new Date(), rootResourceTypeDefinition);
+                resource, null, new Date(), rootResourceTypeDefinition);
         return newResource;
     }
 
@@ -367,14 +374,14 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         newResource.setID(resource.getID());
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
-        ResourceTypeDefinition rt = contentModification(principal, newResource, 
+        ResourceTypeDefinition rt = contentModification(principal, newResource, resource,
                 new ContentImpl(inputStream), new Date(), rootResourceTypeDefinition);
         return newResource;
     }
     
     
     private ResourceTypeDefinition contentModification(Principal principal, 
-            ResourceImpl newResource, Content content, Date time, ResourceTypeDefinition rt) {
+            ResourceImpl newResource, Resource original, Content content, Date time, ResourceTypeDefinition rt) {
 
         // Checking if resource type matches
         if (!checkAssertions(rt, newResource, principal)) return null;
@@ -385,13 +392,16 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         for (int i = 0; i < def.length; i++) {
             PropertyTypeDefinition propertyDef = def[i];
             
+            Property prop = original.getProperty(rt.getNamespace().getURI(), propertyDef.getName());
             ContentModificationPropertyEvaluator evaluator = propertyDef.getContentModificationEvaluator();
             if (evaluator != null) {
-                Property prop = createProperty(rt.getNamespace().getURI(), propertyDef.getName());
+                if (prop == null) 
+                    prop = createProperty(rt.getNamespace().getURI(), propertyDef.getName());
                 if (evaluator.contentModification(principal, prop, newResource, content, time)) {
                     newProps.add(prop);
                 }
-                
+            } else if (prop != null) {
+                newProps.add(prop);
             }
         }
         for (Iterator iter = newProps.iterator(); iter.hasNext();) {
@@ -403,7 +413,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         ResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
         for (int i = 0; i < children.length; i++) {
             ResourceTypeDefinition resourceType = 
-                contentModification(principal, newResource, content, time, children[i]);
+                contentModification(principal, newResource, original, content, time, children[i]);
             if (resourceType != null) {
                 return resourceType;
             }

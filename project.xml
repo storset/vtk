@@ -124,7 +124,7 @@
     <dependency>
       <id>spring</id>
       <groupId>springframework</groupId>
-      <version>1.2.7</version>
+      <version>1.2.6</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
@@ -132,7 +132,7 @@
     <dependency>
       <id>spring-mock</id>
       <groupId>springframework</groupId>
-      <version>1.2.1</version>
+      <version>1.2.6</version>
     </dependency>
     <dependency>
       <id>commons-logging</id>

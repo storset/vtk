@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -728,7 +729,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         String owner = r.getOwner().getQualifiedName();
         String contentModifiedBy = r.getContentModifiedBy().getQualifiedName();
         String propertiesModifiedBy = r.getPropertiesModifiedBy().getQualifiedName();
-        String contentLanguage = r.getContentLocale().toString();
+        Locale locale = r.getContentLocale();
+        String contentLanguage = (locale == null) ? null : locale.toString();
         boolean collection = r.isCollection();
         
         String query = "select * from VORTEX_RESOURCE where uri = ?";

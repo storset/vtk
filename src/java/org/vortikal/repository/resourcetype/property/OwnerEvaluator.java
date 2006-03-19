@@ -31,7 +31,6 @@
 package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
-import java.util.List;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;

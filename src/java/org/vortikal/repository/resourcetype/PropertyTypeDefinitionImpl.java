@@ -13,6 +13,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
     private CreatePropertyEvaluator createEvaluator;
     private ContentModificationPropertyEvaluator contentModificationEvaluator;
     private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
+    private PropertyValidator validator;
     
     public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
         return contentModificationEvaluator;
@@ -86,6 +87,20 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    /**
+     * @return Returns the validator.
+     */
+    public PropertyValidator getValidator() {
+        return validator;
+    }
+
+    /**
+     * @param validator The validator to set.
+     */
+    public void setValidator(PropertyValidator validator) {
+        this.validator = validator;
     }
     
 }

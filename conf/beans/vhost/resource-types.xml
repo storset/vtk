@@ -5,12 +5,19 @@
 
   <bean id="rootResourceTypeDefinition" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
     <property name="name" value="resource"/>
-
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <!-- Properties valid for the resource type -->
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="ownerPropDef" />
         <ref bean="collectionPropDef" />
+        <ref bean="creationTimePropDef" />
+        <ref bean="contentLastModifiedPropDef" />
+        <ref bean="contentModifiedByPropDef" />
+        <ref bean="propertiesLastModifiedPropDef" />
+        <ref bean="propertiesModifiedByPropDef" />
+        <ref bean="contentTypePropDef" />
+        <ref bean="contentLengthPropDef" />
       </list>
     </property>
   </bean>
@@ -18,26 +25,103 @@
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="owner" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_OWNER_EDITABLE" />
-    <property name="isMandatory" value="true" />
-    <property name="propertyEvaluator">
-      <bean class="org.vortikal.repository.resourcetype.property.OwnerEvaluator">
-        <property name="principalManager" ref="principalManager" />
-      </bean>
-    </property>
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="ownerEvaluator" />
+    <property name="validator" ref="ownerEvaluator" />
   </bean>
 
+  <bean id="ownerEvaluator" class="org.vortikal.repository.resourcetype.property.OwnerEvaluator">
+    <property name="principalManager" ref="principalManager" />
+  </bean>
+  
   <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="collection" />
+    <property name="type" ref="TYPE_BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="isMandatory" value="true" />
-    <property name="propertyEvaluator">
-      <bean class="org.vortikal.repository.resourcetype.property.CollectionEvaluator" />
-    </property>
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="collectionEvaluator" /> 
+  </bean>
 
+  <bean id="collectionEvaluator" class="org.vortikal.repository.resourcetype.property.CollectionEvaluator" />
+
+  <bean id="creationTimePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="creationTime" />
+    <property name="type" ref="TYPE_DATE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="creationTimeEvaluator" />
+  </bean>
+
+  <bean id="creationTimeEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.CreationTimeEvaluator" />
+
+
+  <bean id="contentLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="contentLastModified" />
+    <property name="type" ref="TYPE_DATE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="contentLastModifiedEvaluator" />
+    <property name="contentModificationEvaluator" ref="contentLastModifiedEvaluator" />
+  </bean>
+
+  <bean id="contentLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.ContentLastModifiedEvaluator" />
+  
+  <bean id="contentModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="contentModifiedBy" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="contentModifiedByEvaluator" />
+    <property name="contentModificationEvaluator" ref="contentModifiedByEvaluator" />
+  </bean>
+
+  <bean id="contentModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.ContentModifiedByEvaluator" />
+  
+  <bean id="propertiesLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="propertiesLastModified" />
+    <property name="type" ref="TYPE_DATE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="propertiesLastModifiedEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="propertiesLastModifiedEvaluator" />
+  </bean>
+
+  <bean id="propertiesLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesLastModifiedEvaluator" />
+  
+  <bean id="propertiesModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="propertiesModifiedBy" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="propertiesModifiedByEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="propertiesModifiedByEvaluator" />
+  </bean>
+
+  <bean id="propertiesModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesModifiedByEvaluator" />
+  
+  <bean id="contentTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="contentType" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="contentTypeEvaluator" />
+  </bean>
+
+  <bean id="contentTypeEvaluator" class="org.vortikal.repository.resourcetype.property.ContentTypeEvaluator" />
+  
+  <bean id="contentLengthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="contentLength" />
+    <property name="type" ref="TYPE_LONG" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
   </bean>
 
 
 <!-- CONSTANTS -->
+
+  <bean id="DEFAULT_NAMESPACE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Namespace.DEFAULT_NAMESPACE" />
+  </bean>
 
   <bean id="PROTECTION_LEVEL_EDITABLE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
@@ -85,6 +169,12 @@
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
               value="org.vortikal.repository.resourcetype.PropertyType.TYPE_BOOLEAN" />
+  </bean>
+
+  <bean id="TYPE_LONG"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_LONG" />
   </bean>
 
 </beans>

@@ -61,6 +61,8 @@ import org.vortikal.security.TokenManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
 
+import com.jamonapi.utils.Logger;
+
 
 
 /**
@@ -75,6 +77,7 @@ import org.vortikal.util.repository.URIUtil;
  * XXX: transcation demarcation
  * XXX: split dao into multiple daos
  * XXX: externalize caching
+ * XXX: duplication of owner and inherited between resource and acl.
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware,
         InitializingBean {
@@ -157,6 +160,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
+        System.out.println(Long.toString(r.getContentLength()));
         try {
             /* authorize for the right privilege */
             String privilege = (forProcessing)

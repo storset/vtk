@@ -259,7 +259,12 @@ public class AclImpl implements Acl {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        AclImpl clone = new AclImpl(principalManager);
+        clone.setInherited(this.inherited);
+        clone.setOwner(this.owner);
+        // XXX: This is not exactly recommended
+        clone.actionLists = this.actionLists;
+        return clone;
     }
 
     public String toString() {

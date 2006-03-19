@@ -267,10 +267,10 @@ public class RequestContextInitializer
     private String getResourceURI(HttpServletRequest req) throws Exception {
 
         String uri = req.getRequestURI();
-        if (uri == null) {
-            uri = "/";
+        if (uri == null || uri.equals("/")) {
+            return "/";
         }
-        if (uri.endsWith("/") && !uri.equals("/")) {
+        if (uri.endsWith("/")) {
             uri = uri.substring(0, uri.length() - 1);
         }
         return uri;

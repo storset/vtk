@@ -51,6 +51,8 @@ public interface PropertyTypeDefinition {
     public ContentModificationPropertyEvaluator getContentModificationEvaluator();
 
     public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator();
+
+    public PropertyValidator getValidator();
 }
 
 

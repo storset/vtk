@@ -32,9 +32,9 @@ package org.vortikal.repositoryimpl;
 
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.PrivilegeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 
 public class Authorization {
@@ -51,24 +51,32 @@ public class Authorization {
     
     public void authorize(int protectionLevel) throws AuthorizationException {
 
-        boolean owner = principal.getQualifiedName().equals(acl.getOwner());
-        boolean root = this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT);
-        boolean admin = false;
+        switch (protectionLevel) {
+
+        case PropertyType.PROTECTION_LEVEL_UNEDITABLE:
+            throw new AuthorizationException("Principal not authorized for property editing.");
         
-//        if (protectionLevel == PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE ||
-//                protectionLevel == PropertyType.PROTECTION_LEVEL_ROOT_EDITABLE) {
-//            if (this.roleManager.hasRole(principal.getQualifiedName(),
-//                    RoleManager.ROOT)) {
-//                return;
-//            }
-//                    
-//            if (!principal.getQualifiedName().equals(resource.getOwner())) {
-//                throw new AuthorizationException("Principal "
-//                        + principal.getQualifiedName()
-//                        + " is not allowed to set owner of " + "resource "
-//                        + resource.getURI());
-//            }
-//        }
+        case PropertyType.PROTECTION_LEVEL_EDITABLE:
+            if (!acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE))
+                throw new AuthorizationException("Principal not authorized for property editing.");
+            return;
+        
+        case PropertyType.PROTECTION_LEVEL_PROTECTED:
+            if (!acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE_ACL))
+                throw new AuthorizationException("Principal not authorized for property editing.");
+            return;
+        
+        case PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE:
+            if (principal.getQualifiedName().equals(acl.getOwner())) {
+                return;
+            }
+        
+        default:
+            if (this.roleManager.hasRole(principal.getQualifiedName(),
+                    RoleManager.ROOT)) {
+                return;
+            } 
+            throw new AuthorizationException("Principal not authorized for property editing.");
+        }
     }
-    
 }

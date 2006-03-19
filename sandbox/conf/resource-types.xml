@@ -19,7 +19,7 @@
 -->
 <beans>
 
-  <bean id="resourceTypeManager" class="org.vortikal.repositoryimpl.ResourceTypeManagerImpl">
+  <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManager">
     <property name="rootResourceTypeDefinition" ref="rootResourceTypeDefinition"/>
   </bean>
 

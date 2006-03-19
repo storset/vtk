@@ -60,6 +60,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         value = new Value();
     }
     
+    public int getType() {
+        if (this.propertyTypeDefinition == null)
+            return PropertyType.TYPE_STRING;
+        return this.propertyTypeDefinition.getType();
+    }
+    
     public String getNamespace() {
         return this.namespaceUri;
     }
@@ -84,9 +90,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
         if (value == null) return; // XXX: desired behaviour ?
         
-        if (value.getType() != this.propertyTypeDefinition.getType()) {
-            throw new ValueFormatException("Illegal value type: " + 
-                    PropertyType.PROPERTY_TYPE_NAMES[value.getType()]);
+        if (value.getType() != getType()) {
+            throw new ValueFormatException("Illegal value type " + 
+                    PropertyType.PROPERTY_TYPE_NAMES[value.getType()] + 
+                    " for property " + this.name + ". Should be " + 
+                    PropertyType.PROPERTY_TYPE_NAMES[getType()]);
         }
     }
     
@@ -96,7 +104,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Date getDateValue() throws IllegalOperationException {
-        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_DATE) {
+        if (value == null || getType() != PropertyType.TYPE_DATE) {
             throw new IllegalOperationException();
         }
         
@@ -111,7 +119,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public String getStringValue() throws IllegalOperationException {
-        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_STRING) {
+        if (value == null || getType() != PropertyType.TYPE_STRING) {
             throw new IllegalOperationException();
         }
         return value.getValue();
@@ -132,7 +140,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public long getLongValue() throws IllegalOperationException {
-        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_LONG) {
+        if (value == null || (propertyTypeDefinition != null && 
+                propertyTypeDefinition.getType() != PropertyType.TYPE_LONG)) {
             throw new IllegalOperationException();
         }
         return value.getLongValue();
@@ -146,14 +155,14 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public int getIntValue() throws IllegalOperationException {
-        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_INT) {
+        if (value == null || getType() != PropertyType.TYPE_INT) {
             throw new IllegalOperationException();
         }
         return value.getIntValue();
     }
         
     public boolean getBooleanValue() throws IllegalOperationException {
-        if (value == null || propertyTypeDefinition.getType() != PropertyType.TYPE_BOOLEAN) {
+        if (value == null || getType() != PropertyType.TYPE_BOOLEAN) {
             throw new IllegalOperationException();
         }
         return value.getBooleanValue();

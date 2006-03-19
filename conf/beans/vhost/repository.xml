@@ -13,11 +13,10 @@
     <property name="permissionsManager" ref="permissionsManager" />
     <property name="dao" ref="repository.backend" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="permissionsManager" ref="permissionsManager" />
+    <property name="propertyManager" ref="propertyManager" />
     <property name="readOnly" value="${repositoryReadOnly}" />
   </bean>
 
-  
   <bean id="repository.backend" class="org.vortikal.repositoryimpl.dao.Cache">
     <property name="maxItems"><value>${resourceCacheSize}</value></property>
     <property name="wrappedAccessor">
@@ -56,7 +55,6 @@
   <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
-    <property name="permissionsManager" ref="permissionsManager" />
     <property name="rootResourceTypeDefinition" ref="rootResourceTypeDefinition"/>
   </bean>
 
@@ -65,7 +63,7 @@
     <property name="roleManager" ref="roleManager" />
   </bean>
 
-  <bean id="aclValidator" class="org.vortikal.repositoryimpl.ACLValidator">
+  <bean id="aclValidator" class="org.vortikal.repositoryimpl.AclValidator">
     <property name="principalManager" ref="principalManager" />
   </bean>
 

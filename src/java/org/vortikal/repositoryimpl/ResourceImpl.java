@@ -197,9 +197,9 @@ public class ResourceImpl implements Resource, Cloneable {
 
     public List getProperties() {
         List props = new ArrayList();
-        for (Iterator iter = propertyMap.entrySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = propertyMap.values().iterator(); iter.hasNext();) {
             Map map = (Map) iter.next();
-            props.addAll(map.entrySet());
+            props.addAll(map.values());
         }
         return props;
     }
@@ -210,10 +210,10 @@ public class ResourceImpl implements Resource, Cloneable {
         for (Iterator iter = this.propertyMap.entrySet().iterator(); iter.hasNext();) {
             Map.Entry element = (Map.Entry) iter.next();
             String namespace = (String)element.getKey();
-            List props = (List)element.getValue();
+            Map props = (Map)element.getValue();
             if (namespace.equals(PropertyType.DEFAULT_NAMESPACE_URI)) {
                 List specialProps =  Arrays.asList(PropertyType.SPECIAL_PROPERTIES);
-                for (Iterator iterator = props.iterator(); iterator
+                for (Iterator iterator = props.values().iterator(); iterator
                         .hasNext();) {
                     Property prop = (Property) iterator.next();
                     if (!specialProps.contains(prop.getName())) {
@@ -221,7 +221,7 @@ public class ResourceImpl implements Resource, Cloneable {
                     }
                 }
             } else {
-                otherProps.addAll(props);
+                otherProps.addAll(props.values());
             }
         }
         return otherProps;

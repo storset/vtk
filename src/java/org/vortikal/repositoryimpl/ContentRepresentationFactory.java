@@ -67,7 +67,7 @@ public final class ContentRepresentationFactory {
         }
         
         throw new UnsupportedContentRepresentationException("Content type '" + 
-                clazz.getCanonicalName() + "' not supported.");
+                clazz.getName() + "' not supported.");
     }
     
     private static org.jdom.Document createJDOMRepresentation(byte[] content) 

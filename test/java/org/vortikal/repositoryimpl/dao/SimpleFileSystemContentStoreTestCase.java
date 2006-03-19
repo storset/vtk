@@ -46,7 +46,7 @@ public class SimpleFileSystemContentStoreTestCase extends TestCase {
         assertEquals(0, contentStore.getContentLength(uri));
     }
 
-    public void testStoreFileContentAndRetrive() throws IOException {
+    public void testStoreFileContentAndRetrieve() throws IOException {
         String uri = "/test.html";
         String testString = "This is a test æøå ÆØÅ";
 

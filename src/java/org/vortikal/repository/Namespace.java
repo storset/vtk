@@ -36,19 +36,19 @@ public class Namespace {
     public final static Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
      
     private String prefix;
-    private String uri;
+    private String url;
 
-    public Namespace(String prefix, String uri) {
+    public Namespace(String prefix, String url) {
         this.prefix = prefix;
-        this.uri = uri;
+        this.url = url;
     }
 
     public String getPrefix() {
         return this.prefix;
     }
     
-    public String getURI() {
-        return this.uri;
+    public String getUrl() {
+        return this.url;
     }
     
     public String toString() {
@@ -57,12 +57,20 @@ public class Namespace {
             sb.append(this.prefix).append(":");
         }
 
-        if (this.uri == null) {
+        if (this.url == null) {
             sb.append("DEFAULT");
         }
 
-        sb.append(this.uri);
+        sb.append(this.url);
         return sb.toString();
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
     
 }

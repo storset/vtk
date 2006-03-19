@@ -65,23 +65,20 @@ public class ResourceManager {
     /**
      * Creates a resource.
      */
-    public Resource create(ResourceImpl parent, Principal principal,
+    public ResourceImpl create(ResourceImpl parent, Principal principal,
                            boolean collection, String path)
         throws IllegalOperationException, AuthenticationException, 
             AuthorizationException, AclException, IOException, CloneNotSupportedException {
 
         ResourceImpl resource = null;
         
-        try {
-            propertyManager.create(principal, path, collection);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        
+        resource = propertyManager.create(principal, path, collection);
+        resource.setACL((Acl)parent.getAcl().clone());
+        resource.setInheritedACL(true);
         this.dao.store(resource);
         resource = this.dao.load(path);
 
-        addChildURI(parent, resource.getURI());
+        addChildURI(parent, path);
         propertyManager.collectionContentModification(parent, principal);
         
         this.dao.store(parent);

@@ -355,7 +355,6 @@ public class MemoryContentStoreTestCase extends TestCase {
                     
                 } catch (IOException io) {
                     fail("Un-expected IOException while working in '" + workdir + "': " + io.getMessage());
-                    System.exit(1);
                 }
             }
         }

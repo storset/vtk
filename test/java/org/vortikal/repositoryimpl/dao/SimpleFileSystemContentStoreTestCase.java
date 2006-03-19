@@ -24,6 +24,7 @@ public class SimpleFileSystemContentStoreTestCase extends TestCase {
         contentStore = new SimpleFileSystemContentStore();
         tmpDir = System.getProperty("java.io.tmpdir") + "/contentStore"
                 + Thread.currentThread().hashCode();
+        
         File tmpDirFile = new File(tmpDir);
         tmpDirFile.mkdir();
         contentStore.setRepositoryDataDirectory(tmpDir);
@@ -33,6 +34,7 @@ public class SimpleFileSystemContentStoreTestCase extends TestCase {
 
     protected void tearDown() throws Exception {
         super.tearDown();
+        
     }
 
     public void testCreateResource() throws IOException {
@@ -46,31 +48,28 @@ public class SimpleFileSystemContentStoreTestCase extends TestCase {
 
     public void testStoreFileContentAndRetrive() throws IOException {
         String uri = "/test.html";
-        String testString = "This is a test";
+        String testString = "This is a test æøå ÆØÅ";
 
         InputStream inputStreamBeforeStoringContent = contentStore.getInputStream(uri);
         assertNotNull(inputStreamBeforeStoringContent);
         inputStreamBeforeStoringContent.close();
         assertEquals(0, contentStore.getContentLength(uri));
 
-        ByteArrayInputStream inputStreamForStoringContent = new ByteArrayInputStream(testString
-                .getBytes());
+        ByteArrayInputStream inputStreamForStoringContent = 
+            new ByteArrayInputStream(testString.getBytes());
+        
         contentStore.createResource(uri, false);
 
         contentStore.storeContent(uri, inputStreamForStoringContent);
         inputStreamForStoringContent.close();
 
-        assertEquals(testString.length(), contentStore.getContentLength(uri));
+        assertEquals(testString.getBytes().length, contentStore.getContentLength(uri));
         InputStream inputStreamAfterStoringContent = contentStore.getInputStream(uri);
         assertNotNull(inputStreamAfterStoringContent);
         // Write some assertions to make sure the content of the file is ok
         inputStreamAfterStoringContent.close();
 
         contentStore.deleteResource(uri);
-
-        // The following line throws a 
-        // org.vortikal.repository.IllegalOperationException: Collections don't have length
-        // Is this correct behaviour?
         assertEquals(0, contentStore.getContentLength(uri));
 
         try {

@@ -41,9 +41,7 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.web.URLUtil;
 
 public class SimpleFileSystemContentStore implements InitializingBean, ContentStore {
@@ -57,8 +55,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     public void createResource(String uri, boolean isCollection) 
         throws IOException {
 
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+        String fileName = getLocalFilename(uri);
 
         if (isCollection) {
             if (logger.isDebugEnabled()) {
@@ -76,8 +73,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
     
     public long getContentLength(String uri) throws IllegalOperationException {
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+        String fileName = getLocalFilename(uri);
 
         File f = new File(fileName);
         if (f.isFile()) {
@@ -92,8 +88,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
 
     public void deleteResource(String uri) {
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+        String fileName = getLocalFilename(uri);
 
         deleteFiles(new File(fileName));
     }
@@ -115,16 +110,14 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
 
     public InputStream getInputStream(String uri) throws IOException {
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+        String fileName = getLocalFilename(uri);
 
         return new java.io.FileInputStream(new File(fileName));
     }
 
     public void storeContent(String uri, InputStream inputStream)
             throws IOException {
-        String fileName = this.repositoryDataDirectory
-                + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+        String fileName = getLocalFilename(uri);
 
         OutputStream stream = new java.io.FileOutputStream(new File(fileName));
 
@@ -144,12 +137,8 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
     
     public void copy(String srcURI, String destURI) throws IOException {
-        String fileNameFrom = this.repositoryDataDirectory
-            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(srcURI)
-                    : srcURI);
-        String fileNameTo = this.repositoryDataDirectory
-            + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(destURI)
-                    : destURI);
+        String fileNameFrom = getLocalFilename(srcURI);
+        String fileNameTo = getLocalFilename(destURI);
 
         File fromDir = new File(fileNameFrom);
         if (fromDir.isDirectory()) {
@@ -157,6 +146,21 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         } else {
             copyFile(new File(fileNameFrom), new File(fileNameTo));
         }
+    }
+    
+    public boolean isCollection(String uri) throws IOException {
+        String filename = getLocalFilename(uri);
+        File f = new File(filename);
+        if (! f.exists()) {
+            throw new IOException("File does not exist");
+        }
+        
+        return f.isDirectory();
+    }
+    
+    public boolean exists(String uri) {
+        String filename = getLocalFilename(uri);
+        return new File(filename).exists();
     }
     
     private void copyDir(File fromDir, File toDir) throws IOException {
@@ -185,7 +189,10 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         dstChannel.close();
     }
 
-
+    private String getLocalFilename(String uri) {
+        return this.repositoryDataDirectory
+        + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+    }
     
     public void setRepositoryDataDirectory(String repositoryDataDirectory) {
         this.repositoryDataDirectory = repositoryDataDirectory;

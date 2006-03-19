@@ -68,4 +68,8 @@ public interface ContentStore {
 
     public void copy(String srcURI, String destURI) throws IOException;
     
+    public boolean exists(String uri);
+    
+    public boolean isCollection(String uri) throws IOException;
+    
 }

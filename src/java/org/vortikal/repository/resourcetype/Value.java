@@ -92,4 +92,30 @@ public final class Value {
         return this.intValue;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+
+        switch (this.type) {
+            case PropertyType.TYPE_STRING:
+                sb.append(this.value);
+                break;
+            case PropertyType.TYPE_INT:
+                sb.append(this.intValue);
+                break;
+            case PropertyType.TYPE_LONG:
+                sb.append(this.longValue);
+                break;
+            case PropertyType.TYPE_DATE:
+                sb.append(this.dateValue);
+                break;
+            case PropertyType.TYPE_BOOLEAN:
+                sb.append(this.booleanValue);
+                break;
+            default:
+                sb.append(this.value);
+                break;
+        }
+        return sb.toString();
+    }
+    
 }

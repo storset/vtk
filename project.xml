@@ -245,6 +245,15 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
+    <dependency>
+      <id>jmock</id>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <id>jmock-cglib</id>
+      <groupId>jmock</groupId>
+      <version>1.0.1</version>
+    </dependency>
     <!--
      <dependency>
      <id>saxon</id>
@@ -526,6 +535,7 @@
       <includes>
         <include>**/*Test.java</include>
         <include>**/*TestSuite.java</include>
+        <include>**/*TestCase.java</include>
       </includes>
       <resources>
         <resource>

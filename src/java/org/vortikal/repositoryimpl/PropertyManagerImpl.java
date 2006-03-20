@@ -9,10 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
@@ -32,6 +36,7 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.web.service.RepositoryAssertion;
 
+
 /**
  * XXX: Add resource type to resource
  * XXX: Validation is missing
@@ -39,6 +44,8 @@ import org.vortikal.web.service.RepositoryAssertion;
  * XXX: catch or declare evaluation and authorization exceptions on a reasonable level
  */
 public class PropertyManagerImpl implements InitializingBean, ApplicationContextAware {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private RoleManager roleManager;
     private PrincipalManager principalManager;
@@ -451,10 +458,12 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         prop.setNamespace(namespaceUri);
         prop.setName(name);
         
-        // XXX: huge risk of nullpointer exception
-        PropertyTypeDefinition propDef = (PropertyTypeDefinition)
-            ((Map)propertyTypeDefinitions.get(namespaceUri)).get(name);
-        prop.setDefinition(propDef);
+        PropertyTypeDefinition propDef = null;
+        Map map = (Map)propertyTypeDefinitions.get(namespaceUri);
+        if (map != null) {
+            propDef = (PropertyTypeDefinition) map.get(name);
+            prop.setDefinition(propDef);
+        }
         
         // XXX: complete this
         if (value instanceof Date) {
@@ -469,6 +478,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         } else {
             prop.setStringValue((String) value);
         }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Created property: " + prop);
+        }
+
         return prop;
     }
     

@@ -53,9 +53,6 @@ public class RoleManager {
 
 
     public boolean hasRole(String principalName, int role) {
-        if ((role != ROOT) && (role != READ_EVERYTHING)) {
-            throw new IllegalArgumentException("Unknown role: " + role);
-        }
 
         switch (role) {
         case ROOT:
@@ -65,25 +62,22 @@ public class RoleManager {
             return readEverythingRole.contains(principalName);
 
         default:
-            return false;
+            throw new IllegalArgumentException("Unknown role: " + role);
         }
     }
 
 
-    public List listPrincipals(int role) {
-        if ((role != ROOT) && (role != READ_EVERYTHING)) {
-            throw new IllegalArgumentException("Unknown role: " + role);
-        }
+    public Set getPrincipals(int role) {
 
         switch (role) {
         case ROOT:
-            return new ArrayList(rootRole);
+            return rootRole;
 
         case READ_EVERYTHING:
-            return new ArrayList(readEverythingRole);
+            return readEverythingRole;
 
         default:
-            return null;
+            throw new IllegalArgumentException("Unknown role: " + role);
         }
     }
 

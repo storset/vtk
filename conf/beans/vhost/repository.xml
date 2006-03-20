@@ -47,7 +47,6 @@
   </bean>
 
   <bean id="resourceManager" class="org.vortikal.repositoryimpl.ResourceManager">
-    <property name="permissionsManager" ref="permissionsManager" />
     <property name="dao" ref="repository.backend" />
     <property name="propertyManager" ref="propertyManager" />
   </bean>

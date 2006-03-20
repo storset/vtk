@@ -30,6 +30,11 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 
 
 public final class PropertyType {
@@ -106,4 +111,5 @@ public final class PropertyType {
         CONTENTLENGTH_PROP_NAME
         };
     
+    public static final Set SPECIAL_PROPERTIES_SET = new HashSet((List)Arrays.asList(SPECIAL_PROPERTIES));
 }

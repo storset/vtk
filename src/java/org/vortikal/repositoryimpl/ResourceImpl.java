@@ -211,7 +211,8 @@ public class ResourceImpl implements Resource, Cloneable {
             Map.Entry element = (Map.Entry) iter.next();
             String namespace = (String)element.getKey();
             Map props = (Map)element.getValue();
-            if (namespace.equals(PropertyType.DEFAULT_NAMESPACE_URI)) {
+            // XXX: namespace.equals(PropertyType.DEFAULT_NAMESPACE_URI)
+            if (namespace == null) {
                 List specialProps =  Arrays.asList(PropertyType.SPECIAL_PROPERTIES);
                 for (Iterator iterator = props.values().iterator(); iterator
                         .hasNext();) {

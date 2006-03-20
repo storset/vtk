@@ -2,6 +2,7 @@ package org.vortikal.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.vortikal.security.Principal;
 
@@ -17,7 +18,7 @@ public interface Acl extends Cloneable {
      * Gets the set of privileges on this resource for a given principal.
      */
     public String[] getPrivilegeSet(Principal principal);
-        
+    
     /**
      * @param privilegeName
      * @return a list of <code>Principal</code> objects
@@ -43,6 +44,6 @@ public interface Acl extends Cloneable {
 
     public List getPrincipalList(String action);
 
-    public Map getPrivilegeMap();
+    public Set getActions();
 
 }

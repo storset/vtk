@@ -58,7 +58,6 @@ public class ResourceManager {
     private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
     private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
     
-    private PermissionsManager permissionsManager;
     private DataAccessor dao;
     private PropertyManagerImpl propertyManager;
 
@@ -84,7 +83,6 @@ public class ResourceManager {
         this.dao.store(parent);
 
         ResourceImpl clone = (ResourceImpl)resource.clone();
-        permissionsManager.addRolesToAcl(clone.getAcl());
 
         return clone;
     }
@@ -229,10 +227,6 @@ public class ResourceManager {
 
     public void setDao(DataAccessor dao) {
         this.dao = dao;
-    }
-
-    public void setPermissionsManager(PermissionsManager permissionsManager) {
-        this.permissionsManager = permissionsManager;
     }
 
     public void setPropertyManager(PropertyManagerImpl propertyManager) {

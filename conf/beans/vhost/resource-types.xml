@@ -22,6 +22,41 @@
     </property>
   </bean>
 
+  <bean id="xmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="xml-resource"/>
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="rootResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesXml" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="webEditPropDef" />
+        <ref bean="transformViewPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="managedXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="managed-xml"/>
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="xmlResource" />
+    <property name="assertions">
+      <list>
+        <ref bean="webEditable" />
+        <ref bean="viewTransformable" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="schemaPropDef" />
+      </list>
+    </property>
+  </bean>
+
+
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="owner" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_OWNER_EDITABLE" />
@@ -114,6 +149,29 @@
     <property name="mandatory" value="false" />
   </bean>
 
+  <bean id="webEditPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="web-edit" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="transformViewPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="transform-view" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="schemaPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="schema" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="schemaEvaluator" />
+  </bean>
+
+  <bean id="schemaEvaluator"
+        class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
 <!-- CONSTANTS -->
 
@@ -121,6 +179,12 @@
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
               value="org.vortikal.repository.Namespace.DEFAULT_NAMESPACE" />
+  </bean>
+
+  <bean id="CUSTOM_NAMESPACE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Namespace.CUSTOM_NAMESPACE" />
   </bean>
 
   <bean id="PROTECTION_LEVEL_EDITABLE"
@@ -176,6 +240,24 @@
     <property name="staticField"
               value="org.vortikal.repository.resourcetype.PropertyType.TYPE_LONG" />
   </bean>
+
+
+  <bean id="webEditable" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="name" value="web-edit" />
+    <property name="value" value="yes" />
+  </bean>
+                    
+  <bean id="viewTransformable" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="name" value="transform-view" />
+    <property name="value" value="yes" />
+  </bean>
+
 
 </beans>
 

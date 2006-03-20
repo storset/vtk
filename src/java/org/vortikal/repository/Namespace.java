@@ -34,7 +34,8 @@ package org.vortikal.repository;
 public class Namespace {
 
     public final static Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
-     
+    public final static Namespace CUSTOM_NAMESPACE = new Namespace(null, Property.LOCAL_NAMESPACE);
+    
     private String prefix;
     private String url;
 

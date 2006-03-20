@@ -31,12 +31,17 @@
 package org.vortikal.web.service;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
@@ -96,7 +101,9 @@ public class ResourcePrincipalPermissionAssertion
     private RoleManager roleManager = null;
     private Repository repository = null;
     private String trustedToken = null;
-    
+   
+    Set rootPrincipals;
+    Set readPrincipals;
     
     public void setRequiresAuthentication(boolean requiresAuthentication) {
         this.requiresAuthentication = requiresAuthentication;
@@ -161,6 +168,11 @@ public class ResourcePrincipalPermissionAssertion
             throw new BeanInitializationException(
                 "Property 'trustedToken' must be set");
         }
+        
+        
+        rootPrincipals = roleManager.getPrincipals(RoleManager.ROOT);
+        readPrincipals = roleManager.getPrincipals(RoleManager.READ_EVERYTHING);
+
     }
 
 
@@ -180,63 +192,27 @@ public class ResourcePrincipalPermissionAssertion
 
 
     private boolean checkParentWritePermission(Resource resource, Lock lock,
-                                               Principal principal) {
-        Resource parent = null;
-        
-        if (!"/".equals(resource.getURI())) {
-
-            try {
-
-                if (isRoot(principal)) {
-                    return true;
-                }
-
-                if (repository.isReadOnly()) {
-                    return false;
-                }
-
-                // If parent resource is locked by another principal, we fail:
-
-                parent = this.repository.retrieve(this.trustedToken,
-                                                           resource.getParent(), true);
-                Lock parentLock = (parent.getLock() != null) ?
-                    parent.getLock() : null;
-
-                if (parentLock != null && !parentLock.getPrincipal().equals(principal)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Testing parent-write permission for principal "
-                                     + principal + ": "
-                                     + " parent resource is locked by another principal");
-                    }
-
-                    return false;
-                }
-                    
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                                               Principal principal) throws IOException {
+        if ("/".equals(resource.getURI())) {
+            return false;
+        }
+        if (isRoot(principal)) {
+            return true;
+        }
+        if (repository.isReadOnly()) {
+            return false;
         }
 
+        Resource parent = this.repository.retrieve(this.trustedToken, 
+                resource.getParent(), true);
 
-        String[] parentPrivilegeSet = parent.getAcl().getPrivilegeSet(principal);
-                
-        for (int i = 0; i < parentPrivilegeSet.length; i++) {
-
-            if (parentPrivilegeSet[i].equals("write")) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Testing parent-write permission for principal "
-                                 + principal + ": "
-                                 + parentPrivilegeSet[i] + ": true");
-                }
-                return true;
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Testing parent-write permission for principal "
-                             + principal + ": "
-                             + parentPrivilegeSet[i] + ": false");
-            }
+        // If parent resource is locked by another principal, we fail:
+        Lock parentLock = parent.getLock();
+        if (parentLock != null && !parentLock.getPrincipal().equals(principal)) {
+            return false;
         }
-        return false;
+
+        return parent.getAcl().hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE);
     }
     
 
@@ -246,18 +222,15 @@ public class ResourcePrincipalPermissionAssertion
         if (isRoot(principal)) {
             return true;
         }
-
         if (repository.isReadOnly()) {
             return false;
         }
-
         if (lock != null && ! lock.getPrincipal().equals(principal)) {
             return false;
         }
         return checkParentWritePermission(resource, lock, principal);
     } 
     
-
 
     private boolean checkUnlockPermission(Resource resource, Lock lock,
                                           Principal principal) throws IOException {
@@ -283,22 +256,21 @@ public class ResourcePrincipalPermissionAssertion
 
     private boolean checkLockPermission(Resource resource, Lock lock,
                                         Principal principal) throws IOException {
-        if (lock == null) {
+        if (lock != null) {
+            return false;
+        }
 
-            if (isRoot(principal)) {
-                return true;
-            }
+        if (isRoot(principal)) {
+            return true;
+        }
 
-            if (repository.isReadOnly()) {
-                return false;
-            }
+        if (repository.isReadOnly()) {
+            return false;
+        }
 
-            String[] privilegeSet = resource.getAcl().getPrivilegeSet(principal);
-
-            for (int i = 0; i < privilegeSet.length; i++) {
-                if (privilegeSet[i].equals("write"))
-                    return true;
-            }
+        if (resource.getAcl().hasPrivilege(principal.getQualifiedName(), 
+                PrivilegeDefinition.WRITE)) {
+            return true;
         }
         return false;
     }
@@ -325,29 +297,20 @@ public class ResourcePrincipalPermissionAssertion
      * 'read-processed', 'write', 'write-acl')
      */
     private boolean checkACLPermission(Resource resource, Lock lock,
-                                       Principal principal) throws IOException {
+                                       Principal principal) {
 
         if (this.permission.equals("write") || this.permission.equals("write-acl")) {
-            if (lock != null) {
-                Principal owner = lock.getPrincipal();
-
-                if (!principal.equals(owner)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Matching permissions for resource " + resource
-                                     + ": [" + this.permission
-                                     + " = false (resource locked by another principal)]");
-                    }
-                    return false;
+            if (lock != null && !principal.equals(lock.getPrincipal())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Matching permissions for resource " + resource
+                            + ": [" + this.permission
+                            + " = false (resource locked by another principal)]");
                 }
+                return false;
             }
         } 
 
         if (isRoot(principal)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Matching permissions for resource " + resource
-                             + ": [" + this.permission
-                             + " = true (principal = ROOT)]");
-            }
             return true;
         }
 
@@ -363,41 +326,23 @@ public class ResourcePrincipalPermissionAssertion
             return false;
         }
 
-
-
-        String[] privileges = resource.getAcl().getPrivilegeSet(principal);
-
-        for (int i = 0; i < privileges.length; i++) {
-            boolean match = false;
-
-            if (privileges[i].equals(this.permission)) {
-                match = true;
-            }
-                
-            if (this.permission.equals("read-processed") &&
-                privileges[i].equals("read")) {
-                match = true;
-            }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Matching permissions for resource " + resource
-                             + ": [" + this.permission + " against "
-                             + privileges[i] + " = " + match + "]");
-            }
-
-            if (match) {
-                return true;
-            }
+        if (this.permission.equals(PrivilegeDefinition.READ_PROCESSED)
+                || this.permission.equals(PrivilegeDefinition.READ)) {
+            if (readPrincipals.contains(principal.getQualifiedName())) return true;
         }
-        return false;
+        Acl acl = resource.getAcl();
+        if (this.permission.equals(PrivilegeDefinition.READ_PROCESSED) 
+                && acl.hasPrivilege(principal.getQualifiedName(),
+                PrivilegeDefinition.READ)) {
+            return true;
+        }
+        return acl.hasPrivilege(principal.getQualifiedName(), this.permission);
     }
     
 
 
     private boolean isRoot(Principal principal) {
-        return (principal != null
-                && this.roleManager.hasRole(
-                    principal.getQualifiedName(), RoleManager.ROOT));
+        return rootPrincipals.contains(principal.getQualifiedName());
     }
 
 

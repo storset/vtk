@@ -38,6 +38,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -162,7 +163,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         
         Acl acl = repository.getACL(token, uri);
 
-        Principal[] readAuthorizedUsers = acl.listPrivilegedUsers("read");
+        Principal[] readAuthorizedUsers = acl.listPrivilegedUsers(PrivilegeDefinition.READ);
         aclModel.put("readAuthorizedUsers", readAuthorizedUsers);
         String[] readAuthorizedGroups = acl.listPrivilegedGroups("read");
         aclModel.put("readAuthorizedGroups", readAuthorizedGroups);

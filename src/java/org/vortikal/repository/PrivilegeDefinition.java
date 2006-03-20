@@ -35,15 +35,16 @@ package org.vortikal.repository;
  */
 public class PrivilegeDefinition {
     
-    public static final String STANDARD_NAMESPACE = "dav";
-    public final static String CUSTOM_NAMESPACE = "uio";
-
-    
     public static final String READ = "read";
     public static final String WRITE = "write";
     public static final String WRITE_ACL = "write-acl";
-    public static final String ALL = "all";
+    public final static String READ_PROCESSED = "read-processed";
 
-    public final static String CUSTOM_PRIVILEGE_READ_PROCESSED = "read-processed";
+    public final static String[] ROOT_PRIVILEGES = new String[] {
+        PrivilegeDefinition.READ,
+        PrivilegeDefinition.WRITE,
+        PrivilegeDefinition.WRITE_ACL};
+
+    public final static String[] READ_PRIVILEGES = new String[] {PrivilegeDefinition.READ};
 
 }

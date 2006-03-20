@@ -105,7 +105,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     public Date getDateValue() throws IllegalOperationException {
         if (value == null || getType() != PropertyType.TYPE_DATE) {
-            throw new IllegalOperationException();
+            throw new IllegalOperationException("Property " + this + " not of type Date");
         }
         
         return value.getDateValue();
@@ -120,7 +120,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     public String getStringValue() throws IllegalOperationException {
         if (value == null || getType() != PropertyType.TYPE_STRING) {
-            throw new IllegalOperationException();
+            throw new IllegalOperationException("Property " + this + " not of type String");
         }
         return value.getValue();
     }
@@ -142,7 +142,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     public long getLongValue() throws IllegalOperationException {
         if (value == null || (propertyTypeDefinition != null && 
                 propertyTypeDefinition.getType() != PropertyType.TYPE_LONG)) {
-            throw new IllegalOperationException();
+            throw new IllegalOperationException("Property " + this + " not of type Long");
         }
         return value.getLongValue();
     }
@@ -156,14 +156,14 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     public int getIntValue() throws IllegalOperationException {
         if (value == null || getType() != PropertyType.TYPE_INT) {
-            throw new IllegalOperationException();
+            throw new IllegalOperationException("Property " + this + " not of type Integer");
         }
         return value.getIntValue();
     }
         
     public boolean getBooleanValue() throws IllegalOperationException {
         if (value == null || getType() != PropertyType.TYPE_BOOLEAN) {
-            throw new IllegalOperationException();
+            throw new IllegalOperationException("Property " + this + " not of type Boolean");
         }
         return value.getBooleanValue();
     }

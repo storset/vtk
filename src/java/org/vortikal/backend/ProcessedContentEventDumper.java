@@ -164,9 +164,9 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
              */
 
             List principalListBefore = originalACL.getPrincipalList(
-                PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
+                PrivilegeDefinition.READ_PROCESSED);
             List principalListAfter = newACL.getPrincipalList(
-                PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED);
+                PrivilegeDefinition.READ_PROCESSED);
            
 
             if (principalListBefore == null &&
@@ -185,15 +185,15 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             }
             
             if (originalACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
-                    PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED) &&
+                    PrivilegeDefinition.READ_PROCESSED) &&
                 newACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
-                        PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
+                        PrivilegeDefinition.READ_PROCESSED)) {
                 return;
             }
 
             
             String op = newACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
-                    PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED) ?
+                    PrivilegeDefinition.READ_PROCESSED) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), op, -1,

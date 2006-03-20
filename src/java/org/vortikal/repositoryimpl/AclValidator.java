@@ -94,7 +94,7 @@ public class AclValidator {
 //                            privilege.getName());
 //                    }
 //                } else if (privilege.getNamespace().equals(Namespace.CUSTOM_NAMESPACE)) {
-//                    if (!(privilege.getName().equals(PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED))) {
+//                    if (!(privilege.getName().equals(PrivilegeDefinition.READ_PROCESSED))) {
 //                        throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
 //                            "Unsupported privilege name: " +
 //                            privilege.getName());

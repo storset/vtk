@@ -164,7 +164,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             /* authorize for the right privilege */
             String privilege = (forProcessing)
-                ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
+                ? PrivilegeDefinition.READ_PROCESSED
                 : PrivilegeDefinition.READ;
 
             this.permissionsManager.authorize(r, principal, privilege);
@@ -172,7 +172,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             ResourceImpl clone = (ResourceImpl)r.clone();
-            permissionsManager.addRolesToAcl(clone.getAcl());
             
             return clone;
 
@@ -220,18 +219,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         /* authorize for the right privilege: */
-        String privilege = (forProcessing) ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
+        String privilege = (forProcessing) ? PrivilegeDefinition.READ_PROCESSED
                 : PrivilegeDefinition.READ;
 
         this.permissionsManager.authorize(r, principal, privilege);
 
         ResourceImpl[] list = this.dao.loadChildren(r);
-        org.vortikal.repository.Resource[] children = new org.vortikal.repository.Resource[list.length];
+        Resource[] children = new Resource[list.length];
 
         for (int i = 0; i < list.length; i++) {
             try {
                 children[i] = (ResourceImpl)list[i].clone();
-                permissionsManager.addRolesToAcl(children[i].getAcl());
 
             } catch (CloneNotSupportedException e) {
                 throw new IOException("An internal error occurred: unable to " +
@@ -834,7 +832,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         /* authorize for the right privilege */
         String privilege = (forProcessing)
-            ? PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED : PrivilegeDefinition.READ;
+            ? PrivilegeDefinition.READ_PROCESSED : PrivilegeDefinition.READ;
 
         this.permissionsManager.authorize(r, principal, privilege);
 

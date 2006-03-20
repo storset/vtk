@@ -61,8 +61,8 @@ public class AclImpl implements Acl {
     }
     
     
-    public Map getPrivilegeMap() {
-        return actionLists;
+    public Set getActions() {
+        return actionLists.keySet();
     }
 
     public List getPrincipalList(String action) {
@@ -99,7 +99,9 @@ public class AclImpl implements Acl {
 
     public Principal[] listPrivilegedUsers(String action) {
         List principals = (List)this.actionLists.get(action);
-   
+
+        if (principals == null) return new Principal[0];
+        
         List userList = new ArrayList();
         for (Iterator iter = principals.iterator(); iter.hasNext();) {
             ACLPrincipal p = (ACLPrincipal) iter.next();
@@ -116,6 +118,8 @@ public class AclImpl implements Acl {
 
     public String[] listPrivilegedGroups(String action) {
         List principals = (List)this.actionLists.get(action);
+        
+        if (principals == null) return new String[0];
         
         List groupList = new ArrayList();
         for (Iterator iter = principals.iterator(); iter.hasNext();) {
@@ -154,7 +158,6 @@ public class AclImpl implements Acl {
     public String[] getPrivilegeSet(Principal principal) {
         Set actions = new HashSet();
         
-        // XXX: Unfinished: root and the likes?
         for (Iterator iter = this.actionLists.entrySet().iterator(); iter.hasNext();) {
             Map.Entry entry = (Map.Entry) iter.next();
             String action = (String)entry.getKey();
@@ -262,8 +265,14 @@ public class AclImpl implements Acl {
         AclImpl clone = new AclImpl(principalManager);
         clone.setInherited(this.inherited);
         clone.setOwner(this.owner);
-        // XXX: This is not exactly recommended
-        clone.actionLists = this.actionLists;
+
+        for (Iterator iter = actionLists.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            for (Iterator iterator = ((List)entry.getValue()).iterator(); iterator.hasNext();) {
+                ACLPrincipal ap = (ACLPrincipal) iterator.next();
+                clone.addEntry((String)entry.getKey(), ap.getUrl(), ap.isGroup());
+            }
+        }
         return clone;
     }
 
@@ -311,5 +320,5 @@ public class AclImpl implements Acl {
     public Principal getOwner() {
         return this.owner;
     }
-
+    
 }

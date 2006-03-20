@@ -927,9 +927,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     private void insertACL(Connection conn, ResourceImpl r)
             throws SQLException {
-        Map aclMap = r.getAcl().getPrivilegeMap();
-
-        Set actions = aclMap.keySet();
+        Acl acl = r.getAcl();
+        Set actions = acl.getActions();
 
         /*
          * First, delete any previously defined ACEs for this resource:
@@ -959,7 +958,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         for (Iterator i = actions.iterator(); i.hasNext();) {
             String action = (String) i.next();
 
-            for (Iterator j = ((List) aclMap.get(action)).iterator(); j.hasNext();) {
+            for (Iterator j = acl.getPrincipalList(action).iterator(); j.hasNext();) {
                 ACLPrincipal p = (ACLPrincipal) j.next();
 
                 insertACLEntry(conn, action, r, p);
@@ -1030,7 +1029,9 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         if (properties != null) {
             for (Iterator iter = properties.iterator(); iter.hasNext();) {
                 Property property = (Property) iter.next();
-                insertPropertyEntry(conn, r, property);
+                if (PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
+                    insertPropertyEntry(conn, r, property);
+                }
             }
         }
     }
@@ -1153,8 +1154,12 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             String uri = rs.getString("uri");
             String action = rs.getString("action_name");
 
-            AclImpl acl = new AclImpl(this.principalManager);
-            acls.put(uri, acl);
+            AclImpl acl = (AclImpl)acls.get(uri);
+            
+            if (acl == null) {
+                acl = new AclImpl(this.principalManager);
+                acls.put(uri, acl);
+            }
             
 
             acl.addEntry(action,rs.getString("user_or_group_name"),

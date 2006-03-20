@@ -213,7 +213,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             if (editCommand.isEveryone()) {
                 if ("read".equals(privilege)) {
                     editCommand.getEditedACL().addEntry(
-                            PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED,
+                            PrivilegeDefinition.READ_PROCESSED,
                             "dav:all", false);
                 }
                 editCommand.getEditedACL().addEntry(privilege, "dav:authenticated", false);

@@ -57,7 +57,7 @@ public class PermissionsManager {
          * Special treatment for uio:read-processed needed: dav:read also grants
          * uio:read-processed
          */
-        if (action.equals(PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED)) {
+        if (action.equals(PrivilegeDefinition.READ_PROCESSED)) {
             try {
                 authorize(resource, principal, PrivilegeDefinition.READ);
 
@@ -103,7 +103,7 @@ public class PermissionsManager {
         // Condition 1:
         if (acl.hasPrivilege("dav:all", action)
                 && (PrivilegeDefinition.READ.equals(action) 
-                        || PrivilegeDefinition.CUSTOM_PRIVILEGE_READ_PROCESSED
+                        || PrivilegeDefinition.READ_PROCESSED
                         .equals(action))) {
             return;
         }
@@ -161,56 +161,6 @@ public class PermissionsManager {
         }
 
         throw new AuthorizationException();
-    }
-
-    /**
-     * Adds root and read everything roles to <code>Acl</code>
-     * 
-     * @param originalACL an <code>Acl</code>
-     * @return a new <code>Acl</code>
-     */
-    public void addRolesToAcl(Acl acl) throws CloneNotSupportedException {
-
-        List rootPrincipals = roleManager.listPrincipals(RoleManager.ROOT);
-
-        for (Iterator i = rootPrincipals.iterator(); i.hasNext();) {
-            String root = (String) i.next();
-            String[] rootPriv = getRootPrivileges();
-            for (int j = 0; j < rootPriv.length; j++) {
-                acl.addEntry(rootPriv[j], root, false);
-            }
-        }
-
-        List readPrincipals = roleManager.listPrincipals(RoleManager.READ_EVERYTHING);
-
-        for (Iterator i = readPrincipals.iterator(); i.hasNext();) {
-            String read = (String) i.next();
-            String[] readPriv = getReadPrivileges();
-            for (int j = 0; j < readPriv.length; j++) {
-                acl.addEntry(readPriv[j], read, false);
-            }
-        }
-
-    }
-
-    
-    private String[] getRootPrivileges() {
-
-        String[] rootPrivs = new String[3];
-
-        rootPrivs[0] = PrivilegeDefinition.READ;
-        rootPrivs[1] = PrivilegeDefinition.WRITE;
-        rootPrivs[2] = PrivilegeDefinition.WRITE_ACL;
-
-        return rootPrivs;
-    }
-
-    private String[] getReadPrivileges() {
-        String[] readPrivs = new String[1];
-
-        readPrivs[0] = PrivilegeDefinition.READ;
-
-        return readPrivs;
     }
 
     private boolean groupMatch(List principalList, Principal principal) {

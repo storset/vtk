@@ -60,7 +60,6 @@ public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator 
                                        Date time)
             throws PropertyEvaluationException {
         
-        // XXX: Check ancestor PropertySet for correct content type (XML) first ?
         String schemaLocation = null;
         try {
             
@@ -72,17 +71,17 @@ public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator 
             schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);
 
         } catch (Exception e) {
-            throw new PropertyEvaluationException("Could not evaluate schema property from content", e);
-            // XXX: or return false ?
+            // throw new PropertyEvaluationException("Could not evaluate schema property from content", e);
+            return false;
         }
 
         if (schemaLocation != null) {
             property.setStringValue(schemaLocation);
             return true;
-        } else {
-            //throw new PropertyEvaluationException("No schema specified in document.");
-            return false; // XXX: desired behaviour ?
-        }
+        } 
+        
+        //throw new PropertyEvaluationException("No schema specified in document.");
+        return false;
     }
 
 }

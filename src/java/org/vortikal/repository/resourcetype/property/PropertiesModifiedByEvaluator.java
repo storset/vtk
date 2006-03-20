@@ -17,7 +17,7 @@ public class PropertiesModifiedByEvaluator implements CreatePropertyEvaluator,
     }
 
     public boolean propertiesModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
-        property.setDateValue(time);
+        property.setStringValue(principal.getQualifiedName());
         return true;
     }
 

@@ -175,6 +175,7 @@ public class PutController extends AbstractWebdavController {
                     logger.debug("Resource does not exist (creating)");
                 }
                 resource = repository.createDocument(token, uri);
+                // XXX: wrong resource?
                 model.put(WebdavConstants.WEBDAVMODEL_CREATED_RESOURCE, resource);
             }
 

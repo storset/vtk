@@ -98,7 +98,7 @@ public class ProppatchController extends AbstractWebdavController {
             if (logger.isDebugEnabled()) {
                 logger.debug("storing modified Resource");
             }
-            repository.store(token, resource);
+            resource = repository.store(token, resource);
 
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_OK));

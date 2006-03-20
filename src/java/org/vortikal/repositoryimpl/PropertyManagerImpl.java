@@ -17,8 +17,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Lock;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
@@ -184,12 +186,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     }
     
-    public void storeProperties(ResourceImpl resource, Principal principal,
-            Resource dto) throws AuthenticationException, AuthorizationException {
+    public ResourceImpl storeProperties(ResourceImpl resource, Principal principal,
+            Resource dto) throws AuthenticationException, AuthorizationException, CloneNotSupportedException {
         // For all properties, check if they are modified, deleted or created
         Map allreadySetProperties = new HashMap();
         List deadProperties = new ArrayList();
         Authorization authorization = new Authorization(principal, resource.getAcl(), this.roleManager);
+
         for (Iterator iter = resource.getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             Property userProp = dto.getProperty(prop.getNamespace(), prop.getName());
@@ -217,7 +220,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
-                    authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    try {
+                        authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    } catch (AuthorizationException e) {
+                        throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
+                    }
                     addToPropsMap(allreadySetProperties, userProp);
                 }
             } else {
@@ -235,7 +242,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
-                    authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    try {
+                        authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    } catch (AuthorizationException e) {
+                        throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
+                    }
                     addToPropsMap(allreadySetProperties, userProp);
                 }
             }
@@ -243,8 +254,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
                 this.principalManager, this);
         newResource.setID(resource.getID());
-        newResource.setACL(resource.getAcl());
-        newResource.setLock(resource.getLock());
+        newResource.setACL((Acl)resource.getAcl().clone());
+        if (resource.getLock() != null) newResource.setLock((Lock)resource.getLock().clone());
         
         // Evaluate resource tree, for all live props not overridden, evaluate
         ResourceTypeDefinition rt = propertiesModification(principal, newResource, dto,
@@ -263,49 +274,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             }
         }
         
-//    if (!resource.getOwner().equals(dto.getOwner().getQualifiedName())) {
-//        /* Attempt to take ownership, only the owner of a parent
-//         * resource may do that, so do it in a secure manner: */
-//        setResourceOwner(resource, principal, dto.getOwner());
-//    }
-//
-//    if (dto.getOverrideLiveProperties()) {
-//        resource.setPropertiesLastModified(dto.getPropertiesLastModified());
-//        resource.setContentLastModified(dto.getContentLastModified());
-//        resource.setCreationTime(dto.getCreationTime());
-//
-//    } else {
-//        resource.setPropertiesLastModified(new Date());
-//        resource.setPropertiesModifiedBy(principal.getQualifiedName());
-//    }
-//    
-//    if (!resource.isCollection()) {
-//
-//        resource.setContentType(dto.getContentType());
-//        resource.setCharacterEncoding(null);
-//
-//        resource.setContentLocale(null);
-//        if (dto.getContentLocale() != null)
-//            resource.setContentLocale(dto.getContentLocale().toString());
-//
-//        if ((resource.getContentType() != null)
-//            && ContentTypeHelper.isTextContentType(resource.getContentType()) &&
-//            (dto.getCharacterEncoding() != null)) {
-//            try {
-//                /* Force checking of encoding */
-//                new String(new byte[0], dto.getCharacterEncoding());
-//
-//                resource.setCharacterEncoding(dto.getCharacterEncoding());
-//            } catch (java.io.UnsupportedEncodingException e) {
-//                // FIXME: Ignore unsupported character encodings?
-//            }
-//        }
-//
-//    }
-//
-//    resource.setDisplayName(dto.getDisplayName());
-//    resource.setProperties(Arrays.asList(dto.getProperties()));
-    
+        return newResource;
 }
     
     private ResourceTypeDefinition propertiesModification(Principal principal, 

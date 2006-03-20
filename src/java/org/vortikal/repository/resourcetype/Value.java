@@ -32,6 +32,8 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Date;
 
+import org.vortikal.repository.Property;
+
 
 public final class Value {
 
@@ -92,6 +94,31 @@ public final class Value {
         return this.intValue;
     }
 
+    public boolean equals(Object obj) {
+        if (! (obj instanceof Value)) 
+            return false;
+
+        Value v = (Value) obj;
+        
+        if (this.type != v.getType()) 
+            return false;
+        
+        switch (this.type) {
+        case PropertyType.TYPE_BOOLEAN:
+            return (this.booleanValue == v.getBooleanValue());
+        case PropertyType.TYPE_INT:
+            return (this.intValue == v.getIntValue());
+        case PropertyType.TYPE_LONG:
+            return (this.longValue == v.getLongValue());
+        case PropertyType.TYPE_DATE:
+            return (this.dateValue == null && v.getDateValue() == null) ||
+                (this.dateValue != null && this.dateValue.equals(v.getDateValue()));
+        default:
+            return (this.value == null && v.getValue() == null) ||
+                (this.value != null && this.value.equals(v.getValue()));
+        }
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer();
 

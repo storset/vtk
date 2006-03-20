@@ -179,6 +179,20 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return super.clone();
     }
 
+    public boolean equals(Object obj) {
+        if (! (obj instanceof Property)) return false;
+        
+        Property prop = (Property) obj;
+        if (this.name.equals(prop.getName()) && this.value.equals(prop.getValue())) {
+            if (this.namespaceUri == null && prop.getNamespace() == null) 
+                return true;
+            if (this.namespaceUri != null && 
+                    this.namespaceUri.equals(prop.getNamespace()))
+                return true;
+        }
+        return false;
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer();
 

@@ -111,19 +111,19 @@ public class CreateResourceFromResourceController implements Controller,
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         InputStream inStream = repository.getInputStream(token, uri, true);
 
-        Transformer transformer = transformerManager
-                .getTransformer(stylesheetIdentifier);
+        Transformer transformer = 
+            transformerManager.getTransformer(stylesheetIdentifier);
 
-        transformer.transform(new StreamSource(inStream), new StreamResult(
-                outStream));
+        transformer.transform(new StreamSource(inStream), 
+                new StreamResult(outStream));
 
         InputStream in = new ByteArrayInputStream(outStream.toByteArray());
 
         Resource newResource = repository.createDocument(token, newResourceUri);
 
-        String namespace = "http://www.uio.no/vortex/custom-properties";
+        String namespace = Namespace.CUSTOM_NAMESPACE.getUrl();
 
-        // Setting DAV-properties for webedit and transform-view til yes
+        // Setting DAV-properties for webedit and transform-view to yes
         Property p = newResource.createProperty(namespace, "web-edit");
         p.setStringValue("yes");
 
@@ -137,8 +137,7 @@ public class CreateResourceFromResourceController implements Controller,
         repository.storeContent(token, newResourceUri, in);
 
         Resource parent = null;
-        String parentUri = resource.getParent();
-        parent = repository.retrieve(token, parentUri, false);
+        parent = repository.retrieve(token, resource.getParent(), false);
         model.put("resource", parent);
 
         return new ModelAndView(successView, model);

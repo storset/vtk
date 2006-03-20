@@ -244,22 +244,22 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return children;
     }
 
-    public org.vortikal.repository.Resource createDocument(String token,
+    public Resource createDocument(String token,
             String uri) throws IllegalOperationException,
             AuthorizationException, AuthenticationException,
             ResourceLockedException, ReadOnlyException, IOException {
         return create(token, uri, false);
     }
 
-    public org.vortikal.repository.Resource createCollection(String token, 
-            String uri) throws IllegalOperationException, 
+    public Resource createCollection(String token, String uri) 
+            throws IllegalOperationException, 
             AuthorizationException, AuthenticationException, 
             ResourceLockedException, ReadOnlyException, IOException {
 
         return create(token, uri, true);
     }
 
-    private org.vortikal.repository.Resource create(String token, String uri, boolean collection)
+    private Resource create(String token, String uri, boolean collection)
     throws AuthorizationException, AuthenticationException, 
     IllegalOperationException, ResourceLockedException, 
     ReadOnlyException, IOException {
@@ -739,7 +739,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 principal);
     }
 
-    public void store(String token, Resource resource)
+    public Resource store(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
             ResourceLockedException, AuthenticationException, 
             IllegalOperationException, ReadOnlyException, IOException {
@@ -782,16 +782,19 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
-            this.propertyManager.storeProperties(original, principal, resource);
-            this.dao.store(original);
+            ResourceImpl newResource = 
+                this.propertyManager.storeProperties(original, principal, resource);
+            this.dao.store(newResource);
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
-            Resource newResource = (Resource)this.dao.load(uri).clone();
+            newResource = (ResourceImpl)this.dao.load(uri).clone();
 
             ResourceModificationEvent event = new ResourceModificationEvent(
                 this, newResource, originalClone);
 
             context.publishEvent(event);
+
+            return newResource;
         } catch (ResourceLockedException e) {
             OperationLog.failure(operation, "(" + uri + ")", "resource locked",
                 token, principal);
@@ -800,6 +803,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IOException("An internal error occurred: unable to " +
                 "clone() resource: " + original);
         }
+
     }
 
     public InputStream getInputStream(String token, String uri,

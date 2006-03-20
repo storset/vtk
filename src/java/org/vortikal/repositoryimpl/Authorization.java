@@ -51,32 +51,29 @@ public class Authorization {
     
     public void authorize(int protectionLevel) throws AuthorizationException {
 
-        switch (protectionLevel) {
-
-        case PropertyType.PROTECTION_LEVEL_UNEDITABLE:
+        if (protectionLevel == PropertyType.PROTECTION_LEVEL_UNEDITABLE)
             throw new AuthorizationException("Principal not authorized for property editing.");
         
-        case PropertyType.PROTECTION_LEVEL_EDITABLE:
-            if (!acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE))
-                throw new AuthorizationException("Principal not authorized for property editing.");
+        if (this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT))
             return;
+
+        switch (protectionLevel) {
+        case PropertyType.PROTECTION_LEVEL_EDITABLE:
+            if (acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE))
+                return;
+            break;
         
         case PropertyType.PROTECTION_LEVEL_PROTECTED:
-            if (!acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE_ACL))
-                throw new AuthorizationException("Principal not authorized for property editing.");
-            return;
+            if (acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE_ACL))
+                return;
+            break;
         
         case PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE:
             if (principal.getQualifiedName().equals(acl.getOwner())) {
                 return;
             }
-        
-        default:
-            if (this.roleManager.hasRole(principal.getQualifiedName(),
-                    RoleManager.ROOT)) {
-                return;
-            } 
-            throw new AuthorizationException("Principal not authorized for property editing.");
         }
+
+        throw new AuthorizationException("Principal not authorized for property editing.");
     }
 }

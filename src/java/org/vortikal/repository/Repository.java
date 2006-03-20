@@ -128,7 +128,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception IOException if an I/O error occurs
      */
-    public void store(String token, Resource resource)
+    public Resource store(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, ResourceLockedException, 
             IllegalOperationException, ReadOnlyException, IOException;

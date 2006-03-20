@@ -203,8 +203,12 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                         throw new ConstraintViolationException("Property is mandatory: " + prop);
                     }
                     // check if allowed
-                    authorization.authorize(prop.getDefinition().getProtectionLevel());
-                    addToPropsMap(allreadySetProperties, userProp);
+                    try {
+                        authorization.authorize(prop.getDefinition().getProtectionLevel());
+                    } catch (AuthorizationException e) {
+                        throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
+                    }
+                        addToPropsMap(allreadySetProperties, userProp);
                 }
             } else if (!prop.equals(userProp)) {
                 // Changed value

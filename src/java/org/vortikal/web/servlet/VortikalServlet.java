@@ -713,20 +713,7 @@ public class VortikalServlet extends DispatcherServlet {
 
             ErrorHandler candidate = errorHandlers[i];
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(
-                    "Testing error [" + t.getClass() + ", " + currentService
-                    + "] against error handler " + candidate);
-            }
-
             if (!candidate.getErrorType().isAssignableFrom(t.getClass())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug(
-                        "Candidate handler " + candidate + " requires the "
-                        + "error type to be " + candidate.getErrorType() + ". "
-                        + "The actual error type was " + t.getClass()
-                        + ", discarding candidate.");
-                }
                 continue;
             }
             
@@ -735,13 +722,6 @@ public class VortikalServlet extends DispatcherServlet {
                     && !(currentService == candidate.getService() ||
                          currentService.isDescendantOf(candidate.getService())))) {
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug(
-                        "Candidate handler " + candidate + " requires the "
-                        + "current service to be " + candidate.getService() 
-                        + " or a descendant. Current service was " + currentService
-                        + ", discarding candidate.");
-                }
                 continue;
             }
 

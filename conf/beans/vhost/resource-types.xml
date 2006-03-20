@@ -135,7 +135,7 @@
   
   <bean id="contentTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="contentType" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="contentTypeEvaluator" />
   </bean>

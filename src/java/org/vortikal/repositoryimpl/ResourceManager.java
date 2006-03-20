@@ -127,18 +127,20 @@ public class ResourceManager {
     }
 
     /**
-     * XXX: overkill to suddenly be concerned about concurrency?!
      * Adds a URI to the child URI list.
      *
      * @param childURI a <code>String</code> value
      */
     private void addChildURI(ResourceImpl parent, String childURI) {
         synchronized (parent) {
-            List l = Arrays.asList(parent.getChildURIs());
-            l.add(childURI);
+            String[] children = parent.getChildURIs();
+            String[] newChildren = new String[children.length + 1];
+            for (int i = 0; i < children.length; i++) {
+                newChildren[i] = children[i];
+            }
 
-            String[] newChildren = (String[]) l.toArray(new String[l.size()]);
-
+            newChildren[children.length] = childURI;
+            
             parent.setChildURIs(newChildren);
         }
     }

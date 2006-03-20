@@ -111,5 +111,5 @@ public final class PropertyType {
         CONTENTLENGTH_PROP_NAME
         };
     
-    public static final Set SPECIAL_PROPERTIES_SET = new HashSet((List)Arrays.asList(SPECIAL_PROPERTIES));
+    public static final Set SPECIAL_PROPERTIES_SET = new HashSet(Arrays.asList(SPECIAL_PROPERTIES));
 }

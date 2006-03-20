@@ -1029,7 +1029,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         if (properties != null) {
             for (Iterator iter = properties.iterator(); iter.hasNext();) {
                 Property property = (Property) iter.next();
-                if (PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
+                if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
                     insertPropertyEntry(conn, r, property);
                 }
             }

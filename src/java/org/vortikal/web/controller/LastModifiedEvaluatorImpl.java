@@ -42,7 +42,7 @@ public class LastModifiedEvaluatorImpl implements LastModifiedEvaluator {
         if (lookupList != null && lookupList.size() > 0) {
             Property schemaProp = resource.getProperty(propertyNamespace, propertyName);
             if (schemaProp == null) {
-                logger.info("Can't find property for " + resource.getURI());
+                logger.debug("Can't find property for " + resource.getURI());
                 return false;
             }
             String schema = schemaProp.getValue();

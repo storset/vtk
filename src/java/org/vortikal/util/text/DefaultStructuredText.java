@@ -501,7 +501,7 @@ public final class DefaultStructuredText implements StructuredText {
         if (text.indexOf("\"", pos) != pos) return false;
 
         int testPos = text.indexOf("\":", pos + "\"".length());
-        if (testPos > 0) {
+        if (testPos > 0 && (text.length() > testPos + "\":".length())) {
 
             // Check that the " at pos is the closest one to ":
             int intermediatePos = text.indexOf("\"", pos + "\"".length());

@@ -42,8 +42,11 @@ public class LastModifiedEvaluatorImpl implements LastModifiedEvaluator {
         if (lookupList != null && lookupList.size() > 0) {
             Property schemaProp = resource.getProperty(propertyNamespace, propertyName);
             if (schemaProp == null) {
-                logger.debug("Can't find property for " + resource.getURI());
-                return false;
+                logger.debug("Can't find property '" + propertyNamespace + ":" + propertyName
+                        + "' for resource with uri " + resource.getURI());
+                // Since we havn't found the property, we know it is not in the list of accepted
+                // values, and we should behave as it is not found in the list
+                return !handleLastModifiedForValuesInList;
             }
             String schema = schemaProp.getValue();
             Iterator schemaIterator = lookupList.iterator();

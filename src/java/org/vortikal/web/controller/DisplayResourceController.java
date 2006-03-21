@@ -124,6 +124,7 @@ public class DisplayResourceController
     private boolean streamToString = false;
     private boolean ignoreLastModified = false;
     private boolean ignoreLastModifiedOnCollections = false;
+    private LastModifiedEvaluator lastModifiedEvaluator;
     
     public void setChildName(String childName) {
         this.childName = childName;
@@ -167,6 +168,10 @@ public class DisplayResourceController
 
     public void setDisplayProcessed(boolean displayProcessed) {
         this.displayProcessed = displayProcessed;
+    }
+    
+    public void setLastModifiedEvaluator(LastModifiedEvaluator lastModifiedEvaluator) {
+        this.lastModifiedEvaluator = lastModifiedEvaluator;
     }
 
 
@@ -319,7 +324,10 @@ public class DisplayResourceController
                          + uri + ": " + resource.getLastModified());
         }
 
-
+        if (lastModifiedEvaluator != null && !lastModifiedEvaluator.reportLastModified(resource)) {
+            return -1;
+        }
+        
         return resource.getLastModified().getTime();
     }
 

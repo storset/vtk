@@ -314,18 +314,24 @@ public class DisplayResourceController
         }
         
         if (resource.isCollection() && this.ignoreLastModifiedOnCollections) {
-            logger.debug("Ignorig last-modified value for resource "
-                         + uri + ": resource is collection");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Ignorig last-modified value for resource " + uri
+                        + ": resource is collection");
+            }
             return -1;
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning last-modified value for resource "
-                         + uri + ": " + resource.getLastModified());
         }
 
         if (lastModifiedEvaluator != null && !lastModifiedEvaluator.reportLastModified(resource)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Ignorig last-modified value for resource " + uri
+                        + ": defined by the properties of the resource");
+            }
             return -1;
+        }
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Returning last-modified value for resource "
+                         + uri + ": " + resource.getLastModified());
         }
         
         return resource.getLastModified().getTime();

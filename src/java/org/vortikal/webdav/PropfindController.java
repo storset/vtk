@@ -47,6 +47,7 @@ import org.jdom.input.SAXBuilder;
 import org.springframework.web.servlet.ModelAndView;
 
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -301,10 +302,10 @@ public class PropfindController extends AbstractWebdavController {
             for (Iterator iter = customProperties.iterator(); iter.hasNext();) {
                 Property prop = (Property) iter.next();
                 
-                String namespace = prop.getNamespace();
+                Namespace namespace = prop.getNamespace();
                 String name = prop.getName();
 
-                Element e = new Element(name, namespace);
+                Element e = new Element(name, namespace.getUrl());
                 if (isSupportedProperty(name, e.getNamespace())) {
                     propList.add(e);
                 }

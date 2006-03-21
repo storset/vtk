@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xalan.templates.NamespaceAlias;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -392,7 +393,8 @@ public class PropfindView implements View, InitializingBean {
 
         } else {
 
-            Property customProperty = resource.getProperty(namespace.getURI(), property);
+            org.vortikal.repository.Namespace ns = org.vortikal.repository.Namespace.getNamespace(namespace.getURI());
+            Property customProperty = resource.getProperty(ns, property);
             if (customProperty == null) {
                 return null;
             }
@@ -520,7 +522,7 @@ public class PropfindView implements View, InitializingBean {
             try {
         
                 Namespace customNamespace =
-                    Namespace.getNamespace(property.getNamespace());
+                    Namespace.getNamespace(property.getNamespace().getUrl());
 
                 String xml = "<" + property.getName() + " xmlns=\"" +
                     customNamespace.getURI() + "\">" + value + "</" +
@@ -547,7 +549,7 @@ public class PropfindView implements View, InitializingBean {
         }
         
         Namespace customNamespace = 
-            Namespace.getNamespace(property.getNamespace());
+            Namespace.getNamespace(property.getNamespace().getUrl());
         Element propElement = new Element(property.getName(),
                                           customNamespace);
         propElement.setText(property.getStringValue());

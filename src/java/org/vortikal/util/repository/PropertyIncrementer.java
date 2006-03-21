@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom.Namespace;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,7 +29,7 @@ public class PropertyIncrementer implements InitializingBean {
 
     private int _increment = 0;
 
-    private String _namespace;
+    private org.vortikal.repository.Namespace _namespace;
     
     private String _propertyName;
 
@@ -129,7 +130,7 @@ public class PropertyIncrementer implements InitializingBean {
         _increment = increment;
     }
     
-    public void setNamespace(final String namespace) {
+    public void setNamespace(final org.vortikal.repository.Namespace namespace) {
         _namespace = namespace;
     }
     

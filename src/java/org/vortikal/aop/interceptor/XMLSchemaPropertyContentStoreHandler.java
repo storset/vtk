@@ -38,10 +38,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.ResourceImpl;
@@ -148,16 +148,18 @@ public class XMLSchemaPropertyContentStoreHandler
             Document doc = builder.build(contentStream);
             Element root = doc.getRootElement();
 
-            Namespace ns = Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
+            org.jdom.Namespace ns = 
+                org.jdom.Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
             String schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);
 
-            Property prop = resource.getProperty(Property.LOCAL_NAMESPACE, this.schemaPropertyName);
+            Property prop = resource.getProperty(
+                    Namespace.CUSTOM_NAMESPACE, this.schemaPropertyName);
             if (prop != null) {
                 resource.deleteProperty(prop);
             }
             
             if (schemaLocation != null) {
-                prop = resource.createProperty(Property.LOCAL_NAMESPACE, this.schemaPropertyName);
+                prop = resource.createProperty(Namespace.CUSTOM_NAMESPACE, this.schemaPropertyName);
 //                prop.setValue(schemaLocation);
             }
 

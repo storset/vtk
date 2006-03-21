@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -211,7 +212,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         messageCode += "." + resource.getContentType();
         title = springContext.getMessage(messageCode, title);
 
-        Property resourceType = resource.getProperty(Property.LOCAL_NAMESPACE,
+        Property resourceType = resource.getProperty(Namespace.CUSTOM_NAMESPACE,
                 "resource-type");
 
         if (resourceType != null) {

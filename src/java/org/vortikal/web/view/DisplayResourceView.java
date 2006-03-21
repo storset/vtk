@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.web.servlet.view.AbstractView;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -315,8 +316,7 @@ public class DisplayResourceView extends AbstractView
         if (this.includeExpiresHeader) {
             
             Property expiresProperty = resource.getProperty(
-                Property.LOCAL_NAMESPACE, 
-                "expires-sec");
+                Namespace.CUSTOM_NAMESPACE, "expires-sec");
             if (expiresProperty != null && expiresProperty.getValue() != null) {
 
                 try {

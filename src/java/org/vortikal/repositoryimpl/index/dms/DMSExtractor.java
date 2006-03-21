@@ -38,8 +38,8 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.index.AbstractRepositoryExtractor;
@@ -56,11 +56,8 @@ public class DMSExtractor extends AbstractRepositoryExtractor {
 
     private static Log logger = LogFactory.getLog(DMSExtractor.class);
     
-    private final Namespace XSD_NAMESPACE = 
-        Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
-
-    private final Namespace XSI_NAMESPACE = 
-        Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+    private final org.jdom.Namespace XSI_NAMESPACE = 
+        org.jdom.Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
     private SimpleDateFormat dateFormatter = 
             new SimpleDateFormat(DMSIndexBean.DATEFORMAT);
@@ -99,7 +96,8 @@ public class DMSExtractor extends AbstractRepositoryExtractor {
     }
     
 
-    protected String getPropertyValue(Resource resource, String namespace, String name) {
+    protected String getPropertyValue(Resource resource, 
+            Namespace namespace, String name) {
         Property prop = resource.getProperty(namespace, name);
 
         if (prop != null && prop.getValue() != null)
@@ -109,7 +107,7 @@ public class DMSExtractor extends AbstractRepositoryExtractor {
     }
     
     protected String getVortexCustomPropertyValue(Resource resource, String name) {
-        return getPropertyValue(resource, Property.LOCAL_NAMESPACE, name);
+        return getPropertyValue(resource, Namespace.CUSTOM_NAMESPACE, name);
     }
     
     protected String getXMLResourceSchemaId(Resource resource) {

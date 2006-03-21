@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
@@ -48,9 +49,10 @@ import org.vortikal.repository.Resource;
 public class ResourcePropertyFilterCriterion implements FilterCriterion, 
     InitializingBean {
     
+    // XXX: Initializing with "" value!
     private Repository repository;
     private String token = "";
-    private String propertyNamespace = "";
+    private Namespace propertyNamespace = Namespace.DEFAULT_NAMESPACE;
     private String propertyName = "";
     private String requiredValue = "";
     
@@ -81,7 +83,7 @@ public class ResourcePropertyFilterCriterion implements FilterCriterion,
         this.propertyName = propertyName;
     }
 
-    public void setPropertyNamespace(String propertyNamespace) {
+    public void setPropertyNamespace(Namespace propertyNamespace) {
         this.propertyNamespace = propertyNamespace;
     }
 

@@ -21,6 +21,7 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
@@ -87,9 +88,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             
             // Populate map of property type definitions
             PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
-            String namespaceUri = def.getNamespace().getUrl();
+            Namespace namespace = def.getNamespace();
             Map propDefMap = new HashMap();
-            this.propertyTypeDefinitions.put(namespaceUri, propDefMap);
+            this.propertyTypeDefinitions.put(namespace, propDefMap);
             for (int u=0; u<propDefs.length; u++) {
                 propDefMap.put(propDefs[u].getName(), propDefs[u]);
             }
@@ -149,7 +150,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             
             CreatePropertyEvaluator evaluator = propertyDef.getCreateEvaluator();
             if (evaluator != null) {
-                Property prop = createProperty(rt.getNamespace().getUrl(), propertyDef.getName());
+                Property prop = createProperty(rt.getNamespace(), propertyDef.getName());
                 if (evaluator.create(principal, prop, newResource, isCollection, time)) {
                     newProps.add(prop);
                 }
@@ -302,11 +303,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             }
 
             // Not set, evaluate
-            Property prop = dto.getProperty(rt.getNamespace().getUrl(), propertyDef.getName());
+            Property prop = dto.getProperty(rt.getNamespace(), propertyDef.getName());
             PropertiesModificationPropertyEvaluator evaluator = propertyDef.getPropertiesModificationEvaluator();
             if (evaluator != null) {
                 if (prop == null) 
-                    prop = createProperty(rt.getNamespace().getUrl(), propertyDef.getName());
+                    prop = createProperty(rt.getNamespace(), propertyDef.getName());
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
                     newProps.add(prop);
                 }
@@ -373,11 +374,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         for (int i = 0; i < def.length; i++) {
             PropertyTypeDefinition propertyDef = def[i];
             
-            Property prop = original.getProperty(rt.getNamespace().getUrl(), propertyDef.getName());
+            Property prop = original.getProperty(rt.getNamespace(), propertyDef.getName());
             ContentModificationPropertyEvaluator evaluator = propertyDef.getContentModificationEvaluator();
             if (evaluator != null) {
                 if (prop == null) 
-                    prop = createProperty(rt.getNamespace().getUrl(), propertyDef.getName());
+                    prop = createProperty(rt.getNamespace(), propertyDef.getName());
                 if (evaluator.contentModification(principal, prop, newResource, content, time)) {
                     newProps.add(prop);
                 }
@@ -408,14 +409,14 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     
     
     
-    public Property createProperty(String namespaceUri, String name) {
+    public Property createProperty(Namespace namespace, String name) {
 
         PropertyImpl prop = new PropertyImpl();
-        prop.setNamespace(namespaceUri);
+        prop.setNamespace(namespace);
         prop.setName(name);
         
         // XXX: probably not desired behavior
-        Map map = (Map)propertyTypeDefinitions.get(namespaceUri);
+        Map map = (Map)propertyTypeDefinitions.get(namespace);
         if (map != null) {
             PropertyTypeDefinition propDef = (PropertyTypeDefinition) map.get(name);
             if (propDef != null)
@@ -425,14 +426,14 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         return prop;
     }
 
-    public Property createProperty(String namespaceUri, String name, Object value) 
+    public Property createProperty(Namespace namespace, String name, Object value) 
         throws ValueFormatException {
         PropertyImpl prop = new PropertyImpl();
-        prop.setNamespace(namespaceUri);
+        prop.setNamespace(namespace);
         prop.setName(name);
         
         PropertyTypeDefinition propDef = null;
-        Map map = (Map)propertyTypeDefinitions.get(namespaceUri);
+        Map map = (Map)propertyTypeDefinitions.get(namespace);
         if (map != null) {
             propDef = (PropertyTypeDefinition) map.get(name);
             prop.setDefinition(propDef);

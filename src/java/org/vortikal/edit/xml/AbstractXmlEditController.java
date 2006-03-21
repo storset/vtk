@@ -45,14 +45,13 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.Property;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
@@ -63,7 +62,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -105,8 +103,8 @@ public abstract class AbstractXmlEditController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
     
-    public final Namespace XSI_NAMESPACE = 
-        Namespace.getNamespace("xsi",
+    public final org.jdom.Namespace XSI_NAMESPACE = 
+        org.jdom.Namespace.getNamespace("xsi",
                                "http://www.w3.org/2001/XMLSchema-instance");
 
     public final String EDIT_PROPERTY = "web-edit";
@@ -366,7 +364,7 @@ public abstract class AbstractXmlEditController implements Controller {
 
         /* The property web-edit should be 'true' or 'yes' */
         String webEdit = 
-            resource.getProperty(Property.LOCAL_NAMESPACE, EDIT_PROPERTY).getStringValue();
+            resource.getProperty(Namespace.CUSTOM_NAMESPACE, EDIT_PROPERTY).getStringValue();
 
         if (webEdit == null || !(webEdit.equals("true") || webEdit.equals("yes"))) {
             throw new XMLEditException("Xml resource is not set to web editable");

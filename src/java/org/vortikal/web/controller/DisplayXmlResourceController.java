@@ -48,6 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
@@ -94,7 +95,7 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
 
     private String schemaPropertyName = "schema";
 
-    private String schemaNamespace = " http://www.uio.no/vortex/custom-properties";
+    private Namespace schemaNamespace = Namespace.CUSTOM_NAMESPACE;
 
     private Repository repository;
 

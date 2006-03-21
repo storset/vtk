@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.service;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -51,7 +52,7 @@ import org.vortikal.security.Principal;
 public class ResourcePropertyAssertion
   extends AbstractRepositoryAssertion {
 
-    private String namespace;
+    private Namespace namespace;
     private String name;
     private String value;
     private boolean invert = false;
@@ -62,22 +63,22 @@ public class ResourcePropertyAssertion
     
     
     public void setNamespace(String namespace) {
-        this.namespace = namespace;
+        this.namespace = Namespace.getNamespace(namespace);
     }
     
     
     public String getName() {
-        return name;
+        return this.name;
     }
 
 
     public String getNamespace() {
-        return namespace;
+        return this.namespace.getUrl();
     }
 
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
 

@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -216,11 +217,12 @@ public class ResourcePropertiesValueProvider
 
             if (this.namespaces[i] != null && "*".equals(this.names[i])) {
 
-                List expandedProps = resource.getProperties(this.namespaces[i]);
+                Namespace ns = Namespace.getNamespace(this.namespaces[i]);
+                List expandedProps = resource.getProperties(ns);
                 for (Iterator iter = expandedProps.iterator(); iter.hasNext();) {
                     Property prop = (Property) iter.next();
                     subModel.put(prop.getName(),
-                                 maybeLocalizeValue(prop.getNamespace(),
+                                 maybeLocalizeValue(prop.getNamespace().getUrl(),
                                                     prop.getName(),
                                                     prop.getStringValue(),
                                                     request));
@@ -232,7 +234,8 @@ public class ResourcePropertiesValueProvider
                 if (this.namespaces[i] == null) {
                     value = getStandardPropertyValue(resource, this.names[i]);
                 } else {
-                    Property property = resource.getProperty(this.namespaces[i], this.names[i]);
+                    Namespace ns = Namespace.getNamespace(this.namespaces[i]);
+                    Property property = resource.getProperty(ns, this.names[i]);
                     if (property != null) {
                         value = property.getValue();
                     }

@@ -52,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
@@ -365,11 +366,12 @@ public class ProppatchController extends AbstractWebdavController {
 
         } else {
 
-            Property theProperty = resource.getProperty(nameSpace, propertyName);
+            Namespace ns = Namespace.getNamespace(nameSpace);
+            Property theProperty = resource.getProperty(ns, propertyName);
 
             if (theProperty == null) {
                 /* Create a new property: */
-                theProperty = resource.createProperty(nameSpace, propertyName);
+                theProperty = resource.createProperty(ns, propertyName);
             }
             
             if (logger.isDebugEnabled()) {
@@ -402,7 +404,7 @@ public class ProppatchController extends AbstractWebdavController {
         }
 
         String propertyName = propElement.getName();
-        String namespace = propElement.getNamespace().getURI();
+        Namespace namespace = Namespace.getNamespace(propElement.getNamespace().getURI());
 
         Property theProperty = resource.getProperty(namespace, propertyName);
             

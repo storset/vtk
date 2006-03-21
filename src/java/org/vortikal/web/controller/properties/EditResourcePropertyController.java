@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -111,8 +112,9 @@ public class EditResourcePropertyController extends SimpleFormController
                 namespace + ":" + name);
         }
 
+        Namespace ns = Namespace.getNamespace(namespace);
         String value = descriptor.getDefaultValue();
-        Property property = resource.getProperty(namespace, name);
+        Property property = resource.getProperty(ns, name);
         if (property != null) {
             value = property.getStringValue();
         }
@@ -152,8 +154,8 @@ public class EditResourcePropertyController extends SimpleFormController
         Resource resource = repository.retrieve(
             token, requestContext.getResourceURI(), false);
         String value = propertyCommand.getValue();
-        Property prop = resource.getProperty(
-                propertyCommand.getNamespace(),propertyCommand.getName());
+        Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
+        Property prop = resource.getProperty(ns, propertyCommand.getName());
         
         if ("".equals(value)) {
             if (prop != null) {
@@ -161,8 +163,7 @@ public class EditResourcePropertyController extends SimpleFormController
             }
         } else {
             if (prop == null) {
-                prop = resource.createProperty(
-                        propertyCommand.getNamespace(), propertyCommand.getName());
+                prop = resource.createProperty(ns, propertyCommand.getName());
             }
             prop.setStringValue(propertyCommand.getValue());
         }

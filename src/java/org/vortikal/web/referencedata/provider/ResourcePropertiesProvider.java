@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -156,7 +157,8 @@ public class ResourcePropertiesProvider implements ReferenceDataProvider, Initia
                 continue;
             }
             applicablePropertyDescriptors.add(propertyDescriptors[i]);
-            Property prop = resource.getProperty(propertyDescriptors[i].getNamespace(),
+            Namespace ns = Namespace.getNamespace(propertyDescriptors[i].getNamespace());
+            Property prop = resource.getProperty(ns,
                                                  propertyDescriptors[i].getName());
 
             propertyValues.add((prop != null) ? prop.getValue() : null);

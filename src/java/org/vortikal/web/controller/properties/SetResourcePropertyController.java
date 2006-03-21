@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -105,7 +106,9 @@ public class SetResourcePropertyController
 
         Resource resource = repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
-        Property property = resource.getProperty(namespace, name);
+        Namespace ns = Namespace.getNamespace(namespace);
+
+        Property property = resource.getProperty(ns, name);
         if (property != null)
             value = property.getStringValue();
 
@@ -134,12 +137,11 @@ public class SetResourcePropertyController
 
         Resource resource = repository.retrieve(
             token, requestContext.getResourceURI(), false);
+        Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
 
-        Property property = resource.getProperty(propertyCommand.getNamespace(),
-                                                 propertyCommand.getName());
+        Property property = resource.getProperty(ns, propertyCommand.getName());
         if (property == null) {
-            property = resource.createProperty(propertyCommand.getNamespace(),
-                    propertyCommand.getName());
+            property = resource.createProperty(ns, propertyCommand.getName());
         }
         property.setStringValue(propertyCommand.getValue());
 

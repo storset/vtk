@@ -40,8 +40,8 @@ public interface PropertySet {
    
    public List getProperties();
 
-   public Property getProperty(String namespace, String name);
+   public Property getProperty(Namespace namespace, String name);
 
-   public List getProperties(String namespace);
+   public List getProperties(Namespace namespace);
 
 }

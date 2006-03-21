@@ -81,7 +81,6 @@ public final class PropertyType {
     /*
      * Special properties
      */
-    public static final String DEFAULT_NAMESPACE_URI = null;
     
     public static final String COLLECTION_PROP_NAME = "collection";
     public static final String OWNER_PROP_NAME = "owner";

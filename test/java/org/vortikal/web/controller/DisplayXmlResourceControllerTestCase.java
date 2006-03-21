@@ -12,6 +12,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -25,7 +26,7 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
 
     private String schemaPropertyName = "schema";
 
-    private String schemaNamespace = " http://www.uio.no/vortex/custom-properties";
+    private Namespace schemaNamespace = Namespace.CUSTOM_NAMESPACE;
 
     private String faqSchema = "http://www.uio.no/xsd/uio/faq/v001/faq.xsd";
 
@@ -60,7 +61,7 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         long lastModified;
 
         PropertyImpl schemaProperty = new PropertyImpl();
-        schemaProperty.setNamespace(schemaPropertyName);
+        schemaProperty.setNamespace(schemaNamespace);
         schemaProperty.setName(schemaPropertyName);
         schemaProperty.setStringValue(faqSchema);
 

@@ -33,8 +33,11 @@ package org.vortikal.repository;
 
 public class Namespace {
 
+    private final static String CUSTOM_NAMESPACE_URI = "http://www.uio.no/vortex/custom-properties";
+
     public final static Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
-    public final static Namespace CUSTOM_NAMESPACE = new Namespace(null, Property.LOCAL_NAMESPACE);
+    public final static Namespace CUSTOM_NAMESPACE = new Namespace("custom", 
+            CUSTOM_NAMESPACE_URI);
     
     private String prefix;
     private String url;
@@ -44,12 +47,31 @@ public class Namespace {
         this.url = url;
     }
 
+    public static Namespace getNamespace(String uri) {
+        if (uri == null) return DEFAULT_NAMESPACE;
+        if (uri.equals(CUSTOM_NAMESPACE_URI)) return CUSTOM_NAMESPACE;
+        
+        return new Namespace(uri, uri);
+    }
+    
     public String getPrefix() {
         return this.prefix;
     }
     
     public String getUrl() {
         return this.url;
+    }
+    
+    public boolean equals(Object obj) {
+        if (! (obj instanceof Namespace)) return false;
+        Namespace ns = (Namespace) obj;
+        
+        String thisUrl = (this.url == null) ? "" : this.url;
+        String thatUrl = (ns.getUrl() == null) ? "" : ns.getUrl();
+        String thisPrefix = (this.prefix == null) ? "" : this.prefix;
+        String thatPrefix = (ns.getPrefix() == null) ? "" : ns.getPrefix();
+
+        return thisUrl.equals(thatUrl) && thisPrefix.equals(thatPrefix);
     }
     
     public String toString() {

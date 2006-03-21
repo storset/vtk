@@ -63,6 +63,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractView;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.web.HttpUtil;
@@ -287,8 +288,7 @@ public class ResourceXsltView extends AbstractView
             }
 
             Property expiresProperty = resource.getProperty(
-                    Property.LOCAL_NAMESPACE, 
-                    "expires-sec");
+                    Namespace.CUSTOM_NAMESPACE, "expires-sec");
             if (this.handleExpiresProperty &&
                 expiresProperty != null && expiresProperty.getValue() != null) {
 

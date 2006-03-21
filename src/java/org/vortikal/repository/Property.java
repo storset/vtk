@@ -45,9 +45,7 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
  */
 public interface Property extends Cloneable {
 
-    public static final String LOCAL_NAMESPACE = "http://www.uio.no/vortex/custom-properties";
-
-    public String getNamespace();
+    public Namespace getNamespace();
 
     public String getName();
 

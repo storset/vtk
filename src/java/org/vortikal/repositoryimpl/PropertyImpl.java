@@ -33,6 +33,7 @@ package org.vortikal.repositoryimpl;
 import java.util.Date;
 
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -52,7 +53,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     private static final long serialVersionUID = 3762531209208410417L;
     
     private PropertyTypeDefinition propertyTypeDefinition;
-    private String namespaceUri;
+    private Namespace namespace;
     private String name;
     private Value value;
 
@@ -66,12 +67,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.propertyTypeDefinition.getType();
     }
     
-    public String getNamespace() {
-        return this.namespaceUri;
+    public Namespace getNamespace() {
+        return this.namespace;
     }
 
-    public void setNamespace(String namespace) {
-        this.namespaceUri = namespace;
+    public void setNamespace(Namespace namespace) {
+        this.namespace = namespace;
     }
 
     public String getName() {
@@ -183,11 +184,9 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         if (! (obj instanceof Property)) return false;
         
         Property prop = (Property) obj;
-        if (this.name.equals(prop.getName()) && this.value.equals(prop.getValue())) {
-            if (this.namespaceUri == null && prop.getNamespace() == null) 
-                return true;
-            if (this.namespaceUri != null && 
-                    this.namespaceUri.equals(prop.getNamespace()))
+        if (this.name.equals(prop.getName()) 
+                && this.value.equals(prop.getValue())
+                && this.namespace.equals(prop.getNamespace())) {
                 return true;
         }
         return false;
@@ -197,7 +196,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         StringBuffer sb = new StringBuffer();
 
         sb.append(this.getClass().getName()).append(": ");
-        sb.append("[ ").append(this.namespaceUri);
+        sb.append("[ ").append(this.namespace);
         sb.append(":").append(this.name);
         sb.append(" = ").append(this.value);
         sb.append("]");

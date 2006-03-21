@@ -43,6 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -78,7 +79,7 @@ public class ResourceImpl implements Resource, Cloneable {
         this.propertyManager = propertyManager;
     }
 
-    public Property createProperty(String namespace, String name) {
+    public Property createProperty(Namespace namespace, String name) {
         return propertyManager.createProperty(namespace, name);
     }
 
@@ -89,7 +90,7 @@ public class ResourceImpl implements Resource, Cloneable {
             props.remove(property);
     }
 
-    public void removeProperty(String namespace, String name) {
+    public void removeProperty(Namespace namespace, String name) {
         List props = (List)propertyMap.get(namespace);
         
         if (props == null) return;
@@ -182,7 +183,7 @@ public class ResourceImpl implements Resource, Cloneable {
         map.put(property.getName(), property);
     }
     
-    public Property getProperty(String namespace, String name) {
+    public Property getProperty(Namespace namespace, String name) {
         Map map = (Map)propertyMap.get(namespace);
 
         if (map == null) return null;
@@ -190,7 +191,7 @@ public class ResourceImpl implements Resource, Cloneable {
         return (Property)map.get(name);
     }
 
-    public List getProperties(String namespace) {
+    public List getProperties(Namespace namespace) {
         Map map = (Map)propertyMap.get(namespace);
         return new ArrayList(map.entrySet());
     }
@@ -209,10 +210,10 @@ public class ResourceImpl implements Resource, Cloneable {
         
         for (Iterator iter = this.propertyMap.entrySet().iterator(); iter.hasNext();) {
             Map.Entry element = (Map.Entry) iter.next();
-            String namespace = (String)element.getKey();
+            Namespace namespace = (Namespace)element.getKey();
             Map props = (Map)element.getValue();
             // XXX: namespace.equals(PropertyType.DEFAULT_NAMESPACE_URI)
-            if (namespace == null) {
+            if (namespace.equals(Namespace.DEFAULT_NAMESPACE)) {
                 List specialProps =  Arrays.asList(PropertyType.SPECIAL_PROPERTIES);
                 for (Iterator iterator = props.values().iterator(); iterator
                         .hasNext();) {
@@ -311,27 +312,27 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public void setCharacterEncoding(String characterEncoding) {
-        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+        setProperty(Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CHARACTERENCODING_PROP_NAME, characterEncoding);
     }
 
     public void setContentLocale(Locale locale) {
-        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+        setProperty(Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CONTENTLOCALE_PROP_NAME, locale.toString());
     }
 
     public void setContentType(String contentType) {
-        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+        setProperty(Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CONTENTTYPE_PROP_NAME, contentType);
     }
 
     public void setOwner(Principal principal) {
-        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+        setProperty(Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.OWNER_PROP_NAME, principal.getQualifiedName());
     }
 
     public void setDisplayName(String text) {
-        setProperty(PropertyType.DEFAULT_NAMESPACE_URI, 
+        setProperty(Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.DISPLAYNAME_PROP_NAME, text);
     }
 
@@ -355,33 +356,32 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     private String getPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         if (prop == null) return null;
         return prop.getStringValue();
     }
 
     private Date getDatePropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         if (prop == null) return null;
         return prop.getDateValue();
     }
 
     private long getLongPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         if (prop == null) return -1;
         return prop.getLongValue();
     }
 
     private boolean getBooleanPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(PropertyType.DEFAULT_NAMESPACE_URI)).get(name);
+        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         return prop.getBooleanValue();
     }
 
-    private void setProperty(String namespace, String name, String value) {
+    private void setProperty(Namespace namespace, String name, String value) {
         Property prop = getProperty(namespace, name);
         if (prop == null) {
-            prop = createProperty(PropertyType.DEFAULT_NAMESPACE_URI,
-                    PropertyType.CHARACTERENCODING_PROP_NAME);
+            prop = createProperty(namespace, name);
         }
         prop.setStringValue(value);
     

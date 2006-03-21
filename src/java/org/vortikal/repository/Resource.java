@@ -8,11 +8,11 @@ import org.vortikal.security.Principal;
 
 public interface Resource extends PropertySet {
 
-    public Property createProperty(String namespace, String name);
+    public Property createProperty(Namespace namespace, String name);
     
     public void deleteProperty(Property property);
     
-    public void removeProperty(String namespace, String name);
+    public void removeProperty(Namespace namespace, String name);
     
     // XXX: What to do about this?! Old client code operates with a divison of know/unkown props.
     public List getOtherProperties();

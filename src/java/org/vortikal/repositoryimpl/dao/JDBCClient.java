@@ -57,6 +57,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repositoryimpl.AclImpl;
@@ -290,42 +291,42 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         resource.setID(rs.getInt("resource_id"));
         resource.setInheritedACL(rs.getString("acl_inherited").equals("Y"));
         
-        Property prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.COLLECTION_PROP_NAME, new Boolean(rs.getString("is_collection").equals("Y")));
+        Property prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME, new Boolean(rs.getString("is_collection").equals("Y")));
         resource.addProperty(prop);
         
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CREATIONTIME_PROP_NAME, new Date(rs.getTimestamp("creation_time").getTime()));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, new Date(rs.getTimestamp("creation_time").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.OWNER_PROP_NAME, rs.getString("resource_owner"));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME, rs.getString("resource_owner"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.DISPLAYNAME_PROP_NAME, rs.getString("display_name"));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.DISPLAYNAME_PROP_NAME, rs.getString("display_name"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTTYPE_PROP_NAME, rs.getString("content_type"));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME, rs.getString("content_type"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CHARACTERENCODING_PROP_NAME, rs.getString("character_encoding"));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_PROP_NAME, rs.getString("character_encoding"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTLOCALE_PROP_NAME, rs.getString("content_language"));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME, rs.getString("content_language"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("content_last_modified").getTime()));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("content_last_modified").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTMODIFIEDBY_PROP_NAME, rs.getString("content_modified_by"));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME, rs.getString("content_modified_by"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("properties_last_modified").getTime()));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("properties_last_modified").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, rs.getString("properties_modified_by"));
+        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, rs.getString("properties_modified_by"));
         resource.addProperty(prop);
 
         try {
             long contentLength = contentStore.getContentLength(resource.getURI());
-            prop = this.propertyManager.createProperty(PropertyType.DEFAULT_NAMESPACE_URI, PropertyType.CONTENTLENGTH_PROP_NAME, new Long(contentLength));
+            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME, new Long(contentLength));
             resource.addProperty(prop);
         } catch (IllegalOperationException e) {
             // Probably a collection
@@ -365,7 +366,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         while (rs.next()) {
 
-            String ns = rs.getString("name_space");
+            Namespace ns = Namespace.getNamespace(rs.getString("name_space"));
             String name = rs.getString("name");
             String value = rs.getString("value");
 
@@ -1044,7 +1045,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                         + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)");
 
         stmt.setInt(1, r.getID());
-        stmt.setString(2, property.getNamespace());
+        stmt.setString(2, property.getNamespace().getUrl());
         stmt.setString(3, property.getName());
         stmt.setString(4, property.getStringValue());
 
@@ -1334,7 +1335,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             Integer resourceID = new Integer((int) rs.getLong("resource_id"));
 
             Property prop = this.propertyManager.createProperty(
-                    rs.getString("name_space"), rs.getString("name"), rs.getString("value"));
+                    Namespace.getNamespace(rs.getString("name_space")), 
+                    rs.getString("name"), rs.getString("value"));
             ResourceImpl r = (ResourceImpl) resourceMap.get(resourceID);
             r.addProperty(prop);
         }

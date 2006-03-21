@@ -33,6 +33,7 @@ package org.vortikal.web.service;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -43,7 +44,7 @@ import org.vortikal.security.Principal;
 public class ResourcePropertyRegexpAssertion
   extends AbstractRepositoryAssertion {
 
-    private String namespace;
+    private Namespace namespace;
     private String name;
     private Pattern pattern = null;
     private boolean invert = false;
@@ -53,7 +54,7 @@ public class ResourcePropertyRegexpAssertion
     }
     
     public void setNamespace(String namespace) {
-        this.namespace = namespace;
+        this.namespace = Namespace.getNamespace(namespace);
     }
 
     public void setPattern(String pattern) {

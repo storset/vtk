@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -108,6 +109,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private String ignoreProperty = null;
     private String ignorePropertyNamespace = null;
     private String ignorePropertyName = null;
+    private Namespace ignorePropertyNS = null;
     private String[] titleOverrideProperties = null;
     private String[] titleOverrideNamespaces = null;
     private String[] titleOverrideNames = null;
@@ -177,6 +179,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 0, this.ignoreProperty.lastIndexOf(":"));
             this.ignorePropertyName = this.ignoreProperty.substring(
                 this.ignoreProperty.lastIndexOf(":") + 1);
+            this.ignorePropertyNS = Namespace.getNamespace(this.ignorePropertyNamespace);
         }
         if (this.titleOverrideProperties != null) {
             for (int i = 0; i < this.titleOverrideProperties.length; i++) {
@@ -241,7 +244,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
     private boolean checkIgnore(Resource resource) {
         if (this.ignoreProperty != null) {
-            Property p = resource.getProperty(this.ignorePropertyNamespace,
+            Property p = resource.getProperty(this.ignorePropertyNS,
                                               this.ignorePropertyName);
             if (p != null) {
                 return true;
@@ -258,7 +261,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             // Check titleOverrideProperties in correct order
             for (int i = 0; i < this.titleOverrideProperties.length; i++) {
 
-                String namespace = this.titleOverrideNamespaces[i];
+                Namespace namespace = Namespace.getNamespace(this.titleOverrideNamespaces[i]);
                 String name = this.titleOverrideNames[i];
                 
                 Property property = resource.getProperty(namespace, name);

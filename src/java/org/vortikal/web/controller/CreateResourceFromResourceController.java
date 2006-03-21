@@ -121,7 +121,7 @@ public class CreateResourceFromResourceController implements Controller,
 
         Resource newResource = repository.createDocument(token, newResourceUri);
 
-        String namespace = Namespace.CUSTOM_NAMESPACE.getUrl();
+        Namespace namespace = Namespace.CUSTOM_NAMESPACE;
 
         // Setting DAV-properties for webedit and transform-view to yes
         Property p = newResource.createProperty(namespace, "web-edit");

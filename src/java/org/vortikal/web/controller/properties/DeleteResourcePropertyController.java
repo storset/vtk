@@ -36,6 +36,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -122,8 +123,10 @@ public class DeleteResourcePropertyController
             return;
         }
 
+        Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
+        
         Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
-        Property property = resource.getProperty(propertyCommand.getNamespace(), propertyCommand.getName());
+        Property property = resource.getProperty(ns, propertyCommand.getName());
         if (property == null) {
             if (logger.isDebugEnabled())
                 logger.debug("Property " + propertyCommand.getNamespace() + ":" +

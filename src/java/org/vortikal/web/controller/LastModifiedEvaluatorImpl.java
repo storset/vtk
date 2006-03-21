@@ -35,7 +35,7 @@ public class LastModifiedEvaluatorImpl implements LastModifiedEvaluator {
         this.propertyNamespace = propertyNamespace;
     }
 
-    public boolean reportLastModified(Resource resource) {
+    public boolean reportLastModified(Resource resource) throws IllegalArgumentException {
         if (resource == null) {
             throw new IllegalArgumentException("resource can't be null");
         }

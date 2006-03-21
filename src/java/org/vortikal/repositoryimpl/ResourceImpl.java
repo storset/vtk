@@ -387,5 +387,20 @@ public class ResourceImpl implements Resource, Cloneable {
     
     }
     
+    /**
+     * Adds a URI to the child URI list.
+     *
+     * @param childURI a <code>String</code> value
+     */
+    public synchronized void addChildURI(String childURI) {
+            String[] newChildren = new String[this.childURIs.length + 1];
+            for (int i = 0; i < this.childURIs.length; i++) {
+                newChildren[i] = childURIs[i];
+            }
+
+            newChildren[childURIs.length] = childURI;
+            
+            this.childURIs = newChildren;
+    }
 
 }

@@ -61,32 +61,6 @@ public class ResourceManager {
     private DataAccessor dao;
     private PropertyManagerImpl propertyManager;
 
-    /**
-     * Creates a resource.
-     */
-    public ResourceImpl create(ResourceImpl parent, Principal principal,
-                           boolean collection, String path)
-        throws IllegalOperationException, AuthenticationException, 
-            AuthorizationException, AclException, IOException, CloneNotSupportedException {
-
-        ResourceImpl resource = null;
-        
-        resource = propertyManager.create(principal, path, collection);
-        resource.setACL((Acl)parent.getAcl().clone());
-        resource.setInheritedACL(true);
-        this.dao.store(resource);
-        resource = this.dao.load(path);
-
-        addChildURI(parent, path);
-        propertyManager.collectionContentModification(parent, principal);
-        
-        this.dao.store(parent);
-
-        ResourceImpl clone = (ResourceImpl)resource.clone();
-
-        return clone;
-    }
-
     public void collectionContentModification(ResourceImpl resource, Principal principal) throws IOException {
         this.propertyManager.collectionContentModification(resource, principal);
         this.dao.store(resource);
@@ -125,27 +99,6 @@ public class ResourceManager {
             resource.setDirtyACL(false);
         }
     }
-
-    /**
-     * Adds a URI to the child URI list.
-     *
-     * @param childURI a <code>String</code> value
-     */
-    private void addChildURI(ResourceImpl parent, String childURI) {
-        synchronized (parent) {
-            String[] children = parent.getChildURIs();
-            String[] newChildren = new String[children.length + 1];
-            for (int i = 0; i < children.length; i++) {
-                newChildren[i] = children[i];
-            }
-
-            newChildren[children.length] = childURI;
-            
-            parent.setChildURIs(newChildren);
-        }
-    }
-
-
     
     // Locks:
     

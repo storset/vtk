@@ -301,14 +301,26 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                     "or parent is document");
         }
 
-        Resource newResource = null;
+        ResourceImpl newResource = null;
 
         try {
             this.permissionsManager.authorize(parent, principal, 
                     PrivilegeDefinition.WRITE);
             this.resourceManager.lockAuthorize(parent, principal, false);
-            newResource = 
-                this.resourceManager.create(parent, principal, collection, uri);
+//            newResource = 
+//                this.resourceManager.create(parent, principal, collection, uri);
+            newResource = propertyManager.create(principal, uri, collection);
+            newResource.setACL((Acl)parent.getAcl().clone());
+            newResource.setInheritedACL(true);
+            this.dao.store(newResource);
+            newResource = this.dao.load(uri);
+
+            parent.addChildURI(uri);
+            propertyManager.collectionContentModification(parent, principal);
+            
+            this.dao.store(parent);
+
+            newResource = (ResourceImpl)newResource.clone();
         } catch (ResourceLockedException e) {
             OperationLog.failure(operation, "(" + uri + ")",
                     "the parent resource was locked", token, principal);

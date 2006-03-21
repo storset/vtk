@@ -110,7 +110,7 @@ public abstract class AbstractDataAccessor
                 if (!acls.containsKey(resource.getURI())) {
                     throw new SQLException(
                         "Database inconsistency: resource " +
-                        resource.getURI() + " claims  ACL is inherited, " +
+                        resource.getURI() + " claims  ACL is not inherited, " +
                         "but no ACL exists");
                 }
                 

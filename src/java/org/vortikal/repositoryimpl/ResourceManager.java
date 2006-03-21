@@ -73,32 +73,6 @@ public class ResourceManager {
         this.dao.store(resource);
     }
     
-    public void storeACL(ResourceImpl resource, Principal principal, Acl acl)
-        throws AuthorizationException, AuthenticationException, 
-            IllegalOperationException, IOException, AclException, CloneNotSupportedException {
-
-        Acl newAcl = null;
-        if (acl.isInherited()) {
-            /* When the ACL is inherited, make our ACL a copy of our
-             * parent's ACL, since the supplied one may contain other
-             * ACEs than the one we now inherit from. */
-            newAcl = (Acl) this.dao.load(
-                    URIUtil.getParentURI(resource.getURI())).getAcl().clone();
-            newAcl.setInherited(true);
-        } else {
-            newAcl = (Acl)acl.clone();
-        }
-        
-        resource.setACL(newAcl);
-        resource.setInheritedACL(acl.isInherited());
-        resource.setDirtyACL(true);
-
-        try {
-            this.dao.store(resource);
-        } finally {
-            resource.setDirtyACL(false);
-        }
-    }
     
     // Locks:
     

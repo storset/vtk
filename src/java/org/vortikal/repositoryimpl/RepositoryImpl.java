@@ -973,7 +973,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
-    public void storeACL(String token, String uri, Acl newAcl)
+    public void storeACL(String token, String uri, Acl acl)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException, AclException, 
             ReadOnlyException, IOException {
@@ -1001,7 +1001,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
-        if ("/".equals(r.getURI()) && newAcl.isInherited()) {
+        if ("/".equals(r.getURI()) && acl.isInherited()) {
             OperationLog.failure(operation, "(" + uri + ")", "Can't make root acl inherited.",
                     token, principal);
             throw new IllegalOperationException("Can't make root acl inherited.");
@@ -1012,13 +1012,39 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             this.permissionsManager.authorize(r, principal, PrivilegeDefinition.WRITE_ACL);
             this.resourceManager.lockAuthorize(r, principal, false);
-            aclValidator.validateACL(newAcl);
-            this.resourceManager.storeACL(r, principal, newAcl);
+            aclValidator.validateACL(acl);
+
+
+//             this.resourceManager.storeACL(r, principal, acl);
+
+            Acl newAcl = null;
+            if (acl.isInherited()) {
+                /* When the ACL is inherited, make our ACL a copy of the
+                 * parent's ACL, since the supplied one may contain other
+                 * ACEs than the one we now inherit from. */
+                newAcl = (Acl) this.dao.load(
+                    URIUtil.getParentURI(r.getURI())).getAcl().clone();
+                newAcl.setInherited(true);
+            } else {
+                newAcl = (Acl)acl.clone();
+            }
+        
+            r.setACL(newAcl);
+            r.setInheritedACL(newAcl.isInherited());
+
+            try {
+                r.setDirtyACL(true);
+                this.dao.store(r);
+            } finally {
+                r.setDirtyACL(false);
+            }
+
+
             OperationLog.success(operation, "(" + uri + ")", token, principal);
 
             ACLModificationEvent event = new ACLModificationEvent(
                 this, (Resource)r.clone(),
-                originalResource, newAcl, originalResource.getAcl());
+                originalResource, acl, originalResource.getAcl());
 
             context.publishEvent(event);
         } catch (AuthorizationException e) {

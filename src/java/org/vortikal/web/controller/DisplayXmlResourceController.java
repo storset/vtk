@@ -31,23 +31,25 @@
 package org.vortikal.web.controller;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
-
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -96,15 +98,14 @@ public class DisplayXmlResourceController
     private static Log logger = LogFactory.getLog(DisplayXmlResourceController.class);
 
     public static final String DEFAULT_VIEW_NAME = "transformXmlResource";
-
     private Repository repository;
     private TransformerManager transformerManager;
     private String childName;
     private String viewName = DEFAULT_VIEW_NAME;
     private boolean handleLastModified = false;
-    private boolean ignoreXMLErrors = false;
+    private boolean ignoreXMLErrors = false;    
+    private LastModifiedEvaluator lastModifiedEvaluator;
     
-
     public void setChildName(String childName) {
         this.childName = childName;
     }
@@ -124,7 +125,6 @@ public class DisplayXmlResourceController
         this.viewName = viewName;
     }
 
-
     public void setHandleLastModified(boolean handleLastModified) {
         this.handleLastModified = handleLastModified;
     }
@@ -134,6 +134,9 @@ public class DisplayXmlResourceController
         this.ignoreXMLErrors = ignoreXMLErrors;
     }
     
+    public void setLastModifiedEvaluator(LastModifiedEvaluator lastModifiedEvaluator) {
+        this.lastModifiedEvaluator = lastModifiedEvaluator;
+    }
 
     public void afterPropertiesSet() throws Exception {
         if (repository == null) {
@@ -166,6 +169,7 @@ public class DisplayXmlResourceController
         try {
             resource = repository.retrieve(
                 securityContext.getToken(), uri, true);
+                         
         } catch (RepositoryException e) {
             // These exceptions are expected
             return -1;
@@ -176,18 +180,20 @@ public class DisplayXmlResourceController
 
         } catch (Throwable t) {
             if (logger.isInfoEnabled()) {
-                logger.info(
-                    "Unable to get the last modified date for resource "
-                    + uri, t);
+                logger.info("Unable to get the last modified date for resource " + uri, t);
             }
             return -1;
         }
-        
+
         if (resource.isCollection()) {
             return -1;
         }
+
+        if (lastModifiedEvaluator != null && !lastModifiedEvaluator.reportLastModified(resource)) {
+            return -1;
+        }
         
-        return resource.getLastModified().getTime();
+        return resource.getLastModified().getTime();        
     }
     
 

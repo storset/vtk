@@ -39,31 +39,31 @@ public class LastModifiedEvaluatorImpl implements LastModifiedEvaluator {
         if (resource == null) {
             throw new IllegalArgumentException("resource can't be null");
         }
-        if (lookupList != null && lookupList.size() > 0) {
-            Property schemaProp = resource.getProperty(propertyNamespace, propertyName);
-            if (schemaProp == null) {
+        if (lookupList == null || lookupList.size() == 0) {
+            return !handleLastModifiedForValuesInList;
+        }
+
+        Property prop = resource.getProperty(propertyNamespace, propertyName);
+        if (prop == null) {
+            if (logger.isDebugEnabled()) {
                 logger.debug("Can't find property '" + propertyNamespace + ":" + propertyName
-                        + "' for resource with uri " + resource.getURI());
-                // Since we havn't found the property, we know it is not in the list of accepted
-                // values, and we should behave as it is not found in the list
-                return !handleLastModifiedForValuesInList;
+                             + "' for resource with uri " + resource.getURI());
             }
-            String schema = schemaProp.getValue();
-            Iterator schemaIterator = lookupList.iterator();
-            boolean found = false;
-            while (schemaIterator.hasNext()) {
-                String schemaFromList = (String) schemaIterator.next();
-                if (schemaFromList.equals(schema)) {
-                    found = true;
-                    break;
-                }
-            }
-            if ((found && !handleLastModifiedForValuesInList)
-                    || (!found && handleLastModifiedForValuesInList)) {
-                return false;
+            // Since we havn't found the property, we know it is not in the list of accepted
+            // values, and we should behave as it is not found in the list
+            return !handleLastModifiedForValuesInList;
+        }
+        String schema = prop.getValue();
+        Iterator schemaIterator = lookupList.iterator();
+        boolean found = false;
+        while (schemaIterator.hasNext()) {
+            String schemaFromList = (String) schemaIterator.next();
+            if (schemaFromList.equals(schema)) {
+                found = true;
+                break;
             }
         }
-        return true;
+        return found == handleLastModifiedForValuesInList;
     }
 
 }

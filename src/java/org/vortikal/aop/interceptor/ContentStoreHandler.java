@@ -37,7 +37,7 @@ import org.vortikal.repositoryimpl.ResourceImpl;
 
 /**
  * Interface for processing resource input streams in the {@link
- * org.vortikal.repositoryimpl.ReposiutoryImpl#storeContent} method.
+ * org.vortikal.repositoryimpl.RepositoryImpl#storeContent} method.
  */
 public interface ContentStoreHandler {
 

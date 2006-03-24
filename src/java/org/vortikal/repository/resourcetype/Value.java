@@ -33,8 +33,7 @@ package org.vortikal.repository.resourcetype;
 import java.util.Date;
 
 
-public final class Value {
-
+public final class Value implements Cloneable {
     private int type = PropertyType.TYPE_STRING;
 
     private String value;
@@ -136,6 +135,19 @@ public final class Value {
         default:
             return hash + (this.value == null ? 0 : this.value.hashCode());
         }
+    }
+    
+    public Object clone() throws CloneNotSupportedException {
+        
+        Value clone = new Value();
+        clone.type = this.type;
+        clone.dateValue = (Date)this.dateValue.clone();
+        clone.booleanValue = this.booleanValue;
+        clone.intValue = this.intValue;
+        clone.longValue = this.longValue;
+        clone.value = this.value; // String-value
+        
+        return clone;
     }
     
     public String toString() {

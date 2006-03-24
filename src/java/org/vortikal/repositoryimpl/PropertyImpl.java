@@ -90,11 +90,23 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public void setValue(Value value) throws ValueFormatException {
+        if (this.propertyTypeDefinition != null) {
+            if (this.propertyTypeDefinition.isMultiple()) {
+                throw new ValueFormatException("Property is multi-value");
+            }
+        }
+        
         validateValue(value);
         this.value = value;
     }
     
     public void setValues(Value[] values) throws ValueFormatException {
+        if (this.propertyTypeDefinition != null) {
+            if (! this.propertyTypeDefinition.isMultiple()) {
+                throw new ValueFormatException("Property is not multi-value");
+            }
+        }
+        
         validateValues(values);
         this.values = values;
     }
@@ -182,7 +194,23 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        PropertyImpl clone = new PropertyImpl();
+        
+        // "Dumb" clone, avoid all type checks, just copy data structures
+        clone.propertyTypeDefinition = this.propertyTypeDefinition;
+        clone.name = this.name;
+        clone.namespace = this.namespace; // Do we need to clone namespace ? 
+        
+        // Values
+        clone.value = (Value)this.value.clone();
+        clone.values = new Value[this.values.length];
+        
+        // Need to deep-copy array of values
+        for (int i=0; i<this.values.length; i++) {
+            clone.values[i] = (Value)this.values[i].clone();
+        }
+        
+        return clone;
     }
 
     public boolean equals(Object obj) {
@@ -210,12 +238,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     private void validateValues(Value[] values) throws ValueFormatException {
-        if (this.propertyTypeDefinition != null) {
-            if (! this.propertyTypeDefinition.isMultiple()) {
-                throw new ValueFormatException("Property is not multi-value");
-            }
-        }
-        
         for (int i=0; i<values.length; i++) {
             validateValue(values[i]);
         }

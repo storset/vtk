@@ -199,7 +199,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         // "Dumb" clone, avoid all type checks, just copy data structures
         clone.propertyTypeDefinition = this.propertyTypeDefinition;
         clone.name = this.name;
-        clone.namespace = this.namespace; // Do we need to clone namespace ? 
+        clone.namespace = this.namespace; // XXX: Do we need to clone namespace ? 
         
         // Values
         clone.value = (Value)this.value.clone();

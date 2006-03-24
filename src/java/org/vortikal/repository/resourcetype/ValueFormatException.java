@@ -36,9 +36,11 @@ import org.vortikal.repository.RepositoryException;
  * Exception thrown when an attempt is made to set a property value to an 
  * illegal or unconvertible type.
  * 
- *
  */
 public class ValueFormatException extends RepositoryException {
+    
+    private static final long serialVersionUID = 1L;
+    
     public ValueFormatException() {
         super();
     }

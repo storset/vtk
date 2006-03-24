@@ -56,15 +56,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     private Namespace namespace;
     private String name;
     private Value value;
+    private Value[] values;
 
     public PropertyImpl() {
         value = new Value();
-    }
-    
-    public int getType() {
-        if (this.propertyTypeDefinition == null)
-            return PropertyType.TYPE_STRING;
-        return this.propertyTypeDefinition.getType();
+        values = new Value[0];
     }
     
     public Namespace getNamespace() {
@@ -84,24 +80,33 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Value getValue() {
+        if (this.propertyTypeDefinition != null) {
+            if (this.propertyTypeDefinition.isMultiple()) {
+                throw new IllegalOperationException("Property is multi-value"); 
+            }
+        }
+        
         return this.value;
     }
 
-    private void validateValue(Value value) throws ValueFormatException  {
-
-        if (value == null) return; // XXX: desired behaviour ?
-        
-        if (value.getType() != getType()) {
-            throw new ValueFormatException("Illegal value type " + 
-                    PropertyType.PROPERTY_TYPE_NAMES[value.getType()] + 
-                    " for property " + this.name + ". Should be " + 
-                    PropertyType.PROPERTY_TYPE_NAMES[getType()]);
-        }
-    }
-    
-    public void setValue(Value value) {
+    public void setValue(Value value) throws ValueFormatException {
         validateValue(value);
         this.value = value;
+    }
+    
+    public void setValues(Value[] values) throws ValueFormatException {
+        validateValues(values);
+        this.values = values;
+    }
+    
+    public Value[] getValues() {
+        if (this.propertyTypeDefinition != null) {
+            if (! this.propertyTypeDefinition.isMultiple()) {
+                throw new IllegalOperationException("Property is not multi-value");
+            }
+        }
+        
+        return this.values;
     }
 
     public Date getDateValue() throws IllegalOperationException {
@@ -204,6 +209,36 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return sb.toString();
     }
 
+    private void validateValues(Value[] values) throws ValueFormatException {
+        if (this.propertyTypeDefinition != null) {
+            if (! this.propertyTypeDefinition.isMultiple()) {
+                throw new ValueFormatException("Property is not multi-value");
+            }
+        }
+        
+        for (int i=0; i<values.length; i++) {
+            validateValue(values[i]);
+        }
+    }
+    
+    private void validateValue(Value value) throws ValueFormatException  {
+        if (value == null) return; // XXX: desired behaviour ? 
+                                   // Could throw exception instead, to disallow null-values ...
+        
+        if (value.getType() != getType()) {
+            throw new ValueFormatException("Illegal value type " + 
+                    PropertyType.PROPERTY_TYPE_NAMES[value.getType()] + 
+                    " for property " + this.name + ". Should be " + 
+                    PropertyType.PROPERTY_TYPE_NAMES[getType()]);
+        }
+    }
+    
+    public int getType() {
+        if (this.propertyTypeDefinition == null)
+            return PropertyType.TYPE_STRING;
+        return this.propertyTypeDefinition.getType();
+    }
+    
     public PropertyTypeDefinition getDefinition() {
         return propertyTypeDefinition;
     }

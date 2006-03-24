@@ -49,10 +49,16 @@ public interface Property extends Cloneable {
 
     public String getName();
 
-    public Value getValue();
+    // IllegalOperationException thrown when property is multi-value
+    public Value getValue() throws IllegalOperationException;
 
     public void setValue(Value value) throws ValueFormatException;
 
+    // IllegalOperationException thrown when property is _not_ multi-value
+    public Value[] getValues() throws IllegalOperationException;
+    
+    public void setValues(Value[] values) throws ValueFormatException;
+    
     public void setDateValue(Date dateValue) throws ValueFormatException;
 
     public void setStringValue(String stringValue) throws ValueFormatException;
@@ -78,3 +84,4 @@ public interface Property extends Cloneable {
     public Object clone() throws CloneNotSupportedException;
 
 }
+

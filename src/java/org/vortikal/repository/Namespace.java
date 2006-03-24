@@ -74,6 +74,13 @@ public class Namespace {
         return thisUrl.equals(thatUrl) && thisPrefix.equals(thatPrefix);
     }
     
+    public int hashCode() {
+        String url = this.url == null ? "" : this.url;
+        String prefix = this.prefix == null ? "" : this.prefix;
+        
+        return url.hashCode() + prefix.hashCode();
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer();
         if (this.prefix != null) {

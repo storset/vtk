@@ -255,7 +255,6 @@ public class MemoryContentStore implements ContentStore {
                  URI_COMPONENT_SEPARATOR : prefix + node.name + URI_COMPONENT_SEPARATOR;
         for (Iterator i = node.entries.keySet().iterator(); i.hasNext();) {
             String key = (String)i.next();
-            //output.println("KEY: " + key); 
             Node entry = (Node)node.entries.get(key);
             if (entry instanceof DirectoryNode) {
                 printContentsInternal(output, (DirectoryNode)entry, prefix);

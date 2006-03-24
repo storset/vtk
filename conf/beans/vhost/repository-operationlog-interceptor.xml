@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="repository.repositoryProxyCreator"
+    class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+    <property name="interceptorNames">
+      <list>
+        <value>repository.repositoryOperationLogInterceptor</value>
+      </list>
+    </property>
+    <property name="beanNames">
+      <list>
+        <value>repository</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="repository.repositoryOperationLogInterceptor"
+    class="org.vortikal.aop.interceptor.RepositoryOperationLogInterceptor">
+    <property name="tokenManager" ref="tokenManager"/>
+  </bean>
+  
+</beans>
+

@@ -46,5 +46,8 @@
 
   <!-- Indexing configuration files -->
   <import resource="index.xml" />
+  
+  <!-- OperationLog interceptor for Repository -->
+  <!--import resource="repository-operationlog-interceptor.xml"/-->
 
 </beans>

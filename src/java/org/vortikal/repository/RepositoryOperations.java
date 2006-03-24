@@ -5,9 +5,11 @@ import java.util.Set;
 
 public class RepositoryOperations {
 
+    public final static String SET_READ_ONLY = "setReadOnly";
     public final static String RETRIEVE = "retrieve";
     public final static String CREATE = "create";
     public final static String CREATE_COLLECTION = "createCollection";
+    public final static String CREATE_DOCUMENT = "createDocument";
     public final static String COPY = "copy";
     public final static String MOVE = "move";
     public final static String DELETE = "delete";
@@ -27,6 +29,7 @@ public class RepositoryOperations {
         WRITE_OPERATIONS = new HashSet();
         WRITE_OPERATIONS.add(CREATE);
         WRITE_OPERATIONS.add(CREATE_COLLECTION);
+        WRITE_OPERATIONS.add(CREATE_DOCUMENT);
         WRITE_OPERATIONS.add(COPY);
         WRITE_OPERATIONS.add(MOVE);
         WRITE_OPERATIONS.add(DELETE);

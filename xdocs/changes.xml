@@ -5,15 +5,12 @@
     <title>Change Log</title>
   </properties>
   <body>
-    <release version="0.2.2-SNAPSHOT" date="In SVN" description="Release 0.2.2">
-      <!-- add 'action' entries here, newest on top: -->
-      <!-- type: update|fix|add|remove -->
 
+    <release version="0.2.2" date="2006-03-27" description="Release 0.2.2">
       <action dev="oyviste" type="fix">
         Fix WebDAV bugs preventing Dreamweaver/Contribute from working 
         properly.
       </action>
-
     </release>
 
     <release version="0.2.1" date="2006-01-12" description="Release 0.2.1">

@@ -90,7 +90,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     public void deleteResource(String uri) {
         String fileName = getLocalFilename(uri);
         //Don't delete root
-        if (uri != null && !uri.equals("/")) {
+        if (!uri.equals("/")) {
             deleteFiles(new File(fileName));
         }
     }

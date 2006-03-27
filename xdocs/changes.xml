@@ -11,11 +11,6 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
-      <action dev="oyviste" type="fix">
-        Fix WebDAV bugs preventing Dreamweaver/Contribute from working 
-        properly.
-      </action>
-
       <action dev="oyviste" type="add">
         Added request filter for normalizing dot-segments in request URIs.
       </action>
@@ -100,11 +95,12 @@
     </release>
 
 
-    <release version="0.2.2-SNAPSHOT" date="In SVN" description="Release 0.2.2">
-      <!-- add 'action' entries here, newest on top: -->
-      <!-- type: update|fix|add|remove -->
+    <release version="0.2.2" date="2006-03-27" description="Release 0.2.2">
+      <action dev="oyviste" type="fix">
+        Fix WebDAV bugs preventing Dreamweaver/Contribute from working 
+        properly.
+      </action>
     </release>
-
 
     <release version="0.2.1" date="In SVN" description="Release 0.2.1">
 

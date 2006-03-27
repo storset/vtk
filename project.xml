@@ -723,5 +723,15 @@
       <name>0.2</name>
       <tag>release-0.2</tag>
     </version>
+    <version>
+      <id>0.2.1</id>
+      <name>0.2.1</name>
+      <tag>release-0.2.1</tag>
+    </version>
+    <version>
+      <id>0.2.2</id>
+      <name>0.2.2</name>
+      <tag>release-0.2.2</tag>
+    </version>
   </versions>
 </project>

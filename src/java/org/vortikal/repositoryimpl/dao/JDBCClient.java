@@ -245,13 +245,10 @@ public class JDBCClient extends AbstractDataAccessor {
     private void loadProperties(Connection conn, ResourceImpl resource)
             throws SQLException {
 
-        String uri = resource.getURI();
-        
-        String query = "select * from EXTRA_PROP_ENTRY where resource_id in " + 
-        "(select resource_id from vortex_resource where uri = '" + uri + "')";
-
-        Statement propStmt = conn.createStatement();
-        ResultSet rs = propStmt.executeQuery(query);
+        String query = "select * from EXTRA_PROP_ENTRY where resource_id = ?";
+        PreparedStatement propStmt = conn.prepareStatement(query);
+        propStmt.setInt(1, resource.getID());
+        ResultSet rs = propStmt.executeQuery();
 
         while (rs.next()) {
 
@@ -265,7 +262,6 @@ public class JDBCClient extends AbstractDataAccessor {
 
         rs.close();
         propStmt.close();
-
     }
 
 
@@ -274,12 +270,15 @@ public class JDBCClient extends AbstractDataAccessor {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String format = formatter.format(new Date());
 
-        String query = "delete from VORTEX_LOCK "
-                + "where timeout < '" + format + "'";
+//         String query = "delete from VORTEX_LOCK "
+//                 + "where timeout < '" + format + "'";
 
-        Statement stmt = conn.createStatement();
-        int n = stmt.executeUpdate(query);
-        if (logger.isInfoEnabled()) {
+        String query = "delete from VORTEX_LOCK where timeout < ?";
+        //Statement stmt = conn.createStatement();
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setDate(1, new java.sql.Date(System.currentTimeMillis()));
+        int n = stmt.executeUpdate();
+        if (logger.isInfoEnabled() && n > 0) {
             logger.info("Deleted " + n + " expired locks");
         }
         stmt.close();
@@ -307,7 +306,7 @@ public class JDBCClient extends AbstractDataAccessor {
             }
             statement += "is_collection from vortex_resource "
                 + "where uri = '" + uri + "' or uri like '" + getURIWildcard(uri) + "'";
-            
+
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(statement);
             stmt.close();
@@ -461,21 +460,15 @@ public class JDBCClient extends AbstractDataAccessor {
 
         String query = "select uri from VORTEX_RESOURCE "
                 + "where uri like ? order by uri asc";
-
         PreparedStatement stmt = conn.prepareStatement(query);
-
         stmt.setString(1, getURIWildcard(parent.getURI()));
-
         ResultSet rs = stmt.executeQuery();
-
         ArrayList l = new ArrayList();
-
         while (rs.next()) {
             String childURI = rs.getString("uri");
 
             l.add(childURI);
         }
-
         rs.close();
         stmt.close();
 
@@ -600,10 +593,13 @@ public class JDBCClient extends AbstractDataAccessor {
             throws SQLException {
         Lock lock = r.getLock();
 
-        if (lock == null) {
-            Statement stmt = conn.createStatement();
+        String query = null;
 
-            stmt.execute("delete from VORTEX_LOCK where resource_id = " + r.getID());
+        if (lock == null) {
+            query = "delete from VORTEX_LOCK where resource_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, r.getID());
+            stmt.executeUpdate();
             stmt.close();
         }
 
@@ -615,17 +611,19 @@ public class JDBCClient extends AbstractDataAccessor {
             String ownerInfo = lock.getOwnerInfo();
             String depth = lock.getDepth();
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from VORTEX_LOCK where token = '"
-                    + lockToken + "'");
+            query = "select id from VORTEX_LOCK where token = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, lockToken);
+            ResultSet rs = stmt.executeQuery();
             boolean exists = rs.next();
-
             rs.close();
             stmt.close();
 
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("select lock_type_id from LOCK_TYPE where "
-                    + "name = '" + type + "'");
+
+            query = "select lock_type_id from LOCK_TYPE where  name = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, type);
+            rs = stmt.executeQuery();
 
             if (!rs.next()) {
                 rs.close();
@@ -703,11 +701,10 @@ public class JDBCClient extends AbstractDataAccessor {
         /*
          * First, delete any previously defined ACEs for this resource:
          */
-        Statement deleteStatement = conn.createStatement();
-
-        deleteStatement.executeUpdate("delete from ACL_ENTRY where " + "resource_id = "
-                + r.getID());
-
+        String query = "delete from ACL_ENTRY where resource_id = ?";
+        PreparedStatement deleteStatement = conn.prepareStatement(query);
+        deleteStatement.setInt(1, r.getID());
+        deleteStatement.executeUpdate();
         deleteStatement.close();
 
         if (r.isInheritedACL()) {
@@ -715,10 +712,11 @@ public class JDBCClient extends AbstractDataAccessor {
              * The ACL is inherited. Update resource entry to reflect this
              * situation (and return)
              */
-            Statement updateStmt = conn.createStatement();
-
-            updateStmt.executeUpdate("update VORTEX_RESOURCE set acl_inherited = 'Y' "
-                    + "where resource_id = " + r.getID());
+            query = "update VORTEX_RESOURCE set acl_inherited = 'Y' "
+                + "where resource_id = ?";
+            PreparedStatement updateStmt = conn.prepareStatement(query);
+            updateStmt.setInt(1, r.getID());
+            updateStmt.executeUpdate();
             updateStmt.close();
 
             return;
@@ -739,19 +737,22 @@ public class JDBCClient extends AbstractDataAccessor {
          * At this point, we know that the ACL is not inherited. Update the
          * inheritance flag in the resource entry:
          */
-        Statement updateStmt = conn.createStatement();
+        query = "update VORTEX_RESOURCE set acl_inherited = 'N' "
+            + "where resource_id = ?";
+        PreparedStatement updateStmt = conn.prepareStatement(query);
+        updateStmt.setInt(1, r.getID());
 
-        updateStmt.executeUpdate("update VORTEX_RESOURCE set acl_inherited = 'N' "
-                + "where resource_id = " + r.getID());
+        updateStmt.executeUpdate();
         updateStmt.close();
     }
 
     private void insertACLEntry(Connection conn, String action, ResourceImpl resource,
             Principal p)
             throws SQLException {
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("select action_type_id from "
-                + "ACTION_TYPE where name = '" + action + "'");
+        String query = "select action_type_id from ACTION_TYPE where name = ?";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setString(1, action);
+        ResultSet rs = stmt.executeQuery();
 
         if (!rs.next()) {
             rs.close();
@@ -787,40 +788,39 @@ public class JDBCClient extends AbstractDataAccessor {
     private void storeProperties(Connection conn, ResourceImpl r)
             throws SQLException {
 
-        Statement deleteStatement = conn.createStatement();
-
-        deleteStatement.executeUpdate("delete from EXTRA_PROP_ENTRY where "
-                + "resource_id = '" + r.getID() + "'");
-
+        String query = "delete from EXTRA_PROP_ENTRY where resource_id = ?";
+        PreparedStatement deleteStatement = conn.prepareStatement(query);
+        deleteStatement.setInt(1, r.getID());
+        deleteStatement.executeUpdate();
         deleteStatement.close();
 
         List properties = r.getProperties();
 
         if (properties != null) {
+
+            String insertQuery = "insert into EXTRA_PROP_ENTRY " +
+                "(extra_prop_entry_id, resource_id, name_space, name, value) "
+                + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)";
+                    
+            PreparedStatement stmt = conn.prepareStatement(query);
+
             for (Iterator iter = properties.iterator(); iter.hasNext();) {
                 Property property = (Property) iter.next();
                 if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
-                    insertPropertyEntry(conn, r, property);
+
+                    stmt.setInt(1, r.getID());
+                    stmt.setString(2, property.getNamespace().getUri());
+                    stmt.setString(3, property.getName());
+                    stmt.setString(4, property.getStringValue());
+                    stmt.addBatch();
                 }
             }
+            stmt.executeBatch();
+            stmt.close();
+
         }
     }
     
-    private void insertPropertyEntry(Connection conn, ResourceImpl r, Property property)
-            throws SQLException {
-        PreparedStatement stmt = conn
-                .prepareStatement("insert into EXTRA_PROP_ENTRY (extra_prop_entry_id, resource_id, "
-                        + "name_space, name, value) "
-                        + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)");
-
-        stmt.setInt(1, r.getID());
-        stmt.setString(2, property.getNamespace().getUri());
-        stmt.setString(3, property.getName());
-        stmt.setString(4, property.getStringValue());
-
-        stmt.executeUpdate();
-        stmt.close();
-    }
 
 
     protected  void delete(Connection conn, ResourceImpl resource)
@@ -1199,7 +1199,6 @@ public class JDBCClient extends AbstractDataAccessor {
             + "where r.resource_id in ("
             + "select resource_id  from VORTEX_RESOURCE where uri like ?)";
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(resource.getURI()));
         ResultSet rs = stmt.executeQuery();
         

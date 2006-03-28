@@ -95,7 +95,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private ApplicationContext applicationContext;
     
     private ResourceTypeDefinition[] getResourceTypeDefinitionChildren(ResourceTypeDefinition rt) {
-        return (ResourceTypeDefinition[])resourceTypeDefinitions.get(rt);
+        ResourceTypeDefinition[] children = (ResourceTypeDefinition[])resourceTypeDefinitions.get(rt);
+        if (children == null)
+            return new ResourceTypeDefinition[0];
+        return children;
     }
     
     public void afterPropertiesSet() throws Exception {
@@ -170,7 +173,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
         init();
         // XXX: Add resource type to resource
-        ResourceImpl newResource = new ResourceImpl(uri, this.principalManager, this);
+        ResourceImpl newResource = new ResourceImpl(uri, this);
         ResourceTypeDefinition rt = create(principal, newResource, new Date(), 
                 collection, rootResourceTypeDefinition);
         return newResource;
@@ -295,8 +298,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 }
             }
         }
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
-                this.principalManager, this);
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
         newResource.setID(resource.getID());
         newResource.setACL((Acl)resource.getAcl().clone());
         if (resource.getLock() != null) newResource.setLock((Lock)resource.getLock().clone());
@@ -381,8 +383,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             Principal principal) {
         init();
         
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
-                this.principalManager, this);
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
         newResource.setID(resource.getID());
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
@@ -399,8 +400,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         
         // XXX: What to do about swapping old resource with new?
         // XXX: Add resource type to resource
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
-                this.principalManager, this);
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
         newResource.setID(resource.getID());
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());

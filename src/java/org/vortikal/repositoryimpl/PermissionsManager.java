@@ -138,14 +138,13 @@ public class PermissionsManager {
         }
 
         // Condition 3a:
-        if (roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (roleManager.hasRole(principal, RoleManager.ROOT)) {
             return;
         }
 
         // Condition 3b:
         if (PrivilegeDefinition.READ.equals(action)
-                && roleManager.hasRole(principal.getQualifiedName(),
-                        RoleManager.READ_EVERYTHING)) {
+                && roleManager.hasRole(principal, RoleManager.READ_EVERYTHING)) {
             return;
         }
 

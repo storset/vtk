@@ -51,15 +51,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.LockImpl;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.util.repository.URIUtil;
@@ -140,7 +137,7 @@ public class JDBCClient extends AbstractDataAccessor {
     private ResourceImpl populateResource(String uri, ResultSet rs) 
         throws SQLException {
 
-        ResourceImpl resource = new ResourceImpl(uri, principalManager, propertyManager);
+        ResourceImpl resource = new ResourceImpl(uri, propertyManager);
         resource.setID(rs.getInt("resource_id"));
         resource.setInheritedACL(rs.getString("acl_inherited").equals("Y"));
         
@@ -155,9 +152,10 @@ public class JDBCClient extends AbstractDataAccessor {
             new Date(rs.getTimestamp("creation_time").getTime()));
         resource.addProperty(prop);
 
+        Principal principal = principalManager.getUserPrincipal(rs.getString("resource_owner"));
         prop = this.propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
-            rs.getString("resource_owner"));
+            principal);
         resource.addProperty(prop);
 
         String string = rs.getString("display_name");
@@ -196,9 +194,10 @@ public class JDBCClient extends AbstractDataAccessor {
             new Date(rs.getTimestamp("content_last_modified").getTime()));
         resource.addProperty(prop);
 
+        principal = principalManager.getUserPrincipal(rs.getString("content_modified_by"));
         prop = this.propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
-            rs.getString("content_modified_by"));
+            principal);
         resource.addProperty(prop);
 
         prop = this.propertyManager.createProperty(
@@ -206,9 +205,10 @@ public class JDBCClient extends AbstractDataAccessor {
             new Date(rs.getTimestamp("properties_last_modified").getTime()));
         resource.addProperty(prop);
 
+        principal = principalManager.getUserPrincipal(rs.getString("properties_modified_by"));
         prop = this.propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
-            rs.getString("properties_modified_by"));
+            principal);
         resource.addProperty(prop);
 
         if (!collection) {
@@ -477,9 +477,9 @@ public class JDBCClient extends AbstractDataAccessor {
 
     protected void store(Connection conn, ResourceImpl r)
             throws SQLException, IOException {
+
         String uri = r.getURI();
-        
-        String parent = URIUtil.getParentURI(uri);
+        String parent = r.getParent();
 
         Date contentLastModified = r.getContentLastModified();
         Date propertiesLastModified = r.getPropertiesLastModified();

@@ -48,7 +48,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.repository.URIUtil;
 
@@ -69,13 +68,10 @@ public class ResourceImpl implements Resource, Cloneable {
     
     private Map propertyMap = new HashMap();
     
-    private PrincipalManager principalManager;
     private PropertyManagerImpl propertyManager;
     
-    public ResourceImpl(String uri, PrincipalManager principalManager, 
-            PropertyManagerImpl propertyManager) {
+    public ResourceImpl(String uri, PropertyManagerImpl propertyManager) {
         this.uri = uri;
-        this.principalManager = principalManager;
         this.propertyManager = propertyManager;
     }
 
@@ -237,15 +233,15 @@ public class ResourceImpl implements Resource, Cloneable {
     
 
     public Principal getOwner() {
-        return principalManager.getUserPrincipal(getPropValue(PropertyType.OWNER_PROP_NAME));
+        return getPrincipalPropValue(PropertyType.OWNER_PROP_NAME);
     }
 
     public Principal getContentModifiedBy() {
-        return principalManager.getUserPrincipal(getPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME));
+        return getPrincipalPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
     }
 
     public Principal getPropertiesModifiedBy() {
-        return principalManager.getUserPrincipal(getPropValue(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME));
+        return getPrincipalPropValue(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME);
     }
 
     public Date getCreationTime() {
@@ -327,8 +323,9 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public void setOwner(Principal principal) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.OWNER_PROP_NAME, principal.getQualifiedName());
+        Property prop = getProperty(Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.OWNER_PROP_NAME);
+        prop.setPrincipalValue(principal);
     }
 
     public void setDisplayName(String text) {
@@ -341,7 +338,7 @@ public class ResourceImpl implements Resource, Cloneable {
         LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
                 .clone();
 
-        ResourceImpl clone = new ResourceImpl(uri, principalManager, propertyManager);
+        ResourceImpl clone = new ResourceImpl(uri, propertyManager);
         clone.setID(this.id);
         clone.setACL(acl);
         clone.setInheritedACL(this.inheritedACL);
@@ -376,6 +373,11 @@ public class ResourceImpl implements Resource, Cloneable {
     private boolean getBooleanPropValue(String name) {
         Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         return prop.getBooleanValue();
+    }
+
+    private Principal getPrincipalPropValue(String name) {
+        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        return prop.getPrincipalValue();
     }
 
     private void setProperty(Namespace namespace, String name, String value) {

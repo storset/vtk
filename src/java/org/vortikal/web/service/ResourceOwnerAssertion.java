@@ -66,6 +66,6 @@ public class ResourceOwnerAssertion
         if (principal == null) return false;
         
         return resource.getOwner().equals(principal)
-            || roleManager.hasRole(principal.getQualifiedName(),RoleManager.ROOT);
+            || roleManager.hasRole(principal, RoleManager.ROOT);
     }
 }

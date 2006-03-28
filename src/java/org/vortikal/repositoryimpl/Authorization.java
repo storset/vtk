@@ -54,7 +54,7 @@ public class Authorization {
         if (protectionLevel == PropertyType.PROTECTION_LEVEL_UNEDITABLE)
             throw new AuthorizationException("Principal not authorized for property editing.");
         
-        if (this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT))
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
 
         switch (protectionLevel) {

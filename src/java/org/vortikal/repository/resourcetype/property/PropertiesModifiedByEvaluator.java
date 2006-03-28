@@ -42,12 +42,12 @@ public class PropertiesModifiedByEvaluator implements CreatePropertyEvaluator,
     PropertiesModificationPropertyEvaluator {
 
     public boolean create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
-        property.setStringValue(principal.getQualifiedName());
+        property.setPrincipalValue(principal);
         return true;
     }
 
     public boolean propertiesModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
-        property.setStringValue(principal.getQualifiedName());
+        property.setPrincipalValue(principal);
         return true;
     }
 

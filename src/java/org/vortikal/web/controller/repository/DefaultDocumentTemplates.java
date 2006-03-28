@@ -266,7 +266,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
 
     private void findTemplatesRecursively(Resource parent, Map templates) 
-        throws IOException{
+        throws IOException {
 
         Resource[] children = repository.listChildren(trustedToken, parent.getURI(), true);
         for (int i = 0; i < children.length; i++) {

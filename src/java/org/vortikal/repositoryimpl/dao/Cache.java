@@ -322,8 +322,12 @@ public class Cache implements DataAccessor, InitializingBean {
             for (Iterator i = uris.iterator(); i.hasNext();) {
                 String uri = (String) i.next();
 
-                if (!uri.equals(r.getURI()) && this.items.containsURI(uri)) {
+                if (this.items.containsURI(uri)) {
                     this.items.remove(uri);
+                }
+                
+                if (uri.equals(r.getURI())) {
+                    enterResource(r);
                 }
             }
         } finally {

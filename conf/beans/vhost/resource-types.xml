@@ -26,6 +26,7 @@
 
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="owner" />
+    <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_OWNER_EDITABLE" />
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="ownerEvaluator" />
@@ -71,6 +72,7 @@
   
   <bean id="contentModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="contentModifiedBy" />
+    <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="contentModifiedByEvaluator" />
@@ -92,6 +94,7 @@
   
   <bean id="propertiesModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="propertiesModifiedBy" />
+    <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROOT_EDITABLE" />
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="propertiesModifiedByEvaluator" />
@@ -145,7 +148,7 @@
   </bean>
 
   <bean id="contentLocalePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="characterEncoding" />
+    <property name="name" value="contentLocale" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
     <property name="mandatory" value="false" />
   </bean>
@@ -286,6 +289,12 @@
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
               value="org.vortikal.repository.resourcetype.PropertyType.TYPE_LONG" />
+  </bean>
+
+  <bean id="TYPE_PRINCIPAL"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_PRINCIPAL" />
   </bean>
 
   <!-- ASSERTIONS -->

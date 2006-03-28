@@ -30,10 +30,10 @@
  */
 package org.vortikal.security.roles;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+
+import org.vortikal.security.Principal;
 
 
 /**
@@ -52,8 +52,10 @@ public class RoleManager {
 
 
 
-    public boolean hasRole(String principalName, int role) {
+    public boolean hasRole(Principal principal, int role) {
 
+        String principalName = principal.getQualifiedName();
+        
         switch (role) {
         case ROOT:
             return rootRole.contains(principalName);

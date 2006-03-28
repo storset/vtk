@@ -95,29 +95,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return readOnly;
     }
     
-    public void setReadOnly(String token, boolean readOnly) {
-
-        Principal principal = tokenManager.getPrincipal(token);
-
-        if (!roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
-            throw new AuthorizationException();
-        }
-
-        this.readOnly = readOnly;
+    public String getId() {
+        return id;
     }
 
     public boolean exists(String token, String uri) throws IOException {
-        if (!uriValidator.validateURI(uri)) return false;
+        if (!uriValidator.validateURI(uri)) 
+            return false;
 
-        ResourceImpl r = dao.load(uri);
+        if (dao.load(uri) != null) 
+            return true;
 
-        if (r == null) return false;
-
-        return true;
+        return false;
     }
 
-    public Resource retrieve(String token, String uri,
-        boolean forProcessing)
+    public Resource retrieve(String token, String uri, boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IOException {
         Principal principal = tokenManager.getPrincipal(token);
@@ -128,53 +120,52 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         if (resource == null) throw new ResourceNotFoundException(uri);
 
-        try {
-            /* authorize for the right privilege */
-            String privilege = (forProcessing)
-                ? PrivilegeDefinition.READ_PROCESSED
-                : PrivilegeDefinition.READ;
+        /* authorize for the right privilege */
+        String privilege = (forProcessing) ? 
+                PrivilegeDefinition.READ_PROCESSED : PrivilegeDefinition.READ;
 
-            this.permissionsManager.authorize(resource.getAcl(), principal, privilege);
-            ResourceImpl clone = (ResourceImpl)resource.clone();
-            
-            return clone;
+        this.permissionsManager.authorize(resource.getAcl(), principal, privilege);
+
+        try {
+            return (Resource) resource.clone();
+
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
                 "clone() resource: " + resource);
         }
     }
 
-    public Resource[] listChildren(String token, String uri,
+    public Resource[] listChildren(String token, String uri, 
             boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!uriValidator.validateURI(uri)) throw new ResourceNotFoundException(uri);
 
-        ResourceImpl resource = dao.load(uri);
+        ResourceImpl collection = dao.load(uri);
 
-        if (resource == null) {
+        if (collection == null) {
             throw new ResourceNotFoundException(uri);
         }
 
-        // FIXME: magic return value (throw IllegalOperationException ?)
-        //        Need to watch out for client code that depends on this behaviour ..
-        if (!resource.isCollection()) {
-            return null;
+        if (!collection.isCollection()) {
+            throw new IllegalOperationException(
+                    "Can't list children for non-collection resources");
         }
 
         /* authorize for the right privilege: */
-        String privilege = (forProcessing) ? PrivilegeDefinition.READ_PROCESSED
-                : PrivilegeDefinition.READ;
+        String privilege = (forProcessing) ? 
+                PrivilegeDefinition.READ_PROCESSED : PrivilegeDefinition.READ;
 
-        this.permissionsManager.authorize(resource.getAcl(), principal, privilege);
+        this.permissionsManager.authorize(collection.getAcl(), principal, privilege);
 
-        ResourceImpl[] list = this.dao.loadChildren(resource);
+        ResourceImpl[] list = this.dao.loadChildren(collection);
         Resource[] children = new Resource[list.length];
 
         for (int i = 0; i < list.length; i++) {
             try {
-                children[i] = (ResourceImpl)list[i].clone();
+                children[i] = (Resource)list[i].clone();
 
             } catch (CloneNotSupportedException e) {
                 throw new IOException("An internal error occurred: unable to " +
@@ -186,74 +177,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return children;
     }
 
-    public Resource createDocument(String token,
-            String uri) throws IllegalOperationException,
-            AuthorizationException, AuthenticationException,
-            ResourceLockedException, ReadOnlyException, IOException {
+    public Resource createDocument(String token, String uri) 
+    throws IllegalOperationException, AuthorizationException, 
+    AuthenticationException, ResourceLockedException, ReadOnlyException, 
+    IOException {
+
         return create(token, uri, false);
     }
 
     public Resource createCollection(String token, String uri) 
-            throws IllegalOperationException, 
-            AuthorizationException, AuthenticationException, 
-            ResourceLockedException, ReadOnlyException, IOException {
+    throws IllegalOperationException, AuthorizationException, 
+    AuthenticationException, ResourceLockedException, ReadOnlyException, 
+    IOException {
 
         return create(token, uri, true);
     }
-
-    private Resource create(String token, String uri, boolean collection)
-    throws AuthorizationException, AuthenticationException, 
-    IllegalOperationException, ResourceLockedException, 
-    ReadOnlyException, IOException {
-
-        Principal principal = tokenManager.getPrincipal(token);
-
-        if (readOnly(principal)) throw new ReadOnlyException();
-
-        if (!uriValidator.validateURI(uri)) throw new ResourceNotFoundException(uri);
-
-        ResourceImpl resource = dao.load(uri);
-
-        if (resource != null) { 
-            throw new IllegalOperationException("Resource already exists");
-        }
-
-        String parentURI = URIUtil.getParentURI(uri);
-
-        ResourceImpl parent = dao.load(parentURI);
-
-        if ((parent == null) || !parent.isCollection()) {
-            throw new IllegalOperationException("Either parent doesn't exist " +
-                    "or parent is document");
-        }
-
-        ResourceImpl newResource = null;
-
-        try {
-            this.permissionsManager.authorize(parent.getAcl(), principal, 
-                    PrivilegeDefinition.WRITE);
-            this.lockManager.lockAuthorize(parent, principal, false);
-            newResource = propertyManager.create(principal, uri, collection);
-            newResource.setACL((Acl)parent.getAcl().clone());
-            newResource.setInheritedACL(true);
-            this.dao.store(newResource);
-            newResource = this.dao.load(uri);
-
-            parent.addChildURI(uri);
-            propertyManager.collectionContentModification(parent, principal);
-            
-            this.dao.store(parent);
-
-            newResource = (ResourceImpl)newResource.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " +
-                "clone() resource: " + uri);
-        }
-
-        context.publishEvent(new ResourceCreationEvent(this, newResource));
-
-        return newResource;
-    }    
 
     public void copy(String token, String srcUri, String destUri, String depth,
         boolean overwrite, boolean preserveACL)
@@ -261,11 +199,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             AuthenticationException, FailedDependencyException, 
             ResourceOverwriteException, ResourceLockedException, 
             ResourceNotFoundException, ReadOnlyException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
 
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
-        }
+        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(srcUri)) {
             throw new ResourceNotFoundException(srcUri);
@@ -334,11 +271,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             AuthenticationException, FailedDependencyException, 
             ResourceOverwriteException, ResourceLockedException, 
             ResourceNotFoundException, ReadOnlyException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
 
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
-        }
+        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(srcUri)) {
             throw new ResourceNotFoundException(srcUri);
@@ -425,7 +361,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             AuthenticationException, ResourceNotFoundException, 
             ResourceLockedException, FailedDependencyException, 
             ReadOnlyException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
+
+        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
@@ -452,30 +391,28 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                     PrivilegeDefinition.WRITE);
         this.lockManager.lockAuthorize(parentCollection, principal, false);
 
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
-        }
-
         this.dao.delete(r);
-
-        this.propertyManager.collectionContentModification(parentCollection, 
-                principal);
+        this.propertyManager.collectionContentModification(
+                parentCollection, principal);
         this.dao.store(parentCollection);
 
-        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), 
-                                                                r.isCollection());
+        ResourceDeletionEvent event = 
+            new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
 
         context.publishEvent(event);
     }
 
 
     public String lock(String token, String uri, String lockType,
-            String ownerInfo, String depth, int requestedTimeoutSeconds, String lockToken)
-        throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, FailedDependencyException, 
-            ResourceLockedException, IllegalOperationException, 
-            ReadOnlyException, IOException {
+            String ownerInfo, String depth, int requestedTimeoutSeconds, 
+            String lockToken) throws ResourceNotFoundException, 
+            AuthorizationException, AuthenticationException, 
+            FailedDependencyException, ResourceLockedException, 
+            IllegalOperationException, ReadOnlyException, IOException {
+        
         Principal principal = tokenManager.getPrincipal(token);
+
+        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
@@ -486,10 +423,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         } else {
             throw new IllegalOperationException("Invalid depth parameter: "
                                                 + depth);
-        }
-
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
         }
 
         ResourceImpl r = dao.load(uri);
@@ -526,9 +459,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             IOException {
         Principal principal = tokenManager.getPrincipal(token);
 
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
-        }
+        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
@@ -541,8 +472,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         this.permissionsManager.authorize(r.getAcl(), principal, PrivilegeDefinition.WRITE);
+
         // Root role has permission to remove all locks
-        if (!this.roleManager.hasRole(principal.getQualifiedName(), RoleManager.ROOT)) {
+        if (!this.roleManager.hasRole(principal, RoleManager.ROOT)) {
             this.lockManager.lockAuthorize(r, principal, false);
         }
 
@@ -556,17 +488,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         throws ResourceNotFoundException, AuthorizationException, 
             ResourceLockedException, AuthenticationException, 
             IllegalOperationException, ReadOnlyException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
+
+        checkReadOnly(principal);
 
         if (resource == null) {
             throw new IllegalOperationException("Can't store nothing.");
         }
 
         String uri = resource.getURI();
-
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
-        }
 
         if (!uriValidator.validateURI(uri)) {
             throw new IllegalOperationException("Invalid URI: " + uri);
@@ -578,10 +509,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new ResourceNotFoundException(uri);
         }
 
+        this.permissionsManager.authorize(
+                original.getAcl(), principal, PrivilegeDefinition.WRITE);
+        this.lockManager.lockAuthorize(original, principal, false);
+        
         try {
-            this.permissionsManager.authorize(original.getAcl(), principal, PrivilegeDefinition.WRITE);
-            this.lockManager.lockAuthorize(original, principal, false);
-            
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
             ResourceImpl newResource = 
@@ -607,6 +539,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, ResourceLockedException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!uriValidator.validateURI(uri)) {
@@ -620,7 +553,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         if (r.isCollection()) {
-            throw new IllegalOperationException("resource is collection");
+            throw new IllegalOperationException("Resource is collection");
         }
 
         /* authorize for the right privilege */
@@ -629,9 +562,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         this.permissionsManager.authorize(r.getAcl(), principal, privilege);
 
-        InputStream inStream = this.dao.getInputStream(r);
-
-        return inStream;
+        return this.dao.getInputStream(r);
     }
 
 
@@ -642,7 +573,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         throws AuthorizationException, AuthenticationException, 
             ResourceNotFoundException, ResourceLockedException, 
             IllegalOperationException, ReadOnlyException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
+
+        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
@@ -658,15 +592,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("resource is collection");
         }
 
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
-        }
-
+        this.permissionsManager.authorize(r.getAcl(), principal, PrivilegeDefinition.WRITE);
+        this.lockManager.lockAuthorize(r, principal, false);
+    
         try {
-            this.permissionsManager.authorize(r.getAcl(), principal, PrivilegeDefinition.WRITE);
-            this.lockManager.lockAuthorize(r, principal, false);
-        
-            ResourceImpl original = (ResourceImpl) r.clone();
+            Resource original = (ResourceImpl) r.clone();
 
             this.dao.storeContent(r, byteStream);
             
@@ -675,7 +605,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.dao.store(r);
 
             ContentModificationEvent event = new ContentModificationEvent(
-                this, (Resource) r.clone(), (Resource) original.clone());
+                this, (Resource) r.clone(), original);
 
             context.publishEvent(event);
         } catch (CloneNotSupportedException e) {
@@ -688,24 +618,24 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     public Acl getACL(String token, String uri)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IOException {
+        
         Principal principal = tokenManager.getPrincipal(token);
 
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
         }
 
-        ResourceImpl r = dao.load(uri);
+        Resource r = dao.load(uri);
 
         if (r == null) {
             throw new ResourceNotFoundException(uri);
         }
 
+        this.permissionsManager.authorize(r.getAcl(), principal, PrivilegeDefinition.READ);
+
         try {
-            this.permissionsManager.authorize(r.getAcl(), principal, PrivilegeDefinition.READ);
+            return (Acl) r.getAcl().clone();
 
-            Acl acl = (Acl)r.getAcl().clone();
-
-            return acl;
         } catch (CloneNotSupportedException e) {
             throw new IOException(e.getMessage());
         }
@@ -715,12 +645,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException, AclException, 
             ReadOnlyException, IOException {
+
         Principal principal = tokenManager.getPrincipal(token);
 
-        if (readOnly(principal)) {
-            throw new ReadOnlyException();
-        }
-
+        checkReadOnly(principal);
+        
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
         }
@@ -735,21 +664,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("Can't make root acl inherited.");
         }
 
+        this.permissionsManager.authorize(r.getAcl(), principal, PrivilegeDefinition.WRITE_ACL);
+        this.lockManager.lockAuthorize(r, principal, false);
+        this.permissionsManager.validateACL(acl);
+
         try {
+
             Resource originalResource = (Resource)r.clone();
-
-            this.permissionsManager.authorize(r.getAcl(), principal, PrivilegeDefinition.WRITE_ACL);
-            this.lockManager.lockAuthorize(r, principal, false);
-            this.permissionsManager.validateACL(acl);
-
 
             Acl newAcl = null;
             if (acl.isInherited()) {
                 /* When the ACL is inherited, make our ACL a copy of the
                  * parent's ACL, since the supplied one may contain other
                  * ACEs than the one we now inherit from. */
-                newAcl = (Acl) this.dao.load(
-                    URIUtil.getParentURI(r.getURI())).getAcl().clone();
+                Resource parent = this.dao.load(r.getParent());
+                newAcl = (Acl) parent.getAcl().clone();
                 newAcl.setInherited(true);
             } else {
                 newAcl = (Acl)acl.clone();
@@ -776,16 +705,84 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
-    /* Internal (not Repository API) methods: */
-    public DataAccessor getDataAccessor() {
-        return this.dao;
-    }
+    private Resource create(String token, String uri, boolean collection)
+    throws AuthorizationException, AuthenticationException, 
+    IllegalOperationException, ResourceLockedException, 
+    ReadOnlyException, IOException {
 
-    private boolean readOnly(Principal principal) {
-        return this.readOnly && !roleManager.hasRole(
-                principal.getQualifiedName(), RoleManager.ROOT);
+        Principal principal = tokenManager.getPrincipal(token);
+
+        checkReadOnly(principal);
+
+        if (!uriValidator.validateURI(uri)) throw new ResourceNotFoundException(uri);
+
+        ResourceImpl resource = dao.load(uri);
+
+        if (resource != null) { 
+            throw new IllegalOperationException("Resource already exists");
+        }
+
+        String parentURI = URIUtil.getParentURI(uri);
+
+        ResourceImpl parent = dao.load(parentURI);
+
+        if ((parent == null) || !parent.isCollection()) {
+            throw new IllegalOperationException("Either parent doesn't exist " +
+                    "or parent is document");
+        }
+
+        this.permissionsManager.authorize(parent.getAcl(), principal, 
+                PrivilegeDefinition.WRITE);
+        this.lockManager.lockAuthorize(parent, principal, false);
+
+        ResourceImpl newResource = 
+            propertyManager.create(principal, uri, collection);
+
+        try {
+            newResource.setACL((Acl)parent.getAcl().clone());
+            newResource.setInheritedACL(true);
+            this.dao.store(newResource);
+            newResource = this.dao.load(uri);
+
+            parent.addChildURI(uri);
+            propertyManager.collectionContentModification(parent, principal);
+            
+            this.dao.store(parent);
+
+            newResource = (ResourceImpl)newResource.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("An internal error occurred: unable to " +
+                "clone() resource: " + uri);
+        }
+
+        context.publishEvent(new ResourceCreationEvent(this, newResource));
+
+        return newResource;
+    }    
+
+    
+    private void checkReadOnly(Principal principal) {
+        if (this.readOnly && !this.roleManager.hasRole(principal, 
+                RoleManager.ROOT)) {
+            throw new ReadOnlyException();
+        }
     }
     
+
+    public void setReadOnly(String token, boolean readOnly) 
+    throws AuthorizationException {
+
+        Principal principal = tokenManager.getPrincipal(token);
+
+        if (!roleManager.hasRole(principal, RoleManager.ROOT)) {
+            throw new AuthorizationException("Not authorized to switch read " +
+                    "only state of repository");
+        }
+
+        this.readOnly = readOnly;
+    }
+
+
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
@@ -803,10 +800,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.roleManager = roleManager;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -821,6 +814,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
     public void setApplicationContext(ApplicationContext context) {
         this.context = context;
+    }
+
+    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+        this.propertyManager = propertyManager;
     }
 
     public void afterPropertiesSet() {
@@ -848,13 +845,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new BeanInitializationException(
             "Bean property 'propertyManager' must be set");
         }
-    }
-
-    /**
-     * @param propertyManager The propertyManager to set.
-     */
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
-        this.propertyManager = propertyManager;
     }
 
 }

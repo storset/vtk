@@ -47,7 +47,7 @@ public class ContentModifiedByEvaluator implements CreatePropertyEvaluator,
                           PropertySet ancestorPropertySet, 
                           boolean isCollection, 
                           Date time) throws PropertyEvaluationException {
-        property.setStringValue(principal.getQualifiedName());
+        property.setPrincipalValue(principal);
         return true;
     }
 
@@ -56,7 +56,7 @@ public class ContentModifiedByEvaluator implements CreatePropertyEvaluator,
                                        PropertySet ancestorPropertySet, 
                                        Content content, 
                                        Date time) throws PropertyEvaluationException {
-        property.setStringValue(principal.getQualifiedName());
+        property.setPrincipalValue(principal);
         return true;
     }
 

@@ -34,10 +34,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +68,8 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
     private final static String ACL_READ_ALL_NO = "acl_read_all_no";
     
     Log logger = LogFactory.getLog(this.getClass());
-    private JDBCClient jdbcDatabase;
+    private DataSource dataSource;
+    
     
     /**
      * Holds value of property loggerType, which determines what type of log entries
@@ -82,16 +83,15 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
     private int loggerId = 1;
         
     
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     public void afterPropertiesSet() {
-        if (jdbcDatabase == null) {
-            throw new BeanInitializationException("JDBCDatabase accessor not set.");
+        if (this.dataSource == null) {
+            throw new BeanInitializationException("JavaBean property 'dataSource' not set.");
         }
         
-        logger.debug("JDBC resource change fetcher initialized.");
-        logger.debug("There are " + countPendingChanges() + " pending changes in the changelog.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("There are " + countPendingChanges()
+                         + " pending changes in the changelog.");
+        }
     }
     
     /**
@@ -103,8 +103,9 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         
         List result = new ArrayList();
         try {
-            conn = jdbcDatabase.getConnection();
-            
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false); 
+           
             String query = "SELECT cl.* FROM changelog_entry cl " +
                            "WHERE cl.logger_type=? AND cl.logger_id=?";
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -195,7 +196,8 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         
         List result = null;
         try {
-            conn = jdbcDatabase.getConnection();
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
                 
             // Fetch all relevant changes up to MAX(changelog_entry_id)
             String maxIdQuery = "SELECT MAX(cl.changelog_entry_id) FROM changelog_entry cl " +
@@ -296,7 +298,8 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         Connection conn = null;
         int result = -1;
         try {
-            conn = jdbcDatabase.getConnection();
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
             String query =
                     "SELECT COUNT(1) FROM changelog_entry cl WHERE cl.logger_type =? " + 
                     "AND cl.logger_id =?";
@@ -338,7 +341,8 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
     public void removeChanges(List changes) {
         Connection conn = null;
         try {
-            conn = jdbcDatabase.getConnection();
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
             // Delete indexed changes to resources, including all those that
             // occured before the last change to a resource. This should be OK to do.
             // NOTE: might be cases where the above is not true, need to consider this some more.
@@ -377,8 +381,12 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         }
     }
     
-    public void setJdbcDatabase(JDBCClient jdbcDatabase) {
-        this.jdbcDatabase = jdbcDatabase;
+//     public void setJdbcDatabase(JDBCClient jdbcDatabase) {
+//         this.jdbcDatabase = jdbcDatabase;
+//     }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**

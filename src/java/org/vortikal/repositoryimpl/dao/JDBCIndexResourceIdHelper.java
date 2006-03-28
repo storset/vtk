@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import org.vortikal.repositoryimpl.index.util.IndexResourceIdHelper;
 import org.apache.commons.logging.Log;
@@ -51,11 +52,15 @@ import org.springframework.beans.factory.InitializingBean;
 public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, InitializingBean {
     
     Log logger = LogFactory.getLog(this.getClass());    
-    private JDBCClient jdbcDatabase = null;
+    private DataSource dataSource;
     
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     public void afterPropertiesSet() {
-        if (jdbcDatabase == null) {
-            throw new BeanInitializationException("JDBC database not set.");
+        if (this.dataSource == null) {
+            throw new BeanInitializationException("JavaBean property 'dataSource' not set.");
         }
     }
     
@@ -72,7 +77,8 @@ public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, Initial
                 uri = uri.substring(0, uri.length()-1);
             }
             
-            conn = jdbcDatabase.getConnection();
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
             
             // Get resource id
             Statement stmt = conn.createStatement();
@@ -133,7 +139,6 @@ public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, Initial
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException sqle) {
                 logger.warn("SQLException while closing connection.", sqle);
@@ -155,7 +160,8 @@ public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, Initial
                 uri = uri.substring(0, uri.length()-1);
             }
             
-            conn = jdbcDatabase.getConnection();
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
             Statement stmt = conn.createStatement();
             ResultSet rs = 
                     stmt.executeQuery("SELECT resource_id FROM vortex_resource WHERE uri='" +
@@ -173,7 +179,6 @@ public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, Initial
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException sqle) {
                 logger.warn("SQLException while closing connection.", sqle);
@@ -183,7 +188,4 @@ public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, Initial
         return id;
     }
     
-    public void setJdbcDatabase(JDBCClient jdbcDatabase) {
-        this.jdbcDatabase = jdbcDatabase;
-    }
 }

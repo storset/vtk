@@ -50,10 +50,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.dbcp.BasicDataSource;
-
-import org.springframework.beans.factory.DisposableBean;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
@@ -71,150 +67,35 @@ import org.vortikal.util.web.URLUtil;
 
 /**
  * This class is going to be a "generic" JDBC database accessor. Currently, only
- * PostgreSQL is supported.
+ * PostgreSQL is supported. 
  *
  */
-public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
+public class JDBCClient extends AbstractDataAccessor {
 
-    private String databaseDriver;
-    private int maxDatabaseConnections = 6;
-    private String databaseURL;
-    private String databaseUser;
-    private String databasePassword;
-
-    private BasicDataSource pool;
-
-    public void setDatabaseDriver(String databaseDriver) {
-        this.databaseDriver = databaseDriver;
-    }
-
-    public void setDatabasePassword(String databasePassword) {
-        this.databasePassword = databasePassword;
-    }
-
-    public void setDatabaseURL(String databaseURL) {
-        this.databaseURL = databaseURL;
-    }
-
-    public void setDatabaseUser(String databaseUser) {
-        this.databaseUser = databaseUser;
-    }
-
-    public void setMaxDatabaseConnections(int maxDatabaseConnections) {
-        this.maxDatabaseConnections = maxDatabaseConnections;
-    }
-
-    public void afterPropertiesSet()
-            throws Exception {
-        super.afterPropertiesSet();
-
-        logger.info("Setting up database");
-
-        if (contentStore == null) {
-            throw new IOException("Missing property 'contentStore'");
-        }
-        
-        if (databaseURL == null) {
-            throw new IOException("Missing property \"databaseURL\"");
-        }
-
-        if (databaseUser == null) {
-            throw new IOException("Missing property \"databaseUser\"");
-        }
-
-        if (databasePassword == null) {
-            throw new IOException("Missing property \"databasePassword\"");
-        }
-
-        if (maxDatabaseConnections == 0) {
-            throw new IOException("Missing property " + "\"maxDatabaseConnections\"");
-        }
-
-        if (databaseDriver == null) {
-            throw new IOException("Missing property " + "\"databaseDriver\"");
-        }
-
-        pool = new BasicDataSource();
-
-        logger.info("Using driver " + databaseDriver);
-        pool.setDriverClassName(databaseDriver);
-        pool.setMaxActive(maxDatabaseConnections);
-        pool.setUrl(databaseURL);
-        pool.setUsername(databaseUser);
-        pool.setPassword(databasePassword);
-        pool.setDefaultAutoCommit(false);
-    }
-
-
-    protected Connection getConnection()
-            throws SQLException {
-        Connection conn = pool.getConnection();
-        return conn;
-    }
-
-    private boolean tableExists(Connection conn, String tableName)
-            throws IOException {
-        try {
-            DatabaseMetaData md = conn.getMetaData();
-
-            ResultSet rs = md.getTables(null, null, tableName, null);
-            boolean exists = rs.next();
-
-            rs.close();
-
-            return exists;
-        } catch (SQLException e) {
-            logger.warn("Error occurred while checking for table existance: ", e);
-            throw new IOException(e.getMessage());
-        }
-    }
-
-    public boolean validate()
-            throws IOException {
-        Connection conn = null;
+    protected boolean validate(Connection conn) throws SQLException {
         boolean exists = false;
 
-        try {
-            conn = getConnection();
-            exists = ((tableExists(conn, "vortex_resource") || tableExists(conn,
-                    "VORTEX_RESOURCE"))
-                    && (tableExists(conn, "lock_type") || tableExists(conn, "LOCK_TYPE"))
-                    && (tableExists(conn, "vortex_lock") || tableExists(conn,
-                            "VORTEX_LOCK"))
-                    && (tableExists(conn, "action_type") || tableExists(conn,
-                            "ACTION_TYPE"))
-                    && (tableExists(conn, "acl_entry") || tableExists(conn, "ACL_ENTRY")) && (tableExists(
-                    conn, "extra_prop_entry") || tableExists(conn, "EXTRA_PROP_ENTRY")));
-
-            conn.commit();
-
-            if (logger.isDebugEnabled()) {
-                logger.debug(exists ? "All required tables exist"
-                        : "Table(s) are missing");
-            }
-        } catch (SQLException e) {
-            logger.warn("Error occurred while checking database validity: ", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-
+        exists = ((tableExists(conn, "vortex_resource") || tableExists(conn,
+                                                                       "VORTEX_RESOURCE"))
+                  && (tableExists(conn, "lock_type") || tableExists(conn, "LOCK_TYPE"))
+                  && (tableExists(conn, "vortex_lock") || tableExists(conn,
+                                                                      "VORTEX_LOCK"))
+                  && (tableExists(conn, "action_type") || tableExists(conn,
+                                                                      "ACTION_TYPE"))
+                  && (tableExists(conn, "acl_entry") || tableExists(conn, "ACL_ENTRY"))
+                  && (tableExists(conn, "extra_prop_entry") || tableExists(conn, "EXTRA_PROP_ENTRY")));
         return exists;
     }
 
-    public void destroy() {
-        try {
-            pool.close();
-        } catch (SQLException e) {
-            logger.error("Error closing pooled connections:", e);
-        }
+
+    private boolean tableExists(Connection conn, String tableName)
+            throws SQLException {
+        DatabaseMetaData md = conn.getMetaData();
+
+        ResultSet rs = md.getTables(null, null, tableName, null);
+        boolean exists = rs.next();
+        rs.close();
+        return exists;
     }
 
 

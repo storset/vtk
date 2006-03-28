@@ -37,10 +37,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repositoryimpl.AclImpl;
@@ -56,7 +58,7 @@ public abstract class AbstractDataAccessor
     protected Log logger = LogFactory.getLog(this.getClass());
 
     protected ContentStore contentStore;
-    
+    protected DataSource dataSource;
     protected PropertyManagerImpl propertyManager;
     protected PrincipalManager principalManager;
     
@@ -68,34 +70,66 @@ public abstract class AbstractDataAccessor
         this.propertyManager = propertyManager;
     }
 
-    public void afterPropertiesSet() throws Exception {
-        // FIXME: Implement
-    }
-
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
     
-
-
-    /**
-     * Gets a connection from the pool with auto commit set to false.
-     * 
-     * @return a <code>Connection</code>
-     * @exception SQLException if an error occurs
-     */
-    protected abstract Connection getConnection()
-        throws SQLException;
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
     
+    public void afterPropertiesSet() throws Exception {
+        if (this.contentStore == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'contentStore' not specified");
+        }
+        if (this.propertyManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'propertyManager' not specified");
+        }
+        if (this.principalManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'principalManager' not specified");
+        }
+        if (this.dataSource == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'dataSource' not specified");
+        }
+    }
 
-    
+
+
+    public boolean validate() throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);     
+            boolean ok = validate(conn);
+            conn.commit();
+            return ok;
+
+        } catch (SQLException e) {
+            logger.warn("Error occurred while checking database validity: ", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+
 
     public ResourceImpl load(String uri) throws IOException {
         Connection conn = null;
         ResourceImpl retVal = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             retVal = load(conn, uri);
             conn.commit();
@@ -106,7 +140,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -117,15 +150,11 @@ public abstract class AbstractDataAccessor
     }
 
 
-    protected abstract ResourceImpl load(Connection conn, String uri) throws SQLException;
-
-
-
     public void deleteExpiredLocks() throws IOException {
         Connection conn = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             deleteExpiredLocks(conn);
             conn.commit();
@@ -136,7 +165,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -144,7 +172,6 @@ public abstract class AbstractDataAccessor
         }
     }
 
-    protected abstract void deleteExpiredLocks(Connection conn) throws SQLException;
     
 
 
@@ -154,7 +181,7 @@ public abstract class AbstractDataAccessor
         Connection conn = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             addChangeLogEntry(conn, loggerID, loggerType, uri, operation, resourceId,
                               collection, recurse);
@@ -166,7 +193,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -175,21 +201,12 @@ public abstract class AbstractDataAccessor
     }
 
 
-    protected abstract void addChangeLogEntry(
-        Connection conn, String loggerID, String loggerType,
-        String uri, String operation, int resourceId,
-        boolean collection, boolean recurse) throws SQLException;
-    
-
-
-
-
     public String[] discoverLocks(ResourceImpl resource)
             throws IOException {
         Connection conn = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             String[] lockedURIs = discoverLocks(conn, resource);
             conn.commit();
@@ -202,7 +219,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -211,18 +227,13 @@ public abstract class AbstractDataAccessor
     }
 
 
-    protected abstract String[] discoverLocks(Connection conn, ResourceImpl resource)
-        throws SQLException;
-    
-
-
     public String[] listSubTree(ResourceImpl parent)
             throws IOException {
         Connection conn = null;
         String[] retVal = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             retVal = listSubTree(conn, parent);
             conn.commit();
@@ -233,7 +244,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -244,16 +254,12 @@ public abstract class AbstractDataAccessor
     }
 
 
-    protected abstract String[] listSubTree(Connection conn, ResourceImpl parent)
-        throws SQLException;
-    
-
     public void store(ResourceImpl r)
             throws IOException {
         Connection conn = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             store(conn, r);
             conn.commit();
@@ -264,7 +270,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -273,17 +278,12 @@ public abstract class AbstractDataAccessor
     }
 
 
-    protected abstract void store(Connection conn, ResourceImpl r)
-        throws SQLException, IOException;
-    
-
-
     public void delete(ResourceImpl resource)
             throws IOException {
         Connection conn = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             delete(conn, resource);
             conn.commit();
@@ -293,19 +293,12 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
             }
         }
     }
-
-
-    protected abstract void delete(Connection conn, ResourceImpl resource)
-        throws SQLException;
-    
-
 
 
     public ResourceImpl[] loadChildren(ResourceImpl parent)
@@ -317,7 +310,7 @@ public abstract class AbstractDataAccessor
         ResourceImpl[] retVal = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             retVal = loadChildren(conn, parent);
             conn.commit();
@@ -328,7 +321,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -339,20 +331,12 @@ public abstract class AbstractDataAccessor
     }
 
 
-
-    protected abstract ResourceImpl[] loadChildren(Connection conn, ResourceImpl parent)
-        throws SQLException;
-    
-
-
-
-
     public String[] discoverACLs(ResourceImpl resource) throws IOException {
         Connection conn = null;
         String[] retVal = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             retVal = discoverACLs(conn, resource);
             conn.commit();
@@ -363,7 +347,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -374,19 +357,12 @@ public abstract class AbstractDataAccessor
     }
 
 
-
-    protected abstract String[] discoverACLs(Connection conn, ResourceImpl resource)
-        throws SQLException;
-    
-
-
-
     public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
                      boolean setOwner, String owner) throws IOException {
         Connection conn = null;
 
         try {
-            conn = getConnection();
+            conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             copy(conn, resource, destURI, copyACLs, setOwner, owner);
             conn.commit();
@@ -401,7 +377,6 @@ public abstract class AbstractDataAccessor
             try {
                 if (conn != null) {
                     conn.close();
-                    conn = null;
                 }
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
@@ -409,6 +384,38 @@ public abstract class AbstractDataAccessor
         }
     }
 
+
+    // To be implemented by subclasses:
+
+
+    protected abstract boolean validate(Connection conn) throws SQLException;
+
+    protected abstract ResourceImpl load(Connection conn, String uri) throws SQLException;
+
+    protected abstract void deleteExpiredLocks(Connection conn) throws SQLException;
+
+    protected abstract void addChangeLogEntry(
+        Connection conn, String loggerID, String loggerType,
+        String uri, String operation, int resourceId,
+        boolean collection, boolean recurse) throws SQLException;
+
+    protected abstract String[] discoverLocks(Connection conn, ResourceImpl resource)
+        throws SQLException;
+
+    protected abstract String[] listSubTree(Connection conn, ResourceImpl parent)
+        throws SQLException;
+
+    protected abstract void store(Connection conn, ResourceImpl r)
+        throws SQLException, IOException;
+
+    protected abstract void delete(Connection conn, ResourceImpl resource)
+        throws SQLException;
+
+    protected abstract ResourceImpl[] loadChildren(Connection conn, ResourceImpl parent)
+        throws SQLException;
+
+    protected abstract String[] discoverACLs(Connection conn, ResourceImpl resource)
+        throws SQLException;
 
     protected abstract void copy(Connection conn, ResourceImpl resource, String destURI,
                                  boolean copyACLs, boolean setOwner, String owner)

@@ -59,17 +59,17 @@ public class Authorization {
 
         switch (protectionLevel) {
         case PropertyType.PROTECTION_LEVEL_EDITABLE:
-            if (acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE))
+            if (acl.hasPrivilege(principal, PrivilegeDefinition.WRITE))
                 return;
             break;
         
         case PropertyType.PROTECTION_LEVEL_PROTECTED:
-            if (acl.hasPrivilege(principal.getQualifiedName(), PrivilegeDefinition.WRITE_ACL))
+            if (acl.hasPrivilege(principal, PrivilegeDefinition.WRITE_ACL))
                 return;
             break;
         
         case PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE:
-            if (principal.getQualifiedName().equals(acl.getOwner())) {
+            if (principal.equals(acl.getOwner())) {
                 return;
             }
         }

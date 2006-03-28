@@ -42,6 +42,9 @@ public interface PrincipalManager extends PrincipalStore {
      * @throws InvalidPrincipalException when the id is an invalid principal identifier.
      * 
      */
-    public Principal getPrincipal(String id);
+    public Principal getUserPrincipal(String id);
     
+    public Principal getGroupPrincipal(String id);
+
+    public Principal getPseudoPrincipal(String id);
 }

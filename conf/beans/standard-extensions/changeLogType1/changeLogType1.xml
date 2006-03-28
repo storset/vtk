@@ -6,18 +6,11 @@
   <!-- Publish events whenever changes to Vortex resources occur. -->
   <bean id="processedContentEventDumper" 
     class="org.vortikal.backend.ProcessedContentEventDumper">
-    <property name="dataAccessor">
-      <ref bean="repository.database"/>
-    </property>
-    <property name="id">
-      <value>1</value>
-    </property>
-    <property name="repository">
-      <ref bean="repository"/>
-    </property>
-    <property name="loggerType">
-      <value>1</value>
-    </property>
+    <property name="dataAccessor" ref="repository.database"/>
+    <property name="principalManager" ref="principalManager" />
+    <property name="id" value="1" />
+    <property name="repository" ref="repository"/>
+    <property name="loggerType" value="1" />
   </bean>
 
   <!-- Resource change fetcher.  This bean can be used to extract

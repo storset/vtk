@@ -1,16 +1,14 @@
 package org.vortikal.repository;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.security.Principal;
 
 public interface Acl extends Cloneable {
 
-    public void addEntry(String action, String name, boolean isGroup);
+    public void addEntry(String action, Principal principal);
 
-    public void removeEntry(String username, String privilegeName);
+    public void removeEntry(String privilegeName, Principal principal);
 
     public Principal getOwner();
     
@@ -29,20 +27,22 @@ public interface Acl extends Cloneable {
      * @param privilegeName
      * @return a list of <code>String</code> group names.
      */
-    public String[] listPrivilegedGroups(String privilegeName);
+    public Principal[] listPrivilegedGroups(String privilegeName);
     
+    public Principal[] listPrivilegedPseudoPrincipals(String action);
+
     public boolean isInherited();
 
     public void setInherited(boolean inherited);
     
-    public boolean hasPrivilege(String principalName, String privilegeName);
+    public boolean hasPrivilege(Principal principal, String privilegeName);
 
     public Object clone() throws CloneNotSupportedException;
     
     
     // XXX: From impl...
 
-    public List getPrincipalList(String action);
+    public Set getPrincipalSet(String action);
 
     public Set getActions();
 

@@ -180,7 +180,7 @@ public class HttpDigestAuthenticationHandler
         Principal principal = null;
 
         try {
-            principal = this.principalManager.getPrincipal(username);
+            principal = this.principalManager.getUserPrincipal(username);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -371,7 +371,7 @@ public class HttpDigestAuthenticationHandler
         }
         
 
-        Principal principal = this.principalManager.getPrincipal(username);
+        Principal principal = this.principalManager.getUserPrincipal(username);
         boolean correctDigest = false;
 
 

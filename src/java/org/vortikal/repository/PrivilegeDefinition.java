@@ -47,4 +47,11 @@ public class PrivilegeDefinition {
 
     public final static String[] READ_PRIVILEGES = new String[] {PrivilegeDefinition.READ};
 
+    // "Abstract" privileges
+    
+    public static final String PARENT_WRITE = "parent-write";
+    public static final String DELETE = "delete";
+    public static final String UNLOCK = "unlock";
+    public static final String LOCK = "lock";
+    public static final String DELEGATE_OWNERSHIP = "delegate-ownership";
 }

@@ -123,11 +123,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
             resource, securityContext.getPrincipal());
          
         ACLEditCommand command = new ACLEditCommand(submitURL);
-        command.setEveryone(acl.hasPrivilege("dav:authenticated", privilege));
+        
+        Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
+        command.setEveryone(acl.hasPrivilege(auth, privilege));
         command.setOwner(resource.getOwner().getQualifiedName());
 
         Principal[] authorizedUsers = acl.listPrivilegedUsers(privilege);
-        String[] authorizedGroups = acl.listPrivilegedGroups(privilege);
+        Principal[] authorizedGroups = acl.listPrivilegedGroups(privilege);
         command.setUsers(authorizedUsers);
         command.setGroups(authorizedGroups);
 
@@ -196,7 +198,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
-
+        Acl acl = editCommand.getEditedACL();
         
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
@@ -207,26 +209,25 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return new ModelAndView(getSuccessView());
         }
         
+        Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
+        Principal all =  principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
+        
         // Setting or unsetting dav:authenticated 
-        if (!editCommand.getEditedACL().hasPrivilege("dav:authenticated", privilege)) {
+        if (!acl.hasPrivilege(auth, privilege)) {
 
             if (editCommand.isEveryone()) {
                 if ("read".equals(privilege)) {
-                    editCommand.getEditedACL().addEntry(
-                            PrivilegeDefinition.READ_PROCESSED,
-                            "dav:all", false);
+                    acl.addEntry(PrivilegeDefinition.READ_PROCESSED, all);
                 }
-                editCommand.getEditedACL().addEntry(privilege, "dav:authenticated", false);
+                acl.addEntry(privilege, auth);
             }
         } else {
 
             if (!editCommand.isEveryone()) {
-                if ("read".equals(privilege)) 
-                    editCommand.getEditedACL().removeEntry(
-                            "dav:all", "read-processed");
+                if (PrivilegeDefinition.READ.equals(privilege)) 
+                    acl.removeEntry(PrivilegeDefinition.READ_PROCESSED, all);
                 
-                editCommand.getEditedACL().removeEntry(
-                                             "dav:authenticated", privilege);
+                acl.removeEntry(privilege, auth);
             }
         }
         
@@ -238,51 +239,47 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         // doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
-            Acl newACL = editCommand.getEditedACL();
             String[] userNames = editCommand.getUserNames();
 
             for (int i = 0; i < userNames.length; i++) {
-                Principal principal = principalManager.getPrincipal(userNames[i]);
-                String qualifiedName = principal.getQualifiedName();
+                Principal principal = principalManager.getUserPrincipal(userNames[i]);
 
-                newACL.removeEntry(qualifiedName, this.privilege);
+                acl.removeEntry(this.privilege, principal);
             }
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),
                                 this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
-            Acl newACL = editCommand.getEditedACL();
             String[] groupNames = editCommand.getGroupNames();
             
             for (int i = 0; i < groupNames.length; i++) {
-                newACL.removeEntry(groupNames[i], this.privilege);
+                Principal group = principalManager.getGroupPrincipal(groupNames[i]);
+                acl.removeEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
-                                getACLEditCommand(editCommand.getEditedACL()),
-                                this.getCommandName()));
+                    getACLEditCommand(acl), this.getCommandName()));
             
         } else if (editCommand.getAddUserAction() != null) {
-            Acl newACL = editCommand.getEditedACL();
             String[] userNames = editCommand.getUserNames();
             for (int i = 0; i < userNames.length; i++) {
-                Principal principal = principalManager.getPrincipal(userNames[i]);
-                String qualifiedName = principal.getQualifiedName();
-            
-                newACL.addEntry(this.privilege, qualifiedName, false);
+                Principal principal = principalManager.getUserPrincipal(userNames[i]);
+                acl.addEntry(this.privilege, principal);
             }
             ModelAndView mv =  showForm(
                 request, response, new BindException(
-                    getACLEditCommand(editCommand.getEditedACL()),
+                    getACLEditCommand(acl),
                     this.getCommandName()));
             return mv;
 
         } else if (editCommand.getAddGroupAction() != null) {
-            Acl newACL = editCommand.getEditedACL();
             String[] groupNames = editCommand.getGroupNames();
             
+           
             for (int i = 0; i < groupNames.length; i++) {
-                newACL.addEntry(this.privilege, groupNames[i], true);
+                Principal group = principalManager.getGroupPrincipal(groupNames[i]);
+
+                acl.addEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getEditedACL()),

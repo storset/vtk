@@ -77,7 +77,7 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                                    "You must type a value");
             } else {
                 try { 
-                    Principal principal = principalManager.getPrincipal(userName);	
+                    Principal principal = principalManager.getUserPrincipal(userName);	
 
                     if (!principalManager.validatePrincipal(principal))
                         errors.rejectValue("userNames", "permissions.user.wrong.value", 

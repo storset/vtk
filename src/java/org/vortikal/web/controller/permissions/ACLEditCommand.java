@@ -45,7 +45,7 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
     private boolean everyone;
     private String owner;
     private Principal[] users;
-    private String[] groups;
+    private Principal[] groups;
     private String[] withdrawUserURLs;
     private String[] withdrawGroupURLs;
     private String userNames[];
@@ -172,7 +172,7 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
      *
      * @return the value of groups
      */
-    public String[] getGroups() {
+    public Principal[] getGroups() {
         return this.groups;
     }
 
@@ -181,7 +181,7 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
      *
      * @param groups Value to assign to this.groups
      */
-    public void setGroups(String[] groups)  {
+    public void setGroups(Principal[] groups)  {
         this.groups = groups;
     }
     

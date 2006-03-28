@@ -43,20 +43,16 @@
  *
 -->
 <#macro listPrincipals users groups>
+  <#compress>
+    ${resourceContext.currentResource.owner.name} (<@vrtx.msg code="permissions.owner" default="owner"/>)<#t/>
+  </#compress>
+    <#if users?size &gt; 0 || groups?size &gt; 0>,<#t/></#if>
   <#list users as user>
-    <#switch user.name>
-      <#case "dav:owner">
-        <#compress>
-        ${resourceContext.currentResource.owner.name} (<@vrtx.msg code="permissions.owner" default="owner"/>)<#t/>
-        </#compress>
-        <#break>
-      <#default>
-        <#compress>${user.name}</#compress><#t/>
-    </#switch>
+    <#compress>${user.name}</#compress><#t/>
     <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
   </#list>
   <#list groups as group>
-    <#compress>${group}</#compress><#t/>
+    <#compress>${group.name}</#compress><#t/>
     <#if group_index &lt; groups?size - 1>,<#t/></#if>
   </#list>
 </#macro>

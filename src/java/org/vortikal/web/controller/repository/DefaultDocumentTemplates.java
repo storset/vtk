@@ -45,6 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.util.repository.ContentTypeHelper;
 
 
@@ -130,7 +131,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    public void refresh() {
+    public void refresh() throws IOException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Refreshing document templates list");
@@ -144,7 +145,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
     
 
-    private void loadTemplates() {
+    private void loadTemplates() throws IOException {
 
         if (!parseCategoryTemplates && !parseTopTemplates) return;
         
@@ -173,12 +174,12 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
             this.topTemplates = topTemplates;
             this.categoryTemplates = categoryTemplates;
 
-        } catch (Throwable t) {
+        } catch (ResourceNotFoundException e) {
             logger.warn(
                 "Error loading document templates [templatesCollection = "
                 + this.templatesCollection + ", parseTopTemplates = "
                 + this.parseTopTemplates + ", parseCategoryTemplates = "
-                + this.parseCategoryTemplates + "]", t);
+                + this.parseCategoryTemplates + "]:" + e.getMessage());
         }
     }
     

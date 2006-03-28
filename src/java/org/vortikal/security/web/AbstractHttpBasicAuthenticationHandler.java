@@ -150,7 +150,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
 
 
         try {
-            principal = this.principalManager.getPrincipal(username);
+            principal = this.principalManager.getUserPrincipal(username);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -185,7 +185,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         Principal principal = null;
         
         try {
-            principal = principalManager.getPrincipal(username);
+            principal = principalManager.getUserPrincipal(username);
         } catch (InvalidPrincipalException e) {
             throw new AuthenticationException("Invalid principal '" + username + "'", e);
         }

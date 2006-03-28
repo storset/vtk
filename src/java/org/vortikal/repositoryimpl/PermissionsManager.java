@@ -33,11 +33,13 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.PrivilegeDefinition;
-import org.vortikal.repository.Resource;
+import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -47,11 +49,26 @@ public class PermissionsManager {
 
     private RoleManager roleManager;
     private PrincipalManager principalManager;
+    private DataAccessor dao;
+    
+    public void authorizeRecursively(ResourceImpl resource, Principal principal,
+            String privilege) throws IOException, AuthenticationException,
+            AuthorizationException {
 
-    public void authorize(Resource resource, Principal principal, String action)
+        authorize(resource.getAcl(), principal, privilege);
+        if (resource.isCollection()) {
+            String[] uris = this.dao.discoverACLs(resource);
+            for (int i = 0; i < uris.length; i++) {
+                ResourceImpl ancestor = this.dao.load(uris[i]);
+                authorize(ancestor.getAcl(), principal, privilege);
+            }
+        }
+    }
+
+
+    
+    public void authorize(Acl acl, Principal principal, String action)
             throws AuthenticationException, AuthorizationException, IOException {
-
-        Acl acl = resource.getAcl();
 
         /*
          * Special treatment for uio:read-processed needed: dav:read also grants
@@ -59,7 +76,7 @@ public class PermissionsManager {
          */
         if (action.equals(PrivilegeDefinition.READ_PROCESSED)) {
             try {
-                authorize(resource, principal, PrivilegeDefinition.READ);
+                authorize(acl, principal, PrivilegeDefinition.READ);
 
                 return;
             } catch (AuthenticationException e) {
@@ -69,7 +86,7 @@ public class PermissionsManager {
             }
         }
 
-        List principalList = acl.getPrincipalList(action);
+        Set principalSet = acl.getPrincipalSet(action);
 
         /*
          * A user is granted access if one of these conditions are met:
@@ -101,10 +118,11 @@ public class PermissionsManager {
          */
 
         // Condition 1:
-        if (acl.hasPrivilege("dav:all", action)
-                && (PrivilegeDefinition.READ.equals(action) 
-                        || PrivilegeDefinition.READ_PROCESSED
-                        .equals(action))) {
+        Principal p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
+        if (acl.hasPrivilege(p, action)) {
+            // XXX: removed this:
+//            && (PrivilegeDefinition.READ.equals(action) || 
+//                    PrivilegeDefinition.READ_PROCESSED.equals(action))
             return;
         }
 
@@ -114,7 +132,8 @@ public class PermissionsManager {
         }
 
         // Condition 2:
-        if (acl.hasPrivilege("dav:authenticated", action)) {
+        p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
+        if (acl.hasPrivilege(p, action)) {
             return;
         }
 
@@ -140,36 +159,35 @@ public class PermissionsManager {
         // }
         // Dont't need to test the remaining conditions if (principalList ==
         // null)
-        if (principalList == null) {
+        if (principalSet == null) {
             throw new AuthorizationException();
         }
 
-        if (resource.getOwner().equals(principal.getQualifiedName())) {
-            if (acl.hasPrivilege("dav:owner",action)) {
-                return;
-            }
+        p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_OWNER);
+        if (acl.getOwner().equals(principal) && acl.hasPrivilege(p,action)) {
+            return;
         }
 
         // Condition 5:
-        if (acl.hasPrivilege(principal.getQualifiedName(), action)) {
+        if (acl.hasPrivilege(principal, action)) {
             return;
         }
 
         // Condition 6:
-        if (groupMatch(principalList, principal)) {
+        if (groupMatch(principalSet, principal)) {
             return;
         }
 
         throw new AuthorizationException();
     }
 
-    private boolean groupMatch(List principalList, Principal principal) {
+    private boolean groupMatch(Set principalList, Principal principal) {
 
         for (Iterator i = principalList.iterator(); i.hasNext();) {
-            ACLPrincipal p = (ACLPrincipal) i.next();
+            Principal p = (Principal) i.next();
 
-            if (p.isGroup()) {
-                if (principalManager.isMember(principal, p.getUrl())) {
+            if (p.getType() == Principal.TYPE_GROUP) {
+                if (principalManager.isMember(principal, p.getQualifiedName())) {
                     return true;
                 }
             }
@@ -177,6 +195,118 @@ public class PermissionsManager {
 
         return false;
     }
+
+    /**
+     * Checks the validity of an ACL.
+     *
+     * @param aceList an <code>Ace[]</code> value
+     * @exception AclException if an error occurs
+     * @exception IllegalOperationException if an error occurs
+     * @exception IOException if an error occurs
+     */
+    public void validateACL(Acl acl)
+        throws AclException, IllegalOperationException {
+        /*
+         * Enforce ((dav:owner (dav:read dav:write dav:write-acl))
+         */
+        Principal p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_OWNER);
+        if (!acl.hasPrivilege(p, PrivilegeDefinition.WRITE)) {
+            throw new IllegalOperationException(
+                "Owner must be granted write privilege in ACL.");
+        }
+
+        if (!acl.hasPrivilege(p, PrivilegeDefinition.READ)) {
+            throw new IllegalOperationException(
+                "Owner must be granted read privilege in ACL.");
+        }
+
+        if (!acl.hasPrivilege(p, PrivilegeDefinition.WRITE_ACL)) {
+            throw new IllegalOperationException(
+                "Owner must be granted write-acl privilege in ACL.");
+        }
+        
+        p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
+        if (acl.hasPrivilege(p, PrivilegeDefinition.WRITE)) {
+            throw new IllegalOperationException(
+            "'All users' isn't allowed write privilege in ACL.");
+        }
+        
+        if (acl.hasPrivilege(p, PrivilegeDefinition.WRITE_ACL)) {
+            throw new IllegalOperationException(
+            "'All users' isn't allowed write-acl privilege in ACL.");
+        }
+
+        /*
+         * Walk trough the ACL, for every ACE, enforce that:
+         * 1) Every principal is valid
+         * 2) Every privilege has a supported namespace and name
+         */
+
+//        for (int i = 0; i < acl.length; i++) {
+//            Ace ace = acl[i];
+//
+//            org.vortikal.repositoryimpl.ACLPrincipal principal = ace.getPrincipal();
+//
+//            if (principal.getType() == org.vortikal.repositoryimpl.ACLPrincipal.TYPE_URL) {
+//                boolean validPrincipal = false;
+//
+//                if (principal.isUser()) {
+//                    Principal p = null;
+//                    try {
+//                        p = principalManager.getPrincipal(principal.getURL());
+//                    } catch (InvalidPrincipalException e) {
+//                        throw new AclException("Invalid principal '" 
+//                                + principal.getURL() + "' in ACL");
+//                    }
+//                    validPrincipal = principalManager.validatePrincipal(p);
+//                } else {
+//                    validPrincipal = principalManager.validateGroup(principal.getURL());
+//                }
+//
+//                if (!validPrincipal) {
+//                    throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
+//                        "Unknown principal: " + principal.getURL());
+//                }
+//            } else {
+//                if ((principal.getType() != org.vortikal.repositoryimpl.ACLPrincipal.TYPE_ALL) &&
+//                        (principal.getType() != org.vortikal.repositoryimpl.ACLPrincipal.TYPE_OWNER) &&
+//                        (principal.getType() != org.vortikal.repositoryimpl.ACLPrincipal.TYPE_AUTHENTICATED)) {
+//                    throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
+//                        "Allowed principal types are " +
+//                        "either TYPE_ALL, TYPE_OWNER " + "OR  TYPE_URL.");
+//                }
+//            }
+//
+//            Privilege[] privileges = ace.getPrivileges();
+//
+//            for (int j = 0; j < privileges.length; j++) {
+//                Privilege privilege = privileges[j];
+//
+//                if (privilege.getNamespace().equals(Namespace.STANDARD_NAMESPACE)) {
+//                    if (!(privilege.getName().equals(PrivilegeDefinition.WRITE) ||
+//                            privilege.getName().equals(PrivilegeDefinition.READ) ||
+//                            privilege.getName().equals(PrivilegeDefinition.WRITE_ACL))) {
+//                        throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
+//                            "Unsupported privilege name: " +
+//                            privilege.getName());
+//                    }
+//                } else if (privilege.getNamespace().equals(Namespace.CUSTOM_NAMESPACE)) {
+//                    if (!(privilege.getName().equals(PrivilegeDefinition.READ_PROCESSED))) {
+//                        throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
+//                            "Unsupported privilege name: " +
+//                            privilege.getName());
+//                    }
+//                } else {
+//                    throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
+//                        "Unsupported privilege namespace: " +
+//                        privilege.getNamespace());
+//                }
+//            }
+//        }
+    }
+
+    
+    
     
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
@@ -184,6 +314,10 @@ public class PermissionsManager {
 
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
+    }
+
+    public void setDao(DataAccessor dao) {
+        this.dao = dao;
     }
 
 }

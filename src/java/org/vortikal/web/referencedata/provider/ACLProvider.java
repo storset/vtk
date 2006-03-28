@@ -163,27 +163,30 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         
         Acl acl = repository.getACL(token, uri);
 
+        // XXX: Pseudo needs to be handled in the new way
+        // XXX: groups are now principals
         Principal[] readAuthorizedUsers = acl.listPrivilegedUsers(PrivilegeDefinition.READ);
         aclModel.put("readAuthorizedUsers", readAuthorizedUsers);
-        String[] readAuthorizedGroups = acl.listPrivilegedGroups("read");
+        Principal[] readAuthorizedGroups = acl.listPrivilegedGroups(PrivilegeDefinition.READ);
         aclModel.put("readAuthorizedGroups", readAuthorizedGroups);
 
-        Principal[] writeAuthorizedUsers = acl.listPrivilegedUsers("write");
+        Principal[] writeAuthorizedUsers = acl.listPrivilegedUsers(PrivilegeDefinition.WRITE);
         aclModel.put("writeAuthorizedUsers", writeAuthorizedUsers);
-        String[] writeAuthorizedGroups = acl.listPrivilegedGroups("write");
+        Principal[] writeAuthorizedGroups = acl.listPrivilegedGroups(PrivilegeDefinition.WRITE);
         aclModel.put("writeAuthorizedGroups", writeAuthorizedGroups);
 
-        Principal[] writeAclAuthorizedUsers = acl.listPrivilegedUsers("write-acl");
+        Principal[] writeAclAuthorizedUsers = acl.listPrivilegedUsers(PrivilegeDefinition.WRITE_ACL);
         aclModel.put("writeAclAuthorizedUsers", writeAclAuthorizedUsers);
-        String[] writeAclAuthorizedGroups = acl.listPrivilegedGroups("write-acl");
+        Principal[] writeAclAuthorizedGroups = acl.listPrivilegedGroups(PrivilegeDefinition.WRITE_ACL);
         aclModel.put("writeAclAuthorizedGroups", writeAclAuthorizedGroups);
 
+        Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
         aclModel.put("everyoneReadAuthorized" , new Boolean(
-                         acl.hasPrivilege("dav:authenticated", "read")));
+                acl.hasPrivilege(auth, PrivilegeDefinition.READ)));
         aclModel.put("everyoneWriteAuthorized", new Boolean(
-                         acl.hasPrivilege("dav:authenticated", "write")));
+                         acl.hasPrivilege(auth, PrivilegeDefinition.WRITE)));
         aclModel.put("everyoneWriteAclAuthorized", new Boolean(
-                         acl.hasPrivilege("dav:authenticated", "write-acl")));
+                         acl.hasPrivilege(auth, PrivilegeDefinition.WRITE_ACL)));
 
         aclModel.put("aclInherited", new Boolean(acl.isInherited()));
 

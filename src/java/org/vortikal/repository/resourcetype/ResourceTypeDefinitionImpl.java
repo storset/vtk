@@ -40,7 +40,7 @@ public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition {
     private Namespace namespace;
     private ResourceTypeDefinition parentTypeDefinition;
     private ResourceTypeDefinition[] mixinTypeDefinitions;
-    private PropertyTypeDefinition[] propertyTypeDefinitions;
+    private PropertyTypeDefinition[] propertyTypeDefinitions = new PropertyTypeDefinitionImpl[0];
     private RepositoryAssertion[] assertions;
     
 

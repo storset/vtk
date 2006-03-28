@@ -113,7 +113,7 @@ public class OwnershipController extends SimpleFormController implements Initial
                 logger.debug("Setting new owner '" + ownershipCommand.getOwner() + 
                              "' for resource " + uri);
             }
-            resource.setOwner(principalManager.getPrincipal(ownershipCommand.getOwner()));
+            resource.setOwner(principalManager.getUserPrincipal(ownershipCommand.getOwner()));
             repository.store(token, resource);
         }
         ownershipCommand.setDone(true);

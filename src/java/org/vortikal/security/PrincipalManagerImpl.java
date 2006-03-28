@@ -45,7 +45,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
-import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.util.cache.SimpleCacheImpl;
 
 
@@ -145,10 +144,15 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
         }
     }
     
-
-
-
-    public Principal getPrincipal(String id) {
+    public Principal getUserPrincipal(String id) {
+        return getPrincipal(id, Principal.TYPE_USER);
+    }
+    
+    public Principal getGroupPrincipal(String id) {
+        return getPrincipal(id, Principal.TYPE_GROUP);
+    }
+    
+    private Principal getPrincipal(String id, int type) {
         if (id == null) {
             throw new InvalidPrincipalException("Tried to get null principal");
         }
@@ -158,12 +162,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
         if (id.equals(""))
             throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
         
-        // XXX: merge org.vortikal.repository.ACLPrincipal and
-        // org.vortikal.security.Principal to avoid hacks like this:
-        if (id.startsWith("dav:")) {
-            return getSystemPrincipal(id);
-        }
-
         if (id.startsWith(this.delimiter)) {
             throw new InvalidPrincipalException(
                 "Invalid principal id: " + id + ": "
@@ -216,18 +214,19 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             }
         }
 
-        return new PrincipalImpl(name, qualifiedName, domain, url);
+        PrincipalImpl p  = new PrincipalImpl(name, qualifiedName, domain, url);
+        p.setType(type);
+        return p;
     }
 
-    private Principal getSystemPrincipal(String id) {
-        if (ACLPrincipal.NAME_DAV_ALL.equals(id)
-            || ACLPrincipal.NAME_DAV_AUTHENTICATED.equals(id)
-            || ACLPrincipal.NAME_DAV_UNAUTHENTICATED.equals(id)
-            || ACLPrincipal.NAME_DAV_SELF.equals(id)
-            || ACLPrincipal.NAME_DAV_SELF.equals(id)
-            || ACLPrincipal.NAME_DAV_OWNER.equals(id))  {
+    public Principal getPseudoPrincipal(String id) {
+        if (Principal.NAME_PSEUDO_ALL.equals(id)
+            || Principal.NAME_PSEUDO_AUTHENTICATED.equals(id)
+            || Principal.NAME_PSEUDO_OWNER.equals(id))  {
 
-            return new PrincipalImpl(id, id, null, null);
+            PrincipalImpl p = new PrincipalImpl(id, id, null, null);
+            p.setType(Principal.TYPE_PSEUDO);
+            return p;
         }
         throw new InvalidPrincipalException("Invalid principal: " + id);
     }

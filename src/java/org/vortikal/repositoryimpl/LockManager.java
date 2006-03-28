@@ -50,7 +50,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.util.repository.URIUtil;
 
 
-public class ResourceManager {
+public class LockManager {
 
     public final static long LOCK_DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30 minutes
     public final static long LOCK_MAX_TIMEOUT = LOCK_DEFAULT_TIMEOUT;
@@ -59,23 +59,7 @@ public class ResourceManager {
     private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
     
     private DataAccessor dao;
-    private PropertyManagerImpl propertyManager;
 
-    public void collectionContentModification(ResourceImpl resource, Principal principal) throws IOException {
-        this.propertyManager.collectionContentModification(resource, principal);
-        this.dao.store(resource);
-    }
-
-    public void resourceContentModification(ResourceImpl resource, 
-            Principal principal, InputStream inputStream) throws IOException {
-
-        this.propertyManager.fileContentModification(resource, principal, inputStream);
-        this.dao.store(resource);
-    }
-    
-    
-    // Locks:
-    
     public void lockAuthorize(ResourceImpl resource, Principal principal,
             boolean deep) throws ResourceLockedException, IOException,
             AuthenticationException {
@@ -157,10 +141,5 @@ public class ResourceManager {
     public void setDao(DataAccessor dao) {
         this.dao = dao;
     }
-
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-
 
 }

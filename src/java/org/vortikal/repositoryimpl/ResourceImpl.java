@@ -237,15 +237,15 @@ public class ResourceImpl implements Resource, Cloneable {
     
 
     public Principal getOwner() {
-        return principalManager.getPrincipal(getPropValue(PropertyType.OWNER_PROP_NAME));
+        return principalManager.getUserPrincipal(getPropValue(PropertyType.OWNER_PROP_NAME));
     }
 
     public Principal getContentModifiedBy() {
-        return principalManager.getPrincipal(getPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME));
+        return principalManager.getUserPrincipal(getPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME));
     }
 
     public Principal getPropertiesModifiedBy() {
-        return principalManager.getPrincipal(getPropValue(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME));
+        return principalManager.getUserPrincipal(getPropValue(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME));
     }
 
     public Date getCreationTime() {
@@ -342,9 +342,9 @@ public class ResourceImpl implements Resource, Cloneable {
                 .clone();
 
         ResourceImpl clone = new ResourceImpl(uri, principalManager, propertyManager);
-        clone.setID(id);
+        clone.setID(this.id);
         clone.setACL(acl);
-        clone.setInheritedACL(inheritedACL);
+        clone.setInheritedACL(this.inheritedACL);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
         for (Iterator iter = getProperties().iterator(); iter.hasNext();) {

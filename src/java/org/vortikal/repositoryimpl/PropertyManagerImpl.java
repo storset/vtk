@@ -1,8 +1,8 @@
 package org.vortikal.repositoryimpl;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,20 +11,17 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
@@ -54,6 +51,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private PrincipalManager principalManager;
 
     private ResourceTypeDefinition rootResourceTypeDefinition;
+    private boolean lazyInit = false;
+    private boolean init = false;
+    
+    Collection resourceTypeDefinitionBeans;
     
     // Currently maps a parent resource type def. to its children (arrays)
     private Map resourceTypeDefinitions;
@@ -76,21 +77,30 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             throw new BeanInitializationException("Property 'rootResourceTypeDefinition' not set.");
         }
 
-        List resourceTypeDefinitionList = 
-            new ArrayList(applicationContext.getBeansOfType(ResourceTypeDefinition.class, 
-                false, false).values());
-
-        
+        resourceTypeDefinitionBeans = 
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
+                    ResourceTypeDefinition.class, false, false).values();
         this.propertyTypeDefinitions = new HashMap();
         this.resourceTypeDefinitions = new HashMap();
-        for (Iterator i = resourceTypeDefinitionList.iterator(); i.hasNext();) {
+
+        if (!lazyInit) init();
+    }        
+
+    private synchronized void init() {
+        if (init) return;
+
+        for (Iterator i = resourceTypeDefinitionBeans.iterator(); i.hasNext();) {
             ResourceTypeDefinition def = (ResourceTypeDefinition)i.next();
             
             // Populate map of property type definitions
             PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
             Namespace namespace = def.getNamespace();
-            Map propDefMap = new HashMap();
-            this.propertyTypeDefinitions.put(namespace, propDefMap);
+            Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
+            
+            if (propDefMap == null) {
+                propDefMap = new HashMap();
+                this.propertyTypeDefinitions.put(namespace, propDefMap);
+            }
             for (int u=0; u<propDefs.length; u++) {
                 propDefMap.put(propDefs[u].getName(), propDefs[u]);
             }
@@ -111,10 +121,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 newChildren[newChildren.length-1] = def;
             }
             this.resourceTypeDefinitions.put(parent, newChildren);
-           
         }
-    }        
-
+        init = true;
+    }
+    
     private boolean checkAssertions(ResourceTypeDefinition rt, Resource resource, Principal principal) {
         RepositoryAssertion[] assertions = rt.getAssertions();
 
@@ -128,6 +138,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
 
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
+        init();
         // XXX: Add resource type to resource
         ResourceImpl newResource = new ResourceImpl(uri, this.principalManager, this);
         ResourceTypeDefinition rt = create(principal, newResource, new Date(), 
@@ -189,6 +200,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     
     public ResourceImpl storeProperties(ResourceImpl resource, Principal principal,
             Resource dto) throws AuthenticationException, AuthorizationException, CloneNotSupportedException {
+        init();
+
         // For all properties, check if they are modified, deleted or created
         Map allreadySetProperties = new HashMap();
         List deadProperties = new ArrayList();
@@ -336,6 +349,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     
     public ResourceImpl collectionContentModification(ResourceImpl resource, 
             Principal principal) {
+        init();
+        
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
                 this.principalManager, this);
         newResource.setID(resource.getID());
@@ -349,6 +364,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public ResourceImpl fileContentModification(ResourceImpl resource, 
             Principal principal, InputStream inputStream) {
+        init();
+
+        
         // XXX: What to do about swapping old resource with new?
         // XXX: Add resource type to resource
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), 
@@ -411,6 +429,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     
     public Property createProperty(Namespace namespace, String name) {
 
+        init();
+
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespace);
         prop.setName(name);
@@ -428,6 +448,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public Property createProperty(Namespace namespace, String name, Object value) 
         throws ValueFormatException {
+        init();
+
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespace);
         prop.setName(name);
@@ -474,6 +496,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+
+    /**
+     * @param lazyInit The lazyInit to set.
+     */
+    public void setLazyInit(boolean lazyInit) {
+        this.lazyInit = lazyInit;
     }
 
 }

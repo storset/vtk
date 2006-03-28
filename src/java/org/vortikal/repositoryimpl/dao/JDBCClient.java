@@ -65,6 +65,7 @@ import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
+import org.vortikal.security.Principal;
 import org.vortikal.util.repository.URIUtil;
 
 /**
@@ -291,7 +292,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         resource.setID(rs.getInt("resource_id"));
         resource.setInheritedACL(rs.getString("acl_inherited").equals("Y"));
         
-        Property prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME, new Boolean(rs.getString("is_collection").equals("Y")));
+        boolean collection = rs.getString("is_collection").equals("Y");
+        Property prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME, new Boolean(collection));
         resource.addProperty(prop);
         
         prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, new Date(rs.getTimestamp("creation_time").getTime()));
@@ -300,18 +302,29 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME, rs.getString("resource_owner"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.DISPLAYNAME_PROP_NAME, rs.getString("display_name"));
-        resource.addProperty(prop);
-
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME, rs.getString("content_type"));
-        resource.addProperty(prop);
-
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_PROP_NAME, rs.getString("character_encoding"));
-        resource.addProperty(prop);
-
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME, rs.getString("content_language"));
-        resource.addProperty(prop);
-
+        String string = rs.getString("display_name");
+        if (string != null) {
+            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.DISPLAYNAME_PROP_NAME, string);
+            resource.addProperty(prop);
+        }
+        
+        string = rs.getString("content_type");
+        if (string != null) {
+            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME, string);
+            resource.addProperty(prop);
+        }
+        
+        string = rs.getString("character_encoding");
+        if (string != null) {
+            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_PROP_NAME, string);
+            resource.addProperty(prop);
+        }
+        
+        string = rs.getString("content_language");
+        if (string != null) {
+            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME, string);
+            resource.addProperty(prop);
+        }
         prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("content_last_modified").getTime()));
         resource.addProperty(prop);
 
@@ -324,12 +337,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, rs.getString("properties_modified_by"));
         resource.addProperty(prop);
 
-        try {
+        if (!collection) {
             long contentLength = contentStore.getContentLength(resource.getURI());
             prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME, new Long(contentLength));
             resource.addProperty(prop);
-        } catch (IllegalOperationException e) {
-            // Probably a collection
         }
         
         return resource;
@@ -584,7 +595,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         if (rs.next()) {
             lock = new LockImpl(rs.getString("token"), 
-                    principalManager.getPrincipal(rs.getString("lock_owner")), 
+                    principalManager.getUserPrincipal(rs.getString("lock_owner")), 
                     rs.getString("lock_owner_info"), rs.getString("depth"), 
                     new Date(rs.getTimestamp("timeout").getTime()));
         }
@@ -620,7 +631,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         while (rs.next()) {
             LockImpl lock = new LockImpl(rs.getString("token"), 
-                    principalManager.getPrincipal(rs.getString("lock_owner")),
+                    principalManager.getUserPrincipal(rs.getString("lock_owner")),
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 
@@ -959,8 +970,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         for (Iterator i = actions.iterator(); i.hasNext();) {
             String action = (String) i.next();
 
-            for (Iterator j = acl.getPrincipalList(action).iterator(); j.hasNext();) {
-                ACLPrincipal p = (ACLPrincipal) j.next();
+            for (Iterator j = acl.getPrincipalSet(action).iterator(); j.hasNext();) {
+                Principal p = (Principal) j.next();
 
                 insertACLEntry(conn, action, r, p);
             }
@@ -978,7 +989,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
     private void insertACLEntry(Connection conn, String action, ResourceImpl resource,
-            ACLPrincipal p)
+            Principal p)
             throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("select action_type_id from "
@@ -1004,10 +1015,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         insertStmt.setInt(1, actionID);
         insertStmt.setInt(2, resource.getID());
-        insertStmt.setString(3, p.getUrl());
-        insertStmt.setString(4, p.isGroup() ? "N" : "Y");
+        insertStmt.setString(3, p.getQualifiedName());
+        insertStmt.setString(4, p.getType() == Principal.TYPE_GROUP ? "N" : "Y");
 
-        // XXX: Shouldn't this be principal, not owner?
+        // XXX: Does this have any point?
         insertStmt.setString(5, resource.getOwner().getQualifiedName());
         insertStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
 
@@ -1162,9 +1173,18 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                 acls.put(uri, acl);
             }
             
+            boolean isGroup = rs.getString("is_user").equals("N");
+            String name = rs.getString("user_or_group_name");
+            Principal p = null;
 
-            acl.addEntry(action,rs.getString("user_or_group_name"),
-                    rs.getString("is_user").equals("N"));
+            if (isGroup)
+                p = principalManager.getGroupPrincipal(name);
+            else if (name.startsWith("dav:"))
+                p = principalManager.getPseudoPrincipal(name);
+            else
+                p = principalManager.getUserPrincipal(name);
+
+            acl.addEntry(action, p);
         }
 
         rs.close();
@@ -1362,7 +1382,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
         while (rs.next()) {
             LockImpl lock = new LockImpl(rs.getString("token"), 
-                    this.principalManager.getPrincipal(rs.getString("lock_owner")),
+                    this.principalManager.getUserPrincipal(rs.getString("lock_owner")),
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 

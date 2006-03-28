@@ -54,7 +54,7 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
             throw new ConstraintViolationException("All resources must have an owner.");
         }
 
-        Principal owner = principalManager.getPrincipal(property.getStringValue());
+        Principal owner = principalManager.getUserPrincipal(property.getStringValue());
         if (!principalManager.validatePrincipal(owner)) {
             throw new ConstraintViolationException(
                     "Unable to set owner of resource to invalid owner: '" 

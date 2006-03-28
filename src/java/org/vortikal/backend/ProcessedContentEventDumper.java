@@ -31,21 +31,22 @@
 package org.vortikal.backend;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.PrivilegeDefinition;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.ACLPrincipal;
 import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 
 
 public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
     protected AbstractDataAccessor dataAccessor;
-
+    private PrincipalManager principalManager;
 
     private final static String CREATED = "created";
     private final static String DELETED = "deleted";
@@ -163,9 +164,9 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
              * XXX: WHY!?
              */
 
-            List principalListBefore = originalACL.getPrincipalList(
+            Set principalListBefore = originalACL.getPrincipalSet(
                 PrivilegeDefinition.READ_PROCESSED);
-            List principalListAfter = newACL.getPrincipalList(
+            Set principalListAfter = newACL.getPrincipalSet(
                 PrivilegeDefinition.READ_PROCESSED);
            
 
@@ -175,25 +176,23 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             }
             
             principalListBefore = (principalListBefore == null) ?
-                new ArrayList() : principalListBefore;
+                new HashSet() : principalListBefore;
             
             principalListAfter = (principalListAfter == null) ?
-                new ArrayList() : principalListAfter;
+                new HashSet() : principalListAfter;
 
             if (principalListBefore.equals(principalListAfter)) {
                 return;
             }
             
-            if (originalACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
-                    PrivilegeDefinition.READ_PROCESSED) &&
-                newACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
-                        PrivilegeDefinition.READ_PROCESSED)) {
+            Principal all = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
+            if (originalACL.hasPrivilege(all, PrivilegeDefinition.READ_PROCESSED) &&
+                newACL.hasPrivilege(all, PrivilegeDefinition.READ_PROCESSED)) {
                 return;
             }
 
             
-            String op = newACL.hasPrivilege(ACLPrincipal.NAME_DAV_ALL,
-                    PrivilegeDefinition.READ_PROCESSED) ?
+            String op = newACL.hasPrivilege(all, PrivilegeDefinition.READ_PROCESSED) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), op, -1,
@@ -215,6 +214,14 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 "Caught IOException while reporting ACL modification " +
                 "for uri " + resource.getURI(), e);
         }
+    }
+
+
+    /**
+     * @param principalManager The principalManager to set.
+     */
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
 
 }

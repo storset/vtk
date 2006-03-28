@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Property;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
@@ -52,9 +53,9 @@ public class AclImpl implements Acl {
     private PrincipalManager principalManager;
     
     /**
-     * map: [action --> List(ACLPrincipal)]
+     * map: [action --> Set(Principal)]
      */
-    private Map actionLists = new HashMap();
+    private Map actionSets = new HashMap();
 
     public AclImpl(PrincipalManager principalManager) {
         this.principalManager = principalManager;
@@ -62,75 +63,82 @@ public class AclImpl implements Acl {
     
     
     public Set getActions() {
-        return actionLists.keySet();
+        return actionSets.keySet();
     }
 
-    public List getPrincipalList(String action) {
-        return (List) actionLists.get(action);
+    public Set getPrincipalSet(String action) {
+        return (Set) actionSets.get(action);
     }
 
-    public void addEntry(String action, String name, boolean isGroup) {
+    public void addEntry(String action, Principal p) {
 
-        List actionEntry = (List) this.actionLists.get(action);
+        Set actionEntry = (Set) this.actionSets.get(action);
         if (actionEntry == null) {
-            actionEntry = new ArrayList();
-            this.actionLists.put(action, actionEntry);
+            actionEntry = new HashSet();
+            this.actionSets.put(action, actionEntry);
         }
-
-        actionEntry.add(new ACLPrincipal(name, isGroup));
+        
+        if (!actionEntry.contains(p))
+            actionEntry.add(p);
 
     }
     
-    public void removeEntry(String username, String action) {
-        List actionEntry = (List) this.actionLists.get(action);
+    public void removeEntry(String action, Principal principal) {
+        Set actionEntry = (Set) this.actionSets.get(action);
         
         if (actionEntry == null) return;
-        
-        ACLPrincipal a = null;
-        for (Iterator iter = actionEntry.iterator(); iter.hasNext();) {
-            ACLPrincipal p = (ACLPrincipal) iter.next();
-            if (p.getUrl().equals(username)) {
-                a = p;
-                break;
-            }
-        }
-        if (a != null) actionEntry.remove(a);
+        actionEntry.remove(principal);
     }
 
     public Principal[] listPrivilegedUsers(String action) {
-        List principals = (List)this.actionLists.get(action);
+        Set principals = (Set)this.actionSets.get(action);
 
         if (principals == null) return new Principal[0];
         
         List userList = new ArrayList();
         for (Iterator iter = principals.iterator(); iter.hasNext();) {
-            ACLPrincipal p = (ACLPrincipal) iter.next();
+            Principal p = (Principal) iter.next();
 
-            // Don't include user = "dav:authenticated" or groups
-            if (p.getType() != ACLPrincipal.TYPE_AUTHENTICATED && !p.isGroup()) {
-                Principal principal = principalManager.getPrincipal(p.getUrl());
-                userList.add(principal);
+            if (p.isUser()) {
+                userList.add(p);
             }
             
         }
         return (Principal[]) userList.toArray(new Principal[userList.size()]);
     }
 
-    public String[] listPrivilegedGroups(String action) {
-        List principals = (List)this.actionLists.get(action);
+    public Principal[] listPrivilegedGroups(String action) {
+        Set principals = (Set)this.actionSets.get(action);
         
-        if (principals == null) return new String[0];
+        if (principals == null) return new Principal[0];
         
         List groupList = new ArrayList();
         for (Iterator iter = principals.iterator(); iter.hasNext();) {
-            ACLPrincipal p = (ACLPrincipal) iter.next();
+            Principal p = (Principal) iter.next();
 
-            if (p.isGroup()) {
-                groupList.add(p.getUrl());
+            if (p.getType() == Principal.TYPE_GROUP) {
+                groupList.add(p);
             }
             
         }
-        return (String[]) groupList.toArray(new String[groupList.size()]);
+        return (Principal[]) groupList.toArray(new Principal[groupList.size()]);
+    }
+    
+    public Principal[] listPrivilegedPseudoPrincipals(String action) {
+        Set principals = (Set)this.actionSets.get(action);
+        
+        if (principals == null) return new Principal[0];
+        
+        List principalList = new ArrayList();
+        for (Iterator iter = principals.iterator(); iter.hasNext();) {
+            Principal p = (Principal) iter.next();
+
+            if (p.getType() == Principal.TYPE_PSEUDO) {
+                principalList.add(p);
+            }
+            
+        }
+        return (Principal[]) principalList.toArray(new Principal[principalList.size()]);
     }
 
     public boolean isInherited() {
@@ -141,61 +149,23 @@ public class AclImpl implements Acl {
         this.inherited = inherited;
     }
 
-    public boolean hasPrivilege(String principalName, String action) {
-        List actionEntry = (List) this.actionLists.get(action);
+    public boolean hasPrivilege(Principal principal, String action) {
+        Set actionSet = (Set) this.actionSets.get(action);
         
-        if (actionEntry == null) return false;
-        
-        for (Iterator iter = actionEntry.iterator(); iter.hasNext();) {
-            ACLPrincipal p = (ACLPrincipal) iter.next();
-            if (p.getUrl().equals(principalName)) {
-                return true;
-            }
-        }
+        if (actionSet != null && actionSet.contains(principal)) 
+            return true;
         return false;
     }
 
     public String[] getPrivilegeSet(Principal principal) {
         Set actions = new HashSet();
         
-        for (Iterator iter = this.actionLists.entrySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = this.actionSets.entrySet().iterator(); iter.hasNext();) {
             Map.Entry entry = (Map.Entry) iter.next();
             String action = (String)entry.getKey();
-            List actionEntries = (List)entry.getValue();
-
-            boolean finished = false;
-            for (Iterator iterator = actionEntries.iterator(); !finished && iterator.hasNext();) {
-                ACLPrincipal p = (ACLPrincipal) iterator.next();
-
-                switch (p.getType()) {
-
-                case ACLPrincipal.TYPE_URL:
-                
-                    if (principal != null && p.getUrl().equals(principal.getQualifiedName())) {
-                        actions.add(action);
-                        finished = true;
-                    } else if (principal != null && p.isGroup() && principalManager.isMember(principal, p.getUrl())) {
-                        actions.add(action);
-                        finished = true;
-                    }
-                    break;
-                case ACLPrincipal.TYPE_ALL:
-                    actions.add(action);
-                    finished = true;
-                    break;
-                case ACLPrincipal.TYPE_AUTHENTICATED:
-                    if (principal != null) {
-                        actions.add(action);
-                        finished = true;
-                    }
-                    break;
-                case ACLPrincipal.TYPE_OWNER:
-                    if (this.owner.equals(principal)) {
-                        actions.add(action);
-                        finished = true;
-                    }
-                }
-            }
+            Set actionEntries = (Set)entry.getValue();
+            if (actionEntries != null && actionEntries.contains(principal))
+                actions.add(action);
         }
         
         return (String[])actions.toArray(new String[actions.size()]);
@@ -210,28 +180,28 @@ public class AclImpl implements Acl {
 
         AclImpl acl = (AclImpl) o;
 
-        Set actions = actionLists.keySet();
+        Set actions = actionSets.keySet();
 
-        if (actions.size() != acl.actionLists.keySet().size()) {
+        if (actions.size() != acl.actionSets.keySet().size()) {
             return false;
         }
 
         for (Iterator i = actions.iterator(); i.hasNext();) {
             String action = (String) i.next();
 
-            if (!acl.actionLists.containsKey(action)) {
+            if (!acl.actionSets.containsKey(action)) {
                 return false;
             }
 
-            List myPrincipals = (List) actionLists.get(action);
-            List otherPrincipals = (List) acl.actionLists.get(action);
+            Set myPrincipals = (Set) actionSets.get(action);
+            Set otherPrincipals = (Set) acl.actionSets.get(action);
 
             if (myPrincipals.size() != otherPrincipals.size()) {
                 return false;
             }
 
             for (Iterator j = myPrincipals.iterator(); j.hasNext();) {
-                ACLPrincipal p = (ACLPrincipal) j.next();
+                Principal p = (Principal) j.next();
 
                 if (!otherPrincipals.contains(p)) {
                     return false;
@@ -245,14 +215,14 @@ public class AclImpl implements Acl {
     public int hashCode() {
         int hashCode = super.hashCode();
 
-        Set actions = actionLists.keySet();
+        Set actions = actionSets.keySet();
 
         for (Iterator i = actions.iterator(); i.hasNext();) {
             String action = (String) i.next();
-            List principals = (List) actionLists.get(action);
+            Set principals = (Set) actionSets.get(action);
 
             for (Iterator j = principals.iterator(); j.hasNext();) {
-                ACLPrincipal p = (ACLPrincipal) j.next();
+                Principal p = (Principal) j.next();
 
                 hashCode += p.hashCode();
             }
@@ -266,11 +236,11 @@ public class AclImpl implements Acl {
         clone.setInherited(this.inherited);
         clone.setOwner(this.owner);
 
-        for (Iterator iter = actionLists.entrySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = actionSets.entrySet().iterator(); iter.hasNext();) {
             Map.Entry entry = (Map.Entry) iter.next();
-            for (Iterator iterator = ((List)entry.getValue()).iterator(); iterator.hasNext();) {
-                ACLPrincipal ap = (ACLPrincipal) iterator.next();
-                clone.addEntry((String)entry.getKey(), ap.getUrl(), ap.isGroup());
+            for (Iterator iterator = ((Set)entry.getValue()).iterator(); iterator.hasNext();) {
+                Principal p = (Principal) iterator.next();
+                clone.addEntry((String)entry.getKey(), p);
             }
         }
         return clone;
@@ -281,22 +251,18 @@ public class AclImpl implements Acl {
 
         sb.append("[ACL:");
 
-        for (Iterator i = actionLists.keySet().iterator(); i.hasNext();) {
+        for (Iterator i = actionSets.keySet().iterator(); i.hasNext();) {
             String action = (String) i.next();
-            List principalList = getPrincipalList(action);
+            Set principalSet = (Set)actionSets.get(action);
 
             sb.append(" [");
             sb.append(action);
             sb.append(":");
-            for (Iterator j = principalList.iterator(); j.hasNext();) {
-                ACLPrincipal p = (ACLPrincipal) j.next();
+            for (Iterator j = principalSet.iterator(); j.hasNext();) {
+                Principal p = (Principal) j.next();
 
                 sb.append(" ");
-                sb.append(p.getUrl());
-
-                if (p.isGroup()) {
-                    sb.append("(g)");
-                }
+                sb.append(p);
 
                 if (j.hasNext()) {
                     sb.append(",");

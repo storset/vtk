@@ -42,7 +42,8 @@ class PrincipalImpl implements Principal {
     private String qualifiedName = null;
     private String domain = null;
     private String url = null;
-
+    private int type = Principal.TYPE_USER;
+    
     public PrincipalImpl(String name, String qualifiedName,
                          String domain, String url) {
         this.name = name;
@@ -112,6 +113,20 @@ class PrincipalImpl implements Principal {
         if (domain == null) return name;
         //FIXME: principalmanager's delimiter shouldn't be here!
         return qualifiedName.substring(0, qualifiedName.indexOf("@"));
+    }
+
+
+    public boolean isUser() {
+        return type == Principal.TYPE_USER;
+    }
+
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
     
 }

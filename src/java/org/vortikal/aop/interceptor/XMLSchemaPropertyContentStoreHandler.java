@@ -45,7 +45,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.ResourceImpl;
-import org.vortikal.repositoryimpl.ResourceManager;
+import org.vortikal.repositoryimpl.LockManager;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -80,7 +80,6 @@ public class XMLSchemaPropertyContentStoreHandler
     private RepositoryAssertion[] assertions = null;
     private PrincipalManager principalManager = null;
     private RoleManager roleManager = null;
-    private ResourceManager resourceManager;
 
     private String schemaPropertyName = "schema";
 
@@ -120,14 +119,6 @@ public class XMLSchemaPropertyContentStoreHandler
 
         if (this.assertions != null) {
 
-//            try {
-//                
-//                resource = resourceManager.getResourceClone(resource);
-//
-//            } catch (Exception e) {
-//                throw new RuntimeException(e);
-//            }
-//
             for (int i = 0; i < this.assertions.length; i++) {
                 if (!this.assertions[i].matches(resource, null)) {
                     return false;
@@ -180,13 +171,6 @@ public class XMLSchemaPropertyContentStoreHandler
         return contentStream;
     }
 
-    /**
-     * @param resourceManager The resourceManager to set.
-     */
-    public void setResourceManager(ResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
-    
 }
 
 

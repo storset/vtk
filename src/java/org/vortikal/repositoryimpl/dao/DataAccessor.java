@@ -99,7 +99,7 @@ public interface DataAccessor {
      * A faster way of discovering locks on resources deep down in the
      * hierarchy, without the need to actually load all the resources
      * in the subtree. */
-    public String[] discoverLocks(ResourceImpl directory) throws IOException;
+    public String[] discoverLocks(ResourceImpl resource) throws IOException;
 
     public String[] discoverACLs(ResourceImpl resource) throws IOException;
 

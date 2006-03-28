@@ -39,6 +39,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.security.Principal;
 
 
 /**
@@ -47,6 +48,8 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
  * by a namespace and a name. Properties may contain arbitrary string
  * values, such as XML. The application programmer is responsible for
  * the interpretation and processing of properties.
+ * 
+ * XXX: Fail in all getters if value not initialized ?
  */
 public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
@@ -57,6 +60,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     private String name;
     private Value value;
     private Value[] values;
+    
+    /* Flags if a PropertyImpl instance is initialized with a proper 
+     * value or not. */
+    private boolean valueInitialized = false;
 
     public PropertyImpl() {
         value = new Value();
@@ -80,42 +87,40 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Value getValue() {
-        if (this.propertyTypeDefinition != null) {
-            if (this.propertyTypeDefinition.isMultiple()) {
-                throw new IllegalOperationException("Property is multi-value"); 
-            }
+        if (this.propertyTypeDefinition != null &&
+            this.propertyTypeDefinition.isMultiple()) {
+            throw new IllegalOperationException("Property is multi-value"); 
         }
         
         return this.value;
     }
 
     public void setValue(Value value) throws ValueFormatException {
-        if (this.propertyTypeDefinition != null) {
-            if (this.propertyTypeDefinition.isMultiple()) {
-                throw new ValueFormatException("Property is multi-value");
-            }
+        if (this.propertyTypeDefinition != null &&
+            this.propertyTypeDefinition.isMultiple()) {
+            throw new ValueFormatException("Property is multi-value");
         }
         
         validateValue(value);
         this.value = value;
+        this.valueInitialized = true;
     }
     
     public void setValues(Value[] values) throws ValueFormatException {
-        if (this.propertyTypeDefinition != null) {
-            if (! this.propertyTypeDefinition.isMultiple()) {
-                throw new ValueFormatException("Property is not multi-value");
-            }
+        if (this.propertyTypeDefinition == null ||
+            ! this.propertyTypeDefinition.isMultiple()) {
+            throw new ValueFormatException("Property is not multi-value");
         }
         
         validateValues(values);
         this.values = values;
+        this.valueInitialized = true;
     }
     
     public Value[] getValues() {
-        if (this.propertyTypeDefinition != null) {
-            if (! this.propertyTypeDefinition.isMultiple()) {
-                throw new IllegalOperationException("Property is not multi-value");
-            }
+        if (this.propertyTypeDefinition == null || 
+            ! this.propertyTypeDefinition.isMultiple()) {
+            throw new IllegalOperationException("Property is not multi-value");
         }
         
         return this.values;
@@ -134,6 +139,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         v.setDateValue(dateValue);
         validateValue(v);
         this.value = v;
+        this.valueInitialized = true;
     }
 
     public String getStringValue() throws IllegalOperationException {
@@ -148,6 +154,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         v.setValue(stringValue);
         validateValue(v);
         this.value = v;
+        this.valueInitialized = true;
     }
     
     public void setLongValue(long longValue) throws ValueFormatException {
@@ -155,11 +162,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         v.setLongValue(longValue);
         validateValue(v);
         this.value = v;
+        this.valueInitialized = true;
     }
 
     public long getLongValue() throws IllegalOperationException {
-        if (value == null || (propertyTypeDefinition != null && 
-                propertyTypeDefinition.getType() != PropertyType.TYPE_LONG)) {
+        if (value == null || getType() != PropertyType.TYPE_LONG) {
             throw new IllegalOperationException("Property " + this + " not of type Long");
         }
         return value.getLongValue();
@@ -170,6 +177,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         v.setIntValue(intValue);
         validateValue(v);
         this.value = v;
+        this.valueInitialized = true;
     }
 
     public int getIntValue() throws IllegalOperationException {
@@ -191,8 +199,24 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         v.setBooleanValue(booleanValue);
         validateValue(v);
         this.value = v;
+        this.valueInitialized = true;
     }
 
+    public Principal getPrincipalValue() throws IllegalOperationException {
+        if (value == null || getType() != PropertyType.TYPE_PRINCIPAL) {
+            throw new IllegalOperationException("Property " + this + " not of type Principal");
+        }
+        return value.getPrincipalValue();
+    }
+    
+    public void setPrincipalValue(Principal principalValue) throws ValueFormatException {
+        Value v = new Value();
+        v.setPrincipalValue(principalValue);
+        validateValue(v);
+        this.value = v;
+        this.valueInitialized = true;
+    }
+    
     public Object clone() throws CloneNotSupportedException {
         PropertyImpl clone = new PropertyImpl();
         
@@ -214,15 +238,42 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public boolean equals(Object obj) {
-        if (! (obj instanceof Property)) return false;
+        if ((obj == null) || !(obj instanceof Property)) return false;
         
-        Property prop = (Property) obj;
-        if (this.name.equals(prop.getName()) 
-                && this.value.equals(prop.getValue())
-                && this.namespace.equals(prop.getNamespace())) {
-                return true;
+        Property otherProp = (Property) obj;
+        
+        if (! this.name.equals(otherProp.getName()) || 
+            ! this.namespace.equals(otherProp.getNamespace())) {
+            return false;
         }
-        return false;
+        
+        if (this.propertyTypeDefinition != null &&
+            this.propertyTypeDefinition.isMultiple()) {
+            
+            // Other prop must also be multiple, otherwise not equal
+            if (otherProp.getDefinition() == null ||
+                ! otherProp.getDefinition().isMultiple()) {
+                return false;
+            }
+            
+            Value[] otherValues = otherProp.getValues();
+            
+            // Other prop's value list must be equal
+            if (this.values.length != otherValues.length) return false;
+            
+            for (int i=0; i<this.values.length; i++) {
+                if (! this.values[i].equals(otherValues[i])) return false;
+            }
+            
+            return true;
+        } else {
+            // This property is not multiple (or lacks def), other prop cannot be multiple
+            if (otherProp.getDefinition() != null && otherProp.getDefinition().isMultiple()) {
+                return false;
+            }
+            
+            return this.value.equals(otherProp.getValue());
+        }
     }
     
     public String toString() {
@@ -231,7 +282,17 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         sb.append(this.getClass().getName()).append(": ");
         sb.append("[ ").append(this.namespace);
         sb.append(":").append(this.name);
-        sb.append(" = ").append(this.value);
+        if (this.propertyTypeDefinition != null && this.propertyTypeDefinition.isMultiple()) {
+            sb.append(" = {");
+            for (int i=0; i<this.values.length; i++) {
+                sb.append("'").append(this.values[i]).append("'");
+                if (i < this.values.length-1) sb.append(",");
+            }
+            sb.append("}");
+        } else {
+            sb.append(" = '").append(this.value).append("'");
+        }
+        
         sb.append("]");
 
         return sb.toString();
@@ -244,8 +305,9 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     private void validateValue(Value value) throws ValueFormatException  {
-        if (value == null) return; // XXX: desired behaviour ? 
-                                   // Could throw exception instead, to disallow null-values ...
+        if (value == null) {
+            throw new ValueFormatException("Null-values not allowed.");
+        }
         
         if (value.getType() != getType()) {
             throw new ValueFormatException("Illegal value type " + 
@@ -253,11 +315,31 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
                     " for property " + this.name + ". Should be " + 
                     PropertyType.PROPERTY_TYPE_NAMES[getType()]);
         }
+        
+        // Check for potential null values
+        switch (value.getType()) {
+        case PropertyType.TYPE_PRINCIPAL:
+            if (value.getPrincipalValue() == null) {
+                throw new ValueFormatException("Principal value cannot be null");
+            }
+            break;
+        case PropertyType.TYPE_STRING:
+            if (value.getValue() == null) {
+                throw new ValueFormatException("String value cannot be null");
+            }
+            break;
+        case PropertyType.TYPE_DATE:
+            if (value.getDateValue() == null) {
+                throw new ValueFormatException("Date value cannot be null");
+            }
+        }
+         
     }
     
     public int getType() {
         if (this.propertyTypeDefinition == null)
             return PropertyType.TYPE_STRING;
+        
         return this.propertyTypeDefinition.getType();
     }
     
@@ -267,6 +349,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     public void setDefinition(PropertyTypeDefinition propertyTypeDefinition) {
         this.propertyTypeDefinition = propertyTypeDefinition;
+    }
+    
+    public boolean isValueInitialized() {
+        return this.valueInitialized;
     }
     
 }

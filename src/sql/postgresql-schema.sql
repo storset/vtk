@@ -175,6 +175,31 @@ ALTER TABLE acl_entry
 
 CREATE INDEX acl_entry_index1 ON acl_entry(resource_id);
 
+
+-----------------------------------------------------------------------------
+-- prop_type
+-----------------------------------------------------------------------------
+DROP TABLE prop_type CASCADE;
+
+CREATE TABLE prop_type
+(
+    prop_type_id int NOT NULL,
+    prop_type_name VARCHAR(64) NOT NULL
+);
+
+ALTER TABLE prop_type
+    ADD CONSTRAINT prop_type_PK PRIMARY KEY (prop_type_id);
+
+-- This data currently corresponds to definitions in 
+-- org.vortikal.repository.resourcetype.PropertyType
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');
+
+
 -----------------------------------------------------------------------------
 -- extra_prop_entry
 -----------------------------------------------------------------------------
@@ -188,6 +213,7 @@ CREATE TABLE extra_prop_entry
 (
     extra_prop_entry_id int NOT NULL,
     resource_id int NOT NULL,
+--    prop_type_id int DEFAULT 0 NOT NULL,
     name_space VARCHAR (128) NOT NULL,
     name VARCHAR (64) NOT NULL,
     value VARCHAR (2048) NOT NULL
@@ -201,6 +227,12 @@ ALTER TABLE extra_prop_entry
     ADD CONSTRAINT extra_prop_entry_FK_1 FOREIGN KEY (resource_id)
     REFERENCES vortex_resource (resource_id)
 ;
+
+-- Also references prop_type_id
+-- ALTER TABLE extra_prop_entry
+--    ADD CONSTRAINT extra_prop_entry_FK_2 FOREIGN KEY (prop_type_id)
+--    REFERENCES prop_type(prop_type_id)
+-- ;
 
 CREATE INDEX extra_prop_entry_index1 ON extra_prop_entry(resource_id);
 

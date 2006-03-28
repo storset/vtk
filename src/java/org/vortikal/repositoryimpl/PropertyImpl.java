@@ -320,17 +320,23 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         switch (value.getType()) {
         case PropertyType.TYPE_PRINCIPAL:
             if (value.getPrincipalValue() == null) {
-                throw new ValueFormatException("Principal value cannot be null");
+                throw new ValueFormatException(
+                    "Principal value of property '" + this.namespace + ":"
+                    + this.name + "' cannot be null");
             }
             break;
         case PropertyType.TYPE_STRING:
             if (value.getValue() == null) {
-                throw new ValueFormatException("String value cannot be null");
+                throw new ValueFormatException(
+                    "String value of property '" + this.namespace + ":"
+                    + this.name + "' cannot be null");
             }
             break;
         case PropertyType.TYPE_DATE:
             if (value.getDateValue() == null) {
-                throw new ValueFormatException("Date value cannot be null");
+                throw new ValueFormatException(
+                    "Date value of property '" + this.namespace + ":"
+                    + this.name + "' cannot be null");
             }
         }
          

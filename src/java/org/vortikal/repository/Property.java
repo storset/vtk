@@ -35,6 +35,7 @@ import java.util.Date;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.security.Principal;
 
 /**
  * This interface represents meta information about resources. A resource
@@ -68,6 +69,8 @@ public interface Property extends Cloneable {
     public void setLongValue(long longValue) throws ValueFormatException;
     
     public void setIntValue(int intValue) throws ValueFormatException;
+    
+    public void setPrincipalValue(Principal principalValue) throws ValueFormatException;
 
     public int getIntValue() throws IllegalOperationException;
     
@@ -77,7 +80,9 @@ public interface Property extends Cloneable {
 
     public boolean getBooleanValue() throws IllegalOperationException;
 
-    public long getLongValue() throws IllegalOperationException; 
+    public long getLongValue() throws IllegalOperationException;
+    
+    public Principal getPrincipalValue() throws IllegalOperationException;
     
     public PropertyTypeDefinition getDefinition();
     

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,7 +40,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
@@ -68,95 +71,349 @@ public abstract class AbstractDataAccessor
     public void afterPropertiesSet() throws Exception {
         // FIXME: Implement
     }
-    
-    protected void loadACLs(Connection conn, ResourceImpl[] resources)
-        throws SQLException {
 
-        if (resources == null || resources.length == 0) {
-            return;
-        }
-
-        List uris = new ArrayList();
-        
-        for (int i = 0; i < resources.length; i++) {
-
-            String[] path = URLUtil.splitUriIncrementally(
-                resources[i].getURI());
-
-            for (int j = path.length -1; j >= 0; j--) {
-
-                if (!uris.contains(path[j])) {
-                    uris.add(path[j]);
-                }
-            }
-        }
-
-        if (uris.size() == 0) {
-            throw new SQLException("No ancestor path");
-        }
-    
-
-        /* Populate the parent ACL map (these are all the ACLs that
-         * will be needed) */
-        Map acls = executeACLQuery(conn, uris);
-
-        for (int i = 0; i < resources.length; i++) {
-
-            ResourceImpl resource = resources[i];
-            AclImpl acl = null;
-
-            if (!resource.isInheritedACL()) {
-            
-                if (!acls.containsKey(resource.getURI())) {
-                    throw new SQLException(
-                        "Database inconsistency: resource " +
-                        resource.getURI() + " claims  ACL is not inherited, " +
-                        "but no ACL exists");
-                }
-                
-                acl = (AclImpl) acls.get(resource.getURI());
-
-            } else {
-
-                String[] path = URLUtil.splitUriIncrementally(
-                    resource.getURI());
-
-                for (int j = path.length - 2; j >= 0; j--) {
-
-                    AclImpl found = (AclImpl) acls.get(path[j]);
-
-                    if (found != null) {
-                        try {
-                            /* We have to clone the ACL here, because ACLs
-                             * and resources are "doubly linked". */
-                            acl = (AclImpl) found.clone();
-                        } catch (CloneNotSupportedException e) {
-                            throw new SQLException(e.getMessage());
-                        }
-
-                        break;
-                    }                
-                }
-
-                if (acl == null) {
-                    throw new SQLException("Resource " + resource.getURI() +
-                                           ": no ACL to inherit! At least root " +
-                                           "resource should contain an ACL");
-                }
-            }
-            acl.setInherited(resource.isInheritedACL());
-            acl.setOwner(resource.getOwner());
-            resource.setACL(acl);
-        }
-    }
-
-    protected abstract Map executeACLQuery(Connection conn, List uris) throws SQLException;
-
-    /**
-     * @param principalManager The principalManager to set.
-     */
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
+    
+
+
+    /**
+     * Gets a connection from the pool with auto commit set to false.
+     * 
+     * @return a <code>Connection</code>
+     * @exception SQLException if an error occurs
+     */
+    protected abstract Connection getConnection()
+        throws SQLException;
+    
+
+    
+
+    public ResourceImpl load(String uri) throws IOException {
+        Connection conn = null;
+        ResourceImpl retVal = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            retVal = load(conn, uri);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred while loading resource(s)", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+
+        return retVal;
+    }
+
+
+    protected abstract ResourceImpl load(Connection conn, String uri) throws SQLException;
+
+
+
+    public void deleteExpiredLocks() throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            deleteExpiredLocks(conn);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred while deleting expired locks", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+
+    protected abstract void deleteExpiredLocks(Connection conn) throws SQLException;
+    
+
+
+    public void addChangeLogEntry(String loggerID, String loggerType, String uri,
+                                  String operation, int resourceId, boolean collection,
+                                  boolean recurse) throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            addChangeLogEntry(conn, loggerID, loggerType, uri, operation, resourceId,
+                              collection, recurse);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred while adding changelog entry for " + uri, e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+
+
+    protected abstract void addChangeLogEntry(
+        Connection conn, String loggerID, String loggerType,
+        String uri, String operation, int resourceId,
+        boolean collection, boolean recurse) throws SQLException;
+    
+
+
+
+
+    public String[] discoverLocks(ResourceImpl resource)
+            throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            String[] lockedURIs = discoverLocks(conn, resource);
+            conn.commit();
+
+            return lockedURIs;
+        } catch (SQLException e) {
+            logger.warn("Error occurred while discovering locks", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+
+
+    protected abstract String[] discoverLocks(Connection conn, ResourceImpl resource)
+        throws SQLException;
+    
+
+
+    public String[] listSubTree(ResourceImpl parent)
+            throws IOException {
+        Connection conn = null;
+        String[] retVal = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            retVal = listSubTree(conn, parent);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred while listing resource tree", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+
+        return retVal;
+    }
+
+
+    protected abstract String[] listSubTree(Connection conn, ResourceImpl parent)
+        throws SQLException;
+    
+
+    public void store(ResourceImpl r)
+            throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            store(conn, r);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred while storing resource " + r.getURI(), e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+
+
+    protected abstract void store(Connection conn, ResourceImpl r)
+        throws SQLException, IOException;
+    
+
+
+    public void delete(ResourceImpl resource)
+            throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            delete(conn, resource);
+            conn.commit();
+        } catch (SQLException e) {
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+
+
+    protected abstract void delete(Connection conn, ResourceImpl resource)
+        throws SQLException;
+    
+
+
+
+    public ResourceImpl[] loadChildren(ResourceImpl parent)
+            throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("load children:" + parent.getURI());
+        }
+        Connection conn = null;
+        ResourceImpl[] retVal = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            retVal = loadChildren(conn, parent);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred while loading children: " + parent.getURI(), e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+
+        return retVal;
+    }
+
+
+
+    protected abstract ResourceImpl[] loadChildren(Connection conn, ResourceImpl parent)
+        throws SQLException;
+    
+
+
+
+
+    public String[] discoverACLs(ResourceImpl resource) throws IOException {
+        Connection conn = null;
+        String[] retVal = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            retVal = discoverACLs(conn, resource);
+            conn.commit();
+        } catch (SQLException e) {
+            logger.warn("Error occurred finding ACLs ", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+
+        return retVal;
+    }
+
+
+
+    protected abstract String[] discoverACLs(Connection conn, ResourceImpl resource)
+        throws SQLException;
+    
+
+
+
+    public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
+                     boolean setOwner, String owner) throws IOException {
+        Connection conn = null;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);     
+            copy(conn, resource, destURI, copyACLs, setOwner, owner);
+            conn.commit();
+            
+        } catch (SQLException e) {
+            logger.warn("Error occurred while copying resource " + resource, e);
+            throw new IOException(e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Error occurred while copying resource " + resource, e);
+            throw e;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    conn = null;
+                }
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+
+
+    protected abstract void copy(Connection conn, ResourceImpl resource, String destURI,
+                                 boolean copyACLs, boolean setOwner, String owner)
+        throws SQLException, IOException;
+
 
 }
+

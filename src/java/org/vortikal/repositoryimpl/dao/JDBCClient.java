@@ -30,8 +30,6 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -53,20 +51,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.dbcp.BasicDataSource;
+
 import org.springframework.beans.factory.DisposableBean;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.ACLPrincipal;
+import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.util.repository.URIUtil;
+import org.vortikal.util.web.URLUtil;
 
 /**
  * This class is going to be a "generic" JDBC database accessor. Currently, only
@@ -110,7 +111,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         logger.info("Setting up database");
 
         if (contentStore == null) {
-            throw new IOException("Missing property 'fileStore'");
+            throw new IOException("Missing property 'contentStore'");
         }
         
         if (databaseURL == null) {
@@ -144,17 +145,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         pool.setDefaultAutoCommit(false);
     }
 
-    /**
-     * Gets a connection from the pool with auto commit set to false.
-     * 
-     * @return a <code>Connection</code>
-     * @exception SQLException
-     *                if an error occurs
-     */
-    public Connection getConnection()
+
+    protected Connection getConnection()
             throws SQLException {
         Connection conn = pool.getConnection();
-        conn.setAutoCommit(false);     
         return conn;
     }
 
@@ -224,32 +218,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    public ResourceImpl load(String uri) throws IOException {
-        Connection conn = null;
-        ResourceImpl retVal = null;
 
-        try {
-            conn = getConnection();
-            retVal = load(conn, uri);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred while loading resource(s)", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-
-        return retVal;
-    }
-
-    private ResourceImpl load(Connection conn, String uri) throws SQLException {
+    protected ResourceImpl load(Connection conn, String uri) throws SQLException {
 
         String query = "select r.* from VORTEX_RESOURCE r where r.uri = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
@@ -285,6 +255,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return resource;
     }
 
+
     private ResourceImpl populateResource(String uri, ResultSet rs) 
         throws SQLException {
 
@@ -293,58 +264,84 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         resource.setInheritedACL(rs.getString("acl_inherited").equals("Y"));
         
         boolean collection = rs.getString("is_collection").equals("Y");
-        Property prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME, new Boolean(collection));
+        Property prop = this.propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
+            new Boolean(collection));
         resource.addProperty(prop);
         
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, new Date(rs.getTimestamp("creation_time").getTime()));
+        prop = this.propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
+            new Date(rs.getTimestamp("creation_time").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME, rs.getString("resource_owner"));
+        prop = this.propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
+            rs.getString("resource_owner"));
         resource.addProperty(prop);
 
         String string = rs.getString("display_name");
         if (string != null) {
-            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.DISPLAYNAME_PROP_NAME, string);
+            prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.DISPLAYNAME_PROP_NAME,
+                string);
             resource.addProperty(prop);
         }
         
         string = rs.getString("content_type");
         if (string != null) {
-            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME, string);
+            prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME,
+                string);
             resource.addProperty(prop);
         }
         
         string = rs.getString("character_encoding");
         if (string != null) {
-            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_PROP_NAME, string);
+            prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_PROP_NAME,
+                string);
             resource.addProperty(prop);
         }
         
         string = rs.getString("content_language");
         if (string != null) {
-            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME, string);
+            prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME,
+                string);
             resource.addProperty(prop);
         }
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("content_last_modified").getTime()));
+        prop = this.propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME,
+            new Date(rs.getTimestamp("content_last_modified").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME, rs.getString("content_modified_by"));
+        prop = this.propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
+            rs.getString("content_modified_by"));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, new Date(rs.getTimestamp("properties_last_modified").getTime()));
+        prop = this.propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME,
+            new Date(rs.getTimestamp("properties_last_modified").getTime()));
         resource.addProperty(prop);
 
-        prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, rs.getString("properties_modified_by"));
+        prop = this.propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
+            rs.getString("properties_modified_by"));
         resource.addProperty(prop);
 
         if (!collection) {
             long contentLength = contentStore.getContentLength(resource.getURI());
-            prop = this.propertyManager.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME, new Long(contentLength));
+            prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME,
+                new Long(contentLength));
             resource.addProperty(prop);
         }
         
         return resource;
     }
+
+
     
     private String getURIWildcard(String uri) {
         if ("/".equals(uri)) {
@@ -390,29 +387,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     }
 
-    public void deleteExpiredLocks() throws IOException {
-        Connection conn = null;
 
-        try {
-            conn = getConnection();
-            deleteExpiredLocks(conn);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred while deleting expired locks", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-    }
-
-    private void deleteExpiredLocks(Connection conn)
+    protected void deleteExpiredLocks(Connection conn)
             throws SQLException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String format = formatter.format(new Date());
@@ -429,34 +405,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    public void addChangeLogEntry(String loggerID, String loggerType, String uri,
-                                  String operation, int resourceId, boolean collection,
-                                  boolean recurse) throws IOException {
-        Connection conn = null;
 
-        try {
-            conn = getConnection();
-            addChangeLogEntry(conn, loggerID, loggerType, uri, operation, resourceId,
-                              collection, recurse);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred while adding changelog entry for " + uri, e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-    }
-
-    private void addChangeLogEntry(Connection conn, String loggerID, String loggerType,
-                                   String uri, String operation, int resourceId,
-                                   boolean collection, boolean recurse) throws SQLException {
+    protected void addChangeLogEntry(Connection conn, String loggerID, String loggerType,
+                                     String uri, String operation, int resourceId,
+                                     boolean collection, boolean recurse) throws SQLException {
         if (collection && recurse) {
 
             int id = Integer.parseInt(loggerID);
@@ -519,42 +471,16 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
     }
 
-    public String[] discoverLocks(ResourceImpl directory)
-            throws IOException {
-        Connection conn = null;
 
-        try {
-            conn = getConnection();
-
-            if (!directory.isCollection()) {
-                LockImpl lock = loadLock(conn, directory.getURI());
-
-                return (lock != null) ? new String[] {directory.getURI()} : new String[0];
-            }
-
-            String[] lockedURIs = discoverLocks(conn, directory);
-
-            conn.commit();
-
-            return lockedURIs;
-        } catch (SQLException e) {
-            logger.warn("Error occurred while discovering locks", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-    }
-
-    private String[] discoverLocks(Connection conn, ResourceImpl directory)
+    protected String[] discoverLocks(Connection conn, ResourceImpl resource)
             throws SQLException {
-        String uri = directory.getURI();
+        if (!resource.isCollection()) {
+            LockImpl lock = loadLock(conn, resource.getURI());
+
+            return (lock != null) ? new String[] {resource.getURI()} : new String[0];
+        }
+
+        String uri = resource.getURI();
 
         String query = "select r.uri, l.* from VORTEX_LOCK l inner join VORTEX_RESOURCE r "
                 + "on l.resource_id = r.resource_id "
@@ -646,33 +572,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return result;
     }
 
-    public String[] listSubTree(ResourceImpl parent)
-            throws IOException {
-        Connection conn = null;
-        String[] retVal = null;
-
-        try {
-            conn = getConnection();
-            retVal = listSubTree(conn, parent);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred while listing resource tree", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-
-        return retVal;
-    }
-
-    private String[] listSubTree(Connection conn, ResourceImpl parent)
+    protected String[] listSubTree(Connection conn, ResourceImpl parent)
             throws SQLException {
         if (parent.getURI() == null) {
             return new String[] {};
@@ -701,30 +601,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return (String[]) l.toArray(new String[] {});
     }
 
-    public void store(ResourceImpl r)
-            throws IOException {
-        Connection conn = null;
-
-        try {
-            conn = getConnection();
-            store(conn, r);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred while storing resource " + r.getURI(), e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-    }
-
-    private void store(Connection conn, ResourceImpl r)
+    protected void store(Connection conn, ResourceImpl r)
             throws SQLException, IOException {
         String uri = r.getURI();
         
@@ -1064,29 +941,8 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         stmt.close();
     }
 
-    public void delete(ResourceImpl resource)
-            throws IOException {
-        Connection conn = null;
 
-        try {
-            conn = getConnection();
-            delete(conn, resource);
-            conn.commit();
-        } catch (SQLException e) {
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-    }
-
-    public void delete(Connection conn, ResourceImpl resource)
+    protected  void delete(Connection conn, ResourceImpl resource)
             throws SQLException {
         String query = "delete from ACL_ENTRY where resource_id in ("
                 + "select resource_id from VORTEX_RESOURCE "
@@ -1195,34 +1051,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
 
 
 
-    public ResourceImpl[] loadChildren(ResourceImpl parent)
-            throws IOException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("load children:" + parent.getURI());
-        }
-        Connection conn = null;
-        ResourceImpl[] retVal = null;
-
-        try {
-            conn = getConnection();
-            retVal = loadChildren(conn, parent);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred while loading children: " + parent.getURI(), e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-
-        return retVal;
-    }
 
 
     /**
@@ -1250,7 +1078,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return (String[]) childURIs.toArray(new String[childURIs.size()]);
     }
 
-    private ResourceImpl[] loadChildren(Connection conn, ResourceImpl parent)
+    protected ResourceImpl[] loadChildren(Connection conn, ResourceImpl parent)
         throws SQLException {
 
         Map locks = loadLocksForChildren(conn, parent);
@@ -1330,6 +1158,90 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
+
+    private void loadACLs(Connection conn, ResourceImpl[] resources)
+        throws SQLException {
+
+        if (resources == null || resources.length == 0) {
+            return;
+        }
+
+        List uris = new ArrayList();
+        
+        for (int i = 0; i < resources.length; i++) {
+
+            String[] path = URLUtil.splitUriIncrementally(
+                resources[i].getURI());
+
+            for (int j = path.length -1; j >= 0; j--) {
+
+                if (!uris.contains(path[j])) {
+                    uris.add(path[j]);
+                }
+            }
+        }
+
+        if (uris.size() == 0) {
+            throw new SQLException("No ancestor path");
+        }
+    
+
+        /* Populate the parent ACL map (these are all the ACLs that
+         * will be needed) */
+        Map acls = executeACLQuery(conn, uris);
+
+        for (int i = 0; i < resources.length; i++) {
+
+            ResourceImpl resource = resources[i];
+            AclImpl acl = null;
+
+            if (!resource.isInheritedACL()) {
+            
+                if (!acls.containsKey(resource.getURI())) {
+                    throw new SQLException(
+                        "Database inconsistency: resource " +
+                        resource.getURI() + " claims  ACL is not inherited, " +
+                        "but no ACL exists");
+                }
+                
+                acl = (AclImpl) acls.get(resource.getURI());
+
+            } else {
+
+                String[] path = URLUtil.splitUriIncrementally(
+                    resource.getURI());
+
+                for (int j = path.length - 2; j >= 0; j--) {
+
+                    AclImpl found = (AclImpl) acls.get(path[j]);
+
+                    if (found != null) {
+                        try {
+                            /* We have to clone the ACL here, because ACLs
+                             * and resources are "doubly linked". */
+                            acl = (AclImpl) found.clone();
+                        } catch (CloneNotSupportedException e) {
+                            throw new SQLException(e.getMessage());
+                        }
+
+                        break;
+                    }                
+                }
+
+                if (acl == null) {
+                    throw new SQLException("Resource " + resource.getURI() +
+                                           ": no ACL to inherit! At least root " +
+                                           "resource should contain an ACL");
+                }
+            }
+            acl.setInherited(resource.isInheritedACL());
+            acl.setOwner(resource.getOwner());
+            resource.setACL(acl);
+        }
+    }
+
+
+
     private void loadPropertiesForChildren(Connection conn, ResourceImpl parent,
             ResourceImpl[] resources)
             throws SQLException {
@@ -1397,32 +1309,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         return result;
     }
 
-    //------------- NEW STUFF
-
-    public String[] discoverACLs(ResourceImpl resource) throws IOException {
-        Connection conn = null;
-        String[] retVal = null;
-
-        try {
-            conn = getConnection();
-            retVal = discoverACLs(conn, resource);
-            conn.commit();
-        } catch (SQLException e) {
-            logger.warn("Error occurred finding ACLs ", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-
-        return retVal;
-    }
     
     protected String[] discoverACLs(Connection conn, ResourceImpl resource)
             throws SQLException {
@@ -1450,39 +1336,10 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
     }
 
 
-    public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
-                     boolean setOwner, String owner) throws IOException {
-        Connection conn = null;
-
-        try {
-            conn = getConnection();
-            copy(conn, resource, destURI, copyACLs, setOwner, owner);
-            long timestamp = System.currentTimeMillis();
-            conn.commit();
-            long duration = System.currentTimeMillis() - timestamp;
-            System.out.println("__COPY: " + resource.getURI() + " -> " + destURI
-                               + ": commit took " + duration + " ms");
-            
-        } catch (SQLException e) {
-            logger.warn("Error occurred while copying resource " + resource, e);
-            throw new IOException(e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Error occurred while copying resource " + resource, e);
-            throw e;
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-    }
     
-    private void copy(Connection conn, ResourceImpl resource, String destURI, boolean copyACLs,
-                      boolean setOwner, String owner) throws SQLException, IOException {
+    protected void copy(Connection conn, ResourceImpl resource,
+                        String destURI, boolean copyACLs,
+                        boolean setOwner, String owner) throws SQLException, IOException {
 
         int depthDiff = getURIDepth(destURI) - getURIDepth(resource.getURI());
     
@@ -1502,8 +1359,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             + "acl_inherited from vortex_resource "
             + "where uri = '" + resource.getURI() + "'"
             + "or uri like '" + getURIWildcard(resource.getURI()) + "'";
-        
-        System.out.println("__: " + query);
         
 
         Statement stmt = conn.createStatement();
@@ -1542,8 +1397,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
         query = "update vortex_resource set prev_resource_id = null "
             + "where uri = '" + destURI + "' or uri like '" + destURI + "/%'";
 
-        System.out.println("__: " + query);
-
         stmt = conn.createStatement();
         stmt.executeUpdate(query);
         stmt.close();
@@ -1556,8 +1409,6 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
             logger.debug("Successfully copied '" + resource.getURI() + "' to '"
                          + destURI + "' in " + duration + " ms");
         }
-            System.out.println("Successfully copied '" + resource.getURI() + "' to '"
-                               + destURI + "' in " + duration + " ms");
     }
     
 }

@@ -522,7 +522,7 @@ public class PropfindView implements View, InitializingBean {
             try {
         
                 Namespace customNamespace =
-                    Namespace.getNamespace(property.getNamespace().getUrl());
+                    Namespace.getNamespace(property.getNamespace().getUri());
 
                 String xml = "<" + property.getName() + " xmlns=\"" +
                     customNamespace.getURI() + "\">" + value + "</" +
@@ -549,7 +549,7 @@ public class PropfindView implements View, InitializingBean {
         }
         
         Namespace customNamespace = 
-            Namespace.getNamespace(property.getNamespace().getUrl());
+            Namespace.getNamespace(property.getNamespace().getUri());
         Element propElement = new Element(property.getName(),
                                           customNamespace);
         propElement.setText(property.getStringValue());

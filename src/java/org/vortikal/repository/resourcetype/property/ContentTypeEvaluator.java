@@ -40,8 +40,11 @@ import org.vortikal.util.repository.MimeHelper;
 
 public class ContentTypeEvaluator implements CreatePropertyEvaluator {
 
-    public boolean create(Principal principal, Property property, 
-            PropertySet ancestorPropertySet, boolean isCollection, Date time) 
+    public boolean create(Principal principal, 
+                          Property property, 
+                          PropertySet ancestorPropertySet, 
+                          boolean isCollection, 
+                          Date time) 
     throws PropertyEvaluationException {
         if (!isCollection) {
             property.setStringValue(MimeHelper.map(ancestorPropertySet.getName()));

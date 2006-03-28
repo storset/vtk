@@ -35,16 +35,18 @@ public class Namespace {
 
     private final static String CUSTOM_NAMESPACE_URI = "http://www.uio.no/vortex/custom-properties";
 
-    public final static Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
+    public final static Namespace DEFAULT_NAMESPACE = 
+        new Namespace(null, null);
+    
     public final static Namespace CUSTOM_NAMESPACE = 
         new Namespace("custom", CUSTOM_NAMESPACE_URI);
     
     private String prefix;
-    private String url;
+    private String uri;
 
-    public Namespace(String prefix, String url) {
+    public Namespace(String prefix, String uri) {
         this.prefix = prefix;
-        this.url = url;
+        this.uri = uri;
     }
 
     public static Namespace getNamespace(String uri) {
@@ -58,27 +60,27 @@ public class Namespace {
         return this.prefix;
     }
     
-    public String getUrl() {
-        return this.url;
+    public String getUri() {
+        return this.uri;
     }
     
     public boolean equals(Object obj) {
         if (! (obj instanceof Namespace)) return false;
         Namespace ns = (Namespace) obj;
         
-        String thisUrl = (this.url == null) ? "" : this.url;
-        String thatUrl = (ns.getUrl() == null) ? "" : ns.getUrl();
+        String thisUri = (this.uri == null) ? "" : this.uri;
+        String thatUri = (ns.getUri() == null) ? "" : ns.getUri();
         String thisPrefix = (this.prefix == null) ? "" : this.prefix;
         String thatPrefix = (ns.getPrefix() == null) ? "" : ns.getPrefix();
 
-        return thisUrl.equals(thatUrl) && thisPrefix.equals(thatPrefix);
+        return thisUri.equals(thatUri) && thisPrefix.equals(thatPrefix);
     }
     
     public int hashCode() {
-        String url = this.url == null ? "" : this.url;
+        String uri = this.uri == null ? "" : this.uri;
         String prefix = this.prefix == null ? "" : this.prefix;
         
-        return url.hashCode() + prefix.hashCode();
+        return uri.hashCode() + prefix.hashCode();
     }
     
     public String toString() {
@@ -87,10 +89,10 @@ public class Namespace {
             sb.append(this.prefix).append(":");
         }
 
-        if (this.url == null) {
+        if (this.uri == null) {
             sb.append("DEFAULT");
         } else {
-            sb.append(this.url);
+            sb.append(this.uri);
         }
         return sb.toString();
     }
@@ -99,8 +101,8 @@ public class Namespace {
         this.prefix = prefix;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
     
 }

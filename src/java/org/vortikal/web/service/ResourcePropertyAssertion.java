@@ -73,7 +73,7 @@ public class ResourcePropertyAssertion
 
 
     public String getNamespace() {
-        return this.namespace.getUrl();
+        return this.namespace.getUri();
     }
 
 

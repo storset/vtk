@@ -44,7 +44,7 @@ public interface Resource extends PropertySet {
     
     public void removeProperty(Namespace namespace, String name);
     
-    // XXX: What to do about this?! Old client code operates with a divison of know/unkown props.
+    // XXX: What to do about this?! Old client code operates with a divison of know/unknown props.
     public List getOtherProperties();
     
     // Old stuff from dto

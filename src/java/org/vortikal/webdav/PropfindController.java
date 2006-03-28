@@ -305,7 +305,7 @@ public class PropfindController extends AbstractWebdavController {
                 Namespace namespace = prop.getNamespace();
                 String name = prop.getName();
 
-                Element e = new Element(name, namespace.getUrl());
+                Element e = new Element(name, namespace.getUri());
                 if (isSupportedProperty(name, e.getNamespace())) {
                     propList.add(e);
                 }

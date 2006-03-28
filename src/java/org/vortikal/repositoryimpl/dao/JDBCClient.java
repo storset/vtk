@@ -933,7 +933,7 @@ public class JDBCClient extends AbstractDataAccessor implements DisposableBean {
                         + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)");
 
         stmt.setInt(1, r.getID());
-        stmt.setString(2, property.getNamespace().getUrl());
+        stmt.setString(2, property.getNamespace().getUri());
         stmt.setString(3, property.getName());
         stmt.setString(4, property.getStringValue());
 

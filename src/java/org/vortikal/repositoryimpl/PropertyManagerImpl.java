@@ -466,11 +466,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         prop.setName(name);
         
         // XXX: probably not desired behavior
-        Map map = (Map)propertyTypeDefinitions.get(namespace);
-        if (map != null) {
-            PropertyTypeDefinition propDef = (PropertyTypeDefinition) map.get(name);
-            if (propDef != null)
-                prop.setDefinition(propDef);
+        prop.setDefinition(findPropertyTypeDefinition(namespace, name));
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Created property: " + prop);
         }
         
         return prop;
@@ -484,16 +483,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         prop.setNamespace(namespace);
         prop.setName(name);
         
-        PropertyTypeDefinition propDef = null;
-        Map map = (Map)propertyTypeDefinitions.get(namespace);
-        if (map != null) {
-            propDef = (PropertyTypeDefinition) map.get(name);
-            prop.setDefinition(propDef);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Found property definition : " + propDef
-                             + " for property " + prop);
-            }
-        }
+        // Set definition (may be null)
+        prop.setDefinition(findPropertyTypeDefinition(namespace, name));
         
         // XXX: complete this
         if (value instanceof Date) {
@@ -508,11 +499,34 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         } else {
             prop.setStringValue((String) value);
         }
+        
+        
         if (logger.isDebugEnabled()) {
             logger.debug("Created property: " + prop);
         }
 
         return prop;
+    }
+    
+    private PropertyTypeDefinition findPropertyTypeDefinition(Namespace namespace, 
+                                                          String name) {
+        PropertyTypeDefinition propDef = null;
+        Map map = (Map)propertyTypeDefinitions.get(namespace);
+        if (map != null) {
+            propDef = (PropertyTypeDefinition) map.get(name);
+        }
+        
+        if (logger.isDebugEnabled()) {
+            if (propDef != null) {
+                logger.debug("Found property definition : " + propDef
+                        + " for property " + namespace.getPrefix() + ":" + name);
+            } else {
+                logger.debug("No definition found for property " +
+                        namespace.getPrefix() + ":" + name);
+            }
+        }
+        
+        return propDef;
     }
     
     public void setPrincipalManager(PrincipalManager principalManager) {

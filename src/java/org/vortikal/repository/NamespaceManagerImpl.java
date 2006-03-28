@@ -49,7 +49,7 @@ public final class NamespaceManagerImpl implements NamespaceManager {
         for (Iterator i = managedNamespaces.iterator(); i.hasNext();) {
             Namespace n = (Namespace) i.next();
             this.prefixMap.put(n.getPrefix(), n);
-            this.uriMap.put(n.getUrl(), n);
+            this.uriMap.put(n.getUri(), n);
         }
     }
     

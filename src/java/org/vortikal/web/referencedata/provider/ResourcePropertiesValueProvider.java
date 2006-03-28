@@ -222,7 +222,7 @@ public class ResourcePropertiesValueProvider
                 for (Iterator iter = expandedProps.iterator(); iter.hasNext();) {
                     Property prop = (Property) iter.next();
                     subModel.put(prop.getName(),
-                                 maybeLocalizeValue(prop.getNamespace().getUrl(),
+                                 maybeLocalizeValue(prop.getNamespace().getUri(),
                                                     prop.getName(),
                                                     prop.getStringValue(),
                                                     request));

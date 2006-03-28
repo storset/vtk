@@ -89,9 +89,9 @@ public class Namespace {
 
         if (this.url == null) {
             sb.append("DEFAULT");
+        } else {
+            sb.append(this.url);
         }
-
-        sb.append(this.url);
         return sb.toString();
     }
 

@@ -486,7 +486,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         // Set definition (may be null)
         prop.setDefinition(findPropertyTypeDefinition(namespace, name));
         
-        // XXX: complete this
         if (value instanceof Date) {
             Date date = (Date) value;
             prop.setDateValue(date);
@@ -496,7 +495,16 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         } else if (value instanceof Long) {
             Long l = (Long) value;
             prop.setLongValue(l.longValue());
+        } else if (value instanceof Integer) {
+            Integer i = (Integer)value;
+            prop.setIntValue(i.intValue());
+        } else if (value instanceof Principal) {
+            Principal p = (Principal) value;
+            prop.setPrincipalValue(p);
         } else {
+            if (! (value instanceof String)) {
+                throw new ValueFormatException("Supplied value not of any supported type.");
+            }
             prop.setStringValue((String) value);
         }
         

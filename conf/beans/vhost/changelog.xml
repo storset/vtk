@@ -16,7 +16,7 @@
     lists of resource changes from the database changelog table. -->
   <bean id="repository.dbResourceChangeFetcher" 
         class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
-    <property name="jdbcDatabase" ref="repository.database" />
+    <property name="dataSource" ref="repository.dataSource" />
     <property name="loggerType" value="2" />
     <property name="loggerId" value="1" />
   </bean>

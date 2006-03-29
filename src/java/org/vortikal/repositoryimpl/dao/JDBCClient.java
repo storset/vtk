@@ -802,7 +802,7 @@ public class JDBCClient extends AbstractDataAccessor {
                 "(extra_prop_entry_id, resource_id, name_space, name, value) "
                 + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)";
                     
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(insertQuery);
 
             for (Iterator iter = properties.iterator(); iter.hasNext();) {
                 Property property = (Property) iter.next();

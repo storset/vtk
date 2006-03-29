@@ -39,6 +39,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PrincipalStore;
 
 /**
@@ -58,8 +59,9 @@ import org.vortikal.security.PrincipalStore;
 public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
   implements InitializingBean {
 
-    private PrincipalStore principalStore;
+    private PrincipalManager principalManager;
     private Set principals = new HashSet();
+    private Set groupNames = new HashSet();
     private Set groups = new HashSet();
     
     public void setPrincipals(Set principals) {
@@ -67,11 +69,11 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
     }
     
     public void setGroups(Set groups) {
-        this.groups = groups;
+        this.groupNames = groups;
     }
     
-    public void setPrincipalStore(PrincipalStore principalStore) {
-        this.principalStore = principalStore;
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
     
     
@@ -80,14 +82,21 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
             throw new BeanInitializationException(
                 "JavaBean property 'principals' cannot be null");
         }
-        if (this.groups == null) {
+        if (this.groupNames == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'groups' cannot be null");
         }
-        if (this.principalStore == null) {
+        
+        if (this.principalManager == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'principalStore' cannot be null");
+                "JavaBean property 'principalManager' cannot be null");
         }
+
+        for (Iterator iter = groupNames.iterator(); iter.hasNext();) {
+            String groupName = (String) iter.next();
+            groups.add(principalManager.getGroupPrincipal(groupName));
+        }
+        
     }
 
 
@@ -99,8 +108,8 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
             }
 
             for (Iterator i = this.groups.iterator(); i.hasNext();) {
-                String group = (String) i.next();
-                if (this.principalStore.isMember(principal, group)) {
+                Principal group = (Principal) i.next();
+                if (this.principalManager.isMember(principal, group)) {
                     return true;
                 }
             }

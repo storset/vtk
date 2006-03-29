@@ -186,7 +186,7 @@ public class PermissionsManager {
             Principal p = (Principal) i.next();
 
             if (p.getType() == Principal.TYPE_GROUP) {
-                if (principalManager.isMember(principal, p.getQualifiedName())) {
+                if (principalManager.isMember(principal, p)) {
                     return true;
                 }
             }

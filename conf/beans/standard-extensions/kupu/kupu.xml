@@ -52,19 +52,6 @@
     <property name="assertions">
       <list>
         <ref bean="modeParameterEqualsKupu" />
-
-        <!--
-        <bean class="org.vortikal.web.service.PrincipalMatchAssertion">
-          <property name="principalStore" ref="principalStore" />
-          <property name="groups">
-            <list>
-              <value>system-users</value>
-              <value>vrtxadm</value>
-            </list>
-          </property>
-        </bean>
-        -->
-
         <bean id="kupuBrowserCheck" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
           <property name="header" value="User-Agent" />
           <property name="patterns">

@@ -290,7 +290,7 @@ public class ResourcePropertiesValueProvider
             return resource.getCharacterEncoding();
             
         } else if ("contentLocale".equals(propertyName)) {
-            return resource.getContentLocale();
+            return resource.getContentLanguage();
             
         } else if ("contentLastModified".equals(propertyName)) {
             return resource.getContentLastModified();

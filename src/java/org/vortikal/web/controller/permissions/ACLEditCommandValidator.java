@@ -100,8 +100,16 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                 errors.rejectValue("groupNames",
                                    "permissions.group.missing.value",
                                    "You must type a value");
-
-            else if (!principalManager.validateGroup(groupName))
+            Principal group = null; 
+            try {
+                group = this.principalManager.getGroupPrincipal(groupName);
+            } catch (InvalidPrincipalException e) {
+                errors.rejectValue("groupNames", "permissions.group.illegal.value",
+                        new Object[] {groupName}, "String '" + groupName
+                                   + "' is an illegal group name");
+            }
+            
+            if (group != null && !principalManager.validateGroup(group))
                 errors.rejectValue("groupNames", "permissions.group.wrong.value",
                         new Object[] {groupName}, "Group '" + groupName
                                    + "' does not exist");

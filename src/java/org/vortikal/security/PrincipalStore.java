@@ -54,11 +54,11 @@ public interface PrincipalStore {
     /**
      * Validates the existence of a given group.
      *
-     * @param groupName the name of the group
+     * @param group the group to validate
      * @return <code>true</code> if the group exists,
      * <code>false</code> otherwise.
      */
-    public boolean validateGroup(String groupName)
+    public boolean validateGroup(Principal group)
         throws AuthenticationProcessingException;
 
 
@@ -69,8 +69,8 @@ public interface PrincipalStore {
      * @param groupName the group in question
      * @return an array of the principals that are members of the group
      */
-    public String[] resolveGroup(String groupName)
-        throws AuthenticationProcessingException;
+//    public String[] resolveGroup(Principal group)
+//        throws AuthenticationProcessingException;
     
     
     /**
@@ -78,11 +78,11 @@ public interface PrincipalStore {
      * member of a group.
      *
      * @param principal the name of the principal
-     * @param groupName the group in question 
+     * @param group the group in question 
      * @return true if the group exists and the given principal is a
      * member of that group, false otherwise.
      */
-    public boolean isMember(Principal principal, String groupName);
+    public boolean isMember(Principal principal, Principal group);
     
 
 }

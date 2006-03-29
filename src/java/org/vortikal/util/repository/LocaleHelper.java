@@ -40,14 +40,14 @@ public class LocaleHelper {
     
     public static Locale getLocale(String localeString) {
 
-        if (localeString == null) {
+        if (localeString == null || localeString.trim().equals("")) {
             return null;
         }
 
         // FIXME: this is to get around the fact that the
         // content-language has been stored in the database using the
         // string 'unknown' when it should be null:
-
+        // XXX: Remove
         if ("unknown".equals(localeString)) {
             return null;
         }

@@ -144,7 +144,11 @@ public class PropertyConfigurableMD5PrincipalStore
     
 
 
-    public boolean validateGroup(String groupName) {
+    public boolean validateGroup(Principal group) {
+        if (!this.domain.equals(group.getDomain()))
+            return false;
+        
+        String groupName = group.getUnqualifiedName();
         boolean hit = this.groups.containsKey(groupName);
         if (logger.isDebugEnabled()) {
             logger.debug("Validate group: " + groupName + ": " + hit);
@@ -161,7 +165,13 @@ public class PropertyConfigurableMD5PrincipalStore
     }
     
 
-    public String[] resolveGroup(String groupName) {
+    public String[] resolveGroup(Principal group) {
+
+        if (!this.domain.equalsIgnoreCase(group.getDomain())) {
+            return new String[0];
+        }
+        String groupName = group.getUnqualifiedName();
+        
         if (!this.groups.containsKey(groupName)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Resolve group: " + groupName + ": unknown group");
@@ -179,7 +189,8 @@ public class PropertyConfigurableMD5PrincipalStore
     }
 
 
-    public boolean isMember(Principal principal, String groupName) {
+    public boolean isMember(Principal principal, Principal group) {
+        String groupName = group.getQualifiedName();
         if (!this.groups.containsKey(groupName)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Check membership for principal " + principal

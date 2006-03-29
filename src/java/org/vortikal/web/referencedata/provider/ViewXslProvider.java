@@ -141,7 +141,7 @@ public class ViewXslProvider implements ReferenceDataProvider {
         try {
             setXsltParameter(model, "creationTime", resource.getCreationTime());
             setXsltParameter(model, "lastModified", resource.getLastModified());
-            setXsltParameter(model, "contentLanguage", resource.getContentLocale());
+            setXsltParameter(model, "contentLanguage", resource.getContentLanguage());
             setXsltParameter(model, "PARENT-COLLECTION", resource.getParent());
             setXsltParameter(model, "CURRENT-URL", request.getRequestURL());
             setXsltParameter(model, "ADMIN-URL", 

@@ -65,6 +65,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.service.Service;
@@ -334,7 +335,7 @@ public class PropfindView implements View, InitializingBean {
                 element.addContent(name);
 
             } else if (property.equals("getcontentlanguage")) {
-                Locale locale = resource.getContentLocale();
+                Locale locale = LocaleHelper.getLocale(resource.getContentLanguage());
                 if (locale == null) return null;
                 element.addContent(locale.getLanguage());
 

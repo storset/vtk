@@ -347,8 +347,9 @@ public class ProppatchController extends AbstractWebdavController {
                     logger.debug("setting property 'getcontentlanguage' to '"
                                  + property.getText() + "'");
                 }
+                // XXX: Locale needs to be better handled
                 Locale locale = LocaleHelper.getLocale(property.getText());
-                resource.setContentLocale(locale);
+                resource.setContentLocale(property.getText());
                 
             } else if (propertyName.equals("getcontenttype")) {
                 if (logger.isDebugEnabled()) {

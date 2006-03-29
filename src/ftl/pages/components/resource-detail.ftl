@@ -114,7 +114,7 @@
       <div class="nonul">
         <select name="contentLanguage"> 
         <#list editContentLanguageForm.possibleLanguages as lang>
-          <option value="${lang}" <#if resourceContext.currentResource.contentLocale?exists && resourceContext.currentResource.contentLocale = "${lang}">selected=""</#if>><@vrtx.msg code="resource.contentLanguage.${lang}" default="${lang}"/></option>
+          <option value="${lang}" <#if editContentLanguageForm.contentLanguage?exists && editContentLanguageForm.contentLanguage = "${lang}">selected=""</#if>><@vrtx.msg code="resource.contentLanguage.${lang}" default="${lang}"/></option>
         </#list>
         </select>
       </div>
@@ -124,7 +124,7 @@
     </td>
   <#else>
      <td class="key"><@vrtx.msg code="resource.contentLanguage" default="Content-language"/>:</td>
-     <#assign langKey = 'resource.contentLanguage.' + (resourceContext.currentResource.contentLocale)?default('unknown') />
+     <#assign langKey = 'resource.contentLanguage.' + (resourceContext.currentResource.contentLanguage)?default('unknown') />
      <td class="value"><@vrtx.msg code="${langKey}" default="unknown"/>
      <#if resourceDetail.setContentLanguageServiceURL?exists>
       (&nbsp;<a href="${resourceDetail.setContentLanguageServiceURL?html}"><@vrtx.msg code="resource.contentLanguage.edit" default="edit"/></a>&nbsp;)</#if>

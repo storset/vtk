@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -46,7 +47,9 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.repository.URIUtil;
@@ -76,38 +79,39 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public Property createProperty(Namespace namespace, String name) {
-        return propertyManager.createProperty(namespace, name);
+        Property prop = propertyManager.createProperty(namespace, name);
+        addProperty(prop);
+        return prop;
     }
 
     public void deleteProperty(Property property) {
-        List props = (List)propertyMap.get(property.getNamespace());
-        
-        if (props != null && props.contains(property)) 
-            props.remove(property);
+        // XXX: is this meaningfull? need to check for prop equality first?
+        removeProperty(property.getNamespace(), property.getName());
     }
 
     public void removeProperty(Namespace namespace, String name) {
-        List props = (List)propertyMap.get(namespace);
+        Map props = (Map)propertyMap.get(namespace);
         
         if (props == null) return;
         
-        Property prop = null;
-        for (Iterator iter = props.iterator(); iter.hasNext();) {
-            prop = (Property) iter.next();
-            if (prop.getName().equals(name)) {
-                break;
-            }
-            prop = null;
-        }
-        if (prop != null) props.remove(prop);
+        Property prop = (Property)props.get(name);
+        
+        if (prop == null) return;
+
+        PropertyTypeDefinition def = prop.getDefinition();
+        
+        if (def != null && def.isMandatory())
+            throw new ConstraintViolationException("Property is mandatory"); 
+
+        props.remove(name);
     }
 
     public String getParent() {
         return URIUtil.getParentURI(this.uri);
     }
 
-    public Locale getContentLocale() {
-        return LocaleHelper.getLocale(getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME));
+    public String getContentLanguage() {
+        return getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME);
     }
 
 
@@ -312,9 +316,9 @@ public class ResourceImpl implements Resource, Cloneable {
                 PropertyType.CHARACTERENCODING_PROP_NAME, characterEncoding);
     }
 
-    public void setContentLocale(Locale locale) {
+    public void setContentLocale(String locale) {
         setProperty(Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CONTENTLOCALE_PROP_NAME, locale.toString());
+                PropertyType.CONTENTLOCALE_PROP_NAME, locale);
     }
 
     public void setContentType(String contentType) {
@@ -381,6 +385,10 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     private void setProperty(Namespace namespace, String name, String value) {
+        if (value == null) { 
+            removeProperty(namespace, name);
+            return;
+        }
         Property prop = getProperty(namespace, name);
         if (prop == null) {
             prop = createProperty(namespace, name);

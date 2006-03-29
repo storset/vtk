@@ -107,82 +107,84 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     }
 
 
-    public boolean validateGroup(String groupName)
+    public boolean validateGroup(Principal group)
         throws AuthenticationProcessingException {
         for (Iterator i = managers.iterator(); i.hasNext();) {
             PrincipalStore manager = (PrincipalStore) i.next();
-            if (manager.validateGroup(groupName)) {
+            if (manager.validateGroup(group)) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Validated group '" + groupName
+                    logger.debug("Validated group '" + group
                                  + "' using manager " + manager);
                 }
                 return true;
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Invalid group '" + groupName + "'");
+            logger.debug("Invalid group '" + group + "'");
         }
         return false;
     }
     
 
-    public String[] resolveGroup(String groupName)
-        throws AuthenticationProcessingException {
-        for (Iterator i = managers.iterator(); i.hasNext();) {
-            PrincipalStore manager = (PrincipalStore) i.next();
-            if (manager.validateGroup(groupName)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Resolved group '" + groupName
-                                 + "' using manager " + manager);
-                }
-                return manager.resolveGroup(groupName);
-            }
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Unable to resolve group '" + groupName + "'");
-        }
-        return new String[0];
-    }
+//    public String[] resolveGroup(Principal group)
+//        throws AuthenticationProcessingException {
+//        for (Iterator i = managers.iterator(); i.hasNext();) {
+//            PrincipalStore manager = (PrincipalStore) i.next();
+//            if (manager.validateGroup(group)) {
+//                if (logger.isDebugEnabled()) {
+//                    logger.debug("Resolved group '" + group
+//                                 + "' using manager " + manager);
+//                }
+//                return manager.resolveGroup(group);
+//            }
+//        }
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("Unable to resolve group '" + group + "'");
+//        }
+//        return new String[0];
+//    }
     
     
 
-    public boolean isMember(Principal principal, String groupName)
+    public boolean isMember(Principal principal, Principal group)
         throws AuthenticationProcessingException {
 
         if (this.cache == null) {
-            return isMemberUncached(principal, groupName);
+            return isMemberUncached(principal, group);
         }
-        return isMemberCached(principal, groupName);
+        return isMemberCached(principal, group);
     }
     
-    public boolean isMemberUncached(Principal principal, String groupName)
+    public boolean isMemberUncached(Principal principal, Principal group)
         throws AuthenticationProcessingException {
 
         for (Iterator i = this.managers.iterator(); i.hasNext();) {
             PrincipalStore manager = (PrincipalStore) i.next();
-            if (manager.validateGroup(groupName)) {
+            if (manager.validateGroup(group)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Validated group membership for principal '"
-                            + principal + "', group '" + groupName + "' using "
+                            + principal + "', group '" + group.getQualifiedName() + "' using "
                             + "manager " + manager);
                 }
 
-                boolean isMember = manager.isMember(principal, groupName);
+                boolean isMember = manager.isMember(principal, group);
                 return isMember;
             }
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Validating group membership failed: no principal "
                     + "manager match for principal '" + principal + "'"
-                    + ", group '" + groupName + "'");
+                    + ", group '" + group.getQualifiedName() + "'");
         }
         return false;
     }
 
 
-    public boolean isMemberCached(Principal principal, String groupName)
+    public boolean isMemberCached(Principal principal, Principal group)
         throws AuthenticationProcessingException {
 
+        String groupName = group.getQualifiedName();
+            
             GroupItem item = (GroupItem) cache.get(principal);
             if (item == null) {
 
@@ -207,14 +209,14 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
 
         for (Iterator i = this.managers.iterator(); i.hasNext();) {
             PrincipalStore manager = (PrincipalStore) i.next();
-            if (manager.validateGroup(groupName)) {
+            if (manager.validateGroup(group)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Validated group membership for principal '"
                             + principal + "', group '" + groupName + "' using "
                             + "manager " + manager);
                 }
 
-                boolean isMember = manager.isMember(principal, groupName);
+                boolean isMember = manager.isMember(principal, group);
 
                 if (isMember) {
                     item.getGroupsMap().put(groupName, new Object());

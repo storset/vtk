@@ -161,7 +161,8 @@ public class JDBCClient extends AbstractDataAccessor {
         String string = rs.getString("display_name");
         if (string != null) {
             prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.DISPLAYNAME_PROP_NAME,
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.DISPLAYNAME_PROP_NAME,
                 string);
             resource.addProperty(prop);
         }
@@ -169,7 +170,8 @@ public class JDBCClient extends AbstractDataAccessor {
         string = rs.getString("content_type");
         if (string != null) {
             prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME,
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CONTENTTYPE_PROP_NAME,
                 string);
             resource.addProperty(prop);
         }
@@ -177,7 +179,8 @@ public class JDBCClient extends AbstractDataAccessor {
         string = rs.getString("character_encoding");
         if (string != null) {
             prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_PROP_NAME,
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CHARACTERENCODING_PROP_NAME,
                 string);
             resource.addProperty(prop);
         }
@@ -185,7 +188,8 @@ public class JDBCClient extends AbstractDataAccessor {
         string = rs.getString("content_language");
         if (string != null) {
             prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME,
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CONTENTLOCALE_PROP_NAME,
                 string);
             resource.addProperty(prop);
         }
@@ -485,17 +489,16 @@ public class JDBCClient extends AbstractDataAccessor {
         Date propertiesLastModified = r.getPropertiesLastModified();
         Date creationTime = r.getCreationTime();
 
-        String displayName = r.getDisplayName();
-
-        String contentType = r.getContentType();
-        String characterEncoding = r.getCharacterEncoding();
         String owner = r.getOwner().getQualifiedName();
         String contentModifiedBy = r.getContentModifiedBy().getQualifiedName();
         String propertiesModifiedBy = r.getPropertiesModifiedBy().getQualifiedName();
-        Locale locale = r.getContentLocale();
-        String contentLanguage = (locale == null) ? null : locale.toString();
         boolean collection = r.isCollection();
-        
+
+        String displayName = r.getDisplayName();
+        String contentType = r.getContentType();
+        String characterEncoding = r.getCharacterEncoding();
+        String contentLanguage = r.getContentLanguage();
+
         String query = "select * from VORTEX_RESOURCE where uri = ?";
         PreparedStatement existStmt = conn.prepareStatement(query);
 

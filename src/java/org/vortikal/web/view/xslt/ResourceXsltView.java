@@ -66,6 +66,7 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -280,7 +281,7 @@ public class ResourceXsltView extends AbstractView
             response.setHeader("Content-Length", "" + resultBuffer.toByteArray().length);
             
             if (this.includeContentLanguageHeader) {
-                Locale locale = resource.getContentLocale();
+                Locale locale = LocaleHelper.getLocale(resource.getContentLanguage());
                 if (locale != null) {
                     String contentLanguage = locale.getLanguage();
                     response.setHeader("Content-Language", contentLanguage);

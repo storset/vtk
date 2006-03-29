@@ -87,13 +87,15 @@ public class ContentTypeController extends SimpleFormController {
         
         Resource resource = repository.retrieve(token, uri, false);
 
-        if (contentTypeCommand.getContentType() == null ||
-            "".equals(contentTypeCommand.getContentType().trim())) {
+        String contentType = contentTypeCommand.getContentType();
+
+        // XXX: waiting for validator code both for prop and command
+        if (contentType == null || "".equals(contentTypeCommand.getContentType().trim())) {
             contentTypeCommand.setDone(true);
             return;
         }
 
-        resource.setContentType(contentTypeCommand.getContentType().trim());
+        resource.setContentType(contentType);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Setting new content type '" +

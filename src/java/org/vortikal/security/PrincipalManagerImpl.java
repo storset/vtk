@@ -238,17 +238,17 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
     }
 
 
-    public boolean validateGroup(String groupName) throws AuthenticationProcessingException {
-        return this.principalStore.validateGroup(groupName);
+    public boolean validateGroup(Principal group) throws AuthenticationProcessingException {
+        return this.principalStore.validateGroup(group);
     }
 
 
-    public String[] resolveGroup(String groupName) throws AuthenticationProcessingException {
-        return this.principalStore.resolveGroup(groupName);
-    }
+//    public String[] resolveGroup(Principal group) throws AuthenticationProcessingException {
+//        return this.principalStore.resolveGroup(group);
+//    }
 
 
-    public boolean isMember(Principal principal, String groupName) {
-        return this.principalStore.isMember(principal, groupName);
+    public boolean isMember(Principal principal, Principal group) {
+        return this.principalStore.isMember(principal, group);
     }
 }

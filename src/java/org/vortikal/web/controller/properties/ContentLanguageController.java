@@ -60,10 +60,6 @@ public class ContentLanguageController extends SimpleFormController {
 		this.possibleLanguages = possibleLanguages;
 	}
 	
-	public String[] getPossibleLanguages() {
-		return possibleLanguages;
-	}
-
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -73,8 +69,7 @@ public class ContentLanguageController extends SimpleFormController {
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
-        Locale locale = resource.getContentLocale();
-        String language = (locale != null) ? locale.toString() : null;
+        String language = resource.getContentLanguage();
 
         ContentLanguageCommand command =
             new ContentLanguageCommand(language, possibleLanguages, url);
@@ -99,18 +94,12 @@ public class ContentLanguageController extends SimpleFormController {
         
         Resource resource = repository.retrieve(token, uri, false);
 
-        if (contentLanguageCommand.getContentLanguage() == null ||
-            "".equals(contentLanguageCommand.getContentLanguage().trim())) {
-            contentLanguageCommand.setDone(true);
-            return;
-        }
-
-        resource.setContentLocale(
-            LocaleHelper.getLocale(contentLanguageCommand.getContentLanguage()));
+        Locale locale = LocaleHelper.getLocale(contentLanguageCommand.getContentLanguage());
+        resource.setContentLocale((locale == null) ? null : locale.toString());
 
         if (logger.isDebugEnabled()) {
             logger.debug("Setting new content language '" +
-                         resource.getContentLocale() + 
+                         resource.getContentLanguage() + 
                          "' for resource " + uri);
         }
         repository.store(token, resource);

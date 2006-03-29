@@ -237,6 +237,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
         // For all properties, check if they are modified, deleted or created
         Map allreadySetProperties = new HashMap();
+        
         List deadProperties = new ArrayList();
         Authorization authorization = new Authorization(principal, resource.getAcl(), this.roleManager);
 
@@ -256,9 +257,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     try {
                         authorization.authorize(prop.getDefinition().getProtectionLevel());
                     } catch (AuthorizationException e) {
-                        throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
+                        throw new ConstraintViolationException("Not authorized to delete property " + prop, e);
                     }
-                        addToPropsMap(allreadySetProperties, userProp);
+                    // It will be removed
+                    // XXX: if user explicitly want's to delete property and prop has evaluator,
+                    // it will be evaluated. Is this desired behaviour?
                 }
             } else if (!prop.equals(userProp)) {
                 // Changed value
@@ -290,7 +293,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 } else {
                     // check if allowed
                     try {
-                        authorization.authorize(prop.getDefinition().getProtectionLevel());
+                        authorization.authorize(userProp.getDefinition().getProtectionLevel());
                     } catch (AuthorizationException e) {
                         throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
                     }
@@ -316,6 +319,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             for (Iterator iterator = map.values().iterator(); iterator
                     .hasNext();) {
                 Property prop = (Property) iterator.next();
+                System.out.println("*** Still: " + prop);
+
                 newResource.addProperty(prop);
             }
         }

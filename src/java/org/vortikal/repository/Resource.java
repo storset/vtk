@@ -32,7 +32,6 @@ package org.vortikal.repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.vortikal.security.Principal;
 
@@ -46,8 +45,6 @@ public interface Resource extends PropertySet {
     
     // XXX: What to do about this?! Old client code operates with a divison of know/unknown props.
     public List getOtherProperties();
-    
-    // Old stuff from dto
     
     /**
      * Gets a resource's serial string.  A serial string is a unique
@@ -143,12 +140,11 @@ public interface Resource extends PropertySet {
     public String[] getChildURIs();
 
     /**
-     * Gets a resource's content locale.
+     * Gets a resource's content language.
      *
-     * @return the locale (if it has one, <code>null</code>
-     * otherwise)
+     * @return the locale string (if it has one, <code>null</code> otherwise)
      */
-    public Locale getContentLocale();
+    public String getContentLanguage();
 
     /**
      * Gets this resource's display name.
@@ -193,7 +189,7 @@ public interface Resource extends PropertySet {
     
     public void setCharacterEncoding(String characterEncoding);
 
-    public void setContentLocale(Locale locale);
+    public void setContentLocale(String locale);
 
     public void setContentType(String string);
 

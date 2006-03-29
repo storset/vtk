@@ -275,6 +275,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     } catch (AuthorizationException e) {
                         throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
                     }
+                    
                     addToPropsMap(allreadySetProperties, userProp);
                 }
             } else {
@@ -366,6 +367,15 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 newProps.add(prop);
             }
         }
+
+        // Check validator...
+//        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
+//            Property prop = (Property) iter.next();
+//            PropertyValidator validator = prop.getDefinition().getValidator();
+//            if (validator != null)
+//                validator.validate(principal, newResource, prop);
+//        }
+        
         for (Iterator iter = newProps.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             newResource.addProperty(prop);
@@ -559,9 +569,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.applicationContext = applicationContext;
     }
 
-    /**
-     * @param lazyInit The lazyInit to set.
-     */
     public void setLazyInit(boolean lazyInit) {
         this.lazyInit = lazyInit;
     }

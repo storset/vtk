@@ -31,6 +31,7 @@
 package org.vortikal.backend;
 
 import java.io.IOException;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;

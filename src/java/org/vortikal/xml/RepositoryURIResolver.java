@@ -34,15 +34,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
-
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Resolves abstract stylesheet identifiers into URIs of the content

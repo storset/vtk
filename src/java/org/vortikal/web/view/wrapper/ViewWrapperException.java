@@ -31,6 +31,7 @@
 package org.vortikal.web.view.wrapper;
 
 import java.util.Map;
+
 import org.springframework.web.servlet.View;
 
 

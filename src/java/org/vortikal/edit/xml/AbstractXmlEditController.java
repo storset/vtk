@@ -43,27 +43,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.Lock;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.security.AuthenticationException;
-import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.ServiceUnlinkableException;
-import org.vortikal.xml.StylesheetCompilationException;
-import org.vortikal.xml.TransformerManager;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Lock;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.xml.StylesheetCompilationException;
+import org.vortikal.xml.TransformerManager;
 
 
 

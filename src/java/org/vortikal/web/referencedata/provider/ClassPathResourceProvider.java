@@ -31,15 +31,14 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
-
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**

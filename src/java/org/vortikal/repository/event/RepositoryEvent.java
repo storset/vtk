@@ -30,9 +30,8 @@
  */
 package org.vortikal.repository.event;
 
-import org.vortikal.repository.Repository;
-
 import org.springframework.context.ApplicationEvent;
+import org.vortikal.repository.Repository;
 
 
 public abstract class RepositoryEvent extends ApplicationEvent {

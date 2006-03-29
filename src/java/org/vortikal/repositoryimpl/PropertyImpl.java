@@ -35,8 +35,10 @@ import java.util.Date;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.Principal;
@@ -339,7 +341,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
                     + this.name + "' cannot be null");
             }
         }
-         
+        
+        // XXX: Do we want this, or should the client check by itself?
+        if (propertyTypeDefinition != null && propertyTypeDefinition.getConstraint() != null) {
+            Constraint constraint = propertyTypeDefinition.getConstraint();
+            constraint.validate(value);
+        }
     }
     
     public int getType() {

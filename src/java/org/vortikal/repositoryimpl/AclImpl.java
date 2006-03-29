@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.Property;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 

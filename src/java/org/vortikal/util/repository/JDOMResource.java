@@ -35,7 +35,6 @@ import java.io.InputStream;
 
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
-
 import org.vortikal.repository.Repository;
 
 

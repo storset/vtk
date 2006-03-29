@@ -35,8 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.vortikal.web.service.Service;
-
 
 /**
  * Comparator for sorting services based on the natural ordering of

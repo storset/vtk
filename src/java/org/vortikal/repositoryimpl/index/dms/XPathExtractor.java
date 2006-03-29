@@ -37,12 +37,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.xpath.XPath;
-
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.BeanInitializationException;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.index.ExtractorException;
 import org.vortikal.util.repository.ContentTypeHelper;

@@ -32,8 +32,9 @@ package org.vortikal.repositoryimpl.index.util;
 
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.logging.LogFactory;
+
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.index.observation.ResourceChange;

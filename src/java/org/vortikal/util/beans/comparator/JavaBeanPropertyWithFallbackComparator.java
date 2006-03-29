@@ -33,6 +33,7 @@ package org.vortikal.util.beans.comparator;
 
 
 import java.util.Comparator;
+
 import org.springframework.beans.BeanWrapperImpl;
 
 /**

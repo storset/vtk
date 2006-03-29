@@ -43,14 +43,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
-import org.vortikal.repository.Lock;
-import org.vortikal.repository.LockType;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.DocType;
@@ -62,6 +54,12 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.vortikal.repository.LockType;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 
 /**

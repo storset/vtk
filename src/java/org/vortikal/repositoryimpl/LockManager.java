@@ -32,22 +32,16 @@ package org.vortikal.repositoryimpl;
 
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import org.doomdark.uuid.UUIDGenerator;
-import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.util.repository.URIUtil;
 
 
 public class LockManager {

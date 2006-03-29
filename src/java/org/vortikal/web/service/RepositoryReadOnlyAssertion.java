@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.service;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;

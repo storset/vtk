@@ -31,6 +31,7 @@
 package org.vortikal.web.referencedata;
 
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**

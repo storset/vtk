@@ -39,7 +39,7 @@ public interface Resource extends PropertySet {
 
     public Property createProperty(Namespace namespace, String name);
     
-    public void deleteProperty(Property property);
+//    public void deleteProperty(Property property);
     
     public void removeProperty(Namespace namespace, String name);
     
@@ -61,6 +61,94 @@ public interface Resource extends PropertySet {
      */
     public String getParent();
 
+    /**
+     * Gets this resource's name.
+     *
+     * @return the name
+     */
+    public String getName();
+    
+    /**
+     * Gets the size of a resource.
+     *
+     * @return the size of the resource's content (in bytes)
+     */
+    public long getContentLength();
+    
+    /**
+     * Gets the list of children. These are "soft" references, listing
+     * the URIs of the children.
+     *
+     * @return the children's URIs, or <code>null</code> if the
+     * resource is not a collection
+     */
+    public String[] getChildURIs();
+
+    /**
+     * Returns a lock for the resource, if one is set.
+     *
+     * @return a <code>Lock</code> object representing
+     * the active lock that are set on the resource
+     */
+    public Lock getLock();
+    
+    public Acl getAcl();
+    
+    /**
+     * Determines whether this resource is a collection.
+     *
+     * @return a <code>true</code> if this resource is a collection,
+     * <code>false</code> otherwise
+     */
+    public boolean isCollection();
+    
+    /**
+     * Gets a resource's owner.
+     *
+     */
+    public Principal getOwner();
+    
+    /**
+     * Gets the name of the principal that last modified either the
+     * content or the properties of this resource.
+     *
+     * @return the name of the principal
+     */
+    public Principal getModifiedBy();
+    
+    /**
+     * Gets the name of the principal that last modified the
+     * resource's content.
+     */
+    public Principal getContentModifiedBy();
+
+    /**
+     * Gets the name of the principal that last modified the
+     * resource's properties.
+     */
+    public Principal getPropertiesModifiedBy();
+    
+    /**
+     * Gets a resource's content language.
+     *
+     * @return the locale string (if it has one, <code>null</code> otherwise)
+     */
+    public String getContentLanguage();
+
+    /**
+     * Gets this resource's display name.
+     *
+     * @return the display name
+     */
+    public String getDisplayName();
+
+    /**
+     * Gets a resource's content (MIME) type.
+     *
+     * @return the content type
+     */
+    public String getContentType();
+    
     /**
      * Gets the creation time for this resource.
      *
@@ -91,94 +179,6 @@ public interface Resource extends PropertySet {
     public Date getPropertiesLastModified();
 
     /**
-     * Gets this resource's name.
-     *
-     * @return the name
-     */
-    public String getName();
-    
-    /**
-     * Gets a resource's owner.
-     *
-     */
-    public Principal getOwner();
-    
-    /**
-     * Gets the name of the principal that last modified either the
-     * content or the properties of this resource.
-     *
-     * @return the name of the principal
-     */
-    public Principal getModifiedBy();
-    
-    /**
-     * Gets the name of the principal that last modified the
-     * resource's content.
-     */
-    public Principal getContentModifiedBy();
-
-    /**
-     * Gets the name of the principal that last modified the
-     * resource's properties.
-     */
-    public Principal getPropertiesModifiedBy();
-    
-    /**
-     * Gets the size of a resource.
-     *
-     * @return the size of the resource's content (in bytes)
-     */
-    public long getContentLength();
-    
-    /**
-     * Gets the list of children. These are "soft" references, listing
-     * the URIs of the children.
-     *
-     * @return the children's URIs, or <code>null</code> if the
-     * resource is not a collection
-     */
-    public String[] getChildURIs();
-
-    /**
-     * Gets a resource's content language.
-     *
-     * @return the locale string (if it has one, <code>null</code> otherwise)
-     */
-    public String getContentLanguage();
-
-    /**
-     * Gets this resource's display name.
-     *
-     * @return the display name
-     */
-    public String getDisplayName();
-
-    /**
-     * Gets a resource's content (MIME) type.
-     *
-     * @return the content type
-     */
-    public String getContentType();
-    
-    /**
-     * Returns a lock for the resource, if one is set.
-     *
-     * @return a <code>Lock</code> object representing
-     * the active lock that are set on the resource
-     */
-    public Lock getLock();
-    
-    /**
-     * Determines whether this resource is a collection.
-     *
-     * @return a <code>true</code> if this resource is a collection,
-     * <code>false</code> otherwise
-     */
-    public boolean isCollection();
-    
-    public Acl getAcl();
-    
-    /**
      * Gets the character encoding. This value is only relevant if the
      * resource type is 'textResource'.
      *
@@ -195,6 +195,6 @@ public interface Resource extends PropertySet {
 
     public void setOwner(Principal principal);
 
-    public void setDisplayName(String text);
+    public void setDisplayName(String displayName);
     
 }

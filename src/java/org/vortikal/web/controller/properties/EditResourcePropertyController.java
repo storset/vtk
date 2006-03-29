@@ -150,22 +150,26 @@ public class EditResourcePropertyController extends SimpleFormController
             propertyCommand.setDone(true);
             return;
         }
-
-        Resource resource = repository.retrieve(
-            token, requestContext.getResourceURI(), false);
-        String value = propertyCommand.getValue();
+        String uri = requestContext.getResourceURI();
+        Resource resource = repository.retrieve(token, uri, false);
+        
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
-        Property prop = resource.getProperty(ns, propertyCommand.getName());
+        String name = propertyCommand.getName();
+        String value = propertyCommand.getValue();
+        
+        Property prop = resource.getProperty(ns, name);
         
         if ("".equals(value)) {
-            if (prop != null) {
-                resource.deleteProperty(prop);
+            if (prop == null) {
+                propertyCommand.setDone(true);
+                return;
             }
+            resource.removeProperty(ns, name);
         } else {
             if (prop == null) {
-                prop = resource.createProperty(ns, propertyCommand.getName());
+                prop = resource.createProperty(ns, name);
             }
-            prop.setStringValue(propertyCommand.getValue());
+            prop.setStringValue(value);
         }
         repository.store(token, resource);
         propertyCommand.setDone(true);

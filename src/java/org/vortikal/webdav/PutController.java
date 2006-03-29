@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
@@ -46,11 +47,9 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.filter.RequestFilter;
 import org.vortikal.web.filter.UploadLimitInputStreamFilter;
-import org.vortikal.web.RequestContext;
-
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Handler for PUT requests.

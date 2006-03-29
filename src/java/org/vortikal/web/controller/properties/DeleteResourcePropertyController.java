@@ -30,12 +30,14 @@
  */
 package org.vortikal.web.controller.properties;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -43,12 +45,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
 /**
@@ -124,9 +120,10 @@ public class DeleteResourcePropertyController
         }
 
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
+        String name = propertyCommand.getName();
         
         Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
-        Property property = resource.getProperty(ns, propertyCommand.getName());
+        Property property = resource.getProperty(ns, name);
         if (property == null) {
             if (logger.isDebugEnabled())
                 logger.debug("Property " + propertyCommand.getNamespace() + ":" +
@@ -136,7 +133,7 @@ public class DeleteResourcePropertyController
             propertyCommand.setDone(true);
             return;
         }
-        resource.deleteProperty(property);
+        resource.removeProperty(ns, name);
         repository.store(token, resource);
         propertyCommand.setDone(true);
     }

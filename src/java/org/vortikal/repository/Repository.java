@@ -30,11 +30,11 @@
  */
 package org.vortikal.repository;
 
-import org.vortikal.repositoryimpl.AclException;
-import org.vortikal.security.AuthenticationException;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.vortikal.repositoryimpl.AclException;
+import org.vortikal.security.AuthenticationException;
 
 
 /**

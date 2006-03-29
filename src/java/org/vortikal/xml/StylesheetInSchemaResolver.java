@@ -31,14 +31,13 @@
 package org.vortikal.xml;
 
 
-import org.vortikal.repository.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
+import org.vortikal.repository.Resource;
 
 
 /**

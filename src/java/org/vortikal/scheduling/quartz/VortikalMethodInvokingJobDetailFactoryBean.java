@@ -34,7 +34,6 @@ import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
-
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 
 /**

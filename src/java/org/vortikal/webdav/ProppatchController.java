@@ -31,13 +31,12 @@
 package org.vortikal.webdav;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,9 +46,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
 import org.springframework.web.servlet.ModelAndView;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
@@ -407,11 +404,12 @@ public class ProppatchController extends AbstractWebdavController {
         String propertyName = propElement.getName();
         Namespace namespace = Namespace.getNamespace(propElement.getNamespace().getURI());
 
-        Property theProperty = resource.getProperty(namespace, propertyName);
-            
-        if (theProperty != null) {
-            resource.deleteProperty(theProperty);
-        }
+        resource.removeProperty(namespace, propertyName);
+//        Property theProperty = resource.getProperty(namespace, propertyName);
+//            
+//        if (theProperty != null) {
+//            resource.deleteProperty(theProperty);
+//        }
     }
     
 

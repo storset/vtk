@@ -33,8 +33,7 @@ package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import org.vortikal.repositoryimpl.AclImpl;
+
 import org.vortikal.repositoryimpl.ResourceImpl;
 
 

@@ -30,9 +30,9 @@
  */
 package org.vortikal.web.controller.permissions;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
 import org.vortikal.repository.Acl;
 import org.vortikal.security.Principal;
+import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 
 

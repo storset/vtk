@@ -32,6 +32,7 @@ package org.vortikal.web;
 
 import java.io.IOException;
 import java.net.URL;
+
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.BeanInitializationException;

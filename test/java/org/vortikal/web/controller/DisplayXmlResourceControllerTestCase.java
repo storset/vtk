@@ -43,7 +43,6 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.PropertyImpl;

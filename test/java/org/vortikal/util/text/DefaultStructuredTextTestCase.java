@@ -31,14 +31,7 @@
 package org.vortikal.util.text;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import junit.framework.TestCase;
-
-import org.vortikal.repository.IllegalOperationException;
 
 /**
  * Test case for <code>org.vortikal.repositoryimpl.dao.MemoryContentStore</code> 

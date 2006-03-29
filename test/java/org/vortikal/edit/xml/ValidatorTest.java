@@ -30,17 +30,9 @@
  */
 package org.vortikal.edit.xml;
 
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-
 import junit.framework.TestCase;
 
-import org.jdom.Attribute;
 import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 
 /** This test case is commented out, because the xml has to reference an external schema url 
  * for the validator to work. If you want to run it, just uncomment the commented code...

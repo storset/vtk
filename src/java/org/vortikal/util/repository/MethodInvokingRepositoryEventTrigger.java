@@ -31,7 +31,9 @@
 package org.vortikal.util.repository;
 
 import java.lang.reflect.Method;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -40,7 +42,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.event.RepositoryEvent;
-import java.util.regex.Matcher;
 
 
 

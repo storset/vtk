@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;

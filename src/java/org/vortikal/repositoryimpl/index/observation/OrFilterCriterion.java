@@ -30,8 +30,8 @@
  */
 package org.vortikal.repositoryimpl.index.observation;
 
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;

@@ -31,6 +31,7 @@
 package org.vortikal.shell;
 
 import java.io.PrintStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

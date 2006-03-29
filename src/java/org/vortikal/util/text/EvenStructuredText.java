@@ -39,9 +39,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.Attribute;
 import org.jdom.Text;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;

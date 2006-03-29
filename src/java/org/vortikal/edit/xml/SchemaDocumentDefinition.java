@@ -40,8 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.vortikal.util.text.StructuredText;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
@@ -54,6 +52,7 @@ import org.jdom.ProcessingInstruction;
 import org.jdom.Text;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
+import org.vortikal.util.text.StructuredText;
 
 
 

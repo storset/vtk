@@ -30,9 +30,8 @@
  */
 package org.vortikal.xml;
 
-import org.vortikal.repository.Resource;
-
 import org.jdom.Document;
+import org.vortikal.repository.Resource;
 
 
 /**

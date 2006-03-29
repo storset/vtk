@@ -31,6 +31,7 @@
 package org.vortikal.web.service;
 
 import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;

@@ -33,17 +33,17 @@ package org.vortikal.repositoryimpl.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.sql.DataSource;
 
-import org.vortikal.repositoryimpl.index.util.IndexResourceIdHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repositoryimpl.index.util.IndexResourceIdHelper;
 
 /**
  * Derive resource IDs (for index) from Vortex JDBC database.

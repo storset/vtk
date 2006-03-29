@@ -30,11 +30,9 @@
  */
 package org.vortikal.web.view.freemarker;
 
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-
 import java.io.IOException;
 import java.util.Map;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
+
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 
 /**

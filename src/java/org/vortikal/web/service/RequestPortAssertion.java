@@ -32,11 +32,10 @@ package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-
-import org.springframework.util.StringUtils;
 
 
 /**

@@ -35,9 +35,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.web.RequestContext;
-
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.web.RequestContext;
 
 
 

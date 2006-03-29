@@ -31,6 +31,7 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.io.InputStream;
+
 import org.apache.xerces.parsers.DOMParser;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.InputSource;

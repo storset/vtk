@@ -33,9 +33,7 @@ package org.vortikal.web.controller;
 import java.io.InputStream;
 
 import org.apache.xerces.parsers.DOMParser;
-
 import org.springframework.core.io.AbstractResource;
-
 import org.xml.sax.InputSource;
 
 

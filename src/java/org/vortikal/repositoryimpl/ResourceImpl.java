@@ -30,14 +30,12 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -51,7 +49,6 @@ import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.repository.URIUtil;
 
 
@@ -84,10 +81,10 @@ public class ResourceImpl implements Resource, Cloneable {
         return prop;
     }
 
-    public void deleteProperty(Property property) {
-        // XXX: is this meaningfull? need to check for prop equality first?
-        removeProperty(property.getNamespace(), property.getName());
-    }
+    // XXX: is this meaningfull? need to check for prop equality first?
+//    public void deleteProperty(Property property) {
+//        removeProperty(property.getNamespace(), property.getName());
+//    }
 
     public void removeProperty(Namespace namespace, String name) {
         Map props = (Map)propertyMap.get(namespace);

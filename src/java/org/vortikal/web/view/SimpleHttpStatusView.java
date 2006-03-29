@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.view.AbstractView;
-//import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.webdav.WebdavConstants;
 

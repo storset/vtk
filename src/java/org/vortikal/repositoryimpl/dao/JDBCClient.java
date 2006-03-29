@@ -69,6 +69,18 @@ import org.vortikal.util.web.URLUtil;
  */
 public class JDBCClient extends AbstractDataAccessor {
 
+    private QueryProvider queryProvider = new QueryProvider();
+    
+    public void setQueryProvider(QueryProvider queryProvider) {
+        if (queryProvider == null) {
+            throw new IllegalArgumentException("Query provider cannot be null");
+        }
+
+        this.queryProvider = queryProvider;
+    }
+    
+
+
     protected boolean validate(Connection conn) throws SQLException {
         boolean exists = false;
 
@@ -99,7 +111,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
     protected ResourceImpl load(Connection conn, String uri) throws SQLException {
 
-        String query = "select r.* from VORTEX_RESOURCE r where r.uri = ?";
+        String query = this.queryProvider.getLoadResourceByUriPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, uri);
         
@@ -249,7 +261,7 @@ public class JDBCClient extends AbstractDataAccessor {
     private void loadProperties(Connection conn, ResourceImpl resource)
             throws SQLException {
 
-        String query = "select * from EXTRA_PROP_ENTRY where resource_id = ?";
+        String query = this.queryProvider.getLoadPropertiesByResourceIdPreparedStatement();
         PreparedStatement propStmt = conn.prepareStatement(query);
         propStmt.setInt(1, resource.getID());
         ResultSet rs = propStmt.executeQuery();
@@ -271,14 +283,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
     protected void deleteExpiredLocks(Connection conn)
             throws SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String format = formatter.format(new Date());
-
-//         String query = "delete from VORTEX_LOCK "
-//                 + "where timeout < '" + format + "'";
-
-        String query = "delete from VORTEX_LOCK where timeout < ?";
-        //Statement stmt = conn.createStatement();
+        String query = this.queryProvider.getDeleteExpiredLocksPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setDate(1, new java.sql.Date(System.currentTimeMillis()));
         int n = stmt.executeUpdate();
@@ -298,19 +303,9 @@ public class JDBCClient extends AbstractDataAccessor {
             int id = Integer.parseInt(loggerID);
             int type = Integer.parseInt(loggerType);
 
-            String statement = "INSERT INTO changelog_entry "
-                + "(changelog_entry_id, logger_id, logger_type, "
-                + "operation, timestamp, uri, resource_id, is_collection) "
-                + "select nextval('changelog_entry_seq_pk'), " + id + ", " + type + ", "
-                + "'" + operation + "', now(), uri, ";
-            if (resourceId == -1) {
-                statement += "NULL, ";
-            } else {
-                statement += "resource_id, ";
-            }
-            statement += "is_collection from vortex_resource "
-                + "where uri = '" + uri + "' or uri like '" + getURIWildcard(uri) + "'";
-
+            String statement = this.queryProvider.getInsertRecursiveChangeLogEntryStatement(
+                resourceId, uri, getURIWildcard(uri), id, type, operation);
+            
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(statement);
             stmt.close();
@@ -322,11 +317,7 @@ public class JDBCClient extends AbstractDataAccessor {
                 int id = Integer.parseInt(loggerID);
                 int type = Integer.parseInt(loggerType);
 
-                String statement = "INSERT INTO changelog_entry "
-                    + "(changelog_entry_id, logger_id, logger_type, "
-                    + "operation, timestamp, uri, resource_id, is_collection) "
-                    + "VALUES (nextval('changelog_entry_seq_pk'), ?, ?, ?, ?, ?, ?, ?)";
-
+                String statement = this.queryProvider.getInsertChangeLogEntryPreparedStatement();
                 PreparedStatement stmt = conn.prepareStatement(statement);
 
                 stmt.setInt(1, id);
@@ -366,12 +357,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         String uri = resource.getURI();
 
-        String query = "select r.uri, l.* from VORTEX_LOCK l inner join VORTEX_RESOURCE r "
-                + "on l.resource_id = r.resource_id "
-                + "where r.resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE where uri like ?)";
-        
-
+        String query = this.queryProvider.getDiscoverLocksByResourceIdPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(uri));
 
@@ -392,9 +378,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
     private LockImpl loadLock(Connection conn, String uri)
             throws SQLException {
-        String query = "select * from VORTEX_LOCK where resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE where uri = ?)";
-
+        String query = this.queryProvider.getLoadLockByResourceUriPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
 
         stmt.setString(1, uri);
@@ -422,14 +406,7 @@ public class JDBCClient extends AbstractDataAccessor {
             return new HashMap();
         }
 
-        String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
-                + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
-                + "where r.uri in (";
-
-        for (int i = 0; i < uris.length; i++) {
-            query += ((i < (uris.length - 1)) ? "?, " : "?)");
-        }
-
+        String query = this.queryProvider.getLoadLocksByResourceUrisPreparedStatement(uris);
         PreparedStatement stmt = conn.prepareStatement(query);
 
         for (int i = 0; i < uris.length; i++) {
@@ -462,8 +439,7 @@ public class JDBCClient extends AbstractDataAccessor {
             return new String[] {};
         }
 
-        String query = "select uri from VORTEX_RESOURCE "
-                + "where uri like ? order by uri asc";
+        String query = this.queryProvider.getListSubTreePreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(parent.getURI()));
         ResultSet rs = stmt.executeQuery();
@@ -499,9 +475,8 @@ public class JDBCClient extends AbstractDataAccessor {
         String characterEncoding = r.getCharacterEncoding();
         String contentLanguage = r.getContentLanguage();
 
-        String query = "select * from VORTEX_RESOURCE where uri = ?";
+        String query = this.queryProvider.getLoadResourceByUriPreparedStatement();
         PreparedStatement existStmt = conn.prepareStatement(query);
-
         existStmt.setString(1, uri);
 
         ResultSet rs = existStmt.executeQuery();
@@ -512,16 +487,9 @@ public class JDBCClient extends AbstractDataAccessor {
 
         if (existed) {
             // Save the VORTEX_RESOURCE table entry:
-            PreparedStatement stmt = conn
-                    .prepareStatement("update VORTEX_RESOURCE set "
-                            + "content_last_modified = ?, "
-                            + "properties_last_modified = ?, "
-                            + "content_modified_by = ?, "
-                            + "properties_modified_by = ?, " + "resource_owner = ?, "
-                            + "display_name = ?, " + "content_language = ?, "
-                            + "content_type = ?, " + "character_encoding = ?, "
-                            + "creation_time = ? " + "where uri = ?");
-
+            query = this.queryProvider.getUpdateResourcePreparedStatement();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            
             stmt.setTimestamp(1, new Timestamp(contentLastModified.getTime()));
             stmt.setTimestamp(2, new Timestamp(propertiesLastModified.getTime()));
             stmt.setString(3, contentModifiedBy);
@@ -561,13 +529,7 @@ public class JDBCClient extends AbstractDataAccessor {
             throws SQLException, IOException {
         int depth = getURIDepth(uri);
 
-        String statement = "insert into VORTEX_RESOURCE "
-                + "(resource_id, uri, depth, creation_time, content_last_modified, properties_last_modified, "
-                + "content_modified_by, properties_modified_by, "
-                + "resource_owner, display_name, "
-                + "content_language, content_type, character_encoding, is_collection, acl_inherited) "
-                + "values (nextval('vortex_resource_seq_pk'), "
-                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String statement = this.queryProvider.getInsertResourcePreparedStatement();
 
         PreparedStatement stmt = conn.prepareStatement(statement);
 
@@ -599,7 +561,7 @@ public class JDBCClient extends AbstractDataAccessor {
         String query = null;
 
         if (lock == null) {
-            query = "delete from VORTEX_LOCK where resource_id = ?";
+            query = this.queryProvider.getDeleteLockByResourceIdPreparedStatement();
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, r.getID());
             stmt.executeUpdate();
@@ -614,7 +576,7 @@ public class JDBCClient extends AbstractDataAccessor {
             String ownerInfo = lock.getOwnerInfo();
             String depth = lock.getDepth();
 
-            query = "select id from VORTEX_LOCK where token = ?";
+            query = this.queryProvider.getLoadLockIdByTokenPreparedStatement();
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, lockToken);
             ResultSet rs = stmt.executeQuery();
@@ -623,7 +585,7 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt.close();
 
 
-            query = "select lock_type_id from LOCK_TYPE where  name = ?";
+            query = this.queryProvider.getLoadLockTypeIdFromNamePreparedStatement();
             stmt = conn.prepareStatement(query);
             stmt.setString(1, type);
             rs = stmt.executeQuery();
@@ -640,10 +602,8 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt.close();
 
             if (exists) {
-                PreparedStatement updateStmt = conn
-                        .prepareStatement("update VORTEX_LOCK set "
-                                + "lock_type_id = ?, lock_owner = ?, lock_owner_info = ?, "
-                                + "depth = ?, timeout = ? " + "where token = ?");
+                query = this.queryProvider.getUpdateLockPreparedStatement();
+                PreparedStatement updateStmt = conn.prepareStatement(query);
 
                 updateStmt.setInt(1, lockType);
                 updateStmt.setString(2, user);
@@ -655,12 +615,8 @@ public class JDBCClient extends AbstractDataAccessor {
                 updateStmt.executeUpdate();
                 updateStmt.close();
             } else {
-                PreparedStatement insertStmt = conn
-                        .prepareStatement("insert into VORTEX_LOCK "
-                                + "(lock_id, token, resource_id, lock_type_id, lock_owner, "
-                                + "lock_owner_info, depth, timeout) "
-                                + "values (nextval('vortex_lock_seq_pk'), "
-                                + "?, ?, ?, ?, ?, ?, ?)");
+                query = this.queryProvider.getInsertLockPreparedStatement();
+                PreparedStatement insertStmt = conn.prepareStatement(query);
 
                 insertStmt.setString(1, lockToken);
                 insertStmt.setInt(2, r.getID());
@@ -704,7 +660,7 @@ public class JDBCClient extends AbstractDataAccessor {
         /*
          * First, delete any previously defined ACEs for this resource:
          */
-        String query = "delete from ACL_ENTRY where resource_id = ?";
+        String query = this.queryProvider.getDeleteACLEntryByResourceIdPreparedStatement();
         PreparedStatement deleteStatement = conn.prepareStatement(query);
         deleteStatement.setInt(1, r.getID());
         deleteStatement.executeUpdate();
@@ -715,8 +671,7 @@ public class JDBCClient extends AbstractDataAccessor {
              * The ACL is inherited. Update resource entry to reflect this
              * situation (and return)
              */
-            query = "update VORTEX_RESOURCE set acl_inherited = 'Y' "
-                + "where resource_id = ?";
+            query = this.queryProvider.getSetAclInheritedPreparedStatement(true);
             PreparedStatement updateStmt = conn.prepareStatement(query);
             updateStmt.setInt(1, r.getID());
             updateStmt.executeUpdate();
@@ -740,8 +695,7 @@ public class JDBCClient extends AbstractDataAccessor {
          * At this point, we know that the ACL is not inherited. Update the
          * inheritance flag in the resource entry:
          */
-        query = "update VORTEX_RESOURCE set acl_inherited = 'N' "
-            + "where resource_id = ?";
+        query = this.queryProvider.getSetAclInheritedPreparedStatement(false);
         PreparedStatement updateStmt = conn.prepareStatement(query);
         updateStmt.setInt(1, r.getID());
 
@@ -752,7 +706,7 @@ public class JDBCClient extends AbstractDataAccessor {
     private void insertACLEntry(Connection conn, String action, ResourceImpl resource,
             Principal p)
             throws SQLException {
-        String query = "select action_type_id from ACTION_TYPE where name = ?";
+        String query = this.queryProvider.getLoadActionTypeIdFromNamePreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, action);
         ResultSet rs = stmt.executeQuery();
@@ -769,11 +723,8 @@ public class JDBCClient extends AbstractDataAccessor {
         rs.close();
         stmt.close();
 
-        PreparedStatement insertStmt = conn
-                .prepareStatement("insert into ACL_ENTRY (acl_entry_id, action_type_id, "
-                        + "resource_id, user_or_group_name, "
-                        + "is_user, granted_by_user_name, granted_date) "
-                        + "values (nextval('acl_entry_seq_pk'), ?, ?, ?, ?, ?, ?)");
+        query = this.queryProvider.getInsertAclEntryPreparedStatement();
+        PreparedStatement insertStmt = conn.prepareStatement(query);
 
         insertStmt.setInt(1, actionID);
         insertStmt.setInt(2, resource.getID());
@@ -791,7 +742,7 @@ public class JDBCClient extends AbstractDataAccessor {
     private void storeProperties(Connection conn, ResourceImpl r)
             throws SQLException {
 
-        String query = "delete from EXTRA_PROP_ENTRY where resource_id = ?";
+        String query = this.queryProvider.getDeletePropertiesByResourceIdPreparedStatement();
         PreparedStatement deleteStatement = conn.prepareStatement(query);
         deleteStatement.setInt(1, r.getID());
         deleteStatement.executeUpdate();
@@ -801,10 +752,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         if (properties != null) {
 
-            String insertQuery = "insert into EXTRA_PROP_ENTRY " +
-                "(extra_prop_entry_id, resource_id, name_space, name, value) "
-                + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)";
-                    
+            String insertQuery = this.queryProvider.getInsertPropertyEntryPreparedStatement();
             PreparedStatement stmt = conn.prepareStatement(insertQuery);
 
             for (Iterator iter = properties.iterator(); iter.hasNext();) {
@@ -828,9 +776,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
     protected  void delete(Connection conn, ResourceImpl resource)
             throws SQLException {
-        String query = "delete from ACL_ENTRY where resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE "
-                + "where uri like ? or resource_id = ?)";
+        String query = this.queryProvider.getDeleteAclEntriesByUriPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
 
         stmt.setString(1, getURIWildcard(resource.getURI()));
@@ -838,27 +784,21 @@ public class JDBCClient extends AbstractDataAccessor {
         stmt.executeUpdate();
         stmt.close();
 
-        query = "delete from VORTEX_LOCK where resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE "
-                + "where uri like ? or resource_id = ?)";
+        query = this.queryProvider.getDeleteLocksByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
 
-        query = "delete from EXTRA_PROP_ENTRY where resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE "
-                + "where uri like ? or resource_id = ?)";
+        query = this.queryProvider.getDeletePropertiesByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
 
-        query = "delete from VORTEX_RESOURCE where resource_id in ("
-                + "select resource_id from VORTEX_RESOURCE "
-                + "where uri like ? or resource_id = ?)";
+        query = this.queryProvider.getDeleteResourcesByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
@@ -882,18 +822,8 @@ public class JDBCClient extends AbstractDataAccessor {
             throws SQLException {
         Map acls = new HashMap();
         
-        StringBuffer query = 
-            new StringBuffer("select r.uri, a.*, t.namespace as action_namespace, "
-                           + "t.name as action_name from ACL_ENTRY a "
-                           + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
-                           + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
-                           + "where r.uri in (");
-
+        String query = this.queryProvider.getLoadAncestorAclsPreparedStatement(uris);
         int n = uris.size();
-        for (int i = 0; i < n; i++) {
-            query.append((i < n - 1) ? "?, " : "?)");
-        }
-        
         PreparedStatement stmt = conn.prepareStatement(query.toString());
         for (Iterator i = uris.iterator(); i.hasNext();) {
             String uri = (String) i.next();
@@ -943,13 +873,12 @@ public class JDBCClient extends AbstractDataAccessor {
     private String[] loadChildURIs(Connection conn, String uri)
             throws SQLException {
 
-        StringBuffer query = new StringBuffer();
-        query.append("select uri from vortex_resource where ");
-        query.append("uri like '").append(getURIWildcard(uri)).append("'");
-        query.append("and depth = ").append(getURIDepth(uri) + 1);
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(query.toString());
+        String query = this.queryProvider.getLoadChildUrisPreparedStatement();
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setString(1, getURIWildcard(uri));
+        stmt.setInt(2, getURIDepth(uri) + 1);
+        
+        ResultSet rs = stmt.executeQuery();
 
         List childURIs = new ArrayList();
         while (rs.next()) {
@@ -967,13 +896,11 @@ public class JDBCClient extends AbstractDataAccessor {
 
         Map locks = loadLocksForChildren(conn, parent);
 
-        StringBuffer query = new StringBuffer();
-        query.append("select * from vortex_resource where ");
-        query.append("uri like ? and depth = ?");
-
-        PreparedStatement stmt = conn.prepareStatement(query.toString());
+        String query = this.queryProvider.getLoadChildrenPreparedStatement();
+        PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(parent.getURI()));
         stmt.setInt(2, getURIDepth(parent.getURI()) + 1);
+
         ResultSet rs = stmt.executeQuery();
         List resources = new ArrayList();
 
@@ -1012,15 +939,11 @@ public class JDBCClient extends AbstractDataAccessor {
         for (int i = 0; i < children.length; i++) {
             childMap.put(children[i].getURI(), new HashSet());
         }
-
-
-        String query = "select uri from vortex_resource where uri like '"
-            + getURIWildcard(parent.getURI()) + "' and depth = "
-            + (getURIDepth(parent.getURI()) + 2);
-
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
+        String query = this.queryProvider.getLoadChildUrisPreparedStatement();
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setString(1, getURIWildcard(parent.getURI()));
+        stmt.setInt(2, getURIDepth(parent.getURI()) + 2);
+        ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
             
@@ -1133,13 +1056,13 @@ public class JDBCClient extends AbstractDataAccessor {
             return;
         }
 
-        String query = "select * from EXTRA_PROP_ENTRY where resource_id in ("
-            + "select resource_id from vortex_resource "
-            + "where uri like '" + getURIWildcard(parent.getURI()) + "' and depth = "
-            + (getURIDepth(parent.getURI()) + 1) + ")";
+        String query = this.queryProvider.getLoadPropertiesForChildrenPreparedStatement();
 
-        Statement propStmt = conn.createStatement();
-        ResultSet rs = propStmt.executeQuery(query);
+        PreparedStatement propStmt = conn.prepareStatement(query);
+        propStmt.setString(1, getURIWildcard(parent.getURI()));
+        propStmt.setInt(2, getURIDepth(parent.getURI()) + 1);
+        
+        ResultSet rs = propStmt.executeQuery();
         Map resourceMap = new HashMap();
 
         for (int i = 0; i < resources.length; i++) {
@@ -1165,14 +1088,12 @@ public class JDBCClient extends AbstractDataAccessor {
     private Map loadLocksForChildren(Connection conn, ResourceImpl parent)
             throws SQLException {
 
-        String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
-            + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
-            + "where r.resource_id in (select resource_id from vortex_resource "
-            + "where uri like '" + getURIWildcard(parent.getURI()) + "' and depth = "
-            + (getURIDepth(parent.getURI()) + 1) + ")";
-
+        String query = this.queryProvider.getLoadLocksForChildrenPreparedStatement();
+        
         PreparedStatement stmt = conn.prepareStatement(query);
-
+        stmt.setString(1, getURIWildcard(parent.getURI()));
+        stmt.setInt(2, getURIDepth(parent.getURI()) + 1);
+        
         ResultSet rs = stmt.executeQuery();
         Map result = new HashMap();
 
@@ -1197,10 +1118,7 @@ public class JDBCClient extends AbstractDataAccessor {
     protected String[] discoverACLs(Connection conn, ResourceImpl resource)
             throws SQLException {
 
-        String query = "select distinct r.uri as uri from ACL_ENTRY a inner join VORTEX_RESOURCE r "
-            + "on a.resource_id = r.resource_id "
-            + "where r.resource_id in ("
-            + "select resource_id  from VORTEX_RESOURCE where uri like ?)";
+        String query = this.queryProvider.getDiscoverAclsPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(resource.getURI()));
         ResultSet rs = stmt.executeQuery();
@@ -1219,72 +1137,58 @@ public class JDBCClient extends AbstractDataAccessor {
     }
 
 
-    
+
     protected void copy(Connection conn, ResourceImpl resource,
                         String destURI, boolean copyACLs,
                         boolean setOwner, String owner) throws SQLException, IOException {
 
+        long timestamp = System.currentTimeMillis();
+
         int depthDiff = getURIDepth(destURI) - getURIDepth(resource.getURI());
     
-        String ownerVal = setOwner ? "'" + owner + "'" : "resource_owner";
-
-        String query = "insert into vortex_resource (resource_id, prev_resource_id, "
-            + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
-            + "content_modified_by, properties_modified_by, resource_owner, "
-            + "display_name, content_language, content_type, character_encoding, "
-            + "is_collection, acl_inherited) "
-            + "select nextval('vortex_resource_seq_pk'), resource_id, "
-            + "'" + destURI + "' || substring(uri, length('" + resource.getURI() + "') + 1), "
-            + "depth + " + depthDiff + ", creation_time, content_last_modified, "
-            + "properties_last_modified, " 
-            + "content_modified_by, properties_modified_by, " + ownerVal + ", display_name, "
-            + "content_language, content_type, character_encoding, is_collection, "
-            + "acl_inherited from vortex_resource "
-            + "where uri = '" + resource.getURI() + "'"
-            + "or uri like '" + getURIWildcard(resource.getURI()) + "'";
-        
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(query);
+        String query = setOwner ?
+            this.queryProvider.getCopyResourceSetOwnerPreparedStatement() :
+            this.queryProvider.getCopyResourcePreserveOwnerPreparedStatement();
+        PreparedStatement stmt = conn.prepareStatement(query);
+        int i = 1;
+        stmt.setString(i++, destURI);
+        stmt.setString(i++, resource.getURI());
+        stmt.setInt(i++, depthDiff);
+        if (setOwner) {
+            stmt.setString(i++, owner);
+            
+        } 
+        stmt.setString(i++, resource.getURI());
+        stmt.setString(i++, getURIWildcard(resource.getURI()));
+        stmt.executeUpdate();
         stmt.close();
 
-        query = "insert into extra_prop_entry (extra_prop_entry_id, "
-            + "resource_id, name_space, name, value) "
-            + "select nextval('extra_prop_entry_seq_pk'), r.resource_id, p.name_space, "
-            + "p.name, p.value from vortex_resource r inner join extra_prop_entry p "
-            + "on r.prev_resource_id = p.resource_id where r.uri = '" + destURI
-            + "' or r.uri like '" + getURIWildcard(destURI) + "' "
-            + "and r.prev_resource_id is not null";
-        
-        
-        stmt = conn.createStatement();
-        stmt.executeUpdate(query);
+
+        query = this.queryProvider.getCopyPropertiesPreparedStatement();
+        stmt = conn.prepareStatement(query);
+        stmt.setString(1, destURI);
+        stmt.setString(2, getURIWildcard(destURI));
+        stmt.executeUpdate();
         stmt.close();
 
 
         if (copyACLs) {
 
-            query = "insert into acl_entry (acl_entry_id, resource_id, "
-                + "action_type_id, user_or_group_name, is_user, granted_by_user_name, "
-                + "granted_date) "
-                + "select nextval('acl_entry_seq_pk'), r.resource_id, a.action_type_id, "
-                + "a.user_or_group_name, a.is_user, a.granted_by_user_name, a.granted_date "
-                + "from vortex_resource r inner join acl_entry a "
-                + "on r.prev_resource_id = a.resource_id "
-                + "where r.uri = '" + destURI
-                + "' or r.uri like '" + getURIWildcard(destURI) + "' "
-                + "and r.prev_resource_id is not null";
+            query = this.queryProvider.getCopyAclsPreparedStatement();
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, destURI);
+            stmt.setString(2, getURIWildcard(destURI));
+            stmt.executeUpdate();
+            stmt.close();
         }
 
-
-        query = "update vortex_resource set prev_resource_id = null "
-            + "where uri = '" + destURI + "' or uri like '" + destURI + "/%'";
-
-        stmt = conn.createStatement();
-        stmt.executeUpdate(query);
+        query = this.queryProvider.getClearPrevResourceIdPreparedStatement();
+        stmt = conn.prepareStatement(query);
+        stmt.setString(1, destURI);
+        stmt.setString(2, getURIWildcard(destURI));
+        stmt.executeUpdate();
         stmt.close();
 
-        long timestamp = System.currentTimeMillis();
         contentStore.copy(resource.getURI(), destURI);
         long duration = System.currentTimeMillis() - timestamp;
 
@@ -1293,5 +1197,6 @@ public class JDBCClient extends AbstractDataAccessor {
                          + destURI + "' in " + duration + " ms");
         }
     }
+
     
 }

@@ -96,15 +96,12 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             return dispatchAndLogExists(invocation);
         }
         
-        if (RepositoryOperations.LIST_CHILDREN.equals(operation)) {
-            return dispatchAndLogListChildren(invocation);
-        }
-        
         String token = null;
         String params = null;
         
         // Reduce avg. overhead by putting most common ops early in list ..
         if (RepositoryOperations.RETRIEVE.equals(operation)          ||
+            RepositoryOperations.LIST_CHILDREN.equals(operation)     ||
             RepositoryOperations.GET_ACL.equals(operation)           ||
             RepositoryOperations.GET_INPUTSTREAM.equals(operation)   ||
             RepositoryOperations.LOCK.equals(operation)              ||
@@ -193,43 +190,6 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         } catch (IOException io) {
             OperationLog.failure(op, params, io.getMessage(), token, principal);
             throw io;
-        }
-        
-        return retVal;
-    }
-    
-    private Object dispatchAndLogListChildren(MethodInvocation mi) throws Throwable {
-        String op = RepositoryOperations.LIST_CHILDREN;
-        Object[] args = mi.getArguments();
-        
-        String token = (String)args[0];
-        String uri = (String)args[1];
-        
-        Object retVal = null;
-        try {
-            retVal = mi.proceed();
-            
-            if (retVal == null) {
-                // FIXME: assuming that "uri is document" is the actual situation based
-                //        on return value ...
-                OperationLog.failure(op, "(" + uri + ")", "URI is a document", token, 
-                      getPrincipal(token));
-            } else {
-                OperationLog.success(op, "(" + uri + ")", token, getPrincipal(token));
-            }
-            
-        } catch (ResourceNotFoundException rnf) {
-            OperationLog.failure(op, "(" + uri + ")", "resource not found", token, 
-                    getPrincipal(token));
-            throw rnf;
-        } catch (AuthorizationException authorizationException) {
-            OperationLog.failure(op, "(" + uri + ")", "not authorized",
-                token, getPrincipal(token));
-            throw authorizationException;
-        } catch (AuthenticationException authenticationException) {
-            OperationLog.failure(op, "(" + uri + ")", "not authenticated",
-                token, getPrincipal(token));
-            throw authenticationException;
         }
         
         return retVal;

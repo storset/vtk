@@ -32,7 +32,6 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -110,7 +109,7 @@ public final class PropertyType {
         PROPERTIESLASTMODIFIED_PROP_NAME,
         PROPERTIESMODIFIEDBY_PROP_NAME, 
         CONTENTLENGTH_PROP_NAME
-        };
+    };
     
     public static final Set SPECIAL_PROPERTIES_SET = new HashSet(Arrays.asList(SPECIAL_PROPERTIES));
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Text resource -->
+
+  <bean id="textResourceTypeDefinition" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="text"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="characterEncodingPropDef" />
+        <ref bean="contentLocalePropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="characterEncodingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="characterEncoding" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="contentLocalePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="contentLocale" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+</beans>

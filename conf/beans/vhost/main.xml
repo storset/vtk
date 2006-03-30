@@ -14,7 +14,7 @@
 
 
   <import resource="security.xml" />
-  <import resource="resource-types.xml" />
+  <import resource="resource-types/main.xml" />
   <import resource="repository.xml" />
   <import resource="changelog.xml" />
   <import resource="schema-registry.xml" />

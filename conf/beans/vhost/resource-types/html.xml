@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Html resource -->
+
+  <bean id="htmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="html"/>
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
+  </bean>
+
+</beans>

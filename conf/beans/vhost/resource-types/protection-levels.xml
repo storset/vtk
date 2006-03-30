@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="PROTECTION_LEVEL_EDITABLE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_EDITABLE" />
+  </bean>
+
+  <bean id="PROTECTION_LEVEL_PROTECTED"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_PROTECTED" />
+  </bean>
+
+  <bean id="PROTECTION_LEVEL_OWNER_EDITABLE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE" />
+  </bean>
+
+  <bean id="PROTECTION_LEVEL_ROOT_EDITABLE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ROOT_EDITABLE" />
+  </bean>
+
+  <bean id="PROTECTION_LEVEL_UNEDITABLE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_UNEDITABLE" />
+  </bean>
+
+</beans>

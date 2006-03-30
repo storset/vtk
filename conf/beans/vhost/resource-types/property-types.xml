@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="TYPE_STRING"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_STRING" />
+  </bean>
+
+  <bean id="TYPE_DATE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_DATE" />
+  </bean>
+
+  <bean id="TYPE_BOOLEAN"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_BOOLEAN" />
+  </bean>
+
+  <bean id="TYPE_LONG"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_LONG" />
+  </bean>
+
+  <bean id="TYPE_PRINCIPAL"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_PRINCIPAL" />
+  </bean>
+
+</beans>

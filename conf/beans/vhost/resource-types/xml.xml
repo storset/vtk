@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- XML resource -->
+
+  <bean id="xmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="xml-resource"/>
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesXml" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="webEditPropDef" />
+        <ref bean="transformViewPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="webEditPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="web-edit" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="transformViewPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="transform-view" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+</beans>

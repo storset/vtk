@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
--- resource
+-- vortex_resource
 -----------------------------------------------------------------------------
 
 DROP SEQUENCE vortex_resource_seq_pk;
@@ -86,7 +86,7 @@ PRIMARY KEY (lock_type_id);
 
 
 -----------------------------------------------------------------------------
--- lock
+-- vortex_lock
 -----------------------------------------------------------------------------
 DROP SEQUENCE vortex_lock_seq_pk;
 
@@ -189,16 +189,6 @@ CREATE TABLE prop_type
 
 ALTER TABLE prop_type
     ADD CONSTRAINT prop_type_PK PRIMARY KEY (prop_type_id);
-
--- This data currently corresponds to definitions in 
--- org.vortikal.repository.resourcetype.PropertyType
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');
-
 
 -----------------------------------------------------------------------------
 -- extra_prop_entry
@@ -423,3 +413,15 @@ VALUES (
     'vortex@localhost',
     current_timestamp
 );    
+
+-- Property value types
+-- This data currently corresponds to definitions in 
+-- org.vortikal.repository.resourcetype.PropertyType
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');
+
+

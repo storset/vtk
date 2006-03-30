@@ -38,7 +38,7 @@ import org.vortikal.security.Principal;
 public final class Value implements Cloneable {
     private int type = PropertyType.TYPE_STRING;
 
-    private String value;
+    private String value = "";
     private Date dateValue;
     private boolean booleanValue;
     private int intValue;

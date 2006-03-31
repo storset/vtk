@@ -56,6 +56,7 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
@@ -111,7 +112,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
 
     protected ResourceImpl load(Connection conn, String uri) throws SQLException {
-
+        
         String query = this.queryProvider.getLoadResourceByUriPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, uri);
@@ -261,108 +262,163 @@ public class JDBCClient extends AbstractDataAccessor {
     /**
      * @deprecated
      */
-    private void loadProperties(Connection conn, ResourceImpl resource)
-            throws SQLException {
-
-        String query = this.queryProvider.getLoadPropertiesByResourceIdPreparedStatement();
-        PreparedStatement propStmt = conn.prepareStatement(query);
-        propStmt.setInt(1, resource.getID());
-        ResultSet rs = propStmt.executeQuery();
-
-        while (rs.next()) {
-
-            Namespace ns = Namespace.getNamespace(rs.getString("name_space"));
-            String name = rs.getString("name");
-            String value = rs.getString("value");
-
-            Property prop = this.propertyManager.createProperty(ns, name, value);
-            resource.addProperty(prop);
+//    private void loadProperties(Connection conn, ResourceImpl resource)
+//            throws SQLException {
+//
+//        String query = this.queryProvider.getLoadPropertiesByResourceIdPreparedStatement();
+//        PreparedStatement propStmt = conn.prepareStatement(query);
+//        propStmt.setInt(1, resource.getID());
+//        ResultSet rs = propStmt.executeQuery();
+//
+//        while (rs.next()) {
+//
+//            Namespace ns = Namespace.getNamespace(rs.getString("name_space"));
+//            String name = rs.getString("name");
+//            String value = rs.getString("value");
+//
+//            Property prop = this.propertyManager.createProperty(ns, name, value);
+//            resource.addProperty(prop);
+//        }
+//
+//        rs.close();
+//        propStmt.close();
+//    }
+    
+    /**
+     * Small helper-class for multi-valued property loading 
+     */
+    private class PropHolder {
+        String namespaceUri = "";
+        String name = "";
+        int type;
+        int resourceId;
+        
+        public boolean equals(Object other) {
+            if (other == null) return false;
+            
+            if (other == this) return true;
+            
+            return this.namespaceUri.equals(((PropHolder)other).namespaceUri) &&
+                   this.name.equals(((PropHolder)other).name)                 &&
+                   (this.resourceId == ((PropHolder)other).resourceId);
         }
-
-        rs.close();
-        propStmt.close();
+        
+        public int hashCode() {
+            return this.namespaceUri.hashCode() 
+                 + this.name.hashCode() + this.resourceId;
+        }
     }
     
     /**
-     * New loadProperties with multi-value and type support (not enabled yet)
+     * Populate a PropHolder -> value-list map from ResultSet
+     */
+    private Map populatePropHolderValueMap(ResultSet rs) throws SQLException {
+        Map propValues = new HashMap();
+        while (rs.next()) {
+            PropHolder prop = new PropHolder();
+            prop.namespaceUri = rs.getString("name_space");
+            prop.name = rs.getString("name");
+            prop.resourceId = rs.getInt("resource_id");
+            
+            List values =  (List)propValues.get(prop);
+            if (values == null) {
+                values = new ArrayList();
+                prop.type = rs.getInt("prop_type_id");
+                propValues.put(prop, values);
+            } 
+            values.add(rs.getString("value"));
+        }   
+
+        return propValues;
+    }
+
+    /**
+     * New loadProperties with multi-value and type support
      * @param conn
      * @param resource
      * @throws SQLException
      */
-    private void loadPropertiesNew(Connection conn, ResourceImpl resource)
+    private void loadProperties(Connection conn, ResourceImpl resource)
         throws SQLException {
         
         String query = this.queryProvider.getLoadPropertiesByResourceIdPreparedStatement();
         PreparedStatement pstmt = conn.prepareStatement(query);
         pstmt.setInt(1, resource.getID());
         ResultSet rs = pstmt.executeQuery();
-        
-        int type;
-        if (rs.next()) {
-            type = rs.getInt("prop_type_id");
-        } else {
-            rs.close();
-            pstmt.close();
-            return;
-        }
-        
-        // Map namespace-URI to map of prop-names, which maps to list of value(s)
-        // TODO: better way of handling multivalue-props without altering 
-        //       db-schema ?
-        //       An alternative: add 'namespace, name' to order by clause, then loop
-        //       through result set only once and detect when namespace or name changes 
-        //       (new prop)..might be more efficient.
-        Map nsMap = new HashMap();
-        do {
-            String namespaceUri = rs.getString("name_space");
-            String name = rs.getString("name");
-            String value = rs.getString("value");
-            
-            Map props = (Map)nsMap.get(namespaceUri);
-            if (props == null) {
-                props = new HashMap();
-                nsMap.put(namespaceUri, props);
-                
-                List values = new ArrayList();
-                values.add(value);
-                props.put(name, values);
-            } else {
-                List values = (List)props.get(name);
-                if (values == null) {
-                    values = new ArrayList();
-                    props.put(name, values);
-                }
-                values.add(value);
-            }
-        } while (rs.next());
-        
+
+        Map propValues = populatePropHolderValueMap(rs);
         rs.close();
         pstmt.close();
         
-        for (Iterator i = nsMap.keySet().iterator(); i.hasNext();) {
-            String namespaceUri = (String)i.next();
-            Map props = (Map)nsMap.get(namespaceUri);
-            Namespace ns = Namespace.getNamespace(namespaceUri);
+        for (Iterator i = propValues.keySet().iterator(); i.hasNext();) {
             
-            for (Iterator u = props.keySet().iterator(); u.hasNext();) {
-                String name = (String)u.next();
-                List stringValues = (List)props.get(name);
-                
-                // NOTE: We have no way of finding out if a property is multi-valued 
-                // solely based on the database with our current schema. 
-                // We could assume that it is multi-valued
-                // if it has more than one row, but a property with only one row could
-                // be either single or multi-valued. Therefore, we don't concern ourselves
-                // with this in the DAO layer, and instead, always pass in a value list to
-                // the property manager, which does the right thing by consulting the definition.
-                Property prop = this.propertyManager.createProperty(ns, name, 
-                        (String[])stringValues.toArray(new String[]{}), type);
-                
-                resource.addProperty(prop);
-            }
-        }
-    }
+            PropHolder prop = (PropHolder)i.next();
+            
+            List values = (List)propValues.get(prop);
 
+            Property property = this.propertyManager.createProperty(
+                    Namespace.getNamespace(prop.namespaceUri), prop.name, 
+                    (String[])values.toArray(new String[]{}), prop.type);
+            resource.addProperty(property);
+        }
+        
+    }
+    
+    private void loadPropertiesForChildren(Connection conn, ResourceImpl parent,
+            ResourceImpl[] resources)
+            throws SQLException {
+        if ((resources == null) || (resources.length == 0)) {
+            return;
+        }
+
+        String query = this.queryProvider.getLoadPropertiesForChildrenPreparedStatement();
+
+        PreparedStatement propStmt = conn.prepareStatement(query);
+        propStmt.setString(1, getURIWildcard(parent.getURI()));
+        propStmt.setInt(2, getURIDepth(parent.getURI()) + 1);
+        
+        ResultSet rs = propStmt.executeQuery();
+        Map resourceMap = new HashMap();
+
+        for (int i = 0; i < resources.length; i++) {
+            resourceMap.put(new Integer(resources[i].getID()), resources[i]);
+        }
+        
+        Map propValues = populatePropHolderValueMap(rs);
+        rs.close();
+        propStmt.close();
+        
+        
+        for (Iterator i = propValues.keySet().iterator();i.hasNext();) {
+            PropHolder holder = (PropHolder)i.next();
+            List values = (List)propValues.get(holder);
+            
+            Property property = this.propertyManager.createProperty(
+                    Namespace.getNamespace(holder.namespaceUri),
+                    holder.name, (String[])values.toArray(new String[]{}),
+                    holder.type);
+            
+            ResourceImpl r = (ResourceImpl)resourceMap.get(
+                    new Integer(holder.resourceId));
+            r.addProperty(property);
+            
+        }
+        
+//        while (rs.next()) {
+//            // FIXME: type conversion
+//            Integer resourceID = new Integer((int) rs.getLong("resource_id"));
+//
+//            Property prop = this.propertyManager.createProperty(
+//                    Namespace.getNamespace(rs.getString("name_space")), 
+//                    rs.getString("name"), rs.getString("value"));
+//            ResourceImpl r = (ResourceImpl) resourceMap.get(resourceID);
+//            r.addProperty(prop);
+//        }
+//
+//        rs.close();
+//        propStmt.close();
+//
+    }
 
     protected void deleteExpiredLocks(Connection conn)
             throws SQLException {
@@ -838,17 +894,41 @@ public class JDBCClient extends AbstractDataAccessor {
             for (Iterator iter = properties.iterator(); iter.hasNext();) {
                 Property property = (Property) iter.next();
                 if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
-
-                    stmt.setInt(1, r.getID());
-                    stmt.setString(2, property.getNamespace().getUri());
-                    stmt.setString(3, property.getName());
-                    stmt.setString(4, property.getStringValue());
-                    stmt.addBatch();
+                    String namespaceUri = property.getNamespace().getUri();
+                    String name = property.getName();
+                    int resourceId = r.getID();
+                    int type = property.getDefinition() != null ? 
+                            property.getDefinition().getType() : PropertyType.TYPE_STRING;
+                            
+                    if (property.getDefinition() != null 
+                            && property.getDefinition().isMultiple()) {
+                        
+                        String[] stringValues 
+                            = valueFactory.createStrings(property.getValues());
+                        
+                        for (int i=0; i<stringValues.length; i++) {
+                            stmt.setInt(1, resourceId);
+                            stmt.setInt(2, type);
+                            stmt.setString(3, namespaceUri);
+                            stmt.setString(4, name);
+                            stmt.setString(5, stringValues[i]);
+                            stmt.addBatch();
+                        }
+                    } else {
+                        String stringValue 
+                            = valueFactory.createString(property.getValue());
+                        
+                        stmt.setInt(1, resourceId);
+                        stmt.setInt(2, type);
+                        stmt.setString(3, namespaceUri);
+                        stmt.setString(4, name);
+                        stmt.setString(5, stringValue);
+                        stmt.addBatch();
+                    }
                 }
             }
             stmt.executeBatch();
             stmt.close();
-
         }
     }
     
@@ -1129,41 +1209,6 @@ public class JDBCClient extends AbstractDataAccessor {
 
 
 
-    private void loadPropertiesForChildren(Connection conn, ResourceImpl parent,
-            ResourceImpl[] resources)
-            throws SQLException {
-        if ((resources == null) || (resources.length == 0)) {
-            return;
-        }
-
-        String query = this.queryProvider.getLoadPropertiesForChildrenPreparedStatement();
-
-        PreparedStatement propStmt = conn.prepareStatement(query);
-        propStmt.setString(1, getURIWildcard(parent.getURI()));
-        propStmt.setInt(2, getURIDepth(parent.getURI()) + 1);
-        
-        ResultSet rs = propStmt.executeQuery();
-        Map resourceMap = new HashMap();
-
-        for (int i = 0; i < resources.length; i++) {
-            resourceMap.put(new Integer(resources[i].getID()), resources[i]);
-        }
-        
-        while (rs.next()) {
-            // FIXME: type conversion
-            Integer resourceID = new Integer((int) rs.getLong("resource_id"));
-
-            Property prop = this.propertyManager.createProperty(
-                    Namespace.getNamespace(rs.getString("name_space")), 
-                    rs.getString("name"), rs.getString("value"));
-            ResourceImpl r = (ResourceImpl) resourceMap.get(resourceID);
-            r.addProperty(prop);
-        }
-
-        rs.close();
-        propStmt.close();
-
-    }
 
     private Map loadLocksForChildren(Connection conn, ResourceImpl parent)
             throws SQLException {

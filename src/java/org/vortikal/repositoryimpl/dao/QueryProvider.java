@@ -207,8 +207,8 @@ public class QueryProvider {
 
     public String getInsertPropertyEntryPreparedStatement() {
         return "insert into EXTRA_PROP_ENTRY " 
-            + "(extra_prop_entry_id, resource_id, name_space, name, value) "
-            + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?)";
+            + "(extra_prop_entry_id, resource_id, prop_type_id, name_space, name, value) "
+            + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?, ?)";
     }
 
 
@@ -267,7 +267,7 @@ public class QueryProvider {
     public String getLoadPropertiesForChildrenPreparedStatement() {
         return "select * from EXTRA_PROP_ENTRY where resource_id in ("
             + "select resource_id from vortex_resource "
-            + "where uri like ? and depth = ?)";
+            + "where uri like ? and depth = ?) order by extra_prop_entry_id";
     }
 
     public String getLoadLocksForChildrenPreparedStatement() {

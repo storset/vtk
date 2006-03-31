@@ -40,9 +40,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -903,26 +900,22 @@ public class JDBCClient extends AbstractDataAccessor {
                     if (property.getDefinition() != null 
                             && property.getDefinition().isMultiple()) {
                         
-                        String[] stringValues 
-                            = valueFactory.createStrings(property.getValues());
-                        
-                        for (int i=0; i<stringValues.length; i++) {
+                        Value[] values = property.getValues();
+                        for (int i=0; i<values.length; i++) {
                             stmt.setInt(1, resourceId);
                             stmt.setInt(2, type);
                             stmt.setString(3, namespaceUri);
                             stmt.setString(4, name);
-                            stmt.setString(5, stringValues[i]);
+                            stmt.setString(5, values[i].getStringRepresentation());
                             stmt.addBatch();
                         }
                     } else {
-                        String stringValue 
-                            = valueFactory.createString(property.getValue());
-                        
+                        Value value = property.getValue();
                         stmt.setInt(1, resourceId);
                         stmt.setInt(2, type);
                         stmt.setString(3, namespaceUri);
                         stmt.setString(4, name);
-                        stmt.setString(5, stringValue);
+                        stmt.setString(5, value.getStringRepresentation());
                         stmt.addBatch();
                     }
                 }

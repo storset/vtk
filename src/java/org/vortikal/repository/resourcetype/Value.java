@@ -198,4 +198,46 @@ public final class Value implements Cloneable {
         return sb.toString();
     }
     
+    public String getStringRepresentation() {
+        
+        String representation = null;
+        switch (this.type) {
+        
+        case PropertyType.TYPE_BOOLEAN:
+            representation = this.booleanValue ? "true" : "false";
+            break;
+            
+        case PropertyType.TYPE_DATE:
+            Date date = this.dateValue;
+            
+            if (date == null) {
+                throw new ValueFormatException("Cannot convert date value to string, field was null");
+            }
+            
+            representation = Long.toString(date.getTime());
+            break;
+            
+        case PropertyType.TYPE_INT:
+            representation = Integer.toString(intValue);
+            break;
+            
+        case PropertyType.TYPE_LONG:
+            representation = Long.toString(longValue);
+            break;
+            
+        case PropertyType.TYPE_STRING:
+            representation = value;
+            break;
+            
+        case PropertyType.TYPE_PRINCIPAL:
+            Principal principal = principalValue;
+            if (principal == null) {
+                throw new ValueFormatException("Cannot convert principal value to string, field was null");
+            }
+            
+            representation = principal.getQualifiedName();
+        }
+        
+        return representation;
+    }
 }

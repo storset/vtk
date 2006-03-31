@@ -32,7 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 /**
  * Interface for a <code>Value</code> "factory". It currently only does
- * value creation from string representation and vice-versa.
+ * value creation from string representation.
  * 
  * @author oyviste
  *
@@ -59,27 +59,5 @@ public interface ValueFactory {
      */
     public Value[] createValues(String[] stringValues, int type)
         throws ValueFormatException;
-    
-    
-    /**
-     * Create a <code>String</code> representation from the given value.
-     * @param value
-     * @return
-     * @throws ValueFormatException
-     * @throws UnsupportedOperationException
-     */
-    public String createString(Value value)
-        throws ValueFormatException;
-    
-    
-    /**
-     * 
-     * @param value
-     * @return
-     * @throws ValueFormatException
-     */
-    public String[] createStrings(Value[] value)
-        throws ValueFormatException;
-    
-    
+
 }

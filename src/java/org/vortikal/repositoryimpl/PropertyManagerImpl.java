@@ -59,6 +59,8 @@ import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -80,6 +82,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private RoleManager roleManager;
     private PrincipalManager principalManager;
 
+    private ValueFactory valueFactory;
+    
     private ResourceTypeDefinition rootResourceTypeDefinition;
     private boolean lazyInit = false;
     private boolean init = false;
@@ -108,6 +112,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             throw new BeanInitializationException("Property 'principalManager' not set.");
         } else if (rootResourceTypeDefinition == null) {
             throw new BeanInitializationException("Property 'rootResourceTypeDefinition' not set.");
+        } else if (valueFactory == null) {
+            throw new BeanInitializationException("Property 'valueFactory' not set.");
         }
 
         resourceTypeDefinitionBeans = 
@@ -468,10 +474,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
 
     
-    
-    
-    
-    
     public Property createProperty(Namespace namespace, String name) {
 
         init();
@@ -484,7 +486,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         prop.setDefinition(findPropertyTypeDefinition(namespace, name));
         
         if (logger.isDebugEnabled()) {
-            logger.debug("Created property: " + prop);
+            logger.debug("Created property without initial value: " + prop);
         }
         
         return prop;
@@ -521,7 +523,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 throw new ValueFormatException("Supplied value not of any supported type.");
             }
             prop.setStringValue((String) value);
-        }
+        } 
         
         
         if (logger.isDebugEnabled()) {
@@ -531,6 +533,48 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         return prop;
     }
     
+    public Property createProperty(Namespace namespace, String name, 
+                                   String[] stringValues, int type) 
+        throws ValueFormatException {
+        init();
+        
+        PropertyImpl prop = new PropertyImpl();
+        prop.setNamespace(namespace);
+        prop.setName(name);
+        
+        PropertyTypeDefinition def = findPropertyTypeDefinition(namespace, name);
+        prop.setDefinition(def);
+        
+        if (def != null && def.isMultiple()) {
+            Value[] values = valueFactory.createValues(stringValues, type);
+            prop.setValues(values);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Created multi-value property: " + prop);
+            }
+        } else {
+            // Not multi-value, stringValues must be of length 1, otherwise there are
+            // inconsistency problems between database and config.
+            if (stringValues.length > 1) {
+                logger.error("Cannot convert multiple values to a single-value prop" +
+                        " for property " + prop);
+                throw new ValueFormatException("Cannot convert multiple values to a single-value prop" +
+                        " for property " + prop);
+            }
+            
+            Value value = valueFactory.createValue(stringValues[0], type);
+            prop.setValue(value);
+            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Created multi-value property: " + prop);
+            }
+        }
+        
+        return prop;
+        
+    }
+    
+
     private PropertyTypeDefinition findPropertyTypeDefinition(Namespace namespace, 
                                                           String name) {
         PropertyTypeDefinition propDef = null;
@@ -571,6 +615,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public void setLazyInit(boolean lazyInit) {
         this.lazyInit = lazyInit;
+    }
+
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
     }
 
 }

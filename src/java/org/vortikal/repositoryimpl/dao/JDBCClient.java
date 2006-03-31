@@ -40,6 +40,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -255,7 +258,9 @@ public class JDBCClient extends AbstractDataAccessor {
         return count;
     }
 
-
+    /**
+     * @deprecated
+     */
     private void loadProperties(Connection conn, ResourceImpl resource)
             throws SQLException {
 
@@ -277,6 +282,86 @@ public class JDBCClient extends AbstractDataAccessor {
         rs.close();
         propStmt.close();
     }
+    
+    /**
+     * New loadProperties with multi-value and type support (not enabled yet)
+     * @param conn
+     * @param resource
+     * @throws SQLException
+     */
+    private void loadPropertiesNew(Connection conn, ResourceImpl resource)
+        throws SQLException {
+        
+        String query = this.queryProvider.getLoadPropertiesByResourceIdPreparedStatement();
+        PreparedStatement pstmt = conn.prepareStatement(query);
+        pstmt.setInt(1, resource.getID());
+        ResultSet rs = pstmt.executeQuery();
+        
+        int type;
+        if (rs.next()) {
+            type = rs.getInt("prop_type_id");
+        } else {
+            rs.close();
+            pstmt.close();
+            return;
+        }
+        
+        // Map namespace-URI to map of prop-names, which maps to list of value(s)
+        // TODO: better way of handling multivalue-props without altering 
+        //       db-schema ?
+        //       An alternative: add 'namespace, name' to order by clause, then loop
+        //       through result set only once and detect when namespace or name changes 
+        //       (new prop)..might be more efficient.
+        Map nsMap = new HashMap();
+        do {
+            String namespaceUri = rs.getString("name_space");
+            String name = rs.getString("name");
+            String value = rs.getString("value");
+            
+            Map props = (Map)nsMap.get(namespaceUri);
+            if (props == null) {
+                props = new HashMap();
+                nsMap.put(namespaceUri, props);
+                
+                List values = new ArrayList();
+                values.add(value);
+                props.put(name, values);
+            } else {
+                List values = (List)props.get(name);
+                if (values == null) {
+                    values = new ArrayList();
+                    props.put(name, values);
+                }
+                values.add(value);
+            }
+        } while (rs.next());
+        
+        rs.close();
+        pstmt.close();
+        
+        for (Iterator i = nsMap.keySet().iterator(); i.hasNext();) {
+            String namespaceUri = (String)i.next();
+            Map props = (Map)nsMap.get(namespaceUri);
+            Namespace ns = Namespace.getNamespace(namespaceUri);
+            
+            for (Iterator u = props.keySet().iterator(); u.hasNext();) {
+                String name = (String)u.next();
+                List stringValues = (List)props.get(name);
+                
+                // NOTE: We have no way of finding out if a property is multi-valued 
+                // solely based on the database with our current schema. 
+                // We could assume that it is multi-valued
+                // if it has more than one row, but a property with only one row could
+                // be either single or multi-valued. Therefore, we don't concern ourselves
+                // with this in the DAO layer, and instead, always pass in a value list to
+                // the property manager, which does the right thing by consulting the definition.
+                Property prop = this.propertyManager.createProperty(ns, name, 
+                        (String[])stringValues.toArray(new String[]{}), type);
+                
+                resource.addProperty(prop);
+            }
+        }
+    }
 
 
     protected void deleteExpiredLocks(Connection conn)
@@ -290,7 +375,6 @@ public class JDBCClient extends AbstractDataAccessor {
         }
         stmt.close();
     }
-
 
 
     protected void addChangeLogEntry(Connection conn, String loggerID, String loggerType,
@@ -339,9 +423,7 @@ public class JDBCClient extends AbstractDataAccessor {
                 logger.warn("No changelog entry added! Only numerical types and "
                             + "IDs are supported by this database backend.");
             }
-
         }
-
     }
 
 

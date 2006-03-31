@@ -41,7 +41,8 @@ public class QueryProvider {
     }    
 
     public String getLoadPropertiesByResourceIdPreparedStatement() {
-        return "select * from EXTRA_PROP_ENTRY where resource_id = ?";
+        return "select * from EXTRA_PROP_ENTRY where resource_id = ? "
+             + "order by extra_prop_entry_id";
     }    
 
               

@@ -289,6 +289,7 @@ public class JDBCClient extends AbstractDataAccessor {
         String name = "";
         int type;
         int resourceId;
+        List values;
         
         public boolean equals(Object other) {
             if (other == null) return false;
@@ -307,30 +308,34 @@ public class JDBCClient extends AbstractDataAccessor {
     }
     
     /**
-     * Populate a PropHolder -> value-list map from ResultSet
+     * Returns a list of PropHolder objects from the ResultSet, merging
+     * multi-valued props into a single PropHolder with value-list.
+     * 
+     * Does not close ResultSet.
      */
-    private Map populatePropHolderValueMap(ResultSet rs) throws SQLException {
-        Map propValues = new HashMap();
+    private PropHolder[] getPropHoldersFromResultSet(ResultSet rs) throws SQLException {
+        Map propMap = new HashMap();
         while (rs.next()) {
             PropHolder prop = new PropHolder();
             prop.namespaceUri = rs.getString("name_space");
             prop.name = rs.getString("name");
             prop.resourceId = rs.getInt("resource_id");
             
-            List values =  (List)propValues.get(prop);
+            List values = (List)propMap.get(prop);
             if (values == null) {
                 values = new ArrayList();
                 prop.type = rs.getInt("prop_type_id");
-                propValues.put(prop, values);
+                prop.values = values;
+                propMap.put(prop, values);
             } 
             values.add(rs.getString("value"));
-        }   
-
-        return propValues;
+        }
+        
+        return (PropHolder[])propMap.keySet().toArray(new PropHolder[]{});
     }
 
     /**
-     * New loadProperties with multi-value and type support
+     * New loadProperties with multi-value and type support.
      * @param conn
      * @param resource
      * @throws SQLException
@@ -343,19 +348,16 @@ public class JDBCClient extends AbstractDataAccessor {
         pstmt.setInt(1, resource.getID());
         ResultSet rs = pstmt.executeQuery();
 
-        Map propValues = populatePropHolderValueMap(rs);
+        PropHolder[] propHolders = getPropHoldersFromResultSet(rs);
         rs.close();
         pstmt.close();
         
-        for (Iterator i = propValues.keySet().iterator(); i.hasNext();) {
+        for (int i=0; i<propHolders.length; i++) {
+            PropHolder prop = propHolders[i];
             
-            PropHolder prop = (PropHolder)i.next();
-            
-            List values = (List)propValues.get(prop);
-
             Property property = this.propertyManager.createProperty(
                     Namespace.getNamespace(prop.namespaceUri), prop.name, 
-                    (String[])values.toArray(new String[]{}), prop.type);
+                    (String[])prop.values.toArray(new String[]{}), prop.type);
             resource.addProperty(property);
         }
         
@@ -381,18 +383,16 @@ public class JDBCClient extends AbstractDataAccessor {
             resourceMap.put(new Integer(resources[i].getID()), resources[i]);
         }
         
-        Map propValues = populatePropHolderValueMap(rs);
+        PropHolder[] propHolders = getPropHoldersFromResultSet(rs);
         rs.close();
         propStmt.close();
         
-        
-        for (Iterator i = propValues.keySet().iterator();i.hasNext();) {
-            PropHolder holder = (PropHolder)i.next();
-            List values = (List)propValues.get(holder);
-            
+        for (int i=0; i<propHolders.length; i++) {
+            PropHolder holder = propHolders[i];
+                        
             Property property = this.propertyManager.createProperty(
                     Namespace.getNamespace(holder.namespaceUri),
-                    holder.name, (String[])values.toArray(new String[]{}),
+                    holder.name, (String[])holder.values.toArray(new String[]{}),
                     holder.type);
             
             ResourceImpl r = (ResourceImpl)resourceMap.get(
@@ -882,7 +882,7 @@ public class JDBCClient extends AbstractDataAccessor {
         deleteStatement.close();
 
         List properties = r.getProperties();
-
+        
         if (properties != null) {
 
             String insertQuery = this.queryProvider.getInsertPropertyEntryPreparedStatement();
@@ -890,23 +890,26 @@ public class JDBCClient extends AbstractDataAccessor {
 
             for (Iterator iter = properties.iterator(); iter.hasNext();) {
                 Property property = (Property) iter.next();
+
                 if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
                     String namespaceUri = property.getNamespace().getUri();
                     String name = property.getName();
                     int resourceId = r.getID();
-                    int type = property.getDefinition() != null ? 
-                            property.getDefinition().getType() : PropertyType.TYPE_STRING;
-                            
-                    if (property.getDefinition() != null 
+                    int type = property.getDefinition() != null ? property
+                            .getDefinition().getType()
+                            : PropertyType.TYPE_STRING;
+
+                    if (property.getDefinition() != null
                             && property.getDefinition().isMultiple()) {
-                        
+
                         Value[] values = property.getValues();
-                        for (int i=0; i<values.length; i++) {
+                        for (int i = 0; i < values.length; i++) {
                             stmt.setInt(1, resourceId);
                             stmt.setInt(2, type);
                             stmt.setString(3, namespaceUri);
                             stmt.setString(4, name);
-                            stmt.setString(5, values[i].getStringRepresentation());
+                            stmt.setString(5, values[i]
+                                    .getStringRepresentation());
                             stmt.addBatch();
                         }
                     } else {

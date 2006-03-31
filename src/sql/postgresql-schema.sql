@@ -27,6 +27,8 @@ CREATE TABLE vortex_resource
     display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,
     content_type VARCHAR (64) NULL,
+    content_length int DEFAULT 0 NOT NULL,
+    resource_type VARCHAR(64) NULL,
     character_encoding VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,
     acl_inherited CHAR(1) DEFAULT 'Y' NOT NULL,
@@ -203,7 +205,7 @@ CREATE TABLE extra_prop_entry
 (
     extra_prop_entry_id int NOT NULL,
     resource_id int NOT NULL,
---    prop_type_id int DEFAULT 0 NOT NULL,
+    prop_type_id int DEFAULT 0 NOT NULL,
     name_space VARCHAR (128) NOT NULL,
     name VARCHAR (64) NOT NULL,
     value VARCHAR (2048) NOT NULL
@@ -219,10 +221,10 @@ ALTER TABLE extra_prop_entry
 ;
 
 -- Also references prop_type_id
--- ALTER TABLE extra_prop_entry
---    ADD CONSTRAINT extra_prop_entry_FK_2 FOREIGN KEY (prop_type_id)
---    REFERENCES prop_type(prop_type_id)
--- ;
+ ALTER TABLE extra_prop_entry
+    ADD CONSTRAINT extra_prop_entry_FK_2 FOREIGN KEY (prop_type_id)
+    REFERENCES prop_type(prop_type_id)
+ ;
 
 CREATE INDEX extra_prop_entry_index1 ON extra_prop_entry(resource_id);
 

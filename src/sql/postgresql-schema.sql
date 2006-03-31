@@ -23,6 +23,7 @@ CREATE TABLE vortex_resource
     properties_last_modified TIMESTAMP NOT NULL,
     content_modified_by VARCHAR (64) NOT NULL,
     properties_modified_by VARCHAR (64) NOT NULL,
+    serial VARCHAR(64) NULL,
     resource_owner VARCHAR (64) NOT NULL,
     display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,

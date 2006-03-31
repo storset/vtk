@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.PrincipalManager;
@@ -53,6 +54,7 @@ public abstract class AbstractDataAccessor
     protected ContentStore contentStore;
     protected DataSource dataSource;
     protected PropertyManagerImpl propertyManager;
+    protected ValueFactory valueFactory;
     protected PrincipalManager principalManager;
     
     public void setContentStore(ContentStore contentStore) {
@@ -87,6 +89,10 @@ public abstract class AbstractDataAccessor
         if (this.dataSource == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'dataSource' not specified");
+        }
+        if (this.valueFactory == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'valueFactory' not specified");
         }
     }
 
@@ -413,6 +419,10 @@ public abstract class AbstractDataAccessor
     protected abstract void copy(Connection conn, ResourceImpl resource, String destURI,
                                  boolean copyACLs, boolean setOwner, String owner)
         throws SQLException, IOException;
+
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
+    }
 
 
 }

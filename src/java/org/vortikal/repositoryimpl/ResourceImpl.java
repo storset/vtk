@@ -49,6 +49,7 @@ import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
+import org.vortikal.util.codec.MD5;
 import org.vortikal.util.repository.URIUtil;
 
 
@@ -227,12 +228,11 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public String getSerial() {
-        // XXX: Implement me.
-        return null;
+        String serial = getURI() + getContentLastModified() + getPropertiesLastModified();
+        String md5String = MD5.md5sum(serial);
+        return md5String;
     }
-
     
-
     public Principal getOwner() {
         return getPrincipalPropValue(PropertyType.OWNER_PROP_NAME);
     }

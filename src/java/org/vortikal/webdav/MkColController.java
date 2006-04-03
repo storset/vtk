@@ -98,7 +98,7 @@ public class MkColController extends AbstractWebdavController {
         } catch (IllegalOperationException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caught IllegalOperationException for URI "
-                             + uri);
+                             + uri + ": " + e.getMessage());
             }            
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,

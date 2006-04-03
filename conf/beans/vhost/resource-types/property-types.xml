@@ -27,6 +27,12 @@
               value="org.vortikal.repository.resourcetype.PropertyType.TYPE_LONG" />
   </bean>
 
+  <bean id="TYPE_INT"
+    class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+      value="org.vortikal.repository.resourcetype.PropertyType.TYPE_INT" />
+  </bean>
+
   <bean id="TYPE_PRINCIPAL"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"

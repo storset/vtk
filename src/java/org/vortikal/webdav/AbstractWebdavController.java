@@ -35,7 +35,8 @@ package org.vortikal.webdav;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -167,6 +168,7 @@ public abstract class AbstractWebdavController implements Controller {
         throws InvalidRequestException {
 
         String ifHeader = req.getHeader("If");
+        logger.debug("if-header: " + ifHeader);
         if (ifHeader == null || ifHeader.trim().equals("")) {
             return new UriState(uri);
         }
@@ -189,71 +191,112 @@ public abstract class AbstractWebdavController implements Controller {
     private UriState parseIfHeaderTaggedList(String uri, String ifHeader)
         throws InvalidRequestException {
         // FIXME: implement this (see section 9.4.2 of RFC 2518)
+        logger.debug("parseIfHeaderTaggedList starting");
         return new UriState(uri);
     }
     
 
 
     private UriState parseIfHeaderNoTagList(String uri, String ifHeader)
-        throws InvalidRequestException {
+            throws InvalidRequestException {
+        logger.debug("parseIfHeaderNoTagList starting");
+        /*
+         * This is a "No-tag-list" production. It consists of one or more "List" productions. List
+         * productions, in turn, are defined by one or more, possibly negated, state tokens or
+         * entity tags.
+         */
+        // String list = ifHeader.substring(1, ifHeader.length() - 1);
+        // StringTokenizer tokenizer = new StringTokenizer(list);
+        UriState uriState = new UriState(uri);
+        Pattern NO_TAG_LIST_REGEXP = Pattern.compile("\\((.*?)\\)");
+        Pattern LIST_CONTENT_REGEXP = Pattern.compile("(Not)?\\s*(<.*?>|\\[\".*?\"\\])");
 
-        /* This is a "No-tag-list" production. It consists of one or
-         * more "List" productions. List productions, in turn, are
-         * defined by one or more, possibly negated, state tokens or
-         * entity tags. */
-        String list = ifHeader.substring(1, ifHeader.length() - 1);
-            
-        StringTokenizer tokenizer = new StringTokenizer(list);
+        Matcher ifHeaderMatcher = NO_TAG_LIST_REGEXP.matcher(ifHeader);
+        while (ifHeaderMatcher.find()) {
+            String list = ifHeaderMatcher.group(1);
+            //logger.debug("ifHeaderMatcher.group(1): " + ifHeaderMatcher.group(1));
+            Matcher listContentMatcher = LIST_CONTENT_REGEXP.matcher(list);
+            boolean foundToken = false;
+            boolean negate = false;
 
-        UriState state = new UriState(uri);
-
-        while (tokenizer.hasMoreTokens()) {
-            String s = tokenizer.nextToken();
-            boolean negated = false;
-
-            if (s.equals("Not")) {
-                negated = true;
-
-                if (! tokenizer.hasMoreTokens()) {
-                    throw new InvalidRequestException(
-                        "Invalid If header: " + ifHeader);
+            while (listContentMatcher.find()) {
+                String negateString = listContentMatcher.group(1);
+                negate = (negateString != null);
+                //logger.debug("listContentMatcher.group(2): " + listContentMatcher.group(2));
+                String tokenString = listContentMatcher.group(2);
+                if (tokenString.startsWith("<")) {
+                    EtagOrStateToken lockToken = new EtagOrStateToken(EtagOrStateToken.LOCK,
+                            removeFirstAndLastChar(tokenString), negate);
+                    uriState.addToken(lockToken);
+                    foundToken = true;
+                } else if (tokenString.startsWith("[")) {
+                    EtagOrStateToken etagToken = new EtagOrStateToken(EtagOrStateToken.ETAG,
+                            removeFirstAndLastChar(tokenString), negate);
+                    uriState.addToken(etagToken);
+                    foundToken = true;
+                } else {
+                    logger.warn("unknown if-header element: " + list);
                 }
-                s = tokenizer.nextToken();
             }
-                
-            if (s.startsWith("[") && s.endsWith("]")) {
-                /* This is an Etag */
-
-                if (s.length() <= 2) {
-                    throw new InvalidRequestException(
-                        "Invalid If header: " + ifHeader);
-                }
-                    
-                StateToken token = new Etag(
-                    s.substring(1, s.length() - 1), negated);
-                state.addToken(token);
-
-            } else if (s.startsWith("<") && s.endsWith(">")) {
-                /* This is a regular state token (i.e. a lock
-                 * token): */
-                    
-                if (s.length() <= 2) {
-                    throw new InvalidRequestException(
-                        "Invalid If header: " + ifHeader);
-                }
-                    
-                StateToken token = new LockToken(
-                    s.substring(1, s.length() - 1), negated);
-                state.addToken(token);
-
-            } else {
-                /* This is an unsupported token */
-                throw new InvalidRequestException(
-                    "Invalid If header: " + ifHeader);
+            if (!foundToken) {
+                throw new InvalidRequestException("Invalid If header: " + ifHeader);
             }
+
         }
+        
+// while (tokenizer.hasMoreTokens()) {
+//            String s = tokenizer.nextToken();
+//            boolean negated = false;
+//            logger.warn("-------------> s: " + s);
+//            if (s.equals("Not")) {
+//                negated = true;
+//
+//                if (! tokenizer.hasMoreTokens()) {
+//                    throw new InvalidRequestException(
+//                        "Invalid If header: " + ifHeader);
+//                }
+//                s = tokenizer.nextToken();
+//                
+//            }
+//                
+//            if (s.startsWith("[") && s.endsWith("]")) {
+//                /* This is an Etag */
+//
+//                if (s.length() <= 2) {
+//                    throw new InvalidRequestException(
+//                        "Invalid If header: " + ifHeader);
+//                }
+//                    
+//                StateToken token = new Etag(
+//                    s.substring(1, s.length() - 1), negated);
+//                state.addToken(token);
+//
+//            } else if (s.startsWith("<") && s.endsWith(">")) {
+//                /* This is a regular state token (i.e. a lock
+//                 * token): */
+//                    
+//                if (s.length() <= 2) {
+//                    throw new InvalidRequestException(
+//                        "Invalid If header: " + ifHeader);
+//                }
+//                    
+//                StateToken token = new LockToken(
+//                    s.substring(1, s.length() - 1), negated);
+//                state.addToken(token);
+//
+//            } else {
+//                /* This is an unsupported token */
+//                throw new InvalidRequestException(
+//                    "Invalid If header: " + ifHeader);
+//            }
+//        }
 
-        return state;
+        return uriState;
+    }
+
+
+    private String removeFirstAndLastChar(String string) {
+        return string.substring(1, string.length() -1);
     }
     
 
@@ -271,7 +314,7 @@ public abstract class AbstractWebdavController implements Controller {
             return this.uri;
         }
 
-        public void addToken(StateToken token) {
+        public void addToken(EtagOrStateToken token) {
             tokens.add(token);
         }
 
@@ -281,52 +324,44 @@ public abstract class AbstractWebdavController implements Controller {
     }
     
 
+    protected class EtagOrStateToken {
+        public final static int ETAG = 0;
 
-    protected abstract class StateToken {
-        public abstract String getValue();
-        public abstract boolean isNegated();
-    }
-    
+        public final static int LOCK = 1;
 
+        private int type;
 
-
-    protected class Etag extends StateToken {
-        private String etag;
         private boolean negated;
-        
-        public Etag(String etag, boolean negated) {
-            this.etag = etag;
+
+        private String value;
+
+        public EtagOrStateToken(int type, String value, boolean negated) {
+            this.type = type;
+            this.value = value;
             this.negated = negated;
         }
 
         public String getValue() {
-            return this.etag;
-        }
-        
-        public boolean isNegated() {
-            return this.negated;
-        }
-    }
-    
-
-
-    protected class LockToken extends StateToken {
-        private String lockToken;
-        private boolean negated;
-
-        public LockToken(String lockToken, boolean negated) {
-            this.lockToken = lockToken;
-            this.negated = negated;
-        }
-
-        public String getValue() {
-            return this.lockToken;
+            return this.value;
         }
 
         public boolean isNegated() {
             return this.negated;
         }
 
+        public int getType() {
+            return type;
+        }
+        
+        public boolean isLock() {
+            return type == LOCK;
+        }
+        
+        public boolean isEtag() {
+            return type == ETAG;
+        }
+
     }
+
 }
 

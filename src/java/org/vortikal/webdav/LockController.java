@@ -111,7 +111,10 @@ public class LockController extends AbstractWebdavController {
                 UriState uriState = parseIfHeader(request, uri);
                 List tokens = uriState.getTokens();
                 if (tokens.size() == 1) {
-                    refreshLockToken = ((StateToken) tokens.get(0)).getValue();
+                    EtagOrStateToken etagOrStateToken = (EtagOrStateToken) tokens.get(0);
+                    if (etagOrStateToken.isLock()) {
+                       refreshLockToken = etagOrStateToken.getValue();
+                    }
                 }
             } else {
                 Document requestBody = parseRequestBody(request);

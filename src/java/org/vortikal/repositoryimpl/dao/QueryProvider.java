@@ -45,6 +45,9 @@ public class QueryProvider {
              + "order by extra_prop_entry_id";
     }    
 
+    public String getLoadResourceIdByUriPreparedStatement() {
+        return "select resource_id from vortex_resource where uri = ?";
+    }
               
     public String getDeleteExpiredLocksPreparedStatement() {
         return "delete from VORTEX_LOCK where timeout < ?";

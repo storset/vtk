@@ -246,7 +246,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         
         List deadProperties = new ArrayList();
         Authorization authorization = new Authorization(principal, resource.getAcl(), this.roleManager);
-
+        
+        // Looping over already existing properties
         for (Iterator iter = resource.getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             Property userProp = dto.getProperty(prop.getNamespace(), prop.getName());
@@ -285,13 +286,18 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     addToPropsMap(allreadySetProperties, userProp);
                 }
             } else {
+                if (prop.getDefinition() == null) {
+                    // Dead and un-changed.
+                    deadProperties.add(userProp);
+                }
                 // Unchanged - to be evaluated
             }
         }
+        
         for (Iterator iter = dto.getProperties().iterator(); iter.hasNext();) {
             Property userProp = (Property) iter.next();
             Property prop = resource.getProperty(userProp.getNamespace(), userProp.getName());
-
+            
             if (prop == null) {
                 // Added
                 if (userProp.getDefinition() == null) {
@@ -306,13 +312,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     }
                     addToPropsMap(allreadySetProperties, userProp);
                 }
-            }
-        }
-        
-        if (logger.isDebugEnabled()) {
-            for (Iterator i = deadProperties.iterator(); i.hasNext();) {
-                logger.debug("Dead prop: " + i.next());
-            }
+            } 
         }
         
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
@@ -326,6 +326,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
         for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Adding dead property to new resource: " + prop);
+            }
+            
             newResource.addProperty(prop);
         }
         for (Iterator iter = allreadySetProperties.values().iterator(); iter.hasNext();) {

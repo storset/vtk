@@ -182,6 +182,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         ResourceImpl newResource = new ResourceImpl(uri, this);
         ResourceTypeDefinition rt = create(principal, newResource, new Date(), 
                 collection, rootResourceTypeDefinition);
+        if (collection) {
+            newResource.setChildURIs(new String[] {});
+        }
         return newResource;
     }
 

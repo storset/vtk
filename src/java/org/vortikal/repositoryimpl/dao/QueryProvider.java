@@ -145,7 +145,7 @@ public class QueryProvider {
 
 
     public String getLoadLockIdByTokenPreparedStatement() {
-        String query = "select id from VORTEX_LOCK where token = ?";
+        String query = "select lock_id from VORTEX_LOCK where token = ?";
         return query;
     }
 

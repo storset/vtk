@@ -327,7 +327,7 @@ public class JDBCClient extends AbstractDataAccessor {
                 prop.type = rs.getInt("prop_type_id");
                 prop.values = values;
                 propMap.put(prop, values);
-            } 
+            }
             values.add(rs.getString("value"));
         }
         
@@ -349,6 +349,7 @@ public class JDBCClient extends AbstractDataAccessor {
         ResultSet rs = pstmt.executeQuery();
 
         PropHolder[] propHolders = getPropHoldersFromResultSet(rs);
+        
         rs.close();
         pstmt.close();
         
@@ -642,6 +643,23 @@ public class JDBCClient extends AbstractDataAccessor {
                     propertiesLastModified, displayName, owner, contentModifiedBy,
                     propertiesModifiedBy, contentLanguage, contentType,
                     characterEncoding, collection, parent);
+            
+            // Temporary hack to get the new resource ID
+            // Statement.getGeneratedKeys() is not implemented in the PostgreSQL JDBC driver.
+            // storeACL(), storeLock() and storeProperties() depends on the ID.
+            // Consequences for caching ??? Hmm.
+            String resourceIdQuery = queryProvider.getLoadResourceIdByUriPreparedStatement();
+            PreparedStatement resourceIdStatement = conn.prepareStatement(resourceIdQuery);
+            resourceIdStatement.setString(1, uri);
+            ResultSet resourceIdResultSet = resourceIdStatement.executeQuery();
+            if (resourceIdResultSet.next()) {
+                r.setID(resourceIdResultSet.getInt("resource_id"));
+            } else {
+                throw new SQLException("Could not get generated ID for new resource");
+            }
+            resourceIdResultSet.close();
+            resourceIdStatement.close();
+            
         }
 
         // Save the ACL:
@@ -908,8 +926,7 @@ public class JDBCClient extends AbstractDataAccessor {
                             stmt.setInt(2, type);
                             stmt.setString(3, namespaceUri);
                             stmt.setString(4, name);
-                            stmt.setString(5, values[i]
-                                    .getStringRepresentation());
+                            stmt.setString(5, values[i].getStringRepresentation());
                             stmt.addBatch();
                         }
                     } else {
@@ -923,6 +940,7 @@ public class JDBCClient extends AbstractDataAccessor {
                     }
                 }
             }
+            
             stmt.executeBatch();
             stmt.close();
         }

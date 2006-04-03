@@ -308,6 +308,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 }
             }
         }
+        
+        if (logger.isDebugEnabled()) {
+            for (Iterator i = deadProperties.iterator(); i.hasNext();) {
+                logger.debug("Dead prop: " + i.next());
+            }
+        }
+        
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
         newResource.setID(resource.getID());
         newResource.setACL((Acl)resource.getAcl().clone());
@@ -323,10 +330,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
         for (Iterator iter = allreadySetProperties.values().iterator(); iter.hasNext();) {
             Map map = (Map) iter.next();
-            for (Iterator iterator = map.values().iterator(); iterator
-                    .hasNext();) {
+            for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
                 Property prop = (Property) iterator.next();
-                System.out.println("*** Still: " + prop);
 
                 newResource.addProperty(prop);
             }
@@ -566,7 +571,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             prop.setValue(value);
             
             if (logger.isDebugEnabled()) {
-                logger.debug("Created multi-value property: " + prop);
+                logger.debug("Created property: " + prop);
             }
         }
         

@@ -30,11 +30,13 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.web.service.RepositoryAssertion;
 
-
-public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition {
+public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition, 
+                                        InitializingBean {
 
     private String name;
     private Namespace namespace;
@@ -43,7 +45,13 @@ public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition {
     private PropertyTypeDefinition[] propertyTypeDefinitions = new PropertyTypeDefinitionImpl[0];
     private RepositoryAssertion[] assertions;
     
-
+    public void afterPropertiesSet() throws BeanInitializationException {
+        if (name == null) {
+            throw new BeanInitializationException("Property 'name' not set.");
+        } else if (namespace == null) {
+            throw new BeanInitializationException("Property 'namespace' not set.");
+        }
+    }
 
     public String getName() {
         return this.name;

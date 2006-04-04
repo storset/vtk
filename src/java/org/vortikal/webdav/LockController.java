@@ -105,9 +105,8 @@ public class LockController extends AbstractWebdavController {
                 depth = "infinity";
             }
             depth = depth.toLowerCase();
-            int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));;
-
-            if ("0".equals(request.getHeader("Content-Length"))) {
+            int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));
+            if (request.getContentLength() <= 0) { // -1 if not known
                 UriState uriState = parseIfHeader(request, uri);
                 List tokens = uriState.getTokens();
                 if (tokens.size() == 1) {

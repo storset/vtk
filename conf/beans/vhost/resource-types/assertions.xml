@@ -3,9 +3,18 @@
 
 <beans>
 
+  <!-- Assertion that matches all collection resources -->
   <bean id="collection"
         class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
 
+  <!-- Assertion that matches all non-collection resources (files) -->
+  <bean id="file"
+        class="org.vortikal.web.service.ResourceIsCollectionAssertion">
+    <property name="invert" value="true"/>
+  </bean>
+
+  <!-- Assertion that matches resources with the property
+       custom:web-edit = 'yes' -->
   <bean id="webEditable" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
@@ -14,6 +23,8 @@
     <property name="value" value="yes" />
   </bean>
                     
+  <!-- Assertion that matches resources with the property
+       custom:transform-view = 'yes' -->
   <bean id="viewTransformable" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />

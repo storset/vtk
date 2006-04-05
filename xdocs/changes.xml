@@ -11,6 +11,15 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="oyviste" type="add">
+        Added support for storing/retrieving special property 'contentLength'
+        in database. Also added storing/retrieving of meta-property 
+        'resourceType'.
+      </action>
+
+      <action dev="oyviste" type="add">
+        Added support for multi-valued properties and property-value typing.
+      </action>
 
       <action dev="gormap" type="update">
         Now storing effective ACL inheritance node in resource table

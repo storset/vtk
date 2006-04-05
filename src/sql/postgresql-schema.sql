@@ -32,14 +32,17 @@ CREATE TABLE vortex_resource
     resource_type VARCHAR(64) NULL,
     character_encoding VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,
-    acl_inherited_from int NULL REFERENCES vortex_resource(resource_id),
+    acl_inherited_from int NULL,
     CONSTRAINT resource_uri_index UNIQUE (uri)
 );
 
 
 ALTER TABLE vortex_resource
-    ADD CONSTRAINT vortex_resource_PK
-PRIMARY KEY (resource_id);
+      ADD CONSTRAINT vortex_resource_PK PRIMARY KEY (resource_id);
+
+ALTER TABLE vortex_resource
+      ADD CONSTRAINT vortex_resource_FK FOREIGN KEY (acl_inherited_from)
+          REFERENCES vortex_resource (resource_id);
 
 
 

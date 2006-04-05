@@ -109,7 +109,7 @@ public class RequestURLDecoder implements RequestFilter, InitializingBean {
             } catch (Exception e) {
                 
             }
-            if (appendSlash) {
+            if (appendSlash && !"/".equals(uri)) {
                 uri += "/";
             }
             return uri;

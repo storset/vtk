@@ -103,6 +103,10 @@ public class ACLInheritanceController extends SimpleFormController {
 
         acl.setInherited(updateCommand.isInherited());
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Storing new acl for resource " + uri + ": " + acl);
+        }
+        
         repository.storeACL(token, uri, acl);
         updateCommand.setDone(true);
     }

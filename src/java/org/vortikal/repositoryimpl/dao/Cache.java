@@ -357,11 +357,7 @@ public class Cache implements DataAccessor, InitializingBean {
             uris.add(srcParentURI);
         }
 
-        long timestamp = System.currentTimeMillis();
         this.lockManager.lock(uris);
-        long duration = System.currentTimeMillis() - timestamp;
-        System.out.println("CACHE__COPY: " + r.getURI() + " -> " + destURI
-                           + ": lock took " + duration + " ms");
 
         try {
             this.wrappedAccessor.copy(r, destURI, copyACLs, setOwner, owner);
@@ -371,12 +367,8 @@ public class Cache implements DataAccessor, InitializingBean {
             }
 
         } finally {
-            timestamp = System.currentTimeMillis();
             this.lockManager.unlock(uris);
 
-            duration = System.currentTimeMillis() - timestamp;
-            System.out.println("CACHE__COPY: " + r.getURI() + " -> " + destURI
-                               + ": unlock took " + duration + " ms");
             if (logger.isDebugEnabled()) {
                 logger.debug("cache size : " + items.size());
             }

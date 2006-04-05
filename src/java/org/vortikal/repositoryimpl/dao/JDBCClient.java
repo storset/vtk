@@ -135,7 +135,6 @@ public class JDBCClient extends AbstractDataAccessor {
             lock = (LockImpl) locks.get(uri);
         }
         resource.setLock(lock);
-
         resource.setChildURIs(loadChildURIs(conn, resource.getURI()));
         
         loadACLs(conn, new ResourceImpl[] {resource});
@@ -150,7 +149,12 @@ public class JDBCClient extends AbstractDataAccessor {
 
         ResourceImpl resource = new ResourceImpl(uri, propertyManager);
         resource.setID(rs.getInt("resource_id"));
-        resource.setInheritedACL(rs.getString("acl_inherited").equals("Y"));
+        
+        int aclInheritedFrom =  rs.getInt("acl_inherited_from");
+        if (rs.wasNull()) {
+            aclInheritedFrom = -1;
+        }
+        resource.setAclInheritedFrom(aclInheritedFrom);
         
         boolean collection = rs.getString("is_collection").equals("Y");
         Property prop = this.propertyManager.createProperty(
@@ -683,6 +687,7 @@ public class JDBCClient extends AbstractDataAccessor {
             String contentlanguage, String contenttype, String characterEncoding,
             boolean isCollection, String resourceType, String parent)
             throws SQLException, IOException {
+
         int depth = getURIDepth(uri);
 
         String statement = this.queryProvider.getInsertResourcePreparedStatement();
@@ -703,7 +708,7 @@ public class JDBCClient extends AbstractDataAccessor {
         stmt.setString(12, contenttype);
         stmt.setString(13, characterEncoding);
         stmt.setString(14, isCollection ? "Y" : "N");
-        stmt.setString(15, "Y");
+        stmt.setNull(15, java.sql.Types.INTEGER);
 
         stmt.executeUpdate();
         stmt.close();
@@ -791,110 +796,121 @@ public class JDBCClient extends AbstractDataAccessor {
 
     private void storeACL(Connection conn, ResourceImpl r)
             throws SQLException {
-        // XXX: do not belong here!?
-        // first, check if existing ACL is inherited:
+        // XXX: ACL inheritance checking does not belong here!?
+
         ResourceImpl existingResource = load(conn, r.getURI());
+        Acl newAcl = r.getAcl();
+        Set actions = newAcl.getActions();
+        boolean wasInherited = existingResource.isInheritedACL();
 
-        if (existingResource.isInheritedACL() && r.isInheritedACL()) {
-            Acl newACL = r.getAcl();
-
-            if (existingResource.getAcl().equals(newACL)) {
-                /* No need to insert ACL, is inherited and not modified */
+        if (wasInherited && newAcl.isInherited()) {
                 return;
-            }
-        }
+        } 
 
-        // ACL is either not inherited OR inherited and THEN modified,
-        // so we have to store the ACL entries
-        insertACL(conn, r);
-    }
+        if (wasInherited) {
 
-    private void insertACL(Connection conn, ResourceImpl r)
-            throws SQLException {
-        Acl acl = r.getAcl();
-        Set actions = acl.getActions();
+            int oldInheritedFrom = findNearestACL(conn, r.getURI());
 
-        /*
-         * First, delete any previously defined ACEs for this resource:
-         */
-        String query = this.queryProvider.getDeleteACLEntryByResourceIdPreparedStatement();
-        PreparedStatement deleteStatement = conn.prepareStatement(query);
-        deleteStatement.setInt(1, r.getID());
-        deleteStatement.executeUpdate();
-        deleteStatement.close();
+            insertACLEntries(conn, r);
+            
+            String query = this.queryProvider.getUpdateAclInheritedByResourceIdPreparedStatement();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setNull(1, java.sql.Types.INTEGER);
+            stmt.setInt(2, r.getID());
+            stmt.executeUpdate();
+            stmt.close();
+            
+            query = this.queryProvider.getUpdateAclInheritedFromByInheritedPreparedStatement();
 
-        if (r.isInheritedACL()) {
-            /*
-             * The ACL is inherited. Update resource entry to reflect this
-             * situation (and return)
-             */
-            query = this.queryProvider.getSetAclInheritedPreparedStatement(true);
-            PreparedStatement updateStmt = conn.prepareStatement(query);
-            updateStmt.setInt(1, r.getID());
-            updateStmt.executeUpdate();
-            updateStmt.close();
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, r.getID());
+            stmt.setInt(2, oldInheritedFrom);
+            stmt.executeUpdate();
+            stmt.close();
 
             return;
         }
 
-        /* Insert an entry for each privilege */
-        for (Iterator i = actions.iterator(); i.hasNext();) {
-            String action = (String) i.next();
 
-            for (Iterator j = acl.getPrincipalSet(action).iterator(); j.hasNext();) {
-                Principal p = (Principal) j.next();
+        // Delete previous ACL entries for resource:
+        String query = this.queryProvider.getDeleteACLEntryByResourceIdPreparedStatement();
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setInt(1, r.getID());
+        stmt.executeUpdate();
+        stmt.close();
 
-                insertACLEntry(conn, action, r, p);
-            }
+        if (!newAcl.isInherited()) {
+
+            insertACLEntries(conn, r);
+
+        } else {
+            int nearest = findNearestACL(conn, r.getURI());
+
+            query = this.queryProvider.getUpdateAclInheritedByResourceIdOrInheritedPreparedStatement();
+            
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, nearest);
+            stmt.setInt(2, r.getID());
+            stmt.setInt(3, r.getID());
+            stmt.executeUpdate();
+            stmt.close();
         }
-
-        /*
-         * At this point, we know that the ACL is not inherited. Update the
-         * inheritance flag in the resource entry:
-         */
-        query = this.queryProvider.getSetAclInheritedPreparedStatement(false);
-        PreparedStatement updateStmt = conn.prepareStatement(query);
-        updateStmt.setInt(1, r.getID());
-
-        updateStmt.executeUpdate();
-        updateStmt.close();
     }
 
-    private void insertACLEntry(Connection conn, String action, ResourceImpl resource,
-            Principal p)
-            throws SQLException {
-        String query = this.queryProvider.getLoadActionTypeIdFromNamePreparedStatement();
+    
+    private void insertACLEntries(Connection conn, ResourceImpl resource)
+        throws SQLException{
+
+        String query = this.queryProvider.getLoadActionTypesPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, action);
         ResultSet rs = stmt.executeQuery();
-
-        if (!rs.next()) {
-            rs.close();
-            stmt.close();
-            throw new SQLException("Database.insertACLEntry(): Unable to "
-                    + "find id for action '" + action + "'");
+        Map actionTypes = new HashMap();
+        
+        while (rs.next()) {
+            String key = rs.getString("name");
+            Integer value = new Integer(rs.getInt("action_type_id"));
+            actionTypes.put(key, value);
         }
-
-        int actionID = rs.getInt("action_type_id");
-
         rs.close();
         stmt.close();
 
+        
+
+        Acl newAcl = resource.getAcl();
+        Set actions = newAcl.getActions();
+        
         query = this.queryProvider.getInsertAclEntryPreparedStatement();
         PreparedStatement insertStmt = conn.prepareStatement(query);
 
-        insertStmt.setInt(1, actionID);
-        insertStmt.setInt(2, resource.getID());
-        insertStmt.setString(3, p.getQualifiedName());
-        insertStmt.setString(4, p.getType() == Principal.TYPE_GROUP ? "N" : "Y");
+        for (Iterator i = actions.iterator(); i.hasNext();) {
+            String action = (String) i.next();
+            for (Iterator j = newAcl.getPrincipalSet(action).iterator(); j.hasNext();) {
+                Principal p = (Principal) j.next();
 
-        // XXX: Does this have any point?
-        insertStmt.setString(5, resource.getOwner().getQualifiedName());
-        insertStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+                Integer actionID = (Integer) actionTypes.get(action);
+                if (actionID == null) {
+                    throw new SQLException("Database.insertACLEntry(): Unable to "
+                                           + "find id for action '" + action + "'");
+                }
 
-        insertStmt.executeUpdate();
+                insertStmt.setInt(1, actionID.intValue());
+                insertStmt.setInt(2, resource.getID());
+                insertStmt.setString(3, p.getQualifiedName());
+                insertStmt.setString(4, p.getType() == Principal.TYPE_GROUP ? "N" : "Y");
+
+                // XXX: Does this have any point?
+                insertStmt.setString(5, resource.getOwner().getQualifiedName());
+                insertStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+
+                insertStmt.addBatch();
+            }
+        }
+        
+
+        insertStmt.executeBatch();
         insertStmt.close();
     }
+    
 
     private void storeProperties(Connection conn, ResourceImpl r)
             throws SQLException {
@@ -998,52 +1014,6 @@ public class JDBCClient extends AbstractDataAccessor {
         contentStore.storeContent(resource.getURI(), inputStream);
     }
 
-    protected Map executeACLQuery(Connection conn, List uris)
-            throws SQLException {
-        Map acls = new HashMap();
-        
-        String query = this.queryProvider.getLoadAncestorAclsPreparedStatement(uris);
-        int n = uris.size();
-        PreparedStatement stmt = conn.prepareStatement(query.toString());
-        for (Iterator i = uris.iterator(); i.hasNext();) {
-            String uri = (String) i.next();
-            stmt.setString(n--, uri);
-        }
-        ResultSet rs = stmt.executeQuery();
-
-        while (rs.next()) {
-
-            String uri = rs.getString("uri");
-            String action = rs.getString("action_name");
-
-            AclImpl acl = (AclImpl)acls.get(uri);
-            
-            if (acl == null) {
-                acl = new AclImpl(this.principalManager);
-                acls.put(uri, acl);
-            }
-            
-            boolean isGroup = rs.getString("is_user").equals("N");
-            String name = rs.getString("user_or_group_name");
-            Principal p = null;
-
-            if (isGroup)
-                p = principalManager.getGroupPrincipal(name);
-            else if (name.startsWith("dav:"))
-                p = principalManager.getPseudoPrincipal(name);
-            else
-                p = principalManager.getUserPrincipal(name);
-
-            acl.addEntry(action, p);
-        }
-
-        rs.close();
-        stmt.close();
-    
-        return acls;
-    }
-
-
 
 
 
@@ -1126,8 +1096,6 @@ public class JDBCClient extends AbstractDataAccessor {
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
-            
-//             Long parentID = new Long(rs.getLong("parent_id"));
             String uri = rs.getString("uri");
             String parentURI = URIUtil.getParentURI(uri);
             ((Set) childMap.get(parentURI)).add(uri);
@@ -1145,87 +1113,137 @@ public class JDBCClient extends AbstractDataAccessor {
     }
 
 
+    private int findNearestACL(Connection conn, String uri) throws SQLException {
+
+        String[] path = URLUtil.splitUriIncrementally(uri);
+
+        String query = this.queryProvider.getFindAclInheritedFromResourcesPreparedStatement(path.length);
+            
+        int n = path.length;
+        PreparedStatement stmt = conn.prepareStatement(query);
+        for (int i = 0; i < path.length; i++) {
+            stmt.setString(n--, path[i]);
+        }
+        Map uris = new HashMap();
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            uris.put(rs.getString("uri"), new Integer(rs.getInt("resource_id")));
+        }
+        rs.close();
+        stmt.close();
+            
+        System.out.println("__nearest_map(" + uri + "): " + uris);
+
+        int nearestResourceId = -1;
+        for (int i = path.length - 1; i >= 0; i--) {
+            System.out.println("__checking " + path[i]);
+            if (uris.containsKey(path[i])) {
+                nearestResourceId = ((Integer) uris.get(path[i])).intValue();
+                break;
+            }
+        }
+        if (nearestResourceId == -1) {
+            throw new SQLException("Database inconsistency: no acl to inherit "
+                                   + "from for resource " + uri);
+        }
+
+        return nearestResourceId;
+    }
+    
+
 
     private void loadACLs(Connection conn, ResourceImpl[] resources)
         throws SQLException {
-
-        if (resources == null || resources.length == 0) {
-            return;
-        }
-
-        List uris = new ArrayList();
         
+
+        Set resourceIds = new HashSet();
         for (int i = 0; i < resources.length; i++) {
-
-            String[] path = URLUtil.splitUriIncrementally(
-                resources[i].getURI());
-
-            for (int j = path.length -1; j >= 0; j--) {
-
-                if (!uris.contains(path[j])) {
-                    uris.add(path[j]);
-                }
+            if (resources[i].getAclInheritedFrom() != -1) {
+                resourceIds.add(new Integer(resources[i].getAclInheritedFrom()));
+            } else {
+                resourceIds.add(new Integer(resources[i].getID()));
             }
         }
 
-        if (uris.size() == 0) {
-            throw new SQLException("No ancestor path");
-        }
-    
+        Map map = loadAclMap(conn, resourceIds);
 
-        /* Populate the parent ACL map (these are all the ACLs that
-         * will be needed) */
-        Map acls = executeACLQuery(conn, uris);
+        if (map.isEmpty()) {
+            throw new SQLException(
+                "Database inconsistency: no ACL entries exist for "
+                + "resources " + java.util.Arrays.asList(resources));
+        }
 
         for (int i = 0; i < resources.length; i++) {
-
-            ResourceImpl resource = resources[i];
             AclImpl acl = null;
 
-            if (!resource.isInheritedACL()) {
-            
-                if (!acls.containsKey(resource.getURI())) {
-                    throw new SQLException(
-                        "Database inconsistency: resource " +
-                        resource.getURI() + " claims  ACL is not inherited, " +
-                        "but no ACL exists");
-                }
-                
-                acl = (AclImpl) acls.get(resource.getURI());
-
+            if (resources[i].getAclInheritedFrom() != -1) {
+                acl = (AclImpl) map.get(new Integer(resources[i].getAclInheritedFrom()));
             } else {
-
-                String[] path = URLUtil.splitUriIncrementally(
-                    resource.getURI());
-
-                for (int j = path.length - 2; j >= 0; j--) {
-
-                    AclImpl found = (AclImpl) acls.get(path[j]);
-
-                    if (found != null) {
-                        try {
-                            /* We have to clone the ACL here, because ACLs
-                             * and resources are "doubly linked". */
-                            acl = (AclImpl) found.clone();
-                        } catch (CloneNotSupportedException e) {
-                            throw new SQLException(e.getMessage());
-                        }
-
-                        break;
-                    }                
-                }
-
-                if (acl == null) {
-                    throw new SQLException("Resource " + resource.getURI() +
-                                           ": no ACL to inherit! At least root " +
-                                           "resource should contain an ACL");
-                }
+                acl = (AclImpl) map.get(new Integer(resources[i].getID()));
             }
-            acl.setInherited(resource.isInheritedACL());
-            acl.setOwner(resource.getOwner());
-            resource.setACL(acl);
+
+            if (acl == null) {
+                throw new SQLException(
+                    "Resource " + resources[i] + " has no ACL entry (ac_inherited_from = "
+                    + resources[i].getAclInheritedFrom() + ")");
+            }
+
+            try {
+                acl = (AclImpl) acl.clone();
+            } catch (CloneNotSupportedException e) { }
+
+            acl.setInherited(resources[i].isInheritedACL());
+            acl.setOwner(resources[i].getOwner());
+            resources[i].setACL(acl);
         }
     }
+    
+
+
+    private Map loadAclMap(Connection conn, Set resourceIds) throws SQLException {
+
+        Map resultMap = new HashMap();
+
+
+        String query = this.queryProvider.getLoadAclsByResourceIdsPreparedStatement(resourceIds);
+        PreparedStatement stmt = conn.prepareStatement(query.toString());
+
+        int n = 1;
+        for (Iterator i = resourceIds.iterator(); i.hasNext();) {
+            Integer id = (Integer)i.next();
+            stmt.setInt(n++, id.intValue());
+        }
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            
+            Integer resourceId = new Integer(rs.getInt("resource_id"));
+            String action = rs.getString("action_name");
+
+            AclImpl acl = (AclImpl)resultMap.get(resourceId);
+            
+            if (acl == null) {
+                acl = new AclImpl(this.principalManager);
+                resultMap.put(resourceId, acl);
+            }
+            
+            boolean isGroup = rs.getString("is_user").equals("N");
+            String name = rs.getString("user_or_group_name");
+            Principal p = null;
+
+            if (isGroup)
+                p = principalManager.getGroupPrincipal(name);
+            else if (name.startsWith("dav:"))
+                p = principalManager.getPseudoPrincipal(name);
+            else
+                p = principalManager.getUserPrincipal(name);
+            acl.addEntry(action, p);
+        }
+        rs.close();
+        stmt.close();
+
+        return resultMap;
+    }
+    
 
 
 
@@ -1323,6 +1341,74 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt = conn.prepareStatement(query);
             stmt.setString(1, destURI);
             stmt.setString(2, getURIWildcard(destURI));
+            stmt.executeUpdate();
+            stmt.close();
+
+            // Update inheritance to nearest node:
+            int srcNearestACL = findNearestACL(conn, resource.getURI());
+            int destNearestACL = findNearestACL(conn, destURI);
+
+            query = this.queryProvider.getUpdateAclInheritedByUriRecusrivelyPreparedStatement();
+
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, destNearestACL);
+            stmt.setInt(2, srcNearestACL);
+            stmt.setString(3, destURI);
+            stmt.setString(4, getURIWildcard(destURI));
+            stmt.executeUpdate();
+            stmt.close();
+
+            query = this.queryProvider.getUpdateAclInheritedFromByPrevResourceIdPreparedStatement();
+            if (query != null) {
+
+                // Update acl_inherited_from, using prev_{acl_entry, resource}_id:
+
+                query = this.queryProvider.getUpdateAclInheritedFromByPrevResourceIdPreparedStatement();            
+                stmt = conn.prepareStatement(query);
+                stmt.setString(1, destURI);
+                stmt.setString(2, getURIWildcard(destURI));
+                stmt.executeUpdate();
+                stmt.close();
+                
+            } else {
+
+                query = this.queryProvider.getMapInheritedFromByPrevResourceIdPreparedStatement();
+
+                stmt = conn.prepareStatement(query);
+                stmt.setString(1, destURI);
+                stmt.setString(2, getURIWildcard(destURI));
+                ResultSet rs = stmt.executeQuery();
+
+                Map inheritedMap = new HashMap();
+                while (rs.next()) {
+                    inheritedMap.put(new Integer(rs.getInt("resource_id")),
+                                     new Integer(rs.getInt("inherited_from")));
+
+                }
+                rs.close();
+                stmt.close();
+
+                query = this.queryProvider.getUpdateAclInheritedByResourceIdPreparedStatement();
+                stmt = conn.prepareStatement(query);
+
+                for (Iterator iter = inheritedMap.entrySet().iterator(); iter.hasNext();) {
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    stmt.setInt(1, ((Integer) entry.getKey()).intValue());
+                    stmt.setInt(2, ((Integer) entry.getValue()).intValue());
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+                stmt.close();
+            }
+
+        } else {
+            int nearestAclNode = findNearestACL(conn, destURI);
+            query = this.queryProvider.getUpdateAclInheritedByUriRecusrivelyPreparedStatement();
+            
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, nearestAclNode);
+            stmt.setString(2, destURI);
+            stmt.setString(3, getURIWildcard(destURI));
             stmt.executeUpdate();
             stmt.close();
         }

@@ -11,6 +11,12 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+
+      <action dev="gormap" type="update">
+        Now storing effective ACL inheritance node in resource table
+        (repositoryimpl).
+      </action>
+
       <action dev="oyviste" type="add">
         Added request filter for normalizing dot-segments in request URIs.
       </action>

@@ -63,7 +63,8 @@ public class ResourceImpl implements Resource, Cloneable {
     private String uri;
     private String resourceType;
     private Acl acl;
-    private boolean inheritedACL = true;
+//     private boolean inheritedACL = true;
+    private int aclInheritedFrom = -1;
     private Lock lock = null;
     private boolean dirtyACL = false;
     private String[] childURIs = null;
@@ -158,13 +159,23 @@ public class ResourceImpl implements Resource, Cloneable {
         this.id = id;
     }
 
-    public boolean isInheritedACL() {
-        return this.inheritedACL;
+
+    public void setAclInheritedFrom(int aclInheritedFrom) {
+        this.aclInheritedFrom = aclInheritedFrom;
     }
 
-    public void setInheritedACL(boolean inheritedACL) {
-        this.inheritedACL = inheritedACL;
+    public int getAclInheritedFrom() {
+        return this.aclInheritedFrom;
     }
+    
+
+    public boolean isInheritedACL() {
+        return this.aclInheritedFrom != -1;
+    }
+
+//     public void setInheritedACL(boolean inheritedACL) {
+//         this.inheritedACL = inheritedACL;
+//     }
 
     public String getName() {
         if (uri.equals("/")) {
@@ -350,7 +361,8 @@ public class ResourceImpl implements Resource, Cloneable {
         ResourceImpl clone = new ResourceImpl(uri, propertyManager);
         clone.setID(this.id);
         clone.setACL(acl);
-        clone.setInheritedACL(this.inheritedACL);
+        //clone.setInheritedACL(this.aclInheritedFrom == -1);
+        clone.setAclInheritedFrom(this.aclInheritedFrom);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
         clone.setResourceType(this.resourceType);
@@ -418,5 +430,13 @@ public class ResourceImpl implements Resource, Cloneable {
             
             this.childURIs = newChildren;
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName());
+        sb.append(": [").append(this.uri).append("]");
+        return sb.toString();
+    }
+    
 
 }

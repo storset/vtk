@@ -15,7 +15,7 @@ DROP TABLE vortex_resource CASCADE;
 CREATE TABLE vortex_resource
 (
     resource_id int NOT NULL,
-    prev_resource_id int NULL,
+    prev_resource_id int NULL, -- used when copying/moving
     uri VARCHAR (2048) NOT NULL,
     depth int NOT NULL,
     creation_time TIMESTAMP NOT NULL,
@@ -32,45 +32,15 @@ CREATE TABLE vortex_resource
     resource_type VARCHAR(64) NULL,
     character_encoding VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,
-    acl_inherited CHAR(1) DEFAULT 'Y' NOT NULL,
+    acl_inherited_from int NULL REFERENCES vortex_resource(resource_id),
     CONSTRAINT resource_uri_index UNIQUE (uri)
 );
 
+
 ALTER TABLE vortex_resource
-    ADD CONSTRAINT vortex_resource_PK
-PRIMARY KEY (resource_id);
+    ADD CONSTRAINT vortex_resource_PK PRIMARY KEY (resource_id);
 
 
------------------------------------------------------------------------------
--- parent_child
------------------------------------------------------------------------------
-DROP SEQUENCE parent_child_seq_pk;
-
--- CREATE SEQUENCE parent_child_seq_pk INCREMENT 1 START 1000;
-
-DROP TABLE parent_child CASCADE;
-
--- CREATE TABLE parent_child
--- (
---     parent_child_id int NOT NULL,
---     parent_resource_id int NOT NULL,
---     child_resource_id int NOT NULL,
---     CONSTRAINT parent_child_unique1_index UNIQUE (parent_resource_id, child_resource_id)
--- );
-
--- ALTER TABLE parent_child
---     ADD CONSTRAINT parent_child_PK
--- PRIMARY KEY (parent_child_id);
-
--- ALTER TABLE parent_child
---     ADD CONSTRAINT parent_child_FK_1 FOREIGN KEY (parent_resource_id)
---     REFERENCES vortex_resource (resource_id)
--- ;
-
--- ALTER TABLE parent_child
---     ADD CONSTRAINT parent_child_FK_2 FOREIGN KEY (child_resource_id)
---     REFERENCES vortex_resource (resource_id)
--- ;
 
 -----------------------------------------------------------------------------
 -- lock_type
@@ -154,6 +124,7 @@ DROP TABLE acl_entry CASCADE;
 CREATE TABLE acl_entry
 (
     acl_entry_id int NOT NULL,
+    prev_resource_id int NULL, -- used when copying/moving
     resource_id int NOT NULL,
     action_type_id int NOT NULL,
     user_or_group_name VARCHAR (64) NOT NULL,
@@ -294,7 +265,7 @@ INSERT INTO VORTEX_RESOURCE (
     content_type,
     character_encoding,
     is_collection,
-    acl_inherited)
+    acl_inherited_from)
 VALUES (
     nextval('vortex_resource_seq_pk'),
     NULL,
@@ -311,7 +282,7 @@ VALUES (
     'application/x-vortex-collection',
     NULL,
     'Y',
-    'N'
+    NULL
 );
 
 

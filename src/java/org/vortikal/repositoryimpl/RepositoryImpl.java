@@ -674,19 +674,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             Acl newAcl = null;
             if (acl.isInherited()) {
-                /* When the ACL is inherited, make our ACL a copy of the
-                 * parent's ACL, since the supplied one may contain other
-                 * ACEs than the one we now inherit from. */
+                /* When the ACL is inherited, make the new ACL a copy
+                 * of the parent's ACL, since the supplied one may
+                 * contain other ACEs than the one we now inherit
+                 * from. */
                 Resource parent = this.dao.load(r.getParent());
                 newAcl = (Acl) parent.getAcl().clone();
                 newAcl.setInherited(true);
             } else {
                 newAcl = (Acl)acl.clone();
+                r.setAclInheritedFrom(-1);
             }
         
             r.setACL(newAcl);
-            r.setInheritedACL(newAcl.isInherited());
-
+            //r.setInheritedACL(newAcl.isInherited());
+            
             try {
                 r.setDirtyACL(true);
                 this.dao.store(r);
@@ -740,7 +742,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         try {
             newResource.setACL((Acl)parent.getAcl().clone());
-            newResource.setInheritedACL(true);
+            //newResource.setInheritedACL(true);
+            newResource.setAclInheritedFrom(parent.getID());
             this.dao.store(newResource);
             newResource = this.dao.load(uri);
 

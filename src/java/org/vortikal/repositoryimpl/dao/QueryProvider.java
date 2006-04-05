@@ -31,10 +31,29 @@
 package org.vortikal.repositoryimpl.dao;
 
 import java.util.List;
+import java.util.Set;
 
 
+/**
+ * Externalization of SQL queries.
+ *
+ * XXX: fix horrible method names
+ *
+ */
 public class QueryProvider {
 
+    private boolean optimizeAclCopy = false;
+    
+
+    /**
+     * Set to <code>true</code> for databases that support joining on
+     * updates, i.e. for PostgreSQL: <code>update table set column =
+     * from ...</code>.
+     */
+    public void setOptimizeAclCopy(boolean optimizeAclCopy) {
+        this.optimizeAclCopy = optimizeAclCopy;
+    }
+    
 
     public String getLoadResourceByUriPreparedStatement() {
         return "select r.* from VORTEX_RESOURCE r where r.uri = ?";
@@ -135,7 +154,7 @@ public class QueryProvider {
             + "(resource_id, uri, resource_type, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, "
             + "resource_owner, display_name, "
-            + "content_language, content_type, character_encoding, is_collection, acl_inherited) "
+            + "content_language, content_type, character_encoding, is_collection, acl_inherited_from) "
             + "values (nextval('vortex_resource_seq_pk'), "
             + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return statement;
@@ -182,17 +201,52 @@ public class QueryProvider {
     }
 
 
-    public String getSetAclInheritedPreparedStatement(boolean inherited) {
-        String flag = inherited ? "Y" : "N";
-        String query = "update VORTEX_RESOURCE set acl_inherited = '" +
-            flag + "' where resource_id = ?";
-        return query;
-       
+    public String getUpdateAclInheritedByResourceIdPreparedStatement() {
+        return "update vortex_resource set acl_inherited_from = ? where resource_id = ?";
+    }
+
+    public String getUpdateAclInheritedByUriRecusrivelyPreparedStatement() {
+        return  "update vortex_resource set acl_inherited_from = ? "
+            + "where acl_inherited_from = ? and (uri = ? or uri like ?)";
+    }
+
+    public String getUpdateAclInheritedByResourceIdOrInheritedPreparedStatement() {
+        return "update vortex_resource set acl_inherited_from = ? "
+            + "where acl_inherited_from = ? or resource_id = ?";
+    }
+
+    public String getUpdateAclInheritedFromByInheritedPreparedStatement() {
+        return  "update vortex_resource set acl_inherited_from = ? "
+            + "where acl_inherited_from = ?";
+    }
+
+    public String getUpdateAclInheritedFromByPrevResourceIdPreparedStatement() {
+        if (!this.optimizeAclCopy) {
+            return null;
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("update vortex_resource set acl_inherited_from = r.resource_id ");
+        sb.append("from vortex_resource r where ");
+        sb.append("(vortex_resource.uri = ? or vortex_resource.uri like ?) and ");
+        sb.append("r.prev_resource_id = vortex_resource.acl_inherited_from");
+        return sb.toString();
+    }
+    
+    public String getMapInheritedFromByPrevResourceIdPreparedStatement() {
+        return "select r1.resource_id, r2.resource_id as inherited_from "
+            + "from vortex_resource r1, vortex_resource r2 "
+            + "where (r1.uri = ? or r1.uri like ?) "
+            + "and r2.prev_resource_id = r1.acl_inherited_from";
     }
 
        
     public String getLoadActionTypeIdFromNamePreparedStatement() {
         return "select action_type_id from ACTION_TYPE where name = ?";
+    }
+
+    public String getLoadActionTypesPreparedStatement() {
+        return "select * from ACTION_TYPE";
     }
 
     public String getInsertAclEntryPreparedStatement() {
@@ -242,15 +296,33 @@ public class QueryProvider {
     }
 
        
-    public String getLoadAncestorAclsPreparedStatement(List uris) {
+    public String getLoadAclsByResourceIdsPreparedStatement(Set resourceIds) {
+
+        StringBuffer query = new StringBuffer();
+
+        query.append("select r.resource_id, a.*, t.namespace as action_namespace, ");
+        query.append("t.name as action_name from ACL_ENTRY a ");
+        query.append("inner join ACTION_TYPE t on a.action_type_id = t.action_type_id ");
+        query.append("inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id ");
+        query.append("where r.resource_id in (");
+
+        for (int i = 0; i < resourceIds.size(); i++) {
+            query.append("?");
+            if (i < resourceIds.size() - 1) {
+                query.append(",");
+            }
+        }
+        query.append(")");
+        return query.toString();
+    }
+
+    public String getFindAclInheritedFromResourcesPreparedStatement(int n) {
         StringBuffer query = 
-            new StringBuffer("select r.uri, a.*, t.namespace as action_namespace, "
-                             + "t.name as action_name from ACL_ENTRY a "
-                             + "inner join ACTION_TYPE t on a.action_type_id = t.action_type_id "
+            new StringBuffer("select r.resource_id, r.uri "
+                             + "from ACL_ENTRY a "
                              + "inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id "
                              + "where r.uri in (");
 
-        int n = uris.size();
         for (int i = 0; i < n; i++) {
             query.append((i < n - 1) ? "?, " : "?)");
         }
@@ -298,14 +370,14 @@ public class QueryProvider {
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
             + "display_name, content_language, content_type, character_encoding, "
-            + "is_collection, acl_inherited) "
+            + "is_collection, acl_inherited_from) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "
             + "? || substring(uri, length(?) + 1), "
             + "depth + ?, creation_time, content_last_modified, "
             + "properties_last_modified, " 
             + "content_modified_by, properties_modified_by, resource_owner, display_name, "
             + "content_language, content_type, character_encoding, is_collection, "
-            + "acl_inherited from vortex_resource "
+            + "acl_inherited_from from vortex_resource "
             + "where uri = ? or uri like ?";
               
         return query;
@@ -318,14 +390,14 @@ public class QueryProvider {
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
             + "display_name, content_language, content_type, character_encoding, "
-            + "is_collection, acl_inherited) "
+            + "is_collection, acl_inherited_from) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "
             + "? || substring(uri, length(?) + 1), "
             + "depth + ?, creation_time, content_last_modified, "
             + "properties_last_modified, " 
             + "content_modified_by, properties_modified_by, ?, display_name, "
             + "content_language, content_type, character_encoding, is_collection, "
-            + "acl_inherited from vortex_resource "
+            + "acl_inherited_from from vortex_resource "
             + "where uri = ? or uri like ?";
               
         return query;
@@ -363,8 +435,5 @@ public class QueryProvider {
         return "update vortex_resource set prev_resource_id = null "
             + "where uri = ? or uri like ?";
        }
-
-    
-    
 
 }

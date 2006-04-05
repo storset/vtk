@@ -162,7 +162,18 @@
         <prop key="super@localhost">768f9142d878dadc4dadedc44077adf9</prop>
       </props>
     </property>
-<!--     <property name="groups" ref="localGroups" /> -->
+    <property name="groups">
+      <map>
+        <entry key="system-users">
+          <list>
+            <value>root@localhost</value>
+            <value>vortex@localhost</value>
+            <value>user@localhost</value>
+            <value>super@localhost</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
 <!--   <bean id="localPrincipals" -->

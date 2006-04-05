@@ -101,4 +101,12 @@ public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition,
         this.assertions = assertions;
     }
 
+    public String toString() {
+        StringBuffer buffer = new StringBuffer("ResourceTypeDefinitionImpl");
+        buffer.append("[ namespace = ").append(this.namespace);
+        buffer.append(", name = '").append(this.name).append("']");
+        
+        return buffer.toString();
+    }
+    
 }

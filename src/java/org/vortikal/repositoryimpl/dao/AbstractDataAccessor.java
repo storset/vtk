@@ -281,6 +281,7 @@ public abstract class AbstractDataAccessor
             delete(conn, resource);
             conn.commit();
         } catch (SQLException e) {
+            logger.warn("Error occurred while deleting resource " + resource.getURI(), e);
             throw new IOException(e.getMessage());
         } finally {
             try {

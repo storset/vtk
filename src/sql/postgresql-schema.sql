@@ -195,11 +195,10 @@ ALTER TABLE extra_prop_entry
     REFERENCES vortex_resource (resource_id)
 ;
 
--- Also references prop_type_id
- ALTER TABLE extra_prop_entry
+ALTER TABLE extra_prop_entry
     ADD CONSTRAINT extra_prop_entry_FK_2 FOREIGN KEY (prop_type_id)
     REFERENCES prop_type(prop_type_id)
- ;
+;
 
 CREATE INDEX extra_prop_entry_index1 ON extra_prop_entry(resource_id);
 
@@ -269,7 +268,9 @@ INSERT INTO VORTEX_RESOURCE (
     content_type,
     character_encoding,
     is_collection,
-    acl_inherited_from)
+    acl_inherited_from,
+    content_length,
+    resource_type)
 VALUES (
     nextval('vortex_resource_seq_pk'),
     NULL,
@@ -286,7 +287,9 @@ VALUES (
     'application/x-vortex-collection',
     NULL,
     'Y',
-    NULL
+    NULL,
+    NULL,
+    'collection'
 );
 
 
@@ -361,5 +364,3 @@ INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');
-
-

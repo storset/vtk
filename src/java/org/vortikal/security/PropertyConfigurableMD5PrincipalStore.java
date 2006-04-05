@@ -145,10 +145,42 @@ public class PropertyConfigurableMD5PrincipalStore
 
 
     public boolean validateGroup(Principal group) {
-        if (!this.domain.equals(group.getDomain()))
-            return false;
+        if (this.domain == null) {
+            if (group.getDomain() != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Validate group: " + group + ": false");
+                }
+                return false;
+            }
+
+        } else {
+            if (!this.domain.equals(group.getDomain())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Validate group: " + group + ": false");
+                }
+                return false;
+            }
+        }
+
+
+
         
         String groupName = group.getUnqualifiedName();
+        if (groupName == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Validate group: " + group + ": false");
+            }
+            return false;
+        }
+
+        if (this.groups == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Validate group: " + group + ": false");
+            }
+            return false;
+        }
+
+
         boolean hit = this.groups.containsKey(groupName);
         if (logger.isDebugEnabled()) {
             logger.debug("Validate group: " + groupName + ": " + hit);

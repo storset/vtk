@@ -68,6 +68,9 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  *   <li><code>includeContentLanguageHeader</code> - whether or not to
  *   to attempt to set the <code>Content-Language</code> HTTP header
  *   to that of the resource (default <code>true</code>.)
+ *   <li><code>includeEtagHeader</code> - boolean deciding whether
+ *   to attempt to set the <code>Etag</code> HTTP header. 
+ *   The default value is <code>true</code>.
  *   <li><code>streamBufferSize</code> - (int) the size of the buffer
  *   used when executing the (read from resource, write to response)
  *   loop. The default value is <code>5000</code>.
@@ -120,6 +123,7 @@ public class DisplayResourceView extends AbstractView
     private boolean includeLastModifiedHeader = true;
     private boolean includeExpiresHeader = true;
     private boolean includeContentLanguageHeader = true;
+    private boolean includeEtagHeader = true;
     private ReferenceDataProvider[] referenceDataProviders;
     
     public ReferenceDataProvider[] getReferenceDataProviders() {
@@ -154,7 +158,10 @@ public class DisplayResourceView extends AbstractView
         this.includeContentLanguageHeader = includeContentLanguageHeader;
     }
     
-
+    public void setIncludeEtagHeader(boolean includeEtagHeader) {
+        this.includeEtagHeader = includeEtagHeader;
+    }
+    
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
 
@@ -213,6 +220,7 @@ public class DisplayResourceView extends AbstractView
         setContentLengthHeader(resource, model, request, response);
         setExpiresHeader(resource, model, request, response);
         setLastModifiedHeader(resource, model, request, response);
+        setEtagHeader(resource, model, request, response);
         response.setStatus(HttpServletResponse.SC_OK);
     }
     
@@ -308,6 +316,16 @@ public class DisplayResourceView extends AbstractView
             logger.debug("Setting header Content-Length: " + resource.getContentLength());
         }
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
+    }
+    
+    protected void setEtagHeader(Resource resource, Map model, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        if (includeEtagHeader) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting header Etag: " + resource.getSerial());
+            }
+            response.setHeader("ETag", String.valueOf(resource.getSerial()));
+        }
     }
     
 

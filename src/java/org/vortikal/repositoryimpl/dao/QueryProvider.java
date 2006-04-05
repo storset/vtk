@@ -207,7 +207,7 @@ public class QueryProvider {
 
     public String getUpdateAclInheritedByUriRecusrivelyPreparedStatement() {
         return  "update vortex_resource set acl_inherited_from = ? "
-            + "where acl_inherited_from = ? and (uri = ? or uri like ?)";
+            + "where uri = ? or uri like ?";
     }
 
     public String getUpdateAclInheritedByResourceIdOrInheritedPreparedStatement() {

@@ -61,6 +61,7 @@ public class ResourceImpl implements Resource, Cloneable {
     private int id = -1;
 
     private String uri;
+    private String resourceType;
     private Acl acl;
     private boolean inheritedACL = true;
     private Lock lock = null;
@@ -171,6 +172,14 @@ public class ResourceImpl implements Resource, Cloneable {
         } 
         return uri.substring(uri.lastIndexOf("/") + 1);
     }
+    
+    public String getResourceType() {
+        return this.resourceType;
+    }
+    
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
 
     public void addProperty(Property property) {
         Map map = (Map)propertyMap.get(property.getNamespace());
@@ -213,8 +222,7 @@ public class ResourceImpl implements Resource, Cloneable {
             // XXX: namespace.equals(PropertyType.DEFAULT_NAMESPACE_URI)
             if (namespace.equals(Namespace.DEFAULT_NAMESPACE)) {
                 List specialProps =  Arrays.asList(PropertyType.SPECIAL_PROPERTIES);
-                for (Iterator iterator = props.values().iterator(); iterator
-                        .hasNext();) {
+                for (Iterator iterator = props.values().iterator(); iterator.hasNext();) {
                     Property prop = (Property) iterator.next();
                     if (!specialProps.contains(prop.getName())) {
                         otherProps.add(prop);
@@ -345,6 +353,7 @@ public class ResourceImpl implements Resource, Cloneable {
         clone.setInheritedACL(this.inheritedACL);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
+        clone.setResourceType(this.resourceType);
         for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             clone.addProperty((Property) prop.clone());

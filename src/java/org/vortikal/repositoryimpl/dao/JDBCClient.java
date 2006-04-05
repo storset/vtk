@@ -234,6 +234,8 @@ public class JDBCClient extends AbstractDataAccessor {
             resource.addProperty(prop);
         }
         
+        resource.setResourceType(rs.getString("resource_type"));
+        
         return resource;
     }
 
@@ -308,7 +310,7 @@ public class JDBCClient extends AbstractDataAccessor {
     }
     
     /**
-     * Returns a list of PropHolder objects from the ResultSet, merging
+     * Returns an array of PropHolder objects from the ResultSet, merging
      * multi-valued props into a single PropHolder with value-list.
      * 
      * Does not close ResultSet.
@@ -355,7 +357,7 @@ public class JDBCClient extends AbstractDataAccessor {
         
         for (int i=0; i<propHolders.length; i++) {
             PropHolder prop = propHolders[i];
-            
+
             Property property = this.propertyManager.createProperty(
                     Namespace.getNamespace(prop.namespaceUri), prop.name, 
                     (String[])prop.values.toArray(new String[]{}), prop.type);
@@ -608,7 +610,8 @@ public class JDBCClient extends AbstractDataAccessor {
         String contentType = r.getContentType();
         String characterEncoding = r.getCharacterEncoding();
         String contentLanguage = r.getContentLanguage();
-
+        String resourceType = r.getResourceType();
+        
         String query = this.queryProvider.getLoadResourceByUriPreparedStatement();
         PreparedStatement existStmt = conn.prepareStatement(query);
         existStmt.setString(1, uri);
@@ -634,7 +637,8 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt.setString(8, contentType);
             stmt.setString(9, characterEncoding);
             stmt.setTimestamp(10, new Timestamp(creationTime.getTime()));
-            stmt.setString(11, uri);
+            stmt.setString(11, resourceType);
+            stmt.setString(12, uri);
 
             stmt.executeUpdate();
             stmt.close();
@@ -642,12 +646,13 @@ public class JDBCClient extends AbstractDataAccessor {
             insertResourceEntry(conn, uri, creationTime, contentLastModified,
                     propertiesLastModified, displayName, owner, contentModifiedBy,
                     propertiesModifiedBy, contentLanguage, contentType,
-                    characterEncoding, collection, parent);
+                    characterEncoding, collection, resourceType, parent);
             
             // Temporary hack to get the new resource ID
             // Statement.getGeneratedKeys() is not implemented in the PostgreSQL JDBC driver.
             // storeACL(), storeLock() and storeProperties() depends on the ID.
-            // Consequences for caching ??? Hmm.
+            // Consequences for caching: Cache should not keep resource as is before
+            // passing it on to the wrapped DAO accessor.
             String resourceIdQuery = queryProvider.getLoadResourceIdByUriPreparedStatement();
             PreparedStatement resourceIdStatement = conn.prepareStatement(resourceIdQuery);
             resourceIdStatement.setString(1, uri);
@@ -676,7 +681,7 @@ public class JDBCClient extends AbstractDataAccessor {
             Date contentLastModified, Date propertiesLastModified, String displayname,
             String owner, String contentModifiedBy, String propertiesModifiedBy,
             String contentlanguage, String contenttype, String characterEncoding,
-            boolean isCollection, String parent)
+            boolean isCollection, String resourceType, String parent)
             throws SQLException, IOException {
         int depth = getURIDepth(uri);
 
@@ -685,19 +690,20 @@ public class JDBCClient extends AbstractDataAccessor {
         PreparedStatement stmt = conn.prepareStatement(statement);
 
         stmt.setString(1, uri);
-        stmt.setInt(2, depth);
-        stmt.setTimestamp(3, new Timestamp(creationTime.getTime()));
-        stmt.setTimestamp(4, new Timestamp(contentLastModified.getTime()));
-        stmt.setTimestamp(5, new Timestamp(propertiesLastModified.getTime()));
-        stmt.setString(6, contentModifiedBy);
-        stmt.setString(7, propertiesModifiedBy);
-        stmt.setString(8, owner);
-        stmt.setString(9, displayname);
-        stmt.setString(10, contentlanguage);
-        stmt.setString(11, contenttype);
-        stmt.setString(12, characterEncoding);
-        stmt.setString(13, isCollection ? "Y" : "N");
-        stmt.setString(14, "Y");
+        stmt.setString(2, resourceType);
+        stmt.setInt(3, depth);
+        stmt.setTimestamp(4, new Timestamp(creationTime.getTime()));
+        stmt.setTimestamp(5, new Timestamp(contentLastModified.getTime()));
+        stmt.setTimestamp(6, new Timestamp(propertiesLastModified.getTime()));
+        stmt.setString(7, contentModifiedBy);
+        stmt.setString(8, propertiesModifiedBy);
+        stmt.setString(9, owner);
+        stmt.setString(10, displayname);
+        stmt.setString(11, contentlanguage);
+        stmt.setString(12, contenttype);
+        stmt.setString(13, characterEncoding);
+        stmt.setString(14, isCollection ? "Y" : "N");
+        stmt.setString(15, "Y");
 
         stmt.executeUpdate();
         stmt.close();

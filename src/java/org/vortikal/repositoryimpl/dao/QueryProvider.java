@@ -124,19 +124,20 @@ public class QueryProvider {
             + "properties_modified_by = ?, " + "resource_owner = ?, "
             + "display_name = ?, " + "content_language = ?, "
             + "content_type = ?, " + "character_encoding = ?, "
-            + "creation_time = ? " + "where uri = ?";
+            + "creation_time = ?, " + "resource_type = ? " 
+            + "where uri = ?";
         return stmt;
     }
 
 
     public String getInsertResourcePreparedStatement() {
         String statement = "insert into VORTEX_RESOURCE "
-            + "(resource_id, uri, depth, creation_time, content_last_modified, properties_last_modified, "
+            + "(resource_id, uri, resource_type, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, "
             + "resource_owner, display_name, "
             + "content_language, content_type, character_encoding, is_collection, acl_inherited) "
             + "values (nextval('vortex_resource_seq_pk'), "
-            + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return statement;
     }
 

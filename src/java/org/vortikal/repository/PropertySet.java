@@ -38,6 +38,8 @@ public interface PropertySet {
 
    public String getName();
    
+   public String getResourceType();
+   
    public List getProperties();
 
    public Property getProperty(Namespace namespace, String name);

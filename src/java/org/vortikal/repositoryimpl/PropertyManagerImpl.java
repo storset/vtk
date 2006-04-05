@@ -70,7 +70,6 @@ import org.vortikal.web.service.RepositoryAssertion;
 
 
 /**
- * XXX: Add resource type to resource
  * XXX: Validation is missing
  * XXX: Validate all logic!
  * XXX: catch or declare evaluation and authorization exceptions on a reasonable level
@@ -178,13 +177,22 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
         init();
-        // XXX: Add resource type to resource
+
         ResourceImpl newResource = new ResourceImpl(uri, this);
         ResourceTypeDefinition rt = create(principal, newResource, new Date(), 
                 collection, rootResourceTypeDefinition);
-        if (collection) {
-            newResource.setChildURIs(new String[] {});
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Found resource type definition: " 
+                    + rt + " for resource created at '" + uri + "'");
         }
+        
+        newResource.setResourceType(rt.getName());
+        
+        if (collection) {
+            newResource.setChildURIs(new String[]{});
+        }
+        
         return newResource;
     }
 

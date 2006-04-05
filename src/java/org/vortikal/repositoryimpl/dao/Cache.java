@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.repository.URIUtil;
 
@@ -297,7 +298,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
         uris.add(r.getURI());
 
-        if (r.isCollection() && r.isDirtyACL()) {
+        if (r.isCollection() && r.getAcl().isDirty()) {
             String testURI = r.getURI();
 
             if (!testURI.equals("/")) {
@@ -325,10 +326,12 @@ public class Cache implements DataAccessor, InitializingBean {
                 if (this.items.containsURI(uri)) {
                     this.items.remove(uri);
                 }
-                
-                if (uri.equals(r.getURI())) {
-                    enterResource(r);
-                }
+
+                // XXX: Removed this to avoid dirty flag problems.
+                // Does it cause any problems?
+//                if (uri.equals(r.getURI())) {
+//                    enterResource(r);
+//                }
             }
         } finally {
             this.lockManager.unlock(uris);
@@ -421,20 +424,20 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public InputStream getInputStream(ResourceImpl resource)
+    public InputStream getInputStream(String uri)
         throws IOException {
-        return this.wrappedAccessor.getInputStream(resource);
+        return this.wrappedAccessor.getInputStream(uri);
     }
 
-    public void storeContent(ResourceImpl resource, InputStream stream)
+    public void storeContent(String uri, InputStream stream)
         throws IOException {
         try {
-            this.lockManager.lock(resource.getURI());
-            this.items.remove(resource.getURI());
+            this.lockManager.lock(uri);
+            this.items.remove(uri);
 
-            this.wrappedAccessor.storeContent(resource, stream);
+            this.wrappedAccessor.storeContent(uri, stream);
         } finally {
-            this.lockManager.unlock(resource.getURI());
+            this.lockManager.unlock(uri);
         }
     }
 
@@ -447,8 +450,8 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
-    public String[] discoverLocks(ResourceImpl r) throws IOException {
-        return this.wrappedAccessor.discoverLocks(r);
+    public String[] discoverLocks(String uri) throws IOException {
+        return this.wrappedAccessor.discoverLocks(uri);
     }
 
     public void addChangeLogEntry(String loggerID, String loggerType,
@@ -675,8 +678,8 @@ public class Cache implements DataAccessor, InitializingBean {
 
     // --------------  New Stuff
 
-    public String[] discoverACLs(ResourceImpl resource) throws IOException {
-        return this.wrappedAccessor.discoverACLs(resource);
+    public String[] discoverACLs(String uri) throws IOException {
+        return this.wrappedAccessor.discoverACLs(uri);
     }
     
 

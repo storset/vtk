@@ -36,7 +36,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.PrivilegeDefinition;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
 import org.vortikal.security.Principal;
@@ -165,9 +165,9 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
              */
 
             Set principalListBefore = originalACL.getPrincipalSet(
-                PrivilegeDefinition.READ_PROCESSED);
+                Privilege.READ_PROCESSED);
             Set principalListAfter = newACL.getPrincipalSet(
-                PrivilegeDefinition.READ_PROCESSED);
+                Privilege.READ_PROCESSED);
            
 
             if (principalListBefore == null &&
@@ -186,13 +186,13 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             }
             
             Principal all = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
-            if (originalACL.hasPrivilege(all, PrivilegeDefinition.READ_PROCESSED) &&
-                newACL.hasPrivilege(all, PrivilegeDefinition.READ_PROCESSED)) {
+            if (originalResource.isAuthorized(Privilege.READ_PROCESSED, all) &&
+                resource.isAuthorized(Privilege.READ_PROCESSED, all)) {
                 return;
             }
 
             
-            String op = newACL.hasPrivilege(all, PrivilegeDefinition.READ_PROCESSED) ?
+            String op = resource.isAuthorized(Privilege.READ_PROCESSED, all) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), op, -1,

@@ -37,7 +37,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
     private String name;
     private int type = PropertyType.TYPE_STRING;
     private boolean multiple = false;
-    private int protectionLevel = PropertyType.PROTECTION_LEVEL_EDITABLE;
+    private String protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private boolean mandatory = false; // Is this interesting?
     private Constraint constraint;
     private CreatePropertyEvaluator createEvaluator;
@@ -103,11 +103,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
         this.name = name;
     }
 
-    public int getProtectionLevel() {
+    public String getProtectionLevel() {
         return protectionLevel;
     }
 
-    public void setProtectionLevel(int protectionLevel) {
+    public void setProtectionLevel(String protectionLevel) {
         this.protectionLevel = protectionLevel;
     }
 

@@ -56,8 +56,7 @@ class PrincipalImpl implements Principal {
     public boolean equals(Object another) {
         if (another instanceof Principal) {
             String anotherName = ((Principal)another).getQualifiedName();
-            if ((getQualifiedName() == null &&  anotherName == null) || 
-                (getQualifiedName() != null && getQualifiedName().equals(anotherName))) {
+            if (getQualifiedName().equals(anotherName)) {
                 return true;
             }
         }   
@@ -66,8 +65,7 @@ class PrincipalImpl implements Principal {
     
 
     public int hashCode() {
-        // FIXME PLEASE!
-        return name.hashCode();
+        return qualifiedName.hashCode();
     }
     
 

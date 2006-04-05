@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -40,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.PrincipalManager;
@@ -142,6 +144,15 @@ public abstract class AbstractDataAccessor
         return retVal;
     }
 
+    public InputStream getInputStream(String uri) throws IOException {
+        return this.contentStore.getInputStream(uri);
+    }
+
+    public void storeContent(String uri, InputStream inputStream)
+            throws IOException {
+        this.contentStore.storeContent(uri, inputStream);
+    }
+
 
     public void deleteExpiredLocks() throws IOException {
         Connection conn = null;
@@ -194,14 +205,14 @@ public abstract class AbstractDataAccessor
     }
 
 
-    public String[] discoverLocks(ResourceImpl resource)
+    public String[] discoverLocks(String uri)
             throws IOException {
         Connection conn = null;
 
         try {
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
-            String[] lockedURIs = discoverLocks(conn, resource);
+            String[] lockedURIs = discoverLocks(conn, uri);
             conn.commit();
 
             return lockedURIs;
@@ -325,14 +336,14 @@ public abstract class AbstractDataAccessor
     }
 
 
-    public String[] discoverACLs(ResourceImpl resource) throws IOException {
+    public String[] discoverACLs(String uri) throws IOException {
         Connection conn = null;
         String[] retVal = null;
 
         try {
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
-            retVal = discoverACLs(conn, resource);
+            retVal = discoverACLs(conn, uri);
             conn.commit();
         } catch (SQLException e) {
             logger.warn("Error occurred finding ACLs ", e);
@@ -393,7 +404,7 @@ public abstract class AbstractDataAccessor
         String uri, String operation, int resourceId,
         boolean collection, boolean recurse) throws SQLException;
 
-    protected abstract String[] discoverLocks(Connection conn, ResourceImpl resource)
+    protected abstract String[] discoverLocks(Connection conn, String uri)
         throws SQLException;
 
     protected abstract String[] listSubTree(Connection conn, ResourceImpl parent)
@@ -408,7 +419,7 @@ public abstract class AbstractDataAccessor
     protected abstract ResourceImpl[] loadChildren(Connection conn, ResourceImpl parent)
         throws SQLException;
 
-    protected abstract String[] discoverACLs(Connection conn, ResourceImpl resource)
+    protected abstract String[] discoverACLs(Connection conn, String uri)
         throws SQLException;
 
     protected abstract void copy(Connection conn, ResourceImpl resource, String destURI,

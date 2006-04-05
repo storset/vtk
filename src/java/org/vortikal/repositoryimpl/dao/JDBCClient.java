@@ -52,6 +52,7 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
@@ -487,16 +488,8 @@ public class JDBCClient extends AbstractDataAccessor {
     }
 
 
-    protected String[] discoverLocks(Connection conn, ResourceImpl resource)
+    protected String[] discoverLocks(Connection conn, String uri)
             throws SQLException {
-        if (!resource.isCollection()) {
-            LockImpl lock = loadLock(conn, resource.getURI());
-
-            return (lock != null) ? new String[] {resource.getURI()} : new String[0];
-        }
-
-        String uri = resource.getURI();
-
         String query = this.queryProvider.getDiscoverLocksByResourceIdPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(uri));
@@ -513,7 +506,7 @@ public class JDBCClient extends AbstractDataAccessor {
         rs.close();
         stmt.close();
 
-        return (String[]) result.toArray(new String[] {});
+        return (String[]) result.toArray(new String[result.size()]);
     }
 
     private LockImpl loadLock(Connection conn, String uri)
@@ -672,9 +665,14 @@ public class JDBCClient extends AbstractDataAccessor {
             
         }
 
-        // Save the ACL:
-        storeACL(conn, r);
-
+        if (r.getAcl().isDirty()) {
+            // Save the ACL:
+            if (existed)
+                storeACL(conn, r);
+            else
+                insertACLEntries(conn, r);
+        }
+        
         // Save the Lock:
         storeLock(conn, r);
 
@@ -801,7 +799,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         ResourceImpl existingResource = load(conn, r.getURI());
         Acl newAcl = r.getAcl();
-        Set actions = newAcl.getActions();
+
         boolean wasInherited = existingResource.isInheritedACL();
 
         if (wasInherited && newAcl.isInherited()) {
@@ -1014,16 +1012,6 @@ public class JDBCClient extends AbstractDataAccessor {
         }
     }
     
-    public InputStream getInputStream(ResourceImpl resource)
-            throws IOException {
-        return contentStore.getInputStream(resource.getURI());
-    }
-
-    public void storeContent(ResourceImpl resource, InputStream inputStream)
-            throws IOException {
-        contentStore.storeContent(resource.getURI(), inputStream);
-    }
-
 
 
 
@@ -1201,7 +1189,6 @@ public class JDBCClient extends AbstractDataAccessor {
             } catch (CloneNotSupportedException e) { }
 
             acl.setInherited(resources[i].isInheritedACL());
-            acl.setOwner(resources[i].getOwner());
             resources[i].setACL(acl);
         }
     }
@@ -1243,7 +1230,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
             if (isGroup)
                 p = principalManager.getGroupPrincipal(name);
-            else if (name.startsWith("dav:"))
+            else if (name.startsWith("pseudo:"))
                 p = principalManager.getPseudoPrincipal(name);
             else
                 p = principalManager.getUserPrincipal(name);
@@ -1289,12 +1276,12 @@ public class JDBCClient extends AbstractDataAccessor {
     }
 
     
-    protected String[] discoverACLs(Connection conn, ResourceImpl resource)
+    protected String[] discoverACLs(Connection conn, String uri)
             throws SQLException {
 
         String query = this.queryProvider.getDiscoverAclsPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(resource.getURI()));
+        stmt.setString(1, getURIWildcard(uri));
         ResultSet rs = stmt.executeQuery();
         
         List uris = new ArrayList();

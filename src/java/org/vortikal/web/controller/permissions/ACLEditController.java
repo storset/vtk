@@ -42,7 +42,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.PrivilegeDefinition;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -54,9 +54,9 @@ import org.vortikal.web.service.Service;
 
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
-    private Repository repository = null;
-    private PrincipalManager principalManager = null;
-    private String privilege = null;
+    private Repository repository;
+    private PrincipalManager principalManager;
+    private String privilege;
     
     
     public ACLEditController() {
@@ -82,54 +82,50 @@ public class ACLEditController extends SimpleFormController implements Initializ
             throw new BeanInitializationException(
                 "Bean property 'principalManager' must be set");
         }
+        if (!Privilege.PRIVILEGES.contains(this.privilege)) {
+            throw new BeanInitializationException(
+                "Legal values for bean property 'privilege' are defined by " +
+                "Privilege.PRIVILEGES. Value is '" + privilege + "'.");
+        }
     }
     
 
     public void setPrivilege(String privilege) {
-        if (! ("read".equals(privilege) ||
-               "write".equals(privilege) ||
-               "write-acl".equals(privilege))) {
-            throw new IllegalArgumentException(
-                "Legal values for bean property 'privilege' are 'read', 'write' and " +
-                "'write-acl'. Value is '" + privilege + "'.");
-        }
         this.privilege = privilege;
     }
     
 
-
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        String uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-        Acl acl = repository.getACL(token, uri);
-
-        return getACLEditCommand(acl);
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        String token = SecurityContext.getSecurityContext().getToken();
+        
+        Resource resource = repository.retrieve(token, uri, false);
+        return getACLEditCommand(resource);
     }
 
     
 
-    private ACLEditCommand getACLEditCommand(Acl acl) throws Exception {
+    private ACLEditCommand getACLEditCommand(Resource resource) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(), false);
+        Acl acl = resource.getAcl();
+        
         String submitURL = service.constructLink(
             resource, securityContext.getPrincipal());
          
         ACLEditCommand command = new ACLEditCommand(submitURL);
         
         Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
-        command.setEveryone(acl.hasPrivilege(auth, privilege));
-        command.setOwner(resource.getOwner().getQualifiedName());
+        Principal pseudoOwner = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_OWNER);
+        command.setEveryone(resource.isAuthorized(this.privilege, auth));
+        command.setOwner(resource.getOwner().getName());
 
-        Principal[] authorizedUsers = acl.listPrivilegedUsers(privilege);
-        Principal[] authorizedGroups = acl.listPrivilegedGroups(privilege);
+        Principal[] authorizedUsers = acl.listPrivilegedUsers(this.privilege);
+        Principal[] authorizedGroups = acl.listPrivilegedGroups(this.privilege);
         command.setUsers(authorizedUsers);
         command.setGroups(authorizedGroups);
 
@@ -140,8 +136,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             parameters.put("removeUserAction", "true");
             parameters.put("userNames", authorizedUsers[i]);
 
-            if (!("dav:owner".equals(authorizedUsers[i]) ||
-                  "dav:authenticated".equals(authorizedUsers[i]))) {
+            if (!(pseudoOwner.equals(authorizedUsers[i]) ||
+                  auth.equals(authorizedUsers[i]))) {
                 String url = service.constructLink(
                     resource, securityContext.getPrincipal(), parameters);
                 withdrawUserURLs[i] = url;
@@ -160,7 +156,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             withdrawGroupURLs[i] = url;
         }
         command.setWithdrawGroupURLs(withdrawGroupURLs);
-        command.setEditedACL(acl);
+        command.setResource(resource);
         return command;
     }
     
@@ -193,16 +189,15 @@ public class ACLEditController extends SimpleFormController implements Initializ
     protected ModelAndView onSubmit(HttpServletRequest request,
                                     HttpServletResponse response,
                                     Object command, BindException errors) throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
-        Acl acl = editCommand.getEditedACL();
+        Resource resource = editCommand.getResource();
+        String uri = resource.getURI();
+        Acl acl = resource.getAcl();
         
-        String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-        Resource resource = repository.retrieve(token, uri, false);
 
         // did the user cancel?
         if (editCommand.getCancelAction() != null) {
@@ -212,28 +207,20 @@ public class ACLEditController extends SimpleFormController implements Initializ
         Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
         Principal all =  principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
         
-        // Setting or unsetting dav:authenticated 
-        if (!acl.hasPrivilege(auth, privilege)) {
-
-            if (editCommand.isEveryone()) {
-                if ("read".equals(privilege)) {
-                    acl.addEntry(PrivilegeDefinition.READ_PROCESSED, all);
-                }
-                acl.addEntry(privilege, auth);
-            }
-        } else {
-
-            if (!editCommand.isEveryone()) {
-                if (PrivilegeDefinition.READ.equals(privilege)) 
-                    acl.removeEntry(PrivilegeDefinition.READ_PROCESSED, all);
-                
-                acl.removeEntry(privilege, auth);
-            }
+        // Setting or unsetting pseudo:authenticated 
+        if (!resource.isAuthorized(privilege, auth) && editCommand.isEveryone()) {
+            if (Privilege.READ.equals(privilege))
+                acl.addEntry(Privilege.READ_PROCESSED, all);
+            acl.addEntry(privilege, auth);
+        } else if (resource.isAuthorized(privilege, auth) && !editCommand.isEveryone()) {
+            if (Privilege.READ.equals(privilege)) 
+                acl.removeEntry(Privilege.READ_PROCESSED, all);
+            acl.removeEntry(privilege, auth);
         }
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
-            repository.storeACL(token, uri, editCommand.getEditedACL());
+            repository.storeACL(token, uri, acl);
             return new ModelAndView(getSuccessView());
         }
 
@@ -247,7 +234,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 acl.removeEntry(this.privilege, principal);
             }
             return showForm(request, response, new BindException(
-                                getACLEditCommand(editCommand.getEditedACL()),
+                                getACLEditCommand(editCommand.getResource()),
                                 this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
@@ -258,7 +245,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 acl.removeEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
-                    getACLEditCommand(acl), this.getCommandName()));
+                    getACLEditCommand(resource), this.getCommandName()));
             
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
@@ -268,7 +255,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             }
             ModelAndView mv =  showForm(
                 request, response, new BindException(
-                    getACLEditCommand(acl),
+                    getACLEditCommand(resource),
                     this.getCommandName()));
             return mv;
 
@@ -282,7 +269,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 acl.addEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
-                                getACLEditCommand(editCommand.getEditedACL()),
+                                getACLEditCommand(resource),
                                 this.getCommandName()));
 
         } else {

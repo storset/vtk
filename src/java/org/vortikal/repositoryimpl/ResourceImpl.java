@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,7 +67,6 @@ public class ResourceImpl implements Resource, Cloneable {
 //     private boolean inheritedACL = true;
     private int aclInheritedFrom = -1;
     private Lock lock = null;
-    private boolean dirtyACL = false;
     private String[] childURIs = null;
     
     private Map propertyMap = new HashMap();
@@ -78,16 +78,19 @@ public class ResourceImpl implements Resource, Cloneable {
         this.propertyManager = propertyManager;
     }
 
+    public boolean isAuthorized(String privilege, Principal principal) {
+        Set actionSet = this.acl.getPrincipalSet(privilege);
+        
+        if (actionSet != null && actionSet.contains(principal)) 
+            return true;
+        return false;
+    }
+
     public Property createProperty(Namespace namespace, String name) {
         Property prop = propertyManager.createProperty(namespace, name);
         addProperty(prop);
         return prop;
     }
-
-    // XXX: is this meaningfull? need to check for prop equality first?
-//    public void deleteProperty(Property property) {
-//        removeProperty(property.getNamespace(), property.getName());
-//    }
 
     public void removeProperty(Namespace namespace, String name) {
         Map props = (Map)propertyMap.get(namespace);
@@ -121,14 +124,6 @@ public class ResourceImpl implements Resource, Cloneable {
 
     public String[] getChildURIs() {
         return this.childURIs;
-    }
-
-    public void setDirtyACL(boolean dirtyACL) {
-        this.dirtyACL = dirtyACL;
-    }
-
-    public boolean isDirtyACL() {
-        return this.dirtyACL;
     }
 
     public Acl getAcl() {
@@ -172,10 +167,6 @@ public class ResourceImpl implements Resource, Cloneable {
     public boolean isInheritedACL() {
         return this.aclInheritedFrom != -1;
     }
-
-//     public void setInheritedACL(boolean inheritedACL) {
-//         this.inheritedACL = inheritedACL;
-//     }
 
     public String getName() {
         if (uri.equals("/")) {

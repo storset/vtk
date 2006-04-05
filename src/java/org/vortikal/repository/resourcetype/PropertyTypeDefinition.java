@@ -40,7 +40,7 @@ public interface PropertyTypeDefinition {
     
     public boolean isMultiple();
 
-    public int getProtectionLevel();
+    public String getProtectionLevel();
     
     public boolean isMandatory();
 

@@ -34,6 +34,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.vortikal.repositoryimpl.AuthorizationManager;
+
 
 
 public final class PropertyType {
@@ -64,19 +66,20 @@ public final class PropertyType {
     
     
     // Write privilege needed to edit prop
-    public static final int PROTECTION_LEVEL_EDITABLE = 0;
+    public static final String PROTECTION_LEVEL_ACL_WRITE = AuthorizationManager.WRITE;
 
     // Principals with admin permissions can edit property
-    public static final int PROTECTION_LEVEL_PROTECTED = 1;
+    public static final String PROTECTION_LEVEL_ACL_ADMIN = AuthorizationManager.WRITE_ACL;
 
-    // Only principals of the ROOT role or owners are allowed to set property
-    public static final int PROTECTION_LEVEL_OWNER_EDITABLE = 2;
+    // Used for special properties, only to be modified by special "admin" 
+    // users in special cases. unsure about this one...
+    public static final String PROTECTION_LEVEL_ROLE_ADMIN = AuthorizationManager.PROPERTY_EDIT_ADMIN_ROLE;
     
     // Only principals of the ROOT role  are allowed to set property
-    public static final int PROTECTION_LEVEL_ROOT_EDITABLE = 3;
+    public static final String PROTECTION_LEVEL_ROLE_ROOT = AuthorizationManager.PROPERTY_EDIT_ROOT_ROLE;
 
     //  Property is uneditable
-    public static final int PROTECTION_LEVEL_UNEDITABLE = 4;
+    public static final String PROTECTION_LEVEL_UNEDITABLE = "UNEDITABLE";
  
     
     /*

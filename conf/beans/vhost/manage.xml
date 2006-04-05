@@ -1017,8 +1017,8 @@
   <bean id="editWritePermissionsHandler"
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
-    <property name="principalManager"><ref bean="principalManager" /></property>    
-    <property name="privilege"><value>write</value></property>    
+    <property name="principalManager" ref="principalManager" />
+    <property name="privilege" value="write" />
     <property name="formView" value="permissions" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName"><value>editWritePermissionsForm</value></property>
@@ -1037,8 +1037,8 @@
   <bean id="editReadPermissionsHandler"
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
-    <property name="principalManager"><ref bean="principalManager" /></property>    
-    <property name="privilege"><value>read</value></property>    
+    <property name="principalManager" ref="principalManager" />
+    <property name="privilege" value="read" />
     <property name="formView" value="permissions" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName"><value>editReadPermissionsForm</value></property>
@@ -1047,9 +1047,7 @@
     </property>
     <property name="validator">
       <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
-        <property name="principalManager">
-          <ref bean="principalManager" />
-        </property>
+        <property name="principalManager" ref="principalManager" />
       </bean>
     </property>
   </bean>
@@ -1058,7 +1056,7 @@
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
     <property name="principalManager" ref="principalManager" />
-    <property name="privilege" value="write-acl" />
+    <property name="privilege" value="all" />
     <property name="formView" value="permissions" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="editWriteACLPermissionsForm" />
@@ -1674,54 +1672,54 @@
   <bean id="requiresReadPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
-    <property name="permission" value="read" />
+    <property name="permission" ref="ACTION_READ" />
   </bean>
 
   <bean id="requiresWritePermissionAssertion" 
         parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
-    <property name="permission" value="write" />
+    <property name="permission" ref="ACTION_WRITE" />
   </bean>
 
-  <bean id="writeParentPermissionAssertion"
+<!--  <bean id="writeParentPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="parent-write" />
+    <property name="permission" ref="ACTION_CREATE" />
   </bean>
-
+-->
   <bean id="deleteResourcePermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="delete" />
+    <property name="permission" ref="ACTION_DELETE" />
   </bean>
 
   <bean id="writePermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="write" />
+    <property name="permission" ref="ACTION_WRITE" />
   </bean>
 
   <bean id="writeACLPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="write-acl" />
+    <property name="permission" ref="ACTION_WRITE_ACL" />
   </bean>
 
   <bean id="readProcessedPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
-    <property name="permission" value="read-processed" />
+    <property name="permission" ref="ACTION_READ_PROCESSED" />
   </bean>
 
   <bean id="unlockPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="unlock" />
+    <property name="permission" ref="ACTION_UNLOCK" />
   </bean>
 
   <bean id="lockPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="lock" />
+    <property name="permission" ref="ACTION_WRITE" />
   </bean>
 
   <bean id="delegateOwnershipPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" value="delegate-ownership" />
+    <property name="permission" ref="ACTION_WRITE_ACL" />
   </bean>
 
   <bean id="resourceNotRootAssertion" 

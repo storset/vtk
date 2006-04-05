@@ -9,7 +9,7 @@
     <property name="id" value="${repositoryID}" />
     <property name="tokenManager" ref="tokenManager" />
     <property name="roleManager" ref="roleManager" />
-    <property name="permissionsManager" ref="permissionsManager" />
+    <property name="authorizationManager" ref="authorizationManager" />
     <property name="dao" ref="repository.backend" />
     <property name="lockManager" ref="lockManager" />
     <property name="propertyManager" ref="propertyManager" />
@@ -68,14 +68,16 @@
     <!-- Hack fix for circular deps. problem -->
     <property name="lazyInit" value="true" />
 
+    <property name="authorizationManager" ref="authorizationManager" />
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
     <property name="valueFactory" ref="valueFactory"/>
     <property name="rootResourceTypeDefinition" ref="resourceResourceTypeDefinition"/>
   </bean>
 
-  <bean id="permissionsManager" class="org.vortikal.repositoryimpl.PermissionsManager">
+  <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManager">
     <property name="principalManager" ref="principalManager" />
+    <property name="lockManager" ref="lockManager" />
     <property name="roleManager" ref="roleManager" />
     <property name="dao" ref="repository.backend" />
   </bean>

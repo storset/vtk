@@ -25,14 +25,14 @@
   <bean id="webEditPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="web-edit" />
     <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 
   <bean id="transformViewPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="transform-view" />
     <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 

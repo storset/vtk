@@ -34,6 +34,7 @@ package org.vortikal.repositoryimpl.dao;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.ResourceImpl;
 
 
@@ -79,14 +80,14 @@ public interface DataAccessor {
     /**
      * Opens an input stream for reading from a resource
      */
-    public InputStream getInputStream(ResourceImpl resource)
+    public InputStream getInputStream(String uri)
         throws IOException;
 
 
     /**
      * Writes content for a resource
      */
-    public void storeContent(ResourceImpl resource, InputStream stream)
+    public void storeContent(String uri, InputStream stream)
         throws IOException;
 
 
@@ -123,13 +124,12 @@ public interface DataAccessor {
      * Finds any locks on a resource, or on resources in the URI
      * hierarchy defined by that resource.
      */
-    public String[] discoverLocks(ResourceImpl resource) throws IOException;
-
+    public String[] discoverLocks(String uri) throws IOException;
 
     /**
      * Finds any ACLs on a resource, or on resources in the URI
      * hierarchy defined by that resource.
      */
-    public String[] discoverACLs(ResourceImpl resource) throws IOException;
+    public String[] discoverACLs(String uri) throws IOException;
 
 }

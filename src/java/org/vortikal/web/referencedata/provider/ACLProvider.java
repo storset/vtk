@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.PrivilegeDefinition;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -165,28 +165,28 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
 
         // XXX: Pseudo needs to be handled in the new way
         // XXX: groups are now principals
-        Principal[] readAuthorizedUsers = acl.listPrivilegedUsers(PrivilegeDefinition.READ);
+        Principal[] readAuthorizedUsers = acl.listPrivilegedUsers(Privilege.READ);
         aclModel.put("readAuthorizedUsers", readAuthorizedUsers);
-        Principal[] readAuthorizedGroups = acl.listPrivilegedGroups(PrivilegeDefinition.READ);
+        Principal[] readAuthorizedGroups = acl.listPrivilegedGroups(Privilege.READ);
         aclModel.put("readAuthorizedGroups", readAuthorizedGroups);
 
-        Principal[] writeAuthorizedUsers = acl.listPrivilegedUsers(PrivilegeDefinition.WRITE);
+        Principal[] writeAuthorizedUsers = acl.listPrivilegedUsers(Privilege.WRITE);
         aclModel.put("writeAuthorizedUsers", writeAuthorizedUsers);
-        Principal[] writeAuthorizedGroups = acl.listPrivilegedGroups(PrivilegeDefinition.WRITE);
+        Principal[] writeAuthorizedGroups = acl.listPrivilegedGroups(Privilege.WRITE);
         aclModel.put("writeAuthorizedGroups", writeAuthorizedGroups);
 
-        Principal[] writeAclAuthorizedUsers = acl.listPrivilegedUsers(PrivilegeDefinition.WRITE_ACL);
+        Principal[] writeAclAuthorizedUsers = acl.listPrivilegedUsers(Privilege.ALL);
         aclModel.put("writeAclAuthorizedUsers", writeAclAuthorizedUsers);
-        Principal[] writeAclAuthorizedGroups = acl.listPrivilegedGroups(PrivilegeDefinition.WRITE_ACL);
+        Principal[] writeAclAuthorizedGroups = acl.listPrivilegedGroups(Privilege.ALL);
         aclModel.put("writeAclAuthorizedGroups", writeAclAuthorizedGroups);
 
         Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
-        aclModel.put("everyoneReadAuthorized" , new Boolean(
-                acl.hasPrivilege(auth, PrivilegeDefinition.READ)));
-        aclModel.put("everyoneWriteAuthorized", new Boolean(
-                         acl.hasPrivilege(auth, PrivilegeDefinition.WRITE)));
-        aclModel.put("everyoneWriteAclAuthorized", new Boolean(
-                         acl.hasPrivilege(auth, PrivilegeDefinition.WRITE_ACL)));
+        aclModel.put("everyoneReadAuthorized" , 
+                new Boolean(acl.hasPrivilege(Privilege.READ, auth)));
+        aclModel.put("everyoneWriteAuthorized", 
+                new Boolean(acl.hasPrivilege(Privilege.WRITE, auth)));
+        aclModel.put("everyoneWriteAclAuthorized", 
+                new Boolean(acl.hasPrivilege(Privilege.ALL, auth)));
 
         aclModel.put("aclInherited", new Boolean(acl.isInherited()));
 

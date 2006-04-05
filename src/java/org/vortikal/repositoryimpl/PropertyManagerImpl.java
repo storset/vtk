@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +53,7 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
@@ -80,6 +82,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     private RoleManager roleManager;
     private PrincipalManager principalManager;
+    private AuthorizationManager authorizationManager;
 
     private ValueFactory valueFactory;
     
@@ -109,6 +112,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             throw new BeanInitializationException("Property 'roleManager' not set.");
         } else if (principalManager == null) {
             throw new BeanInitializationException("Property 'principalManager' not set.");
+        } else if (authorizationManager == null) {
+            throw new BeanInitializationException("Property 'authorizationManager' not set.");
         } else if (rootResourceTypeDefinition == null) {
             throw new BeanInitializationException("Property 'rootResourceTypeDefinition' not set.");
         } else if (valueFactory == null) {
@@ -122,7 +127,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.resourceTypeDefinitions = new HashMap();
 
         if (!lazyInit) init();
-    }        
+    }
 
     private synchronized void init() {
         if (init) return;
@@ -252,11 +257,12 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             Resource dto) throws AuthenticationException, AuthorizationException, CloneNotSupportedException {
         init();
 
+        String uri = resource.getURI();
+        
         // For all properties, check if they are modified, deleted or created
         Map allreadySetProperties = new HashMap();
         
         List deadProperties = new ArrayList();
-        Authorization authorization = new Authorization(principal, resource.getAcl(), this.roleManager);
         
         // Looping over already existing properties
         for (Iterator iter = resource.getProperties().iterator(); iter.hasNext();) {
@@ -273,8 +279,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     }
                     // check if allowed
                     try {
-                        authorization.authorize(prop.getDefinition().getProtectionLevel());
-                    } catch (AuthorizationException e) {
+                        authorize(prop.getDefinition().getProtectionLevel(), principal, uri);
+                    } catch (Exception e) {
                         throw new ConstraintViolationException("Not authorized to delete property " + prop, e);
                     }
                     // It will be removed
@@ -289,8 +295,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 } else {
                     // check if allowed
                     try {
-                        authorization.authorize(prop.getDefinition().getProtectionLevel());
-                    } catch (AuthorizationException e) {
+                        authorize(prop.getDefinition().getProtectionLevel(), principal, uri);
+                    } catch (Exception e) {
                         throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
                     }
                     
@@ -317,8 +323,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 } else {
                     // check if allowed
                     try {
-                        authorization.authorize(userProp.getDefinition().getProtectionLevel());
-                    } catch (AuthorizationException e) {
+                        authorize(userProp.getDefinition().getProtectionLevel(), principal, uri);
+                    } catch (Exception e) {
                         throw new ConstraintViolationException("Not authorized to edit property " + prop, e);
                     }
                     addToPropsMap(allreadySetProperties, userProp);
@@ -616,6 +622,22 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         return propDef;
     }
     
+    private void authorize(String action, Principal principal, String uri) 
+    throws AuthenticationException, AuthorizationException, 
+    ResourceLockedException, IOException{
+        if (AuthorizationManager.WRITE.equals(action)) {
+            this.authorizationManager.authorizeWrite(uri, principal);
+        } else if (AuthorizationManager.WRITE_ACL.equals(action)) {
+            this.authorizationManager.authorizeWriteAcl(uri, principal);
+        } else if (AuthorizationManager.PROPERTY_EDIT_ADMIN_ROLE.equals(action)) {
+            this.authorizationManager.authorizePropertyEditAdminRole(uri, principal);
+        } else if (AuthorizationManager.PROPERTY_EDIT_ROOT_ROLE.equals(action)) {
+            this.authorizationManager.authorizePropertyEditRootRole(uri, principal);
+        }
+        throw new AuthorizationException();
+    }
+    
+    
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
@@ -639,6 +661,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
+    }
+
+    /**
+     * @param authorizationManager The authorizationManager to set.
+     */
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
     }
 
 }

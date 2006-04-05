@@ -107,7 +107,6 @@ DROP TABLE action_type CASCADE;
 CREATE TABLE action_type
 (
     action_type_id int NOT NULL,
-    namespace VARCHAR (64) NOT NULL,
     name VARCHAR (64) NOT NULL
 );
 
@@ -243,10 +242,11 @@ CREATE UNIQUE INDEX changelog_entry_index1
 -- initial application data
 -----------------------------------------------------------------------------
 
-INSERT INTO action_type (action_type_id, namespace, name) VALUES (1, 'dav', 'read');
-INSERT INTO action_type (action_type_id, namespace, name) VALUES (2, 'dav', 'write');
-INSERT INTO action_type (action_type_id, namespace, name) VALUES (3, 'dav', 'write-acl');
-INSERT INTO action_type (action_type_id, namespace, name) VALUES (4, 'uio', 'read-processed');
+INSERT INTO action_type (action_type_id, name) VALUES (1, 'read');
+INSERT INTO action_type (action_type_id, name) VALUES (2, 'write');
+INSERT INTO action_type (action_type_id, name) VALUES (3, 'all');
+INSERT INTO action_type (action_type_id, name) VALUES (4, 'read-processed');
+INSERT INTO action_type (action_type_id, name) VALUES (5, 'bind');
 
 INSERT INTO LOCK_TYPE (lock_type_id, name) 
 VALUES (1, 'EXCLUSIVE_WRITE');
@@ -290,7 +290,7 @@ VALUES (
 );
 
 
--- (dav:authenticated (dav:read))
+-- (pseudo:authenticated, dav:read)
 
 INSERT INTO ACL_ENTRY (
     acl_entry_id,
@@ -304,14 +304,14 @@ VALUES (
     nextval('acl_entry_seq_pk'),
     currval('vortex_resource_seq_pk'),
     1,
-    'dav:authenticated',
+    'pseudo:authenticated',
     'Y',
     'vortex@localhost',
     current_timestamp
 );    
 
 
--- (dav:all (uio:read-processed))
+-- (pseudo:all, read-processed)
 
 INSERT INTO ACL_ENTRY (
     acl_entry_id,
@@ -325,54 +325,14 @@ VALUES (
     nextval('acl_entry_seq_pk'),
     currval('vortex_resource_seq_pk'),
     4,
-    'dav:all',
+    'pseudo:all',
     'Y',
     'vortex@localhost',
     current_timestamp
 );    
 
 
--- (dav:owner (dav:read))
-
-INSERT INTO ACL_ENTRY (
-    acl_entry_id,
-    resource_id,
-    action_type_id,
-    user_or_group_name,
-    is_user,
-    granted_by_user_name,
-    granted_date)
-VALUES (
-    nextval('acl_entry_seq_pk'),
-    currval('vortex_resource_seq_pk'),
-    1,
-    'dav:owner',
-    'Y',
-    'vortex@localhost',
-    current_timestamp
-);    
-
--- (dav:owner (dav:write))
-
-INSERT INTO ACL_ENTRY (
-    acl_entry_id,
-    resource_id,
-    action_type_id,
-    user_or_group_name,
-    is_user,
-    granted_by_user_name,
-    granted_date)
-VALUES (
-    nextval('acl_entry_seq_pk'),
-    currval('vortex_resource_seq_pk'),
-    2,
-    'dav:owner',
-    'Y',
-    'vortex@localhost',
-    current_timestamp
-);    
-
--- (dav:owner (dav:write-acl))
+-- (pseudo:owner, all)
 
 INSERT INTO ACL_ENTRY (
     acl_entry_id,
@@ -386,7 +346,7 @@ VALUES (
     nextval('acl_entry_seq_pk'),
     currval('vortex_resource_seq_pk'),
     3,
-    'dav:owner',
+    'pseudo:owner',
     'Y',
     'vortex@localhost',
     current_timestamp

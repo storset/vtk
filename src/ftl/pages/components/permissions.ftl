@@ -100,9 +100,9 @@
       <@spring.bind formName + ".users" />
       <#list spring.status.value as user>
           <#switch user>
-            <#case "dav:authenticated">
+            <#case "pseudo:authenticated">
               <#break>
-            <#case "dav:owner">
+            <#case "pseudo:owner">
               <li>${resourceContext.currentResource.owner.name}&nbsp;(<@vrtx.msg code="permissions.owner" default="owner"/>)</li>
               <#break>
             <#default>

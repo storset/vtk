@@ -54,14 +54,14 @@ public class LockManager {
     
     private DataAccessor dao;
 
-    public void lockAuthorize(ResourceImpl resource, Principal principal,
+    public void lockAuthorize(Resource resource, Principal principal,
             boolean deep) throws ResourceLockedException, IOException,
             AuthenticationException {
 
         lockAuthorize(resource.getLock(), principal);
 
         if (resource.isCollection() && deep) {
-            String[] uris = this.dao.discoverLocks(resource);
+            String[] uris = this.dao.discoverLocks(resource.getURI());
 
             for (int i = 0; i < uris.length; i++) {
                 Resource ancestor = this.dao.load(uris[i]);

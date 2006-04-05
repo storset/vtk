@@ -47,6 +47,8 @@ import org.vortikal.security.Principal;
 public class RoleManager {
     public static final int ROOT = 0;
     public static final int READ_EVERYTHING = 1;
+    public static final int ADMIN = 2;
+
     private Set rootRole = new HashSet();
     private Set readEverythingRole = new HashSet();
 

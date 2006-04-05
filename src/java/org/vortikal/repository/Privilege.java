@@ -30,28 +30,22 @@
  */
 package org.vortikal.repository;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * This class defines the privileges supported on a resource.
+ * This class defines the privileges supported in an Acl.
  */
-public class PrivilegeDefinition {
+public class Privilege {
     
+    public static final String READ_PROCESSED = "read-processed";
     public static final String READ = "read";
+    public static final String BIND = "bind";
     public static final String WRITE = "write";
-    public static final String WRITE_ACL = "write-acl";
-    public final static String READ_PROCESSED = "read-processed";
+    public static final String ALL = "all";
 
-    public final static String[] ROOT_PRIVILEGES = new String[] {
-        PrivilegeDefinition.READ,
-        PrivilegeDefinition.WRITE,
-        PrivilegeDefinition.WRITE_ACL};
-
-    public final static String[] READ_PRIVILEGES = new String[] {PrivilegeDefinition.READ};
-
-    // "Abstract" privileges
+    public final static Set PRIVILEGES =
+        new HashSet(Arrays.asList(new String[] {READ_PROCESSED,READ,BIND,WRITE,ALL}));
     
-    public static final String PARENT_WRITE = "parent-write";
-    public static final String DELETE = "delete";
-    public static final String UNLOCK = "unlock";
-    public static final String LOCK = "lock";
-    public static final String DELEGATE_OWNERSHIP = "delegate-ownership";
 }

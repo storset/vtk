@@ -37,6 +37,8 @@ import org.vortikal.security.Principal;
 
 public interface Resource extends PropertySet {
 
+    public boolean isAuthorized(String privilege, Principal principal);
+
     public Property createProperty(Namespace namespace, String name);
     
 //    public void deleteProperty(Property property);

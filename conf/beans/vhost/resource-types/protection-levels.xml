@@ -3,28 +3,28 @@
 
 <beans>
 
-  <bean id="PROTECTION_LEVEL_EDITABLE"
+  <bean id="PROTECTION_LEVEL_ACL_WRITE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_EDITABLE" />
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
 
-  <bean id="PROTECTION_LEVEL_PROTECTED"
+  <bean id="PROTECTION_LEVEL_ACL_ADMIN"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_PROTECTED" />
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ACL_ADMIN" />
   </bean>
 
-  <bean id="PROTECTION_LEVEL_OWNER_EDITABLE"
+  <bean id="PROTECTION_LEVEL_ROLE_ADMIN"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_OWNER_EDITABLE" />
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ROLE_ADMIN" />
   </bean>
 
-  <bean id="PROTECTION_LEVEL_ROOT_EDITABLE"
+  <bean id="PROTECTION_LEVEL_ROLE_ROOT"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ROOT_EDITABLE" />
+              value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ROLE_ROOT" />
   </bean>
 
   <bean id="PROTECTION_LEVEL_UNEDITABLE"

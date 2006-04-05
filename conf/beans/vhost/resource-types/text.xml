@@ -19,13 +19,13 @@
 
   <bean id="characterEncodingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="characterEncoding" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 
   <bean id="contentLocalePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="contentLocale" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_EDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 

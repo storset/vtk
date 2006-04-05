@@ -41,7 +41,9 @@ import org.vortikal.repositoryimpl.ResourceImpl;
  * Simple data access abstraction API.
  */
 public interface DataAccessor {
-    /*
+
+
+    /**
      * "Sanity check" method, called after
      * initialization. Implementations should return false if the
      * data accessor is unable to operate properly (i.e. tables missing,
@@ -49,57 +51,85 @@ public interface DataAccessor {
      */
     public boolean validate() throws IOException;
 
-    /* Loads a single resource */
+
+    /**
+     * Loads a single resource
+     */
     public ResourceImpl load(String uri) throws IOException;
 
-    /* Loads a list of resources. */
-//     public Resource[] load(String[] uris) throws IOException;
 
-    /* Loads the children of a given resource */
+    /**
+     * Loads the children of a given resource
+     */
     public ResourceImpl[] loadChildren(ResourceImpl parent) throws IOException;
 
-    /* Stores a single resource */
+
+    /**
+     * Stores a single resource
+     */
     public void store(ResourceImpl r) throws IOException;
 
-    /* Deletes a single resource (and any children) */
+
+    /**
+     * Deletes a single resource (and any children)
+     */
     public void delete(ResourceImpl resource) throws IOException;
 
-    /* Opens an input stream for reading from a resource */
+
+    /**
+     * Opens an input stream for reading from a resource
+     */
     public InputStream getInputStream(ResourceImpl resource)
         throws IOException;
 
-    /* Writes content for a resource */
+
+    /**
+     * Writes content for a resource
+     */
     public void storeContent(ResourceImpl resource, InputStream stream)
         throws IOException;
 
-    /* Lists all descendants of a collection resource, sorted by URI */
+
+    /**
+     * Lists all descendants of a collection resource, sorted by URI
+     */
     public String[] listSubTree(ResourceImpl parent) throws IOException;
 
-    /* Deletes all expired locks (should be called periodically) */
+
+    /**
+     * Deletes all expired locks (should be called periodically)
+     */
     public void deleteExpiredLocks() throws IOException;
 
-    /* Used externally to report a resource modification */
+
+    /**
+     * Used externally to report a resource modification
+     */
     public void addChangeLogEntry(String loggerID, String recordType,
                                   String uri, String operation, int resourceId,
                                   boolean collection, boolean recurse) throws IOException;
 
     /**
-     * Proposed new methods: copy(), move().  These are currently
-     * implemented on the domain level, meaning that every resource
-     * must first be loaded from the data access level before moving,
-     * consuming a *lot* of time when dealing with large/deep
-     * collections. */
-
-    //public void move(Resource resource, String destURI);
+     * Atomically copies a resource to a new destination.
+     */
     public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
                      boolean setOwner, String owner) throws IOException;
 
+
+    //public void move(Resource resource, String destURI);
+
+
     /**
-     * A faster way of discovering locks on resources deep down in the
-     * hierarchy, without the need to actually load all the resources
-     * in the subtree. */
+     * Finds any locks on a resource, or on resources in the URI
+     * hierarchy defined by that resource.
+     */
     public String[] discoverLocks(ResourceImpl resource) throws IOException;
 
+
+    /**
+     * Finds any ACLs on a resource, or on resources in the URI
+     * hierarchy defined by that resource.
+     */
     public String[] discoverACLs(ResourceImpl resource) throws IOException;
 
 }

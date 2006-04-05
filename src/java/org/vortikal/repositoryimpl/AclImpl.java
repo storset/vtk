@@ -77,8 +77,7 @@ public class AclImpl implements Acl {
             this.actionSets.put(action, actionEntry);
         }
         
-        if (!actionEntry.contains(p))
-            actionEntry.add(p);
+        actionEntry.add(p);
 
     }
     
@@ -248,8 +247,9 @@ public class AclImpl implements Acl {
     public String toString() {
         StringBuffer sb = new StringBuffer();
 
-        sb.append("[ACL:");
-
+        sb.append("[ACL: ");
+        sb.append("[inherited: ").append(this.inherited).append("] ");
+        sb.append("access: ");
         for (Iterator i = actionSets.keySet().iterator(); i.hasNext();) {
             String action = (String) i.next();
             Set principalSet = (Set)actionSets.get(action);

@@ -4,11 +4,11 @@
 <beans>
 
   <!-- Assertion that matches all collection resources -->
-  <bean id="collection"
+  <bean id="collectionAssertion"
         class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
 
   <!-- Assertion that matches all non-collection resources (files) -->
-  <bean id="file"
+  <bean id="fileAssertion"
         class="org.vortikal.web.service.ResourceIsCollectionAssertion">
     <property name="invert" value="true"/>
   </bean>

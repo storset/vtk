@@ -9,6 +9,29 @@
     <property name="name" value="file"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
+
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="contentLengthPropDef"/>
+      </list>
+    </property>
+
+    <property name="assertions">
+      <list>
+        <ref bean="fileAssertion"/>
+      </list>
+    </property>
   </bean>
 
+  <bean id="contentLengthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="contentLength" />
+    <property name="type" ref="TYPE_LONG" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="createEvaluator" ref="contentLengthEvaluator"/>
+    <property name="contentModificationEvaluator" ref="contentLengthEvaluator"/>
+  </bean>
+  
+  <bean id="contentLengthEvaluator" class="org.vortikal.repository.resourcetype.property.ContentLengthEvaluator"/>
+  
 </beans>

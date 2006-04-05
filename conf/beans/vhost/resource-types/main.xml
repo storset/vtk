@@ -3,20 +3,22 @@
 
 <beans>
 
+  <!-- RESOURCE TYPE DEFINITIONS -->
   <import resource="resource.xml" />
   <import resource="file.xml" />
+  <import resource="collection.xml"/>
   <import resource="text.xml" />
   <import resource="html.xml" />
   <import resource="xml.xml" />
 
-<!-- CONSTANTS -->
 
+  <!-- CONSTANTS -->
   <import resource="namespaces.xml" />
   <import resource="protection-levels.xml" />
   <import resource="property-types.xml" />
 
-  <!-- ASSERTIONS -->
 
+  <!-- ASSERTIONS -->
   <import resource="assertions.xml" />
   
 </beans>

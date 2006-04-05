@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Resource type 'collection' -->
+  <bean id="collectionResourceTypeDefinition"
+    class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="collection"/>
+    <property name="namespace" ref="CUSTOM_NAMESPACE"/>
+    <property name="assertions">
+      <list>
+        <ref bean="collectionAssertion"/>
+      </list>
+    </property>
+    
+    <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition"/>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="skipInPathPropDef"/>
+        <ref bean="intListPropDef"/>
+      </list>
+    </property>
+    
+  </bean>
+  
+  <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="skipInPath"/>
+    <property name="type" ref="TYPE_BOOLEAN"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ROOT"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+  
+  <!-- For testing only. List of integers. -->
+  <bean id="intListPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="intList"/>
+    <property name="type" ref="TYPE_INT"/>
+    <property name="multiple" value="true"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ROOT" />
+    <property name="mandatory" value="false"/>
+  </bean>
+
+</beans>

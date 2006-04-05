@@ -48,6 +48,6 @@
   <import resource="index.xml" />
   
   <!-- OperationLog interceptor for Repository -->
-  <!--import resource="repository-operationlog-interceptor.xml"/-->
+  <import resource="repository-operationlog-interceptor.xml"/>
 
 </beans>

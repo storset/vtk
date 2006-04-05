@@ -205,10 +205,18 @@ public class QueryProvider {
         return "update vortex_resource set acl_inherited_from = ? where resource_id = ?";
     }
 
-    public String getUpdateAclInheritedByUriRecusrivelyPreparedStatement() {
+    public String getUpdateAclInheritedByUriPreparedStatement() {
         return  "update vortex_resource set acl_inherited_from = ? "
             + "where uri = ? or uri like ?";
     }
+
+    public String getUpdateAclInheritedByPrevIdPreparedStatement() {
+        return  "update vortex_resource set acl_inherited_from = ? "
+            + "where (uri = ? or uri like ?) and acl_inherited_from = ?";
+        
+    }
+    
+
 
     public String getUpdateAclInheritedByResourceIdOrInheritedPreparedStatement() {
         return "update vortex_resource set acl_inherited_from = ? "
@@ -290,17 +298,15 @@ public class QueryProvider {
     }
 
     public String getDeleteResourcesByUriPreparedStatement() {
-        return "delete from VORTEX_RESOURCE where resource_id in ("
-            + "select resource_id from VORTEX_RESOURCE "
-            + "where uri like ? or resource_id = ?)";
+        return "delete from VORTEX_RESOURCE where uri = ? or uri like ?";
     }
-
+    
        
     public String getLoadAclsByResourceIdsPreparedStatement(Set resourceIds) {
 
         StringBuffer query = new StringBuffer();
 
-        query.append("select r.resource_id, a.*, t.namespace as action_namespace, ");
+        query.append("select r.resource_id, a.*, ");
         query.append("t.name as action_name from ACL_ENTRY a ");
         query.append("inner join ACTION_TYPE t on a.action_type_id = t.action_type_id ");
         query.append("inner join VORTEX_RESOURCE r on r.resource_id = a.resource_id ");
@@ -337,7 +343,7 @@ public class QueryProvider {
 
 
     public String getLoadChildrenPreparedStatement() {
-        return "select * from vortex_resource where uri like ? and depth = ?";
+        return "select * from vortex_resource where depth = ? and uri like ?";
     }
 
     public String getLoadPropertiesForChildrenPreparedStatement() {

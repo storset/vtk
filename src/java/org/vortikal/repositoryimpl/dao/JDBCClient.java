@@ -981,6 +981,10 @@ public class JDBCClient extends AbstractDataAccessor {
         stmt.executeUpdate();
         stmt.close();
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Deleted ACL entries for resource " + resource);
+        }
+
         query = this.queryProvider.getDeleteLocksByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, getURIWildcard(resource.getURI()));
@@ -988,21 +992,26 @@ public class JDBCClient extends AbstractDataAccessor {
         stmt.executeUpdate();
         stmt.close();
 
-        query = this.queryProvider.getDeletePropertiesByUriPreparedStatement();
-        stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(resource.getURI()));
-        stmt.setInt(2, resource.getID());
-        stmt.executeUpdate();
-        stmt.close();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Deleted locks for resource " + resource);
+        }
 
         query = this.queryProvider.getDeleteResourcesByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(resource.getURI()));
-        stmt.setInt(2, resource.getID());
+        stmt.setString(1, resource.getURI());
+        stmt.setString(2, getURIWildcard(resource.getURI()));
         stmt.executeUpdate();
         stmt.close();
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Deleted entry for resource " + resource);
+        }
+
         contentStore.deleteResource(resource.getURI());
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Deleted file(s) for resource " + resource);
+        }
     }
     
     public InputStream getInputStream(ResourceImpl resource)
@@ -1049,8 +1058,8 @@ public class JDBCClient extends AbstractDataAccessor {
 
         String query = this.queryProvider.getLoadChildrenPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(parent.getURI()));
-        stmt.setInt(2, getURIDepth(parent.getURI()) + 1);
+        stmt.setInt(1, getURIDepth(parent.getURI()) + 1);
+        stmt.setString(2, getURIWildcard(parent.getURI()));
 
         ResultSet rs = stmt.executeQuery();
         List resources = new ArrayList();
@@ -1133,11 +1142,8 @@ public class JDBCClient extends AbstractDataAccessor {
         rs.close();
         stmt.close();
             
-        System.out.println("__nearest_map(" + uri + "): " + uris);
-
         int nearestResourceId = -1;
         for (int i = path.length - 1; i >= 0; i--) {
-            System.out.println("__checking " + path[i]);
             if (uris.containsKey(path[i])) {
                 nearestResourceId = ((Integer) uris.get(path[i])).intValue();
                 break;
@@ -1155,7 +1161,8 @@ public class JDBCClient extends AbstractDataAccessor {
 
     private void loadACLs(Connection conn, ResourceImpl[] resources)
         throws SQLException {
-        
+
+        if (resources.length == 0) return; 
 
         Set resourceIds = new HashSet();
         for (int i = 0; i < resources.length; i++) {
@@ -1352,13 +1359,13 @@ public class JDBCClient extends AbstractDataAccessor {
             int srcNearestACL = findNearestACL(conn, resource.getURI());
             int destNearestACL = findNearestACL(conn, destURI);
 
-            query = this.queryProvider.getUpdateAclInheritedByUriRecusrivelyPreparedStatement();
+            query = this.queryProvider.getUpdateAclInheritedByPrevIdPreparedStatement();
 
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, destNearestACL);
-            stmt.setInt(2, srcNearestACL);
-            stmt.setString(3, destURI);
-            stmt.setString(4, getURIWildcard(destURI));
+            stmt.setString(2, destURI);
+            stmt.setString(3, getURIWildcard(destURI));
+            stmt.setInt(4, srcNearestACL);
             stmt.executeUpdate();
             stmt.close();
 
@@ -1407,7 +1414,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         } else {
             int nearestAclNode = findNearestACL(conn, destURI);
-            query = this.queryProvider.getUpdateAclInheritedByUriRecusrivelyPreparedStatement();
+            query = this.queryProvider.getUpdateAclInheritedByUriPreparedStatement();
             
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, nearestAclNode);

@@ -28,7 +28,7 @@ CREATE TABLE vortex_resource
     display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,
     content_type VARCHAR (64) NULL,
-    content_length int DEFAULT 0 NOT NULL,
+    content_length bigint NULL, -- NULL for collections.
     resource_type VARCHAR(64) NULL,
     character_encoding VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,

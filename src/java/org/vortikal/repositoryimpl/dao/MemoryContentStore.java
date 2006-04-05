@@ -123,9 +123,13 @@ public class MemoryContentStore implements ContentStore {
         return new ByteArrayInputStream(((ContentNode)node).content);
     }
 
-    public synchronized void storeContent(String uri, InputStream inputStream)
+    public void storeContent(String uri, InputStream inputStream)
             throws IOException {
-        Node node = getNode(uri);
+        
+        Node node = null;
+        synchronized (this) {
+            node = getNode(uri);
+        }
         
         if (node == null) {
             throw new IOException("Node does not exist.");

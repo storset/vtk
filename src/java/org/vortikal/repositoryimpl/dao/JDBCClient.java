@@ -39,6 +39,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -608,6 +609,7 @@ public class JDBCClient extends AbstractDataAccessor {
         String characterEncoding = r.getCharacterEncoding();
         String contentLanguage = r.getContentLanguage();
         String resourceType = r.getResourceType();
+        long contentLength = r.getContentLength();
         
         String query = this.queryProvider.getLoadResourceByUriPreparedStatement();
         PreparedStatement existStmt = conn.prepareStatement(query);
@@ -635,7 +637,13 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt.setString(9, characterEncoding);
             stmt.setTimestamp(10, new Timestamp(creationTime.getTime()));
             stmt.setString(11, resourceType);
-            stmt.setString(12, uri);
+            if (collection) {
+                stmt.setNull(12, Types.BIGINT);
+            } else {
+                stmt.setLong(12, contentLength);
+            }
+            
+            stmt.setString(13, uri);
 
             stmt.executeUpdate();
             stmt.close();
@@ -643,7 +651,7 @@ public class JDBCClient extends AbstractDataAccessor {
             insertResourceEntry(conn, uri, creationTime, contentLastModified,
                     propertiesLastModified, displayName, owner, contentModifiedBy,
                     propertiesModifiedBy, contentLanguage, contentType,
-                                characterEncoding, collection, resourceType, parent,
+                                characterEncoding, collection, resourceType, contentLength, parent,
                                 r.getAclInheritedFrom());
             
             // Temporary hack to get the new resource ID
@@ -680,11 +688,23 @@ public class JDBCClient extends AbstractDataAccessor {
         storeProperties(conn, r);
     }
 
-    private void insertResourceEntry(Connection conn, String uri, Date creationTime,
-            Date contentLastModified, Date propertiesLastModified, String displayname,
-            String owner, String contentModifiedBy, String propertiesModifiedBy,
-            String contentlanguage, String contenttype, String characterEncoding,
-            boolean isCollection, String resourceType, String parent, int aclInheritedFrom)
+    private void insertResourceEntry(Connection conn, 
+                                     String uri, 
+                                     Date creationTime,
+                                     Date contentLastModified, 
+                                     Date propertiesLastModified, 
+                                     String displayname,
+                                     String owner, 
+                                     String contentModifiedBy, 
+                                     String propertiesModifiedBy,
+                                     String contentlanguage, 
+                                     String contenttype, 
+                                     String characterEncoding,
+                                     boolean collection, 
+                                     String resourceType, 
+                                     long contentLength, 
+                                     String parent, 
+                                     int aclInheritedFrom)
             throws SQLException, IOException {
 
         int depth = getURIDepth(uri);
@@ -695,24 +715,29 @@ public class JDBCClient extends AbstractDataAccessor {
 
         stmt.setString(1, uri);
         stmt.setString(2, resourceType);
-        stmt.setInt(3, depth);
-        stmt.setTimestamp(4, new Timestamp(creationTime.getTime()));
-        stmt.setTimestamp(5, new Timestamp(contentLastModified.getTime()));
-        stmt.setTimestamp(6, new Timestamp(propertiesLastModified.getTime()));
-        stmt.setString(7, contentModifiedBy);
-        stmt.setString(8, propertiesModifiedBy);
-        stmt.setString(9, owner);
-        stmt.setString(10, displayname);
-        stmt.setString(11, contentlanguage);
-        stmt.setString(12, contenttype);
-        stmt.setString(13, characterEncoding);
-        stmt.setString(14, isCollection ? "Y" : "N");
-        stmt.setInt(15, aclInheritedFrom);
+        if (collection) {
+            stmt.setNull(3, Types.BIGINT);
+        } else {
+            stmt.setLong(3, contentLength);
+        }
+        stmt.setInt(4, depth);
+        stmt.setTimestamp(5, new Timestamp(creationTime.getTime()));
+        stmt.setTimestamp(6, new Timestamp(contentLastModified.getTime()));
+        stmt.setTimestamp(7, new Timestamp(propertiesLastModified.getTime()));
+        stmt.setString(8, contentModifiedBy);
+        stmt.setString(9, propertiesModifiedBy);
+        stmt.setString(10, owner);
+        stmt.setString(11, displayname);
+        stmt.setString(12, contentlanguage);
+        stmt.setString(13, contenttype);
+        stmt.setString(14, characterEncoding);
+        stmt.setString(15, collection ? "Y" : "N");
+        stmt.setInt(16, aclInheritedFrom);
 
         stmt.executeUpdate();
         stmt.close();
 
-        contentStore.createResource(uri, isCollection);
+        contentStore.createResource(uri, collection);
     }
 
     private void storeLock(Connection conn, ResourceImpl r)
@@ -992,6 +1017,15 @@ public class JDBCClient extends AbstractDataAccessor {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Deleted locks for resource " + resource);
+        }
+        
+        query = this.queryProvider.getDeletePropertiesByResourceIdPreparedStatement();
+        stmt = conn.prepareStatement(query);
+        stmt.setInt(1, resource.getID());
+        stmt.executeUpdate();
+        stmt.close();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Deleted extra property entries for resource " + resource);
         }
 
         query = this.queryProvider.getDeleteResourcesByUriPreparedStatement();

@@ -143,7 +143,8 @@ public class QueryProvider {
             + "properties_modified_by = ?, " + "resource_owner = ?, "
             + "display_name = ?, " + "content_language = ?, "
             + "content_type = ?, " + "character_encoding = ?, "
-            + "creation_time = ?, " + "resource_type = ? " 
+            + "creation_time = ?, " + "resource_type = ?, " 
+            + "content_length = ? "
             + "where uri = ?";
         return stmt;
     }
@@ -151,12 +152,12 @@ public class QueryProvider {
 
     public String getInsertResourcePreparedStatement() {
         String statement = "insert into VORTEX_RESOURCE "
-            + "(resource_id, uri, resource_type, depth, creation_time, content_last_modified, properties_last_modified, "
+            + "(resource_id, uri, resource_type, content_length, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, "
             + "resource_owner, display_name, "
             + "content_language, content_type, character_encoding, is_collection, acl_inherited_from) "
             + "values (nextval('vortex_resource_seq_pk'), "
-            + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return statement;
     }
 
@@ -376,14 +377,14 @@ public class QueryProvider {
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
             + "display_name, content_language, content_type, character_encoding, "
-            + "is_collection, acl_inherited_from) "
+            + "is_collection, acl_inherited_from, resource_type, content_length) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "
             + "? || substring(uri, length(?) + 1), "
             + "depth + ?, creation_time, content_last_modified, "
             + "properties_last_modified, " 
             + "content_modified_by, properties_modified_by, resource_owner, display_name, "
             + "content_language, content_type, character_encoding, is_collection, "
-            + "acl_inherited_from from vortex_resource "
+            + "acl_inherited_from, resource_type, content_length from vortex_resource "
             + "where uri = ? or uri like ?";
               
         return query;
@@ -396,14 +397,14 @@ public class QueryProvider {
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
             + "display_name, content_language, content_type, character_encoding, "
-            + "is_collection, acl_inherited_from) "
+            + "is_collection, acl_inherited_from, resource_type, content_length) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "
             + "? || substring(uri, length(?) + 1), "
             + "depth + ?, creation_time, content_last_modified, "
             + "properties_last_modified, " 
             + "content_modified_by, properties_modified_by, ?, display_name, "
             + "content_language, content_type, character_encoding, is_collection, "
-            + "acl_inherited_from from vortex_resource "
+            + "acl_inherited_from, resource_type, content_length from vortex_resource "
             + "where uri = ? or uri like ?";
               
         return query;
@@ -413,11 +414,11 @@ public class QueryProvider {
        
     public String getCopyPropertiesPreparedStatement() {
         String query = "insert into extra_prop_entry (extra_prop_entry_id, "
-            + "resource_id, name_space, name, value) "
-            + "select nextval('extra_prop_entry_seq_pk'), r.resource_id, p.name_space, "
+            + "resource_id, prop_type_id, name_space, name, value) "
+            + "select nextval('extra_prop_entry_seq_pk'), r.resource_id, p.prop_type_id, p.name_space, "
             + "p.name, p.value from vortex_resource r inner join extra_prop_entry p "
             + "on r.prev_resource_id = p.resource_id where r.uri = ?"
-            + "or r.uri like ? and r.prev_resource_id is not null";
+            + "or r.uri like ? and r.prev_resource_id is not null order by p.extra_prop_entry_id";
 
         return query;
     }

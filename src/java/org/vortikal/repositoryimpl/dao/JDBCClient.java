@@ -650,7 +650,8 @@ public class JDBCClient extends AbstractDataAccessor {
             insertResourceEntry(conn, uri, creationTime, contentLastModified,
                     propertiesLastModified, displayName, owner, contentModifiedBy,
                     propertiesModifiedBy, contentLanguage, contentType,
-                    characterEncoding, collection, resourceType, parent);
+                                characterEncoding, collection, resourceType, parent,
+                                r.getAclInheritedFrom());
             
             // Temporary hack to get the new resource ID
             // Statement.getGeneratedKeys() is not implemented in the PostgreSQL JDBC driver.
@@ -685,7 +686,7 @@ public class JDBCClient extends AbstractDataAccessor {
             Date contentLastModified, Date propertiesLastModified, String displayname,
             String owner, String contentModifiedBy, String propertiesModifiedBy,
             String contentlanguage, String contenttype, String characterEncoding,
-            boolean isCollection, String resourceType, String parent)
+            boolean isCollection, String resourceType, String parent, int aclInheritedFrom)
             throws SQLException, IOException {
 
         int depth = getURIDepth(uri);
@@ -708,7 +709,7 @@ public class JDBCClient extends AbstractDataAccessor {
         stmt.setString(12, contenttype);
         stmt.setString(13, characterEncoding);
         stmt.setString(14, isCollection ? "Y" : "N");
-        stmt.setNull(15, java.sql.Types.INTEGER);
+        stmt.setInt(15, aclInheritedFrom);
 
         stmt.executeUpdate();
         stmt.close();

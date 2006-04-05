@@ -38,7 +38,8 @@ CREATE TABLE vortex_resource
 
 
 ALTER TABLE vortex_resource
-    ADD CONSTRAINT vortex_resource_PK PRIMARY KEY (resource_id);
+    ADD CONSTRAINT vortex_resource_PK
+PRIMARY KEY (resource_id);
 
 
 

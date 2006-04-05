@@ -1205,6 +1205,9 @@ public class JDBCClient extends AbstractDataAccessor {
 
         Map resultMap = new HashMap();
 
+        if (resourceIds.isEmpty()) {
+            return resultMap;
+        }
 
         String query = this.queryProvider.getLoadAclsByResourceIdsPreparedStatement(resourceIds);
         PreparedStatement stmt = conn.prepareStatement(query.toString());

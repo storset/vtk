@@ -318,6 +318,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (t instanceof ResourceOverwriteException) {
             throw new ResourceOverwriteException();
         }
+        if (t instanceof RuntimeException) {
+            throw (RuntimeException)t;
+        }
         throw new RuntimeException(t);
     }
     

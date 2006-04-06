@@ -164,6 +164,12 @@ public class JDBCClient extends AbstractDataAccessor {
             new Boolean(collection));
         resource.addProperty(prop);
         
+        Principal createdBy = principalManager.getUserPrincipal(rs.getString("created_by"));
+        prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME,
+                createdBy);
+        resource.addProperty(prop);
+
         prop = this.propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
             new Date(rs.getTimestamp("creation_time").getTime()));
@@ -210,6 +216,18 @@ public class JDBCClient extends AbstractDataAccessor {
                 string);
             resource.addProperty(prop);
         }
+
+        prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
+                new Date(rs.getTimestamp("last_modified").getTime()));
+        resource.addProperty(prop);
+
+        principal = principalManager.getUserPrincipal(rs.getString("modified_by"));
+        prop = this.propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME,
+                principal);
+        resource.addProperty(prop);
+
         prop = this.propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME,
             new Date(rs.getTimestamp("content_last_modified").getTime()));
@@ -595,10 +613,13 @@ public class JDBCClient extends AbstractDataAccessor {
         String uri = r.getURI();
         String parent = r.getParent();
 
+        Date lastModified = r.getLastModified();
         Date contentLastModified = r.getContentLastModified();
         Date propertiesLastModified = r.getPropertiesLastModified();
         Date creationTime = r.getCreationTime();
 
+        String modifiedBy = r.getModifiedBy().getQualifiedName();
+        String createdBy = r.getCreatedBy().getQualifiedName();
         String owner = r.getOwner().getQualifiedName();
         String contentModifiedBy = r.getContentModifiedBy().getQualifiedName();
         String propertiesModifiedBy = r.getPropertiesModifiedBy().getQualifiedName();
@@ -637,13 +658,18 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt.setString(9, characterEncoding);
             stmt.setTimestamp(10, new Timestamp(creationTime.getTime()));
             stmt.setString(11, resourceType);
+
             if (collection) {
                 stmt.setNull(12, Types.BIGINT);
             } else {
                 stmt.setLong(12, contentLength);
             }
             
-            stmt.setString(13, uri);
+            stmt.setString(13, createdBy);
+            stmt.setString(14, modifiedBy);
+            stmt.setTimestamp(15, new Timestamp(lastModified.getTime()));
+            
+            stmt.setString(16, uri);
 
             stmt.executeUpdate();
             stmt.close();
@@ -652,7 +678,7 @@ public class JDBCClient extends AbstractDataAccessor {
                     propertiesLastModified, displayName, owner, contentModifiedBy,
                     propertiesModifiedBy, contentLanguage, contentType,
                                 characterEncoding, collection, resourceType, contentLength, parent,
-                                r.getAclInheritedFrom());
+                                r.getAclInheritedFrom(), createdBy, modifiedBy, lastModified);
             
             // Temporary hack to get the new resource ID
             // Statement.getGeneratedKeys() is not implemented in the PostgreSQL JDBC driver.
@@ -704,7 +730,10 @@ public class JDBCClient extends AbstractDataAccessor {
                                      String resourceType, 
                                      long contentLength, 
                                      String parent, 
-                                     int aclInheritedFrom)
+                                     int aclInheritedFrom,
+                                     String createdBy,
+                                     String modifiedBy,
+                                     Date lastModified)
             throws SQLException, IOException {
 
         int depth = getURIDepth(uri);
@@ -733,6 +762,10 @@ public class JDBCClient extends AbstractDataAccessor {
         stmt.setString(14, characterEncoding);
         stmt.setString(15, collection ? "Y" : "N");
         stmt.setInt(16, aclInheritedFrom);
+
+        stmt.setString(17, createdBy);
+        stmt.setString(18, modifiedBy);
+        stmt.setTimestamp(19, new Timestamp(lastModified.getTime()));
 
         stmt.executeUpdate();
         stmt.close();

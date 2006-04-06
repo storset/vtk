@@ -633,10 +633,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             this.authorizationManager.authorizePropertyEditAdminRole(uri, principal);
         } else if (AuthorizationManager.PROPERTY_EDIT_ROOT_ROLE.equals(action)) {
             this.authorizationManager.authorizePropertyEditRootRole(uri, principal);
+        } else {
+            throw new AuthorizationException();
         }
-        throw new AuthorizationException();
     }
-    
     
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;

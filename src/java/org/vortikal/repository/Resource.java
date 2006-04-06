@@ -110,6 +110,8 @@ public interface Resource extends PropertySet {
      */
     public Principal getOwner();
     
+    public Principal getCreatedBy();
+
     /**
      * Gets the name of the principal that last modified either the
      * content or the properties of this resource.

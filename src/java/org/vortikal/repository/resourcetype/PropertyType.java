@@ -89,10 +89,13 @@ public final class PropertyType {
     public static final String COLLECTION_PROP_NAME = "collection";
     public static final String OWNER_PROP_NAME = "owner";
     public static final String CREATIONTIME_PROP_NAME = "creationTime";
+    public static final String CREATEDBY_PROP_NAME = "createdBy";
     public static final String DISPLAYNAME_PROP_NAME = "displayName";
     public static final String CONTENTTYPE_PROP_NAME = "contentType";
     public static final String CHARACTERENCODING_PROP_NAME = "characterEncoding";
     public static final String CONTENTLOCALE_PROP_NAME = "contentLocale";
+    public static final String LASTMODIFIED_PROP_NAME = "lastModified";
+    public static final String MODIFIEDBY_PROP_NAME = "modifiedBy";
     public static final String CONTENTLASTMODIFIED_PROP_NAME = "contentLastModified";
     public static final String CONTENTMODIFIEDBY_PROP_NAME = "contentModifiedBy";
     public static final String PROPERTIESLASTMODIFIED_PROP_NAME = "propertiesLastModified";
@@ -103,10 +106,13 @@ public final class PropertyType {
         COLLECTION_PROP_NAME,
         OWNER_PROP_NAME, 
         CREATIONTIME_PROP_NAME,
+        CREATEDBY_PROP_NAME,
         DISPLAYNAME_PROP_NAME,
         CONTENTTYPE_PROP_NAME,
         CHARACTERENCODING_PROP_NAME,
         CONTENTLOCALE_PROP_NAME, 
+        LASTMODIFIED_PROP_NAME,
+        MODIFIEDBY_PROP_NAME,
         CONTENTLASTMODIFIED_PROP_NAME,
         CONTENTMODIFIEDBY_PROP_NAME,
         PROPERTIESLASTMODIFIED_PROP_NAME,

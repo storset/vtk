@@ -5,7 +5,6 @@
 
   <!-- RESOURCE TYPE DEFINITIONS -->
   <import resource="resource.xml" />
-  <import resource="intermediate-resource.xml" />
   <import resource="file.xml" />
   <import resource="collection.xml"/>
   <import resource="text.xml" />

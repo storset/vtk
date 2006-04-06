@@ -247,6 +247,10 @@ public class ResourceImpl implements Resource, Cloneable {
         return getPrincipalPropValue(PropertyType.OWNER_PROP_NAME);
     }
 
+    public Principal getCreatedBy() {
+        return getPrincipalPropValue(PropertyType.CREATEDBY_PROP_NAME);
+    }
+
     public Principal getContentModifiedBy() {
         return getPrincipalPropValue(PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
     }
@@ -293,11 +297,12 @@ public class ResourceImpl implements Resource, Cloneable {
      * @return the time of last modification
      */
     public Date getLastModified() {
-        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
-            return getContentLastModified();
-        }
-
-        return getPropertiesLastModified();
+//        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
+//            return getContentLastModified();
+//        }
+//
+//        return getPropertiesLastModified();
+        return getDatePropValue(PropertyType.LASTMODIFIED_PROP_NAME);
     }
 
     /**
@@ -307,11 +312,12 @@ public class ResourceImpl implements Resource, Cloneable {
      * @return the name of the principal
      */
     public Principal getModifiedBy() {
-        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
-            return getContentModifiedBy();
-        }
-
-        return getPropertiesModifiedBy();
+//        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
+//            return getContentModifiedBy();
+//        }
+//
+//        return getPropertiesModifiedBy();
+        return getPrincipalPropValue(PropertyType.MODIFIEDBY_PROP_NAME);
     }
 
     public long getContentLength() {

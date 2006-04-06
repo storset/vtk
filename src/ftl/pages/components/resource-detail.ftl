@@ -53,6 +53,16 @@
   </tr>
 
   <tr class="owner">
+    <td class="key">Created by:</td>
+    <td class="value">${resourceContext.currentResource.createdBy.name}</td>
+  </tr>
+
+  <tr class="owner">
+    <td class="key">Modified by:</td>
+    <td class="value">${resourceContext.currentResource.modifiedBy.name}</td>
+  </tr>
+
+  <tr class="owner">
   <#if ownershipForm?exists && !ownershipForm.done>
   <td colspan="2" class="expandedForm">
   <form action="${ownershipForm.submitURL?html}" method="POST">

@@ -277,6 +277,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         repository.storeACL(token, uri, acl);
     }
 
+    // XXX: Losing stack traces unnecessary
     private void throwAppropriateException(String uri, Throwable t) throws 
         AclException, AuthenticationException, AuthorizationException,
         FailedDependencyException, IOException, IllegalOperationException,
@@ -317,9 +318,6 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         }
         if (t instanceof ResourceOverwriteException) {
             throw new ResourceOverwriteException();
-        }
-        if (t instanceof RuntimeException) {
-            throw (RuntimeException)t;
         }
         throw new RuntimeException(t);
     }

@@ -14,7 +14,8 @@
       </list>
     </property>
     
-    <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition"/>
+    <!--property name="parentTypeDefinition" ref="resourceResourceTypeDefinition"/-->
+    <property name="parentTypeDefinition" ref="intermediateResourceResourceTypeDefinition"/>
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="skipInPathPropDef"/>

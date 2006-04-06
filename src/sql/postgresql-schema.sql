@@ -19,10 +19,13 @@ CREATE TABLE vortex_resource
     uri VARCHAR (2048) NOT NULL,
     depth int NOT NULL,
     creation_time TIMESTAMP NOT NULL,
+    created_by VARCHAR(64) NOT NULL,
     content_last_modified TIMESTAMP NOT NULL,
     properties_last_modified TIMESTAMP NOT NULL,
+    last_modified TIMESTAMP NOT NULL,
     content_modified_by VARCHAR (64) NOT NULL,
     properties_modified_by VARCHAR (64) NOT NULL,
+    modified_by VARCHAR (64) NOT NULL,
 --    serial VARCHAR(64) NULL,
     resource_owner VARCHAR (64) NOT NULL,
     display_name VARCHAR (128) NULL,
@@ -44,6 +47,7 @@ ALTER TABLE vortex_resource
       ADD CONSTRAINT vortex_resource_FK FOREIGN KEY (acl_inherited_from)
           REFERENCES vortex_resource (resource_id);
 
+CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 
 
 -----------------------------------------------------------------------------

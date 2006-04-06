@@ -8,7 +8,8 @@
   <bean id="fileResourceTypeDefinition" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
     <property name="name" value="file"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
+    <!--property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" /-->
+    <property name="parentTypeDefinition" ref="intermediateResourceResourceTypeDefinition" />
 
     <property name="propertyTypeDefinitions">
       <list>

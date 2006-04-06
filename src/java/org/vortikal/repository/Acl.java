@@ -73,9 +73,11 @@ public interface Acl extends Cloneable {
 
     public void setInherited(boolean inherited);
 
-    public void addEntry(String action, Principal principal);
+    public void addEntry(String action, Principal principal) 
+    throws IllegalArgumentException;
 
-    public void removeEntry(String privilegeName, Principal principal);
+    public void removeEntry(String privilegeName, Principal principal) 
+    throws IllegalArgumentException;
 
 
 }

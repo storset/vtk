@@ -46,5 +46,4 @@ public interface PrincipalManager extends PrincipalStore {
     
     public Principal getGroupPrincipal(String id);
 
-    public Principal getPseudoPrincipal(String id);
 }

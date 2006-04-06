@@ -1591,8 +1591,6 @@
   <bean id="adminACLProvider" 
         class="org.vortikal.web.referencedata.provider.ACLProvider" 
         parent="requestLocalRepositoryAware">
-    <property name="principalManager" 
-              ref="principalManager" />
     <property name="aclInheritanceService" 
               ref="aclInheritanceService" />
     <property name="editWritePermissionsService" 

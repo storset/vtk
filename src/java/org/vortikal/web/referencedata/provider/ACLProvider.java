@@ -43,6 +43,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -57,7 +58,6 @@ import org.vortikal.web.service.Service;
  * Configurable properties:
  * <ul>
  *  <li><code>repository</code> - the {@link Repository} is required
- *  <li><code>principalManager</code> - the {@link PrincipalManager} is required
  *  <li> <code>aclInheritanceService</code> - service for editing the 'inherited
  *  property' of the ACL for a resource
  *  <li> <code>editWritePermissionsService</code> - service for editing 'write'
@@ -103,7 +103,6 @@ import org.vortikal.web.service.Service;
 public class ACLProvider implements ReferenceDataProvider, InitializingBean {
 
     private Repository repository = null;
-    private PrincipalManager principalManager = null;
     private Service aclInheritanceService = null;
     private Service editWritePermissionsService = null;
     private Service editReadPermissionsService = null;
@@ -113,10 +112,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-    
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
     }
     
     public void setAclInheritanceService(Service aclInheritanceService) {
@@ -144,12 +139,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
             throw new BeanInitializationException(
                 "Bean property 'repository' must be set");
         }
-        if (this.principalManager == null) {
-            throw new BeanInitializationException(
-                "Bean property 'principalManager' must be set");
-        }
     }
-    
 
 
     public void referenceData(Map model, HttpServletRequest request)
@@ -180,7 +170,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         Principal[] writeAclAuthorizedGroups = acl.listPrivilegedGroups(Privilege.ALL);
         aclModel.put("writeAclAuthorizedGroups", writeAclAuthorizedGroups);
 
-        Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
+        Principal auth = PseudoPrincipal.AUTHENTICATED;
         aclModel.put("everyoneReadAuthorized" , 
                 new Boolean(acl.hasPrivilege(Privilege.READ, auth)));
         aclModel.put("everyoneWriteAuthorized", 

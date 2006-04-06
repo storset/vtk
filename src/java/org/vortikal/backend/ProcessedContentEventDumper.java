@@ -38,15 +38,16 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
+import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PseudoPrincipal;
 
 
 public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
     protected AbstractDataAccessor dataAccessor;
-    private PrincipalManager principalManager;
 
     private final static String CREATED = "created";
     private final static String DELETED = "deleted";
@@ -185,7 +186,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 return;
             }
             
-            Principal all = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
+            Principal all = PseudoPrincipal.ALL;
             if (originalResource.isAuthorized(Privilege.READ_PROCESSED, all) &&
                 resource.isAuthorized(Privilege.READ_PROCESSED, all)) {
                 return;
@@ -200,7 +201,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             
             if (resource.isCollection()) {
                 
-                org.vortikal.repositoryimpl.ResourceImpl[] childResources =
+                Resource[] childResources =
                     dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));
                 for (int i=0; i < childResources.length; i++) {
                     dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(),
@@ -214,14 +215,6 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 "Caught IOException while reporting ACL modification " +
                 "for uri " + resource.getURI(), e);
         }
-    }
-
-
-    /**
-     * @param principalManager The principalManager to set.
-     */
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
     }
 
 }

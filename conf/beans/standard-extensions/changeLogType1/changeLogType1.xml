@@ -7,7 +7,6 @@
   <bean id="processedContentEventDumper" 
     class="org.vortikal.backend.ProcessedContentEventDumper">
     <property name="dataAccessor" ref="repository.database"/>
-    <property name="principalManager" ref="principalManager" />
     <property name="id" value="1" />
     <property name="repository" ref="repository"/>
     <property name="loggerType" value="1" />

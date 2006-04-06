@@ -47,6 +47,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -119,8 +120,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
          
         ACLEditCommand command = new ACLEditCommand(submitURL);
         
-        Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
-        Principal pseudoOwner = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_OWNER);
+        Principal auth = PseudoPrincipal.AUTHENTICATED;
+        Principal pseudoOwner = PseudoPrincipal.OWNER;
         command.setEveryone(resource.isAuthorized(this.privilege, auth));
         command.setOwner(resource.getOwner().getName());
 
@@ -204,17 +205,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return new ModelAndView(getSuccessView());
         }
         
-        Principal auth = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
-        Principal all =  principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
+        Principal auth = PseudoPrincipal.AUTHENTICATED;
         
         // Setting or unsetting pseudo:authenticated 
         if (!resource.isAuthorized(privilege, auth) && editCommand.isEveryone()) {
             if (Privilege.READ.equals(privilege))
-                acl.addEntry(Privilege.READ_PROCESSED, all);
+                acl.addEntry(Privilege.READ_PROCESSED, PseudoPrincipal.ALL);
             acl.addEntry(privilege, auth);
         } else if (resource.isAuthorized(privilege, auth) && !editCommand.isEveryone()) {
             if (Privilege.READ.equals(privilege)) 
-                acl.removeEntry(Privilege.READ_PROCESSED, all);
+                acl.removeEntry(Privilege.READ_PROCESSED, PseudoPrincipal.ALL);
             acl.removeEntry(privilege, auth);
         }
         

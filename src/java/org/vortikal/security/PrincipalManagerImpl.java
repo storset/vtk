@@ -219,19 +219,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
         return p;
     }
 
-    public Principal getPseudoPrincipal(String id) {
-        if (Principal.NAME_PSEUDO_ALL.equals(id)
-            || Principal.NAME_PSEUDO_AUTHENTICATED.equals(id)
-            || Principal.NAME_PSEUDO_OWNER.equals(id))  {
-
-            PrincipalImpl p = new PrincipalImpl(id, id, null, null);
-            p.setType(Principal.TYPE_PSEUDO);
-            return p;
-        }
-        throw new InvalidPrincipalException("Invalid principal: " + id);
-    }
-
-
     public boolean validatePrincipal(Principal principal)
         throws AuthenticationProcessingException {
         return this.principalStore.validatePrincipal(principal);

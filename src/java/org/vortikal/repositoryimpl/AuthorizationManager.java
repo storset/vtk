@@ -45,6 +45,7 @@ import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
 
@@ -382,8 +383,7 @@ public class AuthorizationManager {
             }
 
             // Condition 1:
-            Principal p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
-            if (principalSet.contains(p)) {
+            if (principalSet.contains(PseudoPrincipal.ALL)) {
             // XXX: removed this:
             //            && (Privilege.READ.equals(action) || 
             //                    Privilege.READ_PROCESSED.equals(action))
@@ -396,14 +396,12 @@ public class AuthorizationManager {
             }
 
             // Condition 2:
-            p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_AUTHENTICATED);
-            if (principalSet.contains(p)) {
+            if (principalSet.contains(PseudoPrincipal.AUTHENTICATED)) {
                 return;
             }
 
             // Condition 3:
-            p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_OWNER);
-            if (resource.getOwner().equals(principal) && principalSet.contains(p)) {
+            if (resource.getOwner().equals(principal) && principalSet.contains(PseudoPrincipal.OWNER)) {
                 return;
             }
 

@@ -51,10 +51,6 @@ public interface Principal extends Comparable, java.io.Serializable {
      */
     public static final int TYPE_PSEUDO = 2;
 
-    public static final String NAME_PSEUDO_AUTHENTICATED = "pseudo:authenticated";
-    public static final String NAME_PSEUDO_ALL = "pseudo:all";
-    public static final String NAME_PSEUDO_OWNER = "pseudo:owner";
-    
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.
      * @return If the domain equals the principalManager's defaultDomain

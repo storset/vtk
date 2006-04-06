@@ -33,6 +33,9 @@ package org.vortikal.security;
 
 /**
  * Package local implementation of {@link Principal}.
+ * 
+ * XXX: should be reimplemented, at least equals/compare
+ * XXX: or maybe just separate users/groups/pseudo in different interfaces?
  */
 class PrincipalImpl implements Principal {
 
@@ -52,7 +55,6 @@ class PrincipalImpl implements Principal {
         this.url = url;
     }
     
-
     public boolean equals(Object another) {
         if (another instanceof Principal) {
             String anotherName = ((Principal)another).getQualifiedName();

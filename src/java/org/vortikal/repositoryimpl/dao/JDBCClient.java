@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -53,19 +52,21 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 
 /**
  * This class is going to be a "generic" JDBC database accessor. Currently, only
  * PostgreSQL is supported. 
+ * 
+ * XXX: remove lockType
  *
  */
 public class JDBCClient extends AbstractDataAccessor {
@@ -511,7 +512,10 @@ public class JDBCClient extends AbstractDataAccessor {
             throws SQLException {
         String query = this.queryProvider.getDiscoverLocksByResourceIdPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(uri));
+
+        stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+
+        stmt.setString(2, getURIWildcard(uri));
 
         ResultSet rs = stmt.executeQuery();
         List result = new ArrayList();
@@ -528,29 +532,29 @@ public class JDBCClient extends AbstractDataAccessor {
         return (String[]) result.toArray(new String[result.size()]);
     }
 
-    private LockImpl loadLock(Connection conn, String uri)
-            throws SQLException {
-        String query = this.queryProvider.getLoadLockByResourceUriPreparedStatement();
-        PreparedStatement stmt = conn.prepareStatement(query);
-
-        stmt.setString(1, uri);
-
-        ResultSet rs = stmt.executeQuery();
-
-        LockImpl lock = null;
-
-        if (rs.next()) {
-            lock = new LockImpl(rs.getString("token"), 
-                    principalManager.getUserPrincipal(rs.getString("lock_owner")), 
-                    rs.getString("lock_owner_info"), rs.getString("depth"), 
-                    new Date(rs.getTimestamp("timeout").getTime()));
-        }
-
-        rs.close();
-        stmt.close();
-
-        return lock;
-    }
+//    private LockImpl loadLock(Connection conn, String uri)
+//            throws SQLException {
+//        String query = this.queryProvider.getLoadLockByResourceUriPreparedStatement();
+//        PreparedStatement stmt = conn.prepareStatement(query);
+//
+//        stmt.setString(1, uri);
+//
+//        ResultSet rs = stmt.executeQuery();
+//
+//        LockImpl lock = null;
+//
+//        if (rs.next()) {
+//            lock = new LockImpl(rs.getString("token"), 
+//                    principalManager.getUserPrincipal(rs.getString("lock_owner")), 
+//                    rs.getString("lock_owner_info"), rs.getString("depth"), 
+//                    new Date(rs.getTimestamp("timeout").getTime()));
+//        }
+//
+//        rs.close();
+//        stmt.close();
+//
+//        return lock;
+//    }
 
     private Map loadLocks(Connection conn, String[] uris)
             throws SQLException {
@@ -561,8 +565,10 @@ public class JDBCClient extends AbstractDataAccessor {
         String query = this.queryProvider.getLoadLocksByResourceUrisPreparedStatement(uris);
         PreparedStatement stmt = conn.prepareStatement(query);
 
+        stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+        
         for (int i = 0; i < uris.length; i++) {
-            stmt.setString(i + 1, uris[i]);
+            stmt.setString(i + 2, uris[i]);
         }
 
         ResultSet rs = stmt.executeQuery();
@@ -574,9 +580,9 @@ public class JDBCClient extends AbstractDataAccessor {
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 
-            if (lock.getTimeout().getTime() > System.currentTimeMillis()) {
+//            if (lock.getTimeout().getTime() > System.currentTimeMillis()) {
                 result.put(rs.getString("uri"), lock);
-            }
+//            }
         }
 
         rs.close();
@@ -1251,10 +1257,7 @@ public class JDBCClient extends AbstractDataAccessor {
                     + resources[i].getAclInheritedFrom() + ")");
             }
 
-            try {
-                acl = (AclImpl) acl.clone();
-            } catch (CloneNotSupportedException e) { }
-
+            acl = (AclImpl) acl.clone();
             acl.setInherited(resources[i].isInheritedACL());
             resources[i].setACL(acl);
         }
@@ -1287,7 +1290,7 @@ public class JDBCClient extends AbstractDataAccessor {
             AclImpl acl = (AclImpl)resultMap.get(resourceId);
             
             if (acl == null) {
-                acl = new AclImpl(this.principalManager);
+                acl = new AclImpl();
                 resultMap.put(resourceId, acl);
             }
             
@@ -1298,7 +1301,7 @@ public class JDBCClient extends AbstractDataAccessor {
             if (isGroup)
                 p = principalManager.getGroupPrincipal(name);
             else if (name.startsWith("pseudo:"))
-                p = principalManager.getPseudoPrincipal(name);
+                p = PseudoPrincipal.getPrincipal(name);
             else
                 p = principalManager.getUserPrincipal(name);
             acl.addEntry(action, p);
@@ -1319,8 +1322,11 @@ public class JDBCClient extends AbstractDataAccessor {
         String query = this.queryProvider.getLoadLocksForChildrenPreparedStatement();
         
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(parent.getURI()));
-        stmt.setInt(2, getURIDepth(parent.getURI()) + 1);
+  
+        stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+        
+        stmt.setString(2, getURIWildcard(parent.getURI()));
+        stmt.setInt(3, getURIDepth(parent.getURI()) + 1);
         
         ResultSet rs = stmt.executeQuery();
         Map result = new HashMap();
@@ -1331,9 +1337,9 @@ public class JDBCClient extends AbstractDataAccessor {
                 rs.getString("lock_owner_info"), rs.getString("depth"),
                 new Date(rs.getTimestamp("timeout").getTime()));
 
-            if (lock.getTimeout().getTime() > System.currentTimeMillis()) {
+//            if (lock.getTimeout().getTime() > System.currentTimeMillis()) {
                 result.put(rs.getString("uri"), lock);
-            }
+//            }
         }
 
         rs.close();

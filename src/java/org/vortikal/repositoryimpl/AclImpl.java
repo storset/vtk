@@ -43,6 +43,7 @@ import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Privilege;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PseudoPrincipal;
 
 
 public class AclImpl implements Acl {
@@ -50,17 +51,11 @@ public class AclImpl implements Acl {
     private boolean inherited;
     private boolean dirty = false; 
     
-    private PrincipalManager principalManager;
-    
     /**
      * map: [action --> Set(Principal)]
      */
     private Map actionSets = new HashMap();
 
-    public AclImpl(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-    
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
     }
@@ -86,7 +81,19 @@ public class AclImpl implements Acl {
         return (Set) actionSets.get(action);
     }
 
-    public void addEntry(String action, Principal p) {
+    public void addEntry(String action, Principal p) throws IllegalArgumentException {
+        if (!Privilege.PRIVILEGES.contains(action))
+            throw new IllegalArgumentException("Unknown acl privilege");
+            
+        if (p == null)
+            throw new IllegalArgumentException("Null principal");
+            
+        Principal all = PseudoPrincipal.ALL;
+        
+        if ((Privilege.ALL.equals(action) || Privilege.WRITE.equals(action)) 
+                && all.equals(p))
+                throw new IllegalArgumentException("Not allowed to add acl entry");
+        
         this.dirty = true;
         
         Set actionEntry = (Set) this.actionSets.get(action);
@@ -99,7 +106,18 @@ public class AclImpl implements Acl {
 
     }
     
-    public void removeEntry(String action, Principal principal) {
+    public void removeEntry(String action, Principal principal) throws IllegalArgumentException {
+
+        if (!Privilege.PRIVILEGES.contains(action))
+            throw new IllegalArgumentException("Unknown acl privilege");
+            
+        if (principal == null)
+            throw new IllegalArgumentException("Null principal");
+            
+        if (PseudoPrincipal.OWNER.equals(principal) &&
+                Privilege.ALL.equals(action))
+                throw new IllegalArgumentException("Not allowed to remove acl entry");
+        
         this.dirty = true;
 
         Set actionEntry = (Set) this.actionSets.get(action);
@@ -234,16 +252,16 @@ public class AclImpl implements Acl {
 
             for (Iterator j = principals.iterator(); j.hasNext();) {
                 Principal p = (Principal) j.next();
-
-                hashCode += p.hashCode();
+                // XXX: needs to take actions into account(?)
+                hashCode += p.hashCode() + action.hashCode();
             }
         }
 
         return hashCode;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        AclImpl clone = new AclImpl(principalManager);
+    public Object clone() {
+        AclImpl clone = new AclImpl();
         clone.setInherited(this.inherited);
 
         for (Iterator iter = actionSets.entrySet().iterator(); iter.hasNext();) {
@@ -286,114 +304,5 @@ public class AclImpl implements Acl {
         sb.append("]");
         return sb.toString();
     }
-
     
-    /**
-     * Checks the validity of an ACL.
-     *
-     * @param aceList an <code>Ace[]</code> value
-     * @exception AclException if an error occurs
-     * @exception IllegalOperationException if an error occurs
-     * @exception IOException if an error occurs
-     */
-    private void validateACL(Acl acl)
-        throws AclException, IllegalOperationException {
-        /*
-         * Enforce ((dav:owner (dav:read dav:write dav:write-acl))
-         */
-        Principal p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_OWNER);
-        if (!acl.hasPrivilege(Privilege.WRITE, p)) {
-            throw new IllegalOperationException(
-                "Owner must be granted write privilege in ACL.");
-        }
-
-        if (!acl.hasPrivilege(Privilege.READ, p)) {
-            throw new IllegalOperationException(
-                "Owner must be granted read privilege in ACL.");
-        }
-
-        if (!acl.hasPrivilege(Privilege.ALL, p)) {
-            throw new IllegalOperationException(
-                "Owner must be granted write-acl privilege in ACL.");
-        }
-        
-        p = principalManager.getPseudoPrincipal(Principal.NAME_PSEUDO_ALL);
-        if (acl.hasPrivilege(Privilege.WRITE, p)) {
-            throw new IllegalOperationException(
-            "'All users' isn't allowed write privilege in ACL.");
-        }
-        
-        if (acl.hasPrivilege(Privilege.ALL, p)) {
-            throw new IllegalOperationException(
-            "'All users' isn't allowed write-acl privilege in ACL.");
-        }
-
-        /*
-         * Walk trough the ACL, for every ACE, enforce that:
-         * 1) Every principal is valid
-         * 2) Every privilege has a supported namespace and name
-         */
-
-//        for (int i = 0; i < acl.length; i++) {
-//            Ace ace = acl[i];
-//
-//            org.vortikal.repositoryimpl.ACLPrincipal principal = ace.getPrincipal();
-//
-//            if (principal.getType() == org.vortikal.repositoryimpl.ACLPrincipal.TYPE_URL) {
-//                boolean validPrincipal = false;
-//
-//                if (principal.isUser()) {
-//                    Principal p = null;
-//                    try {
-//                        p = principalManager.getPrincipal(principal.getURL());
-//                    } catch (InvalidPrincipalException e) {
-//                        throw new AclException("Invalid principal '" 
-//                                + principal.getURL() + "' in ACL");
-//                    }
-//                    validPrincipal = principalManager.validatePrincipal(p);
-//                } else {
-//                    validPrincipal = principalManager.validateGroup(principal.getURL());
-//                }
-//
-//                if (!validPrincipal) {
-//                    throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
-//                        "Unknown principal: " + principal.getURL());
-//                }
-//            } else {
-//                if ((principal.getType() != org.vortikal.repositoryimpl.ACLPrincipal.TYPE_ALL) &&
-//                        (principal.getType() != org.vortikal.repositoryimpl.ACLPrincipal.TYPE_OWNER) &&
-//                        (principal.getType() != org.vortikal.repositoryimpl.ACLPrincipal.TYPE_AUTHENTICATED)) {
-//                    throw new AclException(AclException.RECOGNIZED_PRINCIPAL,
-//                        "Allowed principal types are " +
-//                        "either TYPE_ALL, TYPE_OWNER " + "OR  TYPE_URL.");
-//                }
-//            }
-//
-//            Privilege[] privileges = ace.getPrivileges();
-//
-//            for (int j = 0; j < privileges.length; j++) {
-//                Privilege privilege = privileges[j];
-//
-//                if (privilege.getNamespace().equals(Namespace.STANDARD_NAMESPACE)) {
-//                    if (!(privilege.getName().equals(Privilege.WRITE) ||
-//                            privilege.getName().equals(Privilege.READ) ||
-//                            privilege.getName().equals(Privilege.ALL))) {
-//                        throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
-//                            "Unsupported privilege name: " +
-//                            privilege.getName());
-//                    }
-//                } else if (privilege.getNamespace().equals(Namespace.CUSTOM_NAMESPACE)) {
-//                    if (!(privilege.getName().equals(Privilege.READ_PROCESSED))) {
-//                        throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
-//                            "Unsupported privilege name: " +
-//                            privilege.getName());
-//                    }
-//                } else {
-//                    throw new AclException(AclException.NOT_SUPPORTED_PRIVILEGE,
-//                        "Unsupported privilege namespace: " +
-//                        privilege.getNamespace());
-//                }
-//            }
-//        }
-    }
 }

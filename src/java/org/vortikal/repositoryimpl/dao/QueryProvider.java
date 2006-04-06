@@ -105,23 +105,23 @@ public class QueryProvider {
     public String getDiscoverLocksByResourceIdPreparedStatement() {
         String query = "select r.uri, l.* from VORTEX_LOCK l inner join VORTEX_RESOURCE r "
             + "on l.resource_id = r.resource_id "
-            + "where r.resource_id in ("
+            + "where l.timeout >= ? and r.resource_id in ("
             + "select resource_id from VORTEX_RESOURCE where uri like ?)";
         return query;
     }
 
-    public String getLoadLockByResourceUriPreparedStatement() {
-        String query = "select * from VORTEX_LOCK where resource_id in ("
-            + "select resource_id from VORTEX_RESOURCE where uri = ?)";
-        return query;
-    }
+//    public String getLoadLockByResourceUriPreparedStatement() {
+//        String query = "select * from VORTEX_LOCK where resource_id in ("
+//            + "select resource_id from VORTEX_RESOURCE where uri = ?)";
+//        return query;
+//    }
 
 
     public String getLoadLocksByResourceUrisPreparedStatement(String[] uris) {
 
         String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
             + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
-            + "where r.uri in (";
+            + "where l.timeout >= ? and r.uri in (";
 
         for (int i = 0; i < uris.length; i++) {
             query += ((i < (uris.length - 1)) ? "?, " : "?)");
@@ -357,8 +357,8 @@ public class QueryProvider {
     public String getLoadLocksForChildrenPreparedStatement() {
         return "select r.uri as uri, l.* from VORTEX_RESOURCE r "
             + "inner join VORTEX_LOCK l on r.resource_id = l.resource_id "
-            + "where r.resource_id in (select resource_id from vortex_resource "
-            + "where uri like ? and depth = ?)";
+            + "where l.timeout >= ? and r.resource_id in (select resource_id " 
+            + "from vortex_resource where uri like ? and depth = ?)";
 
     }
        

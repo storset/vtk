@@ -106,7 +106,7 @@
   <tr class="${rowType} <@vrtx.resolveContentType contentType="${child.contentType?replace('/', '-')}"/>">
    <#list collectionListing.childInfoItems as item>
       <#assign class = item >
-      <#if item = "locked" && child.activeLock?exists>
+      <#if item = "locked" && child.lock?exists>
         <#assign class = class + " activeLock">
       </#if>
       <td class="${class}">
@@ -151,9 +151,9 @@
             <#break>
 
           <#case "locked">
-            <#if child.activeLock?exists>
+            <#if child.lock?exists>
               <span class="lockOwner"></span>
-              <!-- span class="lockOwner">${child.activeLock.principal.name}</span -->
+              <!-- span class="lockOwner">${child.lock.principal.name}</span -->
             </#if>
             <#break>
 

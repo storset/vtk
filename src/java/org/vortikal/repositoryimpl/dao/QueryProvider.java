@@ -285,9 +285,8 @@ public class QueryProvider {
             + "where uri like ? or resource_id = ?)";
     }
 
-
     public String getDeleteLocksByUriPreparedStatement() {
-        return "delete from ACL_ENTRY where resource_id in ("
+        return "delete from VORTEX_LOCK where resource_id in ("
             + "select resource_id from VORTEX_RESOURCE "
             + "where uri like ? or resource_id = ?)";
     }

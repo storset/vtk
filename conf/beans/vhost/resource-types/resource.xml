@@ -12,6 +12,7 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="ownerPropDef" />
+        <ref bean="createdByPropDef" />
         <ref bean="collectionPropDef" />
         <ref bean="creationTimePropDef" />
         <ref bean="contentLastModifiedPropDef" />
@@ -22,6 +23,17 @@
       </list>
     </property>
   </bean>
+
+  <bean id="createdByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="createdBy" />
+    <property name="type" ref="TYPE_PRINCIPAL" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="ownerEvaluator" />
+    <property name="contentModificationEvaluator" ref="lastModifiedEvaluator" />
+  </bean>
+
+
 
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="owner" />

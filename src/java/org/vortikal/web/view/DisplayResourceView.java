@@ -321,7 +321,7 @@ public class DisplayResourceView extends AbstractView
     protected void setEtagHeader(Resource resource, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         if (includeEtagHeader) {
-            String etag = "\"" + resource.getSerial() + "\"";
+            String etag = resource.getEtag();
             if (logger.isDebugEnabled()) {
                 logger.debug("Setting header Etag: " + etag);
             }

@@ -36,7 +36,7 @@
     <property name="name" value="intList"/>
     <property name="type" ref="TYPE_INT"/>
     <property name="multiple" value="true"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ROOT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false"/>
   </bean>
 

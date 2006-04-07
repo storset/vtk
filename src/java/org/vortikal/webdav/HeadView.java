@@ -35,9 +35,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.View;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.view.DisplayResourceView;
 
 
 
@@ -49,7 +52,8 @@ import org.vortikal.web.InvalidModelException;
  */
 public class HeadView implements View {
 
-
+    private static Log logger = LogFactory.getLog(HeadView.class);
+    
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
 
@@ -61,6 +65,7 @@ public class HeadView implements View {
                 " `" + WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE + "')");
         }
 
+        response.setHeader("ETag", resource.getEtag());
         response.setHeader("Content-Type", resource.getContentType());
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
         response.setStatus(HttpServletResponse.SC_OK);

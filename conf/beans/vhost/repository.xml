@@ -71,6 +71,7 @@
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
     <property name="valueFactory" ref="valueFactory"/>
+    <property name="contentStore" ref="repository.contentStore"/>
     <property name="rootResourceTypeDefinition" ref="abstractResourceResourceTypeDefinition"/>
   </bean>
 
@@ -116,7 +117,6 @@
     <property name="targetObject"><ref bean="repository.database"/></property>
     <property name="targetMethod"><value>deleteExpiredLocks</value></property>
   </bean>
-
 
 
 </beans>

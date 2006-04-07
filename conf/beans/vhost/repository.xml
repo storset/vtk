@@ -13,7 +13,6 @@
     <property name="dao" ref="repository.backend" />
     <property name="lockManager" ref="lockManager" />
     <property name="propertyManager" ref="propertyManager" />
-    <property name="readOnly" value="${repositoryReadOnly}" />
   </bean>
 
   <bean id="repository.backend" class="org.vortikal.repositoryimpl.dao.Cache">
@@ -76,6 +75,7 @@
   </bean>
 
   <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManager">
+    <property name="readOnly" value="${repositoryReadOnly}" />
     <property name="principalManager" ref="principalManager" />
     <property name="lockManager" ref="lockManager" />
     <property name="roleManager" ref="roleManager" />

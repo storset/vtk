@@ -55,13 +55,13 @@
   <bean id="ACTION_PROPERTY_EDIT_ADMIN_ROLE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.PROPERTY_EDIT_ADMIN_ROLE" />
+              value="org.vortikal.repositoryimpl.AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION" />
   </bean>
 
   <bean id="ACTION_PROPERTY_EDIT_ROOT_ROLE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.PROPERTY_EDIT_ROOT_ROLE" />
+              value="org.vortikal.repositoryimpl.AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION" />
   </bean>
 
 </beans>

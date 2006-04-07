@@ -378,14 +378,16 @@ public class QueryProvider {
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
             + "display_name, content_language, content_type, character_encoding, "
-            + "is_collection, acl_inherited_from, resource_type, content_length) "
+            + "is_collection, acl_inherited_from, resource_type, content_length, " 
+            + "created_by, modified_by, last_modified) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "
             + "? || substring(uri, length(?) + 1), "
             + "depth + ?, creation_time, content_last_modified, "
             + "properties_last_modified, " 
             + "content_modified_by, properties_modified_by, resource_owner, display_name, "
             + "content_language, content_type, character_encoding, is_collection, "
-            + "acl_inherited_from, resource_type, content_length from vortex_resource "
+            + "acl_inherited_from, resource_type, content_length, " 
+            + "created_by, modified_by, last_modified from vortex_resource "
             + "where uri = ? or uri like ?";
               
         return query;
@@ -398,14 +400,16 @@ public class QueryProvider {
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
             + "display_name, content_language, content_type, character_encoding, "
-            + "is_collection, acl_inherited_from, resource_type, content_length) "
+            + "is_collection, acl_inherited_from, resource_type, content_length, "
+            + "created_by, modified_by, last_modified) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "
             + "? || substring(uri, length(?) + 1), "
             + "depth + ?, creation_time, content_last_modified, "
             + "properties_last_modified, " 
             + "content_modified_by, properties_modified_by, ?, display_name, "
             + "content_language, content_type, character_encoding, is_collection, "
-            + "acl_inherited_from, resource_type, content_length from vortex_resource "
+            + "acl_inherited_from, resource_type, content_length, "
+            + "created_by, modified_by, last_modified from vortex_resource "
             + "where uri = ? or uri like ?";
               
         return query;

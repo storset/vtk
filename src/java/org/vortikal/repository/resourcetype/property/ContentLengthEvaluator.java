@@ -59,15 +59,12 @@ public class ContentLengthEvaluator implements CreatePropertyEvaluator,
                 PropertyEvaluationException("Cannot evaluate content-length, content was null");
         }
         
-        long length;
         try {
-            length = (long) ((byte[]) content.getContentRepresentation(byte[].class)).length;
+            property.setLongValue(content.getContentLength());
         } catch (Exception e) {
             throw new PropertyEvaluationException(
                     "Unable to get content length: " + e.getMessage());
         }
-
-        property.setLongValue(length);
         
         return true;
     }

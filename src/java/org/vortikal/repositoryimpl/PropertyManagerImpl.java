@@ -31,9 +31,7 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,13 +41,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
@@ -61,14 +57,15 @@ import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repositoryimpl.dao.ContentStore;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -90,6 +87,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private AuthorizationManager authorizationManager;
 
     private ValueFactory valueFactory;
+
+    // Needed for property-evaluation. Should be a reasonable dependency.
+    private ContentStore contentStore;
     
     private PrimaryResourceTypeDefinition rootResourceTypeDefinition;
     private boolean lazyInit = false;
@@ -128,6 +128,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             throw new BeanInitializationException("Property 'rootResourceTypeDefinition' not set.");
         } else if (valueFactory == null) {
             throw new BeanInitializationException("Property 'valueFactory' not set.");
+        } else if (contentStore == null) {
+            throw new BeanInitializationException("Property 'contentStore' not set.");
         }
 
         resourceTypeDefinitionBeans = 
@@ -398,6 +400,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         ResourceTypeDefinition rt = propertiesModification(principal, newResource, dto,
                 new Date(), allreadySetProperties, rootResourceTypeDefinition);
 
+        newResource.setResourceType(rt.getName());
+        
         for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             if (logger.isDebugEnabled()) {
@@ -521,22 +525,25 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(principal, newResource, 
                 resource, null, new Date(), rootResourceTypeDefinition);
+        
+        newResource.setResourceType(rt.getName());
+        
         return newResource;
     }
 
 
-    public ResourceImpl fileContentModification(ResourceImpl resource, 
-            Principal principal, InputStream inputStream) {
+    public ResourceImpl fileContentModification(ResourceImpl resource, Principal principal) {
         if (!init) init();
-        
         // XXX: What to do about swapping old resource with new?
-        // XXX: Add resource type to resource
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
         newResource.setID(resource.getID());
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(principal, newResource, resource,
-                new ContentImpl(inputStream), new Date(), rootResourceTypeDefinition);
+                new ContentImpl(resource.getURI(), contentStore), new Date(), rootResourceTypeDefinition);
+        
+        newResource.setResourceType(rt.getName());
+        
         return newResource;
     }
     
@@ -803,6 +810,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
+    }
+
+    public void setContentStore(ContentStore contentStore) {
+        this.contentStore = contentStore;
     }
 
 }

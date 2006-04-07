@@ -30,23 +30,20 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.vortikal.repository.resourcetype.Content;
+import org.vortikal.repositoryimpl.dao.ContentStore;
 
 /**
  * Implementation of <code>org.vortikal.repository.resourcetype.Content</code>
  * interface.
  * 
  * NOTE: returned representations are <em>not</em> cloned. Modifications from the
- * outside will remain permanent for any given representation, and if the binary
- * representations are modified (<code>byte[] or ByteBuffer</code>), the changes will 
- * be reflected in any subsequent creations of new and un-cached representations.
- * Beware of this.
+ * outside will remain permanent for any given representation.
  * 
  * The <code>java.io.InputStream</code> representation is not cached, a new stream
  * is returned every time. This is the only exception.
@@ -58,50 +55,34 @@ import org.vortikal.repository.resourcetype.Content;
  */
 public class ContentImpl implements Content {
 
-    private InputStream inputStream;
+    private ContentStore contentStore;
+    private String uri;
     private Map representations;
-    private byte[] content; // Need to keep binary content representation, because
-                            // we should not trust that the given input stream
-                            // can be reliably reset if new representations are
-                            // requested.
     
-    public ContentImpl(InputStream inputStream) {
-        this.inputStream = inputStream;
+    public ContentImpl(String uri, ContentStore contentStore) {
         this.representations = new HashMap();
-        this.content = null; // Just to be explicit (lazy-initialized).
+        this.contentStore = contentStore;
+        this.uri = uri;
     }
     
-    private void initializeContent() throws IOException {
-        if (this.content == null) {
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1000];
-            int n;
-            while ((n = this.inputStream.read(buffer, 0, buffer.length)) != -1) {
-                bout.write(buffer, 0, n);
-            }
-            
-            this.content = bout.toByteArray();
-            this.inputStream.close();
-        }
-    }
-
     public Object getContentRepresentation(Class clazz) throws Exception {
         // Make sure we have original content from inputstream 
         // before we do anything else. This closes the input stream.
-        initializeContent();
         
         // We don't cache InputStream representations
         if (clazz == java.io.InputStream.class) {
-            return 
-            ContentRepresentationFactory.createRepresentation(java.io.InputStream.class, 
-                                                              this.content);
+            return this.contentStore.getInputStream(this.uri); 
+            
         }
         
         Object representation = representations.get(clazz);
         if (representation == null) {
             // Lazy load representation
+            
+            InputStream inputStream = this.contentStore.getInputStream(this.uri);
             representation = 
-                ContentRepresentationFactory.createRepresentation(clazz, this.content);
+                ContentRepresentationFactory.createRepresentation(clazz, inputStream);
+            inputStream.close();
             representations.put(clazz, representation);
         } 
         
@@ -110,10 +91,14 @@ public class ContentImpl implements Content {
     
     public InputStream getContentInputStream() throws IOException {
         try {
-            return (InputStream) getContentRepresentation(InputStream.class);
+            return (InputStream) getContentRepresentation(java.io.InputStream.class);
         } catch (Exception e) {
             throw new IOException("Unable to create input stream representation: " + e.getMessage());
         }
+    }
+    
+    public long getContentLength() throws IOException {
+        return this.contentStore.getContentLength(this.uri);
     }
     
     public Class[] getSupportedRepresentations() {

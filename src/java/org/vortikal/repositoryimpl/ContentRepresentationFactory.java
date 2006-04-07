@@ -30,13 +30,15 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import org.jdom.input.SAXBuilder;
 
 /**
- * Create representations from binary content.
+ * Create representations from input stream of content.
  * 
  * @author oyviste
  */
@@ -45,34 +47,48 @@ public final class ContentRepresentationFactory {
     public static final Class[] SUPPORTED_REPRESENTATIONS = {
         org.jdom.Document.class,
         String.class,
-        java.io.InputStream.class,
         java.nio.ByteBuffer.class,
         byte[].class
     };
-    
+   
+    /**
+     * Creates a representation of the desired type, using the data from
+     * the given <code>InputStream</code>. The <code>InputStream</code> is not
+     * closed.
+     * 
+     * @param clazz
+     * @param content
+     * @return
+     * @throws Exception
+     */
     public static Object createRepresentation(Class clazz, 
-                                              byte[] content) 
+                                              InputStream content) 
         throws Exception {
         
         if (clazz == org.jdom.Document.class) {
-            return createJDOMRepresentation(content);
+            return new SAXBuilder().build(content);
         } else if (clazz == byte[].class) {
-            return content;
+            return getContentAsByteArray(content);
         } else if (clazz == String.class) {
-            return new String(content); // Hmm.. default encoding only ..
-        } else if (clazz == java.io.InputStream.class) {
-            return new ByteArrayInputStream(content);
+            return new String(getContentAsByteArray(content)); // Hmm.. default encoding only ..
         } else if (clazz == java.nio.ByteBuffer.class) {
-            return ByteBuffer.wrap(content);
+            return ByteBuffer.wrap(getContentAsByteArray(content));
         }
         
         throw new UnsupportedContentRepresentationException("Content type '" + 
                 clazz.getName() + "' not supported.");
     }
     
-    private static org.jdom.Document createJDOMRepresentation(byte[] content) 
-        throws Exception {
-        return new SAXBuilder().build(new ByteArrayInputStream(content));
+    private static byte[] getContentAsByteArray(InputStream content) throws IOException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        
+        int n;
+        byte[] buffer = new byte[5000];
+        while ((n = content.read(buffer, 0, buffer.length)) != -1) {
+            bout.write(buffer, 0, n);
+        }
+        
+        return bout.toByteArray();
     }
     
 }

@@ -59,6 +59,7 @@ public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator 
                                        Content content, 
                                        Date time)
             throws PropertyEvaluationException {
+
         
         String schemaLocation = null;
         try {
@@ -77,6 +78,10 @@ public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator 
 
         if (schemaLocation != null) {
             property.setStringValue(schemaLocation);
+            
+            
+            
+            
             return true;
         } 
         

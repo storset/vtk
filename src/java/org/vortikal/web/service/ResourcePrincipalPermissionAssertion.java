@@ -212,9 +212,9 @@ public class ResourcePrincipalPermissionAssertion
                 this.authorizationManager.authorizeUnlock(uri, principal);
             } else if (AuthorizationManager.DELETE.equals(this.permission)) {
                 this.authorizationManager.authorizeDelete(uri, principal);
-            } else if (AuthorizationManager.PROPERTY_EDIT_ADMIN_ROLE.equals(this.permission)) {
+            } else if (AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION.equals(this.permission)) {
             this.authorizationManager.authorizePropertyEditAdminRole(uri, principal);
-        } else if (AuthorizationManager.PROPERTY_EDIT_ROOT_ROLE.equals(this.permission)) {
+        } else if (AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION.equals(this.permission)) {
             this.authorizationManager.authorizePropertyEditRootRole(uri, principal);
         } else {
             // XXX: copy/move shouldn't be allowed, currently ends up here

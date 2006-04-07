@@ -56,6 +56,9 @@ public class RoleManager {
 
     public boolean hasRole(Principal principal, int role) {
 
+        // XXX: throw exception?
+        if (principal == null) return false;
+        
         String principalName = principal.getQualifiedName();
         
         switch (role) {

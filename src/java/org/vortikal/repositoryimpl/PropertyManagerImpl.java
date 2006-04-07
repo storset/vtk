@@ -629,9 +629,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             this.authorizationManager.authorizeWrite(uri, principal);
         } else if (AuthorizationManager.WRITE_ACL.equals(action)) {
             this.authorizationManager.authorizeWriteAcl(uri, principal);
-        } else if (AuthorizationManager.PROPERTY_EDIT_ADMIN_ROLE.equals(action)) {
+        } else if (AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
             this.authorizationManager.authorizePropertyEditAdminRole(uri, principal);
-        } else if (AuthorizationManager.PROPERTY_EDIT_ROOT_ROLE.equals(action)) {
+        } else if (AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
             this.authorizationManager.authorizePropertyEditRootRole(uri, principal);
         } else {
             throw new AuthorizationException();

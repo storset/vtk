@@ -73,10 +73,10 @@ public final class PropertyType {
 
     // Used for special properties, only to be modified by special "admin" 
     // users in special cases. unsure about this one...
-    public static final String PROTECTION_LEVEL_ROLE_ADMIN = AuthorizationManager.PROPERTY_EDIT_ADMIN_ROLE;
+    public static final String PROTECTION_LEVEL_ROLE_ADMIN = AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION;
     
     // Only principals of the ROOT role  are allowed to set property
-    public static final String PROTECTION_LEVEL_ROLE_ROOT = AuthorizationManager.PROPERTY_EDIT_ROOT_ROLE;
+    public static final String PROTECTION_LEVEL_ROLE_ROOT = AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION;
 
     //  Property is uneditable
     public static final String PROTECTION_LEVEL_UNEDITABLE = "UNEDITABLE";

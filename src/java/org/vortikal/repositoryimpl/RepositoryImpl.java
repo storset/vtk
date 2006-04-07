@@ -88,10 +88,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private URIValidator uriValidator = new URIValidator();
     
     private String id;
-    private boolean readOnly = false;
 
     public boolean isReadOnly() {
-        return readOnly;
+        return authorizationManager.isReadOnly();
     }
     
     public String getId() {
@@ -251,8 +250,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Principal principal = tokenManager.getPrincipal(token);
 
-        checkReadOnly(principal);
-
         if (!uriValidator.validateURI(srcUri)) {
             throw new ResourceNotFoundException(srcUri);
         }
@@ -314,8 +311,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ResourceNotFoundException, ReadOnlyException, IOException {
 
         Principal principal = tokenManager.getPrincipal(token);
-
-        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(srcUri)) {
             throw new ResourceNotFoundException(srcUri);
@@ -387,8 +382,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Principal principal = tokenManager.getPrincipal(token);
 
-        checkReadOnly(principal);
-
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
         }
@@ -431,8 +424,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             IllegalOperationException, ReadOnlyException, IOException {
         
         Principal principal = tokenManager.getPrincipal(token);
-
-        checkReadOnly(principal);
 
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
@@ -478,8 +469,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             IOException {
         Principal principal = tokenManager.getPrincipal(token);
 
-        checkReadOnly(principal);
-
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
         }
@@ -504,8 +493,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             IllegalOperationException, ReadOnlyException, IOException {
 
         Principal principal = tokenManager.getPrincipal(token);
-
-        checkReadOnly(principal);
 
         if (resource == null) {
             throw new IllegalOperationException("Can't store nothing.");
@@ -557,8 +544,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Principal principal = tokenManager.getPrincipal(token);
 
-        checkReadOnly(principal);
-
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
         }
@@ -600,8 +585,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Principal principal = tokenManager.getPrincipal(token);
 
-        checkReadOnly(principal);
-        
         if (!uriValidator.validateURI(uri)) {
             throw new ResourceNotFoundException(uri);
         }
@@ -661,8 +644,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         Principal principal = tokenManager.getPrincipal(token);
 
-        checkReadOnly(principal);
-
         if (!uriValidator.validateURI(uri)) throw new ResourceNotFoundException(uri);
 
         ResourceImpl resource = dao.load(uri);
@@ -708,26 +689,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return newResource;
     }    
 
-    
-    private void checkReadOnly(Principal principal) {
-        if (this.readOnly && !this.roleManager.hasRole(principal, 
-                RoleManager.ROOT)) {
-            throw new ReadOnlyException();
-        }
-    }
-    
-
     public void setReadOnly(String token, boolean readOnly) 
     throws AuthorizationException {
 
         Principal principal = tokenManager.getPrincipal(token);
-
-        if (!roleManager.hasRole(principal, RoleManager.ROOT)) {
-            throw new AuthorizationException("Not authorized to switch read " +
-                    "only state of repository");
-        }
-
-        this.readOnly = readOnly;
+        authorizationManager.authorizeRootRoleAction(principal);
+        authorizationManager.setReadOnly(readOnly);
     }
 
 
@@ -738,10 +705,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
     public void setDao(DataAccessor dao) {
         this.dao = dao;
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
     }
 
     public void setRoleManager(RoleManager roleManager) {

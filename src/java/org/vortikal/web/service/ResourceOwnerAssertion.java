@@ -63,8 +63,6 @@ public class ResourceOwnerAssertion
 
     public boolean matches(Resource resource, Principal principal) {
 
-        if (principal == null) return false;
-        
         return resource.getOwner().equals(principal)
             || roleManager.hasRole(principal, RoleManager.ROOT);
     }

@@ -39,6 +39,7 @@ import java.util.Set;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
@@ -66,12 +67,12 @@ public class AuthorizationManager {
     public final static String DELETE = "delete";
     public final static String COPY = "copy";
     public final static String MOVE = "move";
-    public final static String PROPERTY_EDIT_ADMIN_ROLE = "property-edit-admin-role";
-    public final static String PROPERTY_EDIT_ROOT_ROLE = "property-edit-root-role";
+    public final static String REPOSITORY_ADMIN_ROLE_ACTION = "property-edit-admin-role";
+    public final static String REPOSITORY_ROOT_ROLE_ACTION = "property-edit-root-role";
 
     public final static String[] ACTION_AUTHORIZATIONS = 
         new String[] {READ_PROCESSED, READ, CREATE, WRITE, WRITE_ACL, UNLOCK, 
-        DELETE, COPY, MOVE, PROPERTY_EDIT_ADMIN_ROLE, PROPERTY_EDIT_ROOT_ROLE};
+        DELETE, COPY, MOVE, REPOSITORY_ADMIN_ROLE_ACTION, REPOSITORY_ROOT_ROLE_ACTION};
     
     public final static Set ACTION_AUTHORIZATION_SET = 
         new HashSet(Arrays.asList(ACTION_AUTHORIZATIONS));
@@ -80,6 +81,30 @@ public class AuthorizationManager {
     private PrincipalManager principalManager;
     private DataAccessor dao;
     private LockManager lockManager;
+    
+    private boolean readOnly = false;
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+    
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
+        if (!roleManager.hasRole(principal, RoleManager.ROOT)) {
+            throw new AuthorizationException("Not authorized to perform repository administration");
+        }
+    }
+    
+    private void checkReadOnly(Principal principal) throws ReadOnlyException {
+        
+        if (isReadOnly() && !this.roleManager.hasRole(principal, 
+                RoleManager.ROOT)) {
+            throw new ReadOnlyException();
+        }
+    }
     
     /**
      * <ul>
@@ -92,10 +117,11 @@ public class AuthorizationManager {
     public void authorizeReadProcessed(String uri, Principal principal) 
     throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
         ResourceImpl resource = this.dao.load(uri);
+
         if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
             return;
-        
+
         String[] privileges = 
             new String[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
 
@@ -115,6 +141,7 @@ public class AuthorizationManager {
     throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
 
         ResourceImpl resource = this.dao.load(uri);
+
         if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
             return;
@@ -135,7 +162,10 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeCreate(String uri, Principal principal)
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
+    throws AuthenticationException, AuthorizationException, ReadOnlyException, 
+    ResourceLockedException, IOException {
+
+        checkReadOnly(principal);
 
         ResourceImpl parent = this.dao.load(URIUtil.getParentURI(uri));
         
@@ -160,7 +190,10 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeWrite(String uri, Principal principal)
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
+    throws AuthenticationException, AuthorizationException, ReadOnlyException,
+    ResourceLockedException, IOException {
+
+        checkReadOnly(principal);
 
         ResourceImpl resource = this.dao.load(uri);
         
@@ -185,8 +218,11 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeWriteAcl(String uri, Principal principal)
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
+    throws AuthenticationException, AuthorizationException, ReadOnlyException,
+    ResourceLockedException, IOException {
 
+        checkReadOnly(principal);
+        
         ResourceImpl resource = this.dao.load(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);
@@ -209,8 +245,11 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeUnlock(String uri, Principal principal) 
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
+    throws AuthenticationException, AuthorizationException, ReadOnlyException,
+    ResourceLockedException, IOException {
 
+        checkReadOnly(principal);
+        
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
@@ -235,8 +274,10 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeDelete(String uri, Principal principal) 
-    throws AuthenticationException, AuthorizationException, 
+    throws AuthenticationException, AuthorizationException, ReadOnlyException, 
     ResourceLockedException, IOException {
+
+        checkReadOnly(principal);
 
         Resource resource = this.dao.load(uri);
         
@@ -268,8 +309,8 @@ public class AuthorizationManager {
     public void authorizePropertyEditAdminRole(String uri, Principal principal) 
     throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
 
-        if (!this.roleManager.hasRole(principal, RoleManager.ROOT) &&
-                !this.roleManager.hasRole(principal, RoleManager.ADMIN))
+        if (!(this.roleManager.hasRole(principal, RoleManager.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.ADMIN)))
             throw new AuthorizationException();
         
         authorizeWrite(uri, principal);
@@ -308,8 +349,10 @@ public class AuthorizationManager {
      */
     public void authorizeCopy(String srcUri, String destUri, 
             Principal principal, boolean deleteDestination) 
-    throws AuthenticationException, AuthorizationException, 
+    throws AuthenticationException, AuthorizationException, ReadOnlyException,
     ResourceLockedException, IOException {
+
+        checkReadOnly(principal);
 
         authorizeRead(srcUri, principal);
 
@@ -339,9 +382,11 @@ public class AuthorizationManager {
      */
     public void authorizeMove(String srcUri, String destUri,
             Principal principal, boolean deleteDestination) 
-    throws AuthenticationException, AuthorizationException, 
+    throws AuthenticationException, AuthorizationException, ReadOnlyException,
     ResourceLockedException, IOException {
-        
+
+        checkReadOnly(principal);
+
         authorizeCopy(srcUri, destUri, principal, deleteDestination);
         authorizeDelete(srcUri, principal);
     }

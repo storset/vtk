@@ -5,7 +5,7 @@
 
   <!-- Managed XML resource -->
 
-  <bean id="managedXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="managedXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="managed-xml"/>
     <property name="namespace" ref="CUSTOM_NAMESPACE" />
     <property name="parentTypeDefinition" ref="xmlResource" />

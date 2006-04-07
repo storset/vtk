@@ -30,20 +30,22 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.web.service.RepositoryAssertion;
 
+public class PrimaryResourceTypeDefinitionImpl
+  extends AbstractResourceTypeDefinitionImpl implements PrimaryResourceTypeDefinition {
 
-public interface ResourceTypeDefinition {
+    private PrimaryResourceTypeDefinition parentTypeDefinition;
 
-    public String getName();
+    public PrimaryResourceTypeDefinition getParentTypeDefinition() {
+        return this.parentTypeDefinition;
+    }
 
-    public Namespace getNamespace();
-
-    public MixinResourceTypeDefinition[] getMixinTypeDefinitions();
-
-    public PropertyTypeDefinition[] getPropertyTypeDefinitions();
-
-    public RepositoryAssertion[] getAssertions();
+    public void setParentTypeDefinition(PrimaryResourceTypeDefinition parentTypeDefinition) {
+        this.parentTypeDefinition = parentTypeDefinition;
+    }
 
 }

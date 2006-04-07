@@ -5,7 +5,7 @@
 
   <!-- Text resource -->
 
-  <bean id="textResourceTypeDefinition" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="textResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="text"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />

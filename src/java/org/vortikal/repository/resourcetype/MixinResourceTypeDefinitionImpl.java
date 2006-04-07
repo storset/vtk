@@ -30,20 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.vortikal.repository.Namespace;
-import org.vortikal.web.service.RepositoryAssertion;
-
-
-public interface ResourceTypeDefinition {
-
-    public String getName();
-
-    public Namespace getNamespace();
-
-    public MixinResourceTypeDefinition[] getMixinTypeDefinitions();
-
-    public PropertyTypeDefinition[] getPropertyTypeDefinitions();
-
-    public RepositoryAssertion[] getAssertions();
+public class MixinResourceTypeDefinitionImpl
+  extends AbstractResourceTypeDefinitionImpl implements MixinResourceTypeDefinition {
 
 }

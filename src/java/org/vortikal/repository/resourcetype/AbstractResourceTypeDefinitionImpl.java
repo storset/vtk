@@ -35,17 +35,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.web.service.RepositoryAssertion;
 
-public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition, 
-                                        InitializingBean {
+public abstract class AbstractResourceTypeDefinitionImpl
+  implements ResourceTypeDefinition, InitializingBean {
 
     private String name;
     private Namespace namespace;
-    private ResourceTypeDefinition parentTypeDefinition;
-    private ResourceTypeDefinition[] mixinTypeDefinitions;
+    private MixinResourceTypeDefinition[] mixinTypeDefinitions;
     private PropertyTypeDefinition[] propertyTypeDefinitions = new PropertyTypeDefinitionImpl[0];
     private RepositoryAssertion[] assertions;
     
-    public void afterPropertiesSet() throws BeanInitializationException {
+    public void afterPropertiesSet() {
         if (name == null) {
             throw new BeanInitializationException("Property 'name' not set.");
         } else if (namespace == null) {
@@ -69,19 +68,11 @@ public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition,
         this.namespace = namespace;
     }
 
-    public ResourceTypeDefinition getParentTypeDefinition() {
-        return this.parentTypeDefinition;
-    }
-
-    public void setParentTypeDefinition(ResourceTypeDefinition parentTypeDefinition) {
-        this.parentTypeDefinition = parentTypeDefinition;
-    }
-
-    public ResourceTypeDefinition[] getMixinTypeDefinitions() {
+    public MixinResourceTypeDefinition[] getMixinTypeDefinitions() {
         return this.mixinTypeDefinitions;
     }
 
-    public void setMixinTypeDefinitions(ResourceTypeDefinition[] mixinTypeDefinitions) {
+    public void setMixinTypeDefinitions(MixinResourceTypeDefinition[] mixinTypeDefinitions) {
         this.mixinTypeDefinitions = mixinTypeDefinitions;
     }
 
@@ -102,10 +93,9 @@ public class ResourceTypeDefinitionImpl implements ResourceTypeDefinition,
     }
 
     public String toString() {
-        StringBuffer buffer = new StringBuffer("ResourceTypeDefinitionImpl");
+        StringBuffer buffer = new StringBuffer(this.getClass().getName());
         buffer.append("[ namespace = ").append(this.namespace);
         buffer.append(", name = '").append(this.name).append("']");
-        
         return buffer.toString();
     }
     

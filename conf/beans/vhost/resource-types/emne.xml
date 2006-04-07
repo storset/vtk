@@ -5,7 +5,7 @@
 
   <!-- Course XML resource -->
 
-  <bean id="courseXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="courseXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="course"/>
     <property name="namespace" ref="CUSTOM_NAMESPACE" />
     <property name="parentTypeDefinition" ref="managedxmlResource" />

@@ -5,7 +5,7 @@
 
   <!-- Abstractresource - base resource type -->
 
-  <bean id="abstractResourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="abstractResourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="resource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <!-- Properties valid for the resource type -->
@@ -130,7 +130,7 @@
 
   <!-- Resource - base resource type -->
 
-  <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="resource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="abstractResourceResourceTypeDefinition" />
@@ -170,5 +170,4 @@
   <bean id="lastModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedByEvaluator" />
 
 
-  
 </beans>

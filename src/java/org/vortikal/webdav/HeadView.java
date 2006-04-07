@@ -40,10 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.View;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.InvalidModelException;
-import org.vortikal.web.view.DisplayResourceView;
-
-
-
 
 
 /**

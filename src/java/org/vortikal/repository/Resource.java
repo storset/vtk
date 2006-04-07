@@ -57,6 +57,12 @@ public interface Resource extends PropertySet {
     public String getSerial();
 
     /**
+     * 
+     * @return The ETag String 
+     */
+    public String getEtag();
+    
+    /**
      * Returns the uri of the parent.
      *
      * @return the URI

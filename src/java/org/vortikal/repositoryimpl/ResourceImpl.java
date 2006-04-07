@@ -243,6 +243,10 @@ public class ResourceImpl implements Resource, Cloneable {
         return md5String;
     }
     
+    public String getEtag() {
+        return "\"" + getSerial() + "\"";
+    }
+    
     public Principal getOwner() {
         return getPrincipalPropValue(PropertyType.OWNER_PROP_NAME);
     }

@@ -49,18 +49,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private PropertyValidator validator;
     
     public void afterPropertiesSet() {
-        if (this.mandatory) {
-            if (this.defaultValue == null && this.createEvaluator == null) {
+        if (this.mandatory && this.defaultValue == null) {
                 throw new BeanInitializationException(
-                    "One of JavaBean properties 'defaultValue' or 'createEvaluator' "
+                    "JavaBean property 'defaultValue'"
                     + "must be specified for mandatory property types");
-            }
-        }
-        if (this.protectionLevel == PropertyType.PROTECTION_LEVEL_UNEDITABLE) {
-            if (this.createEvaluator == null) {
-                throw new BeanInitializationException(
-                    "A createEvaluator must be specified for properties having "
-                    + "protection level PROTECTION_LEVEL_UNEDITABLE");
             }
         }
     }

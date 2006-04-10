@@ -155,9 +155,16 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             
             if (propDefMap == null) {
                 propDefMap = new HashMap();
+                // XXX: what about prefix when using namespaces as map keys?
                 this.propertyTypeDefinitions.put(namespace, propDefMap);
+                this.propertyTypeDefinitions.put(namespace.getUri(), propDefMap);
             }
-            for (int u=0; u<propDefs.length; u++) {
+            for (int u = 0; u < propDefs.length; u++) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Registering property type definition "
+                                 + propDefs[u].getName());
+                }
+
                 propDefMap.put(propDefs[u].getName(), propDefs[u]);
             }
             
@@ -188,13 +195,31 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     private boolean checkAssertions(ResourceTypeDefinition rt,
                                     Resource resource, Principal principal) {
+
         RepositoryAssertion[] assertions = rt.getAssertions();
 
         if (assertions != null) {
             for (int i = 0; i < assertions.length; i++) {
-                if (!assertions[i].matches(resource, principal))
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Checking assertion " + assertions[i] + " for resource " + resource);
+                }
+
+                if (!assertions[i].matches(resource, principal)) {
+                    
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
+                            "Checking for type '" + rt.getName() + "', resource " + resource
+                            + " failed, unmatched assertion: " + assertions[i]);
+                    }
                     return false;
+                }
+                
             }
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Checking for type '" + rt.getName() + "', resource " + resource
+                         + " succeeded, assertions matched: "
+                         + (assertions != null ? java.util.Arrays.asList(assertions) : null));
         }
         return true;
     }
@@ -231,7 +256,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
         // Checking if resource type matches
         if (!checkAssertions(rt, newResource, principal)) return null;
-
+        
         List newProps = new ArrayList();
 
         // Evaluating resource type properties
@@ -279,12 +304,22 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         for (int i = 0; i < def.length; i++) {
             PropertyTypeDefinition propertyDef = def[i];
             
-            CreatePropertyEvaluator evaluator = propertyDef.getCreateEvaluator();
-            if (evaluator != null) {
-                Property prop = createProperty(rt.getNamespace(), propertyDef.getName());
-                if (evaluator.create(principal, prop, newResource, isCollection, time)) {
-                    newProps.add(prop);
+            CreatePropertyEvaluator evaluator = propertyDef.getCreateEvaluator();            
+
+            Property prop = createProperty(rt.getNamespace(), propertyDef.getName());
+            if (evaluator != null &&  evaluator.create(principal, prop, newResource,
+                                                      isCollection, time)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Property evaluated: " + prop);
                 }
+            }
+
+            if (propertyDef.isMandatory() && !((PropertyImpl) prop).isValueInitialized()) {
+                throw new Error("Property  " + prop + " not initialized");
+            }
+
+            if (((PropertyImpl) prop).isValueInitialized()) {
+                newProps.add(prop);
             }
         }
     }
@@ -300,6 +335,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     }
     
+
+
+    /**
+     * mandatory --> (default | createEvaluator) (feile ved init)
+     * createEvaluator --> false ved kjøring: sette default-verdi eller feile
+     *
+     */
     public ResourceImpl storeProperties(ResourceImpl resource, Principal principal,
                                         Resource dto)
         throws AuthenticationException, AuthorizationException,
@@ -310,7 +352,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         String uri = resource.getURI();
         
         // For all properties, check if they are modified, deleted or created
-        Map allreadySetProperties = new HashMap();
+        Map alreadySetProperties = new HashMap();
+        Map deletedProps = new HashMap();
+        
         
         List deadProperties = new ArrayList();
         
@@ -336,10 +380,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                             "Not authorized to delete property " + prop, e);
                     }
                     // It will be removed
-
-                    // XXX: if user explicitly wants to delete
-                    // property and prop has evaluator, it will be
-                    // evaluated. Is this desired behaviour?
+                    addToPropsMap(deletedProps, prop);
                 }
             } else if (!prop.equals(userProp)) {
                 // Changed value
@@ -355,7 +396,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                             "Not authorized to edit property " + prop, e);
                     }
                     
-                    addToPropsMap(allreadySetProperties, userProp);
+                    addToPropsMap(alreadySetProperties, userProp);
                 }
             } else {
                 if (prop.getDefinition() == null) {
@@ -375,6 +416,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 // Added
                 if (userProp.getDefinition() == null) {
                     // Dead
+                    // XXX FIXME:
+                    if (!((PropertyImpl) userProp).isValueInitialized()) {
+                        throw new ConstraintViolationException("Property " + userProp
+                                                               + " is not initialized");
+                    }
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
@@ -384,7 +430,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                         throw new ConstraintViolationException(
                             "Not authorized to edit property " + prop, e);
                     }
-                    addToPropsMap(allreadySetProperties, userProp);
+                    addToPropsMap(alreadySetProperties, userProp);
                 }
             } 
         }
@@ -397,8 +443,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             newResource.setLock((Lock)resource.getLock().clone());
         
         // Evaluate resource tree, for all live props not overridden, evaluate
-        ResourceTypeDefinition rt = propertiesModification(principal, newResource, dto,
-                new Date(), allreadySetProperties, rootResourceTypeDefinition);
+        ResourceTypeDefinition rt = propertiesModification(
+            principal, newResource, dto, new Date(), alreadySetProperties,
+            deletedProps, rootResourceTypeDefinition);
 
         newResource.setResourceType(rt.getName());
         
@@ -410,7 +457,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             
             newResource.addProperty(prop);
         }
-        for (Iterator iter = allreadySetProperties.values().iterator(); iter.hasNext();) {
+        for (Iterator iter = alreadySetProperties.values().iterator(); iter.hasNext();) {
             Map map = (Map) iter.next();
             for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
                 Property prop = (Property) iterator.next();
@@ -423,9 +470,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
     
 
-    private PrimaryResourceTypeDefinition propertiesModification(Principal principal, 
-            ResourceImpl newResource, Resource dto, Date time, Map allreadySetProperties, 
-            PrimaryResourceTypeDefinition rt) {
+    private PrimaryResourceTypeDefinition propertiesModification(
+        Principal principal, ResourceImpl newResource, Resource dto, Date time,
+        Map alreadySetProperties, Map deletedProps, 
+        PrimaryResourceTypeDefinition rt) {
 
         // Checking if resource type matches
         if (!checkAssertions(rt, newResource, principal)) return null;
@@ -434,7 +482,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         List newProps = new ArrayList();
         PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
         evalPropertiesModification(principal, newResource, dto, time,
-                                   allreadySetProperties,rt, def, newProps);
+                                   alreadySetProperties, deletedProps, rt, def, newProps);
         
         // Evaluating mixin resource type properties
         MixinResourceTypeDefinition[] mixinTypes =
@@ -443,7 +491,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         for (int i = 0; i < mixinTypes.length; i++) {
             PropertyTypeDefinition[] mixinDef = mixinTypes[i].getPropertyTypeDefinitions();
             evalPropertiesModification(principal, newResource, dto, time,
-                                       allreadySetProperties, mixinTypes[i],
+                                       alreadySetProperties, deletedProps, mixinTypes[i],
                                        mixinDef, newProps);
         }
 
@@ -465,7 +513,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         for (int i = 0; i < children.length; i++) {
             PrimaryResourceTypeDefinition resourceType = 
                 propertiesModification(principal, newResource, dto, time,
-                                       allreadySetProperties, children[i]);
+                                       alreadySetProperties, deletedProps, children[i]);
             if (resourceType != null) {
                 return resourceType;
             }
@@ -477,14 +525,14 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     private void evalPropertiesModification(
         Principal principal, ResourceImpl newResource, Resource dto,
-        Date time, Map allreadySetProperties, ResourceTypeDefinition rt,
+        Date time, Map alreadySetProperties, Map deletedProps, ResourceTypeDefinition rt,
         PropertyTypeDefinition[] def, List newProps) {
 
         for (int i = 0; i < def.length; i++) {
             PropertyTypeDefinition propertyDef = def[i];
             
             // If property allready set, don't evaluate
-            Map propsMap = (Map)allreadySetProperties.get(rt.getNamespace());
+            Map propsMap = (Map)alreadySetProperties.get(rt.getNamespace());
             if (propsMap != null) {
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
@@ -493,20 +541,52 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     continue;
                 }
             }
+            // If prop deleted, don't evaluate
+            propsMap = (Map)deletedProps.get(rt.getNamespace());
+            if (propsMap != null) {
+                Property p = (Property) propsMap.get(propertyDef.getName());
+                if (p != null) {
+                    continue;
+                }
+            }
 
-            // Not set, evaluate
+            // Not user edited, evaluate
             Property prop = dto.getProperty(rt.getNamespace(), propertyDef.getName());
             PropertiesModificationPropertyEvaluator evaluator =
                 propertyDef.getPropertiesModificationEvaluator();
 
+            boolean addProperty = false;
+
             if (evaluator != null) {
                 if (prop == null) 
                     prop = createProperty(rt.getNamespace(), propertyDef.getName());
+
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
-                    newProps.add(prop);
+                    addProperty = true;
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property evaluated: " + prop);
+                    }
+                } else if (propertyDef.isMandatory()) {
+                    Value defaultValue = propertyDef.getDefaultValue();
+                    if (defaultValue != null) {
+                        addProperty = true;
+                        prop.setValue(defaultValue);
+                    } else {
+                        throw new Error("Property " + propertyDef 
+                                        + "is mandatory, but evaluator"
+                                        + "returned false");
+                    }
                 }
-                
             } else if (prop != null) {
+                addProperty = true;
+            } 
+
+            if (!addProperty && propertyDef.isMandatory()) {
+                throw new ConstraintViolationException(
+                    "Property defined by " + propertyDef + " is mandatory");
+            }
+
+            if (addProperty) {
                 newProps.add(prop);
             }
         }
@@ -540,8 +620,15 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(principal, newResource, resource,
-                new ContentImpl(resource.getURI(), contentStore), new Date(), rootResourceTypeDefinition);
+                new ContentImpl(resource.getURI(), contentStore), new Date(),
+                rootResourceTypeDefinition);
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting new resource type: '" + rt.getName()
+                         + "' on resource " + resource);
+        }
+
+
         newResource.setResourceType(rt.getName());
         
         return newResource;
@@ -613,6 +700,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 if (prop == null) 
                     prop = createProperty(rt.getNamespace(), propertyDef.getName());
                 if (evaluator.contentModification(principal, prop, newResource, content, time)) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property evaluated: " + prop);
+                    }
                     newProps.add(prop);
                 }
             } else if (prop != null) {
@@ -630,13 +720,22 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         prop.setNamespace(namespace);
         prop.setName(name);
         
-        // XXX: probably not desired behavior
-        prop.setDefinition(findPropertyTypeDefinition(namespace, name));
+        PropertyTypeDefinition def = findPropertyTypeDefinition(namespace, name);
+        prop.setDefinition(def);
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Created property without initial value: " + prop);
+        if (def != null && def.getDefaultValue() != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting default value of prop " + prop + " to "
+                             + def.getDefaultValue());
+            }
+
+            prop.setValue(def.getDefaultValue());
         }
-        
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Created property: " + prop);
+        }
+
         return prop;
     }
 
@@ -730,6 +829,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                                                           String name) {
         PropertyTypeDefinition propDef = null;
         Map map = (Map)propertyTypeDefinitions.get(namespace);
+        if (map == null) {
+            map = (Map)propertyTypeDefinitions.get(namespace.getUri());
+        }
+
         if (map != null) {
             propDef = (PropertyTypeDefinition) map.get(name);
         }

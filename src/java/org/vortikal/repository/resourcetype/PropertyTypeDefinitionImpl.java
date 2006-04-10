@@ -53,7 +53,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
                 throw new BeanInitializationException(
                     "JavaBean property 'defaultValue'"
                     + "must be specified for mandatory property types");
-            }
         }
     }
     

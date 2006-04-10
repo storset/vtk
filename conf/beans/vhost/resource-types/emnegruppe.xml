@@ -5,7 +5,7 @@
 
   <!-- Emnegruppe XML resource -->
 
-  <bean id="emnegruppeXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="emnegruppeXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="emnegruppe"/>
     <property name="namespace" ref="EMNEGRUPPE_NAMESPACE" /> <!-- studier-namespace for alt ? -->
     <property name="parentTypeDefinition" ref="managedXmlResource" />

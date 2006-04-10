@@ -6,7 +6,7 @@
   <!-- Emne XML resource -->
 
 
-  <bean id="emneXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="emneXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="emne"/>
     <property name="namespace" ref="EMNE_NAMESPACE" />
     <property name="parentTypeDefinition" ref="managedXmlResource" />

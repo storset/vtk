@@ -5,7 +5,7 @@
 
   <!-- Semester XML resource -->
 
-  <bean id="semesterXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="semesterXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="semester"/>
     <property name="namespace" ref="SEMESTER_NAMESPACE" /> <!-- studier-namespace for alt ? -->
     <property name="parentTypeDefinition" ref="managedXmlResource" />

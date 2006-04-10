@@ -5,7 +5,7 @@
 
   <!-- Emne-fullstendig XML resource -->
 
-  <bean id="emneFullstendigXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="emneFullstendigXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="emne-fullstendig"/>
     <property name="namespace" ref="EMNE_NAMESPACE" />
     <property name="parentTypeDefinition" ref="emneXmlResource" />

@@ -28,6 +28,7 @@
     <property name="name" value="createdBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="ownerEvaluator" />
   </bean>
 
@@ -37,6 +38,7 @@
     <property name="name" value="owner" />
     <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="ownerEvaluator" />
     <property name="validator" ref="ownerEvaluator" />
   </bean>
@@ -49,6 +51,7 @@
     <property name="name" value="collection" />
     <property name="type" ref="TYPE_BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="collectionEvaluator" /> 
   </bean>
 
@@ -58,6 +61,7 @@
     <property name="name" value="creationTime" />
     <property name="type" ref="TYPE_DATE" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="creationTimeEvaluator" />
   </bean>
 
@@ -69,6 +73,7 @@
     <property name="name" value="contentLastModified" />
     <property name="type" ref="TYPE_DATE" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="contentLastModifiedEvaluator" />
     <property name="contentModificationEvaluator" ref="contentLastModifiedEvaluator" />
   </bean>
@@ -79,6 +84,7 @@
     <property name="name" value="contentModifiedBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="contentModifiedByEvaluator" />
     <property name="contentModificationEvaluator" ref="contentModifiedByEvaluator" />
   </bean>
@@ -89,6 +95,7 @@
     <property name="name" value="propertiesLastModified" />
     <property name="type" ref="TYPE_DATE" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="propertiesLastModifiedEvaluator" />
     <property name="propertiesModificationEvaluator" ref="propertiesLastModifiedEvaluator" />
   </bean>
@@ -99,6 +106,7 @@
     <property name="name" value="propertiesModifiedBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="propertiesModifiedByEvaluator" />
     <property name="propertiesModificationEvaluator" ref="propertiesModifiedByEvaluator" />
   </bean>
@@ -108,6 +116,7 @@
   <bean id="contentTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="contentType" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="contentTypeEvaluator" />
   </bean>
 
@@ -139,6 +148,7 @@
     <property name="name" value="lastModified" />
     <property name="type" ref="TYPE_DATE" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="lastModifiedEvaluator" />
     <property name="propertiesModificationEvaluator" ref="lastModifiedEvaluator" />
     <property name="contentModificationEvaluator" ref="lastModifiedEvaluator" />
@@ -151,6 +161,7 @@
     <property name="name" value="modifiedBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="lastModifiedByEvaluator" />
     <property name="contentModificationEvaluator" ref="lastModifiedByEvaluator" />
     <property name="propertiesModificationEvaluator" ref="lastModifiedByEvaluator" />

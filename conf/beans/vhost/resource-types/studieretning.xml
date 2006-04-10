@@ -5,7 +5,7 @@
 
   <!-- Studieretning XML resource -->
 
-  <bean id="studieretningXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+  <bean id="studieretningXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="studieretning"/>
     <property name="namespace" ref="STUDIERETNING_NAMESPACE" /> 
     <property name="parentTypeDefinition" ref="managedXmlResource" />

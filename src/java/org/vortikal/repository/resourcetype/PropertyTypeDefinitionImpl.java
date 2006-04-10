@@ -30,21 +30,42 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 
-public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
 
-    // XXX: Default values?
+public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
+
     private String name;
     private int type = PropertyType.TYPE_STRING;
     private boolean multiple = false;
     private String protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
-    private boolean mandatory = false; // Is this interesting?
+    private boolean mandatory = false;
+    private Value defaultValue;
     private Constraint constraint;
     private CreatePropertyEvaluator createEvaluator;
     private ContentModificationPropertyEvaluator contentModificationEvaluator;
     private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
     private PropertyValidator validator;
     
+    public void afterPropertiesSet() {
+        if (this.mandatory) {
+            if (this.defaultValue == null && this.createEvaluator == null) {
+                throw new BeanInitializationException(
+                    "One of JavaBean properties 'defaultValue' or 'createEvaluator' "
+                    + "must be specified for mandatory property types");
+            }
+        }
+        if (this.protectionLevel == PropertyType.PROTECTION_LEVEL_UNEDITABLE) {
+            if (this.createEvaluator == null) {
+                throw new BeanInitializationException(
+                    "A createEvaluator must be specified for properties having "
+                    + "protection level PROTECTION_LEVEL_UNEDITABLE");
+            }
+        }
+    }
+    
+
     public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
         return contentModificationEvaluator;
     }
@@ -91,6 +112,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
         return multiple;
     }
 
+    public void setDefaultValue(Value defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public Value getDefaultValue() {
+        return this.defaultValue;
+    }
+
     public void setMultiple(boolean multiple) {
         this.multiple = multiple;
     }
@@ -119,16 +148,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition {
         this.type = type;
     }
 
-    /**
-     * @return Returns the validator.
-     */
     public PropertyValidator getValidator() {
         return validator;
     }
 
-    /**
-     * @param validator The validator to set.
-     */
     public void setValidator(PropertyValidator validator) {
         this.validator = validator;
     }

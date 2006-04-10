@@ -44,6 +44,8 @@ public interface PropertyTypeDefinition {
     
     public boolean isMandatory();
 
+    public Value getDefaultValue();
+
     public Constraint getConstraint();
 
     public CreatePropertyEvaluator getCreateEvaluator();

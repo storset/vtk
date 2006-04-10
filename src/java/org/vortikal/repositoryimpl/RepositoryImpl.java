@@ -405,8 +405,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         ResourceImpl parentCollection = dao.load(parent);
 
-        this.propertyManager.collectionContentModification(
-                parentCollection, principal);
+        parentCollection = this.propertyManager.collectionContentModification(
+            parentCollection, principal);
         this.dao.store(parentCollection);
 
         ResourceDeletionEvent event = 
@@ -563,7 +563,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
             this.dao.storeContent(uri, byteStream);
             
-            this.propertyManager.fileContentModification(r, principal);
+            r = this.propertyManager.fileContentModification(r, principal);
             this.dao.store(r);
 
             ContentModificationEvent event = new ContentModificationEvent(
@@ -673,7 +673,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             newResource = this.dao.load(uri);
 
             parent.addChildURI(uri);
-            propertyManager.collectionContentModification(parent, principal);
+            parent = this.propertyManager.collectionContentModification(parent, principal);
             
             this.dao.store(parent);
 

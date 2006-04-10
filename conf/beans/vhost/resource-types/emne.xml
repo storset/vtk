@@ -3,87 +3,170 @@
 
 <beans>
 
-  <!-- Course XML resource -->
+  <!-- Emne XML resource -->
 
-  <bean id="courseXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="course"/>
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="managedxmlResource" />
+
+  <bean id="emneXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="emne"/>
+    <property name="namespace" ref="EMNE_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="managedXmlResource" />
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="emnekodeDef" />
-        <ref bean="emnenavnDef" />
-        <ref bean="studiepoeng" />
-        <ref bean="undervisningsSpraakDef" />
-        <ref bean="undervisningsSemesterDef" />
-        <ref bean="undervisningsSemester.bestemte-semestreDef" />
-        <ref bean="undervisningsSemester.annetDef" />
-        <ref bean="eksamensSemesterDef" />
-        <ref bean="eksamensSemester.bestemte-semestreDef" />
-        <ref bean="statusDef" />
-        <ref bean="emnetypeDef" />
-        <ref bean="spraakDef" />
+        <ref bean="emneEmnekodePropDef" />
+        <ref bean="emneEmnenavnPropDef" />
+        <ref bean="emneStudiepoengPropDef" />
+        <ref bean="emneUndervisningsSpraakPropDef" />
+        <ref bean="emneUndervisningsSemesterPropDef" />
+        <ref bean="emneUndervisningsSemesterBestemteSemestrePropDef" />
+        <ref bean="emneUndervisningsSemesterAnnetPropDef" />
+        <ref bean="emneEksamensSemesterPropDef" />
+        <ref bean="emneEksamensSemesterBestemteSemestrePropDef" />
+        <ref bean="emneStatusPropDef" />
+        <ref bean="emneEmnetypePropDef" />
+        <ref bean="emneSpraakPropDef" />
+      </list>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="schemaIsEmne" />
       </list>
     </property>
   </bean>
 
-  <bean id="emnekodeDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+
+  <bean id="emneEmnekodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnekode" />
-    <property name="type" value="TYPE_STRING" />
+    <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="createEvaluator" ref="emnekodeEvaluator" />
-    <property name="contentModificationEvaluator" ref="emnekodeEvaluator" />
+    <property name="contentModificationEvaluator" ref="emneEmnekodeEvaluator" />
   </bean>
 
-  <bean id="emnekodeEvaluator" class="org.vortikal.repository.resourcetype. ..." />
+  <bean id="emneEmnekodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
 
-  <bean id="emnenavnDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="emneEmnenavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnenavn" />
-    <property name="type" value="TYPE_STRING" />
+    <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="createEvaluator" ref="emnenavnEvaluator" />
-    <property name="contentModificationEvaluator" ref="emnenavnEvaluator" />
+    <property name="contentModificationEvaluator" ref="emneEmnenavnEvaluator" />
   </bean>
 
-  <bean id="emnenavnEvaluator" class="org.vortikal.repository.resourcetype. ..." />
+  <bean id="emneEmnenavnEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
 
-  <!-- hvordan begrense til [1-120] ?-->
-  <bean id="studiepoengDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="emneStudiepoengPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studiepoeng" />
-    <property name="type" value="TYPE_INT" />
+    <property name="type" ref="TYPE_INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="createEvaluator" ref="studiepoengEvaluator" />
-    <property name="contentModificationEvaluator" ref="studiepoengEvaluator" />
+    <property name="contentModificationEvaluator" ref="emneStudiepoengEvaluator" />
   </bean>
 
-  <bean id="studiepoengEvaluator" class="org.vortikal.repository.resourcetype. ..." />
+  <bean id="emneStudiepoengEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+            
 
-
-  <!-- faste verdier begrenset av schema [norsk, engelsk, engelsk-ved-behov, annet (default)] -->
-  <bean id="undervisningsSpraakDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="emneUndervisningsSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="undervisningsspraak" />
-    <property name="type" value="TYPE_STRING" />
+    <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="undervisningsSpraakEvaluator" />
-    <property name="contentModificationEvaluator" ref="undervisningsSpraakEvaluator" />
+    <property name="mandatory" value="true" /> 
+    <!-- property name="createEvaluator" ref="emneUndervisningsSpraakEvaluator" / -->
+    <property name="contentModificationEvaluator" ref="emneUndervisningsSpraakEvaluator" />
   </bean>
 
-  <bean id="undervisningsSpraakEvaluator" class="org.vortikal.repository.resourcetype. ..." />
+  <bean id="emneUndervisningsSpraakEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
-  <!-- faste verdier -->
-  <bean id="undervisningsSemesterDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="undervisningssemesterDef" />
-    <property name="type" value="TYPE_STRING" />
+
+  <bean id="emneUndervisningsSemesterPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="undervisningssemester" />
+    <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
+    <!-- property name="createEvaluator" ref="emneUndervisningsSemesterEvaluator" / -->
+    <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterEvaluator" />
   </bean>
 
+  <bean id="emneUndervisningsSemesterEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
+
+  <bean id="emneUndervisningsSemesterBestemteSemestrePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="undervisningssemester.bestemte" />
+    <property name="type" ref="TYPE_STRING" /> <!-- egentlig en liste - håndteres av evaluator ? -->
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterBestemteSemestreEvaluator" />
+  </bean>
+
+  <bean id="emneUndervisningsSemesterBestemteSemestreEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+  <bean id="emneUndervisningsSemesterAnnetPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="undervisningssemester.annet" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterAnnetEvaluator" />
+  </bean>
+
+  <bean id="emneUndervisningsSemesterAnnetEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="emneEksamensSemesterPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="eksamenssemester" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
+    <!-- property name="createEvaluator" ref="emneEksamensSemesterEvaluator" / -->
+    <property name="contentModificationEvaluator" ref="emneEksamensSemesterEvaluator" />
+  </bean>
+
+  <bean id="emneEksamensSemesterEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="emneEksamensSemesterBestemteSemestrePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="eksamenssemester.bestemte" />
+    <property name="type" ref="TYPE_STRING" /> <!-- egentlig liste -->
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="emneEksamensSemesterBestemteSemestreEvaluator" />
+  </bean>
+
+  <bean id="emneEksamensSemesterBestemteSemestreEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="emneStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="status" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" /><!-- hva med defaultverdier i XPathEvaluator -->
+    <!-- property name="createEvaluator" ref="emneStatusEvaluator" / -->
+    <property name="contentModificationEvaluator" ref="emneStatusEvaluator" />
+  </bean>
+
+  <bean id="emneStatusEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="emneEmnetypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="emnetype" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" /> 
+    <property name="contentModificationEvaluator" ref="emneEmnetypeEvaluator" />
+  </bean>
+
+  <bean id="emneEmnetypeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="emneSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="spraak" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
+    <!-- property name="createEvaluator" ref="emneSpraakEvaluator" / -->
+    <property name="contentModificationEvaluator" ref="emneSpraakEvaluator" />
+  </bean>
+
+  <bean id="emneSpraakEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
 </beans>

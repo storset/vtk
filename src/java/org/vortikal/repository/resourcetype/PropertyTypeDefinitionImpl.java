@@ -49,11 +49,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private PropertyValidator validator;
     
     public void afterPropertiesSet() {
-        if (this.mandatory && this.defaultValue == null) {
-                throw new BeanInitializationException(
-                    "JavaBean property 'defaultValue'"
-                    + "must be specified for mandatory property types");
-        }
     }
     
 

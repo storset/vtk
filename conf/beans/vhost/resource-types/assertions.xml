@@ -18,6 +18,7 @@
     <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
     <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
     <property name="name" value="schema" />    
+    <property name="checkExistenceOnly" value="true" />
   </bean>
 
 

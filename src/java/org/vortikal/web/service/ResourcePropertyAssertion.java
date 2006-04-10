@@ -47,6 +47,8 @@ import org.vortikal.security.Principal;
  *   the property to match
  *   <li><code>value</code> - the {@link Property#getValue value}
  *   of the property to match
+ *   <li><code>checkExistenceOnly</code> - whether to only check if
+ *   the property exists on the resource.
  * </ul>
  */
 public class ResourcePropertyAssertion
@@ -54,7 +56,9 @@ public class ResourcePropertyAssertion
 
     private Namespace namespace;
     private String name;
+    // XXX: type the 'value' private variable
     private String value;
+    private boolean checkExistenceOnly = false;
     private boolean invert = false;
     
     public void setName(String name) {
@@ -87,6 +91,11 @@ public class ResourcePropertyAssertion
     }
 
 
+    public void setCheckExistenceOnly(boolean checkExistenceOnly) {
+        this.checkExistenceOnly = checkExistenceOnly;
+    }
+    
+
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourcePropertyAssertion) {
 
@@ -95,13 +104,22 @@ public class ResourcePropertyAssertion
             if (this.namespace.equals(other.getNamespace()) && 
                 this.name.equals(other.getName())) {
 				
-                boolean sameValue = (this.value == null && other.getValue() == null)
-                    || (this.value != null && this.value.equals(other.getValue()));
+                boolean same = false;
+
+                if (this.checkExistenceOnly) {
+                    same = this.checkExistenceOnly == other.checkExistenceOnly;
+                } else {
+                    same = (this.value == null && other.getValue() == null)
+                        || (this.value != null && this.value.equals(other.getValue()));
+                    
+                }
+
+
 
                 if (!this.invert && !other.invert)
-                    return  !sameValue;
+                    return  !same;
                 else if (this.invert != other.invert)
-                    return sameValue;
+                    return same;
             }
         }
         return false;
@@ -129,8 +147,11 @@ public class ResourcePropertyAssertion
         if (resource != null) {
             Property property = resource.getProperty(namespace, name);
 
-            // XXX: type the 'value' private variable:
-            if (property != null && value.equals(property.getStringValue())) return !invert;
+            if (this.checkExistenceOnly) {
+                if (property != null) return !invert;
+            } else {
+                if (property != null && value.equals(property.getStringValue())) return !invert;
+            }
         }
         
         return invert;

@@ -129,7 +129,8 @@ public class ResourcePropertyAssertion
         if (resource != null) {
             Property property = resource.getProperty(namespace, name);
 
-            if (property != null && value.equals(property.getValue())) return !invert;
+            // XXX: type the 'value' private variable:
+            if (property != null && value.equals(property.getStringValue())) return !invert;
         }
         
         return invert;

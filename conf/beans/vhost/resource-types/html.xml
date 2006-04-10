@@ -9,6 +9,11 @@
     <property name="name" value="html"/>
     <property name="namespace" ref="CUSTOM_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesHtml" />
+      </list>
+    </property>
   </bean>
 
 </beans>

@@ -29,6 +29,13 @@
     <property name="contentModificationEvaluator" ref="schemaEvaluator" />
   </bean>
 
+  <bean id="abstractXPathEvaluator"
+        class="org.vortikal.repository.resourcetype.property.XPathEvaluator"
+        abstract="true">
+    <property name="valueFactory" ref="valueFactory" />
+  </bean>
+
+
   <bean id="schemaEvaluator"
         class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 

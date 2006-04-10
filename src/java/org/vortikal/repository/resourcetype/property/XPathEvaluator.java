@@ -31,36 +31,23 @@
 package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jdom.Document;
-import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
 
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.BeanInitializationException;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repositoryimpl.index.ExtractorException;
-import org.vortikal.repositoryimpl.index.dms.DMSIndexBean;
+import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.security.Principal;
-import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.repository.JDOMResource;
+
 
 
 /**
@@ -68,7 +55,7 @@ import org.vortikal.util.repository.JDOMResource;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>xPath</code> - the XPath expression
+ *   <li><code>expression</code> - the XPath expression
  *   <li><code>valueFactory</code> - an optional {@link ValueFactory}
  *   to apply to the extracted value(s). If not specified, all
  *   extracted values are treated as string values.
@@ -87,7 +74,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
     }      
     
 
-    public void setXPath(String value) throws JDOMException {
+    public void setExpression(String value) throws JDOMException {
         this.xPath = XPath.newInstance(value);
     }
     

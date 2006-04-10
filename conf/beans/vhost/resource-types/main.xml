@@ -11,6 +11,15 @@
   <import resource="html.xml" />
   <import resource="xml.xml" />
 
+  <import resource="managed-xml.xml" />
+
+  <!-- import resource="emne.xml" />
+  <import resource="semester.xml" />
+  <import resource="emnegruppe.xml" />
+  <import resource="studieprogram.xml" />
+  <import resource="studieretning.xml" / -->
+
+
 
   <!-- CONSTANTS -->
   <import resource="namespaces.xml" />

@@ -33,6 +33,18 @@
     </property>
   </bean>
 
+  <bean id="EMNE_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="emne" />
+    <constructor-arg value="http://www.uio.no/xsd/studier/emne" />
+  </bean>
+
+  <bean id="schemaIsEmne" 
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="name" value="schema" />
+    <property name="pattern" value="http://www.uio.no/xsd/studier/emne/v00.*" />
+  </bean>
+
 
   <bean id="emneEmnekodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnekode" />
@@ -168,5 +180,7 @@
   </bean>
 
   <bean id="emneSpraakEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
 
 </beans>

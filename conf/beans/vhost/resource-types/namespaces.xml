@@ -14,5 +14,5 @@
     <property name="staticField"
               value="org.vortikal.repository.Namespace.CUSTOM_NAMESPACE" />
   </bean>
-
+ 
 </beans>

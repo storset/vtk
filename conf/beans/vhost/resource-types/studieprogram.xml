@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Studieprogram XML resource -->
+
+  <bean id="studieprogramXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="studieprogram"/>
+    <property name="namespace" ref="STUDIEPROGRAM_NAMESPACE" /> 
+    <property name="parentTypeDefinition" ref="managedXmlResource" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="studieprogramProgramkodePropDef" />
+        <ref bean="studieprogramProgramnavnPropDef" />
+        <ref bean="studieprogramProgramtypePropDef" />
+      </list>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="schemaIsStudieprogram" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="STUDIEPROGRAM_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="emne" />
+    <constructor-arg value="http://www.uio.no/xsd/studier/studieprogram" />
+  </bean>
+
+
+  <bean id="schemaIsStudieprogram" 
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="name" value="schema" />
+    <property name="pattern" value="http://www.uio.no/xsd/studier/studieprogram-hjemmeside/v00.*" />
+  </bean>
+
+
+  <bean id="studieprogramProgramkodePropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="programkode" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramProgramkodeEvaluator" />
+  </bean>
+
+  <bean id="studieprogramProgramkodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="studieprogramProgramnavnPropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="programnavn" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramProgramnavnEvaluator" />
+  </bean>
+
+  <bean id="studieprogramProgramnavnEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="studieprogramProgramtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="programtype" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramProgramtypeEvaluator" />
+  </bean>
+
+  <bean id="studieprogramProgramtypeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+</beans>

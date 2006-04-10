@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Studieretning XML resource -->
+
+  <bean id="studieretningXmlResource" class="org.vortikal.repository.resourcetype.ResourceTypeDefinitionImpl">
+    <property name="name" value="studieretning"/>
+    <property name="namespace" ref="STUDIERETNING_NAMESPACE" /> 
+    <property name="parentTypeDefinition" ref="managedXmlResource" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="studieretningStudieretningskodePropDef" />
+        <ref bean="studieretningStudieretningsnavnPropDef" />
+        <ref bean="studieretningProgramkodeReferansePropDef" />
+      </list>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="schemaIsStudieretning" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="STUDIERETNING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="emne" />
+    <constructor-arg value="http://www.uio.no/xsd/studier/studieretning" />
+  </bean>
+
+
+  <bean id="schemaIsStudieretning" 
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="name" value="schema" />
+    <property name="pattern" value="http://www.uio.no/xsd/studier/studieretning-hjemmeside/v00.*" />
+  </bean>
+
+
+  <bean id="studieretningStudieretningskodePropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="studieretningskode" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieretningStudieretningskodeEvaluator" />
+  </bean>
+
+  <bean id="studieretningStudieretningskodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="studieretningStudieretningsnavnPropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="studieretningsnavn" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieretningStudieretningsnavnEvaluator" />
+  </bean>
+
+  <bean id="studieretningStudieretningsnavnEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="studieretningProgramkodeReferansePropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="programkode-referanse" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieretningProgramkodeReferanseEvaluator" />
+  </bean>
+
+  <bean id="studieretningProgramkodeReferanseEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+</beans>

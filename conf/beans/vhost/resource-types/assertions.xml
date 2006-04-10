@@ -13,6 +13,14 @@
     <property name="invert" value="true"/>
   </bean>
 
+  <bean id="schemaPropSet" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="name" value="schema" />    
+  </bean>
+
+
   <!-- Assertion that matches resources with the property
        custom:web-edit = 'yes' -->
   <bean id="webEditable" 

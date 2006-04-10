@@ -11,25 +11,30 @@
     <property name="parentTypeDefinition" ref="xmlResource" />
     <property name="assertions">
       <list>
-        <ref bean="webEditable" />
-        <ref bean="viewTransformable" />
+        <ref bean="schemaPropSet" />
       </list>
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="schemaPropDef" />
+        <ref bean="webEditPropDef" />
+        <ref bean="transformViewPropDef" />
       </list>
     </property>
   </bean>
 
-  <bean id="schemaPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="schema" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+  <bean id="webEditPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="web-edit" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="schemaEvaluator" />
   </bean>
 
-  <bean id="schemaEvaluator"
-        class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="transformViewPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="transform-view" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
 
 </beans>

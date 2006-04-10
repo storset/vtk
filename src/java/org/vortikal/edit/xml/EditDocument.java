@@ -59,6 +59,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.Xml;
 import org.vortikal.web.RequestContext;
 
 
@@ -199,21 +200,17 @@ public class EditDocument extends Document {
         repository.unlock(token, uri, null);
     }
 
-
-
     public String getDocumentMode() {
-        ProcessingInstruction pi = findPI(getRootElement(), "mode");
+        ProcessingInstruction pi = Xml.findProcessingInstruction(getRootElement(), "mode");
         if (pi != null)
             return pi.getData(); 
 
         return "default";
     }
 
-
-
     public void setDocumentMode(String mode) {
         Element rootElement = getRootElement();
-        ProcessingInstruction pi = findPI(rootElement, "mode");
+        ProcessingInstruction pi = Xml.findProcessingInstruction(rootElement, "mode");
         if (pi != null) {
             rootElement.removeContent(pi);
         }
@@ -221,30 +218,6 @@ public class EditDocument extends Document {
             rootElement.addContent(new ProcessingInstruction("mode", mode));
         }
     }
-
-
-
-
-    private ProcessingInstruction findPI(Element element, String target) {
-        for (Iterator it = element.getContent().iterator(); it.hasNext();) {
-            Object o = it.next();
-            if ((o instanceof ProcessingInstruction)
-                    && target.equals(((ProcessingInstruction) o).getTarget())) { 
-
-                return (ProcessingInstruction) o; 
-            }
-        }
-        return null;
-    }
-
-
-
-    public void removePI(Element element, String name) {
-        ProcessingInstruction pi = findPI(element, name);
-        if (pi != null) element.removeContent(pi);
-    }
-
-
 
     public boolean hasDocumentPI() {
         return pi != null;
@@ -370,7 +343,7 @@ public class EditDocument extends Document {
         Map modifiedElements = new HashMap();
 
 
-        String path = createElementPath(element);
+        String path = Xml.createNumericPath(element);
         String input = (String) parameters.get(path);
         if (input != null) {
             modifiedElements.put(element, input);
@@ -381,7 +354,7 @@ public class EditDocument extends Document {
 
             if (o instanceof Element) {
                 Element e = (Element) o;
-                path = createElementPath(e);
+                path = Xml.createNumericPath(e);
                 input = (String) parameters.get(path);
                 if (input != null) {
                     modifiedElements.put(e, input);
@@ -407,7 +380,7 @@ public class EditDocument extends Document {
              * If the input parameter is on the path of the current element and
              * matches the attribute syntax.
              */
-            if (key.matches(createElementPath(element)
+            if (key.matches(Xml.createNumericPath(element)
                     + "(\\.\\d+)*:[a-zA-Z].*")) {
                 String elementPath = key.substring(0, key.indexOf(":"));
                 String attributeName = key.substring(key.indexOf(":") + 1);
@@ -423,28 +396,6 @@ public class EditDocument extends Document {
     }
 
 
-
-    private String createElementPath(Element element) {
-
-        if (element.isRootElement()) { return "1"; }
-
-        Element parent = (Element) element.getParent();
-        int index = 1;
-
-        for (Iterator i = parent.getChildren().iterator(); i.hasNext();) {
-            Element child = (Element) i.next();
-            if (child == element) {
-                break;
-            }
-            index++;
-        }
-
-        String path = createElementPath(parent) + "." + index;
-        return path;
-    }
-
-
-
     /**
      * Finds elements in document based on "numeric path" (element positions
      * separated by dots). An example of such a path is "1.3.9", which means
@@ -456,29 +407,7 @@ public class EditDocument extends Document {
      *         otherwise
      */
     public Element findElementByPath(String path) {
-        Element currentElement = getRootElement();
-        String currentPath = new String(path);
-        if (currentPath.indexOf(".") >= 0) {
-            // Strip away the leading '1.' (root element)
-            currentPath = currentPath.substring(2, currentPath.length());
-        }
-        while (true) {
-            int index = 0;
-            if (currentPath.indexOf(".") == -1) {
-                index = Integer.parseInt(currentPath);
-            } else {
-                index = Integer.parseInt(currentPath.substring(0, currentPath
-                        .indexOf(".")));
-            }
-            currentElement = (Element) currentElement.getChildren().get(
-                    index - 1);
-            if (currentPath.indexOf(".") == -1) {
-                break;
-            }
-            currentPath = currentPath.substring(currentPath.indexOf(".") + 1,
-                    currentPath.length());
-        }
-        return currentElement;
+        return Xml.findElementByNumericPath(this, path);
     }
 
 

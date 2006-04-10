@@ -34,7 +34,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.ProcessingInstruction;
 import org.jdom.Text;
 import org.jdom.xpath.XPath;
 
@@ -63,4 +65,67 @@ public class Xml {
         }
         return textNodes;
     }
+    
+    public static Element findElementByNumericPath(Document document, String path) {
+        Element currentElement = document.getRootElement();
+
+        String currentPath = new String(path);
+        if (currentPath.indexOf(".") >= 0) {
+            // Strip away the leading '1.' (root element)
+            currentPath = currentPath.substring(2, currentPath.length());
+        }
+        while (true) {
+            int index = 0;
+            if (currentPath.indexOf(".") == -1) {
+                index = Integer.parseInt(currentPath);
+            } else {
+                index = Integer.parseInt(currentPath.substring(0, currentPath
+                        .indexOf(".")));
+            }
+            currentElement = (Element) currentElement.getChildren().get(
+                    index - 1);
+            if (currentPath.indexOf(".") == -1) {
+                break;
+            }
+            currentPath = currentPath.substring(currentPath.indexOf(".") + 1,
+                    currentPath.length());
+        }
+        return currentElement;
+    }
+    
+    public static String createNumericPath(Element element) {
+        if (element.isRootElement()) { return "1"; }
+
+        Element parent = (Element) element.getParent();
+        int index = 1;
+
+        for (Iterator i = parent.getChildren().iterator(); i.hasNext();) {
+            Element child = (Element) i.next();
+            if (child == element) {
+                break;
+            }
+            index++;
+        }
+
+        String path = createNumericPath(parent) + "." + index;
+        return path;
+    }
+
+    public static void removeProcessingInstruction(Element element, String target) {
+        ProcessingInstruction pi = findProcessingInstruction(element, target);
+        if (pi != null) element.removeContent(pi);
+    }
+
+    public static ProcessingInstruction findProcessingInstruction(Element element, String target) {
+        for (Iterator it = element.getContent().iterator(); it.hasNext();) {
+            Object o = it.next();
+            if ((o instanceof ProcessingInstruction)
+                    && target.equals(((ProcessingInstruction) o).getTarget())) { 
+
+                return (ProcessingInstruction) o; 
+            }
+        }
+        return null;
+    }
+
 }

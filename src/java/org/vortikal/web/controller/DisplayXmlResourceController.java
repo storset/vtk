@@ -95,8 +95,6 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
 
     private String schemaPropertyName = "schema";
 
-    private Namespace schemaNamespace = Namespace.CUSTOM_NAMESPACE;
-
     private Repository repository;
 
     private TransformerManager transformerManager;
@@ -193,7 +191,8 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
         }
 
         if (schemasForHandleLastModified != null && schemasForHandleLastModified.size() > 0) {
-            Property schemaProp = resource.getProperty(schemaNamespace, schemaPropertyName);
+            Property schemaProp = resource.getProperty(
+                    Namespace.CUSTOM_NAMESPACE, schemaPropertyName);
             String schema = schemaProp.getStringValue();
             Iterator schemaIterator = schemasForHandleLastModified.iterator();
             boolean schemaIsInList = false;

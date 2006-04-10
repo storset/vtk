@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.util.Xml;
 
 
 
@@ -118,7 +119,7 @@ public class MoveItController extends AbstractXmlEditController {
 
                     Element clone = (Element)elem.clone();
                     l.add(index, clone);
-                    document.removePI(clone, "marked");
+                    Xml.removeProcessingInstruction(clone, "marked");
                     document.resetElements(new Vector(clone.getChildren()));
                 }
 

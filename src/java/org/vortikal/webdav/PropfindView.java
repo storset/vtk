@@ -510,7 +510,8 @@ public class PropfindView implements View, InitializingBean {
          * fails, we assume it is a 'name = value' style property, and
          * build a simple JDOM element from it. */
 
-        String value = property.getStringValue();
+        //String value = property.getStringValue();
+        String value = property.getValue().toString();
 
         /* If the value does not contain both "<" and ">" we know for
          * sure that it is not an XML fragment: */
@@ -550,7 +551,8 @@ public class PropfindView implements View, InitializingBean {
             Namespace.getNamespace(property.getNamespace().getUri());
         Element propElement = new Element(property.getName(),
                                           customNamespace);
-        propElement.setText(property.getStringValue());
+        //propElement.setText(property.getStringValue());
+        propElement.setText(property.getValue().toString());
         return propElement;
 
     }

@@ -76,7 +76,11 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <!-- property name="createEvaluator" ref="emnegruppeSpraakEvaluator" / -->
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <property name="value" value="bokmaal" />
+      </bean>
+    </property>
     <property name="contentModificationEvaluator" ref="emnegruppeSpraakEvaluator" />
   </bean>
 

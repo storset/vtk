@@ -84,7 +84,11 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" /> 
-    <!-- property name="createEvaluator" ref="emneUndervisningsSpraakEvaluator" / -->
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <property name="value" value="annet" />
+      </bean>
+    </property>
     <property name="contentModificationEvaluator" ref="emneUndervisningsSpraakEvaluator" />
   </bean>
 
@@ -96,7 +100,11 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <!-- property name="createEvaluator" ref="emneUndervisningsSemesterEvaluator" / -->
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <property name="value" value="annet" />
+      </bean>
+    </property>
     <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterEvaluator" />
   </bean>
 
@@ -129,7 +137,11 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <!-- property name="createEvaluator" ref="emneEksamensSemesterEvaluator" / -->
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <property name="value" value="annet" />
+      </bean>
+    </property>
     <property name="contentModificationEvaluator" ref="emneEksamensSemesterEvaluator" />
   </bean>
 
@@ -151,8 +163,7 @@
     <property name="name" value="status" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" /><!-- hva med defaultverdier i XPathEvaluator -->
-    <!-- property name="createEvaluator" ref="emneStatusEvaluator" / -->
+    <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneStatusEvaluator" />
   </bean>
 
@@ -175,7 +186,11 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <!-- property name="createEvaluator" ref="emneSpraakEvaluator" / -->
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <property name="value" value="bokmaal" />
+      </bean>
+    </property>
     <property name="contentModificationEvaluator" ref="emneSpraakEvaluator" />
   </bean>
 

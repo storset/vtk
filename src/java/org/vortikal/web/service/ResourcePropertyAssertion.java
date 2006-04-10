@@ -95,10 +95,13 @@ public class ResourcePropertyAssertion
             if (this.namespace.equals(other.getNamespace()) && 
                 this.name.equals(other.getName())) {
 				
+                boolean sameValue = (this.value == null && other.getValue() == null)
+                    || (this.value != null && this.value.equals(other.getValue()));
+
                 if (!this.invert && !other.invert)
-                    return ! this.value.equals(other.getValue());
+                    return  !sameValue;
                 else if (this.invert != other.invert)
-                    return this.value.equals(other.getValue());
+                    return sameValue;
             }
         }
         return false;

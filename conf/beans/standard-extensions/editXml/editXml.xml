@@ -333,16 +333,21 @@
   </bean>
 
 
-  <bean id="editTransformerManager" class="org.vortikal.xml.TransformerManager">
-    <property name="alwaysCompile" value="true" />
-    <property name="stylesheetReferenceResolvers">
+  <bean id="editXslStylesheetResolvers" class="java.util.ArrayList">
+    <constructor-arg>
       <list>
         <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
           <property name="schemaRegistry" ref="schemaRegistry"/>
           <property name="elementXPath" value="/xsd:schema/xsd:annotation/xsd:appinfo/edit/xsl" />
          </bean>
-       </list>
-     </property>
+      </list>
+    </constructor-arg>
+  </bean>
+
+
+  <bean id="editTransformerManager" class="org.vortikal.xml.TransformerManager">
+    <property name="alwaysCompile" value="true" />
+    <property name="stylesheetReferenceResolvers" ref="editXslStylesheetResolvers" />
      <property name="compilationURIResolvers">
        <list>
          <ref bean="xsltCompilationFilePathURIResolver" />

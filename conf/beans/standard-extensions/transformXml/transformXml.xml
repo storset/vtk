@@ -229,19 +229,31 @@
   </bean>
 
 
+  <bean id="xmlStylesheetInDocumentResolver"
+        class="org.vortikal.xml.StylesheetInDocumentResolver" />
+
+
+  <bean id="xmlStylesheetInSchemaResolver" class="org.vortikal.xml.StylesheetInSchemaResolver">
+    <property name="schemaRegistry" ref="schemaRegistry"/>
+  </bean>
+
+
+  <bean id="standardXslStylesheetResolvers" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+         <ref bean="xmlStylesheetInDocumentResolver" />
+         <ref bean="xmlStylesheetInSchemaResolver" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+
 
    <bean id="transformerManager" class="org.vortikal.xml.TransformerManager">
      <description>
        XSLT Transformer manager
      </description>
-     <property name="stylesheetReferenceResolvers">
-       <list>
-         <bean class="org.vortikal.xml.StylesheetInDocumentResolver"/>
-         <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
-           <property name="schemaRegistry"><ref bean="schemaRegistry"/></property>
-         </bean>
-       </list>
-     </property>
+     <property name="stylesheetReferenceResolvers" ref="standardXslStylesheetResolvers" />
      <property name="compilationURIResolvers">
        <description>
          This is the list of URI resolvers used to obtain the XSL

@@ -142,4 +142,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.validator = validator;
     }
     
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": [name=").append(this.name).append("]");
+        return sb.toString();
+    }
+    
 }

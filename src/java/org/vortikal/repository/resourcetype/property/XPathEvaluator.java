@@ -60,6 +60,8 @@ import org.vortikal.security.Principal;
  *   to apply to the extracted value(s). If not specified, all
  *   extracted values are treated as string values.
  * </ul>
+ *
+ * <p>TODO: Handle list values.
  */
 public class XPathEvaluator implements ContentModificationPropertyEvaluator {
 

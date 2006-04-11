@@ -65,22 +65,17 @@ public class Namespace {
     }
     
     public boolean equals(Object obj) {
+        if (obj == null) return false;
         if (! (obj instanceof Namespace)) return false;
         Namespace ns = (Namespace) obj;
-        
+
         String thisUri = (this.uri == null) ? "" : this.uri;
         String thatUri = (ns.getUri() == null) ? "" : ns.getUri();
-        String thisPrefix = (this.prefix == null) ? "" : this.prefix;
-        String thatPrefix = (ns.getPrefix() == null) ? "" : ns.getPrefix();
-
-        return thisUri.equals(thatUri) && thisPrefix.equals(thatPrefix);
+        return thisUri.equals(thatUri);
     }
     
     public int hashCode() {
-        String uri = this.uri == null ? "" : this.uri;
-        String prefix = this.prefix == null ? "" : this.prefix;
-        
-        return uri.hashCode() + prefix.hashCode();
+        return this.uri == null ? 0 : this.uri.hashCode();
     }
     
     public String toString() {

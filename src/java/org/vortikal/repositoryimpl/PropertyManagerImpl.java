@@ -157,7 +157,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 propDefMap = new HashMap();
                 // XXX: what about prefix when using namespaces as map keys?
                 this.propertyTypeDefinitions.put(namespace, propDefMap);
-                this.propertyTypeDefinitions.put(namespace.getUri(), propDefMap);
             }
             for (int u = 0; u < propDefs.length; u++) {
                 if (logger.isDebugEnabled()) {
@@ -201,7 +200,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         if (assertions != null) {
             for (int i = 0; i < assertions.length; i++) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Checking assertion " + assertions[i] + " for resource " + resource);
+                    logger.debug("Checking assertion "
+                                 + assertions[i] + " for resource " + resource);
                 }
 
                 if (!assertions[i].matches(resource, principal)) {
@@ -217,8 +217,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Checking for type '" + rt.getName() + "', resource " + resource
-                         + " succeeded, assertions matched: "
+            logger.debug("Checking for type '" + rt.getName() + "', resource "
+                         + resource + " succeeded, assertions matched: "
                          + (assertions != null ? java.util.Arrays.asList(assertions) : null));
         }
         return true;
@@ -338,14 +338,18 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
 
     /**
-     * mandatory --> (default | createEvaluator) (feile ved init)
-     * createEvaluator --> false ved kjøring: sette default-verdi eller feile
+     * Evaluates and validates properties on a resource before
+     * storing.
      *
+     * @param resource a the original resource
+     * @param principal the principal performing the store operation
+     * @param dto the user-supplied resource
+     * @return the resulting resource after property evaluation
      */
     public ResourceImpl storeProperties(ResourceImpl resource, Principal principal,
                                         Resource dto)
         throws AuthenticationException, AuthorizationException,
-        CloneNotSupportedException {
+        CloneNotSupportedException, IOException {
 
         if (!init) init();
 
@@ -373,12 +377,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                             "Property is mandatory: " + prop);
                     }
                     // check if allowed
-                    try {
-                        authorize(prop.getDefinition().getProtectionLevel(), principal, uri);
-                    } catch (Exception e) {
-                        throw new ConstraintViolationException(
-                            "Not authorized to delete property " + prop, e);
-                    }
+                    authorize(prop.getDefinition().getProtectionLevel(), principal, uri);
                     // It will be removed
                     addToPropsMap(deletedProps, prop);
                 }
@@ -389,13 +388,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
-                    try {
-                        authorize(prop.getDefinition().getProtectionLevel(), principal, uri);
-                    } catch (Exception e) {
-                        throw new ConstraintViolationException(
-                            "Not authorized to edit property " + prop, e);
-                    }
-                    
+                    authorize(prop.getDefinition().getProtectionLevel(), principal, uri);
                     addToPropsMap(alreadySetProperties, userProp);
                 }
             } else {
@@ -424,12 +417,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
-                    try {
-                        authorize(userProp.getDefinition().getProtectionLevel(), principal, uri);
-                    } catch (Exception e) {
-                        throw new ConstraintViolationException(
-                            "Not authorized to edit property " + prop, e);
-                    }
+                    authorize(userProp.getDefinition().getProtectionLevel(), principal, uri);
                     addToPropsMap(alreadySetProperties, userProp);
                 }
             } 
@@ -442,6 +430,15 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         if (resource.getLock() != null)
             newResource.setLock((Lock)resource.getLock().clone());
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("About to evaluate resource type for resource " + dto
+                         + ", alreadySetProps = " + alreadySetProperties
+                         + ", deletedProps = " + deletedProps
+                         + ", deadProps = " + deadProperties
+                         + ", suppliedProps = " + dto.getProperties());
+        }
+
+
         // Evaluate resource tree, for all live props not overridden, evaluate
         ResourceTypeDefinition rt = propertiesModification(
             principal, newResource, dto, new Date(), alreadySetProperties,
@@ -526,13 +523,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private void evalPropertiesModification(
         Principal principal, ResourceImpl newResource, Resource dto,
         Date time, Map alreadySetProperties, Map deletedProps, ResourceTypeDefinition rt,
-        PropertyTypeDefinition[] def, List newProps) {
+        PropertyTypeDefinition[] propertyDefs, List newProps) {
 
-        for (int i = 0; i < def.length; i++) {
-            PropertyTypeDefinition propertyDef = def[i];
+        for (int i = 0; i < propertyDefs.length; i++) {
+            PropertyTypeDefinition propertyDef = propertyDefs[i];
             
             // If property allready set, don't evaluate
-            Map propsMap = (Map)alreadySetProperties.get(rt.getNamespace());
+            Map propsMap = (Map) alreadySetProperties.get(rt.getNamespace());
             if (propsMap != null) {
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
@@ -542,7 +539,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 }
             }
             // If prop deleted, don't evaluate
-            propsMap = (Map)deletedProps.get(rt.getNamespace());
+            propsMap = (Map) deletedProps.get(rt.getNamespace());
             if (propsMap != null) {
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
@@ -830,9 +827,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                                                           String name) {
         PropertyTypeDefinition propDef = null;
         Map map = (Map)propertyTypeDefinitions.get(namespace);
-        if (map == null) {
-            map = (Map)propertyTypeDefinitions.get(namespace.getUri());
-        }
 
         if (map != null) {
             propDef = (PropertyTypeDefinition) map.get(name);

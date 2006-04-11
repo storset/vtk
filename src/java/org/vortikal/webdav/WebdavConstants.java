@@ -94,12 +94,17 @@ public class WebdavConstants {
         Namespace.getNamespace("d", "DAV:");
 
     /**
-     * Namespace for representation of multiple property values in XML.
-     * TODO: Make configurable somewhere
+     * Namespace for representation of multiple property values in XML-list-format.
      */
-    public static final Namespace VORTIKAL_PROPERTYVALUES =
-        Namespace.getNamespace("vv", "http://vortikal.org/");
+    public static final Namespace VORTIKAL_PROPERTYVALUES_XML_NAMESPACE =
+        Namespace.getNamespace("vx", "http://vortikal.org/xml-value-list");
 
+    /**
+     * Namespace for representation of multiple property values in CSV-list-format.
+     */
+    public static final Namespace VORTIKAL_PROPERTYVALUES_CSV_NAMESPACE =
+        Namespace.getNamespace("vc", "http://vortikal.org/csv-value-list");
+    
     
 //    /**
 //     * Describe <code>buildLockDiscovery</code> method here.

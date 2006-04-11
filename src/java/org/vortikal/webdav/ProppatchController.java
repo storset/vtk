@@ -55,6 +55,10 @@ import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repositoryimpl.AclException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
@@ -66,11 +70,10 @@ import org.vortikal.web.RequestContext;
  * Handler for PROPPATCH requests.
  *
  */
-public class ProppatchController extends AbstractWebdavController {
+public class ProppatchController extends AbstractWebdavController  {
 
-
-
-
+    private ValueFactory valueFactory;
+    
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
          
@@ -311,19 +314,19 @@ public class ProppatchController extends AbstractWebdavController {
      * Sets a single property on a resource .
      *
      * @param resource the <code>Resource</code> to modify.
-     * @param property an <code>org.jdom.Element</code> object
+     * @param propertyElement an <code>org.jdom.Element</code> object
      * representing a DAV property element. This may be a standard DAV
      * property, or a custom one, although at present only standard
      * DAV properties are supported.
      */
-    protected void setProperty(Resource resource, Element property, 
+    protected void setProperty(Resource resource, Element propertyElement, 
                                String token)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
         java.io.IOException, AclException {
 
-        String propertyName = property.getName();
-        String nameSpace = property.getNamespace().getURI();
+        String propertyName = propertyElement.getName();
+        String nameSpace = propertyElement.getNamespace().getURI();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Setting property with namespace: " + nameSpace);
@@ -335,25 +338,25 @@ public class ProppatchController extends AbstractWebdavController {
             if (propertyName.equals("displayname")) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("setting property 'displayname' to '"
-                                 + property.getText() + "'");
+                                 + propertyElement.getText() + "'");
                 }
-                resource.setDisplayName(property.getText());
+                resource.setDisplayName(propertyElement.getText());
                 
             } else if (propertyName.equals("getcontentlanguage")) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("setting property 'getcontentlanguage' to '"
-                                 + property.getText() + "'");
+                                 + propertyElement.getText() + "'");
                 }
                 // XXX: Locale needs to be better handled
-                Locale locale = LocaleHelper.getLocale(property.getText());
-                resource.setContentLocale(property.getText());
+                Locale locale = LocaleHelper.getLocale(propertyElement.getText());
+                resource.setContentLocale(propertyElement.getText());
                 
             } else if (propertyName.equals("getcontenttype")) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("setting property 'getcontenttype' to '"
-                                 + property.getText() + "'");
+                                 + propertyElement.getText() + "'");
                 }
-                resource.setContentType(property.getText());
+                resource.setContentType(propertyElement.getText());
                 
             } else {
                 if (logger.isDebugEnabled()) {
@@ -365,22 +368,39 @@ public class ProppatchController extends AbstractWebdavController {
         } else {
 
             Namespace ns = Namespace.getNamespace(nameSpace);
-            Property theProperty = resource.getProperty(ns, propertyName);
+            Property property = resource.getProperty(ns, propertyName);
 
-            if (theProperty == null) {
+            if (property == null) {
                 /* Create a new property: */
-                theProperty = resource.createProperty(ns, propertyName);
+                property = resource.createProperty(ns, propertyName);
             }
             
             if (logger.isDebugEnabled()) {
-                logger.debug("Setting property " + theProperty + 
+                logger.debug("Setting property " + property + 
                              " on resource " + resource.getURI());
             }
-            theProperty.setStringValue(elementToString(property));
             
+            PropertyTypeDefinition def = property.getDefinition();
+            
+            if (def != null) {
+                // Set value of controlled property
+                try {
+                    if (def.isMultiple()) {
+                        property.setValues(elementToValues(propertyElement, def.getType()));
+                    } else {
+                        property.setValue(valueFactory.createValue(propertyElement.getText(), def.getType()));
+                    }
+                } catch (ValueFormatException e) {
+                    logger.warn("Could not convert given value(s) for property " 
+                            + property + " to the correct type: " + e.getMessage());
+                    throw new IllegalOperationException("Could not convert given value(s) for property " 
+                            + property + " to the correct type: " + e.getMessage());
+                }
+            } else {
+                // Set string value of un-controlled property
+                property.setStringValue(elementToString(propertyElement));
+            }
         }
-        
-        
     }
     
     
@@ -417,7 +437,7 @@ public class ProppatchController extends AbstractWebdavController {
     /**
      * Builds a string representation of a property element.
      *
-     * @param element an <code>Element</code> of type "dav:prop".
+     * @param a child element (property) of the "dav:prop" element.
      * @return a String representation of the property. If the element
      * has no child elements, the string returned is the value of the
      * element's text, otherwise the XML structure is preserved.
@@ -428,15 +448,57 @@ public class ProppatchController extends AbstractWebdavController {
                 /* Assume a "name = value" style property */
                 return element.getText();
             }
+            
             Format format = Format.getRawFormat();
             format.setOmitDeclaration(true);
             XMLOutputter xmlOutputter = new XMLOutputter(format);
+            
             return xmlOutputter.outputString(element.getChildren());
-
         } catch (Exception e) {
             logger.warn("Error reading property value", e);
             return null;
         }
+    }
+    
+    protected Value[] elementToValues(Element element, int type) throws ValueFormatException {
+        
+        String[] stringValues;
+        Element valuesElement;
+        if ((valuesElement = element.getChild("values", 
+                    WebdavConstants.VORTIKAL_PROPERTYVALUES_CSV_NAMESPACE)) != null) {
+            // CSV separated values
+            if (valuesElement.getChildren().size() > 0) {
+                throw new ValueFormatException("Invalid multi-value syntax: CSV list cannot contain un-escaped XML");
+            }
+            
+            stringValues = valuesElement.getText().split(",");
+        } else if ((valuesElement = element.getChild("values", 
+                WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE))!= null) {
+                
+            List children = valuesElement.getChildren("value", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
+            
+            if (children.size() == 0) {
+                throw new ValueFormatException("Empty value lists are currently not supported.");
+            }
+            
+            stringValues = new String[children.size()];
+            int u=0;
+            for (Iterator i = children.iterator(); i.hasNext(); ) {
+                stringValues[u++] = ((Element)i.next()).getText();
+            }
+        } else {
+            throw new ValueFormatException("Invalid multi-value syntax: "
+                    + "missing 'values'-element in proper namespace");
+        }
+        
+        return valueFactory.createValues(stringValues, type);
+    }
+
+
+
+
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
     }
     
 }

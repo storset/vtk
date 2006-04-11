@@ -494,7 +494,9 @@
     parent="requestLocalRepositoryAware" />
 
   <bean id="webdavProppatchHandler" class="org.vortikal.webdav.ProppatchController"
-    parent="requestLocalRepositoryAware" />
+    parent="requestLocalRepositoryAware">
+    <property name="valueFactory" ref="valueFactory"/>
+  </bean>
 
 
 

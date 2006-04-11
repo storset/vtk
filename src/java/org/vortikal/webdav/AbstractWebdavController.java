@@ -59,13 +59,10 @@ public abstract class AbstractWebdavController implements Controller {
 
     protected Repository repository = null;
 
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
-
-
     /**
      * The standard WebDAV XML properties supported by the WebDAV
      * controllers.

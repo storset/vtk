@@ -575,11 +575,11 @@ public class PropfindView implements View, InitializingBean {
         Element propElement = new Element(property.getName(),
                                           customNamespace);
         
-        Element valuesElement = new Element("values", WebdavConstants.VORTIKAL_PROPERTYVALUES);
+        Element valuesElement = new Element("values", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
         
         for (int i=0; i<values.length; i++) {
             Element valueElement = 
-                new Element("value", WebdavConstants.VORTIKAL_PROPERTYVALUES);
+                new Element("value", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
             
             valueElement.setText(values[i].getStringRepresentation());
             valuesElement.addContent(valueElement);

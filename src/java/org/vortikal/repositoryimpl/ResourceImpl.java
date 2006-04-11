@@ -64,7 +64,6 @@ public class ResourceImpl implements Resource, Cloneable {
     private String uri;
     private String resourceType;
     private Acl acl;
-//     private boolean inheritedACL = true;
     private int aclInheritedFrom = -1;
     private Lock lock = null;
     private String[] childURIs = null;
@@ -184,7 +183,7 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public void addProperty(Property property) {
-        Map map = (Map)propertyMap.get(property.getNamespace());
+        Map map = (Map) this.propertyMap.get(property.getNamespace());
         if (map == null) {
             map = new HashMap();
             propertyMap.put(property.getNamespace(), map);
@@ -193,21 +192,21 @@ public class ResourceImpl implements Resource, Cloneable {
     }
     
     public Property getProperty(Namespace namespace, String name) {
-        Map map = (Map)propertyMap.get(namespace);
-
+        Map map = (Map) this.propertyMap.get(namespace);
         if (map == null) return null;
         
-        return (Property)map.get(name);
+        return (Property) map.get(name);
     }
 
     public List getProperties(Namespace namespace) {
-        Map map = (Map)propertyMap.get(namespace);
+        Map map = (Map) this.propertyMap.get(namespace);
+        if (map == null) return new ArrayList();
         return new ArrayList(map.entrySet());
     }
 
     public List getProperties() {
         List props = new ArrayList();
-        for (Iterator iter = propertyMap.values().iterator(); iter.hasNext();) {
+        for (Iterator iter = this.propertyMap.values().iterator(); iter.hasNext();) {
             Map map = (Map) iter.next();
             props.addAll(map.values());
         }

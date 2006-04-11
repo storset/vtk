@@ -18,6 +18,8 @@
       <list>
         <ref bean="webEditPropDef" />
         <ref bean="transformViewPropDef" />
+        <ref bean="viewXslStylesheetPropDef" />
+        <ref bean="editXslStylesheetPropDef" />
       </list>
     </property>
   </bean>
@@ -29,11 +31,43 @@
     <property name="mandatory" value="false" />
   </bean>
 
+
+
   <bean id="transformViewPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="transform-view" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
+  </bean>
+
+
+  <bean id="viewXslStylesheetPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="view-xsl-ref" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="viewXslEvaluator" />
+  </bean>
+
+  <bean id="viewXslEvaluator"
+        class="org.vortikal.repository.resourcetype.property.XMLStylesheetEvaluator">
+    <property name="stylesheetReferenceResolvers" ref="standardXslStylesheetResolvers" />
+  </bean>
+
+
+  <bean id="editXslStylesheetPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="edit-xsl-ref" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="editXslEvaluator" />
+  </bean>
+
+  <bean id="editXslEvaluator"
+        class="org.vortikal.repository.resourcetype.property.XMLStylesheetEvaluator">
+    <property name="stylesheetReferenceResolvers" ref="editXslStylesheetResolvers" />
   </bean>
 
 

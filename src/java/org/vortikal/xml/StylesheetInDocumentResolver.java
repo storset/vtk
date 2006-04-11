@@ -35,7 +35,7 @@ import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.ProcessingInstruction;
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.PropertySet;
 
 
 /**
@@ -44,7 +44,7 @@ import org.vortikal.repository.Resource;
  */
 public class StylesheetInDocumentResolver implements StylesheetReferenceResolver {
 
-    public String getStylesheetIdentifier(Resource resource, Document document) {
+    public String getStylesheetIdentifier(PropertySet resource, Document document) {
         String stylesheetURL = getStylesheetURLFromDocument(document);
         return stylesheetURL;
     }

@@ -31,7 +31,7 @@
 package org.vortikal.xml;
 
 import org.jdom.Document;
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.PropertySet;
 
 
 /**
@@ -42,6 +42,6 @@ import org.vortikal.repository.Resource;
  */
 public interface StylesheetReferenceResolver {
 
-    public String getStylesheetIdentifier(Resource resource, Document document);
+    public String getStylesheetIdentifier(PropertySet resource, Document document);
     
 }

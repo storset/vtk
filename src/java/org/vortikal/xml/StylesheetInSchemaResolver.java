@@ -37,7 +37,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.PropertySet;
 
 
 /**
@@ -71,7 +71,7 @@ public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
     
 
 
-    public String getStylesheetIdentifier(Resource resource, Document document) {
+    public String getStylesheetIdentifier(PropertySet resource, Document document) {
 
         String docType = document.getRootElement().getAttributeValue(
             "noNamespaceSchemaLocation", XSI_NAMESPACE);
@@ -80,11 +80,8 @@ public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
             return null;
         }
 
-
         try {
-
             Document schemaDoc = schemaRegistry.getXMLSchema(docType);
-            
             XPath xPath = XPath.newInstance(elementXPath);
             xPath.addNamespace(XSD_NAMESPACE);
             Element e = (Element) xPath.selectSingleNode(schemaDoc);

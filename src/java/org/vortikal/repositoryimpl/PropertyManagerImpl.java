@@ -700,6 +700,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 if (prop == null) 
                     prop = createProperty(rt.getNamespace(), propertyDef.getName());
                 if (evaluator.contentModification(principal, prop, newResource, content, time)) {
+
                     if (logger.isDebugEnabled()) {
                         logger.debug("Property evaluated: " + prop);
                     }

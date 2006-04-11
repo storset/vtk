@@ -564,6 +564,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.dao.storeContent(uri, byteStream);
             
             r = this.propertyManager.fileContentModification(r, principal);
+            
             this.dao.store(r);
 
             ContentModificationEvent event = new ContentModificationEvent(

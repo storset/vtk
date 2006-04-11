@@ -146,7 +146,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         if (fromDir.isDirectory()) {
             copyDir(fromDir, new File(fileNameTo));
         } else {
-            copyFile(new File(fileNameFrom), new File(fileNameTo));
+            copyFile(fromDir, new File(fileNameTo));
         }
     }
     

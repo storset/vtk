@@ -60,6 +60,8 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.LockType;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
@@ -397,7 +399,13 @@ public class PropfindView implements View, InitializingBean {
                 return null;
             }
             
-            element = buildCustomPropertyElement(customProperty);
+            PropertyTypeDefinition def = customProperty.getDefinition();
+            if (def != null && def.isMultiple()) {
+                element = buildMultiValueCustomPropertyElement(customProperty);
+            } else {
+                element = buildCustomPropertyElement(customProperty);
+            }
+            
         }
 
         return element;
@@ -460,11 +468,9 @@ public class PropfindView implements View, InitializingBean {
         activeLock.addContent(new Element("timeout",
                 WebdavConstants.DAV_NAMESPACE).addContent(timeoutStr));
 
-        activeLock
-                .addContent(new Element("locktoken",
+        activeLock.addContent(new Element("locktoken",
                         WebdavConstants.DAV_NAMESPACE).addContent(new Element(
-                        "href", WebdavConstants.DAV_NAMESPACE).addContent(lock
-                        .getLockToken())));
+                        "href", WebdavConstants.DAV_NAMESPACE).addContent(lock.getLockToken())));
 
         lockDiscovery.addContent(activeLock);
 
@@ -510,8 +516,7 @@ public class PropfindView implements View, InitializingBean {
          * fails, we assume it is a 'name = value' style property, and
          * build a simple JDOM element from it. */
 
-        //String value = property.getStringValue();
-        String value = property.getValue().toString();
+        String value = property.getValue().getStringRepresentation();
 
         /* If the value does not contain both "<" and ">" we know for
          * sure that it is not an XML fragment: */
@@ -551,12 +556,39 @@ public class PropfindView implements View, InitializingBean {
             Namespace.getNamespace(property.getNamespace().getUri());
         Element propElement = new Element(property.getName(),
                                           customNamespace);
-        //propElement.setText(property.getStringValue());
-        propElement.setText(property.getValue().toString());
+
+        propElement.setText(property.getValue().getStringRepresentation());
         return propElement;
 
     }
    
+    /**
+     * Make a simple XML-list structure out of a multi-valued property.
+     * @param property
+     * @return
+     */
+    private Element buildMultiValueCustomPropertyElement(Property property) {
+        Value[] values = property.getValues();
+
+        Namespace customNamespace = 
+            Namespace.getNamespace(property.getNamespace().getUri());
+        Element propElement = new Element(property.getName(),
+                                          customNamespace);
+        
+        Element valuesElement = new Element("values", WebdavConstants.VORTIKAL_PROPERTYVALUES);
+        
+        for (int i=0; i<values.length; i++) {
+            Element valueElement = 
+                new Element("value", WebdavConstants.VORTIKAL_PROPERTYVALUES);
+            
+            valueElement.setText(values[i].getStringRepresentation());
+            valuesElement.addContent(valueElement);
+        }
+        
+        propElement.addContent(valuesElement);
+        
+        return propElement;
+    }
 
 
     private String formatCreationTime(Date date) {
@@ -568,8 +600,7 @@ public class PropfindView implements View, InitializingBean {
         return formatter.format(date);
     }
 
-
-
+    
 
     /* EXPERIMENTAL WebDAV ACL STUFF: */
 

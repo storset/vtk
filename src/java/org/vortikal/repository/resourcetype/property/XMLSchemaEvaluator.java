@@ -78,15 +78,10 @@ public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator 
 
         if (schemaLocation != null) {
             property.setStringValue(schemaLocation);
-            
-            
-            
-            
             return true;
         } 
         
         //throw new PropertyEvaluationException("No schema specified in document.");
         return false;
     }
-
 }

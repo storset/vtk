@@ -30,10 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Namespace;
-import org.vortikal.web.service.RepositoryAssertion;
 
 public class PrimaryResourceTypeDefinitionImpl
   extends AbstractResourceTypeDefinitionImpl implements PrimaryResourceTypeDefinition {

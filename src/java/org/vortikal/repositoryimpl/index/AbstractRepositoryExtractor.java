@@ -72,12 +72,12 @@ public abstract class AbstractRepositoryExtractor implements Extractor, Initiali
     }
     
     /**
-     * @see {@link org.vortikal.repositoryimpl.index.Extractor#extract}
+     * @see org.vortikal.repositoryimpl.index.Extractor#extract
      */
     public abstract Object extract(String uri);
     
     /**
-     * @see {@link org.vortikal.repositoryimpl.index.Extractor#getExtractedClass}
+     * @see org.vortikal.repositoryimpl.index.Extractor#getExtractedClass
      */
     public abstract Class getExtractedClass();
 

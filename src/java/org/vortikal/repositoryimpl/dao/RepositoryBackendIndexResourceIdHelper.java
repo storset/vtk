@@ -128,7 +128,7 @@ public class RepositoryBackendIndexResourceIdHelper implements IndexResourceIdHe
     
     /**
      * Set DataAccessor property.
-     * @see org.vortikal.repositoryimpl.dao.DataAccessor;
+     * @see org.vortikal.repositoryimpl.dao.DataAccessor
      */
     public void setDao(DataAccessor dao) {
         this.dao = dao;

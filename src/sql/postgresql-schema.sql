@@ -43,9 +43,12 @@ CREATE TABLE vortex_resource
 ALTER TABLE vortex_resource
       ADD CONSTRAINT vortex_resource_PK PRIMARY KEY (resource_id);
 
+
 ALTER TABLE vortex_resource
       ADD CONSTRAINT vortex_resource_FK FOREIGN KEY (acl_inherited_from)
           REFERENCES vortex_resource (resource_id);
+
+CREATE INDEX vortex_resource_acl_inherited_index ON vortex_resource(acl_inherited_from);
 
 CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 
@@ -102,6 +105,7 @@ ALTER TABLE vortex_lock
 ;
 
 CREATE INDEX vortex_lock_index1 ON vortex_lock(resource_id);
+CREATE INDEX vortex_lock_index2 ON vortex_lock(timeout);
 
 -----------------------------------------------------------------------------
 -- action_type

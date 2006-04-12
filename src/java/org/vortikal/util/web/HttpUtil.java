@@ -132,10 +132,10 @@ public class HttpUtil {
 
     
     /**
-     * Gets the MIME type part from a header possibly containing a
+     * Gets the MIME type part from the header of a request possibly containing a
      * 'charset' parameter.
      *
-     * @param headerValue the value part of a HTTP 'Content-Type:' header.
+     * @param request the we want to get  HTTP 'Content-Type:' header from.
      * @return the content type, or <code>null</code> if there is no
      * such header, or if it is unparseable.
      */

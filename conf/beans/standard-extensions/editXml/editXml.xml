@@ -364,6 +364,7 @@
 
 
   <!-- Add the raw query URL provider to the central list: -->
+  <!--
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="editView" />
     <property name="targetMethod" value="addReferenceDataProvider" />
@@ -373,7 +374,7 @@
       </list>
     </property>
   </bean>
-
+-->
 
   <!-- XML edit error handler -->
 

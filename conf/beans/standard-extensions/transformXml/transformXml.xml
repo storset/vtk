@@ -218,6 +218,7 @@
 
 
   <!-- Add the XSL provider to the central list: -->
+<!--
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="transformXmlView" />
     <property name="targetMethod" value="addReferenceDataProvider" />
@@ -228,14 +229,29 @@
     </property>
   </bean>
 
+-->
 
   <bean id="xmlStylesheetInDocumentResolver"
         class="org.vortikal.xml.StylesheetInDocumentResolver" />
 
-
   <bean id="xmlStylesheetInSchemaResolver" class="org.vortikal.xml.StylesheetInSchemaResolver">
     <property name="schemaRegistry" ref="schemaRegistry"/>
   </bean>
+
+
+
+   <bean id="xsltTransformationRepositoryURIResolver"
+         class="org.vortikal.xml.RepositoryURIResolver"
+         parent="requestLocalRepositoryAware">
+     <description>
+       No token is defined here, in order to use the user's actual
+       token during transformation, for XSLT document() calls.
+
+       Although one could specify a file path URI resolver here, it
+       would make no sense in most cases, as document() calls works
+       with documents located preferably in the repository.
+     </description>
+   </bean>
 
 
   <bean id="standardXslStylesheetResolvers" class="java.util.ArrayList">
@@ -249,23 +265,48 @@
 
 
 
+
+   <bean id="xsltCompilationFileURIResolver" class="org.vortikal.xml.FileURIResolver">
+     <description>
+       This URI resolver gets stylesheets from 'file://' type URLs.
+     </description>     
+   </bean>
+
+   <bean id="xsltCompilationFilePathURIResolver" class="org.vortikal.xml.FilePathURIResolver">
+     <description>
+       This URI resolver gets stylesheets from file paths starting
+       with '/', e.g. '/foo/bar' (and NOT 'file://' type URLs).
+     </description>     
+     <property name="prefix" value="${xslFilePath}" />
+   </bean>
+
+   <bean id="xsltCompilationRepositoryURIResolver"
+         class="org.vortikal.xml.RepositoryURIResolver"
+         parent="requestLocalRepositoryAware">
+     <description>
+       This URI resolver gets stylesheets from the repository. It uses
+       a trusted token, as is is only used during compilation of the
+       stylesheets, not for document() calls.
+     </description>
+     <property name="prefix" value="${xslRepositoryPath}" />
+   </bean>
+
+  <bean id="standardXslCompilationResolvers" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+         <ref bean="xsltCompilationFilePathURIResolver" />
+         <ref bean="xsltCompilationFileURIResolver" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+
    <bean id="transformerManager" class="org.vortikal.xml.TransformerManager">
      <description>
        XSLT Transformer manager
      </description>
      <property name="stylesheetReferenceResolvers" ref="standardXslStylesheetResolvers" />
-     <property name="compilationURIResolvers">
-       <description>
-         This is the list of URI resolvers used to obtain the XSL
-         stylesheet resources during compilation (applies to imports
-         and includes).
-       </description>
-       <list>
-         <ref bean="xsltCompilationFilePathURIResolver" />
-         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
-         <ref bean="xsltCompilationFileURIResolver" />
-       </list>
-     </property>
+     <property name="compilationURIResolvers" ref="standardXslCompilationResolvers" />
      <property name="transformationURIResolvers">
        <description>
          This is the list of URI resolvers used to obtain the XML
@@ -294,13 +335,7 @@
          </bean>
        </list>
      </property>
-     <property name="compilationURIResolvers">
-       <list>
-         <ref bean="xsltCompilationFilePathURIResolver" />
-         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
-         <ref bean="xsltCompilationFileURIResolver" />
-       </list>
-     </property>
+     <property name="compilationURIResolvers" ref="standardXslCompilationResolvers" />
      <property name="transformationURIResolvers">
        <list>
          <ref bean="xsltTransformationRepositoryURIResolver" />
@@ -374,48 +409,6 @@
     <property name="viewName" value="transformRssResource" />
   </bean>
 
-
-
-   <bean id="xsltCompilationFileURIResolver" class="org.vortikal.xml.FileURIResolver">
-     <description>
-       This URI resolver gets stylesheets from 'file://' type URLs.
-     </description>     
-   </bean>
-
-
-   <bean id="xsltCompilationFilePathURIResolver" class="org.vortikal.xml.FilePathURIResolver">
-     <description>
-       This URI resolver gets stylesheets from file paths starting
-       with '/', e.g. '/foo/bar' (and NOT 'file://' type URLs).
-     </description>     
-     <property name="prefix" value="${xslFilePath}" />
-   </bean>
-
-
-   <bean id="xsltCompilationRepositoryURIResolver"
-         class="org.vortikal.xml.RepositoryURIResolver"
-         parent="requestLocalRepositoryAware">
-     <description>
-       This URI resolver gets stylesheets from the repository. It uses
-       a trusted token, as is is only used during compilation of the
-       stylesheets, not for document() calls.
-     </description>
-     <property name="prefix" value="${xslRepositoryPath}" />
-   </bean>
-
-
-   <bean id="xsltTransformationRepositoryURIResolver"
-         class="org.vortikal.xml.RepositoryURIResolver"
-         parent="requestLocalRepositoryAware">
-     <description>
-       No token is defined here, in order to use the user's actual
-       token during transformation, for XSLT document() calls.
-
-       Although one could specify a file path URI resolver here, it
-       would make no sense in most cases, as document() calls works
-       with documents located preferably in the repository.
-     </description>
-   </bean>
 
 
 </beans>

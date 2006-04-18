@@ -60,6 +60,7 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.LockType;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
@@ -151,7 +152,7 @@ public class PropfindView implements View, InitializingBean {
         response.setHeader("Content-Type", "text/xml;charset=utf-8");
         response.setIntHeader("Content-Length", buffer.length);
         response.setStatus(HttpUtil.SC_MULTI_STATUS,
-                           WebdavConstants.getStatusMessage(
+                           WebdavUtil.getStatusMessage(
                                HttpUtil.SC_MULTI_STATUS));
         OutputStream out = null;
         try {
@@ -274,7 +275,7 @@ public class PropfindView implements View, InitializingBean {
             Element propStatElement = new Element("propstat", WebdavConstants.DAV_NAMESPACE);
             propStatElement.addContent(foundProperties);
             Element status = new Element("status", WebdavConstants.DAV_NAMESPACE);
-            status.addContent(WebdavConstants.getStatusMessage(
+            status.addContent(WebdavUtil.getStatusMessage(
                                   HttpServletResponse.SC_OK));
             propStatElement.addContent(status);
             responseElement.addContent(propStatElement);
@@ -287,7 +288,7 @@ public class PropfindView implements View, InitializingBean {
             Element propStatUnknown = new Element("propstat", WebdavConstants.DAV_NAMESPACE);
             propStatUnknown.addContent(unknownProperties);
             propStatUnknown.addContent(status);
-            status.addContent(WebdavConstants.getStatusMessage(
+            status.addContent(WebdavUtil.getStatusMessage(
                                   HttpServletResponse.SC_NOT_FOUND));
             responseElement.addContent(propStatUnknown);
         }
@@ -405,7 +406,7 @@ public class PropfindView implements View, InitializingBean {
             } else {
                 element = buildCustomPropertyElement(customProperty);
             }
-            
+
         }
 
         return element;
@@ -556,8 +557,15 @@ public class PropfindView implements View, InitializingBean {
             Namespace.getNamespace(property.getNamespace().getUri());
         Element propElement = new Element(property.getName(),
                                           customNamespace);
-
-        propElement.setText(property.getValue().getStringRepresentation());
+        
+        // Format dates according to HTTP spec, 
+        // use value's native string representation for other types.
+        if (property.getValue().getType() == PropertyType.TYPE_DATE) {
+            propElement.setText(WebdavUtil.formatPropertyDateValue(property.getDateValue()));
+        } else {
+            propElement.setText(property.getValue().getStringRepresentation());    
+        }
+        
         return propElement;
 
     }
@@ -580,8 +588,15 @@ public class PropfindView implements View, InitializingBean {
         for (int i=0; i<values.length; i++) {
             Element valueElement = 
                 new Element("value", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
+
+            // Format dates according to HTTP spec, 
+            // use value's native string representation for other types.
+            if (values[i].getType() == PropertyType.TYPE_DATE) {
+                valueElement.setText(WebdavUtil.formatPropertyDateValue(values[i].getDateValue()));
+            } else {
+                valueElement.setText(values[i].getStringRepresentation());
+            }
             
-            valueElement.setText(values[i].getStringRepresentation());
             valuesElement.addContent(valueElement);
         }
         
@@ -599,8 +614,6 @@ public class PropfindView implements View, InitializingBean {
         formatter.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
         return formatter.format(date);
     }
-
-    
 
     /* EXPERIMENTAL WebDAV ACL STUFF: */
 

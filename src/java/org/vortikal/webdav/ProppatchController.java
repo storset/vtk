@@ -31,6 +31,7 @@
 package org.vortikal.webdav;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +56,7 @@ import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -388,7 +390,7 @@ public class ProppatchController extends AbstractWebdavController  {
                     if (def.isMultiple()) {
                         property.setValues(elementToValues(propertyElement, def.getType()));
                     } else {
-                        property.setValue(valueFactory.createValue(propertyElement.getText(), def.getType()));
+                        property.setValue(elementToValue(propertyElement, def.getType()));
                     }
                 } catch (ValueFormatException e) {
                     logger.warn("Could not convert given value(s) for property " 
@@ -460,6 +462,24 @@ public class ProppatchController extends AbstractWebdavController  {
         }
     }
     
+    protected Value elementToValue(Element element, int type) throws ValueFormatException {
+        String stringValue = element.getText();
+        
+        Value value;
+        if (type == PropertyType.TYPE_DATE) {
+            value = new Value();
+            try {
+                value.setDateValue(WebdavUtil.parsePropertyDateValue(stringValue));
+            } catch (ParseException e) {
+                throw new ValueFormatException(e.getMessage());
+            }
+        } else {
+            value = valueFactory.createValue(stringValue, type);
+        }
+
+        return value;
+    }
+    
     protected Value[] elementToValues(Element element, int type) throws ValueFormatException {
         
         String[] stringValues;
@@ -491,7 +511,22 @@ public class ProppatchController extends AbstractWebdavController  {
                     + "missing 'values'-element in proper namespace");
         }
         
-        return valueFactory.createValues(stringValues, type);
+        Value[] values;
+        if (type == PropertyType.TYPE_DATE) {
+            values = new Value[stringValues.length];
+            try {
+                for (int i=0; i<values.length; i++) {
+                    values[i] = new Value();
+                    values[i].setDateValue(WebdavUtil.parsePropertyDateValue(stringValues[i]));
+                }
+            } catch (ParseException e) {
+                throw new ValueFormatException(e.getMessage());
+            }
+        } else {
+            values = valueFactory.createValues(stringValues, type);
+        }
+        
+        return values;
     }
 
 

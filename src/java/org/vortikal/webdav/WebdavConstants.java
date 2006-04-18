@@ -65,26 +65,12 @@ public class WebdavConstants {
     public static final String WEBDAVMODEL_HTTP_MULTI_STATUS_CODE =
         "httpMultiStatusCode";
     
-
-    /**
-     * Gets the HTTP "status message" for the status codes defined in
-     * this class, i.e. <code>SC_MULTI_STATUS</code> will map to
-     * <code>207 Multi-Status</code>, etc.
-     *
-     * @param statusCode an <code>int</code> value
-     * @return a <code>String</code>
-     */
-    public static String getStatusMessage(int statusCode) {
-
-        String message = "HTTP/" + HTTP_VERSION_USED + " " + 
-            String.valueOf(statusCode) + " "
-            + HttpUtil.getStatusMessage(statusCode);
-        return message;
-    }
-
-
-
-
+    /** Date format used by properties containing date values (HTTP-compliant) */
+    public static final String WEBDAV_PROPERTY_DATE_VALUE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
+    
+    /** Timezone of dates presented from properties containing date values. */
+    public static final String WEBDAV_PROPERTY_DATE_VALUE_TIMEZONE = "GMT";
+    
     /**
      * The default XML namespace used in all elements of WebDAV
      * request/response bodies.

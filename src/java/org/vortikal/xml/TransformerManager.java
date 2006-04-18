@@ -32,7 +32,8 @@ package org.vortikal.xml;
 
 import java.io.IOException;
 import java.util.Date;
-
+import java.util.Iterator;
+import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -42,7 +43,9 @@ import javax.xml.transform.URIResolver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
@@ -62,9 +65,9 @@ public class TransformerManager implements InitializingBean {
 
     private boolean alwaysCompile = false;
     private StylesheetTemplatesRegistry stylesheetRegistry = new StylesheetTemplatesRegistry();
-    private StylesheetReferenceResolver[] stylesheetReferenceResolvers;
-    private StylesheetURIResolver[] compilationURIResolvers = null;
-    private URIResolver[] transformationURIResolvers = null;
+    private List stylesheetReferenceResolvers;
+    private List compilationURIResolvers = null;
+    private List transformationURIResolvers = null;
 
     private ChainedURIResolver compilationURIResolver = null;
     private ChainedURIResolver transformationURIResolver = null;
@@ -106,8 +109,7 @@ public class TransformerManager implements InitializingBean {
      *
      * @param stylesheetReferenceResolvers Value to assign to this.stylesheetReferenceResolvers
      */
-    public void setStylesheetReferenceResolvers(StylesheetReferenceResolver[]
-                                                stylesheetReferenceResolvers)  {
+    public void setStylesheetReferenceResolvers(List stylesheetReferenceResolvers)  {
         this.stylesheetReferenceResolvers = stylesheetReferenceResolvers;
     }
 
@@ -119,10 +121,15 @@ public class TransformerManager implements InitializingBean {
      *
      * @param compilationURIResolvers an <code>URIResolver[]</code> value
      */
-    public void setCompilationURIResolvers(
-        StylesheetURIResolver[] compilationURIResolvers) {
+    public void setCompilationURIResolvers(List compilationURIResolvers) {
         this.compilationURIResolvers = compilationURIResolvers;
-        this.compilationURIResolver = new ChainedURIResolver(compilationURIResolvers);
+        StylesheetURIResolver[] resolverArray =
+            new StylesheetURIResolver[compilationURIResolvers.size()];
+        int n = 0;
+        for (Iterator i = compilationURIResolvers.iterator(); i.hasNext();) {
+            resolverArray[n++] = (StylesheetURIResolver) i.next();
+        }
+        this.compilationURIResolver = new ChainedURIResolver(resolverArray);
     }
     
 
@@ -133,15 +140,14 @@ public class TransformerManager implements InitializingBean {
      *
      * @param transformationURIResolvers an <code>URIResolver[]</code> value
      */
-    public void setTransformationURIResolvers(URIResolver[] transformationURIResolvers) {
+    public void setTransformationURIResolvers(List transformationURIResolvers) {
         this.transformationURIResolvers = transformationURIResolvers;
-        this.transformationURIResolver = new ChainedURIResolver(transformationURIResolvers);
+        URIResolver[] resolverArray = (URIResolver[])
+            compilationURIResolvers.toArray(new URIResolver[compilationURIResolvers.size()]);
+        this.transformationURIResolver = new ChainedURIResolver(resolverArray);
     }
     
 
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     public void afterPropertiesSet() throws Exception {
         if (stylesheetReferenceResolvers == null) {
             throw new BeanInitializationException(
@@ -155,9 +161,6 @@ public class TransformerManager implements InitializingBean {
             throw new BeanInitializationException(
                 "Bean property 'transformationURIResolvers' must be set");
         }
-
-        this.compilationURIResolver = new ChainedURIResolver(this.compilationURIResolvers);
-        this.transformationURIResolver = new ChainedURIResolver(this.transformationURIResolvers);
     }
     
     
@@ -247,9 +250,8 @@ public class TransformerManager implements InitializingBean {
 
 
     private String resolveTemplateReference(Resource resource, Document document) {
-        for (int i = 0; i < stylesheetReferenceResolvers.length; i++) {
-            StylesheetReferenceResolver resolver = stylesheetReferenceResolvers[i];
-
+        for (Iterator i = this.stylesheetReferenceResolvers.iterator(); i.hasNext();) {
+            StylesheetReferenceResolver resolver = (StylesheetReferenceResolver)i.next();
             // Obtain the stylesheet identifier:
             String reference = resolver.getStylesheetIdentifier(resource, document);
             
@@ -267,9 +269,8 @@ public class TransformerManager implements InitializingBean {
 
 
     private StylesheetURIResolver getStylesheetResolver(String stylesheetIdentifier) {
-        for (int i = 0; i < compilationURIResolvers.length; i++) {
-            StylesheetURIResolver resolver = compilationURIResolvers[i];
-            
+        for (Iterator i = compilationURIResolvers.iterator(); i.hasNext();) {
+            StylesheetURIResolver resolver = (StylesheetURIResolver) i.next();
             // Map the identifier to a physical resource:
             if (resolver.matches(stylesheetIdentifier)) {
                 if (logger.isDebugEnabled())

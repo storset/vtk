@@ -31,13 +31,13 @@
 package org.vortikal.webdav;
 
 import org.jdom.Namespace;
-import org.vortikal.util.web.HttpUtil;
 
 /**
  * Utility class defining a set of constants that are convenient when
- * building MVC models, plus additional utility methods.
+ * building MVC models.
  *
- * @version $Id: VortexResponse.java,v 1.6 2004/03/16 20:27:08 storset Exp $
+ * Constants are also provided for certain namespaces and date formats.
+ * 
  */
 public class WebdavConstants {
 

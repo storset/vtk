@@ -48,7 +48,8 @@ public final class WebdavUtil {
 
     /**
      * Gets the HTTP "status message" for the status codes defined in
-     * this class, i.e. <code>SC_MULTI_STATUS</code> will map to
+     * {@link org.vortikal.util.web.HttpUtil}, 
+     * i.e. <code>org.vortikal.util.web.HttpUtil.SC_MULTI_STATUS</code> will map to
      * <code>207 Multi-Status</code>, etc.
      *
      * @param statusCode an <code>int</code> value

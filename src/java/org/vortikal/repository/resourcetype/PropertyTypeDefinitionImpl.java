@@ -47,6 +47,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private ContentModificationPropertyEvaluator contentModificationEvaluator;
     private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
     private PropertyValidator validator;
+    private Value[] allowedValues;
     
     public void afterPropertiesSet() {
     }
@@ -140,6 +141,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     public void setValidator(PropertyValidator validator) {
         this.validator = validator;
+    }
+    
+    public Value[] getAllowedValues() {
+        return this.allowedValues;
+    }
+    
+    public void setAllowedValues(Value[] allowedValues) {
+        this.allowedValues = allowedValues;
     }
     
     public String toString() {

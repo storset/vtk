@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 
 
+
 public interface PropertyTypeDefinition {
     
     public String getName();
@@ -55,6 +56,8 @@ public interface PropertyTypeDefinition {
     public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator();
 
     public PropertyValidator getValidator();
+    
+    public Value[] getAllowedValues();
 }
 
 

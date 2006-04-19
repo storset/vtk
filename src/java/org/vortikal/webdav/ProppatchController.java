@@ -61,7 +61,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-import org.vortikal.repositoryimpl.AclException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
@@ -153,14 +152,14 @@ public class ProppatchController extends AbstractWebdavController  {
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
 
-        } catch (AclException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught AclException for URI " + uri, e);
-            }
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
-
+//        } catch (AclException e) {
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Caught AclException for URI " + uri, e);
+//            }
+//            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+//            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+//                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+//
         } catch (IOException e) {
             logger.info("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -254,7 +253,7 @@ public class ProppatchController extends AbstractWebdavController  {
                                     Document requestBody, String token) 
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
-        InvalidRequestException, AclException, java.io.IOException {
+        InvalidRequestException, java.io.IOException {
         
         Element root = requestBody.getRootElement();
 
@@ -301,7 +300,7 @@ public class ProppatchController extends AbstractWebdavController  {
                                  String token)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
-        java.io.IOException, AclException {
+        IOException {
 
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
@@ -325,7 +324,7 @@ public class ProppatchController extends AbstractWebdavController  {
                                String token)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
-        java.io.IOException, AclException {
+        IOException {
 
         String propertyName = propertyElement.getName();
         String nameSpace = propertyElement.getNamespace().getURI();

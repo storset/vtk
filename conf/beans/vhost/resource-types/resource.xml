@@ -6,9 +6,8 @@
   <!-- Abstractresource - base resource type -->
 
   <bean id="abstractResourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="resource"/>
+    <property name="name" value="abstractResource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <!-- Properties valid for the resource type -->
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="ownerPropDef" />
@@ -19,11 +18,31 @@
         <ref bean="contentModifiedByPropDef" />
         <ref bean="propertiesLastModifiedPropDef" />
         <ref bean="propertiesModifiedByPropDef" />
-        <ref bean="contentTypePropDef" />
       </list>
     </property>
   </bean>
 
+  <!-- Resource - base resource type -->
+
+  <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="parentTypeDefinition" 
+              ref="abstractResourceResourceTypeDefinition" />
+    <property name="name" value="resource"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="web30MixinResourceTypeDef" />
+      </list>
+    </property>    
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="lastModifiedPropDef" />
+        <ref bean="modifiedByPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  
   <bean id="createdByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="createdBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />
@@ -31,8 +50,6 @@
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="ownerEvaluator" />
   </bean>
-
-
 
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="owner" />
@@ -47,6 +64,7 @@
     <property name="principalManager" ref="principalManager" />
   </bean>
   
+
   <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="collection" />
     <property name="type" ref="TYPE_BOOLEAN" />
@@ -56,6 +74,7 @@
   </bean>
 
   <bean id="collectionEvaluator" class="org.vortikal.repository.resourcetype.property.CollectionEvaluator" />
+
 
   <bean id="creationTimePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="creationTime" />
@@ -80,6 +99,7 @@
 
   <bean id="contentLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.ContentLastModifiedEvaluator" />
   
+
   <bean id="contentModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="contentModifiedBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />
@@ -91,6 +111,7 @@
 
   <bean id="contentModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.ContentModifiedByEvaluator" />
   
+
   <bean id="propertiesLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="propertiesLastModified" />
     <property name="type" ref="TYPE_DATE" />
@@ -102,6 +123,7 @@
 
   <bean id="propertiesLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesLastModifiedEvaluator" />
   
+
   <bean id="propertiesModifiedByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="propertiesModifiedBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />
@@ -113,37 +135,7 @@
 
   <bean id="propertiesModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesModifiedByEvaluator" />
   
-  <bean id="contentTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="contentType" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="contentTypeEvaluator" />
-  </bean>
 
-  <bean id="contentTypeEvaluator" class="org.vortikal.repository.resourcetype.property.ContentTypeEvaluator" />
-
-
-
-
-
-
-
-  <!-- Resource - base resource type -->
-
-  <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="resource"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="abstractResourceResourceTypeDefinition" />
-    <!-- Properties valid for the resource type -->
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="lastModifiedPropDef" />
-        <ref bean="modifiedByPropDef" />
-      </list>
-    </property>
-  </bean>
-
-  
   <bean id="lastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="lastModified" />
     <property name="type" ref="TYPE_DATE" />
@@ -168,6 +160,5 @@
   </bean>
 
   <bean id="lastModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedByEvaluator" />
-
 
 </beans>

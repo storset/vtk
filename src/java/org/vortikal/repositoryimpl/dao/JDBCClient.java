@@ -384,7 +384,7 @@ public class JDBCClient extends AbstractDataAccessor {
             PropHolder prop = propHolders[i];
 
             Property property = this.propertyManager.createProperty(
-                    Namespace.getNamespace(prop.namespaceUri), prop.name, 
+                    prop.namespaceUri, prop.name, 
                     (String[])prop.values.toArray(new String[]{}), prop.type);
             resource.addProperty(property);
         }
@@ -419,7 +419,7 @@ public class JDBCClient extends AbstractDataAccessor {
             PropHolder holder = propHolders[i];
                         
             Property property = this.propertyManager.createProperty(
-                    Namespace.getNamespace(holder.namespaceUri),
+                    holder.namespaceUri,
                     holder.name, (String[])holder.values.toArray(new String[]{}),
                     holder.type);
             

@@ -103,6 +103,7 @@ public final class Value implements Cloneable {
         return this.principalValue;
     }
 
+    // XXX: Use hashCode?
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Value)) {
             return false;

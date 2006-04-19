@@ -45,7 +45,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
-import org.vortikal.repositoryimpl.AclException;
 import org.vortikal.repositoryimpl.OperationLog;
 import org.vortikal.repositoryimpl.RepositoryImpl;
 import org.vortikal.security.AuthenticationException;
@@ -184,9 +183,6 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             // XXX: Log this exception ?
             OperationLog.failure(op, params, "failed dependency", token, principal);
             throw fde;
-        } catch (AclException acle) {
-            OperationLog.failure(op, params, acle.getMessage(), token, principal);
-            throw acle;
         } catch (IOException io) {
             OperationLog.failure(op, params, io.getMessage(), token, principal);
             throw io;

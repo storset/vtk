@@ -44,6 +44,4 @@ public interface ResourceTypeDefinition {
 
     public PropertyTypeDefinition[] getPropertyTypeDefinitions();
 
-    public RepositoryAssertion[] getAssertions();
-
 }

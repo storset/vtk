@@ -284,23 +284,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
         
+        if (dest != null) {
+            this.dao.delete(dest);
+        }
+        this.dao.copy(src, destUri, preserveACL, false, principal.getQualifiedName());
+
         try {
-            if (dest != null) {
-                this.dao.delete(dest);
-            }
-            this.dao.copy(src, destUri, preserveACL, false, principal.getQualifiedName());
 
             dest = (ResourceImpl)dao.load(destUri).clone();
 
-            ResourceCreationEvent event = new ResourceCreationEvent(this, dest);
-
-            context.publishEvent(event);
-        } catch (AclException e) {
-            throw new IllegalOperationException(e.getMessage());
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
                 "clone() resource: " + destUri);
         }
+
+        context.publishEvent(new ResourceCreationEvent(this, dest));
     }
 
     public void move(String token, String srcUri, String destUri,
@@ -351,28 +349,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.authorizationManager.authorizeMove(srcUri, destUri, principal, overwrite);
 
         // Performing move operation
+        if (dest != null) {
+            this.dao.delete(dest);
+            context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
+                    dest.isCollection()));
+        }
+        
+        this.dao.copy(src, destUri, true, true, principal.getQualifiedName());
+
         try {
-            if (dest != null) {
-                this.dao.delete(dest);
-                context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
-                        dest.isCollection()));
-            }
-            
-            this.dao.copy(src, destUri, true, true, principal.getQualifiedName());
-            this.dao.delete(src);
-            context.publishEvent(new ResourceDeletionEvent(this, srcUri,
-                    src.getID(), src.isCollection()));
-
             dest = (ResourceImpl) dao.load(destUri).clone();
-
-            context.publishEvent(new ResourceCreationEvent(this, dest));
-        } catch (AclException e) {
-            throw new IllegalOperationException(e.getMessage());
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
                 "clone() resource: " + destUri);
         }
-    }
+        context.publishEvent(new ResourceCreationEvent(this, dest));
+
+        this.dao.delete(src);
+        context.publishEvent(new ResourceDeletionEvent(this, srcUri,
+                src.getID(), src.isCollection()));
+
+}
 
     public void delete(String token, String uri)
         throws IllegalOperationException, AuthorizationException, 
@@ -580,7 +577,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
     public void storeACL(String token, String uri, Acl acl)
         throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IllegalOperationException, AclException, 
+            AuthenticationException, IllegalOperationException,
             ReadOnlyException, IOException {
 
         Principal principal = tokenManager.getPrincipal(token);

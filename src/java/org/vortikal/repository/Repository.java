@@ -33,7 +33,6 @@ package org.vortikal.repository;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.vortikal.repositoryimpl.AclException;
 import org.vortikal.security.AuthenticationException;
 
 
@@ -482,7 +481,7 @@ public interface Repository {
      */
     public void storeACL(String token, String uri, Acl acl)
         throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, AclException, IllegalOperationException, 
+            AuthenticationException, IllegalOperationException, 
             ReadOnlyException, IOException;
 
     

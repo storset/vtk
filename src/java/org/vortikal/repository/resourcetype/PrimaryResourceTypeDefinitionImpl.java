@@ -30,11 +30,14 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.vortikal.web.service.RepositoryAssertion;
+
 
 public class PrimaryResourceTypeDefinitionImpl
   extends AbstractResourceTypeDefinitionImpl implements PrimaryResourceTypeDefinition {
 
     private PrimaryResourceTypeDefinition parentTypeDefinition;
+    private RepositoryAssertion[] assertions;
 
     public PrimaryResourceTypeDefinition getParentTypeDefinition() {
         return this.parentTypeDefinition;
@@ -44,4 +47,13 @@ public class PrimaryResourceTypeDefinitionImpl
         this.parentTypeDefinition = parentTypeDefinition;
     }
 
+    public RepositoryAssertion[] getAssertions() {
+        return this.assertions;
+    }
+
+    public void setAssertions(RepositoryAssertion[] assertions) {
+        this.assertions = assertions;
+    }
+
+ 
 }

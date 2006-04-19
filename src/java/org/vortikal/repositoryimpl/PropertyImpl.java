@@ -30,15 +30,17 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.Constraint;
+import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.Principal;
@@ -343,10 +345,27 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         }
         
         // XXX: Do we want this, or should the client check by itself?
-        if (propertyTypeDefinition != null && propertyTypeDefinition.getConstraint() != null) {
+        if (propertyTypeDefinition == null) {
+            return;
+        }
+        
+        if (propertyTypeDefinition.getConstraint() != null) {
             Constraint constraint = propertyTypeDefinition.getConstraint();
             constraint.validate(value);
         }
+
+        if (propertyTypeDefinition.getAllowedValues() != null) {
+            List valuesList = Arrays.asList(propertyTypeDefinition.getAllowedValues());
+            if (!valuesList.contains(value)) {
+                ConstraintViolationException e = 
+                    new ConstraintViolationException(
+                            "Value not in list of allowed values for property '"
+                            + this.namespace + ":" + this.name + "'");
+                e.setStatusCode(ConstraintViolationException.NOT_IN_ALLOWED_VALUES);
+                throw e;
+            }
+        }
+        
     }
     
     public int getType() {

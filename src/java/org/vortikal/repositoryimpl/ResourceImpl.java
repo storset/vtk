@@ -354,14 +354,16 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        AclImpl acl = (this.acl == null) ? null : (AclImpl) this.acl.clone();
-        LockImpl lock = (this.lock == null) ? null : (LockImpl) this.lock
-                .clone();
+
+        AclImpl acl = (AclImpl) this.acl.clone();
+        
+        LockImpl lock = null;
+        if (this.lock != null)
+            lock = (LockImpl) this.lock.clone();
 
         ResourceImpl clone = new ResourceImpl(uri, propertyManager);
         clone.setID(this.id);
         clone.setACL(acl);
-        //clone.setInheritedACL(this.aclInheritedFrom == -1);
         clone.setAclInheritedFrom(this.aclInheritedFrom);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);

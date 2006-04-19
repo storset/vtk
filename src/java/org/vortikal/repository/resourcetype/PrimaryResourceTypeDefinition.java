@@ -30,12 +30,13 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.vortikal.repository.Namespace;
 import org.vortikal.web.service.RepositoryAssertion;
 
 
 public interface PrimaryResourceTypeDefinition extends ResourceTypeDefinition {
 
     public PrimaryResourceTypeDefinition getParentTypeDefinition();
+
+    public RepositoryAssertion[] getAssertions();
 
 }

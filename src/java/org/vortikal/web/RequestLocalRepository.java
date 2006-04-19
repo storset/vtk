@@ -47,7 +47,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
-import org.vortikal.repositoryimpl.AclException;
 import org.vortikal.security.AuthenticationException;
 
 
@@ -267,7 +266,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
 
     public void storeACL(String token, String uri, Acl acl)
         throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, AclException, IllegalOperationException, 
+        AuthenticationException, IllegalOperationException, 
         ReadOnlyException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
@@ -278,20 +277,16 @@ public class RequestLocalRepository implements InitializingBean, Repository {
     }
 
     // XXX: Losing stack traces unnecessary
-    private void throwAppropriateException(String uri, Throwable t) throws 
-        AclException, AuthenticationException, AuthorizationException,
-        FailedDependencyException, IOException, IllegalOperationException,
-        ReadOnlyException, ResourceLockedException, ResourceNotFoundException,
-        ResourceOverwriteException {
+    private void throwAppropriateException(String uri, Throwable t) 
+    throws AuthenticationException, AuthorizationException,
+    FailedDependencyException, IOException, IllegalOperationException,
+    ReadOnlyException, ResourceLockedException, ResourceNotFoundException,
+    ResourceOverwriteException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Re-throwing exception: " + t);
         }
 
-        if (t instanceof AclException) {
-            throw new AclException(((AclException) t).getStatus(),
-                                   t.getMessage());
-        }
         if (t instanceof AuthenticationException) {
             throw new AuthenticationException(t.getMessage());
         }

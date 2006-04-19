@@ -13,11 +13,16 @@
         <ref bean="collectionAssertion"/>
       </list>
     </property>
-    
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="uhtmlInheritedMixinResourceTypeDef" />
+      </list>
+    </property>    
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition"/>
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="skipInPathPropDef"/>
+        <ref bean="nameInPathPropDef" />
         <ref bean="intListPropDef"/>
       </list>
     </property>
@@ -27,6 +32,20 @@
   <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="skipInPath"/>
     <property name="type" ref="TYPE_BOOLEAN"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+    <property name="allowedValues">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <property name="booleanValue" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="nameInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="nameInPath"/>
+    <property name="type" ref="TYPE_STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
   </bean>

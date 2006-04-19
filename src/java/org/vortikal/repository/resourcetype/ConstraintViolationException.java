@@ -37,6 +37,10 @@ public class ConstraintViolationException extends RepositoryException {
 
     private static final long serialVersionUID = -9028654759270752131L;
 
+    public static final String NOT_IN_ALLOWED_VALUES = "NOT_IN_ALLOWED_VALUES";
+
+    private String statusCode = null;
+    
     public ConstraintViolationException() {
         super();
     }
@@ -51,6 +55,14 @@ public class ConstraintViolationException extends RepositoryException {
 
     public ConstraintViolationException(Throwable cause) {
         super(cause);
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
     
 }

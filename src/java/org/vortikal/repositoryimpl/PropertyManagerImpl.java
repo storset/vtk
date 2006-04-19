@@ -95,16 +95,16 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private boolean lazyInit = false;
     private boolean init = false;
     
-    Collection resourceTypeDefinitionBeans;
-    
     // Currently maps a parent resource type def. to its children (arrays)
-    private Map resourceTypeDefinitions;
+    private Map resourceTypeDefinitions = new HashMap();
     
     // Currently maps namespaceUris to maps which map property names to defs.
-    private Map propertyTypeDefinitions;
+    private Map propertyTypeDefinitions = new HashMap();
     
-    private Map mixinTypeDefinitions;
+    private Map mixinTypeDefinitions = new HashMap();
 
+    private Map namespaceUriMap = new HashMap();
+    
     private ApplicationContext applicationContext;
     
     private PrimaryResourceTypeDefinition[] getResourceTypeDefinitionChildren(
@@ -132,40 +132,20 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             throw new BeanInitializationException("Property 'contentStore' not set.");
         }
 
-        resourceTypeDefinitionBeans = 
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
-                    PrimaryResourceTypeDefinition.class, false, false).values();
-        this.propertyTypeDefinitions = new HashMap();
-        this.resourceTypeDefinitions = new HashMap();
-        this.mixinTypeDefinitions = new HashMap();
-
         if (!lazyInit) init();
     }
 
     private synchronized void init() {
         if (init) return;
 
+        Collection resourceTypeDefinitionBeans = 
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
+                    PrimaryResourceTypeDefinition.class, false, false).values();
+
         for (Iterator i = resourceTypeDefinitionBeans.iterator(); i.hasNext();) {
             PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
             
-            // Populate map of property type definitions
-            PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
-            Namespace namespace = def.getNamespace();
-            Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
-            
-            if (propDefMap == null) {
-                propDefMap = new HashMap();
-                // XXX: what about prefix when using namespaces as map keys?
-                this.propertyTypeDefinitions.put(namespace, propDefMap);
-            }
-            for (int u = 0; u < propDefs.length; u++) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Registering property type definition "
-                                 + propDefs[u].getName());
-                }
-
-                propDefMap.put(propDefs[u].getName(), propDefs[u]);
-            }
+            addNamespacesAndProperties(def);
             
             // Populate map of resourceTypeDefiniton parent -> children
             PrimaryResourceTypeDefinition parent = def.getParentTypeDefinition();
@@ -187,12 +167,44 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
         }
 
+        Collection mixins = 
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
+                    MixinResourceTypeDefinition.class, false, false).values();
+        for (Iterator iter = mixins.iterator(); iter.hasNext();) {
+            ResourceTypeDefinition def = (ResourceTypeDefinition) iter.next();
+            addNamespacesAndProperties(def);
+        }
+
         init = true;
     }
     
 
+    private void addNamespacesAndProperties(ResourceTypeDefinition def) {
+        // Populate map of property type definitions
+        PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
+        Namespace namespace = def.getNamespace();
 
-    private boolean checkAssertions(ResourceTypeDefinition rt,
+        if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri()))
+            this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
+
+        Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
+        
+        if (propDefMap == null) {
+            propDefMap = new HashMap();
+            // XXX: what about prefix when using namespaces as map keys?
+            this.propertyTypeDefinitions.put(namespace, propDefMap);
+        }
+        for (int u = 0; u < propDefs.length; u++) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Registering property type definition "
+                             + propDefs[u].getName());
+            }
+
+            propDefMap.put(propDefs[u].getName(), propDefs[u]);
+        }
+    }
+    
+    private boolean checkAssertions(PrimaryResourceTypeDefinition rt,
                                     Resource resource, Principal principal) {
 
         RepositoryAssertion[] assertions = rt.getAssertions();
@@ -780,10 +792,15 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
     
 
-    public Property createProperty(Namespace namespace, String name, 
+    public Property createProperty(String namespaceUrl, String name, 
                                    String[] stringValues, int type) 
         throws ValueFormatException {
         if (!init) init();
+        
+        Namespace namespace = (Namespace)this.namespaceUriMap.get(namespaceUrl);
+        
+        if (namespace == null) 
+            namespace = new Namespace(namespaceUrl);
         
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespace);
@@ -868,7 +885,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         MixinResourceTypeDefinition[] directMixins = rt.getMixinTypeDefinitions();
         if (directMixins != null) {
             for (int i = 0; i < directMixins.length; i++) {
-                mixinTypes.add(directMixins[i]);
+                MixinResourceTypeDefinition mix = directMixins[i];
+                mixinTypes.add(mix);
+                if (!this.namespaceUriMap.containsKey(mix.getNamespace().getUri()))
+                    this.namespaceUriMap.put(mix.getNamespace().getUri(), mix.getNamespace());                    
+
                 MixinResourceTypeDefinition[] indirectMixins =
                     directMixins[i].getMixinTypeDefinitions();
                 if (indirectMixins != null) {

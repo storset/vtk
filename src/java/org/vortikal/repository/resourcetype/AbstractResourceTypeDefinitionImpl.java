@@ -42,7 +42,6 @@ public abstract class AbstractResourceTypeDefinitionImpl
     private Namespace namespace;
     private MixinResourceTypeDefinition[] mixinTypeDefinitions;
     private PropertyTypeDefinition[] propertyTypeDefinitions = new PropertyTypeDefinitionImpl[0];
-    private RepositoryAssertion[] assertions;
     
     public void afterPropertiesSet() {
         if (name == null) {
@@ -82,14 +81,6 @@ public abstract class AbstractResourceTypeDefinitionImpl
 
     public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
         this.propertyTypeDefinitions = propertyTypeDefinitions;
-    }
-
-    public RepositoryAssertion[] getAssertions() {
-        return this.assertions;
-    }
-
-    public void setAssertions(RepositoryAssertion[] assertions) {
-        this.assertions = assertions;
     }
 
     public String toString() {

@@ -147,10 +147,10 @@ public class PropertyEditController extends SimpleFormController
         Namespace ns = this.resourceTypeDefinition.getNamespace();
         String name = this.propertyTypeDefinition.getName();
 
-        String value = propertyCommand.getValue();
+        String stringValue = propertyCommand.getValue();
         Property prop = resource.getProperty(ns, name);
         
-        if ("".equals(value)) {
+        if ("".equals(stringValue)) {
             if (prop == null) {
                 propertyCommand.setDone(true);
                 return;
@@ -160,7 +160,9 @@ public class PropertyEditController extends SimpleFormController
             if (prop == null) {
                 prop = resource.createProperty(ns, name);
             }
-            prop.setStringValue(value);
+            Value value = this.valueFactory.createValue(
+                stringValue, this.propertyTypeDefinition.getType());
+            prop.setValue(value);
         }
         repository.store(token, resource);
         propertyCommand.setDone(true);

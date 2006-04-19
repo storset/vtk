@@ -201,7 +201,7 @@ public class ResourceImpl implements Resource, Cloneable {
     public List getProperties(Namespace namespace) {
         Map map = (Map) this.propertyMap.get(namespace);
         if (map == null) return new ArrayList();
-        return new ArrayList(map.entrySet());
+        return new ArrayList(map.values());
     }
 
     public List getProperties() {

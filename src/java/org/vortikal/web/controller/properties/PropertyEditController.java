@@ -30,14 +30,16 @@
  */
 package org.vortikal.web.controller.properties;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -48,19 +50,21 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repositoryimpl.AuthorizationManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Service;
-import org.vortikal.repository.resourcetype.ValueFactory;
 
 
 
 public class PropertyEditController extends SimpleFormController
-  implements InitializingBean {
+  implements ReferenceDataProvider, ReferenceDataProviding, InitializingBean {
 
     private Repository repository;
-    private ResourceTypeDefinition resourceTypeDefinition;
-    private PropertyTypeDefinition propertyTypeDefinition;
+    private PropertyTypeDefinition[] propertyTypeDefinitions;
     private ValueFactory valueFactory;
     
     
@@ -68,16 +72,17 @@ public class PropertyEditController extends SimpleFormController
         this.repository = repository;
     }
 
-    public void setPropertyTypeDefinition(PropertyTypeDefinition propertyTypeDefinition) {
-        this.propertyTypeDefinition = propertyTypeDefinition;
-    }
-    
-    public void setResourceTypeDefinition(ResourceTypeDefinition resourceTypeDefinition) {
-        this.resourceTypeDefinition = resourceTypeDefinition;
+    public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
+        this.propertyTypeDefinitions = propertyTypeDefinitions;
     }
     
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
+    }
+    
+
+    public ReferenceDataProvider[] getReferenceDataProviders() {
+        return new ReferenceDataProvider[] {this};
     }
     
 
@@ -86,11 +91,11 @@ public class PropertyEditController extends SimpleFormController
             throw new BeanInitializationException(
                 "JavaBean property 'repository' not set");
         }
-        if (this.propertyTypeDefinition == null) {
+        if (this.propertyTypeDefinitions == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'propertyTypeDefinition' not set");
+                "JavaBean property 'propertyTypeDefinitions' not set");
         }
-        setValidator(new PropertyEditValidator(this.propertyTypeDefinition, valueFactory));
+        setValidator(new PropertyEditValidator(valueFactory));
     }
     
 
@@ -100,31 +105,68 @@ public class PropertyEditController extends SimpleFormController
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        Resource resource = repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(), false);
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
+                                                     requestContext.getResourceURI(), false);
         String value = null;
-        
-        Property property = resource.getProperty(
-            this.resourceTypeDefinition.getNamespace(),
-            this.propertyTypeDefinition.getName());
-        if (property != null) {
-            value = property.getValue().toString();
-        }
-
-        Value[] definitionAllowedValues = this.propertyTypeDefinition.getAllowedValues();
         String[] formAllowedValues = null;
-        if (definitionAllowedValues != null) {
-            formAllowedValues = new String[definitionAllowedValues.length];
-            for (int i = 0; i < definitionAllowedValues.length; i++) {
-                formAllowedValues[i] = definitionAllowedValues[i].toString();
+        String editURL = null;
+        PropertyTypeDefinition definition = null;
+
+
+        for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
+
+            if (isFocusedProperty(this.propertyTypeDefinitions[i], request)) {
+
+                definition = this.propertyTypeDefinitions[i];
+
+                Property property = resource.getProperty(
+                    definition.getNamespace(), definition.getName());
+
+                if (property != null) {
+                    if (definition.isMultiple()) {
+                        StringBuffer val = new StringBuffer();
+                        Value[] values = property.getValues();
+                        for (int j = 0; j < values.length; j++) {
+                            val.append(values[j].toString());
+                            if (j < values.length - 1) val.append(", ");
+                        }
+                        value = val.toString();
+                    } else {
+                        value = property.getValue().toString();
+                    }
+                }
+
+                Value[] definitionAllowedValues = definition.getAllowedValues();
+
+                if (definitionAllowedValues != null) {
+                    int startIdx = 0;
+                    if (!definition.isMandatory()) {
+                        // Allow "" value (remove property)
+                        formAllowedValues = new String[definitionAllowedValues.length + 1];
+                        formAllowedValues[0] = "";
+                        startIdx = 1;
+                    } else {
+                        formAllowedValues = new String[definitionAllowedValues.length];
+                    }
+
+                    for (int j = startIdx; j < definitionAllowedValues.length; j++) {
+                        formAllowedValues[j] = definitionAllowedValues[j].toString();
+                    }
+                }
+                Map urlParameters = new HashMap();
+                String namespaceURI = definition.getNamespace().getUri();
+                if (namespaceURI != null) {
+                    urlParameters.put("namespace", namespaceURI);
+                }
+                urlParameters.put("name", definition.getName());
+                editURL = service.constructLink(resource, securityContext.getPrincipal(),
+                                                urlParameters);
             }
         }
-
-        String url = service.constructLink(resource, securityContext.getPrincipal());
-        PropertyEditCommand command = new PropertyEditCommand(url, value, formAllowedValues);
-        return command;
+        
+        return new PropertyEditCommand(editURL, definition, value,
+                                       formAllowedValues);
     }
-
 
 
 
@@ -138,34 +180,126 @@ public class PropertyEditController extends SimpleFormController
             (PropertyEditCommand) command;
 
         if (propertyCommand.getCancelAction() != null) {
+            propertyCommand.clear();
             propertyCommand.setDone(true);
             return;
         }
         String uri = requestContext.getResourceURI();
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
+        for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
+            
+            PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
+            if (isFocusedProperty(def, propertyCommand.getNamespace(), propertyCommand.getName())) {
+                
+                Property property = resource.getProperty(def.getNamespace(), def.getName());
 
-        Namespace ns = this.resourceTypeDefinition.getNamespace();
-        String name = this.propertyTypeDefinition.getName();
+                String stringValue = propertyCommand.getValue();
+                if ("".equals(stringValue)) {
+                    if (property == null) {
+                        propertyCommand.setDone(true);
+                        propertyCommand.clear();
+                        return;
+                    }
+                    resource.removeProperty(def.getNamespace(), def.getName());
+                } else {
+                    if (property == null) {
+                        property = resource.createProperty(def.getNamespace(), def.getName());
+                    }
 
-        String stringValue = propertyCommand.getValue();
-        Property prop = resource.getProperty(ns, name);
-        
-        if ("".equals(stringValue)) {
-            if (prop == null) {
-                propertyCommand.setDone(true);
-                return;
+                    if (def.isMultiple()) {
+                        String[] splitValues = stringValue.split(",");
+                        Value[] values = this.valueFactory.createValues(splitValues, def.getType());
+                        property.setValues(values);
+                    } else {
+                        Value value = this.valueFactory.createValue(
+                            stringValue, def.getType());
+                        property.setValue(value);
+                    }
+                }
+                this.repository.store(token, resource);
+                break;
             }
-            resource.removeProperty(ns, name);
-        } else {
-            if (prop == null) {
-                prop = resource.createProperty(ns, name);
-            }
-            Value value = this.valueFactory.createValue(
-                stringValue, this.propertyTypeDefinition.getType());
-            prop.setValue(value);
         }
-        repository.store(token, resource);
+
+        propertyCommand.clear();
         propertyCommand.setDone(true);
+
     }
     
+
+    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Service service = requestContext.getService();
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
+                                                     requestContext.getResourceURI(), false);
+
+        List propsList = new ArrayList();
+        for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
+
+            PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
+
+            Property property = resource.getProperty(def.getNamespace(), def.getName());
+
+            String editURL = null;
+
+            if (resource.isAuthorized(def.getProtectionLevel(), securityContext.getPrincipal())) {
+                
+                Map urlParameters = new HashMap();
+                String namespaceURI = def.getNamespace().getUri();
+                if (namespaceURI != null) {
+                    urlParameters.put("namespace", namespaceURI);
+                }
+                urlParameters.put("name", def.getName());
+                editURL = service.constructLink(resource, securityContext.getPrincipal(),
+                                                       urlParameters);
+            }
+            
+
+            PropertyItem item = new PropertyItem(property, def, editURL);
+            propsList.add(item);
+        }
+
+        model.put("propertyList", propsList);
+    }
+    
+
+
+
+
+
+    private boolean isFocusedProperty(PropertyTypeDefinition propDef, HttpServletRequest request) {
+        String inputNamespace = request.getParameter("namespace");
+        String inputName = request.getParameter("name");
+        return isFocusedProperty(propDef, inputNamespace, inputName);
+    }
+    
+    private boolean isFocusedProperty(PropertyTypeDefinition propDef,
+                                      String inputNamespace, String inputName) {
+
+        if (inputNamespace != null) inputNamespace = inputNamespace.trim();
+        if (inputName != null) inputName = inputName.trim();
+        
+        if (inputName == null || "".equals(inputName)) {
+            return false;
+        }
+
+        if (!inputName.equals(propDef.getName())) {
+            return false;
+        }
+        
+        // We now know it is the same name, check namespace:
+
+        if (propDef.getNamespace().getUri() == null
+            && (inputNamespace == null || "".equals(inputNamespace))) {
+            return true;
+        }
+
+        return propDef.getNamespace().getUri().equals(inputNamespace);
+    }
+    
+    
+
+
 }

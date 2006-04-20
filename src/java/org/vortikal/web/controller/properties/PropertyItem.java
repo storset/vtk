@@ -30,68 +30,46 @@
  */
 package org.vortikal.web.controller.properties;
 
+import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 
+public class PropertyItem {
 
-public class PropertyEditCommand extends AbstractSaveCancelCommand {
-
+    private Property property;
     private PropertyTypeDefinition definition;
-    private String[] possibleValues;
-    private String value;
-    
-    private String namespace;
-    private String name;
-    
+    private String editURL;
 
-    public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition, String value) {
-        super(submitURL);
+    public PropertyItem(Property property, PropertyTypeDefinition definition,
+                        String editURL) {
+        this.property = property;
         this.definition = definition;
-        this.value = value;
-        this.namespace = definition != null ? definition.getNamespace().getUri() : null;
-        this.name = definition != null ? definition.getName() : null;
+        this.editURL = editURL;
     }
 
-    public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition, String value,
-                               String[] possibleValues) {
-        super(submitURL);
-        this.definition = definition;
-        this.value = value;
-        this.possibleValues = possibleValues;
-        this.namespace = definition != null ? definition.getNamespace().getUri() : null;
-        this.name = definition != null ? definition.getName() : null;
+
+    public Property getProperty() {
+        return this.property;
+    }
+
+    public void setProperty(Property property) {
+        this.property = property;
     }
 
     public PropertyTypeDefinition getDefinition() {
         return this.definition;
     }
 
-    public String getNamespace() {
-        return this.namespace;
+    public void setDefinition(PropertyTypeDefinition definition) {
+        this.definition = definition;
     }
 
-    public String getName() {
-        return this.name;
+    public String getEditURL() {
+        return this.editURL;
     }
 
-    public String getValue() {
-        return this.value;
+    public void setEditURL(String editURL) {
+        this.editURL = editURL;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-    
-    public String[] getPossibleValues() {
-        return this.possibleValues;
-    }
-    
-    public void clear() {
-        this.definition = null;
-        this.value = null;
-        this.possibleValues = null;
-    }
-    
 }
-

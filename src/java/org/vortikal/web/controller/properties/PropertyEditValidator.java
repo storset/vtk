@@ -43,55 +43,65 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 
 public class PropertyEditValidator implements Validator {
     
-    private PropertyTypeDefinition propertyTypeDefinition;
     private ValueFactory valueFactory;
     
     
 
-    public PropertyEditValidator(PropertyTypeDefinition propertyTypeDefinition,
-                                 ValueFactory valueFactory) {
-        this.propertyTypeDefinition = propertyTypeDefinition;
+    public PropertyEditValidator(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
     
 
     public boolean supports(Class clazz) {
-        return PropertyEditCommand.class.isAssignableFrom(clazz);
+        boolean retVal = (PropertyEditCommand.class.isAssignableFrom(clazz));
+        System.out.println("__is_supported(" + clazz.getName() + "): " + retVal);
+        return retVal;
     }
 
 
     public void validate(Object object, Errors errors) {
         PropertyEditCommand command = (PropertyEditCommand) object;
 
+        if (command.getCancelAction() != null) {
+            return;
+        }
+
         String formValue = command.getValue();
         if ("".equals(formValue) || formValue == null) {
-            if (this.propertyTypeDefinition.isMandatory()) {
+            if (command.getDefinition().isMandatory()) {
                 errors.rejectValue("value", "mandatory property"); // XXX
             }
             return;
         }
 
         try {
-            Value value = this.valueFactory.createValue(
-                formValue, this.propertyTypeDefinition.getType());
+            
+            if (command.getDefinition().isMultiple()) {
+                String[] splitValues = formValue.split(",");
+                Value[] values = this.valueFactory.createValues(splitValues,
+                                                                command.getDefinition().getType());
+            } else {
+                Value value = this.valueFactory.createValue(
+                    formValue, command.getDefinition().getType());
 
-            Constraint constraint = this.propertyTypeDefinition.getConstraint();
-            if (constraint != null) {
-                constraint.validate(value);
-            }
-
-            Value[] allowedValues = propertyTypeDefinition.getAllowedValues();
-            if (allowedValues != null) {
-                boolean found = false;
-                for (int i = 0; i < allowedValues.length; i++) {
-                    if (value.equals(allowedValues[i])) {
-                        found = true;
-                        break;
-                    }
+                Constraint constraint = command.getDefinition().getConstraint();
+                if (constraint != null) {
+                    constraint.validate(value);
                 }
-                if (!found) {
-                    errors.rejectValue("value", "Illegal value"); // XXX
-                    return;
+
+                Value[] allowedValues = command.getDefinition().getAllowedValues();
+                if (allowedValues != null) {
+                    boolean found = false;
+                    for (int i = 0; i < allowedValues.length; i++) {
+                        if (value.equals(allowedValues[i])) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        errors.rejectValue("value", "Illegal value");
+                        return;
+                    }
                 }
             }
 
@@ -101,7 +111,7 @@ public class PropertyEditValidator implements Validator {
             errors.rejectValue("value", "Illegal value"); // XXX
         }
 
-
+        System.out.println("__errors: " + errors.getAllErrors());
     }
     
 }

@@ -23,12 +23,9 @@
 
 <#import "/lib/menu/list-menu.ftl" as listMenu />
 
-<#assign contentType>
-  <@vrtx.resolveContentType contentType="${resourceContext.currentResource.contentType?replace('/', '-')}"/>
-</#assign>
 
 <div id="titleContainer" class="clear">
-  <div class="resource-title ${contentType}">  
+  <div class="resource-title ${resourceContext.currentResource.resourceType}">  
     <h1> 
       <#if (resourceTitle.title)?exists>${resourceTitle.title}<#else>${resourceContext.currentResource.name}</#if>
     </h1>

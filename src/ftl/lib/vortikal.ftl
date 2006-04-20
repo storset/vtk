@@ -82,7 +82,3 @@
 	</#list>
 </#macro>
 
-<#-- Macro for resolving contentType to a more general term. If no match it just 
-returns the submitted contentType unmodified -->
-
-<#macro resolveContentType contentType><#if contentType?starts_with("audio")>audio<#elseif contentType?starts_with("video")>video<#elseif contentType?starts_with("image")>image<#elseif contentType?starts_with("text")>document<#elseif contentType?starts_with("application-x-vortex-collection")>folder<#else>${contentType}</#if></#macro>

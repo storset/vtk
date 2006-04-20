@@ -103,7 +103,7 @@
 
   <#assign rowType = "odd">
   <#list collectionListing.children as child>
-  <tr class="${rowType} <@vrtx.resolveContentType contentType="${child.contentType?replace('/', '-')}"/>">
+  <tr class="${rowType} ${child.resourceType}">
    <#list collectionListing.childInfoItems as item>
       <#assign class = item >
       <#if item = "locked" && child.lock?exists>
@@ -130,7 +130,7 @@
             <#break>
 
           <#case "content-length">
-            <#if child.contentType == 'application/x-vortex-collection'>
+            <#if child.isCollection()>
               &nbsp;
             <#elseif child.contentLength <= 1000>
               ${child.contentLength} B

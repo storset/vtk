@@ -47,7 +47,7 @@ import org.vortikal.repository.PropertySet;
  *
  */
 
-public class PropertySetImpl implements PropertySet {
+public class PropertySetImpl implements PropertySet, Cloneable {
 
     protected String uri;
     protected String resourceType;

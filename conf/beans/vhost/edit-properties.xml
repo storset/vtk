@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+
+  <bean id="editPropertiesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <!--property name="order"><value>9600</value></property-->
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">400</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>mode</value>
+          </property>
+          <property name="parameterValue">
+            <value>edit-properties</value>
+          </property>
+        </bean>      
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="editPropertiesHandler" />
+    </property>
+  </bean>        
+
+
+  <bean id="editPropertiesHandler" 
+    class="org.vortikal.web.controller.properties.PropertyEditController"
+    parent="requestLocalRepositoryAware">
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="ownerPropDef" />
+        <ref bean="createdByPropDef" />
+        <ref bean="collectionPropDef" />
+        <ref bean="creationTimePropDef" />
+        <ref bean="contentLastModifiedPropDef" />
+        <ref bean="contentModifiedByPropDef" />
+        <ref bean="propertiesLastModifiedPropDef" />
+        <ref bean="propertiesModifiedByPropDef" />
+
+        <ref bean="unitPropDef" />
+        <ref bean="topicPropDef" />
+
+        <ref bean="keywordsPropDef" />
+        <ref bean="descriptionPropDef" />
+
+      </list>
+    </property>
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="formView" value="editProperties" />
+    <property name="successView" value="editProperties" />
+
+    <property name="commandName" value="form" />
+    <!--
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
+    </property>
+    -->
+  </bean>
+
+  <bean id="editPropertiesView" parent="freemarkerView">
+    <property name="url" value="pages/properties-listing.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="editPropertiesHandler" /> <!-- (Also a reference data provider) -->
+        <ref bean="adminCSSProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+
+  <bean id="adminViewResolver2" 
+        parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="editProperties" value-ref="editPropertiesView" />
+      </map>
+    </property>
+  </bean>
+
+
+</beans>

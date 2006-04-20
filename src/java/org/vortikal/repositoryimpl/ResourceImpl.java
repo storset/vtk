@@ -66,18 +66,17 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     private String[] childURIs = null;
     
     private PropertyManagerImpl propertyManager;
+    private AuthorizationManager authorizationManager;
     
-    public ResourceImpl(String uri, PropertyManagerImpl propertyManager) {
+    public ResourceImpl(String uri, PropertyManagerImpl propertyManager, 
+            AuthorizationManager authorizationManager) {
         super(uri);
         this.propertyManager = propertyManager;
+        this.authorizationManager = authorizationManager;
     }
 
-    public boolean isAuthorized(String privilege, Principal principal) {
-        Set actionSet = this.acl.getPrincipalSet(privilege);
-        
-        if (actionSet != null && actionSet.contains(principal)) 
-            return true;
-        return false;
+    public boolean isAuthorized(String action, Principal principal) {
+        return this.authorizationManager.authorizeAction(this.uri, action, principal);
     }
 
     public Property createProperty(Namespace namespace, String name) {
@@ -319,7 +318,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
 
-        ResourceImpl clone = new ResourceImpl(uri, propertyManager);
+        ResourceImpl clone = new ResourceImpl(uri, propertyManager, this.authorizationManager);
         clone.setID(this.id);
         clone.setACL(acl);
         clone.setAclInheritedFrom(this.aclInheritedFrom);
@@ -397,6 +396,5 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();
     }
-    
 
 }

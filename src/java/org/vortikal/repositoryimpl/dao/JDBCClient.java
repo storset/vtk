@@ -150,7 +150,7 @@ public class JDBCClient extends AbstractDataAccessor {
     private ResourceImpl populateResource(String uri, ResultSet rs) 
         throws SQLException {
 
-        ResourceImpl resource = new ResourceImpl(uri, propertyManager);
+        ResourceImpl resource = new ResourceImpl(uri, propertyManager, this.authorizationManager);
         resource.setID(rs.getInt("resource_id"));
         
         int aclInheritedFrom =  rs.getInt("acl_inherited_from");

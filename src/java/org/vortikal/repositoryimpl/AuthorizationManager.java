@@ -106,6 +106,40 @@ public class AuthorizationManager {
         }
     }
     
+    public boolean authorizeAction(String uri, String action, Principal principal) {
+        try {
+            if (AuthorizationManager.READ_PROCESSED.equals(action)) {
+                authorizeReadProcessed(uri, principal);
+            } else if (AuthorizationManager.READ.equals(action)) {
+                authorizeRead(uri, principal);
+            } else if (AuthorizationManager.CREATE.equals(action)) {
+                authorizeCreate(uri, principal);
+            } else if (AuthorizationManager.WRITE.equals(action)) {
+                authorizeWrite(uri, principal);
+            } else if (AuthorizationManager.WRITE_ACL.equals(action)) {
+                authorizeWriteAcl(uri, principal);
+            } else if (AuthorizationManager.UNLOCK.equals(action)) {
+                authorizeUnlock(uri, principal);
+            } else if (AuthorizationManager.DELETE.equals(action)) {
+                authorizeDelete(uri, principal);
+            } else if (AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+                authorizePropertyEditAdminRole(uri, principal);
+            } else if (AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
+                authorizePropertyEditRootRole(uri, principal);
+            } else {
+                // XXX: copy/move shouldn't be allowed, currently ends up here
+                return false;
+            }
+        
+            return true;
+        } catch (Exception e) {
+            // Nothing
+        }
+        
+        return false;
+    }
+    
+    
     /**
      * <ul>
      *   <li>Privilege READ_PROCESSED, READ or ALL in ACL

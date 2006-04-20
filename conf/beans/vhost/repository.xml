@@ -32,16 +32,10 @@
 
 
   <bean id="repository.database" class="org.vortikal.repositoryimpl.dao.JDBCClient">
-    <!--
-    <property name="databaseDriver" value="${databaseDriver}" />
-    <property name="maxDatabaseConnections" value="${maxDatabaseConnections}" />
-    <property name="databaseURL" value="${databaseURL}" />
-    <property name="databaseUser" value="${jdbcUsername}" />
-    <property name="databasePassword" value="${jdbcPassword}" />
-    -->
     <property name="dataSource" ref="repository.dataSource" />
     <property name="contentStore" ref="repository.contentStore" />
     <property name="propertyManager" ref="propertyManager" />
+    <property name="authorizationManager" ref="authorizationManager" />
     <property name="principalManager" ref="principalManager" />
   </bean>
 

@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repositoryimpl.AuthorizationManager;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.PrincipalManager;
@@ -55,6 +56,7 @@ public abstract class AbstractDataAccessor
     protected DataSource dataSource;
     protected PropertyManagerImpl propertyManager;
     protected PrincipalManager principalManager;
+    protected AuthorizationManager authorizationManager;
     
     public void setContentStore(ContentStore contentStore) {
         this.contentStore = contentStore;
@@ -80,6 +82,10 @@ public abstract class AbstractDataAccessor
         if (this.propertyManager == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'propertyManager' not specified");
+        }
+        if (this.authorizationManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'authorizationManager' not specified");
         }
         if (this.principalManager == null) {
             throw new BeanInitializationException(
@@ -424,6 +430,10 @@ public abstract class AbstractDataAccessor
     protected abstract void copy(Connection conn, ResourceImpl resource, String destURI,
                                  boolean copyACLs, boolean setOwner, String owner)
         throws SQLException, IOException;
+
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
+    }
 
 
 }

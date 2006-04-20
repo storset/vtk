@@ -197,36 +197,7 @@ public class ResourcePrincipalPermissionAssertion
         // XXX: missing resource validation
         String uri = resource.getURI();
         
-        try {
-            if (AuthorizationManager.READ_PROCESSED.equals(this.permission)) {
-                this.authorizationManager.authorizeReadProcessed(uri, principal);
-            } else if (AuthorizationManager.READ.equals(this.permission)) {
-                this.authorizationManager.authorizeRead(uri, principal);
-            } else if (AuthorizationManager.CREATE.equals(this.permission)) {
-                this.authorizationManager.authorizeCreate(uri, principal);
-            } else if (AuthorizationManager.WRITE.equals(this.permission)) {
-                this.authorizationManager.authorizeWrite(uri, principal);
-            } else if (AuthorizationManager.WRITE_ACL.equals(this.permission)) {
-                this.authorizationManager.authorizeWriteAcl(uri, principal);
-            } else if (AuthorizationManager.UNLOCK.equals(this.permission)) {
-                this.authorizationManager.authorizeUnlock(uri, principal);
-            } else if (AuthorizationManager.DELETE.equals(this.permission)) {
-                this.authorizationManager.authorizeDelete(uri, principal);
-            } else if (AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION.equals(this.permission)) {
-            this.authorizationManager.authorizePropertyEditAdminRole(uri, principal);
-        } else if (AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION.equals(this.permission)) {
-            this.authorizationManager.authorizePropertyEditRootRole(uri, principal);
-        } else {
-            // XXX: copy/move shouldn't be allowed, currently ends up here
-            return false;
-        }
-        
-        return true;
-        } catch (Exception e) {
-            // Nothing
-        }
-        
-        return false;
+        return this.authorizationManager.authorizeAction(uri, this.permission, principal);
     }
 
 

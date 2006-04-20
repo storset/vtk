@@ -241,7 +241,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
         if (!init) init();
 
-        ResourceImpl newResource = new ResourceImpl(uri, this);
+        ResourceImpl newResource = new ResourceImpl(uri, this, this.authorizationManager);
         PrimaryResourceTypeDefinition rt = create(principal, newResource, new Date(), 
                 collection, rootResourceTypeDefinition);
 
@@ -435,7 +435,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             } 
         }
         
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
         newResource.setACL((Acl)resource.getAcl().clone());
 
@@ -608,7 +608,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             Principal principal) {
         if (!init) init();
         
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
@@ -624,7 +624,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     public ResourceImpl fileContentModification(ResourceImpl resource, Principal principal) {
         if (!init) init();
         // XXX: What to do about swapping old resource with new?
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this);
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());

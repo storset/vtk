@@ -33,7 +33,6 @@ package org.vortikal.repositoryimpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -54,26 +53,22 @@ import org.vortikal.util.codec.MD5;
 import org.vortikal.util.repository.URIUtil;
 
 
-public class ResourceImpl implements Resource, Cloneable {
+public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable {
     
     protected Log logger = LogFactory.getLog(this.getClass());
 
     /* Numeric ID, required by database */
     private int id = -1;
 
-    private String uri;
-    private String resourceType;
     private Acl acl;
     private int aclInheritedFrom = -1;
     private Lock lock = null;
     private String[] childURIs = null;
     
-    private Map propertyMap = new HashMap();
-    
     private PropertyManagerImpl propertyManager;
     
     public ResourceImpl(String uri, PropertyManagerImpl propertyManager) {
-        this.uri = uri;
+        super(uri);
         this.propertyManager = propertyManager;
     }
 
@@ -109,7 +104,7 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public String getParent() {
-        return URIUtil.getParentURI(this.uri);
+        return URIUtil.getParentURI(super.uri);
     }
 
     public String getContentLanguage() {
@@ -142,9 +137,10 @@ public class ResourceImpl implements Resource, Cloneable {
     }
 
     public String getURI() {
-        return this.uri;
+        return super.uri;
     }
 
+    
     public int getID() {
         return this.id;
     }
@@ -153,7 +149,7 @@ public class ResourceImpl implements Resource, Cloneable {
         this.id = id;
     }
 
-
+    
     public void setAclInheritedFrom(int aclInheritedFrom) {
         this.aclInheritedFrom = aclInheritedFrom;
     }
@@ -174,49 +170,11 @@ public class ResourceImpl implements Resource, Cloneable {
         return uri.substring(uri.lastIndexOf("/") + 1);
     }
     
-    public String getResourceType() {
-        return this.resourceType;
-    }
-    
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
-    }
-
-    public void addProperty(Property property) {
-        Map map = (Map) this.propertyMap.get(property.getNamespace());
-        if (map == null) {
-            map = new HashMap();
-            propertyMap.put(property.getNamespace(), map);
-        }
-        map.put(property.getName(), property);
-    }
-    
-    public Property getProperty(Namespace namespace, String name) {
-        Map map = (Map) this.propertyMap.get(namespace);
-        if (map == null) return null;
-        
-        return (Property) map.get(name);
-    }
-
-    public List getProperties(Namespace namespace) {
-        Map map = (Map) this.propertyMap.get(namespace);
-        if (map == null) return new ArrayList();
-        return new ArrayList(map.values());
-    }
-
-    public List getProperties() {
-        List props = new ArrayList();
-        for (Iterator iter = this.propertyMap.values().iterator(); iter.hasNext();) {
-            Map map = (Map) iter.next();
-            props.addAll(map.values());
-        }
-        return props;
-    }
 
     public List getOtherProperties() {
         List otherProps = new ArrayList();
         
-        for (Iterator iter = this.propertyMap.entrySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = super.propertyMap.entrySet().iterator(); iter.hasNext();) {
             Map.Entry element = (Map.Entry) iter.next();
             Namespace namespace = (Namespace)element.getKey();
             Map props = (Map)element.getValue();
@@ -367,7 +325,7 @@ public class ResourceImpl implements Resource, Cloneable {
         clone.setAclInheritedFrom(this.aclInheritedFrom);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
-        clone.setResourceType(this.resourceType);
+        clone.setResourceType(super.resourceType);
         for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             clone.addProperty((Property) prop.clone());

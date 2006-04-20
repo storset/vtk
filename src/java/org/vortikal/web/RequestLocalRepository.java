@@ -278,41 +278,43 @@ public class RequestLocalRepository implements InitializingBean, Repository {
 
     // XXX: Losing stack traces unnecessary
     private void throwAppropriateException(String uri, Throwable t) 
-    throws AuthenticationException, AuthorizationException,
-    FailedDependencyException, IOException, IllegalOperationException,
-    ReadOnlyException, ResourceLockedException, ResourceNotFoundException,
-    ResourceOverwriteException {
+        throws AuthenticationException, AuthorizationException,
+        FailedDependencyException, IOException, IllegalOperationException,
+        ReadOnlyException, ResourceLockedException, ResourceNotFoundException,
+        ResourceOverwriteException {
+
+        t = t.fillInStackTrace();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Re-throwing exception: " + t);
         }
 
         if (t instanceof AuthenticationException) {
-            throw new AuthenticationException(t.getMessage());
+            throw (AuthenticationException) t;
         }
         if (t instanceof AuthorizationException) {
-            throw new AuthorizationException(t.getMessage());
+            throw (AuthorizationException) t;
         }
         if (t instanceof FailedDependencyException) {
-            throw new FailedDependencyException(/* FIXME: populate */);
+            throw (FailedDependencyException) t;
         }
         if (t instanceof IOException) {
-            throw new IOException(t.getMessage());
+            throw (IOException) t;
         }
         if (t instanceof IllegalOperationException) {
-            throw new IllegalOperationException(t.getMessage());
+            throw (IllegalOperationException) t;
         }
         if (t instanceof ReadOnlyException) {
-            throw new ReadOnlyException();
+            throw (ReadOnlyException) t;
         }
         if (t instanceof ResourceLockedException) {
-            throw new ResourceLockedException();
+            throw (ResourceLockedException) t;
         }
         if (t instanceof ResourceNotFoundException) {
-            throw new ResourceNotFoundException(uri);
+            throw (ResourceNotFoundException) t;
         }
         if (t instanceof ResourceOverwriteException) {
-            throw new ResourceOverwriteException();
+            throw (ResourceOverwriteException) t;
         }
         throw new RuntimeException(t);
     }

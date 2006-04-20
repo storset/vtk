@@ -302,13 +302,15 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return sb.toString();
     }
 
-    private void validateValues(Value[] values) throws ValueFormatException {
+    private void validateValues(Value[] values) throws ValueFormatException,
+                                                ConstraintViolationException {
         for (int i=0; i<values.length; i++) {
             validateValue(values[i]);
         }
     }
     
-    private void validateValue(Value value) throws ValueFormatException  {
+    private void validateValue(Value value) throws ValueFormatException,
+                                                ConstraintViolationException {
         if (value == null) {
             throw new ValueFormatException("Null-values not allowed.");
         }
@@ -344,7 +346,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
         }
         
-        // XXX: Do we want this, or should the client check by itself?
+        // XXX: Do we want this, or should the client check by itself ?
         if (propertyTypeDefinition == null) {
             return;
         }

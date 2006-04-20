@@ -49,6 +49,14 @@ public abstract class AbstractResourceTypeDefinitionImpl
         } else if (namespace == null) {
             throw new BeanInitializationException("Property 'namespace' not set.");
         }
+
+        // XXX hack:
+        for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
+            if (propertyTypeDefinitions[i] instanceof PropertyTypeDefinitionImpl) {
+                ((PropertyTypeDefinitionImpl) propertyTypeDefinitions[i]).setNamespace(this.namespace);
+            }
+
+        }
     }
 
     public String getName() {

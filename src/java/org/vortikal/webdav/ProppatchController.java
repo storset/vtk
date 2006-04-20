@@ -484,32 +484,26 @@ public class ProppatchController extends AbstractWebdavController  {
         String[] stringValues;
         Element valuesElement;
         if ((valuesElement = element.getChild("values", 
-                    WebdavConstants.VORTIKAL_PROPERTYVALUES_CSV_NAMESPACE)) != null) {
-            // CSV separated values
-            if (valuesElement.getChildren().size() > 0) {
-                throw new ValueFormatException("Invalid multi-value syntax: CSV list cannot contain un-escaped XML");
-            }
-            
-            stringValues = valuesElement.getText().split(",");
-        } else if ((valuesElement = element.getChild("values", 
                 WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE))!= null) {
                 
             List children = valuesElement.getChildren("value", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
-            
-            if (children.size() == 0) {
-                throw new ValueFormatException("Empty value lists are currently not supported.");
-            }
             
             stringValues = new String[children.size()];
             int u=0;
             for (Iterator i = children.iterator(); i.hasNext(); ) {
                 stringValues[u++] = ((Element)i.next()).getText();
             }
+        } else if (element.getChildren().size() == 0) {
+            // Assume values separated by comma (CSV)
+            stringValues = element.getText().split(",");
         } else {
-            throw new ValueFormatException("Invalid multi-value syntax: "
-                    + "missing 'values'-element in proper namespace");
+            throw new ValueFormatException("Invalid multi-value syntax.");
         }
-        
+
+        if (stringValues.length == 0) {
+            throw new ValueFormatException("Empty value lists are not supported.");
+        }
+    
         Value[] values;
         if (type == PropertyType.TYPE_DATE) {
             values = new Value[stringValues.length];

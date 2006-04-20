@@ -32,10 +32,13 @@ package org.vortikal.repository.resourcetype;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Namespace;
 
 
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
 
+    private Namespace namespace;
+    
     private String name;
     private int type = PropertyType.TYPE_STRING;
     private boolean multiple = false;
@@ -50,6 +53,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private Value[] allowedValues;
     
     public void afterPropertiesSet() {
+        
     }
     
 
@@ -151,10 +155,18 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.allowedValues = allowedValues;
     }
     
+    public Namespace getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(Namespace namespace) {
+        this.namespace = namespace;
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append(": [name=").append(this.name).append("]");
         return sb.toString();
     }
-    
+
 }

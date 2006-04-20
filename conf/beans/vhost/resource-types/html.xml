@@ -14,6 +14,23 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="guessedHtmlCharsetPropDef" />
+      </list>
+    </property>
   </bean>
+
+  <bean id="guessedHtmlCharsetPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="guessedCharset" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="htmlCharsetEvaluator" />
+    <property name="contentModificationEvaluator" ref="htmlCharsetEvaluator" />
+  </bean>
+
+  <bean id="htmlCharsetEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
 
 </beans>

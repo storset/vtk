@@ -70,6 +70,7 @@ import org.vortikal.web.referencedata.ExtendableReferenceDataProviding;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.view.LinkConstructor;
+import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 
@@ -254,9 +255,8 @@ public class ResourceXsltView extends AbstractView
         
         // do the transformation
         JDOMSource source = new JDOMSource(document);
-        source.setSystemId(
-            org.vortikal.xml.AbstractPathBasedURIResolver.PROTOCOL_PREFIX +
-            document.getBaseURI());
+        source.setSystemId(AbstractPathBasedURIResolver.PROTOCOL_PREFIX 
+                + document.getBaseURI());
         transformer.transform(
             source, new StreamResult(resultBuffer));
 

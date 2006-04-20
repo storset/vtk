@@ -45,7 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>pattern</code> - the regular expression to match
- *   <li><code>pattern</code> - the replacement string
+ *   <li><code>replacement</code> - the replacement string
  * </ul>
  */
 public class TextReplaceContentFilter implements TextContentFilter, InitializingBean {

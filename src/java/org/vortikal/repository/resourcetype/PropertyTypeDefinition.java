@@ -30,10 +30,14 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.vortikal.repository.Namespace;
+
 
 
 
 public interface PropertyTypeDefinition {
+    
+    public Namespace getNamespace();
     
     public String getName();
 

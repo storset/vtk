@@ -32,6 +32,8 @@
 
   <!-- ASSERTIONS -->
   <import resource="assertions.xml" />
+
+  <import resource="uhtml.xml" />
   
 </beans>
 

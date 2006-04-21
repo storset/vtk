@@ -39,6 +39,12 @@
     <property name="principalManager" ref="principalManager" />
   </bean>
 
+  <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
+    <property name="dataSource" ref="repository.dataSource" />
+    <property name="propertyManager" ref="propertyManager" />
+    <property name="principalManager" ref="principalManager" />
+  </bean>
+
   <bean id="repository.contentStore" 
         class="org.vortikal.repositoryimpl.dao.SimpleFileSystemContentStore">
     <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />

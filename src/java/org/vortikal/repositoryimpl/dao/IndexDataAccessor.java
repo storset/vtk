@@ -13,11 +13,13 @@ public interface IndexDataAccessor {
     
     /**
      * Get iterator over <em>all</em> existing property sets in repository.
+     * The URI order should be lexicographic.
+     * Might be useful for incremental synchronization/re-indexing.
      * 
      * @return
      * @throws IOException
      */
-    public ResultSetIterator getPropertySetIterator() throws IOException;
+    public ResultSetIterator getOrderedPropertySetIterator() throws IOException;
     
     /**
      * Get an ordered <code>PropertySet</code> iterator, starting from the given 

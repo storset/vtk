@@ -53,6 +53,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     protected String resourceType;
     protected Map propertyMap;
     protected int id = -1; // Numeric ID used by database
+    private int aclInheritedFrom = -1;
    
     public PropertySetImpl(String uri) {
         this.uri = uri;
@@ -85,6 +86,20 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
+
+    public void setAclInheritedFrom(int aclInheritedFrom) {
+        this.aclInheritedFrom = aclInheritedFrom;
+    }
+
+    public int getAclInheritedFrom() {
+        return this.aclInheritedFrom;
+    }
+    
+
+    public boolean isInheritedACL() {
+        return this.aclInheritedFrom != -1;
+    }
+
 
     public void addProperty(Property property) {
         Map map = (Map) this.propertyMap.get(property.getNamespace());
@@ -128,6 +143,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         
         PropertySetImpl clone = new PropertySetImpl(this.uri);
         clone.resourceType = this.resourceType;
+        clone.setAclInheritedFrom(this.aclInheritedFrom);
         
         for (Iterator i = getProperties().iterator(); i.hasNext(); ){
             Property prop = (Property)i.next();
@@ -136,5 +152,12 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         
         return clone;
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(" [").append(this.uri).append("]");
+        return sb.toString();
+    }
+    
     
 }

@@ -56,8 +56,11 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.LockImpl;
+import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -147,126 +150,140 @@ public class JDBCClient extends AbstractDataAccessor {
     }
 
 
+    
+
     private ResourceImpl populateResource(String uri, ResultSet rs) 
         throws SQLException {
 
-        ResourceImpl resource = new ResourceImpl(uri, propertyManager, this.authorizationManager);
-        resource.setID(rs.getInt("resource_id"));
-        
-        int aclInheritedFrom =  rs.getInt("acl_inherited_from");
-        if (rs.wasNull()) {
-            aclInheritedFrom = -1;
-        }
-        resource.setAclInheritedFrom(aclInheritedFrom);
-        
-        boolean collection = rs.getString("is_collection").equals("Y");
-        Property prop = this.propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
-            new Boolean(collection));
-        resource.addProperty(prop);
-        
-        Principal createdBy = principalManager.getUserPrincipal(rs.getString("created_by"));
-        prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME,
-                createdBy);
-        resource.addProperty(prop);
+        ResourceImpl resource = new ResourceImpl(uri, this.propertyManager,
+                                                 this.authorizationManager);
 
-        prop = this.propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
-            new Date(rs.getTimestamp("creation_time").getTime()));
-        resource.addProperty(prop);
+        populateStandardProperties(this.propertyManager, this.principalManager,
+                                   resource, rs);
 
-        Principal principal = principalManager.getUserPrincipal(rs.getString("resource_owner"));
-        prop = this.propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
-            principal);
-        resource.addProperty(prop);
-
-        String string = rs.getString("display_name");
-        if (string != null) {
-            prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.DISPLAYNAME_PROP_NAME,
-                string);
-            resource.addProperty(prop);
-        }
-        
-        string = rs.getString("content_type");
-        if (string != null) {
-            prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CONTENTTYPE_PROP_NAME,
-                string);
-            resource.addProperty(prop);
-        }
-        
-        string = rs.getString("character_encoding");
-        if (string != null) {
-            prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CHARACTERENCODING_PROP_NAME,
-                string);
-            resource.addProperty(prop);
-        }
-        
-        string = rs.getString("content_language");
-        if (string != null) {
-            prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CONTENTLOCALE_PROP_NAME,
-                string);
-            resource.addProperty(prop);
-        }
-
-        prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
-                new Date(rs.getTimestamp("last_modified").getTime()));
-        resource.addProperty(prop);
-
-        principal = principalManager.getUserPrincipal(rs.getString("modified_by"));
-        prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME,
-                principal);
-        resource.addProperty(prop);
-
-        prop = this.propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME,
-            new Date(rs.getTimestamp("content_last_modified").getTime()));
-        resource.addProperty(prop);
-
-        principal = principalManager.getUserPrincipal(rs.getString("content_modified_by"));
-        prop = this.propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
-            principal);
-        resource.addProperty(prop);
-
-        prop = this.propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME,
-            new Date(rs.getTimestamp("properties_last_modified").getTime()));
-        resource.addProperty(prop);
-
-        principal = principalManager.getUserPrincipal(rs.getString("properties_modified_by"));
-        prop = this.propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
-            principal);
-        resource.addProperty(prop);
-
-        if (!collection) {
-            long contentLength = contentStore.getContentLength(resource.getURI());
-            prop = this.propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME,
-                new Long(contentLength));
-            resource.addProperty(prop);
-        }
-        
-        resource.setResourceType(rs.getString("resource_type"));
-        
         return resource;
     }
 
 
     
-    private String getURIWildcard(String uri) {
+    public static void populateStandardProperties(
+        PropertyManagerImpl propertyManager, PrincipalManager principalManager,
+        PropertySetImpl propertySet, ResultSet rs) throws SQLException {
+
+        propertySet.setID(rs.getInt("resource_id"));
+        
+        boolean collection = rs.getString("is_collection").equals("Y");
+        Property prop = propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
+            new Boolean(collection));
+        propertySet.addProperty(prop);
+        
+        Principal createdBy = principalManager.getUserPrincipal(rs.getString("created_by"));
+        prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME,
+                createdBy);
+        propertySet.addProperty(prop);
+
+        prop = propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
+            new Date(rs.getTimestamp("creation_time").getTime()));
+        propertySet.addProperty(prop);
+
+        Principal principal = principalManager.getUserPrincipal(rs.getString("resource_owner"));
+        prop = propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
+            principal);
+        propertySet.addProperty(prop);
+
+        String string = rs.getString("display_name");
+        if (string != null) {
+            prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.DISPLAYNAME_PROP_NAME,
+                string);
+            propertySet.addProperty(prop);
+        }
+        
+        string = rs.getString("content_type");
+        if (string != null) {
+            prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CONTENTTYPE_PROP_NAME,
+                string);
+            propertySet.addProperty(prop);
+        }
+        
+        string = rs.getString("character_encoding");
+        if (string != null) {
+            prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CHARACTERENCODING_PROP_NAME,
+                string);
+            propertySet.addProperty(prop);
+        }
+        
+        string = rs.getString("content_language");
+        if (string != null) {
+            prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CONTENTLOCALE_PROP_NAME,
+                string);
+            propertySet.addProperty(prop);
+        }
+
+        prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
+                new Date(rs.getTimestamp("last_modified").getTime()));
+        propertySet.addProperty(prop);
+
+        principal = principalManager.getUserPrincipal(rs.getString("modified_by"));
+        prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME,
+                principal);
+        propertySet.addProperty(prop);
+
+        prop = propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME,
+            new Date(rs.getTimestamp("content_last_modified").getTime()));
+        propertySet.addProperty(prop);
+
+        principal = principalManager.getUserPrincipal(rs.getString("content_modified_by"));
+        prop = propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
+            principal);
+        propertySet.addProperty(prop);
+
+        prop = propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME,
+            new Date(rs.getTimestamp("properties_last_modified").getTime()));
+        propertySet.addProperty(prop);
+
+        principal = principalManager.getUserPrincipal(rs.getString("properties_modified_by"));
+        prop = propertyManager.createProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
+            principal);
+        propertySet.addProperty(prop);
+
+        if (!collection) {
+            //long contentLength = contentStore.getContentLength(propertySet.getURI());
+            long contentLength = rs.getLong("content_length");
+            prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME,
+                new Long(contentLength));
+            propertySet.addProperty(prop);
+        }
+        
+        propertySet.setResourceType(rs.getString("resource_type"));
+
+        int aclInheritedFrom =  rs.getInt("acl_inherited_from");
+        if (rs.wasNull()) {
+            aclInheritedFrom = -1;
+        }
+        propertySet.setAclInheritedFrom(aclInheritedFrom);
+    }
+
+
+    public static String getURIWildcard(String uri) {
         if ("/".equals(uri)) {
             return "/%";
         }
@@ -274,7 +291,7 @@ public class JDBCClient extends AbstractDataAccessor {
     }
     
 
-    private int getURIDepth(String uri) {
+    public static int getURIDepth(String uri) {
         if ("/".equals(uri)) {
             return 0;
         }
@@ -283,35 +300,11 @@ public class JDBCClient extends AbstractDataAccessor {
         return count;
     }
 
-    /**
-     * @deprecated
-     */
-//    private void loadProperties(Connection conn, ResourceImpl resource)
-//            throws SQLException {
-//
-//        String query = this.queryProvider.getLoadPropertiesByResourceIdPreparedStatement();
-//        PreparedStatement propStmt = conn.prepareStatement(query);
-//        propStmt.setInt(1, resource.getID());
-//        ResultSet rs = propStmt.executeQuery();
-//
-//        while (rs.next()) {
-//
-//            Namespace ns = Namespace.getNamespace(rs.getString("name_space"));
-//            String name = rs.getString("name");
-//            String value = rs.getString("value");
-//
-//            Property prop = this.propertyManager.createProperty(ns, name, value);
-//            resource.addProperty(prop);
-//        }
-//
-//        rs.close();
-//        propStmt.close();
-//    }
     
     /**
      * Small helper-class for multi-valued property loading 
      */
-    private class PropHolder {
+    public static class PropHolder {
         String namespaceUri = "";
         String name = "";
         int type;
@@ -1058,21 +1051,38 @@ public class JDBCClient extends AbstractDataAccessor {
             logger.debug("Deleted locks for resource " + resource);
         }
         
-        query = this.queryProvider.getDeletePropertiesByResourceIdPreparedStatement();
+        query = this.queryProvider.getDeletePropertiesByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
-        stmt.setInt(1, resource.getID());
+        stmt.setString(1, getURIWildcard(resource.getURI()));
+        stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
         if (logger.isDebugEnabled()) {
             logger.debug("Deleted extra property entries for resource " + resource);
         }
 
+// WAS:
         query = this.queryProvider.getDeleteResourcesByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, resource.getURI());
         stmt.setString(2, getURIWildcard(resource.getURI()));
         stmt.executeUpdate();
         stmt.close();
+
+
+// IS:
+//         query = "delete from vortex_resource where uri like ?";
+//         stmt = conn.prepareStatement(query);
+//         stmt.setString(1, getURIWildcard(resource.getURI()));
+//         stmt.executeUpdate();
+//         stmt.close();
+
+//         query = "delete from vortex_resource where resource_id = ?";
+//         stmt = conn.prepareStatement(query);
+//         stmt.setInt(1, resource.getID());
+//         stmt.executeUpdate();
+//         stmt.close();
+// END IS
 
         if (logger.isDebugEnabled()) {
             logger.debug("Deleted entry for resource " + resource);

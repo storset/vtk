@@ -57,7 +57,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     protected Log logger = LogFactory.getLog(this.getClass());
 
     private Acl acl;
-    private int aclInheritedFrom = -1;
     private Lock lock = null;
     private String[] childURIs = null;
     
@@ -133,19 +132,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
 
     public String getURI() {
         return super.uri;
-    }
-
-    public void setAclInheritedFrom(int aclInheritedFrom) {
-        this.aclInheritedFrom = aclInheritedFrom;
-    }
-
-    public int getAclInheritedFrom() {
-        return this.aclInheritedFrom;
-    }
-    
-
-    public boolean isInheritedACL() {
-        return this.aclInheritedFrom != -1;
     }
 
     public String getName() {
@@ -307,7 +293,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         ResourceImpl clone = new ResourceImpl(uri, propertyManager, this.authorizationManager);
         clone.setID(this.id);
         clone.setACL(acl);
-        clone.setAclInheritedFrom(this.aclInheritedFrom);
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
         clone.setResourceType(super.resourceType);

@@ -32,7 +32,7 @@
 <div class="resourceInfoHeader" style="padding-top:0;padding-bottom:1.5em;">
   <h2 style="padding-top: 0px;float:left;">
     <@vrtx.msg
-       code="resource.metadata.about.${resourceContext.currentResource.contentType}"
+       code="resource.metadata.about.${resourceContext.currentResource.resourceType}"
        default="${defaultHeader}"/>
   </h2>
 </div>
@@ -96,7 +96,7 @@
   </tr>
   </#if>
 
-  <#if resourceContext.currentResource.contentType != 'application/x-vortex-collection'>
+  <#if !resourceContext.currentResource.collection>
   <tr class="contentType">
   <#if editContentTypeForm?exists && !editContentTypeForm.done>
     <td colspan="2" class="expandedForm">

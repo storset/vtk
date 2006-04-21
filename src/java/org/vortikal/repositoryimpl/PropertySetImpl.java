@@ -52,12 +52,21 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     protected String uri;
     protected String resourceType;
     protected Map propertyMap;
+    protected int id = -1; // Numeric ID used by database
    
     public PropertySetImpl(String uri) {
         this.uri = uri;
         propertyMap = new HashMap();
     }
-    
+ 
+    public int getID() {
+        return this.id;
+    }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+     
     public String getURI() {
         return this.uri;
     }

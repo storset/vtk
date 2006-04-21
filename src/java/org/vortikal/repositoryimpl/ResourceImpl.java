@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,9 +55,6 @@ import org.vortikal.util.repository.URIUtil;
 public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable {
     
     protected Log logger = LogFactory.getLog(this.getClass());
-
-    /* Numeric ID, required by database */
-    private int id = -1;
 
     private Acl acl;
     private int aclInheritedFrom = -1;
@@ -139,16 +135,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         return super.uri;
     }
 
-    
-    public int getID() {
-        return this.id;
-    }
-
-    public void setID(int id) {
-        this.id = id;
-    }
-
-    
     public void setAclInheritedFrom(int aclInheritedFrom) {
         this.aclInheritedFrom = aclInheritedFrom;
     }

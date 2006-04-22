@@ -50,6 +50,8 @@ import org.vortikal.security.PrincipalManager;
 
 /**
  * ResultSetIterator implementation
+ *
+ * XXX: exception handling
  */
 public class ResultSetIteratorImpl implements ResultSetIterator {
 
@@ -70,10 +72,16 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
 
         try {
             this.hasNext = this.rs.next();
-
+            this.hasNext = this.hasNext && ! rs.isAfterLast();
+            
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
         }
+    }
+    
+
+    public boolean hasNext() throws IOException {
+        return this.hasNext;
     }
     
 
@@ -90,34 +98,52 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
 
             JDBCClient.populateStandardProperties(this.propertyManager, this.principalManager,
                                                   propertySet, this.rs);
+
+            Map propMap = new HashMap();
+
             while (currentURI.equals(uri)) {
 
-                loadPropertyEntries(propertySet);
+                JDBCClient.PropHolder holder = new JDBCClient.PropHolder();
+                holder.namespaceUri = rs.getString("name_space");
+                holder.name = rs.getString("name");
+                holder.resourceId = rs.getInt("resource_id");
+            
+                if (holder.name != null) { 
+
+                    List values = (List) propMap.get(holder);
+                    if (values == null) {
+                        values = new ArrayList();
+                        holder.type = rs.getInt("prop_type_id");
+                        holder.values = values;
+                        propMap.put(holder, values);
+                    }
+                    values.add(rs.getString("value"));
+                }
 
                 if (!this.rs.isLast()) {
-                    this.hasNext = this.rs.next();
+                    this.rs.next();
                     uri = rs.getString("uri");
                 } else {
                     uri = null;
+                    this.hasNext = false;
                 }
             }
 
+            for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
+                JDBCClient.PropHolder holder = (JDBCClient.PropHolder) i.next();
+                Property property = this.propertyManager.createProperty(
+                    holder.namespaceUri, holder.name, 
+                    (String[]) holder.values.toArray(new String[]{}), holder.type);
+                propertySet.addProperty(property);
+            }
             return propertySet;
 
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new IOException(e.getMessage());
         }
-
-
     }
     
     
-    public boolean hasNext() throws IOException {
-        return this.hasNext;
-    }
-    
-
     public void close() throws IOException {
 
         this.hasNext = false;
@@ -132,7 +158,6 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
             }
             this.rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -141,7 +166,6 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
                 }
                 
             } catch (SQLException e) {
-                e.printStackTrace();
                 throw new IOException(e.getMessage());
             } finally {
                 try {
@@ -150,56 +174,10 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
                         conn.close();
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
                     throw new IOException(e.getMessage());
                 }
             }
         }
-    }
-    
-    
-    private void loadPropertyEntries(PropertySetImpl propertySet) throws SQLException {
-        
-        int id = rs.getInt("resource_id");
-        Map propMap = new HashMap();
-        
-        while (id == propertySet.getID()) {
-            JDBCClient.PropHolder holder = new JDBCClient.PropHolder();
-            holder.namespaceUri = rs.getString("name_space");
-            holder.name = rs.getString("name");
-            holder.resourceId = rs.getInt("resource_id");
-            
-            if (holder.name != null) { // prop exists in result
-
-                List values = (List) propMap.get(holder);
-                if (values == null) {
-                    values = new ArrayList();
-                    holder.type = rs.getInt("prop_type_id");
-                    holder.values = values;
-                    propMap.put(holder, values);
-                }
-                values.add(rs.getString("value"));
-            }
-
-
-            if (!this.rs.isLast()) {
-                this.hasNext = this.rs.next();
-                id = rs.getInt("resource_id");
-            } else {
-                this.hasNext = false;
-                id = -1;
-            }
-        }
-        
-        for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
-            JDBCClient.PropHolder holder = (JDBCClient.PropHolder) i.next();
-            Property property = this.propertyManager.createProperty(
-                    holder.namespaceUri, holder.name, 
-                    (String[]) holder.values.toArray(new String[]{}), holder.type);
-            propertySet.addProperty(property);
-        }
-        
-
     }
     
     

@@ -83,6 +83,11 @@ public final class EvenStructuredText implements StructuredText {
     protected String REF_START = "[";
     protected String REF_ATTRIBUTE = ":";
     protected String REF_CLOSE = "]";
+    protected String SUB_START = "sub:\"";
+    protected String SUB_END = "\"";
+    protected String SUPER_START = "super:\"";
+    protected String SUPER_END = "\"";    
+    
     
     protected Map tagNames = new HashMap();
 
@@ -103,6 +108,8 @@ public final class EvenStructuredText implements StructuredText {
         tagNames.put("paragraph", "paragraph");
         tagNames.put("reference", "refrence");
         tagNames.put("reference-type", "type");
+        tagNames.put("sub", "sub");
+        tagNames.put("super", "sup");
     }
 
     protected boolean paragraphAtPos(String text, int pos) {
@@ -235,6 +242,52 @@ public final class EvenStructuredText implements StructuredText {
         return false;
     }
 
+    protected boolean subAtPos(String text, int pos) {
+        // sub look like: sub:"text"
+    	
+    	int startPos = text.indexOf(SUB_START, pos); 
+    	
+        if (startPos != pos) {
+        	return false;
+        }
+        
+        int endPos = text.indexOf(SUB_END, pos + SUB_START.length());
+        
+        String subtext = text.substring(startPos, endPos);
+        
+
+        if( endPos < 0 || subtext.contains(LINE_SEPARATOR) ) {
+            return false;
+        }
+        else {
+        	return true;
+        }
+    }
+
+    protected boolean superAtPos(String text, int pos) {
+        // super look like: super:"text"
+    	
+    	int startPos = text.indexOf(SUPER_START, pos); 
+    	
+        if (startPos != pos) {
+        	return false;
+        }
+        
+        int endPos = text.indexOf(SUPER_END, pos + SUPER_START.length());
+        
+        String supertext = text.substring(startPos, endPos);
+        
+
+        if( endPos < 0 || supertext.contains(LINE_SEPARATOR) ) {
+            return false;
+        }
+        else {
+        	return true;
+        }
+    }
+
+
+    
     public Element parseStructuredText(String text) {
 
         String structureText = text;
@@ -429,7 +482,7 @@ public final class EvenStructuredText implements StructuredText {
         return endPos;
     }
 
-   // basicText consist of bold, italic, link and refrence.
+   // basicText consist of bold, italic, link, refrence, subscript and superscript.
     protected int parseBasicText(String basicText, int pos, Element parent) {
 
         int nextPos = pos;
@@ -442,6 +495,10 @@ public final class EvenStructuredText implements StructuredText {
         		nextPos = parseRefrence(basicText, pos, parent);
         } else if (linkAtPos(basicText, pos)) {
             nextPos = parseLink(basicText, pos, parent);
+        } else if (subAtPos(basicText, pos)) {
+        	nextPos = parseSub(basicText, pos, parent);
+        } else if (superAtPos(basicText, pos)) {
+        	nextPos = parseSuper(basicText, pos, parent);
         } else {
             nextPos = parsePlainText(basicText, pos, parent);
         }
@@ -534,6 +591,35 @@ public final class EvenStructuredText implements StructuredText {
 
         return endUrl;
     }
+    
+    protected int parseSub(String text, int pos, Element parent) {
+        String subtext = text.substring(
+                          pos + SUB_START.length(),
+                          text.indexOf(SUB_END, pos + SUB_START.length() ));
+
+        int endSub = pos + SUB_START.length() + subtext.length() + SUB_END.length();
+
+        Element sub = new Element(lookupTag("sub"));
+        sub.addContent(subtext);
+        parent.addContent(sub);
+
+        return endSub;
+    }
+
+    protected int parseSuper(String text, int pos, Element parent) {
+        String supertext = text.substring(
+                pos + SUPER_START.length(),
+                text.indexOf(SUPER_END, pos + SUPER_START.length() ));
+        
+        int endSuper = pos + SUPER_START.length() + supertext.length() + SUPER_END.length();
+        
+        Element sup = new Element(lookupTag("super"));
+        sup.addContent(supertext);
+        parent.addContent(sup);
+
+        return endSuper;
+    }
+
 
     protected int parsePlainText(String text, int pos, Element parent) {
         int startPos = pos;
@@ -544,11 +630,14 @@ public final class EvenStructuredText implements StructuredText {
             if (paragraphAtPos(text, pos)
                 || listAtPos(text, pos)
                 || boldAtPos(text, pos)
-			   || refrenceAtPos(text, pos)
+			    || refrenceAtPos(text, pos)
                 || italicAtPos(text, pos)
                 || listitemAtPos(text, pos)
                 || numlistitemAtPos(text, pos)	
-                || linkAtPos(text, pos)) //|| newlineAtPos(text, pos)
+                || linkAtPos(text, pos) 
+                //|| newlineAtPos(text, pos)
+            	|| subAtPos(text, pos)
+            	|| superAtPos(text, pos) )
                 break;
         }
 
@@ -619,6 +708,14 @@ public final class EvenStructuredText implements StructuredText {
                     buffer.append(PARAGRAPH_START);
                     buffer.append(generateStructuredText(child));
                     //buffer.append();
+                } else if (tagName.equals("sub")) {
+                	buffer.append(SUB_START);
+                	buffer.append(generateStructuredText(child));
+                	buffer.append(SUB_END);
+                } else if (tagName.equals("super")) {
+                	buffer.append(SUPER_START);
+                	buffer.append(generateStructuredText(child));
+                	buffer.append(SUPER_END);
                 } else { // plaintextelement
                     throw new StructuredTextException(
                         "Unexpected element name: " + tagName);
@@ -741,6 +838,8 @@ public final class EvenStructuredText implements StructuredText {
             tagNames.put("ordered-list", "sortertliste");
             tagNames.put("listitem", "listepunkt");
             tagNames.put("paragraph", "avsnitt");
+            tagNames.put("sub", "sub");
+            tagNames.put("super", "sup");
 
             parser.setTextMappings(tagNames);
             
@@ -784,3 +883,4 @@ public final class EvenStructuredText implements StructuredText {
     } //end main
 
 }
+	

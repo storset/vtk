@@ -55,7 +55,7 @@ import org.springframework.core.io.ResourceLoader;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>initScripts</code> - a list of resources to evaluate as
+ *   <li><code>initFiles</code> - a list of resources to evaluate as
  *       scripts during startup
  *   <li><code>runEvalLoop</code> - a <code>boolean</code> indicating
  *       whether to run a read - eval - print loop, or just the init

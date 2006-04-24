@@ -54,7 +54,6 @@ public class PropertyEditValidator implements Validator {
 
     public boolean supports(Class clazz) {
         boolean retVal = (PropertyEditCommand.class.isAssignableFrom(clazz));
-        System.out.println("__is_supported(" + clazz.getName() + "): " + retVal);
         return retVal;
     }
 
@@ -110,8 +109,6 @@ public class PropertyEditValidator implements Validator {
         } catch (ConstraintViolationException e) {
             errors.rejectValue("value", "Illegal value"); // XXX
         }
-
-        System.out.println("__errors: " + errors.getAllErrors());
     }
     
 }

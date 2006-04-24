@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="publishResourceTypeDef" 
+        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="publish"/>
+    <property name="namespace" ref="PUBLISH_NAMESPACE" /> 
+
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="publishDatePropDef" />
+        <ref bean="unPublishDatePropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="publishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="verifiedDate" /> 
+    <property name="type" ref="TYPE_DATE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="unpublishDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="verifiedDate" /> 
+    <property name="type" ref="TYPE_DATE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+</beans>

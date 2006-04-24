@@ -179,11 +179,12 @@
 
   <bean id="collectionListingService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
-      <list><ref bean="resourceIsCollectionAssertion" /></list>
+      <list>
+        <ref bean="resourceIsCollectionAssertion" />
+      </list>
     </property>
-    <property name="handler">
-      <ref bean="collectionListingHandler" />
-    </property>
+    <property name="handler" ref="collectionListingHandler" />
+
     <property name="services">
       <list>
         <ref bean="displayIndexHtmlFileService" />
@@ -195,13 +196,10 @@
     <property name="parent" ref="collectionListingService" />
     <property name="assertions">
       <list>
-        <ref bean="resourceIsCollectionAssertion" />
         <ref bean="feedParameterSetAssertion" />
         </list>
     </property>
-    <property name="handler">
-      <ref bean="collectionListingAsFeedHandler" />
-    </property>
+    <property name="handler" ref="collectionListingAsFeedHandler" />
   </bean>
 
 
@@ -213,9 +211,7 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <ref bean="displayIndexHtmlHandler" />
-    </property>
+    <property name="handler" ref="displayIndexHtmlHandler" />
   </bean>                
 
 
@@ -228,16 +224,12 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <ref bean="displayIndexEngHtmlHandler" />
-    </property>
+    <property name="handler" ref="displayIndexEngHtmlHandler" />
   </bean>                
 
 
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="handler">
-      <ref bean="displayResourceHandler" />
-    </property>
+    <property name="handler" ref="displayResourceHandler" />
     <property name="services">
       <list>
         <ref bean="displayHTMLResourceService" />
@@ -258,9 +250,7 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="displayHTMLResourceHandler" />
-    </property>
+    <property name="handler" ref="displayHTMLResourceHandler" />
   </bean>
 
 

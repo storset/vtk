@@ -59,4 +59,10 @@
   
   <bean id="contentLengthEvaluator" class="org.vortikal.repository.resourcetype.property.ContentLengthEvaluator"/>
   
+  <!-- Assertion that matches all non-collection resources (files) -->
+  <bean id="fileAssertion"
+        class="org.vortikal.web.service.ResourceIsCollectionAssertion">
+    <property name="invert" value="true"/>
+  </bean>
+
 </beans>

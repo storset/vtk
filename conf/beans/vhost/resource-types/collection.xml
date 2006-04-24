@@ -22,7 +22,6 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="skipInPathPropDef"/>
-        <ref bean="nameInPathPropDef" />
         <ref bean="intListPropDef"/>
       </list>
     </property>
@@ -43,13 +42,10 @@
     </property>
   </bean>
   
-  <bean id="nameInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="nameInPath"/>
-    <property name="type" ref="TYPE_STRING"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
-  </bean>
-  
+  <!-- Assertion that matches all collection resources -->
+  <bean id="collectionAssertion"
+        class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+
   <!-- For testing only. List of integers. -->
   <bean id="intListPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="intList"/>

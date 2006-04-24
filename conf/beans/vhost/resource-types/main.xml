@@ -23,16 +23,15 @@
 
   <import resource="uhtml.xml" />
 
+  <import resource="uhtml.xml" />
+  <import resource="publish.xml" />
+
   <!-- CONSTANTS -->
   <import resource="namespaces.xml" />
   <import resource="protection-levels.xml" />
   <import resource="property-types.xml" />
 
 
-  <!-- ASSERTIONS -->
-  <import resource="assertions.xml" />
-
-  <import resource="uhtml.xml" />
   
 </beans>
 

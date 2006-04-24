@@ -51,18 +51,20 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
         return true;
     }
 
+    // XXX: implement me...
     public void validate(Principal principal, PropertySet ancestorPropertySet, 
             Property property) throws ConstraintViolationException {
+
         if (property.getPrincipalValue() == null) {
             throw new ConstraintViolationException("All resources must have an owner.");
         }
-
-        Principal owner = property.getPrincipalValue();
-        if (!principalManager.validatePrincipal(owner)) {
-            throw new ConstraintViolationException(
-                    "Unable to set owner of resource to invalid owner: '" 
-                    + principal.getQualifiedName() + "'");
-        }
+//
+//        Principal owner = property.getPrincipalValue();
+//        if (!principalManager.validatePrincipal(owner)) {
+//            throw new ConstraintViolationException(
+//                    "Unable to set owner of resource to invalid owner: '" 
+//                    + principal.getQualifiedName() + "'");
+//        }
     }
 
     public void setPrincipalManager(PrincipalManager principalManager) {

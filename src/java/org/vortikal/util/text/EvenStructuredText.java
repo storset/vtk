@@ -87,6 +87,7 @@ public final class EvenStructuredText implements StructuredText {
     protected String SUB_END = "\"";
     protected String SUPER_START = "super:\"";
     protected String SUPER_END = "\"";    
+    protected char NEWLINE = '\n';
     
     
     protected Map tagNames = new HashMap();
@@ -110,10 +111,18 @@ public final class EvenStructuredText implements StructuredText {
         tagNames.put("reference-type", "type");
         tagNames.put("sub", "sub");
         tagNames.put("super", "sup");
+        tagNames.put("newline", "br");
     }
 
     protected boolean paragraphAtPos(String text, int pos) {
         return (text.indexOf(PARAGRAPH_START, pos) == pos);
+    }
+    
+    protected boolean newlineAtPos(String text, int pos) {
+    	if( text.charAt(pos) == NEWLINE && text.charAt(pos+1) != NEWLINE )
+    		return true;
+    	else
+    		return false;
     }
 
     protected boolean listAtPos(String text, int pos) {
@@ -217,11 +226,6 @@ public final class EvenStructuredText implements StructuredText {
         return false;
     }
 
-    protected boolean newlineAtPos(String text, int pos) {
-        //if (!includeNewlines) return false;			
-        return text.indexOf(LINE_SEPARATOR, pos) == pos;
-    }
-
     // sjekker om visse spesialtegn dukker opp f�r sluttposisjonen til elementet som sjekkes.
     protected boolean endOfBlockLevelElement(
         String text,
@@ -243,7 +247,7 @@ public final class EvenStructuredText implements StructuredText {
     }
 
     protected boolean subAtPos(String text, int pos) {
-        // sub look like: sub:"text"
+        // sub is given on the form: sub:"text"
     	
     	int startPos = text.indexOf(SUB_START, pos); 
     	
@@ -265,7 +269,7 @@ public final class EvenStructuredText implements StructuredText {
     }
 
     protected boolean superAtPos(String text, int pos) {
-        // super look like: super:"text"
+        // super is given on the form: super:"text"
     	
     	int startPos = text.indexOf(SUPER_START, pos); 
     	
@@ -840,6 +844,7 @@ public final class EvenStructuredText implements StructuredText {
             tagNames.put("paragraph", "avsnitt");
             tagNames.put("sub", "sub");
             tagNames.put("super", "sup");
+            tagNames.put("newline", "br");
 
             parser.setTextMappings(tagNames);
             

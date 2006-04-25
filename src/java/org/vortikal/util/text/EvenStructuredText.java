@@ -256,7 +256,7 @@ public final class EvenStructuredText implements StructuredText {
         String subtext = text.substring(startPos, endPos);
         
 
-        if( endPos < 0 || subtext.contains(LINE_SEPARATOR) ) {
+        if( endPos < 0 || subtext.indexOf(LINE_SEPARATOR) != -1 ) {
             return false;
         }
         else {
@@ -278,7 +278,7 @@ public final class EvenStructuredText implements StructuredText {
         String supertext = text.substring(startPos, endPos);
         
 
-        if( endPos < 0 || supertext.contains(LINE_SEPARATOR) ) {
+        if( endPos < 0 || supertext.indexOf(LINE_SEPARATOR) != -1 ) {
             return false;
         }
         else {

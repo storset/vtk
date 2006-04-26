@@ -63,6 +63,7 @@
     <property name="successView" value="editProperties" />
 
     <property name="commandName" value="form" />
+    <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
     <!--
     <property name="commandClass">
       <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>

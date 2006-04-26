@@ -30,8 +30,14 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.security.InvalidPrincipalException;
@@ -48,9 +54,18 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
 
     private PrincipalManager principalManager;
     
+    private List dateFormats;
+    
+    protected Log logger = LogFactory.getLog(this.getClass());
+
+    
     public void afterPropertiesSet() throws BeanInitializationException {
         if (principalManager == null) {
             throw new BeanInitializationException("Property 'principalManager' not set.");
+        }
+        if (dateFormats == null || dateFormats.size() < 1) {
+            throw new BeanInitializationException(
+                    "Property 'dateformats' not set or has not atleast one dateformat in list.");
         }
     }
     
@@ -89,12 +104,10 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
             break;
         
         case PropertyType.TYPE_DATE:
-            // Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
-            try {
-                value.setDateValue(new Date(Long.parseLong(stringValue)));
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException(nfe.getMessage());
-            }
+            // old: Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
+            // Dates are represented in the following format dd.MM.yyyy
+            Date date = getDateFromStringValue(stringValue);
+            value.setDateValue(date);
             break;
         
         case PropertyType.TYPE_INT:
@@ -129,8 +142,33 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         return value;
     }
 
+    private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
+        SimpleDateFormat format;
+        Date date;
+        for (Iterator iter = dateFormats.iterator(); iter.hasNext(); ) {
+            String dateFormat = (String) iter.next();
+            format = new SimpleDateFormat(dateFormat);
+            try {
+                date = format.parse(stringValue);
+                return date;
+            } catch (ParseException e) {
+                logger.debug("Dateformat not ok for dateformat \'" + dateFormat
+                        + "\' and stringValue \'" + stringValue + "\': " + e.getMessage());
+            }
+        }
+        if (stringValue.equals("")) {
+            return null;
+        } else {
+            throw new ValueFormatException("Illegal date format");
+        }
+    }
+
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+    }
+
+    public void setDateFormats(List dateformats) {
+        this.dateFormats = dateformats;
     }
 
 }

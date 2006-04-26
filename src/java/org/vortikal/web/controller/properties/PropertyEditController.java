@@ -30,28 +30,26 @@
  */
 package org.vortikal.web.controller.properties;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
-import org.vortikal.repository.Namespace;
+import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
-import org.vortikal.repositoryimpl.AuthorizationManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -66,7 +64,7 @@ public class PropertyEditController extends SimpleFormController
     private Repository repository;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private ValueFactory valueFactory;
-    
+    private String dateFormat;
     
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -80,6 +78,9 @@ public class PropertyEditController extends SimpleFormController
         this.valueFactory = valueFactory;
     }
     
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return new ReferenceDataProvider[] {this};
@@ -94,6 +95,10 @@ public class PropertyEditController extends SimpleFormController
         if (this.propertyTypeDefinitions == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'propertyTypeDefinitions' not set");
+        }
+        if (this.dateFormat == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'dateFormat' not set");
         }
         setValidator(new PropertyEditValidator(valueFactory));
     }
@@ -132,7 +137,7 @@ public class PropertyEditController extends SimpleFormController
                         }
                         value = val.toString();
                     } else {
-                        value = property.getValue().toString();
+                        value = getValueForPropertyAsString(property);
                     }
                 }
 
@@ -164,13 +169,32 @@ public class PropertyEditController extends SimpleFormController
             }
         }
         
-        return new PropertyEditCommand(editURL, definition, value,
+        PropertyEditCommand propertyEditCommand = new PropertyEditCommand(editURL, definition, value,
                                        formAllowedValues);
+        return propertyEditCommand;
+    }
+
+    private String getValueForPropertyAsString(Property property) throws IllegalOperationException {
+        String value;
+        int type = property.getDefinition().getType();
+        switch (type) {
+
+        case PropertyType.TYPE_DATE:
+            SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+            Date date = property.getDateValue();
+            value = format.format(date);
+            break;
+
+        default:
+            value = property.getValue().toString();
+            
+        }
+        return value;
     }
 
 
 
-    protected void doSubmitAction(Object command) throws Exception {        
+    protected void doSubmitAction(Object command) throws Exception {    
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
@@ -265,10 +289,6 @@ public class PropertyEditController extends SimpleFormController
     }
     
 
-
-
-
-
     private boolean isFocusedProperty(PropertyTypeDefinition propDef, HttpServletRequest request) {
         String inputNamespace = request.getParameter("namespace");
         String inputName = request.getParameter("name");
@@ -298,6 +318,8 @@ public class PropertyEditController extends SimpleFormController
 
         return propDef.getNamespace().getUri().equals(inputNamespace);
     }
+
+
     
     
 

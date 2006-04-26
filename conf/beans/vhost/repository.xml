@@ -61,6 +61,13 @@
 
   <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
     <property name="principalManager" ref="principalManager"/>
+    <property name="dateFormats">
+      <list>
+        <value>dd.MM.yyyy HH:mm:ss</value>
+        <value>dd.MM.yyyy HH:mm</value>
+        <value>dd.MM.yyyy</value>
+      </list>  
+    </property>
   </bean>
 
   <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">

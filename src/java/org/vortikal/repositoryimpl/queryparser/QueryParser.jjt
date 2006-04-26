@@ -1,0 +1,131 @@
+options {
+  MULTI = true;
+  STATIC = false;
+  //  DEBUG_PARSER = true;
+  //  DEBUG_LOOKAHEAD = true;
+  //  DEBUG_TOKEN_MANAGER = true;
+  //  JAVA_UNICODE_ESCAPE = true;
+  //  UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(QueryParser)
+
+package org.vortikal.repositoryimpl.queryparser;
+
+import java.io.StringReader;
+
+
+/**
+* Partial implementation of a query parser based on javacc.
+* <p>Try the parser out with:
+* <p>java -cp target/classes org.vortikal.repositoryimpl.queryparser.QueryParser "((pre:post=c AND s:s=s) OR ff=2211)"
+*/
+public class QueryParser {
+
+  public static void main(String args[]) throws ParseException {
+    if (args.length == 0) {
+      System.out.println("Usage: java org.vortikal.repositoryimpl.queryparser.QueryParser <input>");
+      System.exit(0);
+    }
+    QueryParser parser = new QueryParser(new StringReader(args[0]));
+    SimpleNode q = parser.parse();
+    q.dump("");
+ 
+    
+
+  }
+}
+
+PARSER_END(QueryParser)
+
+SKIP : {" "}
+
+TOKEN : { < EQ: "="> }
+TOKEN : { < LP: "("> }
+TOKEN : { < RP: ")"> }
+TOKEN : { < AND: "AND" | "&&"> }
+TOKEN : { < OR: "OR" | "||"> }
+TOKEN : { < COLON: ":"> }
+TOKEN : { < #NAME_LETTER: ["a"-"z","A"-"Z","_","-","0"-"9"] > }
+TOKEN : { < #STRING_LETTER: ["a"-"z","A"-"Z","0"-"9"] > }
+
+TOKEN : { < STRING: (["a"-"z","A"-"Z","0"-"9"])+ > }
+
+
+// Main method:
+SimpleNode parse() : {}
+{ 
+    Query() 
+        { return jjtThis; }
+}
+
+void Query() #void : {}
+{
+    (
+     LOOKAHEAD(100, (Parantheses() | PropertyQuery()) <AND>) AndQuery() 
+     | LOOKAHEAD(100, (ClosedQuery() | PropertyQuery()) <OR>) OrQuery() 
+    | ClosedQuery()
+    | PropertyQuery()
+    )    
+}
+
+void Parantheses() :
+{}
+{
+    <LP> (<EQ> | <AND> | <OR> | <COLON> | <STRING> | Parantheses())* <RP>
+}
+
+void ClosedQuery() #void : {}
+{
+    <LP> Query() <RP>
+}
+
+void AndQuery() : {}
+{
+    (ClosedQuery() | PropertyQuery())
+    (<AND> (ClosedQuery() | PropertyQuery()) )+
+}
+
+void OrQuery() : {}
+{
+    (ClosedQuery() | PropertyQuery())
+    (<OR> (ClosedQuery() | PropertyQuery()) )+
+}
+
+void PropertyQuery() : {}
+{ 
+    [LOOKAHEAD(2) Prefix() <COLON>] Name() <EQ> Value()
+}
+
+void Prefix() : 
+{
+  Token t;
+}
+{
+  t=<STRING>
+  {
+    jjtThis.setValue(t.image);
+  }
+}
+
+void Name() : 
+{
+  Token t;
+}
+{
+  t=<STRING>
+  {
+    jjtThis.setValue(t.image);
+  }
+}
+
+void Value() : 
+{
+  Token t;
+}
+{
+  t=<STRING>
+  {
+    jjtThis.setValue(t.image);
+  }
+}

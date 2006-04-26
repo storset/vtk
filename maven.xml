@@ -13,12 +13,24 @@
     in the user's home directory.
   -->
    <preGoal name="java:compile">
+     <attainGoal name="generate-parser" />
      <j:if test="${sandbox.include}">
       <ant:path id="sandbox.src.set" location="${sandbox.src.dir}"/>
       <maven:addPath id="maven.compile.src.set" refid="sandbox.src.set"/>
      </j:if>
    </preGoal>
 
+   <goal name="generate-parser">
+     <attainGoal name="javacc:jjtree-generate" />
+     <attainGoal name="javacc:javacc-generate" />
+
+      <ant:copy overwrite="true"
+                file="${basedir}/misc/SimpleNode.java"
+                todir="${maven.build.dir}/generated-src/main/java/org/vortikal/repositoryimpl/queryparser" />
+
+      <ant:path id="javacc.src.set" location="${maven.build.dir}/generated-src/main/java"/>
+     <maven:addPath id="maven.compile.src.set" refid="javacc.src.set"/>
+   </goal>
 
 
   <!--

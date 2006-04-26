@@ -34,17 +34,45 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
+/**
+ * Interface for accessing resource content during property
+ * evaluation. Allows pluggable (and reusable) representations of the
+ * resource content, e.g. JDOM Document, ByteBuffer, etc.
+ */
 public interface Content {
     
-    // Allows pluggable (and reusable) representations of the resource
-    // content, e.g. JDOM Document, ByteBuffer, 
+    /**
+     * Gets the content representation specified by a given class.
+     *
+     * @param clazz the class of the desired content representation
+     * @return the content representation, or <code>null</code> if no
+     * such representation is available.
+     * @exception Exception if an error occurs
+     */
     public Object getContentRepresentation(Class clazz) throws Exception;
     
-    // Equivalent to calling getContentRepresentation(InputStream.class)
+
+    /**
+     * Gets the content of a resource as a stream. Equivalent to
+     * calling <code>getContentRepresentation(InputStream.class)</code>
+     *
+     * @return an <code>InputStream</code>
+     * @exception IOException if an error occurs
+     */
     public InputStream getContentInputStream() throws IOException;
     
+
+
+    /**
+     * Gets the length of the resource's content stream measured in
+     * bytes.
+     *
+     * @return a the length of the content stream in bytes.
+     * @exception IOException if an error occurs
+     */
     public long getContentLength() throws IOException;
     
+
     // Get all supported representations
-    public Class[] getSupportedRepresentations();
+//     public Class[] getSupportedRepresentations();
 }

@@ -71,16 +71,23 @@
   </bean>
 
   <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">
-    <!-- Hack fix for circular deps. problem -->
-    <property name="lazyInit" value="true" />
-
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
     <property name="valueFactory" ref="valueFactory"/>
     <property name="contentStore" ref="repository.contentStore"/>
     <property name="rootResourceTypeDefinition" ref="abstractResourceResourceTypeDefinition"/>
+    <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
   </bean>
+
+  
+  <bean id="contentRepresentationRegistry"
+        class="org.vortikal.repositoryimpl.content.ContentRepresentationRegistry" />
+
+  <bean id="jdomContentFactory" class="org.vortikal.repositoryimpl.content.JDOMContentFactory" />
+
+  <bean id="jtidyContentFactory" class="org.vortikal.repositoryimpl.content.JTidyContentFactory" />
+
 
   <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManager">
     <property name="readOnly" value="${repositoryReadOnly}" />

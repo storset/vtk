@@ -16,21 +16,142 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="guessedHtmlCharsetPropDef" />
+        <ref bean="htmlDocTypePropDef" />
+        <ref bean="guessedHtmlCharacterEncodingPropDef" />
       </list>
     </property>
   </bean>
 
-  <bean id="guessedHtmlCharsetPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="guessedCharset" />
+
+  <bean id="htmlDocTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="docType" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="docTypeEvaluator" />
+  </bean>
+
+  <bean id="docTypeEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator" />
+
+
+
+  <bean id="guessedHtmlCharacterEncodingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="guessedCharacterEncoding" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="htmlCharsetEvaluator" />
-    <property name="contentModificationEvaluator" ref="htmlCharsetEvaluator" />
+    <property name="createEvaluator" ref="htmlCharacterEncodingEvaluator" />
+    <property name="contentModificationEvaluator" ref="htmlCharacterEncodingEvaluator" />
+    <!--
+    <property name="defaultValue">
+      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="valueFactory" />
+        <property name="targetMethod" value="createValue" />
+        <property name="arguments">
+          <list>
+            <value>utf-8</value>
+            <ref bean="TYPE_STRING" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    -->
   </bean>
 
-  <bean id="htmlCharsetEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
+  <bean id="htmlCharacterEncodingEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator">
+    <property name="defaultEncoding" value="iso-8859-1" />
+  </bean>
+
+
+  <bean id="xhtml10ResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="xhtml10"/>
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="htmlResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="docTypeIsXHtml10" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="guessedXHtmlCharacterEncodingPropDef" />
+      </list>
+    </property>
+  </bean>
+
+
+
+  <bean id="guessedXHtmlCharacterEncodingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="guessedCharacterEncoding" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="xhtmlCharacterEncodingEvaluator" />
+    <property name="contentModificationEvaluator" ref="xhtmlCharacterEncodingEvaluator" />
+<!--
+    <property name="defaultValue">
+      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="valueFactory" />
+        <property name="targetMethod" value="createValue" />
+        <property name="arguments">
+          <list>
+            <value>utf-8</value>
+            <ref bean="TYPE_STRING" />
+          </list>
+        </property>
+      </bean>
+    </property>
+-->
+  </bean>
+
+
+  <bean id="xhtmlCharacterEncodingEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
+    <property name="defaultEncoding" value="utf-8" />
+  </bean>
+
+
+  <bean id="docTypeIsXHtml10" class="org.vortikal.web.service.RepositoryShortcutOrAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="docTypeIsXHtml10Transitional" />
+        <ref bean="docTypeIsXHtml10Frameset" />
+        <ref bean="docTypeIsXHtml10Strict" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="docTypeIsXHtml10Transitional"
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="name" value="docType" />
+    <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;"/>
+    <property name="checkExistenceOnly" value="false" />
+  </bean>
+
+  <bean id="docTypeIsXHtml10Frameset"
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="name" value="docType" />
+    <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Frameset//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&#x22;" />
+    <property name="checkExistenceOnly" value="false" />
+  </bean>
+
+  <bean id="docTypeIsXHtml10Strict"
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="name" value="docType" />
+    <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Strict//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&#x22;" />
+    <property name="checkExistenceOnly" value="false" />
+  </bean>
+
 
 </beans>
+
+

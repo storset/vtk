@@ -16,6 +16,7 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
+        <ref bean="guessedXmlCharacterEncodingPropDef" />
         <ref bean="schemaPropDef" />
       </list>
     </property>
@@ -38,5 +39,34 @@
 
   <bean id="schemaEvaluator"
         class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+
+
+  <bean id="guessedXmlCharacterEncodingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="guessedCharacterEncoding" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="xmlCharacterEncodingEvaluator" />
+    <property name="contentModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
+<!--
+    <property name="defaultValue">
+      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="valueFactory" />
+        <property name="targetMethod" value="createValue" />
+        <property name="arguments">
+          <list>
+            <value>utf-8</value>
+            <ref bean="TYPE_STRING" />
+          </list>
+        </property>
+      </bean>
+    </property>
+-->
+  </bean>
+
+
+  <bean id="xmlCharacterEncodingEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
+
 
 </beans>

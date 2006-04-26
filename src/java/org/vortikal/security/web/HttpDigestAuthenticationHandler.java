@@ -52,7 +52,8 @@ import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.Base64;
 import org.vortikal.util.codec.MD5;
 import org.vortikal.util.net.NetUtils;
-import org.vortikal.util.web.HttpUtil;
+import org.vortikal.util.text.TextUtils;
+
 
 
 /**
@@ -170,8 +171,12 @@ public class HttpDigestAuthenticationHandler
             return false;
         }
         
-        String username = HttpUtil.extractHeaderField(authHeader, "username");
+        String headerFields = authHeader.substring("Digest: ".length() -1 );
+        String username = TextUtils.extractField(headerFields, "username");
         if (username == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to extract field 'username' from header: " + authHeader);
+            }
             return false;
         }
 
@@ -213,15 +218,17 @@ public class HttpDigestAuthenticationHandler
             logger.debug("Authentication header: " + authHeader);
         }
         
-        String uri = HttpUtil.extractHeaderField(authHeader, "uri");
+        String headerFields = authHeader.substring("Digest: ".length() -1 );
 
-        String response = HttpUtil.extractHeaderField(authHeader, "response");
-        String nc = HttpUtil.extractHeaderField(authHeader, "nc");
-        String nonce = HttpUtil.extractHeaderField(authHeader, "nonce");
-        String cnonce = HttpUtil.extractHeaderField(authHeader, "cnonce");
-        String qop = HttpUtil.extractHeaderField(authHeader, "qop");
-        String username = HttpUtil.extractHeaderField(authHeader, "username");
-        String opaque = HttpUtil.extractHeaderField(authHeader, "opaque");
+        String uri = TextUtils.extractField(headerFields, "uri");
+
+        String response = TextUtils.extractField(headerFields, "response");
+        String nc = TextUtils.extractField(headerFields, "nc");
+        String nonce = TextUtils.extractField(headerFields, "nonce");
+        String cnonce = TextUtils.extractField(headerFields, "cnonce");
+        String qop = TextUtils.extractField(headerFields, "qop");
+        String username = TextUtils.extractField(headerFields, "username");
+        String opaque = TextUtils.extractField(headerFields, "opaque");
 
         if (response == null) {
             throw new InvalidAuthenticationRequestException(
@@ -254,8 +261,10 @@ public class HttpDigestAuthenticationHandler
             return false;
         }
 
-        String nonce = HttpUtil.extractHeaderField(authHeader, "nonce");
-        String opaque = HttpUtil.extractHeaderField(authHeader, "opaque");
+        String headerFields = authHeader.substring("Digest: ".length() -1 );
+
+        String nonce = TextUtils.extractField(headerFields, "nonce");
+        String opaque = TextUtils.extractField(headerFields, "opaque");
         if (nonce == null || opaque == null) {
             return false;
         }
@@ -296,8 +305,11 @@ public class HttpDigestAuthenticationHandler
 
             String authHeader = req.getHeader("Authorization");
             if (authHeader != null) {
-                String nonce = HttpUtil.extractHeaderField(authHeader, "nonce");
-                String opaque = HttpUtil.extractHeaderField(authHeader, "opaque");
+
+                String headerFields = authHeader.substring("Digest: ".length() -1 );
+
+                String nonce = TextUtils.extractField(headerFields, "nonce");
+                String opaque = TextUtils.extractField(headerFields, "opaque");
                 if (nonce != null && opaque != null) {
                     StateEntry entry = (StateEntry) this.stateMap.remove(nonce + ":" + opaque);
                     if (entry != null) {

@@ -53,6 +53,14 @@ public class HtmlUtil {
         Pattern.compile("(<\\s*meta[^>]+charset\\s*\\=\\s*)([\\w-]+)", 
                         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
+    /**
+     * Tries to guess the HTML character encoding using regular
+     * expression matching.
+     *
+     * @param html a <code>byte[]</code> value
+     * @return a <code>String</code>
+     * @deprecated Move to resource/properties evaluation framework?
+     */
     public static String getCharacterEncodingFromBody(byte[] html) {
         // Reads the first bytes of the content to look for the charset to use.
         int numBytes = Math.min(NUM_HEAD_BYTES, html.length);

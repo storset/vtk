@@ -35,7 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -171,40 +170,5 @@ public class HttpUtil {
         return (String) statusMessages.get(key);
     }
     
-
-    /**
-     * Extracts a field from an HTTP header.
-     *
-     * @param header the HTTP header
-     * @param name the name of the field wanted
-     * @return the value of the field, or <code>null</code> if not
-     * found
-     */
-    public static String extractHeaderField(String header, String name) {
-
-        StringTokenizer tokenizer = 
-            new StringTokenizer(header.substring("Digest: ".length() -1 ), ",");
-
-        while (tokenizer.hasMoreTokens()) {
-
-            String token = tokenizer.nextToken().trim();
-
-            if (token.startsWith(name + "=\"")) {
-                int startPos = token.indexOf("\"") + 1;
-                int endPos = token.indexOf("\"", startPos);
-
-                if (startPos > 0 && endPos > startPos) {
-                    return token.substring(startPos, endPos);
-                }
-            } else if (token.startsWith(name + "=")) {
-                int startPos = token.indexOf("=") + 1;
-                if (startPos > 0) {
-                    return token.substring(startPos);
-                }
-            }   
-        }
-        return null;
-    }
-
 
 }

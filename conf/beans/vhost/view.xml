@@ -47,6 +47,7 @@
         class="org.vortikal.web.view.DisplayResourceView">
     <property name="includeLastModifiedHeader" value="true" />
     <property name="includeExpiresHeader" value="true" />
+    <property name="includeEtagHeader" value="false" />
   </bean> 
 
   <bean id="httpOptionsView"

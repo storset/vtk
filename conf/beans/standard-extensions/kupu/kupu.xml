@@ -150,6 +150,7 @@
             <property name="view">
               <bean class="org.vortikal.web.view.DisplayResourceView">
                 <property name="includeLastModifiedHeader" value="false" />
+                <property name="includeEtagHeader" value="false" />"
               </bean>
             </property>
             <property name="viewWrapper">

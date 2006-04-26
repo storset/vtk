@@ -123,7 +123,7 @@ public class DisplayResourceView extends AbstractView
     private boolean includeLastModifiedHeader = true;
     private boolean includeExpiresHeader = true;
     private boolean includeContentLanguageHeader = true;
-    private boolean includeEtagHeader = true;
+    private boolean includeEtagHeader = false;
     private ReferenceDataProvider[] referenceDataProviders;
     
     public ReferenceDataProvider[] getReferenceDataProviders() {

@@ -569,9 +569,8 @@
 
 
   <bean id="webdavDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" >
-    <property name="includeLastModifiedHeader">
-      <value>false</value>
-    </property>
+    <property name="includeLastModifiedHeader" value="false" />
+    <property name="includeEtagHeader" value="true" />
   </bean>
 
 

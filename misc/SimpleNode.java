@@ -54,7 +54,7 @@ public class SimpleNode implements Node {
     public String toString() { 
         String s = QueryParserTreeConstants.jjtNodeName[id];;
         if (value != null)
-            s += " = " + value;
+            s += " = '" + value + "'";
         return s; 
     }
 

@@ -5,7 +5,7 @@ options {
   //  DEBUG_LOOKAHEAD = true;
   //  DEBUG_TOKEN_MANAGER = true;
   //  JAVA_UNICODE_ESCAPE = true;
-  //  UNICODE_INPUT = true;
+  UNICODE_INPUT = true;
 }
 
 PARSER_BEGIN(QueryParser)
@@ -29,28 +29,48 @@ public class QueryParser {
     }
     QueryParser parser = new QueryParser(new StringReader(args[0]));
     SimpleNode q = parser.parse();
+    System.out.println(args[0]);
     q.dump("");
- 
-    
 
   }
+
+    private String unescape(String escaped) {
+        char[] caSource = escaped.toCharArray();
+        char[] caDest = new char[caSource.length];
+        int j = 0;
+        for (int i = 0; i < caSource.length; i++) {
+            if ((caSource[i] != '\\') || (i > 0 && caSource[i-1] == '\\')) {
+                caDest[j++]=caSource[i];
+            }
+        }
+        return new String(caDest, 0, j);
+    }
 }
 
 PARSER_END(QueryParser)
 
 SKIP : {" "}
 
-TOKEN : { < EQ: "="> }
 TOKEN : { < LP: "("> }
 TOKEN : { < RP: ")"> }
+
+TOKEN : { <#ESCAPED_CHAR: "\\" [" ", "\\", "!", "(", ")", ":", "\"", "|", "&", "=", "<", ">" ] > }
+TOKEN : { < EQ: "="> }
+TOKEN : { < GT: ">"> }
+TOKEN : { < LT: "<"> }
+TOKEN : { < NEQ: "!="> }
+TOKEN : { < GTE: ">="> }
+TOKEN : { < LTE: "<="> }
+
 TOKEN : { < AND: "AND" | "&&"> }
 TOKEN : { < OR: "OR" | "||"> }
 TOKEN : { < COLON: ":"> }
-TOKEN : { < #NAME_LETTER: ["a"-"z","A"-"Z","_","-","0"-"9"] > }
-TOKEN : { < #STRING_LETTER: ["a"-"z","A"-"Z","0"-"9"] > }
 
-TOKEN : { < STRING: (["a"-"z","A"-"Z","0"-"9"])+ > }
+TOKEN : { < #ID: (~[" ", "\\", "\"", "=", "<", ">", "!", "(", ")", ":"])+ > }
+TOKEN : { < STRING: (<ID> | <ESCAPED_CHAR>)+ > }
 
+// Don't know how to introduce this yet...
+TOKEN : { < #QUOTED: (~["\""])+ > }
 
 // Main method:
 SimpleNode parse() : {}
@@ -62,8 +82,8 @@ SimpleNode parse() : {}
 void Query() #void : {}
 {
     (
-     LOOKAHEAD(100, (Parantheses() | PropertyQuery()) <AND>) AndQuery() 
-     | LOOKAHEAD(100, (ClosedQuery() | PropertyQuery()) <OR>) OrQuery() 
+     LOOKAHEAD(1000, (Parantheses() | PropertyQuery()) <AND>) AndQuery() 
+     | LOOKAHEAD(1000, (ClosedQuery() | PropertyQuery()) <OR>) OrQuery() 
     | ClosedQuery()
     | PropertyQuery()
     )    
@@ -72,7 +92,7 @@ void Query() #void : {}
 void Parantheses() :
 {}
 {
-    <LP> (<EQ> | <AND> | <OR> | <COLON> | <STRING> | Parantheses())* <RP>
+    <LP> (Comparator() | <AND> | <OR> | <COLON> | <STRING> | Parantheses())* <RP>
 }
 
 void ClosedQuery() #void : {}
@@ -94,12 +114,23 @@ void OrQuery() : {}
 
 void PropertyQuery() : {}
 { 
-    [LOOKAHEAD(2) Prefix() <COLON>] Name() <EQ> Value()
+    [LOOKAHEAD(2) Prefix() <COLON>] Name() Comparator() Value()
+}
+
+void Comparator() : 
+{ 
+    Token t;
+}
+{
+    ( t=<NEQ> | t=<GTE> | t=<LTE> | t=<EQ> | t=<GT> | t=<LT> )
+    { 
+        jjtThis.setValue(t.image); 
+    }
 }
 
 void Prefix() : 
 {
-  Token t;
+    Token t;
 }
 {
   t=<STRING>
@@ -110,7 +141,7 @@ void Prefix() :
 
 void Name() : 
 {
-  Token t;
+    Token t;
 }
 {
   t=<STRING>
@@ -124,8 +155,9 @@ void Value() :
   Token t;
 }
 {
-  t=<STRING>
+    ("\"" t=<STRING> "\"" | t=<STRING>)
   {
-    jjtThis.setValue(t.image);
+      
+      jjtThis.setValue(unescape(t.image));
   }
 }

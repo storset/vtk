@@ -30,8 +30,10 @@
  */
 package org.vortikal.repositoryimpl;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,11 +43,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
@@ -65,6 +69,8 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repositoryimpl.content.ContentImpl;
+import org.vortikal.repositoryimpl.content.ContentRepresentationRegistry;
 import org.vortikal.repositoryimpl.dao.ContentStore;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -85,14 +91,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private RoleManager roleManager;
     private PrincipalManager principalManager;
     private AuthorizationManager authorizationManager;
-
+    private ContentRepresentationRegistry contentRepresentationRegistry;
     private ValueFactory valueFactory;
 
     // Needed for property-evaluation. Should be a reasonable dependency.
     private ContentStore contentStore;
     
     private PrimaryResourceTypeDefinition rootResourceTypeDefinition;
-    private boolean lazyInit = false;
     private boolean init = false;
     
     // Currently maps a parent resource type def. to its children (arrays)
@@ -118,21 +123,29 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
     
     public void afterPropertiesSet() throws Exception {
-        if (roleManager == null) {
+        if (this.roleManager == null) {
             throw new BeanInitializationException("Property 'roleManager' not set.");
-        } else if (principalManager == null) {
+        } 
+        if (this.principalManager == null) {
             throw new BeanInitializationException("Property 'principalManager' not set.");
-        } else if (authorizationManager == null) {
+        }
+        if (this.authorizationManager == null) {
             throw new BeanInitializationException("Property 'authorizationManager' not set.");
-        } else if (rootResourceTypeDefinition == null) {
+        }
+        if (this.rootResourceTypeDefinition == null) {
             throw new BeanInitializationException("Property 'rootResourceTypeDefinition' not set.");
-        } else if (valueFactory == null) {
+        }
+        if (this.valueFactory == null) {
             throw new BeanInitializationException("Property 'valueFactory' not set.");
-        } else if (contentStore == null) {
+        }
+        if (this.contentStore == null) {
             throw new BeanInitializationException("Property 'contentStore' not set.");
         }
+        if (this.contentRepresentationRegistry == null) {
+            throw new BeanInitializationException("Property 'contentRepresentationRegistry' not set.");
+        }
 
-        if (!lazyInit) init();
+        init();
     }
 
     private synchronized void init() {
@@ -162,10 +175,11 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 System.arraycopy(children, 0, newChildren, 0, children.length);
                 newChildren[newChildren.length-1] = def;
             }
-            this.resourceTypeDefinitions.put(parent, newChildren);            
+            this.resourceTypeDefinitions.put(parent, newChildren);
             this.mixinTypeDefinitions.put(def, getMixinTypes(def));
 
         }
+        logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
 
         Collection mixins = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
@@ -178,68 +192,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         init = true;
     }
     
-
-    private void addNamespacesAndProperties(ResourceTypeDefinition def) {
-        // Populate map of property type definitions
-        PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
-        Namespace namespace = def.getNamespace();
-
-        if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri()))
-            this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
-
-        Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
-        
-        if (propDefMap == null) {
-            propDefMap = new HashMap();
-            // XXX: what about prefix when using namespaces as map keys?
-            this.propertyTypeDefinitions.put(namespace, propDefMap);
-        }
-        for (int u = 0; u < propDefs.length; u++) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Registering property type definition "
-                             + propDefs[u].getName());
-            }
-
-            propDefMap.put(propDefs[u].getName(), propDefs[u]);
-        }
-    }
-    
-    private boolean checkAssertions(PrimaryResourceTypeDefinition rt,
-                                    Resource resource, Principal principal) {
-
-        RepositoryAssertion[] assertions = rt.getAssertions();
-
-        if (assertions != null) {
-            for (int i = 0; i < assertions.length; i++) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Checking assertion "
-                                 + assertions[i] + " for resource " + resource);
-                }
-
-                if (!assertions[i].matches(resource, principal)) {
-                    
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(
-                            "Checking for type '" + rt.getName() + "', resource " + resource
-                            + " failed, unmatched assertion: " + assertions[i]);
-                    }
-                    return false;
-                }
-                
-            }
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Checking for type '" + rt.getName() + "', resource "
-                         + resource + " succeeded, assertions matched: "
-                         + (assertions != null ? java.util.Arrays.asList(assertions) : null));
-        }
-        return true;
-    }
-
-
-
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
-        if (!init) init();
 
         ResourceImpl newResource = new ResourceImpl(uri, this, this.authorizationManager);
         PrimaryResourceTypeDefinition rt = create(principal, newResource, new Date(), 
@@ -362,8 +315,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                                         Resource dto)
         throws AuthenticationException, AuthorizationException,
         CloneNotSupportedException, IOException {
-
-        if (!init) init();
 
         String uri = resource.getURI();
         
@@ -606,7 +557,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public ResourceImpl collectionContentModification(ResourceImpl resource, 
             Principal principal) {
-        if (!init) init();
         
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
@@ -622,15 +572,16 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
 
     public ResourceImpl fileContentModification(ResourceImpl resource, Principal principal) {
-        if (!init) init();
         // XXX: What to do about swapping old resource with new?
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
-        ResourceTypeDefinition rt = contentModification(principal, newResource, resource,
-                new ContentImpl(resource.getURI(), contentStore), new Date(),
-                rootResourceTypeDefinition);
+        ResourceTypeDefinition rt = contentModification(
+            principal, newResource, resource,
+            new ContentImpl(resource.getURI(), contentStore,
+                            this.contentRepresentationRegistry),
+            new Date(), rootResourceTypeDefinition);
         
         if (logger.isDebugEnabled()) {
             logger.debug("Setting new resource type: '" + rt.getName()
@@ -714,7 +665,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                         logger.debug("Property evaluated: " + prop);
                     }
                     newProps.add(prop);
-                }
+                } 
+
             } else if (prop != null) {
                 newProps.add(prop);
             }
@@ -723,8 +675,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
 
     public Property createProperty(Namespace namespace, String name) {
-
-        if (!init) init();
 
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespace);
@@ -752,7 +702,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     public Property createProperty(Namespace namespace, String name, Object value) 
         throws ValueFormatException {
-        if (!init) init();
 
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespace);
@@ -795,7 +744,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     public Property createProperty(String namespaceUrl, String name, 
                                    String[] stringValues, int type) 
         throws ValueFormatException {
-        if (!init) init();
         
         Namespace namespace = (Namespace)this.namespaceUriMap.get(namespaceUrl);
         
@@ -863,6 +811,89 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     }
     
 
+    private String getResourceTypeTreeAsString() {
+        StringBuffer sb = new StringBuffer();
+        recurseResourceTypes(sb, 0, rootResourceTypeDefinition);
+        return sb.toString();
+    }
+    
+    private void recurseResourceTypes(StringBuffer sb, int level,
+                                      ResourceTypeDefinition def) {
+        
+        for (int i = 0; i < level; i++) sb.append("  ");
+
+        sb.append("[").append(def.getNamespace()).append("] ").append(def.getName()).append("\n");
+        PrimaryResourceTypeDefinition[] children = (PrimaryResourceTypeDefinition[])
+            this.resourceTypeDefinitions.get(def);
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                recurseResourceTypes(sb, level + 1, children[i]);
+            }
+        }
+    }
+
+
+    private void addNamespacesAndProperties(ResourceTypeDefinition def) {
+        // Populate map of property type definitions
+        PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
+        Namespace namespace = def.getNamespace();
+
+        if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri()))
+            this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
+
+        Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
+        
+        if (propDefMap == null) {
+            propDefMap = new HashMap();
+            // XXX: what about prefix when using namespaces as map keys?
+            this.propertyTypeDefinitions.put(namespace, propDefMap);
+        }
+        for (int u = 0; u < propDefs.length; u++) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Registering property type definition "
+                             + propDefs[u].getName());
+            }
+
+            propDefMap.put(propDefs[u].getName(), propDefs[u]);
+        }
+    }
+    
+    private boolean checkAssertions(PrimaryResourceTypeDefinition rt,
+                                    Resource resource, Principal principal) {
+
+        RepositoryAssertion[] assertions = rt.getAssertions();
+
+        if (assertions != null) {
+            for (int i = 0; i < assertions.length; i++) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Checking assertion "
+                                 + assertions[i] + " for resource " + resource);
+                }
+
+                if (!assertions[i].matches(resource, principal)) {
+                    
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
+                            "Checking for type '" + rt.getName() + "', resource " + resource
+                            + " failed, unmatched assertion: " + assertions[i]);
+                    }
+                    return false;
+                }
+                
+            }
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Checking for type '" + rt.getName() + "', resource "
+                         + resource + " succeeded, assertions matched: "
+                         + (assertions != null ? Arrays.asList(assertions) : null));
+        }
+        return true;
+    }
+
+
+
+
+
     private void authorize(String action, Principal principal, String uri) 
         throws AuthenticationException, AuthorizationException, 
         ResourceLockedException, IOException{
@@ -876,7 +907,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         } else if (AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
             this.authorizationManager.authorizePropertyEditRootRole(uri, principal);
         } else {
-            throw new AuthorizationException();
+            throw new AuthorizationException(
+                "Principal " + principal + " not authorized to perform "
+                + " action " + action + " on resource " + uri);
         }
     }
     
@@ -893,7 +926,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 MixinResourceTypeDefinition[] indirectMixins =
                     directMixins[i].getMixinTypeDefinitions();
                 if (indirectMixins != null) {
-                    mixinTypes.addAll(java.util.Arrays.asList(getMixinTypes(indirectMixins[i])));
+                    mixinTypes.addAll(Arrays.asList(getMixinTypes(indirectMixins[i])));
                 }
             }
         }        
@@ -919,10 +952,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.applicationContext = applicationContext;
     }
 
-    public void setLazyInit(boolean lazyInit) {
-        this.lazyInit = lazyInit;
-    }
-
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
@@ -935,4 +964,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.contentStore = contentStore;
     }
 
+    public void setContentRepresentationRegistry(
+        ContentRepresentationRegistry contentRepresentationRegistry) {
+        this.contentRepresentationRegistry = contentRepresentationRegistry;
+    }
+    
 }

@@ -63,9 +63,9 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         if (principalManager == null) {
             throw new BeanInitializationException("Property 'principalManager' not set.");
         }
-        if (dateFormats == null || dateFormats.size() < 1) {
+        if (dateFormats == null || dateFormats.size() == 0) {
             throw new BeanInitializationException(
-                    "Property 'dateformats' not set or has not atleast one dateformat in list.");
+                    "Property 'dateformats' not set or empty list.");
         }
     }
     
@@ -143,6 +143,11 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
     }
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
+        
+        try {
+            return new Date(Long.parseLong(stringValue));
+        } catch (NumberFormatException nfe) {}
+        
         SimpleDateFormat format;
         Date date;
         for (Iterator iter = dateFormats.iterator(); iter.hasNext(); ) {
@@ -152,12 +157,12 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
                 date = format.parse(stringValue);
                 return date;
             } catch (ParseException e) {
-                logger.debug("Dateformat not ok for dateformat \'" + dateFormat
-                        + "\' and stringValue \'" + stringValue + "\': " + e.getMessage());
+                logger.debug("Dateformat not ok for dateformat '" + dateFormat
+                        + "' and stringValue '" + stringValue + "': " + e.getMessage());
             }
         }
         if (stringValue.equals("")) {
-            return null;
+            return null; // XXX: allow this to happen ? Seems like a ValueFormatException-case...
         } else {
             throw new ValueFormatException("Illegal date format");
         }

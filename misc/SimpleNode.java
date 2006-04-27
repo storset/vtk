@@ -1,6 +1,9 @@
 package org.vortikal.repositoryimpl.queryparser;
 
-public class SimpleNode implements Node {
+import java.util.Arrays;
+import java.util.List;
+
+public class SimpleNode implements Node, QueryNode {
   protected Node parent;
   protected Node[] children;
   protected int id;
@@ -52,7 +55,7 @@ public class SimpleNode implements Node {
      you need to do. */
 
     public String toString() { 
-        String s = QueryParserTreeConstants.jjtNodeName[id];;
+        String s = QueryParserTreeConstants.jjtNodeName[id];
         if (value != null)
             s += " = '" + value + "'";
         return s; 
@@ -67,9 +70,15 @@ public class SimpleNode implements Node {
         return value;
     }
 
+    public String getNodeName() {
+        return QueryParserTreeConstants.jjtNodeName[id];
+    }
 
+    public List getChildren() {
+        return Arrays.asList(children);
+    }
 
-  public String toString(String prefix) { return prefix + toString(); }
+    public String toString(String prefix) { return prefix + toString(); }
 
   /* Override this method if you want to customize how the node dumps
      out its children. */

@@ -4,7 +4,7 @@ options {
   //  DEBUG_PARSER = true;
   //  DEBUG_LOOKAHEAD = true;
   //  DEBUG_TOKEN_MANAGER = true;
-  //  JAVA_UNICODE_ESCAPE = true;
+  // JAVA_UNICODE_ESCAPE = true;
   UNICODE_INPUT = true;
 }
 
@@ -14,25 +14,27 @@ package org.vortikal.repositoryimpl.queryparser;
 
 import java.io.StringReader;
 
-
 /**
 * Partial implementation of a query parser based on javacc.
 * <p>Try the parser out with:
 * <p>java -cp target/classes org.vortikal.repositoryimpl.queryparser.QueryParser "((pre:post=c AND s:s=s) OR ff=2211)"
 */
-public class QueryParser {
+public class QueryParser implements Parser {
 
-  public static void main(String args[]) throws ParseException {
-    if (args.length == 0) {
-      System.out.println("Usage: java org.vortikal.repositoryimpl.queryparser.QueryParser <input>");
-      System.exit(0);
+    public QueryParser() {
+        this(new StringReader(""));
     }
-    QueryParser parser = new QueryParser(new StringReader(args[0]));
-    SimpleNode q = parser.parse();
-    System.out.println(args[0]);
-    q.dump("");
 
-  }
+    public static void main(String args[]) throws ParseException {
+        if (args.length == 0) {
+            System.out.println("Usage: java org.vortikal.repositoryimpl.queryparser.QueryParser <input>");
+            System.exit(0);
+        }
+        QueryParser parser = new QueryParser(new StringReader(args[0]));
+        SimpleNode q = parser.Query();
+        System.out.println(args[0]);
+        q.dump("");
+    }
 
     private String unescape(String escaped) {
         char[] caSource = escaped.toCharArray();
@@ -45,6 +47,18 @@ public class QueryParser {
         }
         return new String(caDest, 0, j);
     }
+
+    public QueryNode parse(String query) {
+        ReInit(new StringReader(query));
+        try {
+            return Query();
+        } catch (TokenMgrError tme) {
+            throw new RuntimeException(tme.getMessage());
+        } catch (ParseException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
 }
 
 PARSER_END(QueryParser)
@@ -73,17 +87,17 @@ TOKEN : { < STRING: (<ID> | <ESCAPED_CHAR>)+ > }
 TOKEN : { < #QUOTED: (~["\""])+ > }
 
 // Main method:
-SimpleNode parse() : {}
+SimpleNode Query() : {}
 { 
-    Query() 
+    QueryChoice()
         { return jjtThis; }
 }
 
-void Query() #void : {}
+void QueryChoice() #void : {}
 {
     (
-     LOOKAHEAD(1000, (Parantheses() | PropertyQuery()) <AND>) AndQuery() 
-     | LOOKAHEAD(1000, (ClosedQuery() | PropertyQuery()) <OR>) OrQuery() 
+     LOOKAHEAD(100, (Parantheses() | PropertyQuery()) <AND>) AndQuery() 
+     | LOOKAHEAD(100, (ClosedQuery() | PropertyQuery()) <OR>) OrQuery() 
     | ClosedQuery()
     | PropertyQuery()
     )    
@@ -97,7 +111,7 @@ void Parantheses() :
 
 void ClosedQuery() #void : {}
 {
-    <LP> Query() <RP>
+    <LP> QueryChoice() <RP>
 }
 
 void AndQuery() : {}

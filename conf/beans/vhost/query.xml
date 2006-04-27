@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="queryParser"
+        class="org.vortikal.repositoryimpl.queryparser.QueryParser" />
+
+  <bean id="queryTester"
+        class="org.vortikal.repositoryimpl.queryparser.Test">
+    <property name="parser" ref="queryParser" />
+    <property name="query">
+      <value>(uri=/a/b/* AND (emne:kode=12 || lastModified >="$now-3d"))</value>
+    </property>
+
+  </bean>
+</beans>

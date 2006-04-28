@@ -281,8 +281,9 @@
       </properties>
     </dependency>
     <dependency>
-      <id>lucene</id>
-      <version>1.4.3</version>
+      <id>lucene-core</id>
+      <groupId>lucene</groupId>
+      <version>1.9.1</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

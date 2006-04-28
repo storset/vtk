@@ -79,9 +79,7 @@
       <list>
         <ref bean="contentTypeMatchesXml" />
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace">
-            <value>http://www.uio.no/vortex/custom-properties</value>
-          </property>
+          <property name="namespace" ref="CUSTOM_NAMESPACE" />
           <property name="name">
             <value>transform-view</value>
           </property>

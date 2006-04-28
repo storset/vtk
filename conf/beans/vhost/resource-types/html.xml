@@ -7,7 +7,7 @@
 
   <bean id="htmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="html"/>
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
       <list>
@@ -43,20 +43,7 @@
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="htmlCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="htmlCharacterEncodingEvaluator" />
-    <!--
-    <property name="defaultValue">
-      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="valueFactory" />
-        <property name="targetMethod" value="createValue" />
-        <property name="arguments">
-          <list>
-            <value>utf-8</value>
-            <ref bean="TYPE_STRING" />
-          </list>
-        </property>
-      </bean>
-    </property>
-    -->
+    <property name="defaultValue" ref="defaultTextResourceEncoding" />
   </bean>
 
   <bean id="htmlCharacterEncodingEvaluator" 
@@ -68,7 +55,7 @@
   <bean id="xhtml10ResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="xhtml10"/>
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="htmlResourceTypeDefinition" />
     <property name="assertions">
       <list>
@@ -126,8 +113,7 @@
 
   <bean id="docTypeIsXHtml10Transitional"
         class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
-    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="docType" />
     <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;"/>
     <property name="checkExistenceOnly" value="false" />
@@ -135,8 +121,7 @@
 
   <bean id="docTypeIsXHtml10Frameset"
         class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
-    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="docType" />
     <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Frameset//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&#x22;" />
     <property name="checkExistenceOnly" value="false" />
@@ -144,8 +129,7 @@
 
   <bean id="docTypeIsXHtml10Strict"
         class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
-    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="docType" />
     <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Strict//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&#x22;" />
     <property name="checkExistenceOnly" value="false" />

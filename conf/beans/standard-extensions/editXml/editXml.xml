@@ -22,8 +22,7 @@
       <list>
         <ref bean="contentTypeMatchesXml" />
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace" 
-                    value="http://www.uio.no/vortex/custom-properties" />
+          <property name="namespace" ref="CUSTOM_NAMESPACE" />
           <property name="name" value="web-edit" />
           <property name="value" value="yes" />
         </bean>

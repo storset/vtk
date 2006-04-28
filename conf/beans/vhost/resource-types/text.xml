@@ -40,11 +40,11 @@
 
   <bean id="abstractTextResourceEncodingEvaluator" 
         class="org.vortikal.repository.resourcetype.property.FixedValuePropertyEvaluator">
-    <property name="value" ref="abstractTextResourceDefaultEncoding" />
+    <property name="value" ref="defaultTextResourceEncoding" />
   </bean>
 
 
-  <bean name="abstractTextResourceDefaultEncoding"
+  <bean name="defaultTextResourceEncoding"
     class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="valueFactory" />
     <property name="targetMethod" value="createValue" />

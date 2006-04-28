@@ -66,8 +66,8 @@ public class ResourcePropertyAssertion
     }
     
     
-    public void setNamespace(String namespace) {
-        this.namespace = Namespace.getNamespace(namespace);
+    public void setNamespace(Namespace namespace) {
+        this.namespace = namespace;
     }
     
     
@@ -76,8 +76,8 @@ public class ResourcePropertyAssertion
     }
 
 
-    public String getNamespace() {
-        return this.namespace.getUri();
+    public Namespace getNamespace() {
+        return this.namespace;
     }
 
 

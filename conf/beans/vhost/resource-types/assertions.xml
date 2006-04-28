@@ -16,7 +16,7 @@
   <bean id="schemaPropSet" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
-    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
     <property name="name" value="schema" />    
     <property name="checkExistenceOnly" value="true" />
   </bean>
@@ -26,8 +26,7 @@
        custom:web-edit = 'yes' -->
   <bean id="webEditable" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
-    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
     <property name="name" value="web-edit" />
     <property name="value" value="yes" />
   </bean>
@@ -36,8 +35,7 @@
        custom:transform-view = 'yes' -->
   <bean id="viewTransformable" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
-    <!--property name="namespace" ref="CUSTOM_NAMESPACE" /-->
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
     <property name="name" value="transform-view" />
     <property name="value" value="yes" />
   </bean>

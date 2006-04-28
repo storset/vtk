@@ -200,7 +200,7 @@ public class PutController extends AbstractWebdavController {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Setting character encoding: " + characterEncoding);
                 }
-                resource.setCharacterEncoding(characterEncoding);
+                resource.setUserSpecifiedCharacterEncoding(characterEncoding);
                 store = true;
             }
 

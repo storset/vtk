@@ -188,17 +188,30 @@ public interface Resource extends PropertySet {
      */
     public Date getPropertiesLastModified();
 
+
+    /**
+     * Gets the user specified character encoding.
+     */
+    public String getUserSpecifiedCharacterEncoding();
+
+    /**
+     * Sets the user specified character encoding.
+     */
+    public void setUserSpecifiedCharacterEncoding(String characterEncoding);
+
+    /**
+     * Gets the evaluated ('guessed') character encoding.
+     */
+    public String getGuessedCharacterEncoding();
+
     /**
      * Gets the character encoding. This value is only relevant if the
-     * resource type is 'textResource'.
-     *
-     * @return the value of characterEncoding
+     * resource type is 'textResource'. It depends on the value of
+     * <code>getEvaluatedCharacterEncoding()</code> and
+     * <code>getUserSpecifiedCharacterEncoding()</code>.
      */
     public String getCharacterEncoding();
     
-    
-    public void setCharacterEncoding(String characterEncoding);
-
     public void setContentLocale(String locale);
 
     public void setContentType(String string);

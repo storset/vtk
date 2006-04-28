@@ -93,7 +93,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     public Value getValue() {
         if (this.propertyTypeDefinition != null &&
             this.propertyTypeDefinition.isMultiple()) {
-            throw new IllegalOperationException("Property is multi-value"); 
+            throw new IllegalOperationException("Property " + this + " is multi-value"); 
         }
         
         return this.value;
@@ -102,7 +102,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     public void setValue(Value value) throws ValueFormatException {
         if (this.propertyTypeDefinition != null &&
             this.propertyTypeDefinition.isMultiple()) {
-            throw new ValueFormatException("Property is multi-value");
+            throw new ValueFormatException("Property " + this + " is multi-value");
         }
         
         validateValue(value);
@@ -113,7 +113,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     public void setValues(Value[] values) throws ValueFormatException {
         if (this.propertyTypeDefinition == null ||
             ! this.propertyTypeDefinition.isMultiple()) {
-            throw new ValueFormatException("Property is not multi-value");
+            throw new ValueFormatException("Property " + this + " is not multi-value");
         }
         
         validateValues(values);
@@ -124,7 +124,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     public Value[] getValues() {
         if (this.propertyTypeDefinition == null || 
             ! this.propertyTypeDefinition.isMultiple()) {
-            throw new IllegalOperationException("Property is not multi-value");
+            throw new IllegalOperationException("Property " + this + " is not multi-value");
         }
         
         return this.values;
@@ -318,7 +318,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         if (value.getType() != getType()) {
             throw new ValueFormatException("Illegal value type " + 
                     PropertyType.PROPERTY_TYPE_NAMES[value.getType()] + 
-                    " for property " + this.name + ". Should be " + 
+                    " for property " + this + ". Should be " + 
                     PropertyType.PROPERTY_TYPE_NAMES[getType()]);
         }
         
@@ -327,22 +327,19 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         case PropertyType.TYPE_PRINCIPAL:
             if (value.getPrincipalValue() == null) {
                 throw new ValueFormatException(
-                    "Principal value of property '" + this.namespace + ":"
-                    + this.name + "' cannot be null");
+                    "Principal value of property '" + this + "' cannot be null");
             }
             break;
         case PropertyType.TYPE_STRING:
             if (value.getValue() == null) {
                 throw new ValueFormatException(
-                    "String value of property '" + this.namespace + ":"
-                    + this.name + "' cannot be null");
+                    "String value of property '" + this + "' cannot be null");
             }
             break;
         case PropertyType.TYPE_DATE:
             if (value.getDateValue() == null) {
                 throw new ValueFormatException(
-                    "Date value of property '" + this.namespace + ":"
-                    + this.name + "' cannot be null");
+                    "Date value of property '" + this + "' cannot be null");
             }
         }
         
@@ -361,8 +358,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             if (!valuesList.contains(value)) {
                 ConstraintViolationException e = 
                     new ConstraintViolationException(
-                            "Value not in list of allowed values for property '"
-                            + this.namespace + ":" + this.name + "'");
+                        "Value not in list of allowed values for property '" + this);
                 e.setStatusCode(ConstraintViolationException.NOT_IN_ALLOWED_VALUES);
                 throw e;
             }
@@ -389,4 +385,5 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.valueInitialized;
     }
     
+
 }

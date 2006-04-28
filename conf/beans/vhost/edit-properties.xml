@@ -56,6 +56,10 @@
         <ref bean="keywordsPropDef" />
         <ref bean="descriptionPropDef" />
 
+
+        <ref bean="userSetCharacterEncodingPropDef" />
+        <ref bean="guessedCharacterEncodingPropDef" />
+        <ref bean="characterEncodingPropDef" />
       </list>
     </property>
     <property name="valueFactory" ref="valueFactory" />

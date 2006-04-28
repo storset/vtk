@@ -49,7 +49,9 @@
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="actionParameterEqualsPlaintextEdit" />
         <ref bean="contentTypeMatchesXml" />
+        <!--
         <ref bean="xmlEditPropertyIsSet" />
+        -->
       </list>
     </property>
     <property name="handler">
@@ -114,7 +116,6 @@
     <property name="cancelView" value="redirectToManage" />
     <property name="commandName" value="plaintextEditForm" />
     <property name="commandClass" value="org.vortikal.edit.plaintext.PlaintextEditCommand" />
-    <property name="storeModifiedCharacterEncodings" value="true" />
   </bean>
 
 </beans>

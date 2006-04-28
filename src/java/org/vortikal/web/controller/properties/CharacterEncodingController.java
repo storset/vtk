@@ -98,10 +98,10 @@ public class CharacterEncodingController extends SimpleFormController {
 
         if (encodingCommand.getCharacterEncoding() == null ||
             "".equals(encodingCommand.getCharacterEncoding().trim())) {
-            resource.setCharacterEncoding(null);
+            resource.setUserSpecifiedCharacterEncoding(null);
         } else {
             // XXX: Needs check for understandable encoding
-            resource.setCharacterEncoding(
+            resource.setUserSpecifiedCharacterEncoding(
                 encodingCommand.getCharacterEncoding().trim());
         }
 

@@ -215,6 +215,14 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         return getPropValue(PropertyType.CHARACTERENCODING_PROP_NAME);
     }
 
+    public String getUserSpecifiedCharacterEncoding() {
+        return getPropValue(PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
+    }
+
+    public String getGuessedCharacterEncoding() {
+        return getPropValue(PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME);
+    }
+
     public boolean isCollection() {
         return getBooleanPropValue(PropertyType.COLLECTION_PROP_NAME);
     }
@@ -229,26 +237,14 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
      * @return the time of last modification
      */
     public Date getLastModified() {
-//        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
-//            return getContentLastModified();
-//        }
-//
-//        return getPropertiesLastModified();
         return getDatePropValue(PropertyType.LASTMODIFIED_PROP_NAME);
     }
 
     /**
      * Gets the name of the principal that last modified either the
      * content or the properties of this resource.
-     *
-     * @return the name of the principal
      */
     public Principal getModifiedBy() {
-//        if (getContentLastModified().compareTo(getPropertiesLastModified()) > 0) {
-//            return getContentModifiedBy();
-//        }
-//
-//        return getPropertiesModifiedBy();
         return getPrincipalPropValue(PropertyType.MODIFIEDBY_PROP_NAME);
     }
 
@@ -256,10 +252,17 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         return getLongPropValue(PropertyType.CONTENTLENGTH_PROP_NAME);
     }
 
-    public void setCharacterEncoding(String characterEncoding) {
+    public void setUserSpecifiedCharacterEncoding(String characterEncoding) {
         setProperty(Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CHARACTERENCODING_PROP_NAME, characterEncoding);
+                    PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, characterEncoding);
+
     }
+    
+
+//     public void setCharacterEncoding(String characterEncoding) {
+//         setProperty(Namespace.DEFAULT_NAMESPACE, 
+//                 PropertyType.CHARACTERENCODING_PROP_NAME, characterEncoding);
+//     }
 
     public void setContentLocale(String locale) {
         setProperty(Namespace.DEFAULT_NAMESPACE, 

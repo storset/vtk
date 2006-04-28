@@ -31,10 +31,10 @@
 package org.vortikal.edit.plaintext;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -43,10 +43,14 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.LockType;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.TextResourceContentHelper;
 import org.vortikal.util.text.HtmlUtil;
@@ -82,69 +86,50 @@ import org.vortikal.web.service.Service;
  *  <li><code>defaultCharacterEncoding</code> - defaults to
  *  <code>utf-8</code>, which encoding to enterpret the supplied
  *  resource content in, if unable to guess.
- *  <li><code>storeModifiedCharacterEncodings</code> - whether or not
- *  to also change the resource's <code>characterEncoding</code>
- *  property when modified in the XML declaration or in a HTML meta
- *  tag. Default is <code>false</code>.
  * </ul>
  */
 public class PlaintextEditController extends SimpleFormController
   implements InitializingBean {
 
-    private static Log logger = LogFactory.getLog(
-        PlaintextEditController.class);
+    private PropertyTypeDefinition updateEncodingProperty;
+    
+    private Log logger = LogFactory.getLog(this.getClass().getName());
     
     private String cancelView;
     private Repository repository;
     private int lockTimeoutSeconds = 300;
+
+//     private String formCharacterEncoding = "utf-8";
+    
+
     private String defaultCharacterEncoding = "utf-8";
-    private boolean storeModifiedCharacterEncodings = false;
     private TextResourceContentHelper textResourceContentHelper;
     
 
-    /**
-     * Sets the repository.
-     */
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
 
-    /**
-     * Sets the requested number of seconds for lock timeout.
-     */
-    public void setLockTimeoutMinutes(int lockTimeoutSeconds) {
+    public void setLockTimeoutSeconds(int lockTimeoutSeconds) {
         this.lockTimeoutSeconds = lockTimeoutSeconds;
     }
     
 
-    /**
-     * Sets the cancel view name (will be returned when user cancelles
-     * the edit operation).
-     */
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
     }
     
 
-    /**
-     * Sets the default character encoding.
-     */
     public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
         this.defaultCharacterEncoding = defaultCharacterEncoding;
     }
 
-
-    /**
-     * Sets whether to store modified character encodings on resources
-     * when altered in markup meta headers.
-     */
-    public void setStoreModifiedCharacterEncodings(
-        boolean storeModifiedCharacterEncodings) {
-        this.storeModifiedCharacterEncodings = storeModifiedCharacterEncodings;
+    public void setUpdateEncodingProperty(PropertyTypeDefinition updateEncodingProperty) {
+        this.updateEncodingProperty = updateEncodingProperty;
     }
     
-
+    
     public void afterPropertiesSet() {
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -159,6 +144,7 @@ public class PlaintextEditController extends SimpleFormController
             this.repository, this.defaultCharacterEncoding);
     }
     
+
 
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
@@ -175,19 +161,13 @@ public class PlaintextEditController extends SimpleFormController
                         this.lockTimeoutSeconds, null);
 
         Resource resource = repository.retrieve(token, uri, false);
-
         String url = service.constructLink(resource, principal);
-        String content = this.textResourceContentHelper.getResourceContent(resource, token);
+        String characterEncoding = resource.getCharacterEncoding();
+        String content = getTextualContent(resource, token);
         
-        PlaintextEditCommand command =
-            new PlaintextEditCommand(content, url);
-
-        if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
-            command.setHtml(true);
-        }
-        
-        return command;
+        return new PlaintextEditCommand(content, url);
     }
+
 
 
     protected ModelAndView onSubmit(Object command, BindException errors)
@@ -213,63 +193,19 @@ public class PlaintextEditController extends SimpleFormController
     }
     
 
+
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        PlaintextEditCommand plaintextEditCommand =
-            (PlaintextEditCommand) command;
+        PlaintextEditCommand plaintextEditCommand = (PlaintextEditCommand) command;
 
         Resource resource = repository.retrieve(token, uri, false);
-
         String storedEncoding = resource.getCharacterEncoding();
-        if (storedEncoding == null) {
+        String postedEncoding = getPostedEncoding(resource, plaintextEditCommand);
 
-            if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
-                storedEncoding = this.textResourceContentHelper.getXMLCharacterEncoding(
-                    resource, token);
-
-            } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
-                storedEncoding = this.textResourceContentHelper.getHTMLCharacterEncoding(
-                    resource, token);
-            }
-        }
-
-        String postedEncoding = null;
-        if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
-
-            postedEncoding = this.textResourceContentHelper.getXMLCharacterEncoding(
-                plaintextEditCommand.getContent());
-            
-        } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
-
-            postedEncoding = HtmlUtil.getCharacterEncodingFromBody(
-                plaintextEditCommand.getContent().getBytes());
-        } 
-        
-        
-        try {
-            if (storedEncoding != null) Charset.forName(storedEncoding);
-        } catch (Exception e) {
-            if (logger.isDebugEnabled())
-                logger.debug(
-                    "Invalid character encoding '" + storedEncoding);
-                    
-            storedEncoding = null;
-        }
-
-        try {
-            if (postedEncoding != null) Charset.forName(postedEncoding);
-        } catch (Exception e) {
-            if (logger.isDebugEnabled())
-                logger.debug(
-                    "Invalid character encoding '" + postedEncoding);
-            postedEncoding = null;
-        }
-
-        
         /** 
          * When storing content, it has to be written as a byte
          * sequence, produced from the posted content using an
@@ -281,44 +217,89 @@ public class PlaintextEditController extends SimpleFormController
          * 4. storedEncoding != null, postedEncoding != null --> use postedEncoding
          */
         String characterEncoding = this.defaultCharacterEncoding;
-        boolean storeEncoding = false;
+        boolean maybeSetEncoding = false;
 
         if (storedEncoding == null && postedEncoding != null) {
             characterEncoding = postedEncoding;
-            storeEncoding = true;
+            maybeSetEncoding = true;
 
         } else if (storedEncoding != null && postedEncoding == null) {
             characterEncoding = storedEncoding;
 
         } else if (storedEncoding != null && postedEncoding != null) {
             characterEncoding = postedEncoding;
-            storeEncoding = true;
+            maybeSetEncoding = true;
         }
-
-        if (!this.storeModifiedCharacterEncodings) {
-            storeEncoding = false;
+        if (this.updateEncodingProperty == null) {
+            maybeSetEncoding = false;
         }
-
-        if (storeEncoding) {
+        if (maybeSetEncoding) {
             if (logger.isDebugEnabled())
                 logger.debug("New character encoding for document "
                              + resource + " resolved to: " + characterEncoding);
-            resource.setCharacterEncoding(characterEncoding);
+
+            resource.setUserSpecifiedCharacterEncoding(characterEncoding);
             repository.store(token, resource);
         }
 
         String content = plaintextEditCommand.getContent();
+        logger.warn("Decoding posted string using encoding: " + characterEncoding);
 
         repository.storeContent(token, uri, 
                 new ByteArrayInputStream(content.getBytes(characterEncoding)));
+
     }
     
 
 
+    private String getTextualContent(Resource resource, String token)
+        throws IOException {
 
+        String encoding = resource.getCharacterEncoding();
+        InputStream is = repository.getInputStream(token, resource.getURI(),
+                                                   false);
+        byte[] bytes = StreamUtil.readInputStream(is);
+        String content = new String(bytes, encoding);
+        return content;
+    }
+
+
+
+//     private String getEncoding(Resource resource) {
+//         String encoding = null;
+        
+//         if (resource.getCharacterEncoding() != null) {
+//             encoding = resource.getCharacterEncoding();
+//         }
+//         if (encoding == null) {
+//             Property guessedEncoding = resource.getProperty(
+//                 Namespace.CUSTOM_NAMESPACE, "guessedCharacterEncoding");
+//             if (guessedEncoding != null) {
+//                 encoding = guessedEncoding.getStringValue();
+//             }
+//         }
+//         if (encoding == null) {
+//             encoding = this.defaultCharacterEncoding;
+//         }
+//         return encoding;
+//     }
     
 
+    private String getPostedEncoding(Resource resource, PlaintextEditCommand command) {
+        String postedEncoding = null;
+        if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
 
+            postedEncoding = this.textResourceContentHelper.getXMLCharacterEncoding(
+                command.getContent());
+            
+        } else if (ContentTypeHelper.isHTMLContentType(resource.getContentType())) {
+
+            postedEncoding = HtmlUtil.getCharacterEncodingFromBody(
+                command.getContent().getBytes());
+        } 
+        return postedEncoding;
+    }
+    
 
 }
 

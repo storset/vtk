@@ -34,6 +34,8 @@ CREATE TABLE vortex_resource
     content_length bigint NULL, -- NULL for collections.
     resource_type VARCHAR(64) NULL,
     character_encoding VARCHAR (64) NULL,
+    guessed_character_encoding VARCHAR (64) NULL,
+    user_specified_character_encoding VARCHAR (64) NULL,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL,
     acl_inherited_from int NULL,
     CONSTRAINT resource_uri_index UNIQUE (uri)
@@ -189,7 +191,7 @@ CREATE TABLE extra_prop_entry
     extra_prop_entry_id int NOT NULL,
     resource_id int NOT NULL,
     prop_type_id int DEFAULT 0 NOT NULL,
-    name_space VARCHAR (128) NOT NULL,
+    name_space VARCHAR (128) NULL,
     name VARCHAR (64) NOT NULL,
     value VARCHAR (2048) NOT NULL
 );

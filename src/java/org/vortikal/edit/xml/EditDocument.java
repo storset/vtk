@@ -178,7 +178,7 @@ public class EditDocument extends Document {
         if (resource.getCharacterEncoding() != null) {
             String encoding = resource.getCharacterEncoding().toLowerCase();
             if (!"utf-8".equals(encoding)) {
-                resource.setCharacterEncoding("utf-8");
+                resource.setUserSpecifiedCharacterEncoding("utf-8");
                 repository.store(token, resource);
             }
         }

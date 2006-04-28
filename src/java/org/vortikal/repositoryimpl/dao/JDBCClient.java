@@ -222,6 +222,24 @@ public class JDBCClient extends AbstractDataAccessor {
             propertySet.addProperty(prop);
         }
         
+        string = rs.getString("guessed_character_encoding");
+        if (string != null) {
+            prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME,
+                string);
+            propertySet.addProperty(prop);
+        }
+        
+        string = rs.getString("user_specified_character_encoding");
+        if (string != null) {
+            prop = propertyManager.createProperty(
+                Namespace.DEFAULT_NAMESPACE, 
+                PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
+                string);
+            propertySet.addProperty(prop);
+        }
+        
         string = rs.getString("content_language");
         if (string != null) {
             prop = propertyManager.createProperty(
@@ -311,17 +329,26 @@ public class JDBCClient extends AbstractDataAccessor {
         int resourceId;
         List values;
         
-        public boolean equals(Object other) {
-            if (other == null) return false;
+        public boolean equals(Object object) {
+            if (object == null) return false;
             
-            if (other == this) return true;
+            if (object == this) return true;
             
-            return this.namespaceUri.equals(((PropHolder)other).namespaceUri) &&
-                   this.name.equals(((PropHolder)other).name)                 &&
-                   (this.resourceId == ((PropHolder)other).resourceId);
+            PropHolder other = (PropHolder) object;
+            if (this.namespaceUri == null && other.namespaceUri != null ||
+               this.namespaceUri != null && other.namespaceUri == null)
+                return false;
+
+            return ((this.namespaceUri == null && other.namespaceUri == null)
+                    || (this.namespaceUri.equals(other.namespaceUri) &&
+                        this.name.equals(other.name)                 &&
+                        this.resourceId == other.resourceId));
         }
         
         public int hashCode() {
+            if (this.namespaceUri == null) {
+                return this.name.hashCode() + this.resourceId;
+            }
             return this.namespaceUri.hashCode() 
                  + this.name.hashCode() + this.resourceId;
         }
@@ -627,6 +654,8 @@ public class JDBCClient extends AbstractDataAccessor {
         String displayName = r.getDisplayName();
         String contentType = r.getContentType();
         String characterEncoding = r.getCharacterEncoding();
+        String guessedCharacterEncoding = r.getGuessedCharacterEncoding();
+        String userSpecifiedCharacterEncoding = r.getUserSpecifiedCharacterEncoding();
         String contentLanguage = r.getContentLanguage();
         String resourceType = r.getResourceType();
         long contentLength = r.getContentLength();
@@ -655,20 +684,22 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt.setString(7, contentLanguage);
             stmt.setString(8, contentType);
             stmt.setString(9, characterEncoding);
-            stmt.setTimestamp(10, new Timestamp(creationTime.getTime()));
-            stmt.setString(11, resourceType);
+            stmt.setString(10, guessedCharacterEncoding);
+            stmt.setString(11, userSpecifiedCharacterEncoding);
+            stmt.setTimestamp(12, new Timestamp(creationTime.getTime()));
+            stmt.setString(13, resourceType);
 
             if (collection) {
-                stmt.setNull(12, Types.BIGINT);
+                stmt.setNull(14, Types.BIGINT);
             } else {
-                stmt.setLong(12, contentLength);
+                stmt.setLong(14, contentLength);
             }
             
-            stmt.setString(13, createdBy);
-            stmt.setString(14, modifiedBy);
-            stmt.setTimestamp(15, new Timestamp(lastModified.getTime()));
+            stmt.setString(15, createdBy);
+            stmt.setString(16, modifiedBy);
+            stmt.setTimestamp(17, new Timestamp(lastModified.getTime()));
             
-            stmt.setString(16, uri);
+            stmt.setString(18, uri);
 
             stmt.executeUpdate();
             stmt.close();
@@ -676,8 +707,10 @@ public class JDBCClient extends AbstractDataAccessor {
             insertResourceEntry(conn, uri, creationTime, contentLastModified,
                     propertiesLastModified, displayName, owner, contentModifiedBy,
                     propertiesModifiedBy, contentLanguage, contentType,
-                                characterEncoding, collection, resourceType, contentLength, parent,
-                                r.getAclInheritedFrom(), createdBy, modifiedBy, lastModified);
+                                characterEncoding, guessedCharacterEncoding,
+                                userSpecifiedCharacterEncoding, collection, resourceType,
+                                contentLength, parent, r.getAclInheritedFrom(), createdBy,
+                                modifiedBy, lastModified);
             
             // Temporary hack to get the new resource ID
             // Statement.getGeneratedKeys() is not implemented in the PostgreSQL JDBC driver.
@@ -725,6 +758,8 @@ public class JDBCClient extends AbstractDataAccessor {
                                      String contentlanguage, 
                                      String contenttype, 
                                      String characterEncoding,
+                                     String guessedCharacterEncoding,
+                                     String userSpecifiedCharacterEncoding,
                                      boolean collection, 
                                      String resourceType, 
                                      long contentLength, 
@@ -759,12 +794,14 @@ public class JDBCClient extends AbstractDataAccessor {
         stmt.setString(12, contentlanguage);
         stmt.setString(13, contenttype);
         stmt.setString(14, characterEncoding);
-        stmt.setString(15, collection ? "Y" : "N");
-        stmt.setInt(16, aclInheritedFrom);
+        stmt.setString(15, guessedCharacterEncoding);
+        stmt.setString(16, userSpecifiedCharacterEncoding);
+        stmt.setString(17, collection ? "Y" : "N");
+        stmt.setInt(18, aclInheritedFrom);
 
-        stmt.setString(17, createdBy);
-        stmt.setString(18, modifiedBy);
-        stmt.setTimestamp(19, new Timestamp(lastModified.getTime()));
+        stmt.setString(19, createdBy);
+        stmt.setString(20, modifiedBy);
+        stmt.setTimestamp(21, new Timestamp(lastModified.getTime()));
 
         stmt.executeUpdate();
         stmt.close();
@@ -1014,6 +1051,15 @@ public class JDBCClient extends AbstractDataAccessor {
                         stmt.setString(3, namespaceUri);
                         stmt.setString(4, name);
                         stmt.setString(5, value.getNativeStringRepresentation());
+
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Inserting row in batch: [ resourceId: "
+                                         + resourceId + ", type = " + type + ", namespaceUri = "
+                                         + namespaceUri + ", name = " + name + ", value = "
+                                         + value.getStringRepresentation());
+                        }
+
+
                         stmt.addBatch();
                     }
                 }

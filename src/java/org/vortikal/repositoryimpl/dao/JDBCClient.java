@@ -1052,14 +1052,6 @@ public class JDBCClient extends AbstractDataAccessor {
                         stmt.setString(4, name);
                         stmt.setString(5, value.getNativeStringRepresentation());
 
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Inserting row in batch: [ resourceId: "
-                                         + resourceId + ", type = " + type + ", namespaceUri = "
-                                         + namespaceUri + ", name = " + name + ", value = "
-                                         + value.getStringRepresentation());
-                        }
-
-
                         stmt.addBatch();
                     }
                 }

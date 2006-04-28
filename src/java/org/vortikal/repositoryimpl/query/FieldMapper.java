@@ -34,16 +34,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Field;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
 
 /**
  * Create {@link org.apache.lucene.document.Field} objects from 
@@ -52,146 +46,40 @@ import org.vortikal.repositoryimpl.PropertyManagerImpl;
  * 
  * @author oyviste
  */
-public class FieldMapper implements InitializingBean {
+public final class FieldMapper {
     
-    Log logger = LogFactory.getLog(FieldMapper.class);
+    private static Log logger = LogFactory.getLog(FieldMapper.class);
     
-    public static final String FIELD_NAMESPACEPREFIX_NAME_SEPARATOR = ":";
-
-    public static final String FIELD_RESERVED_PREFIX = "_";
-    
-    public static final String FIELD_VALUE_LIST_SEPARATOR = ";";
-    
-    private ValueFactory valueFactory;
-    private PropertyManagerImpl propertyManager;
-    
-    public FieldMapper() {}
-    
-    public void afterPropertiesSet() {
-        if (valueFactory == null) {
-            throw new BeanInitializationException("Property 'valueFactory' not set.");
-        } else if (propertyManager == null) {
-            throw new BeanInitializationException("Proeprty 'propertyManager' not set.");
-        }
-    }
-    
-    public Property getPropertyFromField(Field field) throws FieldMappingException {
-        
-        String[] f = field.name().split(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
-        String nsPrefix = null;
-        String name = null;
-        if (f.length == 1) {
-            // Default namespace (no prefix)
-            name = f[0];
-        } else if (f.length == 2) {
-            nsPrefix = f[0];
-            name = f[1];
-        } else {
-            logger.warn("Invalid index field name: '" + field.name() + "'");
-            throw new FieldMappingException("Invalid index field name: '" 
-                    + field.name() + "'");
-        }
-        
-        Namespace ns = Namespace.getNamespaceFromPrefix(nsPrefix);
-        Property property = propertyManager.createProperty(ns, name);
-        
-        PropertyTypeDefinition def = property.getDefinition();
-        
-        if (def != null) {
-            if (def.isMultiple()) {
-                property.setValues(getValuesFromField(field, def.getType()));
-            } else {
-                property.setValue(getValueFromField(field, def.getType()));
-            }
-        } else {
-            property.setValue(getValueFromField(field, PropertyType.TYPE_STRING));
-        }
-        
-        return property;
-    }
-    
-    public Field getFieldFromProperty(Property property) throws FieldMappingException {
-        StringBuffer fieldValue = new StringBuffer();
-        Field field = null;
-        String name = property.getName();
-        String prefix = property.getNamespace().getPrefix();
-        String fieldName = null;
-        if (prefix == null) {
-            fieldName = name;
-        } else {
-            fieldName = prefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + name;
-        }
-        
-        PropertyTypeDefinition def = property.getDefinition();
-        if (def != null) {
-            int type = def.getType();
-            if (def.isMultiple()) {
-                Value[] values = property.getValues();
-                for (int i=0; i<values.length; i++) {
-                    
-                    String encoded = 
-                        encodeIndexFieldValue(values[i].getNativeStringRepresentation(), type);
-                    
-                    String escaped =
-                        escapeIndexFieldValue(encoded);
-                    
-                    fieldValue.append(escaped);
-                    if (i < values.length-1) {
-                        fieldValue.append(FIELD_VALUE_LIST_SEPARATOR);
-                    }
-                    
-                    // Tokenized field
-                    field = new Field(fieldName, fieldValue.toString(), Field.Store.YES, 
-                                                                Field.Index.TOKENIZED);
-                }
-            } else {
-                Value value = property.getValue();
-                
-                fieldValue.append(
-                        encodeIndexFieldValue(value.getNativeStringRepresentation(), type));
-                
-                field = new Field(fieldName, fieldValue.toString(), Field.Store.YES, 
-                                         Field.Index.NO_NORMS);
-            }
-        } else {
-            String encoded = encodeIndexFieldValue(property.getStringValue(), PropertyType.TYPE_STRING);
-            fieldValue.append(encoded);
-            field = new Field(fieldName, fieldValue.toString(), Field.Store.YES, 
-                    Field.Index.NO_NORMS);
-        }
-        
-        return field;
-        
-    }
-    
+    private FieldMapper() {} // Util
+     
     // No encoding (un-typed)
-    public Field getKeywordField(String name, int value) {
+    public static Field getKeywordField(String name, int value) {
         return getKeywordField(name, Integer.toString(value));
     }
     
     // No encoding (un-typed)
-    public Field getKeywordField(String name, String value) {
+    public static Field getKeywordField(String name, String value) {
         return new Field(name, value, Field.Store.YES, 
                 Field.Index.NO_NORMS);
     }
-    
-    // No encoding (un-typed)
-    // Creates a multi-value field that can be analyzed (split) by 
-    // MultiValueFieldAnalyzer
-    public Field getMultiValueKeywordField(String name, String[] values) {
-        StringBuffer fieldValue = new StringBuffer();
+
+    public static Field[] getFieldsFromValues(String name, Value[] values) {
+        
+        Field[] fields = new Field[values.length];
         for (int i=0; i<values.length; i++) {
-            fieldValue.append(escapeIndexFieldValue(values[i]));
-            
-            if (i < values.length-1) {
-                fieldValue.append(FIELD_VALUE_LIST_SEPARATOR);
-            }
+            String encoded = encodeIndexFieldValue(values[i].getNativeStringRepresentation(), values[i].getType());
+            fields[i] = getKeywordField(name, encoded);
         }
         
-        return new Field(name, fieldValue.toString(), Field.Store.YES, Field.Index.TOKENIZED);
+        return fields;
     }
-
-    private Value getValueFromField(Field field, int type) {
+    
+    public static Field getFieldFromValue(String name, Value value) {
+        String encoded = encodeIndexFieldValue(value.getNativeStringRepresentation(), value.getType());
+        return getKeywordField(name, encoded);
+    }
+    
+    public static Value getValueFromField(Field field, ValueFactory valueFactory, int type) {
         String fieldValue = field.stringValue();
         
         String decodedFieldValue = decodeIndexFieldValue(fieldValue, type);
@@ -199,20 +87,19 @@ public class FieldMapper implements InitializingBean {
         return valueFactory.createValue(decodedFieldValue, type);
     }
     
-    private Value[] getValuesFromField(Field field, int type) {
-        String fieldValue = field.stringValue();
-        
-        String[] stringValues = fieldValue.split("\\\\" + FIELD_VALUE_LIST_SEPARATOR);
-        
-        for (int i=0; i<stringValues.length; i++) {
-            stringValues[i] = 
-                decodeIndexFieldValue(unescapeIndexFieldValue(stringValues[i]), type);
+    public static Value[] getValuesFromFields(Field[] fields, ValueFactory valueFactory, 
+                                                int type) {
+
+        Value[] values = new Value[fields.length];
+        for (int i=0; i<fields.length; i++) {
+            String stringValue = fields[i].stringValue();
+            values[i] = valueFactory.createValue(stringValue, type);
         }
         
-        return valueFactory.createValues(stringValues, type);
+        return values;
     }
     
-    public String decodeIndexFieldValue(String fieldValue, int type) 
+    public static String decodeIndexFieldValue(String fieldValue, int type) 
         throws ValueFormatException {
         
         switch (type) {
@@ -279,7 +166,7 @@ public class FieldMapper implements InitializingBean {
      * is indexing/Lucene-specific.
      * 
      */
-    public String encodeIndexFieldValue(String stringValue, int type) 
+    public static String encodeIndexFieldValue(String stringValue, int type) 
         throws ValueFormatException {
         
         switch (type) {
@@ -368,9 +255,15 @@ public class FieldMapper implements InitializingBean {
 
     }
     
-    public static String unescapeIndexFieldValue(String value) {
-        StringBuffer buffer = new StringBuffer(value);
-        String escapedSeparator = "\\" + FIELD_VALUE_LIST_SEPARATOR;
+    /**
+     * Un-backslash-escape given character
+     * @param c
+     * @param s
+     * @return
+     */
+    public static String unescapeCharacter(char c, String s) {
+        StringBuffer buffer = new StringBuffer(s);
+        String escapedSeparator = "\\" + c;
         int p = 0;
         while ((p = buffer.indexOf(escapedSeparator, p)) != -1) {
             buffer.delete(p, p+1);
@@ -379,22 +272,23 @@ public class FieldMapper implements InitializingBean {
         return buffer.toString();
     }
     
-    public static String escapeIndexFieldValue(String value) {
-        StringBuffer buffer = new StringBuffer(value);
+    /**
+     * Backslash-escape given character
+     * @param c
+     * @param s
+     * @return
+     */
+    public static String escapeCharacter(char c, String s) {
+        StringBuffer buffer = new StringBuffer(s);
+        String escapeChar = Character.toString(c);
         int p = 0;
-        while ((p = buffer.indexOf(FIELD_VALUE_LIST_SEPARATOR, p)) != -1) {
+        while ((p = buffer.indexOf(escapeChar, p)) != -1) {
             buffer.insert(p, "\\");
         }
         
         return buffer.toString();
     }
     
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
-        this.propertyManager = propertyManager;
-    }
 
-    public void setValueFactory(ValueFactory valueFactory) {
-        this.valueFactory = valueFactory;
-    }
 
 }

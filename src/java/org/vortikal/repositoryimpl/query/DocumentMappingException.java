@@ -1,23 +1,23 @@
 package org.vortikal.repositoryimpl.query;
 
-public class FieldMappingException extends DocumentMappingException {
+public class DocumentMappingException extends IndexException {
 
-    public FieldMappingException() {
+    public DocumentMappingException() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-    public FieldMappingException(String message) {
+    public DocumentMappingException(String message) {
         super(message);
         // TODO Auto-generated constructor stub
     }
 
-    public FieldMappingException(String message, Throwable cause) {
+    public DocumentMappingException(String message, Throwable cause) {
         super(message, cause);
         // TODO Auto-generated constructor stub
     }
 
-    public FieldMappingException(Throwable cause) {
+    public DocumentMappingException(Throwable cause) {
         super(cause);
         // TODO Auto-generated constructor stub
     }

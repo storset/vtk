@@ -813,21 +813,36 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     private String getResourceTypeTreeAsString() {
         StringBuffer sb = new StringBuffer();
-        recurseResourceTypes(sb, 0, rootResourceTypeDefinition);
+        printResourceTypes(sb, 0, rootResourceTypeDefinition);
         return sb.toString();
     }
     
-    private void recurseResourceTypes(StringBuffer sb, int level,
-                                      ResourceTypeDefinition def) {
+    private void printResourceTypes(StringBuffer sb, int level,
+                                    ResourceTypeDefinition def) {
         
-        for (int i = 0; i < level; i++) sb.append("  ");
+        if (level > 0) {
+            for (int i = 1; i < level; i++) sb.append("  ");
+            sb.append("|\n");
+            for (int i = 1; i < level; i++) sb.append("  ");
+            sb.append("+--");
+        }
 
         sb.append("[").append(def.getNamespace()).append("] ").append(def.getName()).append("\n");
+
+        PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
+        if (propDefs.length > 0) {
+            for (int i = 0; i < propDefs.length; i++) {
+                for (int j = 0; j < level; j++) sb.append("  ");
+                sb.append("  prop: ");
+                sb.append(propDefs[i].getName());
+                sb.append("\n");
+            }
+        }
         PrimaryResourceTypeDefinition[] children = (PrimaryResourceTypeDefinition[])
             this.resourceTypeDefinitions.get(def);
         if (children != null) {
             for (int i = 0; i < children.length; i++) {
-                recurseResourceTypes(sb, level + 1, children[i]);
+                printResourceTypes(sb, level + 1, children[i]);
             }
         }
     }

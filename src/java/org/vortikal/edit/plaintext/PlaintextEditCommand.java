@@ -39,37 +39,19 @@ import org.vortikal.web.controller.AbstractSaveCancelCommand;
 public class PlaintextEditCommand extends AbstractSaveCancelCommand {
 
     private String content;
-    private boolean html = false;
     
-    /**
-     * Creates a new <code>PlaintextEditCommand</code> instance.
-     *
-     * @param content a the text content.
-     * @param submitURL the URL to submit to.
-     */
     public PlaintextEditCommand(String content, String submitURL) {
         super(submitURL);
         this.content = content;
     }
 
-
-    public boolean isHtml() {
-        return html;
-    }
-    
-
-    public void setHtml(boolean html) {
-        this.html = html;
-    }
-
-
     public String getContent() {
         return this.content;
     }
 
-
     public void setContent(String content)  {
         this.content = content;
     }
+
 }
 

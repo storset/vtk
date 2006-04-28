@@ -30,42 +30,167 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.TermQuery;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.PropertySetIndex;
+import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
+ * XXX: Not to be considered finished, but functional, at least.
+ * Really need to model things a bit differently to support indexing to alternate
+ * index, hot-switching between indexes after re-indexing, locking etc.
+ * XXX: handle DocumentMappingException's
  * 
  * @author oyviste
  *
  */
-public class PropertySetIndexImpl implements PropertySetIndex {
+public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean {
 
+    Log logger = LogFactory.getLog(PropertySetIndexImpl.class);
+    
     private LuceneIndex index; // Underlying Lucene index.
+    private DocumentMapper documentMapper;
 
+    public void afterPropertiesSet() throws BeanInitializationException {
+        if (index == null) {
+            throw new BeanInitializationException("Property 'index' not set.");
+        } else if (documentMapper == null) {
+            throw new BeanInitializationException("Property 'documentMapper' not set.");
+        }
+    }
+    
     public void addPropertySet(PropertySet propertySet) throws IndexException {
-        // TODO Auto-generated method stub
+
+        Document doc = null;
+        // XXX: FIXME: ugly casting and parentIds not functioning yet.
+        // XXX: FIXME: locking must be done at some point, need to think more about how to best model this.
+        try {
+            doc = documentMapper.getDocument((PropertySetImpl)propertySet, new String[]{});
+            if (logger.isDebugEnabled()) {
+                logger.debug("Adding new property set at URI '" + propertySet.getURI() + "'");
+            }
+            index.getIndexWriter().addDocument(doc);
+        } catch (DocumentMappingException dme) {
+            logger.warn("Could not map property set to index document", dme);
+            throw new IndexException("Could not map property set to index document", dme);
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
         
     }
 
     public void clearIndex() throws IndexException {
-        // TODO Auto-generated method stub
-        
+        try {
+            index.createNewIndex();
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
     }
 
     public void deletePropertySet(String uri) throws IndexException {
-        // TODO Auto-generated method stub
+        // XXX: uses prefixq now, but will use parentids
+        IndexReader reader = null;
+        try {
+            PrefixQuery q = new PrefixQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            
+            reader = index.getIndexReader();
+            IndexSearcher searcher = new IndexSearcher(reader);
+            
+            Hits hits = searcher.search(q);
+            for (int i=0; i<hits.length(); i++) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Deleting property set at URI '"
+                            + hits.doc(i).get(DocumentMapper.URI_FIELD_NAME) + "' from index.");
+                }
+                        
+                reader.deleteDocument(hits.id(i));
+            }
+            
+            searcher.close();
+        } catch (IOException io) {
+            throw new IndexException (io);
+        }    
+    }
+
+    public void updatePropertySet(PropertySet propertySet) throws IndexException {
+        
+        try {
+            IndexReader reader = index.getIndexReader();
+            reader.deleteDocuments(new Term(DocumentMapper.URI_FIELD_NAME, propertySet.getURI()));
+            
+            IndexWriter writer = index.getIndexWriter();
+            // XXX: nasty cast.. 
+            writer.addDocument(documentMapper.getDocument((PropertySetImpl)propertySet, new String[]{}));
+            
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
         
     }
 
     public PropertySet getPropertySet(String uri) throws IndexException {
-        // TODO Auto-generated method stub
-        return null;
+        IndexSearcher searcher = null;
+        try {
+            PropertySet propSet = null;
+            searcher = index.getIndexSearcher();
+            TermQuery tq = new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            Hits hits = searcher.search(tq);
+            if (hits.length() > 1) {
+                throw new IndexException("Multiple property sets exist in index for a single URI");
+            }
+            
+            if (hits.length() == 1) {
+                Document doc = hits.doc(0);
+                propSet = documentMapper.getPropertySet(doc);
+            } else {
+                throw new IndexException("Could not find any property set with URI '" + uri + "'");
+            }
+            searcher.close();
+          
+            return propSet;
+        } catch (IOException io) {
+            throw new IndexException(io);
+        } 
     }
 
-    public void updatePropertySet(PropertySet propertySet) throws IndexException {
-        // TODO Auto-generated method stub
+    public void commit() throws IndexException {
+        try {
+            index.commit();
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
         
     }
+
+    public boolean lock() {
+        return index.lockAcquire();
+    }
+
+    public void unlock() throws IndexException {
+        index.lockRelease();
+    }
+
+    public void setDocumentMapper(DocumentMapper documentMapper) {
+        this.documentMapper = documentMapper;
+    }
+
+    public void setIndex(LuceneIndex index) {
+        this.index = index;
+    }
+
     
 }

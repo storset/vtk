@@ -117,9 +117,9 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         // Create a new writer if necessary.
         if (writer == null) {
             writer = new IndexWriter(directory, analyzer, false);
-            writer.minMergeDocs = this.minMergeDocs;
-            writer.maxMergeDocs = this.maxMergeDocs;
-            writer.mergeFactor = this.mergeFactor;
+            writer.setMaxBufferedDocs(this.minMergeDocs);
+            writer.setMaxMergeDocs(this.maxMergeDocs);
+            writer.setMergeFactor(this.mergeFactor);
         }
         
         return writer;

@@ -191,7 +191,7 @@ public class DocumentMapper implements InitializingBean {
     private Property getPropertyFromFields(Field[] fields) throws FieldMappingException {
         
         if (fields == null || fields.length == 0) {
-            throw new IllegalArgumentException("Need at least one field, and it may not be null.s");
+            throw new IllegalArgumentException("Need at least one field, and it may not be null");
         }
         
         Field ff = fields[0];

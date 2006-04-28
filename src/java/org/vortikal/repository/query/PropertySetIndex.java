@@ -56,4 +56,12 @@ public interface PropertySetIndex {
     public void clearIndex() throws IndexException;
     
     
+    // XXX: should be somewhere else, or be done in a different way, but keep 
+    // it like this for now.
+    public boolean lock() throws IndexException;
+    
+    public void unlock() throws IndexException;
+    
+    public void commit() throws IndexException;
+    
 }

@@ -1004,7 +1004,7 @@ public class JDBCClient extends AbstractDataAccessor {
                             stmt.setInt(2, type);
                             stmt.setString(3, namespaceUri);
                             stmt.setString(4, name);
-                            stmt.setString(5, values[i].getStringRepresentation());
+                            stmt.setString(5, values[i].getNativeStringRepresentation());
                             stmt.addBatch();
                         }
                     } else {
@@ -1013,7 +1013,7 @@ public class JDBCClient extends AbstractDataAccessor {
                         stmt.setInt(2, type);
                         stmt.setString(3, namespaceUri);
                         stmt.setString(4, name);
-                        stmt.setString(5, value.getStringRepresentation());
+                        stmt.setString(5, value.getNativeStringRepresentation());
                         stmt.addBatch();
                     }
                 }

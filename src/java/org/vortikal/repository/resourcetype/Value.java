@@ -199,7 +199,7 @@ public final class Value implements Cloneable {
         return sb.toString();
     }
     
-    public String getStringRepresentation() {
+    public String getNativeStringRepresentation() {
         
         String representation = null;
         switch (this.type) {

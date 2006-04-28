@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,13 @@ package org.vortikal.repository.query;
 import org.vortikal.repositoryimpl.index.Results;
 
 /**
- * Simple search interface
+ * Defines a searchable property set index.
+ * 
+ * XXX: This interface needs modifications !
+ * @author oyviste
  *
- * Created: Wed May  5 21:39:46 2004
- * @deprecated
  */
-public interface Searcher {
+public interface PropertySetSearchIndex {
 
     public Results execute(String token, Query query) throws QueryException;
     
@@ -47,5 +48,5 @@ public interface Searcher {
 
     public Results execute(String token, Query query, int maxResults,
                           int cursor) throws QueryException;
-
+    
 }

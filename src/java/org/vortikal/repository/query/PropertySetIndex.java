@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,30 @@
  */
 package org.vortikal.repository.query;
 
-import org.vortikal.repositoryimpl.index.Results;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
- * Simple search interface
+ * Defines an interface to a hierarchically organized index of <code>PropertySet</code>s.
+ * Each <code>PropertySet</code> is identified by its URI. A 
+ * <code>PropertySet</code> can be a parent of other <code>PropertySet</code>s. 
+ * (collections). Deleting a parent <code>PropertySet</code> will also 
+ * delete all its children.
+ * 
+ * @author oyviste
  *
- * Created: Wed May  5 21:39:46 2004
- * @deprecated
  */
-public interface Searcher {
+public interface PropertySetIndex {
 
-    public Results execute(String token, Query query) throws QueryException;
+    public void addPropertySet(PropertySet propertySet) throws IndexException;
     
-    public Results execute(String token, Query query, int maxResults) throws
-        QueryException;
-
-    public Results execute(String token, Query query, int maxResults,
-                          int cursor) throws QueryException;
-
+    public void updatePropertySet(PropertySet propertySet) throws IndexException;
+    
+    public void deletePropertySet(String uri) throws IndexException;
+    
+    public PropertySet getPropertySet(String uri) throws IndexException;
+    
+    public void clearIndex() throws IndexException;
+    
+    
 }

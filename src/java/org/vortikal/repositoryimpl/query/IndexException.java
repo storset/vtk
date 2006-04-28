@@ -1,21 +1,21 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,24 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.query;
-
-import org.vortikal.repositoryimpl.index.Results;
+package org.vortikal.repositoryimpl.query;
 
 /**
- * Simple search interface
- *
- * Created: Wed May  5 21:39:46 2004
- * @deprecated
+ * Generic index exception.
+ * @author oyviste
  */
-public interface Searcher {
-
-    public Results execute(String token, Query query) throws QueryException;
+public class IndexException extends RuntimeException {
     
-    public Results execute(String token, Query query, int maxResults) throws
-        QueryException;
+    private static final long serialVersionUID = 6555061187853543964L;
 
-    public Results execute(String token, Query query, int maxResults,
-                          int cursor) throws QueryException;
+    /** Creates a new instance of IndexException */
+    public IndexException() {
+        super();
+    }
 
+    public IndexException(String message) {
+        super(message);
+    }
+
+    public IndexException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public IndexException(Throwable cause) {
+        super(cause);
+    }
 }

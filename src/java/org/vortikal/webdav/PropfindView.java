@@ -517,7 +517,7 @@ public class PropfindView implements View, InitializingBean {
          * fails, we assume it is a 'name = value' style property, and
          * build a simple JDOM element from it. */
 
-        String value = property.getValue().getStringRepresentation();
+        String value = property.getValue().getNativeStringRepresentation();
 
         /* If the value does not contain both "<" and ">" we know for
          * sure that it is not an XML fragment: */
@@ -563,7 +563,7 @@ public class PropfindView implements View, InitializingBean {
         if (property.getValue().getType() == PropertyType.TYPE_DATE) {
             propElement.setText(WebdavUtil.formatPropertyDateValue(property.getDateValue()));
         } else {
-            propElement.setText(property.getValue().getStringRepresentation());    
+            propElement.setText(property.getValue().getNativeStringRepresentation());    
         }
         
         return propElement;
@@ -594,7 +594,7 @@ public class PropfindView implements View, InitializingBean {
             if (values[i].getType() == PropertyType.TYPE_DATE) {
                 valueElement.setText(WebdavUtil.formatPropertyDateValue(values[i].getDateValue()));
             } else {
-                valueElement.setText(values[i].getStringRepresentation());
+                valueElement.setText(values[i].getNativeStringRepresentation());
             }
             
             valuesElement.addContent(valueElement);

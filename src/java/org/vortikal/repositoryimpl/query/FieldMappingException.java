@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.query;
-
-import org.vortikal.repositoryimpl.index.Results;
+package org.vortikal.repositoryimpl.query;
 
 /**
- * Simple search interface
+ * 
+ * @author oyviste
  *
- * Created: Wed May  5 21:39:46 2004
- * @deprecated
  */
-public interface Searcher {
+public class FieldMappingException extends IndexException {
 
-    public Results execute(String token, Query query) throws QueryException;
+    public FieldMappingException() {
+        super();
+    }
     
-    public Results execute(String token, Query query, int maxResults) throws
-        QueryException;
-
-    public Results execute(String token, Query query, int maxResults,
-                          int cursor) throws QueryException;
-
+    public FieldMappingException(String msg) {
+        super(msg);
+    }
+    
+    public FieldMappingException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+    
 }

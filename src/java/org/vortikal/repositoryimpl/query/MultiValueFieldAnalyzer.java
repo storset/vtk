@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.query;
+package org.vortikal.repositoryimpl.query;
 
-import org.vortikal.repositoryimpl.index.Results;
+import java.io.Reader;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 
 /**
- * Simple search interface
+ * 
+ * @author oyviste
  *
- * Created: Wed May  5 21:39:46 2004
- * @deprecated
  */
-public interface Searcher {
+public class MultiValueFieldAnalyzer extends Analyzer {
 
-    public Results execute(String token, Query query) throws QueryException;
-    
-    public Results execute(String token, Query query, int maxResults) throws
-        QueryException;
-
-    public Results execute(String token, Query query, int maxResults,
-                          int cursor) throws QueryException;
+    public TokenStream tokenStream(String fieldName, Reader reader) {
+        return new MultiValueFieldTokenizer(reader);
+      }
 
 }

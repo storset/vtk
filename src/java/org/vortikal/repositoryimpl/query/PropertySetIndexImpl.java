@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,44 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.query;
+package org.vortikal.repositoryimpl.query;
 
-import org.vortikal.repositoryimpl.index.Results;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.query.PropertySetIndex;
+import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
- * Simple search interface
+ * 
+ * @author oyviste
  *
- * Created: Wed May  5 21:39:46 2004
- * @deprecated
  */
-public interface Searcher {
+public class PropertySetIndexImpl implements PropertySetIndex {
 
-    public Results execute(String token, Query query) throws QueryException;
+    private LuceneIndex index; // Underlying Lucene index.
+
+    public void addPropertySet(PropertySet propertySet) throws IndexException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void clearIndex() throws IndexException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void deletePropertySet(String uri) throws IndexException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public PropertySet getPropertySet(String uri) throws IndexException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void updatePropertySet(PropertySet propertySet) throws IndexException {
+        // TODO Auto-generated method stub
+        
+    }
     
-    public Results execute(String token, Query query, int maxResults) throws
-        QueryException;
-
-    public Results execute(String token, Query query, int maxResults,
-                          int cursor) throws QueryException;
-
 }

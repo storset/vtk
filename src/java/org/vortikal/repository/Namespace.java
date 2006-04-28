@@ -30,6 +30,9 @@
  */
 package org.vortikal.repository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class Namespace {
 
@@ -62,6 +65,18 @@ public class Namespace {
         return new Namespace(uri);
     }
     
+    public static Namespace getNamespaceFromPrefix(String prefix) {
+        if (prefix == null) {
+            return DEFAULT_NAMESPACE;
+        } 
+        
+        if ("custom".equals(prefix)) {
+            return CUSTOM_NAMESPACE;
+        }
+        
+        return new Namespace(prefix); // XXX: unknown prefix
+    }
+
     public String getPrefix() {
         return this.prefix;
     }

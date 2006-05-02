@@ -46,7 +46,7 @@ import org.vortikal.security.PrincipalManager;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>principalStore</code> - a {@link PrincipalStore} used
+ *   <li><code>principalStore</code> - a {@link org.vortikal.security.PrincipalStore} used
  *   for validating group membership
  *   <li><code>principals</code> - a {@link Set} of (fully qualified)
  *   principal names to match the current principal against.

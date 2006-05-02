@@ -438,7 +438,7 @@ public class ProppatchController extends AbstractWebdavController  {
     /**
      * Builds a string representation of a property element.
      *
-     * @param a child element (property) of the "dav:prop" element.
+     * @param element a child element (property) of the "dav:prop" element.
      * @return a String representation of the property. If the element
      * has no child elements, the string returned is the value of the
      * element's text, otherwise the XML structure is preserved.

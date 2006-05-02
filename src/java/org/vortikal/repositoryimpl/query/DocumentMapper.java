@@ -110,11 +110,11 @@ public class DocumentMapper implements InitializingBean {
         Field uriField = FieldMapper.getKeywordField(URI_FIELD_NAME, propSet.getURI());
         doc.add(uriField);
         
-        Field nameField = FieldMapper.getKeywordField("name", propSet.getName());
+        Field nameField = FieldMapper.getKeywordField(NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
         
         Field resourceTypeField =
-            FieldMapper.getKeywordField(NAME_FIELD_NAME, propSet.getResourceType());
+            FieldMapper.getKeywordField(RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
         doc.add(resourceTypeField);
         
         for (int i=0; i<parentIds.length; i++) {

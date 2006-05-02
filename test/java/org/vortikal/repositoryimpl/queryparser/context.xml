@@ -2,13 +2,8 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+
   <bean id="queryParser"
         class="org.vortikal.repositoryimpl.queryparser.QueryParser" />
 
-<!--  <bean id="queryManager"
-        class="org.vortikal.repositoryimpl.queryparser.Test">
-    <property name="parser" ref="queryParser" />
-    <property name="searcher" ref="searcher" />
-  </bean>
--->
 </beans>

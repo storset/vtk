@@ -65,6 +65,7 @@ import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -456,12 +457,12 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
 
         // Check validator...
-//        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
-//            Property prop = (Property) iter.next();
-//            PropertyValidator validator = prop.getDefinition().getValidator();
-//            if (validator != null)
-//                validator.validate(principal, newResource, prop);
-//        }
+        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            PropertyValidator validator = prop.getDefinition().getValidator();
+            if (validator != null)
+                validator.validate(principal, newResource, prop);
+        }
         
         for (Iterator iter = newProps.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();

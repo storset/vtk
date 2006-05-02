@@ -73,6 +73,9 @@
     <property name="principalManager" ref="principalManager" />
   </bean>
   
+  <bean id="principalEvaluator" class="org.vortikal.repository.resourcetype.property.PrincipalEvaluator">
+    <property name="principalManager" ref="principalManager" />
+  </bean>
 
   <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="collection" />

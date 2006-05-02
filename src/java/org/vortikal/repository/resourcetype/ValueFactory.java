@@ -42,9 +42,10 @@ public interface ValueFactory {
     /**
      * Create a <code>Value</code> object from the given string
      * representation and type.
-     * @param value
-     * @param type
-     * @return
+     * @param stringValue The String representation of the value
+     * @param type The type of the Value, see {@link PropertyType}
+     * @return The Value based on the stringValue and type
+     * @throws ValueFormatException
      */
     public Value createValue(String stringValue, int type)
         throws ValueFormatException;
@@ -52,9 +53,9 @@ public interface ValueFactory {
 
     /**
      * 
-     * @param stringValues
-     * @param type
-     * @return
+     * @param stringValues An array of String representation
+     * @param type The type of the Value, see {@link PropertyType}
+     * @return An array of Values 
      * @throws ValueFormatException
      */
     public Value[] createValues(String[] stringValues, int type)

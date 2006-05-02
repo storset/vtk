@@ -40,7 +40,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
+import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
 /**
@@ -105,7 +107,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         
         case PropertyType.TYPE_DATE:
             // old: Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
-            // Dates are represented in the following format dd.MM.yyyy
+            // Dates are represented as described in the configuration for this bean in the List stringFormats
             Date date = getDateFromStringValue(stringValue);
             value.setDateValue(date);
             break;
@@ -128,12 +130,24 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
             
         case PropertyType.TYPE_PRINCIPAL:
             try {
-                value.setPrincipalValue(principalManager.getUserPrincipal(stringValue));
-            } catch (InvalidPrincipalException ipe) {
-                throw new ValueFormatException("Unable to convert string to valid principal");
+                Principal principal = principalManager.getUserPrincipal(stringValue);
+                if (!principalManager.validatePrincipal(principal)) {
+                    logger.debug("Validation failed for principal with stringValue '" + stringValue);
+                    throw new ValueFormatException(
+                            "Unable to convert string to valid principal. Principal '"
+                                    + stringValue + "' does not exists");
+                }
+                value.setPrincipalValue(principal);
+            } catch (InvalidPrincipalException e) {
+                logger.debug("Exception for stringValue '" + stringValue + "': " + e);
+                throw new ValueFormatException(e.getMessage());
+            } catch (AuthenticationProcessingException e) {
+                logger.debug("Exception for stringValue '" + stringValue + "': " + e);
+                throw new ValueFormatException(
+                        "Unable to convert string to valid principal. Principal does not exists");
             }
             break;
-            
+                    
         default:
             throw new IllegalArgumentException("Cannot convert to unknown type '" + type+ "'");
             

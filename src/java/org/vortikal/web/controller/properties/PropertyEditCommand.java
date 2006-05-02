@@ -32,6 +32,7 @@ package org.vortikal.web.controller.properties;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import java.util.Arrays;
 
 
 
@@ -92,6 +93,28 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         this.value = null;
         this.possibleValues = null;
     }
+
+    /**
+         * toString methode: creates a String representation of the object
+         * @return the String representation
+         * @author info.vancauwenberge.tostring plugin
+    
+         */
+        public String toString() {
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("PropertyEditCommand[");
+            buffer.append("definition = ").append(definition);
+            if (possibleValues == null) {
+                buffer.append(", possibleValues = ").append("null");
+            } else {
+                buffer.append(", possibleValues = ").append(Arrays.asList(possibleValues).toString());
+            }
+            buffer.append(", value = ").append(value);
+            buffer.append(", namespace = ").append(namespace);
+            buffer.append(", name = ").append(name);
+            buffer.append("]");
+            return buffer.toString();
+        }
     
 }
 

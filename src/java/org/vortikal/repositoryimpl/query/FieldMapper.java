@@ -34,7 +34,6 @@ import java.text.ParseException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.DateTools.Resolution;

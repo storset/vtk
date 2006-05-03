@@ -72,13 +72,20 @@ TOKEN : { <#ESCAPED_CHAR: "\\" [" ", "\\", "!", "(", ")", ":", "\"", "|", "&", "
 TOKEN : { < EQ: "="> }
 TOKEN : { < GT: ">"> }
 TOKEN : { < LT: "<"> }
-TOKEN : { < NEQ: "!="> }
+TOKEN : { < NE: "!="> }
 TOKEN : { < GTE: ">="> }
 TOKEN : { < LTE: "<="> }
+
+TOKEN : { < EXISTS: "exists"> }
+TOKEN : { < NOTEXISTS: "not exists" | "!exists"> }
 
 TOKEN : { < AND: "AND" | "&&"> }
 TOKEN : { < OR: "OR" | "||"> }
 TOKEN : { < COLON: ":"> }
+
+TOKEN : { < URI: "uri"> }
+TOKEN : { < NAME: "name"> }
+TOKEN : { < TYPE: "type"> }
 
 TOKEN : { < #ID: (~[" ", "\\", "\"", "=", "<", ">", "!", "(", ")", ":"])+ > }
 TOKEN : { < STRING: (<ID> | <ESCAPED_CHAR>)+ > }
@@ -96,10 +103,10 @@ SimpleNode Query() : {}
 void QueryChoice() #void : {}
 {
     (
-     LOOKAHEAD(100, (Parantheses() | PropertyQuery()) <AND>) AndQuery() 
-     | LOOKAHEAD(100, (ClosedQuery() | PropertyQuery()) <OR>) OrQuery() 
+     LOOKAHEAD(100, (Parantheses() | TermQuery()) <AND>) AndQuery() 
+     | LOOKAHEAD(100, (ClosedQuery() | TermQuery()) <OR>) OrQuery() 
     | ClosedQuery()
-    | PropertyQuery()
+    | TermQuery()
     )    
 }
 
@@ -116,30 +123,65 @@ void ClosedQuery() #void : {}
 
 void AndQuery() : {}
 {
-    (ClosedQuery() | PropertyQuery())
-    (<AND> (ClosedQuery() | PropertyQuery()) )+
+    (ClosedQuery() | TermQuery())
+    (<AND> (ClosedQuery() | TermQuery()) )+
 }
 
 void OrQuery() : {}
 {
-    (ClosedQuery() | PropertyQuery())
-    (<OR> (ClosedQuery() | PropertyQuery()) )+
+    (ClosedQuery() | TermQuery())
+    (<OR> (ClosedQuery() | TermQuery()) )+
 }
 
-void PropertyQuery() : {}
+void TermQuery() #void : {}
 { 
-    [LOOKAHEAD(2) Prefix() <COLON>] Name() Comparator() Value()
+    UriQuery() | NameQuery() | TypeQuery() | LOOKAHEAD(4) PropertyExistsQuery() | PropertyValueQuery()
 }
 
-void Comparator() : 
+// URI query:
+void UriQuery() : {}
 { 
+    <URI> UriComparator() Value()
+}
+
+// Name query:
+void NameQuery() : {}
+{ 
+    <NAME> ComparatorValue()
+}
+
+// Type query:
+void TypeQuery() : {}
+{ 
+    <TYPE> ComparatorValue()
+}
+
+// Property exists:
+void PropertyExistsQuery() : {}
+{
+    [LOOKAHEAD(2) Prefix() <COLON>] Name() Exists()
+}
+
+void Exists() : 
+{
     Token t;
 }
 {
-    ( t=<NEQ> | t=<GTE> | t=<LTE> | t=<EQ> | t=<GT> | t=<LT> )
+    (t=<EXISTS> | t=<NOTEXISTS>)
     { 
         jjtThis.setValue(t.image); 
     }
+}
+
+// Property value query:
+void PropertyValueQuery() : {}
+{
+    [LOOKAHEAD(2) Prefix() <COLON>] Name() ComparatorValue()
+}
+
+void ComparatorValue() #void : {}
+{
+    Comparator() Value()
 }
 
 void Prefix() : 
@@ -175,3 +217,27 @@ void Value() :
       jjtThis.setValue(unescape(t.image));
   }
 }
+
+// Comparators:
+void Comparator() : 
+{
+    Token t;
+}
+{
+    ( t=<NE> | t=<GTE> | t=<LTE> | t=<EQ> | t=<GT> | t=<LT> )
+    { 
+        jjtThis.setValue(t.image); 
+    }
+}
+
+void UriComparator() :
+{ 
+    Token t;
+}
+{
+    (t=<EQ> | t=<NE>)
+    { 
+        jjtThis.setValue(t.image); 
+    }
+}
+

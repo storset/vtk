@@ -985,4 +985,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
     
+    public PropertyTypeDefinition getPropertyDefinition(String prefix, String name) {
+        return null;
+    }
+    
 }

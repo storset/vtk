@@ -33,14 +33,14 @@ public class QueryManager implements InitializingBean {
     }
     
     private Query buildQuery(QueryNode node) {
-        if (node.getNodeName().equals(AndQuery.class.getName())) {
+        if (node.getNodeName().equals("AndQuery")) {
             AndQuery and = new AndQuery();
             for (Iterator iter = node.getChildren().iterator(); iter.hasNext();) {
                 QueryNode child = (QueryNode) iter.next();
                 and.add(buildQuery(child));
             }
             return and;
-        } else if (node.getNodeName().equals(OrQuery.class.getName())) {
+        } else if (node.getNodeName().equals("OrQuery")) {
             OrQuery or = new OrQuery();
             for (Iterator iter = node.getChildren().iterator(); iter.hasNext();) {
                 QueryNode child = (QueryNode) iter.next();

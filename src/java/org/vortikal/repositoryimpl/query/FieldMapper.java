@@ -30,19 +30,25 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import java.text.ParseException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.DateTools.Resolution;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
 /**
- * Create {@link org.apache.lucene.document.Field} objects from 
- * {@org.vortikal.repository.Property} instances and vice-versa + misc
- * utility methods for mapping field-values.
+ * <ul>
+ *  <li>Utility methods for mapping between <code>Value</code> and <code>org.apache.lucene.document.Field</code>
+ * objects.
+ *  <li>Methods for encoding and decoding index field values</li>
+ * </ul> 
  * 
  * @author oyviste
  */
@@ -111,15 +117,21 @@ public final class FieldMapper {
             return fieldValue; // Stored as-is in index
 
         case (PropertyType.TYPE_DATE):
-            long time = DateField.stringToTime(fieldValue);
-            return Long.toString(time);
+            try {
+                long time = DateTools.stringToTime(fieldValue);
+                return Long.toString(time);
+            } catch (ParseException pe) {
+                throw new ValueFormatException(pe.getMessage());
+            }
+            
 
             
         // XXX: sorting of negative integers does not work with this encoding
         // XXX: Possible solution is to shift scale to [0 - 2*Integer.MAX_VALUE], so
         //      that we avoid negative numbers (which cannot be compared directly
         //      lexicographically with other numbers, because "bigger" is in fact smaller
-        //      on the negative side of the scale).        
+        //      on the negative side of the scale).
+        //  TODO: use hex encoding, which is more compact.
         // Index representations: '+0000002005', '-0009999999', '+0000000000'
         case (PropertyType.TYPE_INT):
             int n;
@@ -178,7 +190,7 @@ public final class FieldMapper {
         case(PropertyType.TYPE_DATE):
             try {
                 long l = Long.parseLong(stringValue);
-                return DateField.timeToString(l);
+                return DateTools.timeToString(l, Resolution.SECOND);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException("Unable to encode date string value to " 
                         + "to index field value representation: " + nfe.getMessage());
@@ -288,7 +300,5 @@ public final class FieldMapper {
         
         return buffer.toString();
     }
-    
-
 
 }

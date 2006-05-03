@@ -4,6 +4,9 @@ import java.util.Iterator;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.query.query.AndQuery;
+import org.vortikal.repositoryimpl.query.query.OrQuery;
+import org.vortikal.repositoryimpl.query.query.Query;
 
 public class QueryManager implements InitializingBean {
 
@@ -47,7 +50,7 @@ public class QueryManager implements InitializingBean {
                 or.add(buildQuery(child));
             }
             return or;
-        } else if (node.getNodeName().equals(PropertyQuery.class.getName())) {
+        } else if (node.getNodeName().equals("")) {
             return parsePropertyQuery(node);
         }
         

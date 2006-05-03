@@ -1,7 +1,8 @@
-package org.vortikal.repositoryimpl.queryparser;
+package org.vortikal.repositoryimpl.query.query;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public abstract class AbstractMultipleQuery implements Query {
 

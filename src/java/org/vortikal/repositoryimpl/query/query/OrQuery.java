@@ -1,4 +1,4 @@
-package org.vortikal.repositoryimpl.queryparser;
+package org.vortikal.repositoryimpl.query.query;
 
 
 public class OrQuery extends AbstractMultipleQuery {

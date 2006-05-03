@@ -169,6 +169,7 @@ void Exists() :
 {
     (t=<EXISTS> | t=<NOTEXISTS>)
     { 
+        
         jjtThis.setValue(t.image); 
     }
 }

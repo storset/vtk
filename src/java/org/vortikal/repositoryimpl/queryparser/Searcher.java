@@ -30,6 +30,8 @@
  */
 package org.vortikal.repositoryimpl.queryparser;
 
+import org.vortikal.repositoryimpl.query.query.Query;
+
 /**
  * Simple search interface
  *

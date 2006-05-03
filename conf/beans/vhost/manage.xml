@@ -1099,7 +1099,7 @@
             </list>
           </property>
           <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
-          <property name="name"><value>visual-profile</value></property>
+          <property name="name" value="visual-profile" />
           <property name="values">
             <list>
               <value>yes</value>

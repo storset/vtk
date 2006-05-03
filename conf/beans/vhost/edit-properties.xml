@@ -30,13 +30,49 @@
         </bean>      
       </list>
     </property>
-    <property name="handler">
-      <ref bean="editPropertiesHandler" />
+    <property name="services">
+      <list>
+        <ref bean="editStandardPropertiesService" />
+        <ref bean="editUhtmlPropertiesService" />
+      </list>
     </property>
+    <property name="handler" ref="editStandardPropertiesHandler" />
   </bean>        
 
+  <bean id="editStandardPropertiesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editPropertiesService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="group" />
+          <property name="parameterValue" value="standard" />
+        </bean>      
+      </list>
+    </property>
+    <property name="handler" ref="editStandardPropertiesHandler" />
+  </bean>        
 
-  <bean id="editPropertiesHandler" 
+  <bean id="editUhtmlPropertiesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editPropertiesService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="WEB_3_0_NAMESPACE" />
+          <property name="name" value="description" />
+          <property name="value" value="yes" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="group" />
+          <property name="parameterValue" value="uhtml" />
+        </bean>      
+      </list>
+    </property>
+    <property name="handler" ref="editUhtmlPropertiesHandler" />
+  </bean>        
+  
+
+
+  <bean id="editStandardPropertiesHandler" 
     class="org.vortikal.web.controller.properties.PropertyEditController"
     parent="requestLocalRepositoryAware">
     <property name="propertyTypeDefinitions">
@@ -50,18 +86,41 @@
         <ref bean="propertiesLastModifiedPropDef" />
         <ref bean="propertiesModifiedByPropDef" />
 
-        <ref bean="unitPropDef" />
-        <ref bean="topicPropDef" />
-
         <ref bean="keywordsPropDef" />
         <ref bean="descriptionPropDef" />
-
 
         <ref bean="userSetCharacterEncodingPropDef" />
         <ref bean="guessedCharacterEncodingPropDef" />
         <ref bean="characterEncodingPropDef" />
       </list>
     </property>
+    <property name="modelKey" value="standardPropList" />
+    <property name="service" ref="editStandardPropertiesService" />
+
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="formView" value="editProperties" />
+    <property name="successView" value="editProperties" />
+
+    <property name="commandName" value="form" />
+    <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
+    <!--
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
+    </property>
+    -->
+  </bean>
+
+  <bean id="editUhtmlPropertiesHandler" 
+    class="org.vortikal.web.controller.properties.PropertyEditController"
+    parent="requestLocalRepositoryAware">
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="unitPropDef" />
+        <ref bean="topicPropDef" />
+      </list>
+    </property>
+    <property name="modelKey" value="uhtmlPropList" />
+    <property name="service" ref="editUhtmlPropertiesService" />
     <property name="valueFactory" ref="valueFactory" />
     <property name="formView" value="editProperties" />
     <property name="successView" value="editProperties" />
@@ -79,7 +138,8 @@
     <property name="url" value="pages/properties-listing.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="editPropertiesHandler" /> <!-- (Also a reference data provider) -->
+        <ref bean="editStandardPropertiesHandler" /> <!-- (Also a reference data provider) -->
+        <ref bean="editUhtmlPropertiesHandler" />
         <ref bean="adminCSSProvider" />
       </list>
     </property>

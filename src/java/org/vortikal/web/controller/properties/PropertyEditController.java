@@ -55,6 +55,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceUnlinkableException;
 
 
 
@@ -65,6 +66,14 @@ public class PropertyEditController extends SimpleFormController
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private ValueFactory valueFactory;
     private String dateFormat;
+    
+    private String modelKey;
+  
+    private Service service;
+    
+    public void setModelKey(String modelKey) {
+        this.modelKey = modelKey;
+    }
     
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -88,6 +97,11 @@ public class PropertyEditController extends SimpleFormController
     
 
     public void afterPropertiesSet() {
+        if (this.modelKey == null) {
+            throw new BeanInitializationException(
+            "JavaBean property 'modelKey' not set");
+        }
+        
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'repository' not set");
@@ -255,7 +269,9 @@ public class PropertyEditController extends SimpleFormController
 
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Service service = requestContext.getService();
+        Service service = this.service;
+        if (service == null) service = requestContext.getService();
+        
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                      requestContext.getResourceURI(), false);
 
@@ -276,16 +292,20 @@ public class PropertyEditController extends SimpleFormController
                     urlParameters.put("namespace", namespaceURI);
                 }
                 urlParameters.put("name", def.getName());
-                editURL = service.constructLink(resource, securityContext.getPrincipal(),
-                                                       urlParameters);
+                try {
+                    editURL = service.constructLink(resource, securityContext.getPrincipal(),
+                            urlParameters);
+
+                } catch (ServiceUnlinkableException e) {
+                    // Assertion doesn't match, OK in this case
+                }
             }
-            
 
             PropertyItem item = new PropertyItem(property, def, editURL);
             propsList.add(item);
         }
 
-        model.put("propertyList", propsList);
+        model.put(modelKey, propsList);
     }
     
 
@@ -317,6 +337,10 @@ public class PropertyEditController extends SimpleFormController
         }
 
         return propDef.getNamespace().getUri().equals(inputNamespace);
+    }
+
+    public void setService(Service service) {
+        this.service = service;
     }
 
 

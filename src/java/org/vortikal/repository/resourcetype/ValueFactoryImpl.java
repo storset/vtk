@@ -167,6 +167,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         for (Iterator iter = dateFormats.iterator(); iter.hasNext(); ) {
             String dateFormat = (String) iter.next();
             format = new SimpleDateFormat(dateFormat);
+            format.setLenient(false);
             try {
                 date = format.parse(stringValue);
                 return date;

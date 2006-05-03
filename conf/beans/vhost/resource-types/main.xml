@@ -22,8 +22,6 @@
   <import resource="studieretning.xml" />
 
   <import resource="uhtml.xml" />
-
-  <import resource="uhtml.xml" />
   <import resource="publish.xml" />
 
   <!-- CONSTANTS -->

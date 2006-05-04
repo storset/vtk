@@ -230,7 +230,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return repository.exists(token, uri);
     }
 
-    public String lock(String token, String uri, String lockType,
+    public Resource lock(String token, String uri, String lockType,
                        String ownerInfo, String depth, int requestedTimoutSeconds,
                        String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 

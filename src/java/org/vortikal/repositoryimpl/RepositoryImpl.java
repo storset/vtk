@@ -413,7 +413,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
 
-    public String lock(String token, String uri, String lockType,
+    public Resource lock(String token, String uri, String lockType,
             String ownerInfo, String depth, int requestedTimeoutSeconds, 
             String lockToken) throws ResourceNotFoundException, 
             AuthorizationException, AuthenticationException, 
@@ -457,7 +457,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         String newLockToken = this.lockManager.lockResource(r, principal, ownerInfo, depth,
                 requestedTimeoutSeconds, (lockToken != null));
 
-        return newLockToken;
+        return r;
     }
 
     public void unlock(String token, String uri, String lockToken)

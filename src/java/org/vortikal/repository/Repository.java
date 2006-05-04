@@ -411,7 +411,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception IOException if an I/O error occurs
      */
-    public String lock(String token, String uri, String lockType,
+    public Resource lock(String token, String uri, String lockType,
             String ownerInfo, String depth, int requestedTimoutSeconds, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 

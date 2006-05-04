@@ -55,6 +55,34 @@ CREATE INDEX vortex_resource_acl_inherited_index ON vortex_resource(acl_inherite
 CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 
 
+-- Stored function for retrieving a resource's ancestor IDs.
+-- Returns an integer array of IDs.
+DROP FUNCTION resource_ancestor_ids(varchar); 
+CREATE OR REPLACE FUNCTION
+resource_ancestor_ids(varchar) RETURNS integer[] AS ' DECLARE
+  ancestor varchar DEFAULT ''/'';
+  id integer;
+  idc integer DEFAULT 0;
+  ids integer[] DEFAULT ''{}'';
+  slashpos integer DEFAULT 1;
+  nextslash integer DEFAULT -1;
+BEGIN
+  IF $1 = ''/'' THEN RETURN ids; END IF;
+
+  LOOP
+    SELECT INTO id vr.resource_id FROM vortex_resource vr
+    WHERE vr.uri = ancestor AND vr.is_collection = ''Y'';
+    ids[idc] := id;
+    idc := idc + 1;
+    nextslash := position(''/'' in substring($1 from slashpos+1 for char_length($1)-slashpos));
+    EXIT WHEN nextslash = 0;
+    slashpos := slashpos + nextslash;
+    ancestor := substring($1 from 1 for slashpos-1);
+  END LOOP;
+  RETURN ids;
+END;
+' LANGUAGE plpgsql;
+
 -----------------------------------------------------------------------------
 -- lock_type
 -----------------------------------------------------------------------------

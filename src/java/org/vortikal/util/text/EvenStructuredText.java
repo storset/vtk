@@ -30,7 +30,6 @@
  */
 package org.vortikal.util.text;
 
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
@@ -47,9 +46,10 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 /**
- * @author Even Halvorsen
- * <A HREF="mailto:even.halvorsen@usit.uio.no">even.halvorsen@usit.uio.no</A>
- * (based on guru Gorm A. Paulsen's previous version DefaultStructuredText.java)
+ * @author Even Halvorsen <A
+ *         HREF="mailto:even.halvorsen@usit.uio.no">even.halvorsen@usit.uio.no</A>
+ *         (based on guru Gorm A. Paulsen's previous version
+ *         DefaultStructuredText.java)
  * 
  * This class contains methods for generating XML-elements from structured text
  * and methods for generating structured text from an XML-structure.
@@ -65,7 +65,6 @@ public final class EvenStructuredText implements StructuredText {
     }
 
     private String LINE_SEPARATOR = "\n";
-
     protected String LISTITEM_START = LINE_SEPARATOR + "- ";
     protected String NUMLISTITEM_START = LINE_SEPARATOR + "# ";
     protected String LIST_START = LISTITEM_START;
@@ -86,16 +85,15 @@ public final class EvenStructuredText implements StructuredText {
     protected String SUB_START = "sub:\"";
     protected String SUB_END = "\"";
     protected String SUPER_START = "super:\"";
-    protected String SUPER_END = "\"";    
+    protected String SUPER_END = "\"";
     protected char NEWLINE = '\n';
-    
-    
+
     protected Map tagNames = new HashMap();
 
     public Set getTagNames() {
         return tagNames.keySet();
     }
-    
+
     private void initTagNames() {
         tagNames.put("root", "evenstructuredtext");
         tagNames.put("bold", "bold");
@@ -111,18 +109,20 @@ public final class EvenStructuredText implements StructuredText {
         tagNames.put("reference-type", "type");
         tagNames.put("sub", "sub");
         tagNames.put("super", "sup");
-        tagNames.put("newline", "br");
+        tagNames.put("newline", "linjeskift");
     }
 
     protected boolean paragraphAtPos(String text, int pos) {
         return (text.indexOf(PARAGRAPH_START, pos) == pos);
     }
-    
+
     protected boolean newlineAtPos(String text, int pos) {
-    	if( text.charAt(pos) == NEWLINE && text.charAt(pos+1) != NEWLINE )
-    		return true;
-    	else
-    		return false;
+        if (pos < text.length() - 1
+                && text.charAt(pos) == NEWLINE
+                && text.charAt(pos + 1) != NEWLINE)
+            return true;
+        else
+            return false;
     }
 
     protected boolean listAtPos(String text, int pos) {
@@ -147,10 +147,7 @@ public final class EvenStructuredText implements StructuredText {
         int endPos = text.indexOf(BOLD_CLOSE, pos + BOLD_START.length());
 
         if (endPos > 0)
-            return !(
-                endOfBlockLevelElement(
-                    text,
-                    pos + BOLD_START.length(),
+            return !(endOfBlockLevelElement(text, pos + BOLD_START.length(),
                     endPos));
 
         return false;
@@ -162,10 +159,8 @@ public final class EvenStructuredText implements StructuredText {
         int endPos = text.indexOf(ITALIC_CLOSE, pos + ITALIC_START.length());
 
         if (endPos > 0)
-            return !endOfBlockLevelElement(
-                text,
-                pos + ITALIC_START.length(),
-                endPos);
+            return !endOfBlockLevelElement(text, pos + ITALIC_START.length(),
+                    endPos);
 
         return false;
     }
@@ -179,29 +174,33 @@ public final class EvenStructuredText implements StructuredText {
 
         if (middlePos > 0) {
 
-            //Check that the " at pos is the closest one to ":
+            // Check that the " at pos is the closest one to ":
             int testPos = text.indexOf(LINK_START, pos + LINK_START.length());
             if (testPos != middlePos)
                 return false;
 
-            //Check that no LINE_SEPERATOR come before LINK_MIDDLE
-            int lineSepPos =
-                text.indexOf(LINE_SEPARATOR, pos + LINK_START.length());
+            // Check that no LINE_SEPERATOR come before LINK_MIDDLE
+            int lineSepPos = text.indexOf(LINE_SEPARATOR, pos
+                    + LINK_START.length());
             if ((lineSepPos > 0) && (lineSepPos < middlePos))
                 return false;
 
-            //Check that no PARAGRAPH_START or LIST_START come before LINK_MIDDLE
-            if (endOfBlockLevelElement(text, pos + LINK_START.length(), middlePos))
+            // Check that no PARAGRAPH_START or LIST_START come before
+            // LINK_MIDDLE
+            if (endOfBlockLevelElement(text, pos + LINK_START.length(),
+                    middlePos))
                 return false;
 
-            //Check that middlePos is not at the end of the text
+            // Check that middlePos is not at the end of the text
             if (middlePos == text.length() - LINK_MIDDLE.length())
                 return false;
 
-            //Check that LINE_SEPARATOR or whitespace is not righT after LINK_MIDDLE			
+            // Check that LINE_SEPARATOR or whitespace is not righT after
+            // LINK_MIDDLE
             if ((text.charAt(middlePos + LINK_MIDDLE.length()) == ' ')
-                || (text.indexOf(LINE_SEPARATOR, pos + LINK_MIDDLE.length())
-                    == pos + LINK_MIDDLE.length()))
+                    || (text
+                            .indexOf(LINE_SEPARATOR, pos + LINK_MIDDLE.length()) == pos
+                            + LINK_MIDDLE.length()))
                 return false;
 
             return true;
@@ -213,24 +212,19 @@ public final class EvenStructuredText implements StructuredText {
     protected boolean refrenceAtPos(String text, int pos) {
         if (text.indexOf(REF_START, pos) != pos)
             return false;
-        
+
         int endPos = text.indexOf(REF_CLOSE, pos + REF_START.length());
 
         if (endPos > 0)
-            return !(
-                endOfBlockLevelElement(
-                    text,
-                    pos + REF_START.length(),
+            return !(endOfBlockLevelElement(text, pos + REF_START.length(),
                     endPos));
 
         return false;
     }
 
-    // sjekker om visse spesialtegn dukker opp f�r sluttposisjonen til elementet som sjekkes.
-    protected boolean endOfBlockLevelElement(
-        String text,
-        int pos,
-        int endPos) {
+    // sjekker om visse spesialtegn dukker opp f�r sluttposisjonen til elementet
+    // som sjekkes.
+    protected boolean endOfBlockLevelElement(String text, int pos, int endPos) {
         int paragraphPos = text.indexOf(PARAGRAPH_START, pos);
         if (paragraphPos > 0 && paragraphPos < endPos)
             return true;
@@ -248,50 +242,44 @@ public final class EvenStructuredText implements StructuredText {
 
     protected boolean subAtPos(String text, int pos) {
         // sub is given on the form: sub:"text"
-    	
-    	int startPos = text.indexOf(SUB_START, pos); 
-    	
-        if (startPos != pos) {
-        	return false;
-        }
-        
-        int endPos = text.indexOf(SUB_END, pos + SUB_START.length());
-        
-        String subtext = text.substring(startPos, endPos);
-        
 
-        if( endPos < 0 || subtext.indexOf(LINE_SEPARATOR) != -1 ) {
+        int startPos = text.indexOf(SUB_START, pos);
+
+        if (startPos != pos) {
             return false;
         }
-        else {
-        	return true;
+
+        int endPos = text.indexOf(SUB_END, pos + SUB_START.length());
+
+        String subtext = text.substring(startPos, endPos);
+
+        if (endPos < 0 || subtext.indexOf(LINE_SEPARATOR) != -1) {
+            return false;
+        } else {
+            return true;
         }
     }
 
     protected boolean superAtPos(String text, int pos) {
         // super is given on the form: super:"text"
-    	
-    	int startPos = text.indexOf(SUPER_START, pos); 
-    	
-        if (startPos != pos) {
-        	return false;
-        }
-        
-        int endPos = text.indexOf(SUPER_END, pos + SUPER_START.length());
-        
-        String supertext = text.substring(startPos, endPos);
-        
 
-        if( endPos < 0 || supertext.indexOf(LINE_SEPARATOR) != -1 ) {
+        int startPos = text.indexOf(SUPER_START, pos);
+
+        if (startPos != pos) {
             return false;
         }
-        else {
-        	return true;
+
+        int endPos = text.indexOf(SUPER_END, pos + SUPER_START.length());
+
+        String supertext = text.substring(startPos, endPos);
+
+        if (endPos < 0 || supertext.indexOf(LINE_SEPARATOR) != -1) {
+            return false;
+        } else {
+            return true;
         }
     }
 
-
-    
     public Element parseStructuredText(String text) {
 
         String structureText = text;
@@ -301,8 +289,8 @@ public final class EvenStructuredText implements StructuredText {
 
         // All structuretext m� inn i avsnitt eller liste
         if ((!structureText.startsWith(PARAGRAPH_START))
-            || (!structureText.startsWith(LIST_START))
-            || (!structureText.startsWith(NUMLIST_START))) {
+                || (!structureText.startsWith(LIST_START))
+                || (!structureText.startsWith(NUMLIST_START))) {
             structureText = PARAGRAPH_START + structureText;
         }
 
@@ -312,26 +300,23 @@ public final class EvenStructuredText implements StructuredText {
         int nextPos = 0;
 
         while (pos < structureText.length()) {
-            if (listAtPos(structureText,
-                          pos + LINE_SEPARATOR.length())) { //telle opp riktig
-                nextPos =
-                    parseList(
-                        structureText,
-                        pos + LINE_SEPARATOR.length(),
-                        root);
-            } else if (
-                numlistAtPos(
-                    structureText,
-                    pos + LINE_SEPARATOR.length())) { //telle opp riktig
-                nextPos =
-                    parseNumlist(
-                        structureText,
-                        pos + LINE_SEPARATOR.length(),
-                        root);
+            if (listAtPos(structureText, pos + LINE_SEPARATOR.length())) { // telle
+                                                                            // opp
+                                                                            // riktig
+                nextPos = parseList(structureText, pos
+                        + LINE_SEPARATOR.length(), root);
+            } else if (numlistAtPos(structureText, pos
+                    + LINE_SEPARATOR.length())) { // telle opp riktig
+                nextPos = parseNumlist(structureText, pos
+                        + LINE_SEPARATOR.length(), root);
             } else if (listAtPos(structureText, pos)) {
                 nextPos = parseList(structureText, pos, root);
             } else if (numlistAtPos(structureText, pos)) {
                 nextPos = parseNumlist(structureText, pos, root);
+                /*
+                 * } else if (newlineAtPos(text, pos)) {
+                 * parseNewline(structureText, pos, root);
+                 */
             } else if (paragraphAtPos(structureText, pos)) {
                 nextPos = parseParagraph(structureText, pos, root);
             }
@@ -348,7 +333,8 @@ public final class EvenStructuredText implements StructuredText {
 
         int pos = startPos + PARAGRAPH_START.length();
 
-        //slutte avsnitt n�r nytt avsnitt eller liste begynner, eller ved slutt p� tekst.
+        // slutte avsnitt n�r nytt avsnitt eller liste begynner, eller ved slutt
+        // p� tekst.
         int endPos = text.length();
         int nextParagraph = text.indexOf(PARAGRAPH_START, pos);
         int nextList = text.indexOf(LIST_START, pos);
@@ -367,7 +353,19 @@ public final class EvenStructuredText implements StructuredText {
         }
 
         return endPos;
-        //returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes til � starte nytt element		
+        // returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes
+        // til � starte nytt element
+    }
+    
+    
+    protected int parseNewline(String text, int startPos, Element root) {
+
+        Element paragraphElement = new Element(lookupTag("newline"));
+        root.addContent(paragraphElement);
+        
+        // Assuming newline is always represented by the "\n" character 
+        // (length = 1)
+        return ++startPos;
     }
 
     protected int parseList(String text, int startPos, Element root) {
@@ -383,8 +381,7 @@ public final class EvenStructuredText implements StructuredText {
         int nextParagraph = text.indexOf(PARAGRAPH_START, pos);
         int listClose = text.indexOf(LIST_CLOSE, pos);
         int numListStart = text.indexOf(NUMLIST_START, pos);
-        
-        
+
         if (!(nextParagraph < 0) && (nextParagraph < endPos))
             endPos = nextParagraph;
         if (!(listClose < 0) && (listClose < endPos))
@@ -393,13 +390,14 @@ public final class EvenStructuredText implements StructuredText {
             endPos = numListStart;
 
         pos = pos - LISTITEM_START.length();
-        // Move pos back to listitem start...	
+        // Move pos back to listitem start...
         while (pos < endPos) {
             // only listitems are defined
             pos = parseListitem(text, pos, listElement);
         }
         return endPos;
-        //returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes til � starte nytt element		
+        // returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes
+        // til � starte nytt element
     }
 
     protected int parseNumlist(String text, int startPos, Element root) {
@@ -409,7 +407,8 @@ public final class EvenStructuredText implements StructuredText {
 
         int pos = startPos + NUMLIST_START.length();
 
-        //slutte avsnitt n�r nytt avsnitt begynner eller liste slutter, eller ved slutt p� tekst.
+        // slutte avsnitt n�r nytt avsnitt begynner eller liste slutter, eller
+        // ved slutt p� tekst.
         int endPos = text.length();
         int nextParagraph = text.indexOf(PARAGRAPH_START, pos);
         int numlistClose = text.indexOf(NUMLIST_CLOSE, pos);
@@ -423,13 +422,14 @@ public final class EvenStructuredText implements StructuredText {
             endPos = listStart;
 
         pos = pos - NUMLISTITEM_START.length();
-        // Move pos back to listitem start...	
+        // Move pos back to listitem start...
         while (pos < endPos) {
             // only listitems are defined
             pos = parseNumlistitem(text, pos, listElement);
         }
         return endPos;
-        //returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes til � starte nytt element		
+        // returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes
+        // til � starte nytt element
     }
 
     protected int parseListitem(String text, int startPos, Element parent) {
@@ -463,7 +463,7 @@ public final class EvenStructuredText implements StructuredText {
         int pos = startPos + NUMLISTITEM_START.length();
 
         int numlistitemClosePos = text.indexOf(NUMLISTITEM_START, pos);
-        //Close when new listitem starts
+        // Close when new listitem starts
         int numlistClosePos = text.indexOf(NUMLIST_CLOSE, pos);
         int listStartPos = text.indexOf(LISTITEM_START, pos);
 
@@ -486,7 +486,8 @@ public final class EvenStructuredText implements StructuredText {
         return endPos;
     }
 
-   // basicText consist of bold, italic, link, refrence, subscript and superscript.
+    // basicText consist of bold, italic, link, refrence, subscript and
+    // superscript.
     protected int parseBasicText(String basicText, int pos, Element parent) {
 
         int nextPos = pos;
@@ -496,13 +497,15 @@ public final class EvenStructuredText implements StructuredText {
         } else if (italicAtPos(basicText, pos)) {
             nextPos = parseItalic(basicText, pos, parent);
         } else if (refrenceAtPos(basicText, pos)) {
-        		nextPos = parseRefrence(basicText, pos, parent);
+            nextPos = parseRefrence(basicText, pos, parent);
         } else if (linkAtPos(basicText, pos)) {
             nextPos = parseLink(basicText, pos, parent);
         } else if (subAtPos(basicText, pos)) {
-        	nextPos = parseSub(basicText, pos, parent);
+            nextPos = parseSub(basicText, pos, parent);
         } else if (superAtPos(basicText, pos)) {
-        	nextPos = parseSuper(basicText, pos, parent);
+            nextPos = parseSuper(basicText, pos, parent);
+        } else if (newlineAtPos(basicText, pos)) {
+            nextPos = parseNewline(basicText, pos, parent);
         } else {
             nextPos = parsePlainText(basicText, pos, parent);
         }
@@ -527,7 +530,7 @@ public final class EvenStructuredText implements StructuredText {
         int endPos = text.indexOf(ITALIC_CLOSE, startPos);
 
         String italicText = text.substring(startPos, endPos);
-		
+
         Element italic = new Element(lookupTag("italic"));
         italic.addContent(italicText);
         element.addContent(italic);
@@ -538,48 +541,45 @@ public final class EvenStructuredText implements StructuredText {
     protected int parseRefrence(String text, int pos, Element element) {
         int startPos = pos + REF_START.length();
         int endPos = text.indexOf(REF_CLOSE, startPos);
-       
+
         String refrenceText = text.substring(startPos, endPos);
-        Element refrence = new Element(lookupTag("reference"));        
+        Element refrence = new Element(lookupTag("reference"));
 
         int attributePos = refrenceText.indexOf(REF_ATTRIBUTE);
-            
+
         if (attributePos > -1) {
-        	  String elementValue = refrenceText.substring(0, attributePos); 
-	      String typeAttributeValue = refrenceText.substring(attributePos + REF_ATTRIBUTE.length(), refrenceText.length());
-	      
-	      
-	      Attribute typeAttribute = new Attribute(lookupTag("reference-type"), typeAttributeValue);  
-	      refrence.setAttribute(typeAttribute);
-	      refrence.addContent(elementValue);
-        	
-        } else refrence.addContent(refrenceText);
+            String elementValue = refrenceText.substring(0, attributePos);
+            String typeAttributeValue = refrenceText.substring(attributePos
+                    + REF_ATTRIBUTE.length(), refrenceText.length());
+
+            Attribute typeAttribute = new Attribute(
+                    lookupTag("reference-type"), typeAttributeValue);
+            refrence.setAttribute(typeAttribute);
+            refrence.addContent(elementValue);
+
+        } else
+            refrence.addContent(refrenceText);
 
         element.addContent(refrence);
 
         return endPos + REF_CLOSE.length();
     }
-    
+
     protected int parseLink(String text, int pos, Element parent) {
 
-        String description =
-            text.substring(
-                pos + LINK_START.length(),
-                text.indexOf(LINK_MIDDLE, pos));
+        String description = text.substring(pos + LINK_START.length(), text
+                .indexOf(LINK_MIDDLE, pos));
 
         int endUrl = pos + description.length() + LINK_MIDDLE.length();
-        while (endUrl < text.length()
-               && text.indexOf(" ", endUrl) != endUrl
-               && text.indexOf(LINE_SEPARATOR, endUrl) != endUrl
-               && text.indexOf(". ", endUrl) != endUrl
-               && text.indexOf(", ", endUrl) != endUrl
-               && text.indexOf("; ", endUrl) != endUrl) {
+        while (endUrl < text.length() && text.indexOf(" ", endUrl) != endUrl
+                && text.indexOf(LINE_SEPARATOR, endUrl) != endUrl
+                && text.indexOf(". ", endUrl) != endUrl
+                && text.indexOf(", ", endUrl) != endUrl
+                && text.indexOf("; ", endUrl) != endUrl) {
             endUrl++;
         }
-        String url =
-            text.substring(
-                text.indexOf(LINK_MIDDLE, pos) + LINK_MIDDLE.length(),
-                endUrl);
+        String url = text.substring(text.indexOf(LINK_MIDDLE, pos)
+                + LINK_MIDDLE.length(), endUrl);
 
         Element link = new Element(lookupTag("link"));
 
@@ -595,13 +595,13 @@ public final class EvenStructuredText implements StructuredText {
 
         return endUrl;
     }
-    
-    protected int parseSub(String text, int pos, Element parent) {
-        String subtext = text.substring(
-                          pos + SUB_START.length(),
-                          text.indexOf(SUB_END, pos + SUB_START.length() ));
 
-        int endSub = pos + SUB_START.length() + subtext.length() + SUB_END.length();
+    protected int parseSub(String text, int pos, Element parent) {
+        String subtext = text.substring(pos + SUB_START.length(), text.indexOf(
+                SUB_END, pos + SUB_START.length()));
+
+        int endSub = pos + SUB_START.length() + subtext.length()
+                + SUB_END.length();
 
         Element sub = new Element(lookupTag("sub"));
         sub.addContent(subtext);
@@ -611,12 +611,12 @@ public final class EvenStructuredText implements StructuredText {
     }
 
     protected int parseSuper(String text, int pos, Element parent) {
-        String supertext = text.substring(
-                pos + SUPER_START.length(),
-                text.indexOf(SUPER_END, pos + SUPER_START.length() ));
-        
-        int endSuper = pos + SUPER_START.length() + supertext.length() + SUPER_END.length();
-        
+        String supertext = text.substring(pos + SUPER_START.length(), text
+                .indexOf(SUPER_END, pos + SUPER_START.length()));
+
+        int endSuper = pos + SUPER_START.length() + supertext.length()
+                + SUPER_END.length();
+
         Element sup = new Element(lookupTag("super"));
         sup.addContent(supertext);
         parent.addContent(sup);
@@ -624,24 +624,23 @@ public final class EvenStructuredText implements StructuredText {
         return endSuper;
     }
 
-
     protected int parsePlainText(String text, int pos, Element parent) {
         int startPos = pos;
 
-        //		parse ett og ett tegn til man st�ter p� spesial tegn
+        // parse ett og ett tegn til man treffer et spesialtegn
         while (pos < text.length()) {
-            pos++; //f�rste posisjon er allerede sjekket
-            if (paragraphAtPos(text, pos)
-                || listAtPos(text, pos)
-                || boldAtPos(text, pos)
-			    || refrenceAtPos(text, pos)
-                || italicAtPos(text, pos)
-                || listitemAtPos(text, pos)
-                || numlistitemAtPos(text, pos)	
-                || linkAtPos(text, pos) 
-                //|| newlineAtPos(text, pos)
-            	|| subAtPos(text, pos)
-            	|| superAtPos(text, pos) )
+            pos++; // f�rste posisjon er allerede sjekket
+            if (paragraphAtPos(text, pos) 
+                    || listAtPos(text, pos)
+                    || boldAtPos(text, pos) 
+                    || refrenceAtPos(text, pos)
+                    || italicAtPos(text, pos) 
+                    || listitemAtPos(text, pos)
+                    || numlistitemAtPos(text, pos) 
+                    || linkAtPos(text, pos)
+                    || subAtPos(text, pos) 
+                    || superAtPos(text, pos)
+                    || newlineAtPos(text, pos) )
                 break;
         }
 
@@ -652,8 +651,9 @@ public final class EvenStructuredText implements StructuredText {
 
     /**
      * Generate structured text from an XML structure.
-     *
-     * @param element the root <code>Element</code> of the XML structure
+     * 
+     * @param element
+     *            the root <code>Element</code> of the XML structure
      * @return a <code>String</code> containing the structured text
      */
 
@@ -680,94 +680,98 @@ public final class EvenStructuredText implements StructuredText {
                 } else if (tagName.equals("reference")) {
                     buffer.append(REF_START);
                     buffer.append(generateStructuredText(child));
-                    if (child.getAttributeValue(lookupTag("reference-type"))!= null) {
-                    	buffer.append(REF_ATTRIBUTE);
-                    	buffer.append(child.getAttributeValue(lookupTag("reference-type")));	
-                    }               
+                    if (child.getAttributeValue(lookupTag("reference-type")) != null) {
+                        buffer.append(REF_ATTRIBUTE);
+                        buffer.append( 
+                                child.getAttributeValue(lookupTag("reference-type")) );
+                    }
                     buffer.append(REF_CLOSE);
                 } else if (tagName.equals("link")) {
-                    //buffer.append();
+                    // buffer.append();
                     buffer.append(generateStructuredText(child));
-                    //buffer.append();
+                    // buffer.append();
                 } else if (tagName.equals("url-description")) {
                     buffer.append(LINK_START);
                     buffer.append(generateStructuredText(child));
                     buffer.append(LINK_MIDDLE);
                 } else if (tagName.equals("url")) {
-                    //buffer.append();
+                    // buffer.append();
                     buffer.append(generateStructuredText(child));
-                    //buffer.append();
-                } else if (tagName.equals("unordered-list") || tagName.equals("ordered-list")) {
+                    // buffer.append();
+                } else if (tagName.equals("unordered-list")
+                        || tagName.equals("ordered-list")) {
                     buffer.append(LINE_SEPARATOR);
                     buffer.append(generateStructuredText(child));
-                    //buffer.append(LIST_CLOSE);
-                } else if (tagName.equals("listitem")) {					
+                    // buffer.append(LIST_CLOSE);
+                } else if (tagName.equals("listitem")) {
                     String parentName = reverseLookupTag(element.getName());
                     if (parentName.equals("ordered-list"))
                         buffer.append(NUMLISTITEM_START);
-                    else buffer.append(LISTITEM_START);
+                    else
+                        buffer.append(LISTITEM_START);
                     buffer.append(generateStructuredText(child));
-                    //buffer.append();
+                    // buffer.append();
                 } else if (tagName.equals("paragraph")) {
                     buffer.append(PARAGRAPH_START);
                     buffer.append(generateStructuredText(child));
-                    //buffer.append();
+                    // buffer.append();
+                } else if (tagName.equals("newline")) {
+                    buffer.append(NEWLINE);
                 } else if (tagName.equals("sub")) {
-                	buffer.append(SUB_START);
-                	buffer.append(generateStructuredText(child));
-                	buffer.append(SUB_END);
+                    buffer.append(SUB_START);
+                    buffer.append(generateStructuredText(child));
+                    buffer.append(SUB_END);
                 } else if (tagName.equals("super")) {
-                	buffer.append(SUPER_START);
-                	buffer.append(generateStructuredText(child));
-                	buffer.append(SUPER_END);
+                    buffer.append(SUPER_START);
+                    buffer.append(generateStructuredText(child));
+                    buffer.append(SUPER_END);
                 } else { // plaintextelement
                     throw new StructuredTextException(
-                        "Unexpected element name: " + tagName);
+                            "Unexpected element name: " + tagName);
                 }
             } else if (object instanceof Text) { // plaintextelement
-                            
+
                 Element parent = (Element) ((Text) object).getParent();
                 String tagName = reverseLookupTag(parent.getName());
 
                 // Don't include text nodes for the following parent
                 // ("block level") elements:
                 if (!"root".equals(tagName)
-                    && !"unordered-list".equals(tagName)
-                    && !"ordered-list".equals(tagName)
-                    && !"link".equals(tagName)) {
+                        && !"unordered-list".equals(tagName)
+                        && !"ordered-list".equals(tagName)
+                        && !"link".equals(tagName)) {
                     Text child = (Text) object;
                     buffer.append(child.getText());
                 }
             }
-        } //end for
+        } // end for
 
         return buffer.toString();
     }
 
-
     public String parseElement(Element root) {
         String text = generateStructuredText(root);
 
-	if (root.getChildren().size() == 0) return "";
+        if (root.getChildren().size() == 0)
+            return "";
 
-	Element child = (Element) root.getChildren().get(0);
-	
-	// Delete first paragraph/list start
-	
-	if ("paragraph".equals(reverseLookupTag(child.getName()))) {
-	    return text.substring(PARAGRAPH_START.length());
-	}
-	
-	if ("unordered-list".equals(reverseLookupTag(child.getName()))) {
-	    return text.substring((LINE_SEPARATOR + LINE_SEPARATOR).length());
-	}
-        
-	if ("ordered-list".equals(reverseLookupTag(child.getName()))) {
-	    return text.substring((LINE_SEPARATOR + LINE_SEPARATOR).length());
-	}
-	return text;
+        Element child = (Element) root.getChildren().get(0);
+
+        // Delete first paragraph/list start
+
+        if ("paragraph".equals(reverseLookupTag(child.getName()))) {
+            return text.substring(PARAGRAPH_START.length());
+        }
+
+        if ("unordered-list".equals(reverseLookupTag(child.getName()))) {
+            return text.substring((LINE_SEPARATOR + LINE_SEPARATOR).length());
+        }
+
+        if ("ordered-list".equals(reverseLookupTag(child.getName()))) {
+            return text.substring((LINE_SEPARATOR + LINE_SEPARATOR).length());
+        }
+        return text;
     }
-
 
     // Ymse metoder
     private String lookupTag(String tagName) {
@@ -791,13 +795,13 @@ public final class EvenStructuredText implements StructuredText {
     public static void dumpXML(Document doc, PrintStream out) {
         try {
             Format format = Format.getPrettyFormat();
-            
+
             XMLOutputter xmlOutputter = new XMLOutputter();
             xmlOutputter.setFormat(format);
-//			XMLOutputter xmlOutputter = new XMLOutputter(" ", true);
-//
-//			xmlOutputter.setExpandEmptyElements(true);
-//			xmlOutputter.setTextNormalize(false);
+            // XMLOutputter xmlOutputter = new XMLOutputter(" ", true);
+            //
+            // xmlOutputter.setExpandEmptyElements(true);
+            // xmlOutputter.setTextNormalize(false);
             String xml = xmlOutputter.outputString(doc);
             out.println(xml);
         } catch (Exception e) {
@@ -809,12 +813,13 @@ public final class EvenStructuredText implements StructuredText {
     public static void dumpXML(Element element, PrintStream out) {
         try {
             Format format = Format.getPrettyFormat();
-            
+
             XMLOutputter xmlOutputter = new XMLOutputter();
             xmlOutputter.setFormat(format);
-//			//XMLOutputter takes a JDOM tree and formats it to a stream as XML.
-//			XMLOutputter xmlOutputter = new XMLOutputter(" ", true);
-//			xmlOutputter.setTextNormalize(true);
+            // //XMLOutputter takes a JDOM tree and formats it to a stream as
+            // XML.
+            // XMLOutputter xmlOutputter = new XMLOutputter(" ", true);
+            // xmlOutputter.setTextNormalize(true);
             String xml = xmlOutputter.outputString(element);
             out.println(xml);
         } catch (Exception e) {
@@ -844,13 +849,13 @@ public final class EvenStructuredText implements StructuredText {
             tagNames.put("paragraph", "avsnitt");
             tagNames.put("sub", "sub");
             tagNames.put("super", "sup");
-            tagNames.put("newline", "br");
+            tagNames.put("newline", "linjeskift");
 
             parser.setTextMappings(tagNames);
-            
+
             if (args.length < 1) {
-                System.out.println(
-                    "Usage: " + parser.getClass().getName() + " <textfile>");
+                System.out.println("Usage: " + parser.getClass().getName()
+                        + " <textfile>");
                 return;
             }
 
@@ -860,7 +865,7 @@ public final class EvenStructuredText implements StructuredText {
                 return;
             }
 
-            //parser.setIncludeNewlines(true);
+            // parser.setIncludeNewlines(true);
 
             char[] buffer = new char[(int) textFile.length()];
             FileReader reader = new FileReader(textFile);
@@ -885,7 +890,6 @@ public final class EvenStructuredText implements StructuredText {
 
             e.printStackTrace();
         }
-    } //end main
+    } // end main
 
 }
-	

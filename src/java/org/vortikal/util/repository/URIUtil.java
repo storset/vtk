@@ -30,6 +30,9 @@
  */
 package org.vortikal.util.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Resource;
@@ -139,6 +142,37 @@ public class URIUtil {
         return getParentURI(getParentURI(uri));
     }
     
+    /**
+     * Get list of all absolute ancestor URIs for given absolute URI. 
+     * The list is ordered from closest ancestor first and upwards to 
+     * (and including) the '/'.
+     * 
+     * @param uri Absolute URI to get ancestors of.
+     * @return List of all ancestor URIs for given URI.
+     */
+    public static List getAncestorURIs(String uri) {
+        List ancestorUris = new ArrayList();
+
+        if (uri.equals("/")) {
+            return ancestorUris;
+        } else {
+            if (uri.length() == 0 || uri.endsWith("/")) {
+                throw new IllegalArgumentException("Invalid URI '" + uri + "'");
+            }
+        }
+        
+        int from = uri.length();
+        while (from > 0) {
+            from = uri.lastIndexOf('/', from);
+            if (from == 0) {
+                ancestorUris.add("/");
+            } else {
+                ancestorUris.add(uri.substring(0, from--));
+            }
+        }
+        
+        return ancestorUris;
+    }
     
     /**
      * Expands '../' strings in resource URIs. 

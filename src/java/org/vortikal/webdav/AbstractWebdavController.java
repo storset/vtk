@@ -151,14 +151,14 @@ public abstract class AbstractWebdavController implements Controller {
         return uri;
     }
 
-    public boolean matchesIfHeader(Resource resource) {
+    protected boolean matchesIfHeader(Resource resource) {
         if (ifHeader == null) {
             return true;
         }
         return ifHeader.matches(resource);
     }
     
-    public boolean matchesIfHeaderEtags(Resource resource) {
+    protected boolean matchesIfHeaderEtags(Resource resource) {
         if (ifHeader == null) {
             return true;
         }

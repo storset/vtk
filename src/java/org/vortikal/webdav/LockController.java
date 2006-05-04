@@ -30,11 +30,9 @@
  */
 package org.vortikal.webdav;
 
-
-
-
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -59,60 +57,60 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
-
+import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for LOCK requests.
- *
+ * 
  */
 public class LockController extends AbstractWebdavController {
 
     /* Value (in seconds) of infinite timeout */
-    private static final int INFINITE_TIMEOUT = 410000000; 
-    
-    /* Max length of lock owner info string. If the actual client supplied
-     * content exceeds this value, an <code>InvalidRequestException</code> will
-     * be thrown.
+    private static final int INFINITE_TIMEOUT = 410000000;
+
+    /*
+     * Max length of lock owner info string. If the actual client supplied content exceeds this
+     * value, an <code>InvalidRequestException</code> will be thrown.
      */
     private static final int MAX_LOCKOWNER_INFO_LENGTH = 128;
 
     /**
      * Performs the WebDAV 'LOCK' method.
-     *
+     * 
      */
-    public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
-         
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         Map model = new HashMap();
-
+        Resource lockedResource;
+        
         if (securityContext.getPrincipal() == null) {
-            throw new AuthenticationException(
-                "A principal is required to lock resources");
+            throw new AuthenticationException("A principal is required to lock resources");
         }
 
+        String type = LockType.LOCKTYPE_EXCLUSIVE_WRITE;
+        String lockToken = null;
+        ifHeader = new IfHeaderImpl(request);
+        
         try {
-            
-            String type = LockType.LOCKTYPE_EXCLUSIVE_WRITE;
-            String lockToken = null;
-            String refreshLockToken = null;
             String ownerInfo = securityContext.getPrincipal().toString();
             String depth = request.getHeader("Depth");
             if (depth == null) {
                 depth = "infinity";
             }
             depth = depth.toLowerCase();
+            boolean exists = repository.exists(token, uri);
             int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));
+
+            
             if (request.getContentLength() <= 0) { // -1 if not known
-                UriState uriState = parseIfHeader(request, uri);
-                List tokens = uriState.getTokens();
-                if (tokens.size() == 1) {
-                    EtagOrStateToken etagOrStateToken = (EtagOrStateToken) tokens.get(0);
-                    if (etagOrStateToken.isLock()) {
-                       refreshLockToken = etagOrStateToken.getValue();
+                //If contentLength <= 0 we assume we want vto refresh a lock
+                if (exists) {
+                    lockedResource = repository.retrieve(token, uri, false);
+                    if (matchesIfHeader(lockedResource)) {
+                        lockToken = lockedResource.getLock().getLockToken();
                     }
                 }
             } else {
@@ -124,123 +122,105 @@ public class LockController extends AbstractWebdavController {
                 }
             }
 
-            boolean existed = repository.exists(token, uri);
-
-            if (!existed) {
+            if (!exists) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Creating null resource");
                 }
                 repository.createDocument(token, uri);
             }
             
-            if (existed && refreshLockToken != null) {
-                Resource lockedResource = repository.retrieve(
-                    token, uri, false);
-                if (lockedResource.getLock() != null) {
-                    String existingToken = lockedResource.getLock().getLockToken();
-                    if (refreshLockToken.equals(existingToken)) {
-                        lockToken = refreshLockToken;
-                    }
-                }
-            }
 
 
             if (logger.isDebugEnabled()) {
-                String msg = "Atttempting to lock " + uri + " with timeout: "
-                    + timeout + " seconds, " + "depth: " + depth;
+                String msg = "Atttempting to lock " + uri + " with timeout: " + timeout
+                        + " seconds, " + "depth: " + depth;
                 if (lockToken != null)
                     msg += " (refreshing with token: " + lockToken + ")";
                 logger.debug(msg);
             }
+            lockedResource = repository.lock(token, uri, type, ownerInfo, depth, timeout, lockToken);
 
-            repository.lock(token, uri, type, ownerInfo, depth, timeout, lockToken);
-            
             if (logger.isDebugEnabled()) {
                 logger.debug("Locking " + uri + " succeeded");
             }
-            
-            Resource lockedResource = repository.retrieve(
-                token, uri, false);
-            
-            model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE,
-                      lockedResource);
-            
+
+            //Resource lockedResource = repository.retrieve(token, uri, false);
+
+            model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE, lockedResource);
+
             return new ModelAndView("LOCK", model);
 
         } catch (InvalidRequestException e) {
-            logger.info("Got InvalidRequestException for URI "  + uri, e);
+            logger.info("Got InvalidRequestException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_BAD_REQUEST));
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
+                    HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (ResourceNotFoundException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Got ResourceNotFoundException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_NOT_FOUND));
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
+                    HttpServletResponse.SC_NOT_FOUND));
 
         } catch (FailedDependencyException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Got FailedDependencyException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
-            
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
+                    HttpServletResponse.SC_PRECONDITION_FAILED));
+
         } catch (ResourceLockedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Got ResourceLockedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpUtil.SC_LOCKED));
+            model
+                    .put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
+                            HttpUtil.SC_LOCKED));
 
         } catch (IllegalOperationException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Got IllegalOperationException for URI " + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
+                    HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ReadOnlyException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Got ReadOnlyException for URI " + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
+                    HttpServletResponse.SC_FORBIDDEN));
 
         } catch (IOException e) {
             logger.info("Got IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
         }
 
         return new ModelAndView("HTTP_STATUS_VIEW", model);
     }
-   
-
-
 
 
     /**
      * Builds a JDom tree of the LOCK request body.
-     *
-     * @param request the <code>HttpServletRequest</code>
+     * 
+     * @param request
+     *            the <code>HttpServletRequest</code>
      * @return an <code>org.jdom.Document</code> containing the request
-     * @exception InvalidRequestException if the body does not contain
-     * valid XML
+     * @exception InvalidRequestException
+     *                if the body does not contain valid XML
      */
-    protected Document parseRequestBody(HttpServletRequest request)
-        throws InvalidRequestException {
+    protected Document parseRequestBody(HttpServletRequest request) throws InvalidRequestException {
         try {
             SAXBuilder builder = new SAXBuilder();
-            org.jdom.Document requestBody = builder.build(
-                request.getInputStream());
+            org.jdom.Document requestBody = builder.build(request.getInputStream());
             return requestBody;
 
         } catch (JDOMException e) {
@@ -251,28 +231,24 @@ public class LockController extends AbstractWebdavController {
         }
     }
 
-
-
-
     /**
      * Checks if a JDom tree is a valid WebDAV LOCK request body.
-     *
-     * @param requestBody the <code>org.jdom.Document</code> to check
-     * @exception InvalidRequestException if the request is not valid
+     * 
+     * @param requestBody
+     *            the <code>org.jdom.Document</code> to check
+     * @exception InvalidRequestException
+     *                if the request is not valid
      */
-    public void validateRequest(Document requestBody)
-        throws InvalidRequestException {
+    public void validateRequest(Document requestBody) throws InvalidRequestException {
         requestBody.getRootElement();
     }
-   
-
-
 
     /**
      * Gets the requested lock scope from a LOCK request body.
-     *
-     * @param requestBody the request body, represented as a
-     * <code>org.jdom.Document</code> tree (is assumed to be valid)
+     * 
+     * @param requestBody
+     *            the request body, represented as a <code>org.jdom.Document</code> tree (is
+     *            assumed to be valid)
      * @return the lock scope as a <code>String</code>
      */
     protected String getLockScope(Document requestBody) {
@@ -281,7 +257,6 @@ public class LockController extends AbstractWebdavController {
         String scope = ((Element) lockScope.getChildren().get(0)).getName();
         return scope;
     }
-   
 
     protected String getLockType(Document requestBody) {
         Element lockInfo = requestBody.getRootElement();
@@ -290,9 +265,7 @@ public class LockController extends AbstractWebdavController {
         return type;
     }
 
-
-    protected String getLockOwner(Document requestBody) 
-        throws InvalidRequestException {
+    protected String getLockOwner(Document requestBody) throws InvalidRequestException {
         Element lockInfo = requestBody.getRootElement();
         Element lockOwner = lockInfo.getChild("owner", WebdavConstants.DAV_NAMESPACE);
         String owner = "";
@@ -300,7 +273,6 @@ public class LockController extends AbstractWebdavController {
         if (lockOwner == null) {
             return null;
         }
-        
 
         if (lockOwner.getChildren().size() > 0) {
             Element content = (Element) lockOwner.getChildren().get(0);
@@ -314,23 +286,21 @@ public class LockController extends AbstractWebdavController {
         } else {
             owner = lockOwner.getText();
         }
-        
+
         if (owner.length() > MAX_LOCKOWNER_INFO_LENGTH) {
-            throw new InvalidRequestException("Length of owner info data exceeded " +
-                                          "maximum of " + MAX_LOCKOWNER_INFO_LENGTH);
+            throw new InvalidRequestException("Length of owner info data exceeded " + "maximum of "
+                    + MAX_LOCKOWNER_INFO_LENGTH);
         }
-        
+
         return owner;
     }
 
-
-   
-
     protected int parseTimeoutHeader(String timeoutHeader) {
 
-        /* FIXME: Handle the 'Extend' format (see section 4.2 of RFC
-         * 2068) and multiple TimeTypes (see section 9.8 of RFC
-         * 2518) */
+        /*
+         * FIXME: Handle the 'Extend' format (see section 4.2 of RFC 2068) and multiple TimeTypes
+         * (see section 9.8 of RFC 2518)
+         */
         int timeout = INFINITE_TIMEOUT;
 
         if (timeoutHeader == null || timeoutHeader.equals("")) {
@@ -348,18 +318,16 @@ public class LockController extends AbstractWebdavController {
         if (timeoutHeader.startsWith("Second-")) {
 
             try {
-                String timeoutStr = timeoutHeader.substring(
-                    "Second-".length(), timeoutHeader.length());
+                String timeoutStr = timeoutHeader.substring("Second-".length(), timeoutHeader
+                        .length());
                 timeout = Integer.parseInt(timeoutStr);
 
             } catch (NumberFormatException e) {
                 logger.warn("Invalid timeout header: " + timeoutHeader);
             }
         }
-        
+
         return timeout;
     }
-    
-
 
 }

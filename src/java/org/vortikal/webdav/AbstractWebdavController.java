@@ -45,6 +45,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Namespace;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.webdav.ifheader.IfHeader;
+import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 
 
@@ -56,6 +59,7 @@ public abstract class AbstractWebdavController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
+    protected IfHeader ifHeader;
 
     protected Repository repository = null;
 
@@ -147,218 +151,20 @@ public abstract class AbstractWebdavController implements Controller {
         return uri;
     }
 
-
-
-
-
-    /**
-     * Parses the WebDAV "If" header.
-     *
-     * @param req the <code>HttpServletRequest</code>
-     * @return a <code>UriState</code> representing the state tokens
-     * (ETags and lock tokens) that the client is aware of on various
-     * resources.
-     * @throws InvalidRequestException if the lock token format is
-     * invalid
-     */
-    protected UriState parseIfHeader(HttpServletRequest req, String uri)
-        throws InvalidRequestException {
-
-        String ifHeader = req.getHeader("If");
-        logger.debug("if-header: " + ifHeader);
-        if (ifHeader == null || ifHeader.trim().equals("")) {
-            return new UriState(uri);
+    public boolean matchesIfHeader(Resource resource) {
+        if (ifHeader == null) {
+            return true;
         }
-
-        if (ifHeader.startsWith("(") && ifHeader.endsWith(")")) {
-            // FIXME: must look for *several* parenthesis, not only one
-            return parseIfHeaderNoTagList(uri, ifHeader);
-        }
-        
-        if (ifHeader.startsWith("<")) {
-            return parseIfHeaderTaggedList(uri, ifHeader);
-        }
-
-        return new UriState(uri);
-        
+        return ifHeader.matches(resource);
     }
     
-
-
-    private UriState parseIfHeaderTaggedList(String uri, String ifHeader)
-        throws InvalidRequestException {
-        // FIXME: implement this (see section 9.4.2 of RFC 2518)
-        logger.debug("parseIfHeaderTaggedList starting");
-        return new UriState(uri);
+    public boolean matchesIfHeaderEtags(Resource resource) {
+        if (ifHeader == null) {
+            return true;
+        }
+        return ifHeader.matchesEtags(resource);
     }
-    
-
-
-    private UriState parseIfHeaderNoTagList(String uri, String ifHeader)
-            throws InvalidRequestException {
-        logger.debug("parseIfHeaderNoTagList starting");
-        /*
-         * This is a "No-tag-list" production. It consists of one or more "List" productions. List
-         * productions, in turn, are defined by one or more, possibly negated, state tokens or
-         * entity tags.
-         */
-        // String list = ifHeader.substring(1, ifHeader.length() - 1);
-        // StringTokenizer tokenizer = new StringTokenizer(list);
-        UriState uriState = new UriState(uri);
-        Pattern NO_TAG_LIST_REGEXP = Pattern.compile("\\((.*?)\\)");
-        Pattern LIST_CONTENT_REGEXP = Pattern.compile("(Not)?\\s*(<.*?>|\\[\".*?\"\\])");
-
-        Matcher ifHeaderMatcher = NO_TAG_LIST_REGEXP.matcher(ifHeader);
-        while (ifHeaderMatcher.find()) {
-            String list = ifHeaderMatcher.group(1);
-            //logger.debug("ifHeaderMatcher.group(1): " + ifHeaderMatcher.group(1));
-            Matcher listContentMatcher = LIST_CONTENT_REGEXP.matcher(list);
-            boolean foundToken = false;
-            boolean negate = false;
-
-            while (listContentMatcher.find()) {
-                String negateString = listContentMatcher.group(1);
-                negate = (negateString != null);
-                //logger.debug("listContentMatcher.group(2): " + listContentMatcher.group(2));
-                String tokenString = listContentMatcher.group(2);
-                if (tokenString.startsWith("<")) {
-                    EtagOrStateToken lockToken = new EtagOrStateToken(EtagOrStateToken.LOCK,
-                            removeFirstAndLastChar(tokenString), negate);
-                    uriState.addToken(lockToken);
-                    foundToken = true;
-                } else if (tokenString.startsWith("[")) {
-                    EtagOrStateToken etagToken = new EtagOrStateToken(EtagOrStateToken.ETAG,
-                            removeFirstAndLastChar(tokenString), negate);
-                    uriState.addToken(etagToken);
-                    foundToken = true;
-                } else {
-                    logger.warn("unknown if-header element: " + list);
-                }
-            }
-            if (!foundToken) {
-                throw new InvalidRequestException("Invalid If header: " + ifHeader);
-            }
-
-        }
-        
-// while (tokenizer.hasMoreTokens()) {
-//            String s = tokenizer.nextToken();
-//            boolean negated = false;
-//            logger.warn("-------------> s: " + s);
-//            if (s.equals("Not")) {
-//                negated = true;
-//
-//                if (! tokenizer.hasMoreTokens()) {
-//                    throw new InvalidRequestException(
-//                        "Invalid If header: " + ifHeader);
-//                }
-//                s = tokenizer.nextToken();
-//                
-//            }
-//                
-//            if (s.startsWith("[") && s.endsWith("]")) {
-//                /* This is an Etag */
-//
-//                if (s.length() <= 2) {
-//                    throw new InvalidRequestException(
-//                        "Invalid If header: " + ifHeader);
-//                }
-//                    
-//                StateToken token = new Etag(
-//                    s.substring(1, s.length() - 1), negated);
-//                state.addToken(token);
-//
-//            } else if (s.startsWith("<") && s.endsWith(">")) {
-//                /* This is a regular state token (i.e. a lock
-//                 * token): */
-//                    
-//                if (s.length() <= 2) {
-//                    throw new InvalidRequestException(
-//                        "Invalid If header: " + ifHeader);
-//                }
-//                    
-//                StateToken token = new LockToken(
-//                    s.substring(1, s.length() - 1), negated);
-//                state.addToken(token);
-//
-//            } else {
-//                /* This is an unsupported token */
-//                throw new InvalidRequestException(
-//                    "Invalid If header: " + ifHeader);
-//            }
-//        }
-
-        return uriState;
-    }
-
-
-    private String removeFirstAndLastChar(String string) {
-        return string.substring(1, string.length() -1);
-    }
-    
-
-
-    protected class UriState {
-        private String uri;
-        private ArrayList tokens;
-        
-        public UriState(String uri) {
-            this.uri = uri;
-            this.tokens = new ArrayList();
-        }
-        
-        public String getURI() {
-            return this.uri;
-        }
-
-        public void addToken(EtagOrStateToken token) {
-            tokens.add(token);
-        }
-
-        public List getTokens() {
-            return this.tokens;
-        }
-    }
-    
-
-    protected class EtagOrStateToken {
-        public final static int ETAG = 0;
-
-        public final static int LOCK = 1;
-
-        private int type;
-
-        private boolean negated;
-
-        private String value;
-
-        public EtagOrStateToken(int type, String value, boolean negated) {
-            this.type = type;
-            this.value = value;
-            this.negated = negated;
-        }
-
-        public String getValue() {
-            return this.value;
-        }
-
-        public boolean isNegated() {
-            return this.negated;
-        }
-
-        public int getType() {
-            return type;
-        }
-        
-        public boolean isLock() {
-            return type == LOCK;
-        }
-        
-        public boolean isEtag() {
-            return type == ETAG;
-        }
-
-    }
-
+       
+  
 }
 

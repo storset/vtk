@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-  
 <beans>
 
+  <!-- Data accessor for indexing -->
+  <bean id="indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
+    <property name="propertyManager" ref="propertyManager"/>
+    <property name="principalManager" ref="principalManager"/>
+    <property name="dataSource" ref="repository.dataSource"/>
+  </bean>
+
+  <!-- Document mapper -->
   <bean id="indexDocumentMapper" class="org.vortikal.repositoryimpl.query.DocumentMapper">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="valueFactory" ref="valueFactory"/>
   </bean>
 
+  <!-- A Lucene index instance. Managed by property set index. -->
+  <bean id="luceneIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
+    <property name="indexPath" value="${newSystemIndexPath}"/>
+    <property name="optimizeInterval" value="500"/>
+    <property name="forceUnlock" value="true"/>
+  </bean>
+
+  <!-- Property set index based on a single Lucene index. -->
+  <bean id="newSystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
+    <property name="index" ref="luceneIndexAccessor"/>
+    <property name="documentMapper" ref="indexDocumentMapper"/>
+    <property name="propertyManager" ref="propertyManager"/>
+  </bean>
+
+  <!-- Perform incremental updates on property set index from resource changes. -->
+  <bean id="newSystemIndexUpdater" 
+        class="org.vortikal.repositoryimpl.query.observation.PropertySetIndexUpdater">
+    <property name="index" ref="newSystemIndex"/>
+    <property name="notifier" ref="repository.resourceChangeNotifier"/>
+    <property name="indexDataAccessor" ref="indexDataAccessor"/>
+  </bean>
+
+  <!-- Simple re-indexer for a propety set index. -->
+  <bean id="newSystemIndexReindexer" class="org.vortikal.repositoryimpl.query.Reindexer">
+    <property name="indexDataAccessor" ref="indexDataAccessor"/>
+    <property name="index" ref="newSystemIndex"/>
+  </bean>
 </beans>

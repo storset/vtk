@@ -54,9 +54,6 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
     private int optimizeInterval = 500;
     private int commitCounter = 0;
     
-    private FSBackedLuceneIndex index;
-    private VolatileLuceneIndex volatileIndex;
-    
     /** This is our FIFO write lock on this index. Operations requiring write-access
      *  will need to acquire this before doing the operation. This includes all 
      *  operations using an IndexWriter and all operations using an IndexReader 

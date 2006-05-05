@@ -37,14 +37,7 @@ public class Reindexer implements InitializingBean {
            throw new BeanInitializationException("Property 'index' not set.");
        }
        
-       new Thread(new Runnable() {
-           public void run() {
-               try {
-                   Thread.sleep(6000);
-               } catch (InterruptedException ie) {}
-               Reindexer.this.run();
-           }
-       }).start();
+
    }
    
    public synchronized void run() throws IndexException {
@@ -68,8 +61,6 @@ public class Reindexer implements InitializingBean {
            }
            
            index.commit();
-           
-           test();
        } catch (IOException io) {
            throw new IndexException(io);
        } finally {
@@ -86,29 +77,7 @@ public class Reindexer implements InitializingBean {
        
    }
    
-   public void test() throws IOException {
-       
-       logger.debug("Testing:");
-       
-       PropertySet foo = index.getPropertySet("/foo");
-       
-       logger.debug("name: " + foo.getName());
-       logger.debug("uri:" + foo.getURI());
-       logger.debug("resourcetype:" + foo.getResourceType());
-       logger.debug("lastModified: " + foo.getProperty(Namespace.getNamespace(null), "lastModified"));
-       
-       logger.debug("intList:");
-       Property intList = foo.getProperty(Namespace.CUSTOM_NAMESPACE, "intList");
-       Value[] values = intList.getValues();
-       for (int i=0; i<values.length; i++) {
-           logger.debug("  Value: " + values[i].getIntValue());
-       }
-       
-       index.deletePropertySet("/foo");
-       index.deletePropertySet("/vrtx");
-       
-       
-   }
+
    
    public void setIndexDataAccessor(IndexDataAccessor indexDataAccessor) {
        this.indexDataAccessor = indexDataAccessor;

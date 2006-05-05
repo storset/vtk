@@ -165,8 +165,8 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return ancestorIds;
     }
 
-    public void setAncestorIds(int[] parentIds) {
-        this.ancestorIds = parentIds;
+    public void setAncestorIds(int[] ancestorIds) {
+        this.ancestorIds = ancestorIds;
     }
 
 }

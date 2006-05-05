@@ -405,6 +405,7 @@ public class QueryProvider {
             + "uri, depth, creation_time, content_last_modified, properties_last_modified, "
             + "content_modified_by, properties_modified_by, resource_owner, "
             + "display_name, content_language, content_type, character_encoding, "
+            + "guessed_character_encoding, user_specified_character_encoding, " 
             + "is_collection, acl_inherited_from, resource_type, content_length, "
             + "created_by, modified_by, last_modified) "
             + "select nextval('vortex_resource_seq_pk'), resource_id, "

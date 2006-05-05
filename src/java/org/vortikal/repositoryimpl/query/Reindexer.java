@@ -36,7 +36,6 @@ public class Reindexer implements InitializingBean {
        } else if (index == null) {
            throw new BeanInitializationException("Property 'index' not set.");
        }
-       
 
    }
    
@@ -74,10 +73,7 @@ public class Reindexer implements InitializingBean {
            index.unlock();
        }
        
-       
    }
-   
-
    
    public void setIndexDataAccessor(IndexDataAccessor indexDataAccessor) {
        this.indexDataAccessor = indexDataAccessor;

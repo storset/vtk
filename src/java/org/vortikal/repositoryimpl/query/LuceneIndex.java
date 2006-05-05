@@ -62,7 +62,7 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
     private FIFOSemaphore lock = new FIFOSemaphore(1);
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        
+        super.afterPropertiesSet();
     }
     
     // Locking

@@ -49,7 +49,7 @@ public interface PropertySetIndex {
     
     public void updatePropertySet(PropertySet propertySet) throws IndexException;
     
-    public void deletePropertySet(String uri) throws IndexException;
+    public int deletePropertySet(String uri) throws IndexException;
     
     public PropertySet getPropertySet(String uri) throws IndexException;
     

@@ -126,6 +126,10 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
     
     public ResultSetIterator getPropertySetIteratorForURIs(List uris) throws IOException {
         
+        if (uris.size() == 0) {
+            throw new IllegalArgumentException("At least one URI must be specified for retrieval.");
+        }
+        
         Connection conn;
         try {
             conn = this.dataSource.getConnection();

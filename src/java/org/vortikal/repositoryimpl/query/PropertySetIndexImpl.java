@@ -163,7 +163,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         }
     }
 
-    public void deletePropertySet(String uri) throws IndexException {
+    public int deletePropertySet(String uri) throws IndexException {
         IndexReader reader = null;
         IndexSearcher searcher = null;
         try {
@@ -183,7 +183,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Property set at URI '" + uri + "' not found in index.");
                 }
-                return;
+                return 0;
             } else {
                 String id = hits.doc(0).get(DocumentMapper.ID_FIELD_NAME);
                 int n = reader.deleteDocuments(new Term(DocumentMapper.URI_FIELD_NAME, uri));
@@ -192,6 +192,8 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deleted " + n + " documents from index.");
                 }
+                
+                return n;
             }
         } catch (IOException io) {
             throw new IndexException (io);

@@ -115,7 +115,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
             }
         }
         
-        // Also need to consider special fields
+        // Special fields
         wrapper.addAnalyzer(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME, keywordAnalyzer);
         wrapper.addAnalyzer(DocumentMapper.ID_FIELD_NAME, keywordAnalyzer);
         wrapper.addAnalyzer(DocumentMapper.NAME_FIELD_NAME, keywordAnalyzer);

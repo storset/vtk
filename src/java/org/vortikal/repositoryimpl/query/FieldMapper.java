@@ -31,14 +31,10 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.DateTools.Resolution;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -48,7 +44,8 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
  * <ul>
  *  <li>Utility methods for mapping between <code>Value</code> and <code>org.apache.lucene.document.Field</code>
  * objects.
- *  <li>Methods for encoding and decoding index field values</li>
+ * </li>
+ * <li>Methods for encoding and decoding index field values</li>
  * </ul> 
  * 
  * @author oyviste
@@ -261,7 +258,6 @@ public final class FieldMapper {
     }
     
     // XXX: sorting of negative long integers does not work with this encoding.
-    
     public static String longToZeroPaddedString(long l) {
         // Zero-pad and add positive/negative sign.
         char[] encodedChars = "+00000000000000000000".toCharArray(); // Total length is 21

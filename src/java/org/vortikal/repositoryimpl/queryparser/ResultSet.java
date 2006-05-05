@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl.queryparser;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -85,5 +86,11 @@ public interface ResultSet {
      * @return Size of the result set.
      */
     public int getSize();
+ 
+    /**
+     * Iterate over results.
+     * @return
+     */
+    public Iterator iterator();
     
 }

@@ -66,7 +66,7 @@ public class DocumentMapper implements InitializingBean {
     
     public static final String NAME_FIELD_NAME = "name";
     public static final String URI_FIELD_NAME = "uri";
-    public static final String RESOURCETYPE_FIELD_NAME = "resourcetype";
+    public static final String RESOURCETYPE_FIELD_NAME = "resourceType";
     public static final String ANCESTORIDS_FIELD_NAME = "_ANCESTORIDS";
     public static final String ID_FIELD_NAME = "_ID";
     public static final String ACL_INHERITED_FROM_FIELD_NAME = "_ACL_INHERITED_FROM";
@@ -102,29 +102,35 @@ public class DocumentMapper implements InitializingBean {
         Document doc = new Document();
         
         // Special fields
+        // uri
         Field uriField = FieldMapper.getKeywordField(URI_FIELD_NAME, propSet.getURI());
         doc.add(uriField);
         
+        // name
         Field nameField = FieldMapper.getKeywordField(NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
         
+        // resourceType
         Field resourceTypeField =
             FieldMapper.getKeywordField(RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
         doc.add(resourceTypeField);
         
-        Field parentIdsField = 
+        // _ANCESTOR_IDS (index system field)
+        Field ancestorIdsField = 
             FieldMapper.getUnencodedMultiValueFieldFromIntegers(ANCESTORIDS_FIELD_NAME, 
                                                                     propSet.getAncestorIds());
-        doc.add(parentIdsField);
+        doc.add(ancestorIdsField);
         
+        // _ID (index system field)
         Field idField = FieldMapper.getKeywordField(ID_FIELD_NAME, propSet.getID());
         doc.add(idField);
         
+        // _ACL_INHERITED_FROM (index system field)
         Field aclField = FieldMapper.getKeywordField(ACL_INHERITED_FROM_FIELD_NAME, 
                                             propSet.getAclInheritedFrom());
         doc.add(aclField);
         
-        // Add all props
+        // Add all other properties
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Field field = getFieldFromProperty((Property)i.next());
             doc.add(field);
@@ -205,7 +211,6 @@ public class DocumentMapper implements InitializingBean {
         return property;
     }    
     
-    
     private Field getFieldFromProperty(Property property) throws FieldMappingException {
         String name = property.getName();
         String prefix = property.getNamespace().getPrefix();
@@ -228,7 +233,6 @@ public class DocumentMapper implements InitializingBean {
         } else {
             return FieldMapper.getFieldFromValue(fieldName, property.getValue());
         }
-
     }    
     
     public void setPropertyManager(PropertyManagerImpl propertyManager) {

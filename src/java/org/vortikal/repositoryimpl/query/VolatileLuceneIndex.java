@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Memory-based Lucene index.
@@ -41,8 +42,12 @@ import org.apache.lucene.store.RAMDirectory;
  * @author oyviste
  *
  */
-public class VolatileLuceneIndex extends AbstractLuceneIndex {
+public class VolatileLuceneIndex extends AbstractLuceneIndex implements InitializingBean {
 
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
+    }
+    
     public VolatileLuceneIndex() {
         super();
     }

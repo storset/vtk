@@ -111,6 +111,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     private Map namespaceUriMap = new HashMap();
     
+    private Map namespacePrefixMap = new HashMap();
+
     private ApplicationContext applicationContext;
     
     private PrimaryResourceTypeDefinition[] getResourceTypeDefinitionChildren(
@@ -180,8 +182,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             this.mixinTypeDefinitions.put(def, getMixinTypes(def));
 
         }
-        logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
-
         Collection mixins = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
                     MixinResourceTypeDefinition.class, false, false).values();
@@ -189,6 +189,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             ResourceTypeDefinition def = (ResourceTypeDefinition) iter.next();
             addNamespacesAndProperties(def);
         }
+
+        logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
 
         init = true;
     }
@@ -489,14 +491,30 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         Date time, Map alreadySetProperties, Map deletedProps, ResourceTypeDefinition rt,
         PropertyTypeDefinition[] propertyDefs, List newProps) {
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluating properties modification for resource "
+                         + newResource + ", resource type " + rt);
+        }
+
+
         for (int i = 0; i < propertyDefs.length; i++) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Evaluating properties modification for resource "
+                             + newResource + ", resource type " + rt
+                             + ", property " + propertyDefs[i]);
+            }
+
             PropertyTypeDefinition propertyDef = propertyDefs[i];
             
-            // If property allready set, don't evaluate
+
+            // If property already set, don't evaluate
             Map propsMap = (Map) alreadySetProperties.get(rt.getNamespace());
             if (propsMap != null) {
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property " + p + " already set, will not evaluate");
+                    }
                     newProps.add(p);
                     propsMap.remove(propertyDef.getName());
                     continue;
@@ -507,11 +525,18 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             if (propsMap != null) {
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property " + p + " was deleted, will not evaluate");
+                    }
                     continue;
                 }
             }
 
             // Not user edited, evaluate
+            if (logger.isDebugEnabled()) {
+                logger.debug("Property " + propertyDef + " not user edited, evaluating");
+            }
+
             Property prop = dto.getProperty(rt.getNamespace(), propertyDef.getName());
             PropertiesModificationPropertyEvaluator evaluator =
                 propertyDef.getPropertiesModificationEvaluator();
@@ -522,6 +547,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 if (prop == null) 
                     prop = createProperty(rt.getNamespace(), propertyDef.getName());
 
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Created property " + prop + ", will evaluate using "
+                                 + evaluator);
+                }
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
                     addProperty = true;
                     if (logger.isDebugEnabled()) {
@@ -539,12 +568,23 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                     }
                 }
             } else if (prop != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No properties modification evaluator for property " + prop
+                                 + ", but it already existed on resource");
+                }
                 addProperty = true;
-            } 
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No properties modification evaluator for property "
+                                 + propertyDef + ", and it did not already exist, not adding");
+                }
+                System.out.println("deleted_props: " + deletedProps);
+            }
 
             if (!addProperty && propertyDef.isMandatory()) {
                 throw new ConstraintViolationException(
-                    "Property defined by " + propertyDef + " is mandatory");
+                    "Property defined by " + propertyDef
+                    + " is mandatory for resource type " + rt);
             }
 
             if (addProperty) {
@@ -693,10 +733,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             prop.setValue(def.getDefaultValue());
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Created property: " + prop);
-        }
-
         return prop;
     }
 
@@ -733,11 +769,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             prop.setStringValue((String) value);
         } 
         
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Created property: " + prop);
-        }
-
         return prop;
     }
     
@@ -778,10 +809,6 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             
             Value value = valueFactory.createValue(stringValues[0], type);
             prop.setValue(value);
-            
-            if (logger.isDebugEnabled()) {
-                logger.debug("Created property: " + prop);
-            }
         }
         
         return prop;
@@ -792,27 +819,23 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private PropertyTypeDefinition findPropertyTypeDefinition(Namespace namespace, 
                                                           String name) {
         PropertyTypeDefinition propDef = null;
-        Map map = (Map)propertyTypeDefinitions.get(namespace);
+        Map map = (Map) this.propertyTypeDefinitions.get(namespace);
 
         if (map != null) {
             propDef = (PropertyTypeDefinition) map.get(name);
         }
         
-        if (logger.isDebugEnabled()) {
-            if (propDef != null) {
-                logger.debug("Found property definition : " + propDef
-                        + " for property " + namespace.getPrefix() + ":" + name);
-            } else {
-                logger.debug("No definition found for property " +
-                        namespace.getPrefix() + ":" + name);
-            }
+        if (logger.isDebugEnabled() && propDef == null) {
+            logger.debug("No definition found for property " +
+                         namespace.getPrefix() + ":" + name);
         }
         
         return propDef;
     }
     
 
-    private String getResourceTypeTreeAsString() {
+    // TODO: print mixin types as well
+    public String getResourceTypeTreeAsString() {
         StringBuffer sb = new StringBuffer();
         printResourceTypes(sb, 0, rootResourceTypeDefinition);
         return sb.toString();
@@ -856,6 +879,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
         if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri()))
             this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
+
+        if (!this.namespacePrefixMap.containsKey(def.getNamespace().getPrefix()))
+            this.namespaceUriMap.put(def.getNamespace().getPrefix(), def.getNamespace());
 
         Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
         
@@ -985,6 +1011,16 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
     
+    public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix, String name) {
+        Namespace namespace = (Namespace) this.namespacePrefixMap.get(prefix);
+        if (namespace == null) {
+            return null;
+        }
+        return findPropertyTypeDefinition(namespace, name);
+
+    }
+
+
     public List getPropertyTypeDefinitions() {
         // Return flat list of prop defs
         // XXX: equivalent methods for resource-types, mixin-types, etc ?

@@ -190,14 +190,14 @@
   <#assign defaultNotInherited = vrtx.getMsg("permissions.notInherited", "Custom") />
   <h2 class="permissionsToggleHeader">
     <@vrtx.msg
-       code="permissions.header.${resourceContext.currentResource.contentType}"
+       code="permissions.header.${resourceContext.currentResource.resourceType}"
        default="${defaultHeader}"/>
   </h2>
   <div class="permissionsToggleAction">
     <#if aclInfo.aclInherited>
       <@vrtx.msg code="permissions.isInherited" default="Inherited"/>
     <#else>
-      <@vrtx.msg code="permissions.notInherited.${resourceContext.currentResource.contentType}" default="${defaultNotInherited}"/>
+      <@vrtx.msg code="permissions.notInherited.${resourceContext.currentResource.resourceType}" default="${defaultNotInherited}"/>
     </#if>
     <#if aclInfo.aclInheritanceServiceURL?exists &&
       resourceContext.currentResource.URI != '/'>
@@ -213,7 +213,7 @@
   <form action="${aclInheritanceForm.submitURL?html}" method="POST">
     <h3>
       <@vrtx.msg
-         code="permissions.header.${resourceContext.currentResource.contentType}"
+         code="permissions.header.${resourceContext.currentResource.resourceType}"
          default="${defaultHeader}"/>
     </h3>
     <ul class="inheritance">

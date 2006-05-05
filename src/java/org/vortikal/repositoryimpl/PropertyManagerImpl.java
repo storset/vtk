@@ -985,8 +985,17 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
     
-    public PropertyTypeDefinition getPropertyDefinition(String prefix, String name) {
-        return null;
+    public List getPropertyTypeDefinitions() {
+        // Return flat list of prop defs
+        // XXX: equivalent methods for resource-types, mixin-types, etc ?
+        // Indexing system needs type config information in a more available manner.
+        ArrayList propDefs = new ArrayList();
+        
+        for (Iterator i = this.propertyTypeDefinitions.values().iterator(); i.hasNext();) {
+            Map propMap = (Map)i.next();
+            propDefs.addAll(propMap.values());
+        }
+        
+        return propDefs;
     }
-    
 }

@@ -40,10 +40,16 @@ import org.apache.lucene.analysis.TokenStream;
  * @author oyviste
  *
  */
-public class MultiValueFieldAnalyzer extends Analyzer {
+public class EscapedMultiValueFieldAnalyzer extends Analyzer {
 
+    private char splitChar;
+    
+    public EscapedMultiValueFieldAnalyzer(char splitChar) {
+        this.splitChar = splitChar;
+    }
+    
     public TokenStream tokenStream(String fieldName, Reader reader) {
-        return new MultiValueFieldTokenizer(reader);
+        return new EscapedMultiValueFieldTokenizer(reader, splitChar);
       }
 
 }

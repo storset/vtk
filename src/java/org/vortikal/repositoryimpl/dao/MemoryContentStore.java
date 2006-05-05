@@ -48,11 +48,8 @@ import org.vortikal.repository.IllegalOperationException;
  * (see test case <code>org.vortikal.repositoryimpl.dao.MemoryContentStoreTestCase</code>)
  * 
  * It maintains an internal tree structure of content- and directory-nodes.
- * 
- * TODO: Make thread synchronization more refined 
- *       (synchronize in smaller blocks, instead of entire methods). 
- *       Needs some think-juice to implement without breaking under concurrent access.
- * 
+ *
+ * TODO: Smarter and more refined synchronization.
  * @author oyviste
  *
  */
@@ -87,8 +84,11 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
-    public synchronized long getContentLength(String uri) throws IllegalOperationException {
-        Node node = getNode(uri);
+    public long getContentLength(String uri) throws IllegalOperationException {
+        Node node = null;
+        synchronized (this) {
+            node = getNode(uri);
+        }
         
         if (node == null) {
             return 0; // Same behaviour as java.io.File#length()

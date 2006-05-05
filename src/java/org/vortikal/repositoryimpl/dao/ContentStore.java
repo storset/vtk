@@ -41,7 +41,7 @@ import org.vortikal.repository.IllegalOperationException;
  * to that of a common file system. Every node must have an 
  * existing parent collection resource node, except the root node. 
  * The root collection node shall always exist, and should not need to be 
- * created upon intialization.
+ * created upon initialization.
  * 
  */
 public interface ContentStore {

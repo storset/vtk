@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 
@@ -51,12 +50,9 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
     private PropertyValidator validator;
     private Value[] allowedValues;
-    
-    public void afterPropertiesSet() {
-        
-    }
-    
 
+    public void afterPropertiesSet() {}
+    
     public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
         return contentModificationEvaluator;
     }

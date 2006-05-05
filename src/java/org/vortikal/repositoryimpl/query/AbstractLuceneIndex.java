@@ -36,7 +36,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -91,7 +91,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     public void afterPropertiesSet() 
         throws BeanInitializationException {
         if (this.analyzer == null) {
-            this.analyzer = new WhitespaceAnalyzer(); // Default analyzer
+            this.analyzer = new KeywordAnalyzer(); // Default (and simples) analyzer
         } 
         
         try {

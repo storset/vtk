@@ -1,6 +1,7 @@
 package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.vortikal.repository.PropertySet;
 
@@ -33,6 +34,16 @@ public interface IndexDataAccessor {
     public ResultSetIterator getOrderedPropertySetIterator(String startURI) throws IOException;
     
     /**
+     * Get iterator over all <code>PropertySet</code>s from URIs in the given 
+     * <code>List</code>.
+     *  
+     * @param uris
+     * @return
+     * @throws IOException
+     */
+    public ResultSetIterator getPropertySetIteratorForURIs(List uris) throws IOException;
+    
+    /**
      * Returns a single <code>PropertySet</code> for the given URI.
      * 
      * @param uri
@@ -40,7 +51,6 @@ public interface IndexDataAccessor {
      * @throws IOException
      */
     public PropertySet getPropertySetForURI(String uri) throws IOException;
-    
     
     
 }

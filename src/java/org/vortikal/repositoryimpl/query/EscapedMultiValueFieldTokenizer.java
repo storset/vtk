@@ -37,52 +37,68 @@ import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
 
 /**
- * MultiValueFieldTokenizer.
- * Split at un-escaped splitting char.
+ * EscapedMultiValueFieldTokenizer.
+ * Split input into tokens at un-escaped splitting characters. 
+ * Escape-character is always '\\'.
  * 
- * Remove escape characters from tokens so that escaping while
- * searching becomes un-necessary.
+ * The escape-character ('\\') is always removed from the tokens before they
+ * are returned for indexing. Thus, searching on fields analyzed by this analyzer 
+ * should require no pre-escaping of the splitting character.
+ * 
+ * Empty tokens are discarded.
  * 
  * @author oyviste
- *
  */
-public class MultiValueFieldTokenizer extends Tokenizer {
+public class EscapedMultiValueFieldTokenizer extends Tokenizer {
 
+    public static final char ESCAPE_CHAR = '\\';
+    
     private static final int MAX_TOKEN_LEN = 2048;
     
-    public MultiValueFieldTokenizer(Reader in) {
+    private char splitChar;
+    private char[] tokenBuffer;
+    private int streamOffset;
+    
+    public EscapedMultiValueFieldTokenizer(Reader in, char splitChar) {
         super(in);
+        this.splitChar = splitChar;
+        this.streamOffset = 0;
+        this.tokenBuffer = new char[MAX_TOKEN_LEN];
     }
     
-    private char[] ioBuffer = new char[4096];
-    private int ioBufferIndex = 0;
-    private int dataLen = 0;
-
-    private int start = 0; // Position of first token
-    
     public final Token next() throws IOException {
-        int tokenLength = 0;
-        char[] tokenBuffer = new char[MAX_TOKEN_LEN];
-        int offset = 0;
-        while (true) {
+        int c, tOff = 0, start = streamOffset;
+        boolean esc = false;
+        while ((c = input.read()) != -1) {
+            ++streamOffset;
+
+            if (c == splitChar) {
+                if (esc) {
+                    tOff--;
+                } else {
+                    if (tOff == 0) { // Drop empty tokens
+                        esc = false;
+                        start = streamOffset;
+                        continue;
+                    } else break; 
+                }
+            }
             
-            dataLen = input.read(ioBuffer);
+            if (tOff == MAX_TOKEN_LEN-1) {
+                // Max token length reached, return it (forced break)
+                break;
+            }
             
-            break;// XXX: not finished. We might not need this, depends on behaviour when adding same field
-            // multiple times to index (we may be able to map pretty good to what we do in the database
-            // for multi-valued props).
-            
-            // <Read into buf>
-            // <scan forward for un-escaped split char>
-            // <if none found in current io-buffer, then break, and let the
-            //  iobuffer fill up again>
-            //   <if iobuffer empty, return null (signals end of token stream)
-            // <if found, then un-escape string and create token>
-            //   <return token>
-            
+            tokenBuffer[tOff++] = (char)c; // Add character to token
+            esc = c == ESCAPE_CHAR ? true : false;
         }
         
-        return null;
+        if (c == -1) {
+            if (tOff == 0) return null; // No more tokens left.
+            ++streamOffset;
+        }
+        
+        return new Token(new String(tokenBuffer, 0, tOff), start, streamOffset-1);
     }
 
 }

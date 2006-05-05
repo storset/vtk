@@ -31,12 +31,14 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.DateTools.Resolution;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -53,7 +55,8 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
  */
 public final class FieldMapper {
     
-    private static Log logger = LogFactory.getLog(FieldMapper.class);
+
+    public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
     
     private FieldMapper() {} // Util
      
@@ -68,15 +71,19 @@ public final class FieldMapper {
                 Field.Index.NO_NORMS);
     }
 
-    public static Field[] getFieldsFromValues(String name, Value[] values) {
+    public static Field getFieldFromValues(String name, Value[] values) {
         
-        Field[] fields = new Field[values.length];
+        StringBuffer fieldValue = new StringBuffer();
         for (int i=0; i<values.length; i++) {
             String encoded = encodeIndexFieldValue(values[i].getNativeStringRepresentation(), values[i].getType());
-            fields[i] = getKeywordField(name, encoded);
+            String escaped = escapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, encoded);
+            fieldValue.append(escaped);
+            if (i < values.length-1) fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);
         }
+
+        Field field = new Field(name, fieldValue.toString(), Field.Store.YES, Field.Index.TOKENIZED);
         
-        return fields;
+        return field;
     }
     
     public static Field getFieldFromValue(String name, Value value) {
@@ -92,16 +99,48 @@ public final class FieldMapper {
         return valueFactory.createValue(decodedFieldValue, type);
     }
     
-    public static Value[] getValuesFromFields(Field[] fields, ValueFactory valueFactory, 
+    public static Value[] getValuesFromField(Field field, ValueFactory valueFactory, 
                                                 int type) {
 
-        Value[] values = new Value[fields.length];
-        for (int i=0; i<fields.length; i++) {
-            String stringValue = fields[i].stringValue();
+        String[] stringValues = 
+            field.stringValue().split(Character.toString(MULTI_VALUE_FIELD_SEPARATOR));
+        Value[] values = new Value[stringValues.length];
+        for (int i=0; i<stringValues.length; i++) {
+            String stringValue = 
+                decodeIndexFieldValue(unescapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, 
+                                                            stringValues[i]), type);
+            
             values[i] = valueFactory.createValue(stringValue, type);
         }
         
         return values;
+    }
+    
+    // XXX: yuck.
+    public static Field getUnencodedMultiValueFieldFromIntegers(String name, 
+                                                                int[] integers) {
+        StringBuffer fieldValue = new StringBuffer();
+        for (int i=0; i<integers.length; i++) {
+            fieldValue.append(Integer.toString(integers[i]));
+            if (i < integers.length-1) {
+                fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);
+            }
+        }
+        
+        return new Field(name, fieldValue.toString(), Field.Store.YES, 
+                                                      Field.Index.TOKENIZED);
+    }
+
+    // XXX: yuck.
+    public static int[] getIntegersFromUnencodedMultiValueField(Field field) {
+        String[] stringValues = field.stringValue().split(
+                Character.toString(MULTI_VALUE_FIELD_SEPARATOR));
+        int[] integers = new int[stringValues.length];
+        for (int i=0; i<stringValues.length; i++) {
+            integers[i] = Integer.parseInt(stringValues[i]);
+        }
+        
+        return integers;
     }
     
     public static String decodeIndexFieldValue(String fieldValue, int type) 
@@ -122,8 +161,6 @@ public final class FieldMapper {
             } catch (ParseException pe) {
                 throw new ValueFormatException(pe.getMessage());
             }
-            
-
             
         // XXX: sorting of negative integers does not work with this encoding
         // XXX: Possible solution is to shift scale to [0 - 2*Integer.MAX_VALUE], so

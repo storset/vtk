@@ -30,13 +30,9 @@
  */
 package org.vortikal.repositoryimpl.query;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -71,7 +67,7 @@ public class DocumentMapper implements InitializingBean {
     public static final String NAME_FIELD_NAME = "name";
     public static final String URI_FIELD_NAME = "uri";
     public static final String RESOURCETYPE_FIELD_NAME = "resourcetype";
-    public static final String PARENTIDS_FIELD_NAME = "_PARENTIDS";
+    public static final String ANCESTORIDS_FIELD_NAME = "_ANCESTORIDS";
     public static final String ID_FIELD_NAME = "_ID";
     public static final String ACL_INHERITED_FROM_FIELD_NAME = "_ACL_INHERITED_FROM";
     
@@ -83,7 +79,7 @@ public class DocumentMapper implements InitializingBean {
         RESERVED_FIELD_NAMES.add(NAME_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(RESOURCETYPE_FIELD_NAME);
-        RESERVED_FIELD_NAMES.add(PARENTIDS_FIELD_NAME);
+        RESERVED_FIELD_NAMES.add(ANCESTORIDS_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ID_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ACL_INHERITED_FROM_FIELD_NAME);
     }
@@ -101,8 +97,7 @@ public class DocumentMapper implements InitializingBean {
         }
     }
     
-    public Document getDocument(PropertySetImpl propSet,
-                                       String[] parentIds) throws DocumentMappingException {
+    public Document getDocument(PropertySetImpl propSet) throws DocumentMappingException {
         
         Document doc = new Document();
         
@@ -117,10 +112,10 @@ public class DocumentMapper implements InitializingBean {
             FieldMapper.getKeywordField(RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
         doc.add(resourceTypeField);
         
-        for (int i=0; i<parentIds.length; i++) {
-            Field field = FieldMapper.getKeywordField(PARENTIDS_FIELD_NAME, parentIds[i]);
-            doc.add(field);
-        }
+        Field parentIdsField = 
+            FieldMapper.getUnencodedMultiValueFieldFromIntegers(ANCESTORIDS_FIELD_NAME, 
+                                                                    propSet.getAncestorIds());
+        doc.add(parentIdsField);
         
         Field idField = FieldMapper.getKeywordField(ID_FIELD_NAME, propSet.getID());
         doc.add(idField);
@@ -131,18 +126,19 @@ public class DocumentMapper implements InitializingBean {
         
         // Add all props
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
-
-            Field[] fields = getFieldsFromProperty((Property)i.next());
-            
-            for (int u=0; u<fields.length; u++) {
-                doc.add(fields[u]);
-            }
-           
+            Field field = getFieldFromProperty((Property)i.next());
+            doc.add(field);
         }
         
         return doc;
     }
-    
+
+    /**
+     * 
+     * @param doc
+     * @return
+     * @throws DocumentMappingException
+     */
     public PropertySetImpl getPropertySet(Document doc) throws DocumentMappingException {
         
         // XXX: exception handling
@@ -150,29 +146,15 @@ public class DocumentMapper implements InitializingBean {
         propSet.setAclInheritedFrom(Integer.parseInt(doc.get(ACL_INHERITED_FROM_FIELD_NAME)));
         propSet.setID(Integer.parseInt(doc.get(ID_FIELD_NAME)));
         propSet.setResourceType(doc.get(RESOURCETYPE_FIELD_NAME));
+        propSet.setAncestorIds(FieldMapper.getIntegersFromUnencodedMultiValueField(
+                doc.getField(ANCESTORIDS_FIELD_NAME)));
         
         Enumeration e = doc.fields();
-        Map fieldMap = new HashMap();
         while (e.hasMoreElements()) {
             Field field = (Field)e.nextElement();
-            String name = field.name();
-            if (RESERVED_FIELD_NAMES.contains(name)) continue;
+            if (RESERVED_FIELD_NAMES.contains(field.name())) continue;
             
-            List fields = null;
-            if ((fields = (List)fieldMap.get(name)) == null) {
-                fields = new ArrayList();
-                fields.add(field);
-                fieldMap.put(name, fields);
-            } else {
-                fields.add(field);
-            }
-        }
-        
-        for (Iterator i = fieldMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry)i.next();
-            String name = (String)entry.getKey();
-            Field[] fields = (Field[])((List)entry.getValue()).toArray(new Field[]{});
-            Property prop = getPropertyFromFields(fields);
+            Property prop = getPropertyFromField(field);
             propSet.addProperty(prop);
         }
         
@@ -180,22 +162,14 @@ public class DocumentMapper implements InitializingBean {
     }
     
     /**
-     * Get a <code>Property</code> from an array of fields. If it's a single-value
-     * property, the array should of length 1. In case of multi-valued props, there
-     * will be more fields with the same name.
      * 
      * @param fields
      * @return
      * @throws FieldMappingException
      */
-    private Property getPropertyFromFields(Field[] fields) throws FieldMappingException {
+    private Property getPropertyFromField(Field field) throws FieldMappingException {
         
-        if (fields == null || fields.length == 0) {
-            throw new IllegalArgumentException("Need at least one field, and it may not be null");
-        }
-        
-        Field ff = fields[0];
-        String[] fieldNameComponents = ff.name().split(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+        String[] fieldNameComponents = field.name().split(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
         String nsPrefix = null;
         String name = null;
         if (fieldNameComponents.length == 1) {
@@ -205,9 +179,9 @@ public class DocumentMapper implements InitializingBean {
             nsPrefix = fieldNameComponents[0];
             name = fieldNameComponents[1];
         } else {
-            logger.warn("Invalid index field name: '" + ff.name() + "'");
+            logger.warn("Invalid index field name: '" + field.name() + "'");
             throw new FieldMappingException("Invalid index field name: '" 
-                    + ff.name() + "'");
+                    + field.name() + "'");
         }
         
         Namespace ns = Namespace.getNamespaceFromPrefix(nsPrefix);
@@ -217,26 +191,22 @@ public class DocumentMapper implements InitializingBean {
         
         if (def != null) {
             if (def.isMultiple()) {
-                property.setValues(FieldMapper.getValuesFromFields(fields, valueFactory, def.getType()));
+                property.setValues(FieldMapper.getValuesFromField(field, valueFactory, 
+                        def.getType()));
             } else {
-                if (fields.length > 1) {
-                    throw new FieldMappingException("Multiple fields cannot be mapped to single-valued property.");
-                }
-
-                property.setValue(FieldMapper.getValueFromField(fields[0], valueFactory, def.getType()));
+                property.setValue(FieldMapper.getValueFromField(field, valueFactory, 
+                        def.getType()));
             }
         } else {
-            if (fields.length > 1) {
-                throw new FieldMappingException("Multiple fields cannot be mapped to single-valued property.");
-            }
-            property.setValue(FieldMapper.getValueFromField(fields[0], valueFactory, PropertyType.TYPE_STRING));
+            property.setValue(FieldMapper.getValueFromField(field, valueFactory, 
+                    PropertyType.TYPE_STRING));
         }
         
         return property;
     }    
     
     
-    private Field[] getFieldsFromProperty(Property property) throws FieldMappingException {
+    private Field getFieldFromProperty(Property property) throws FieldMappingException {
         String name = property.getName();
         String prefix = property.getNamespace().getPrefix();
         String fieldName = null;
@@ -254,9 +224,9 @@ public class DocumentMapper implements InitializingBean {
         PropertyTypeDefinition def = property.getDefinition();
         if (def != null && def.isMultiple()) {
                 Value[] values = property.getValues();
-                return FieldMapper.getFieldsFromValues(fieldName, values);
+                return FieldMapper.getFieldFromValues(fieldName, values);
         } else {
-            return new Field[]{FieldMapper.getFieldFromValue(fieldName, property.getValue())};
+            return FieldMapper.getFieldFromValue(fieldName, property.getValue());
         }
 
     }    

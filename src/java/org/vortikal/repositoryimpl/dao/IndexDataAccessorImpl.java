@@ -36,7 +36,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.sql.DataSource;
+
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.security.PrincipalManager;
@@ -47,19 +51,6 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
     private PrincipalManager principalManager;
     private DataSource dataSource;
 
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-    
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-    
 
     public ResultSetIterator getOrderedPropertySetIterator() throws IOException {
         Connection conn = null;
@@ -73,7 +64,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             
-            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager, rs);
+            return new ResourceIDCachingResultSetIteratorImpl(this.propertyManager, this.principalManager, rs);
 
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
@@ -88,7 +79,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             
-            String query = "select r.*, p.*, p.* from vortex_resource r "
+            String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
                 + "left outer join extra_prop_entry p  on r.resource_id = p.resource_id "
                 + "where r.uri = ? or r.uri like ? order by r.uri";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -110,8 +101,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             
-            String query = "select r.*, p.*, p.* from vortex_resource r "
-                + "left outer join extra_prop_entry p  on r.resource_id = p.resource_id "
+            String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
+                + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
                 + "where r.uri = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, uri);
@@ -133,5 +124,50 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
         }
     }
     
+    public ResultSetIterator getPropertySetIteratorForURIs(List uris) throws IOException {
+        
+        Connection conn;
+        try {
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
+
+            int n = uris.size();
+            StringBuffer query = 
+                new StringBuffer("select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
+                + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
+                + "where r.uri in (");
+            for (int i=0; i<n; i++) {
+                query.append("?");
+                if (i < n-1) query.append(",");
+            }
+            query.append(")");
+
+            PreparedStatement stmt = conn.prepareStatement(query.toString());
+            
+            n = 1;
+            for (Iterator i = uris.iterator(); i.hasNext();) {
+                String uri = (String)i.next();
+                stmt.setString(n++, uri);
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            
+            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager, rs);
+        } catch (SQLException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+ 
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+        this.propertyManager = propertyManager;
+    }
     
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+
 }

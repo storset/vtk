@@ -35,9 +35,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.index.Index;
 
 import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
 
@@ -49,13 +47,15 @@ import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
  *
  */
 public class LuceneIndex extends FSBackedLuceneIndex implements
-    InitializingBean, BeanNameAware, Index {
+    InitializingBean {
     
     private Log logger = LogFactory.getLog(this.getClass());
     
     private int optimizeInterval = 500;
     private int commitCounter = 0;
-    private String beanName;
+    
+    private FSBackedLuceneIndex index;
+    private VolatileLuceneIndex volatileIndex;
     
     /** This is our FIFO write lock on this index. Operations requiring write-access
      *  will need to acquire this before doing the operation. This includes all 
@@ -65,7 +65,6 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
     private FIFOSemaphore lock = new FIFOSemaphore(1);
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        super.afterPropertiesSet();
         
     }
     
@@ -112,22 +111,8 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
         super.commit();
     }
     
-    public String getIndexId() {
-        return this.beanName;
-    }
-    
     public void setOptimizeInterval(int optimizeInterval) {
         this.optimizeInterval = optimizeInterval;
     }
 
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-    
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("[ ").append(getClass().getName());
-        buffer.append(", id='").append(getIndexId()).append("' ]");
-        return buffer.toString();
-    }
 }

@@ -52,8 +52,10 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     protected String uri;
     protected String resourceType;
     protected Map propertyMap;
-    protected int id = -1; // Numeric ID used by database
-    private int aclInheritedFrom = -1;
+    protected int id = -1;   // Numeric ID used by database
+    private int aclInheritedFrom = -1; // Numeric ID of resource from which this resource inherits
+                                       // its ACL definition.
+    private int[] ancestorIds; // Numeric ID of ancestors. Might be null. Used by indexing system. 
    
     public PropertySetImpl(String uri) {
         this.uri = uri;
@@ -159,5 +161,12 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return sb.toString();
     }
     
-    
+    public int[] getAncestorIds() {
+        return ancestorIds;
+    }
+
+    public void setAncestorIds(int[] parentIds) {
+        this.ancestorIds = parentIds;
+    }
+
 }

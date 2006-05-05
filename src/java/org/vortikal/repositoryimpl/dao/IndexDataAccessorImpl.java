@@ -60,7 +60,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
             conn.setAutoCommit(false);     
             
             String query = "select r.*, p.* from vortex_resource r "
-                + "left outer join extra_prop_entry p on r.resource_id = p.resource_id order by r.uri";
+                + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
+                + "order by r.uri, p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             
@@ -81,7 +82,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
             
             String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
                 + "left outer join extra_prop_entry p  on r.resource_id = p.resource_id "
-                + "where r.uri = ? or r.uri like ? order by r.uri";
+                + "where r.uri = ? or r.uri like ? order by r.uri, p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, startURI);
             stmt.setString(2, JDBCClient.getURIWildcard(startURI));
@@ -103,7 +104,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
             
             String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
                 + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
-                + "where r.uri = ?";
+                + "where r.uri = ? order by p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, uri);
             ResultSet rs = stmt.executeQuery();
@@ -144,7 +145,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
                 query.append("?");
                 if (i < n-1) query.append(",");
             }
-            query.append(")");
+            query.append(") order by r.uri, p.extra_prop_entry_id");
 
             PreparedStatement stmt = conn.prepareStatement(query.toString());
             

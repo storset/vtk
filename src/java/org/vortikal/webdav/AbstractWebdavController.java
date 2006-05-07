@@ -59,6 +59,9 @@ public abstract class AbstractWebdavController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
+    // A way of partly disabling work in progress regarding if-headers
+    protected boolean ignoreIfHeader = true;
+    
     protected IfHeader ifHeader;
 
     protected Repository repository = null;
@@ -151,18 +154,24 @@ public abstract class AbstractWebdavController implements Controller {
         return uri;
     }
 
-    protected boolean matchesIfHeader(Resource resource) {
-        if (ifHeader == null) {
+    protected boolean matchesIfHeader(Resource resource, boolean shouldMatchOnNoIfHeader) {
+        if (ignoreIfHeader) {
             return true;
         }
-        return ifHeader.matches(resource);
+        if (ifHeader == null) {
+            return shouldMatchOnNoIfHeader;
+        }
+        return ifHeader.matches(resource, shouldMatchOnNoIfHeader);
     }
     
-    protected boolean matchesIfHeaderEtags(Resource resource) {
-        if (ifHeader == null) {
+    protected boolean matchesIfHeaderEtags(Resource resource, boolean shouldMatchOnNoIfHeader) {
+        if (ignoreIfHeader) {
             return true;
         }
-        return ifHeader.matchesEtags(resource);
+        if (ifHeader == null) {
+            return shouldMatchOnNoIfHeader;
+        }
+        return ifHeader.matchesEtags(resource, shouldMatchOnNoIfHeader);
     }
        
   

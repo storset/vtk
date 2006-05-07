@@ -39,11 +39,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 
 
@@ -63,6 +65,15 @@ public class UnlockController extends AbstractWebdavController {
         String uri = requestContext.getResourceURI();
         Map model = new HashMap();
         try {
+            ifHeader = new IfHeaderImpl(request);
+            Resource resource = repository.retrieve(token, uri, false);
+            if (!matchesIfHeader(resource, true)) {
+                logger.debug("handleRequest: matchesIfHeader false");
+                throw new ResourceLockedException();
+            } else {
+                logger.debug("handleRequest: matchesIfHeader true");
+            }
+            
             String lockToken = getLockToken(request);
 
             if (logger.isDebugEnabled()) {

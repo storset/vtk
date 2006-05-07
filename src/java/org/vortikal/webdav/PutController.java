@@ -50,6 +50,7 @@ import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.filter.RequestFilter;
 import org.vortikal.web.filter.UploadLimitInputStreamFilter;
+import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for PUT requests.
@@ -121,19 +122,25 @@ public class PutController extends AbstractWebdavController {
             /* Get the document or collection: */
 
             Resource resource = null;
-            boolean existed = repository.exists(token, uri);
+            boolean exists = repository.exists(token, uri);
 
-            if (existed) {
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Resource already exists");
-                }
+            if (exists) {
+                logger.debug("Resource already exists");
                 resource = repository.retrieve(token, uri, false);
-
+                ifHeader = new IfHeaderImpl(request);
+                
+                if (!matchesIfHeader(resource, true)) {
+                    logger.debug("handleRequest: matchesIfHeader false");
+                    throw new ResourceLockedException();
+                } else {
+                    logger.debug("handleRequest: matchesIfHeader true");
+                }
+                
+                
                 /* if lock-null resource, act as if it did not exist.. */
                 if (resource.getContentLength() == 0 &&
                     resource.getLock() != null) {
-                    existed = false;
+                    exists = false;
                 }
                 
 
@@ -208,7 +215,7 @@ public class PutController extends AbstractWebdavController {
                 repository.store(token, resource);
             }
 
-            if (existed) {
+            if (exists) {
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                           new Integer(HttpServletResponse.SC_OK));
             } else {

@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
@@ -48,6 +49,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for COPY requests
@@ -80,7 +82,24 @@ public class CopyController extends AbstractWebdavController {
         Map model = new HashMap();
 
         try {
-
+            ifHeader = new IfHeaderImpl(request);
+            Resource resource = repository.retrieve(token, uri, false);
+            if (!matchesIfHeader(resource, true)) {
+                logger.debug("handleRequest: src matchesIfHeader false");
+                throw new ResourceLockedException();
+            } else {
+                logger.debug("handleRequest: src matchesIfHeader true");
+            }
+            
+            Resource destination = repository.retrieve(token, destURI, false);
+            if (!matchesIfHeader(destination, true)) {
+                logger.debug("handleRequest: destination matchesIfHeader false");
+                throw new ResourceLockedException();
+            } else {
+                logger.debug("handleRequest: destination matchesIfHeader true");
+            }
+            
+            
             if (destURI == null || destURI.trim().equals("")) {
                 throw new InvalidRequestException(
                     "Missing `Destination' request header");

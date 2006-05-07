@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
@@ -48,6 +49,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 
 
@@ -77,7 +79,21 @@ public class MoveController extends AbstractWebdavController {
         Map model = new HashMap();
 
         try {
-
+            ifHeader = new IfHeaderImpl(request);
+            Resource resource = repository.retrieve(token, uri, false);
+            
+            if (!ignoreIfHeader && resource.getLock() != null && !ifHeader.hasTokens()) {
+                logger.debug("handleRequest: resource locked and if-header hasn't any locktokens");
+                throw new ResourceLockedException();
+            }
+            
+            if (!matchesIfHeader(resource, true)) {
+                logger.debug("handleRequest: matchesIfHeader false");
+                throw new ResourceLockedException();
+            } else {
+                logger.debug("handleRequest: matchesIfHeader true");
+            }
+            
             if (destURI == null || destURI.trim().equals("")) {
                 throw new InvalidRequestException(
                     "Missing `Destination' request header");

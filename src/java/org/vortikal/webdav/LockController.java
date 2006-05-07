@@ -95,6 +95,13 @@ public class LockController extends AbstractWebdavController {
         ifHeader = new IfHeaderImpl(request);
         
         try {
+            lockedResource = repository.retrieve(token, uri, false);
+            if (!matchesIfHeader(lockedResource, true)) {
+                logger.debug("andleRequest: matchesIfHeader false");
+                throw new ResourceLockedException();
+            } else {
+                logger.debug("handleRequest: matchesIfHeader true");
+            }
             String ownerInfo = securityContext.getPrincipal().toString();
             String depth = request.getHeader("Depth");
             if (depth == null) {
@@ -108,8 +115,8 @@ public class LockController extends AbstractWebdavController {
             if (request.getContentLength() <= 0) { // -1 if not known
                 //If contentLength <= 0 we assume we want vto refresh a lock
                 if (exists) {
-                    lockedResource = repository.retrieve(token, uri, false);
-                    if (matchesIfHeader(lockedResource)) {
+                    //lockedResource = repository.retrieve(token, uri, false);
+                    if (matchesIfHeader(lockedResource, false)) {
                         lockToken = lockedResource.getLock().getLockToken();
                     }
                 }

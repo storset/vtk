@@ -66,6 +66,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
  * Handler for PROPPATCH requests.
@@ -86,13 +87,23 @@ public class ProppatchController extends AbstractWebdavController  {
 
         try {
 
+            ifHeader = new IfHeaderImpl(request);
+            Resource resource = repository.retrieve(token, uri, false);
+            if (!matchesIfHeader(resource, true)) {
+                logger.debug("handleRequest: matchesIfHeader false");
+                throw new ResourceLockedException();
+            } else {
+                logger.debug("handleRequest: matchesIfHeader true");
+            }
+            
+            
             /* Parse the request body XML: */
             Document requestBody = parseRequestBody(request);
 
             /* Make sure the request is valid: */
             validateRequestBody(requestBody);
 
-            Resource resource = repository.retrieve(token, uri, false);
+            //Resource resource = repository.retrieve(token, uri, false);
 
             doPropertyUpdate(resource, requestBody, token);
             

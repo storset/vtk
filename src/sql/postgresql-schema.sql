@@ -56,14 +56,12 @@ CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 
 
 -- Stored function for retrieving a resource's ancestor IDs.
--- Returns an integer array of IDs.
-DROP FUNCTION resource_ancestor_ids(varchar); 
-CREATE OR REPLACE FUNCTION
-resource_ancestor_ids(varchar) RETURNS integer[] AS ' DECLARE
-  ancestor varchar DEFAULT ''/'';
+-- Returns a VARCHAR of space-separated id integers.
+DROP FUNCTION resource_ancestor_ids(varchar); CREATE OR REPLACE
+FUNCTION resource_ancestor_ids(varchar) RETURNS VARCHAR AS ' DECLARE
+  parent varchar DEFAULT ''/'';
   id integer;
-  idc integer DEFAULT 0;
-  ids integer[] DEFAULT ''{}'';
+  ids varchar DEFAULT '''';
   slashpos integer DEFAULT 1;
   nextslash integer DEFAULT -1;
 BEGIN
@@ -71,17 +69,17 @@ BEGIN
 
   LOOP
     SELECT INTO id vr.resource_id FROM vortex_resource vr
-    WHERE vr.uri = ancestor AND vr.is_collection = ''Y'';
-    ids[idc] := id;
-    idc := idc + 1;
+    WHERE vr.uri = parent AND vr.is_collection = ''Y'';
+    ids := ids || '' '' || id;
     nextslash := position(''/'' in substring($1 from slashpos+1 for char_length($1)-slashpos));
     EXIT WHEN nextslash = 0;
     slashpos := slashpos + nextslash;
-    ancestor := substring($1 from 1 for slashpos-1);
+    parent := substring($1 from 1 for slashpos-1);
   END LOOP;
   RETURN ids;
 END;
 ' LANGUAGE plpgsql;
+
 
 -----------------------------------------------------------------------------
 -- lock_type

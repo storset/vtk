@@ -37,12 +37,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.PropertySetImpl;
@@ -56,6 +56,8 @@ import org.vortikal.security.PrincipalManager;
  */
 public class ResultSetIteratorImpl implements ResultSetIterator {
 
+    private static Log logger = LogFactory.getLog(ResultSetIteratorImpl.class);
+    
     private ResultSet rs;
     private PropertyManagerImpl propertyManager;
     private PrincipalManager principalManager;
@@ -99,12 +101,10 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
             JDBCClient.populateStandardProperties(this.propertyManager, this.principalManager,
                                                   propertySet, this.rs);
             
-            java.sql.Array array = rs.getArray("ancestor_ids");
-            propertySet.setAncestorIds((int[])array.getArray());
+            propertySet.setAncestorIds(getAncestorIdsFromString(rs.getString("ancestor_ids")));
             
             Map propMap = new HashMap();
             
-
             while (currentURI.equals(uri)) {
 
                 JDBCClient.PropHolder holder = new JDBCClient.PropHolder();
@@ -147,7 +147,6 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
         }
     }
     
-    
     public void close() throws IOException {
 
         this.hasNext = false;
@@ -184,6 +183,28 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
         }
     }
     
-    
+    /**
+     * XXX: Horrible hack mapping from a single string of ids returned by database 
+     * function for getting ancestor ids, to a Java int[] array. Needed because
+     * we haven't ported Oracle-function to something more intelligent, and we
+     * don't want to have two different Java-classes for Oracle and PostgreSQL.
+     * 
+     * Only temporary, until we get the id-problem 
+     * sorted out, either by not using procedures/functions at all, or change
+     * how we do the SQL/procedures.
+     * 
+     * @param idString White-space separated String of ancestor ids (parseable as integers) 
+     * @return array of integers
+     */
+    private int[] getAncestorIdsFromString(String idString) {
+        String[] ids = idString.trim().split(" ");
+        
+        int[] integerIds = new int[ids.length];
+        for (int i=0; i<integerIds.length; i++) {
+            integerIds[i] = Integer.parseInt(ids[i]);
+        }
+        
+        return integerIds;
+    }
 
 }

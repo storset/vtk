@@ -125,6 +125,10 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
         }
     }
     
+    /**
+     * XXX: problematic with a large number of URIs (uses SQL uri IN(uri1, uri2, uri3 ...) style)
+     * 
+     */
     public ResultSetIterator getPropertySetIteratorForURIs(List uris) throws IOException {
         
         if (uris.size() == 0) {

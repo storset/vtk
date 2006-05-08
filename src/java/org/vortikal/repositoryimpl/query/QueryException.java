@@ -31,27 +31,27 @@
 package org.vortikal.repositoryimpl.query;
 
 /**
- * Generic index exception.
+ * Generic query exception.
  * @author oyviste
  */
-public class IndexException extends RuntimeException {
+public class QueryException extends RuntimeException {
     
     private static final long serialVersionUID = 6555061187853543964L;
 
     /** Creates a new instance of IndexException */
-    public IndexException() {
+    public QueryException() {
         super();
     }
 
-    public IndexException(String message) {
+    public QueryException(String message) {
         super(message);
     }
 
-    public IndexException(String message, Throwable cause) {
+    public QueryException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public IndexException(Throwable cause) {
+    public QueryException(Throwable cause) {
         super(cause);
     }
 }

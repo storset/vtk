@@ -42,6 +42,30 @@ ALTER TABLE vortex_resource
     ADD CONSTRAINT vortex_resource_PK
 PRIMARY KEY (resource_id);
 
+/* Stored function for getting string of ancestor ids */
+CREATE OR REPLACE FUNCTION resource_ancestor_ids(uri IN VARCHAR)
+RETURN VARCHAR AS
+  ancestor VARCHAR(1500) DEFAULT '/';
+  id NUMBER;
+  ids VARCHAR(1500) DEFAULT '';
+  slashpos NUMBER DEFAULT 1;
+BEGIN
+  IF uri = '/' THEN RETURN ids; END IF;
+
+  LOOP
+    SELECT vr.resource_id INTO id FROM vortex_resource vr
+    WHERE vr.uri = ancestor AND vr.is_collection = 'Y';
+    ids := ids || ' ' || id;
+    slashpos := instr(uri, '/', slashpos+1);
+    EXIT WHEN slashpos = 0;
+    ancestor := substr(uri, 1, slashpos-1);
+  END LOOP;
+  RETURN ids;
+END resource_ancestor_ids;
+/
+show errors;
+
+
 -----------------------------------------------------------------------------
 -- parent_child
 -----------------------------------------------------------------------------

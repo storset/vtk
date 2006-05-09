@@ -3,9 +3,9 @@ package org.vortikal.repositoryimpl.query;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.apache.lucene.analysis.Token;
-
 import junit.framework.TestCase;
+
+import org.apache.lucene.analysis.Token;
 
 public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
     
@@ -51,7 +51,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
         assertEquals("two escaped semicolons: ;;", t.termText());
         assertEquals(34, t.startOffset());
         assertEquals(62, t.endOffset());
-        
+
         t = tokenizer.next();
         assertEquals("lastValue", t.termText());
         assertEquals(63, t.startOffset());

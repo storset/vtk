@@ -33,8 +33,8 @@ package org.vortikal.repository.resourcetype;
 import org.vortikal.repository.RepositoryException;
 
 /**
- * Exception thrown when an attempt is made to set a property value to an 
- * illegal or unconvertible type.
+ * General exception for format errors when converting string representations
+ * to actual data types.
  * 
  */
 public class ValueFormatException extends RepositoryException {

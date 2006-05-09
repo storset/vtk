@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+  <resultMap id="Resource" class="java.util.HashMap">
+    <result property="uri" column="uri" />
+    <result property="id" column="resource_id"/>
+    <result property="resourceType" column="resource_type"/>
+    <result property="creationTime" column="creation_time" />
+    <result property="createdBy" column="created_by" />
+    <result property="contentLastModified" column="content_last_modified" />
+    <result property="propertiesLastModified" column="properties_last_modified" />
+    <result property="lastModified" column="last_modified" />
+    <result property="contentModifiedBy" column="content_modified_by" />
+    <result property="propertiesModifiedBy" column="properties_modified_by" />
+    <result property="modifiedBy" column="modified_by" />
+    <result property="owner" column="resource_owner" />
+    <result property="displayName" column="display_name" />
+    <result property="contentLanguage" column="content_language" />
+    <result property="contentType" column="content_type" />
+    <result property="contentLength" column="content_length" />
+    <result property="characterEncoding" column="character_encoding" />
+    <result property="guessedCharacterEncoding" column="guessed_character_encoding" />
+    <result property="userSpecifiedCharacterEncoding" column="user_specified_character_encoding" />
+    <result property="isCollection" column="is_collection" />
+    <result property="aclInheritedFrom" column="acl_inherited_from" />
+  </resultMap>
+
+
+  <resultMap id="Uri" class="java.util.HashMap">
+    <result property="uri" column="uri" />
+  </resultMap>
+
+
+  <resultMap id="UriResourceId" class="java.util.HashMap">
+    <result property="uri" column="uri" />
+    <result property="resourceId" column="resource_id" />
+  </resultMap>
+
+
+  <resultMap id="ResourceIdInheritedFromMap" class="java.util.HashMap">
+    <result property="resourceId" column="resource_id" />
+    <result property="inheritedFrom" column="inherited_from" />
+  </resultMap>
+
+
+  <resultMap id="Property" class="java.util.HashMap">
+    <result property="id" column="extra_prop_entry_id" />
+    <result property="resourceId" column="resource_id" />
+    <result property="type" column="prop_type" />
+    <result property="typeId" column="prop_type_id" />
+    <result property="name" column="name" />
+    <result property="namespace" column="name_space" />
+    <result property="value" column="value" />
+  </resultMap>
+
+
+  <resultMap id="AclEntry" class="java.util.HashMap">
+    <result property="id" column="acl_entry_id" />
+    <result property="resourceId" column="resource_id" />
+    <result property="action" column="action_type" />
+    <result property="principal" column="user_or_group_name" />
+    <result property="isUser" column="is_user" />
+  </resultMap>
+
+
+  <resultMap id="ActionType" class="java.util.HashMap">
+    <result property="id" column="action_type_id" />
+    <result property="name" column="name" />
+  </resultMap>
+
+
+  <resultMap id="Lock" class="java.util.HashMap">
+    <result property="id" column="lock_id" />
+    <result property="resourceId" column="resource_id" />
+    <result property="uri" column="uri" />
+    <result property="token" column="token" />
+    <result property="owner" column="lock_owner" />
+    <result property="ownerInfo" column="lock_owner_info" />
+    <result property="depth" column="depth" />
+    <result property="timeout" column="timeout" />
+  </resultMap>
+
+
+  <select id="loadResourceByUri" resultMap="Resource">
+    select * from vortex_resource where uri = #value#
+  </select>
+
+
+  <select id="loadResourceIdByUri" resultMap="UriResourceId">
+    select uri, resource_id from vortex_resource where uri = #value#
+  </select>
+
+
+  <update id="updateResource" parameterClass="java.util.Map">
+    update vortex_resource set
+      content_last_modified = #contentLastModified#,
+      properties_last_modified = #propertiesLastModified#,
+      content_modified_by = #contentModifiedBy#,
+      properties_modified_by = #propertiesModifiedBy#,
+      resource_owner = #owner#,
+      display_name = #displayName#,
+      content_language = #contentLanguage#,
+      content_type = #contentType#,
+      character_encoding = #characterEncoding#,
+      guessed_character_encoding = #guessedCharacterEncoding#,
+      user_specified_character_encoding = #userSpecifiedCharacterEncoding#,
+      creation_time = #creationTime#,
+      resource_type = #resourceType#,
+      content_length = #contentLength#,
+      created_by = #createdBy#,
+      modified_by = #modifiedBy#,
+      last_modified = #lastModified#
+    where uri = #uri#
+  </update>
+
+
+  <insert id="insertResource" parameterClass="java.util.Map">
+    insert into vortex_resource 
+      (resource_id,
+       uri,
+       resource_type,
+       content_length,
+       depth,
+       creation_time,
+       content_last_modified,
+       properties_last_modified,
+       content_modified_by,
+       properties_modified_by,
+       resource_owner,
+       display_name,
+       content_language,
+       content_type,
+       character_encoding,
+       guessed_character_encoding,
+       user_specified_character_encoding,
+       is_collection,
+       acl_inherited_from,
+       created_by, modified_by,
+       last_modified)
+
+    values 
+      (nextval('vortex_resource_seq_pk'),
+       #uri#,
+       #resourceType#,
+       #contentLength#,
+       #depth#,
+       #creationTime#,
+       #contentLastModified#,
+       #propertiesLastModified#,
+       #contentModifiedBy#,
+       #propertiesModifiedBy#,
+       #owner#,
+       #displayName#,
+       #contentLanguage#, 
+       #contentType#,
+       #characterEncoding#,
+       #guessedCharacterEncoding#,
+       #userSpecifiedCharacterEncoding#,
+       #collection#,
+       #aclInheritedFrom#,
+       #createdBy#,
+       #modifiedBy#,
+       #lastModified#)
+  </insert>
+
+
+  <insert id="copyResource" parameterClass="java.util.Map">
+    insert into vortex_resource 
+      (resource_id,
+       uri,
+       prev_resource_id,
+       resource_type,
+       content_length,
+       depth,
+       creation_time,
+       content_last_modified,
+       properties_last_modified,
+       content_modified_by,
+       properties_modified_by,
+       resource_owner,
+       display_name,
+       content_language,
+       content_type,
+       character_encoding,
+       guessed_character_encoding,
+       user_specified_character_encoding,
+       is_collection,
+       acl_inherited_from,
+       created_by,
+       modified_by,
+       last_modified)
+
+    select
+      nextval('vortex_resource_seq_pk'),
+      #destUri# || substring(uri, length(#uri#) + 1),
+      resource_id,
+      resource_type,
+      content_length,
+      depth + #depthDiff#,
+      creation_time,
+      content_last_modified,
+      properties_last_modified,
+      content_modified_by,
+      properties_modified_by,
+      <isPropertyAvailable property="owner">#owner#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="owner">resource_owner,</isNotPropertyAvailable>
+      display_name,
+      content_language,
+      content_type,
+      character_encoding,
+      guessed_character_encoding,
+      user_specified_character_encoding,
+      is_collection,
+      acl_inherited_from,
+      created_by,
+      modified_by,
+      last_modified
+    from vortex_resource
+    where uri = #uri# or uri like #uriWildcard#
+  </insert>
+
+
+  <delete id="deleteResourceByUri" parameterClass="java.util.Map">
+    delete from VORTEX_RESOURCE where uri = #uri# or uri like #uriWildcard#    
+  </delete>
+
+
+  <select id="loadChildren" parameterClass="java.util.Map"
+          resultMap="Resource">
+    select * from vortex_resource where uri like #uriWildcard# and depth = #depth#
+  </select>
+
+
+  <select id="loadChildUrisForChildren" parameterClass="java.util.Map"
+          resultMap="Uri">
+    select uri from vortex_resource where uri like #uriWildcard# and depth = #depth#
+  </select>
+
+
+              
+  <update id="updateAclInheritedFromByResourceId" parameterClass="java.util.Map">
+    update vortex_resource
+      set acl_inherited_from = #inheritedFrom#
+      where resource_id = #resourceId#
+  </update>
+
+
+  <update id="updateAclInheritedFromByUri" parameterClass="java.util.Map">
+    update vortex_resource
+      set acl_inherited_from = #inheritedFrom#
+      where uri = #uri# or uri like #uriWildcard#  
+  </update>
+
+
+  <update id="updateAclInheritedFromByPreviousInheritedFromAndUri" parameterClass="java.util.Map">
+    update vortex_resource
+      set acl_inherited_from = #inheritedFrom#
+      where (uri = #uri# or uri like #uriWildcard#)
+             and acl_inherited_from = #previouslyInheritedFrom#
+  </update>
+
+
+  <update id="updateAclInheritedFromByPreviousResourceId" parameterClass="java.util.Map">
+    update vortex_resource
+      set acl_inherited_from = r.resource_id
+        from vortex_resource r
+        where (vortex_resource.uri = #uri# or vortex_resource.uri like #uriWildcard#)
+               and r.prev_resource_id = vortex_resource.acl_inherited_from
+  </update>
+
+
+  <update id="updateAclInheritedFromByResourceIdOrPreviousInheritedFrom" parameterClass="java.util.Map">
+    update vortex_resource
+      set acl_inherited_from = #inheritedFrom#
+      where acl_inherited_from = #previouslyInheritedFrom#
+        or resource_id = #id#
+  </update>
+
+
+  <select id="loadPreviousInheritedFromMap" parameterClass="java.util.Map"
+          resultMap="ResourceIdInheritedFromMap">
+    select
+      r1.resource_id,
+      r2.resource_id as inherited_from 
+    from vortex_resource r1, vortex_resource r2 
+    where (r1.uri = #uri# or r1.uri like #uriWildcard#)
+           and r2.prev_resource_id = r1.acl_inherited_from
+  </select>
+
+
+  <update id="clearPrevResourceIdByUri" parameterClass="java.util.Map">
+    update vortex_resource
+      set prev_resource_id = null
+      where uri = #uri# or uri like #uriWildcard#  
+  </update>
+
+
+  <select id="loadActionTypes" resultMap="ActionType">
+    select * from action_type
+  </select>
+
+
+  <select id="loadPropertiesForResource" parameterClass="int" resultMap="Property">
+    select
+      p.*,
+      t.prop_type_name as prop_type
+    from extra_prop_entry p, prop_type t
+    where resource_id = #value#
+      and t.prop_type_id = p.prop_type_id
+  </select>
+
+
+  <select id="loadPropertiesForChildren" parameterClass="java.util.Map"
+          resultMap="Property">
+    select
+      p.*,
+      t.prop_type_name as prop_type
+    from extra_prop_entry p, prop_type t
+    where p.resource_id in
+      (select resource_id from vortex_resource
+        where uri like #uriWildcard# and depth = #depth#)
+  </select>
+
+
+  <insert id="insertPropertyEntry" parameterClass="java.util.Map">
+    insert into extra_prop_entry
+      (extra_prop_entry_id, resource_id, name_space, name, value)
+    values (nextval('extra_prop_entry_seq_pk'), #resourceId#, #namespaceUri#,
+            #name#, #value#)
+  </insert>
+
+
+  <insert id="copyProperties" parameterClass="java.util.Map">
+    insert into extra_prop_entry
+      (extra_prop_entry_id,
+       resource_id,
+       prop_type_id,
+       name_space,
+       name,
+       value)
+    select
+      nextval('extra_prop_entry_seq_pk'),
+      r.resource_id,
+      p.prop_type_id,
+      p.name_space,
+      p.name,
+      p.value
+    from vortex_resource r inner join extra_prop_entry p 
+      on r.prev_resource_id = p.resource_id
+    where (r.uri = #desturi# or r.uri like #destUriWildcard#)
+          and r.prev_resource_id is not null
+    order by p.extra_prop_entry_id
+  </insert>    
+
+
+  <delete id="deletePropertiesByResourceId" parameterClass="int">
+    delete from extra_prop_entry where resource_id = #resourceId#
+  </delete>
+
+
+  <delete id="deletePropertiesByUri" parameterClass="java.util.Map">
+    delete from extra_prop_entry where resource_id in
+      (select resource_id from vortex_resource
+       where uri = #uri# or uri like #uriWildcard#)
+  </delete>
+
+
+  <select id="loadAclEntriesByResourceIds" resultMap="AclEntry">
+    select
+      r.resource_id as resource_id,
+      a.*,
+      t.name as action_type
+    from acl_entry a
+      inner join action_type t on a.action_type_id = t.action_type_id
+      inner join vortex_resource r on r.resource_id = a.resource_id
+    where r.resource_id in 
+
+    <iterate prepend="" property="resourceIds" open="(" close=")" conjunction=","> 
+             #resourceIds[]# 
+    </iterate> 
+  </select>
+
+  
+  <insert id="insertAclEntry" parameterClass="java.util.Map">
+    insert into acl_entry
+      (acl_entry_id, action_type_id, resource_id, user_or_group_name,
+       is_user, granted_by_user_name, granted_date)
+    values (nextval('acl_entry_seq_pk'), #actionId#, #resourceId#, #principal#,
+            #isUser#, #grantedBy#, #grantedDate#)
+  </insert>
+
+  
+  <insert id="copyAclEntries" parameterClass="java.util.Map">
+    insert into acl_entry
+      (acl_entry_id,
+       resource_id,
+       action_type_id,
+       user_or_group_name,
+       is_user,
+       granted_by_user_name,
+       granted_date)
+     select
+       nextval('acl_entry_seq_pk'),
+       r.resource_id,
+       a.action_type_id,
+       a.user_or_group_name,
+       a.is_user,
+       a.granted_by_user_name,
+       a.granted_date
+     from vortex_resource r inner join acl_entry a
+       on r.prev_resource_id = a.resource_id 
+     where (r.uri = #destUri#  or r.uri like #destUriWildcard#)
+            and r.prev_resource_id is not null    
+  </insert>
+  
+
+  <select id="discoverAcls" parameterClass="java.util.Map" resultMap="Uri">
+    select distinct
+      r.uri as uri
+    from acl_entry a inner join vortex_resource r on a.resource_id = r.resource_id
+    where r.acl_inherited_from is null and r.resource_id in
+      (select resource_id from vortex_resource where uri like #uriWildcard#)
+  </select>
+
+
+  <delete id="deleteAclEntriesByUri" parameterClass="java.util.Map">
+    delete from acl_entry where resource_id in
+      (select resource_id from vortex_resource
+       where uri = #uri# or uri like #uriWildcard#)
+  </delete>
+
+
+  <delete id="deleteAclEntriesByResourceId" parameterClass="int">
+    delete from acl_entry where resource_id = #id#
+  </delete>
+
+
+  <select id="isInheritedAcl" parameterClass="int">
+    select acl_inherited_from from vortex_resource where resource_id = #value#
+  </select>
+
+
+  <select id="findNearestAclResourceId" resultMap="UriResourceId">
+    select
+      r.resource_id, r.uri 
+    from acl_entry a
+      inner join vortex_resource r on r.resource_id = a.resource_id 
+    where r.uri in 
+    <iterate prepend="" property="path" open="(" close=")" conjunction=","> 
+             #path[]# 
+    </iterate> 
+  </select>
+
+
+  <select id="loadLocksForChildren" parameterClass="java.util.Map"
+          resultMap="Lock">
+    select
+      r.uri as uri, l.*
+    from vortex_resource r
+      inner join vortex_lock l on r.resource_id = l.resource_id
+      where l.timeout >= #timestamp# and r.resource_id in (select resource_id 
+        from vortex_resource where uri like #uriWildcard# and depth = #depth#)
+  </select>
+
+
+  <select id="loadLocksByUris" parameterClass="java.util.Map"
+          resultMap="Lock">
+    select
+      r.uri as uri, l.*
+    from vortex_resource r
+      inner join vortex_lock l on r.resource_id = l.resource_id
+      where l.timeout >= #timestamp# and r.uri in 
+    <iterate prepend="" property="uris" open="(" close=")" conjunction=","> 
+             #uris[]# 
+    </iterate> 
+  </select>
+
+
+  <select id="loadLockByLockToken" parameterClass="string" resultMap="Lock">
+    select
+      r.uri as uri, l.*
+    from vortex_resource r
+      inner join vortex_lock l on r.resource_id = l.resource_id
+      where l.token = #value#
+  </select>
+
+
+  <insert id="insertLock" parameterClass="java.util.Map">
+    insert into vortex_lock
+      (lock_id, token, resource_id, lock_owner,
+       lock_owner_info, depth, timeout)
+     values (nextval('vortex_lock_seq_pk'),
+            #lockToken#, #resourceId#, #owner#,
+            #ownerInfo#, #depth#, #timeout#)
+  </insert>
+
+
+  <update id="updateLock" parameterClass="java.util.Map">
+    update vortex_lock
+      set lock_owner = #owner#,
+          lock_owner_info = #ownerInfo#,
+          depth = #depth#,
+          timeout = #timeout#
+      where token = #lockToken#
+  </update>
+
+
+  <delete id="deleteLockByResourceId" parameterClass="int">
+    delete from vortex_lock where resource_id = #value#
+  </delete>
+
+
+  <delete id="deleteLocksByUri" parameterClass="java.util.Map">
+    delete from vortex_lock where resource_id in
+      (select resource_id from vortex_resource
+       where uri = #uri# or uri like #uriWildcard#)
+  </delete>
+
+
+  <delete id="deleteExpiredLocks">
+    delete from vortex_lock where timeout &lt; #value#
+  </delete>
+
+
+  <select id="discoverLocks" parameterClass="java.util.Map" resultMap="Uri">
+    select
+      r.uri from vortex_resource r
+        inner join vortex_lock l on r.resource_id = l.resource_id
+    where l.timeout &gt; #timestamp# and r.uri like #uriWildcard#
+  </select>
+  
+
+  <select id="listSubTree" parameterClass="java.util.Map" resultMap="Uri">
+    select uri from vortex_resource where uri like #uriWildcard#
+  </select>
+  
+  
+  <insert id="insertChangelogEntriesRecursively">
+    insert into changelog_entry 
+      (changelog_entry_id, logger_id, logger_type,
+      operation, timestamp, uri, resource_id, is_collection)
+    select nextval('changelog_entry_seq_pk'), #id#, #type#,
+      #operation#, now(), uri, resource_id, is_collection 
+    from vortex_resource 
+    where uri = #uri# or uri like #uriWildcard#
+  </insert>
+
+
+  <insert id="insertChangelogEntry">
+    insert into changelog_entry 
+      (changelog_entry_id, logger_id, logger_type,
+      operation, timestamp, uri, resource_id, is_collection)
+    values (nextval('changelog_entry_seq_pk'), #loggerId#, #loggerType#,
+      #operation#, now(), #uri#, #resourceId#, #collection#)
+  </insert>
+
+
+</sqlMap>

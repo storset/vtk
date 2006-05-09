@@ -295,7 +295,7 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-    <!-- 
+
     <dependency>
       <id>hsqldb</id>
       <version>1.8.0.1</version>
@@ -303,7 +303,28 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-    -->
+
+    <dependency>
+      <id>ibatis2-common</id>
+      <groupId>com.ibatis</groupId>
+      <version>2.1.6.589</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <id>ibatis2-sqlmap</id>
+      <groupId>com.ibatis</groupId>
+      <version>2.1.6.589</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+
+    
+
+
     <!-- These dependencies are needed in order to build the
           project: -->
     <dependency>
@@ -387,6 +408,14 @@
         <targetPath>/</targetPath>
         <includes>
           <include>*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <!-- Include iBATIS SQL maps. -->
+        <directory>src/java/org/vortikal/repositoryimpl/dao/ibatis</directory>
+        <targetPath>/org/vortikal/repositoryimpl/dao/ibatis</targetPath>
+        <includes>
+          <include>*.xml</include>
         </includes>
       </resource>
       <!-- Include the change log XML file in the jar under

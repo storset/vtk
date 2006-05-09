@@ -30,7 +30,42 @@
     <property name="defaultAutoCommit" value="false" />
   </bean>
 
+  <!--
+  <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="repository.dataSource"/>
+  </bean>
+  -->
 
+  <!-- SqlMap setup for iBATIS Database Layer -->
+  <bean id="sqlMapClientFactory" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="transactionConfigClass"
+              value="com.ibatis.sqlmap.engine.transaction.jdbc.JdbcTransactionConfig" />
+    <property name="useTransactionAwareDataSource" value="false" />
+    <property name="configLocation" value="classpath:/vortikal/beans/vhost/sql-map-config.xml"/>
+    <property name="dataSource" ref="repository.dataSource"/>
+  </bean>
+
+  <bean id="repository.database" class="org.vortikal.repositoryimpl.dao.SqlMapDataAccessor">
+    <property name="sqlMapClient" ref="sqlMapClientFactory"/>
+    <property name="contentStore" ref="repository.contentStore" />
+    <property name="propertyManager" ref="propertyManager" />
+    <property name="authorizationManager" ref="authorizationManager" />
+    <property name="principalManager" ref="principalManager" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+  </bean>
+
+  <!-- Insert additional entries here to override individual SQL
+       statements as defined in DefaultSqlMaps.xml: -->
+  <bean id="repository.statementMappings" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <!--entry key="copyResource" value="oracleCopyResource" /-->
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <!--
   <bean id="repository.database" class="org.vortikal.repositoryimpl.dao.JDBCClient">
     <property name="dataSource" ref="repository.dataSource" />
     <property name="contentStore" ref="repository.contentStore" />
@@ -38,6 +73,7 @@
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="principalManager" ref="principalManager" />
   </bean>
+  -->
 
   <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
     <property name="dataSource" ref="repository.dataSource" />
@@ -133,4 +169,9 @@
   </bean>
 
 
+  <!--
+  <bean id="repository.importer" class="org.vortikal.repositoryimpl.DataImportUtil">
+    <property name="repository" ref="repository" />
+  </bean>
+  -->
 </beans>

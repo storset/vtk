@@ -61,4 +61,10 @@ public class PseudoPrincipal implements Principal {
         return 0;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": [").append(this.name).append("]");
+        return sb.toString();
+    }
+    
 }

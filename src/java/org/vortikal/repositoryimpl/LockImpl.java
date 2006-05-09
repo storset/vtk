@@ -33,7 +33,6 @@ package org.vortikal.repositoryimpl;
 import java.util.Date;
 
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.LockType;
 import org.vortikal.security.Principal;
 
 
@@ -56,10 +55,6 @@ public class LockImpl implements Lock {
         this.timeout = timeout;
         this.ownerInfo = ownerInfo;
         this.depth = depth;
-    }
-
-    public String getLockType() {
-        return LockType.LOCKTYPE_EXCLUSIVE_WRITE;
     }
 
     public String getOwnerInfo() {

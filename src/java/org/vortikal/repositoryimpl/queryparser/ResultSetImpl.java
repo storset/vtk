@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.vortikal.repository.PropertySet;
+
 
 
 /**
@@ -76,6 +78,10 @@ public class ResultSetImpl implements ResultSet {
 
     public int getSize() {
         return results.size();
+    }
+    
+    public void addResult(PropertySet propSet) {
+        this.results.add(propSet);
     }
     
     public void removeResult(int index) {

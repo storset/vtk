@@ -30,23 +30,15 @@
  */
 package org.vortikal.repositoryimpl.query;
 
-import java.text.ParseException;
-
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.DateTools.Resolution;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
 /**
- * <ul>
- *  <li>Utility methods for mapping between <code>Value</code> and <code>org.apache.lucene.document.Field</code>
- * objects.
- * </li>
- * <li>Methods for encoding and decoding index field values</li>
- * </ul> 
+ * Utility methods for mapping between <code>Value</code> and 
+ * <code>org.apache.lucene.document.Field</code> objects.
  * 
  * @author oyviste
  */
@@ -68,11 +60,18 @@ public final class FieldMapper {
                 Field.Index.NO_NORMS);
     }
 
+    /**
+     * Create <code>Field</code> from multiple <code>Value</code>s.
+     *  
+     * @param name
+     * @param values
+     * @return
+     */
     public static Field getFieldFromValues(String name, Value[] values) {
-        
+
         StringBuffer fieldValue = new StringBuffer();
         for (int i=0; i<values.length; i++) {
-            String encoded = encodeIndexFieldValue(values[i].getNativeStringRepresentation(), values[i].getType());
+            String encoded = encodeIndexFieldValue(values[i]);
             String escaped = escapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, encoded);
             fieldValue.append(escaped);
             if (i < values.length-1) fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);
@@ -83,19 +82,44 @@ public final class FieldMapper {
         return field;
     }
     
+    /**
+     * Create <code>Field</code> from single <code>Value</code>.
+     *  
+     * @param name
+     * @param value
+     * @return
+     */
     public static Field getFieldFromValue(String name, Value value) {
-        String encoded = encodeIndexFieldValue(value.getNativeStringRepresentation(), value.getType());
+        String encoded = encodeIndexFieldValue(value);
         return getKeywordField(name, encoded);
     }
     
+    /**
+     * Create single <code>Value</code> from <code>Field</code> with the given
+     * datatype.
+     * 
+     * @param field
+     * @param valueFactory
+     * @param type
+     * @return
+     */
     public static Value getValueFromField(Field field, ValueFactory valueFactory, int type) {
         String fieldValue = field.stringValue();
         
-        String decodedFieldValue = decodeIndexFieldValue(fieldValue, type);
+        String decodedFieldValue = decodeIndexFieldValueToString(fieldValue, type);
         
         return valueFactory.createValue(decodedFieldValue, type);
     }
     
+    /**
+     * Create multiple <code>Value</code>s from <code>Field</code> with the
+     * given datatype.
+     * 
+     * @param field
+     * @param valueFactory
+     * @param type
+     * @return
+     */
     public static Value[] getValuesFromField(Field field, ValueFactory valueFactory, 
                                                 int type) {
 
@@ -104,7 +128,7 @@ public final class FieldMapper {
         Value[] values = new Value[stringValues.length];
         for (int i=0; i<stringValues.length; i++) {
             String stringValue = 
-                decodeIndexFieldValue(unescapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, 
+                decodeIndexFieldValueToString(unescapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, 
                                                             stringValues[i]), type);
             
             values[i] = valueFactory.createValue(stringValue, type);
@@ -113,7 +137,9 @@ public final class FieldMapper {
         return values;
     }
     
-    // XXX: yuck.
+    // XXX: Used for generating ancestor ids field. We don't bother to encode
+    //      it because of its system-specific nature, and that it should never
+    //      be used as a sane sorting key.
     public static Field getUnencodedMultiValueFieldFromIntegers(String name, 
                                                                 int[] integers) {
         StringBuffer fieldValue = new StringBuffer();
@@ -128,7 +154,7 @@ public final class FieldMapper {
                                                       Field.Index.TOKENIZED);
     }
 
-    // XXX: yuck.
+    // XXX: Used for ancestor ids field.
     public static int[] getIntegersFromUnencodedMultiValueField(Field field) {
         String[] stringValues = field.stringValue().split(
                 Character.toString(MULTI_VALUE_FIELD_SEPARATOR));
@@ -140,79 +166,69 @@ public final class FieldMapper {
         return integers;
     }
     
-    public static String decodeIndexFieldValue(String fieldValue, int type) 
-        throws ValueFormatException {
+    public static int getIntegerFromUnencodedField(Field field) {
+        return Integer.parseInt(field.stringValue());
+    }
+    
+    public static String decodeIndexFieldValueToString(String fieldValue, int type) 
+        throws FieldValueEncodingException {
         
         switch (type) {
         
         case (PropertyType.TYPE_BOOLEAN):
         case (PropertyType.TYPE_STRING):
         case (PropertyType.TYPE_PRINCIPAL):
-
-            return fieldValue; // Stored as-is in index
+            return fieldValue; // No need to decode any of these. Native String
+                               // representation already present in index.
 
         case (PropertyType.TYPE_DATE):
-            try {
-                long time = DateTools.stringToTime(fieldValue);
-                return Long.toString(time);
-            } catch (ParseException pe) {
-                throw new ValueFormatException(pe.getMessage());
-            }
+            return Long.toString(FieldValueEncoder.decodeDateValue(fieldValue));
             
-        // XXX: sorting of negative integers does not work with this encoding
-        // XXX: Possible solution is to shift scale to [0 - 2*Integer.MAX_VALUE], so
-        //      that we avoid negative numbers (which cannot be compared directly
-        //      lexicographically with other numbers, because "bigger" is in fact smaller
-        //      on the negative side of the scale).
-        //  TODO: use hex encoding, which is more compact.
-        // Index representations: '+0000002005', '-0009999999', '+0000000000'
         case (PropertyType.TYPE_INT):
-            int n;
-            try {
-                // Remove explicit '+' sign, if positive number
-                if (fieldValue.startsWith("+")) {
-                    fieldValue = fieldValue.substring(1, fieldValue.length());
-                }
-                // Remove any leading-zero-padding
-                n = Integer.parseInt(fieldValue);
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException("Unable to decode field value " 
-                        + " to string representation", nfe);
-            }
-            return Integer.toString(n);
+            return Integer.toString(FieldValueEncoder.decodeInteger(fieldValue));
             
         case (PropertyType.TYPE_LONG):
-            long l;
-            try {
-                // Remove explicit '+' sign, if positive number (breaks Integer.parseInt)
-                if (fieldValue.startsWith("+")) {
-                    fieldValue = fieldValue.substring(1, fieldValue.length());
-                }
-                // Remove any leading-zero-padding
-                l = Long.parseLong(fieldValue);
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException("Unable to decode field value " 
-                        + " to string representation", nfe);
-            }
-            
-            return Long.toString(l);
+            return Long.toString(FieldValueEncoder.decodeLong(fieldValue));
             
         default: throw new ValueFormatException("Unknown type " + type);
                 
         }
     }
     
+    public static String encodeIndexFieldValue(Value value) 
+        throws FieldValueEncodingException {
+        
+        switch (value.getType()) {
+        case(PropertyType.TYPE_STRING):
+        case(PropertyType.TYPE_BOOLEAN):
+        case(PropertyType.TYPE_PRINCIPAL):
+            return value.getNativeStringRepresentation();
+        
+        case(PropertyType.TYPE_DATE):
+            return FieldValueEncoder.encodeDateValue(value.getDateValue().getTime());
+        
+        case(PropertyType.TYPE_INT):
+            return FieldValueEncoder.encodeInteger(value.getIntValue());
+        
+        case(PropertyType.TYPE_LONG):
+            return FieldValueEncoder.encodeLong(value.getLongValue());
+        
+        default: throw new IllegalArgumentException("Unknown type: " + value.getType());
+        
+        }
+        
+    }
+    
     /**
      * Encode a native value string representation into a form suitable for indexing
-     * (make the various type representations lexicographically sortable, 
+     * and searching (make the various type representations lexicographically sortable, 
      * basically).
      * 
      * Only native string representations are supported by this method, and it
      * is indexing/Lucene-specific.
-     * 
      */
     public static String encodeIndexFieldValue(String stringValue, int type) 
-        throws ValueFormatException {
+        throws ValueFormatException, FieldValueEncodingException {
         
         switch (type) {
         case(PropertyType.TYPE_STRING):
@@ -223,7 +239,7 @@ public final class FieldMapper {
         case(PropertyType.TYPE_DATE):
             try {
                 long l = Long.parseLong(stringValue);
-                return DateTools.timeToString(l, Resolution.SECOND);
+                return FieldValueEncoder.encodeDateValue(l);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException("Unable to encode date string value to " 
                         + "to index field value representation: " + nfe.getMessage());
@@ -231,9 +247,9 @@ public final class FieldMapper {
             
         case(PropertyType.TYPE_INT):
             try {
-                // Validate and pad
+                // Validate and encode 
                 int n = Integer.parseInt(stringValue);
-                return intToZeroPaddedString(n);
+                return FieldValueEncoder.encodeInteger(n);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException("Unable to encode integer string value to "
                         + "to index field value representation: " + nfe.getMessage());
@@ -243,7 +259,7 @@ public final class FieldMapper {
             try {
                 // Validate and pad
                 long l = Long.parseLong(stringValue);
-                return longToZeroPaddedString(l);
+                return FieldValueEncoder.encodeLong(l);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException(
                         "Unable to encode long integer string value to "
@@ -251,56 +267,14 @@ public final class FieldMapper {
                                 + nfe.getMessage());
             }
             
-        default: throw new ValueFormatException("Unknown type " + type);
+        default: throw new IllegalArgumentException("Unknown type " + type);
         
         }
-
-    }
-    
-    // XXX: sorting of negative long integers does not work with this encoding.
-    public static String longToZeroPaddedString(long l) {
-        // Zero-pad and add positive/negative sign.
-        char[] encodedChars = "+00000000000000000000".toCharArray(); // Total length is 21
-        char[] chars = Long.toString(l).toCharArray();
-
-        if (l < 0) {
-            encodedChars[0] = '-';
-            System.arraycopy(chars, 1, encodedChars, 22 - chars.length,
-                    chars.length - 1);
-        } else {
-            System.arraycopy(chars, 0, encodedChars, 21 - chars.length,
-                    chars.length);
-        }
-
-        return String.valueOf(encodedChars);
-        
-    }
-    
-    // XXX: sorting of negative integers does not work with this encoding
-    // XXX: Possible solution is to shift scale from 0 - 2*Integer.MAX_VALUE, so
-    //      that we avoid negative numbers (which cannot be compared directly
-    //      lexicographically with other numbers, because "bigger" is in fact smaller
-    //      on the negative side of the scale).
-    public static String intToZeroPaddedString(int i) {
-        // Zero-pad and add positive/negative sign.
-        char[] encodedChars = "+0000000000".toCharArray(); // Total length is 11
-        char[] chars = Integer.toString(i).toCharArray();
-            
-        if (i < 0) {
-            encodedChars[0] = '-';
-            System.arraycopy(chars, 1, encodedChars, 12-chars.length, 
-                    chars.length-1);
-        } else {
-            System.arraycopy(chars, 0, encodedChars, 11-chars.length, 
-                    chars.length);
-        }
-        
-        return String.valueOf(encodedChars);
 
     }
     
     /**
-     * Un-backslash-escape given character
+     * Un-backslash-escape given character.
      * @param c
      * @param s
      * @return
@@ -308,7 +282,7 @@ public final class FieldMapper {
     public static String unescapeCharacter(char c, String s) {
         StringBuffer buffer = new StringBuffer(s);
         String escapedSeparator = "\\" + c;
-        int p = 0;
+        int p = 0;              
         while ((p = buffer.indexOf(escapedSeparator, p)) != -1) {
             buffer.delete(p, p+1);
         }
@@ -317,7 +291,7 @@ public final class FieldMapper {
     }
     
     /**
-     * Backslash-escape given character
+     * Backslash-escape given character.
      * @param c
      * @param s
      * @return
@@ -325,7 +299,7 @@ public final class FieldMapper {
     public static String escapeCharacter(char c, String s) {
         StringBuffer buffer = new StringBuffer(s);
         String escapeChar = Character.toString(c);
-        int p = 0;
+        int p = 0;               
         while ((p = buffer.indexOf(escapeChar, p)) != -1) {
             buffer.insert(p, "\\");
         }

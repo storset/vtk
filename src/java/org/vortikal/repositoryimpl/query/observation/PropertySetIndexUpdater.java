@@ -119,6 +119,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             }
             
             // Apply changes to index
+            // Deletes
             for (Iterator i = deletes.iterator(); i.hasNext();) {
                 String uri = (String)i.next();
                 if (logger.isDebugEnabled()) {
@@ -127,6 +128,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 index.deletePropertySet(uri);
             }
             
+            // Updates/additions
             if (updates.size() > 0) {
                 // Get iterator over property sets that need updating
                 rsi = indexDataAccessor.getPropertySetIteratorForURIs(updates);
@@ -174,5 +176,4 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     public void setNotifier(ResourceChangeNotifier notifier) {
         this.notifier = notifier;
     }
-
 }

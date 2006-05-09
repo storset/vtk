@@ -51,6 +51,5 @@ public interface IndexDataAccessor {
      * @throws IOException
      */
     public PropertySet getPropertySetForURI(String uri) throws IOException;
-    
-    
+
 }

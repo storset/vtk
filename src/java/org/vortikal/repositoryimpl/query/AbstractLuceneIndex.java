@@ -91,7 +91,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     public void afterPropertiesSet() 
         throws BeanInitializationException {
         if (this.analyzer == null) {
-            this.analyzer = new KeywordAnalyzer(); // Default (and simples) analyzer
+            this.analyzer = new KeywordAnalyzer(); // Default (and simplest) Analyzer
         } 
         
         try {

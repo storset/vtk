@@ -45,9 +45,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.index.TermDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
@@ -62,6 +60,7 @@ import org.vortikal.repositoryimpl.index.IndexException;
  * XXX: Not to be considered finished, but functional, at least.
  * May need to model things a bit differently to support indexing to alternate
  * index, hot-switching between indexes after re-indexing, locking etc.
+ * 
  * XXX: handle DocumentMappingException's
  * 
  * @author oyviste
@@ -130,7 +129,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
 
         Document doc = null;
         // XXX: FIXME: ugly casting 
-        // XXX: FIXME: locking must be done at some point, need to think more about how to best model this.
+        // XXX: FIXME: locking must be done above this level.
         try {
             doc = documentMapper.getDocument((PropertySetImpl)propertySet);
             
@@ -152,10 +151,9 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         } catch (IOException io) {
             throw new IndexException(io);
         }
-        
     }
 
-    public void clearIndex() throws IndexException {
+    public void clear() throws IndexException {
         try {
             index.createNewIndex();
         } catch (IOException io) {
@@ -164,29 +162,25 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     }
 
     public int deletePropertySet(String uri) throws IndexException {
-        IndexReader reader = null;
-        IndexSearcher searcher = null;
+        TermDocs td = null;
         try {
             Term uriTerm = new Term(DocumentMapper.URI_FIELD_NAME, uri);
-            TermQuery q = new TermQuery(uriTerm);
+            IndexReader reader = index.getIndexReader();
             
-            reader = index.getIndexReader();
-            searcher = new IndexSearcher(reader);
-            
-            Hits hits = searcher.search(q);
+            td = reader.termDocs(uriTerm);
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Deleting property set at URI '" + uri + "' from index.");
             }
             
-            if (hits.length() == 0) {
+            if (! td.next()) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Property set at URI '" + uri + "' not found in index.");
                 }
                 return 0;
             } else {
-                String id = hits.doc(0).get(DocumentMapper.ID_FIELD_NAME);
-                int n = reader.deleteDocuments(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+                String id = reader.document(td.doc()).get(DocumentMapper.ID_FIELD_NAME);
+                int n = reader.deleteDocuments(uriTerm);
                 n += reader.deleteDocuments(new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, id));
 
                 if (logger.isDebugEnabled()) {
@@ -198,9 +192,9 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         } catch (IOException io) {
             throw new IndexException (io);
         } finally {
-            if (searcher != null) {
+            if (td != null) {
                 try {
-                    searcher.close();
+                    td.close();
                 } catch (IOException io) {}
             }
         }
@@ -219,30 +213,30 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     }
 
     public PropertySet getPropertySet(String uri) throws IndexException {
-        IndexSearcher searcher = null;
+        TermDocs td = null;
         try {
+            IndexReader reader = index.getIndexReader();
             PropertySet propSet = null;
-            searcher = index.getIndexSearcher();
-            TermQuery tq = new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
-            Hits hits = searcher.search(tq);
-            if (hits.length() > 1) {
-                throw new IndexException("Multiple property sets exist in index for a single URI.");
-            }
+            td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, uri));
             
-            if (hits.length() == 1) {
-                Document doc = hits.doc(0);
+            if (td.next()) {
+                Document doc = reader.document(td.doc()); 
                 propSet = documentMapper.getPropertySet(doc);
             } else {
-                throw new IndexException("Could not find any property set with URI '" + uri + "'");
+                throw new IndexException("Could not find any property set at URI '" + uri + "'");
             }
           
+            if (td.next()) {
+                logger.warn("Multiple property sets exist in index for a single URI");
+            }
+            
             return propSet;
         } catch (IOException io) {
             throw new IndexException(io);
         } finally {
-            if (searcher != null) {
+            if (td != null) {
                 try {
-                    searcher.close();
+                    td.close();
                 } catch (IOException io) {}
             }
         }

@@ -47,7 +47,7 @@ public class Reindexer implements InitializingBean {
        
        ResultSetIterator resultSetIterator = null;
        try {
-           index.clearIndex();
+           index.clear();
            resultSetIterator = indexDataAccessor.getOrderedPropertySetIterator();
            
            while (resultSetIterator.hasNext()) {

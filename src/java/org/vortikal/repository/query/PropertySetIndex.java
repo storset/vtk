@@ -37,7 +37,7 @@ import org.vortikal.repositoryimpl.index.IndexException;
  * Defines an interface to a hierarchically organized index of <code>PropertySet</code>s.
  * Each <code>PropertySet</code> is identified by its URI. A 
  * <code>PropertySet</code> can be a parent of other <code>PropertySet</code>s. 
- * (collections). Deleting a parent <code>PropertySet</code> will also 
+ * (collections). Deleting a parent <code>PropertySet</code> shall also 
  * delete all its children.
  * 
  * @author oyviste
@@ -53,7 +53,7 @@ public interface PropertySetIndex {
     
     public PropertySet getPropertySet(String uri) throws IndexException;
     
-    public void clearIndex() throws IndexException;
+    public void clear() throws IndexException;
     
     
     // XXX: should be somewhere else, or be done in a different way, but keep 

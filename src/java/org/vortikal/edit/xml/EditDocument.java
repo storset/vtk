@@ -54,7 +54,6 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.vortikal.repository.LockType;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -106,8 +105,7 @@ public class EditDocument extends Document {
         Principal principal = securityContext.getPrincipal();
         String uri = requestContext.getResourceURI();
         
-        String type = LockType.LOCKTYPE_EXCLUSIVE_WRITE;
-        repository.lock(token, uri, type, principal.getQualifiedName(), "0", lockTimeoutSeconds, null);
+        repository.lock(token, uri, principal.getQualifiedName(), "0", lockTimeoutSeconds, null);
 
         Resource resource = repository.retrieve(token, uri, false);
         

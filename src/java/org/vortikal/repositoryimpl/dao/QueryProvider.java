@@ -39,6 +39,7 @@ import java.util.Set;
  *
  * XXX: fix horrible method names
  *
+ * @deprecated Replaced by iBATIS SQL maps
  */
 public class QueryProvider {
 
@@ -110,13 +111,6 @@ public class QueryProvider {
         return query;
     }
 
-//    public String getLoadLockByResourceUriPreparedStatement() {
-//        String query = "select * from VORTEX_LOCK where resource_id in ("
-//            + "select resource_id from VORTEX_RESOURCE where uri = ?)";
-//        return query;
-//    }
-
-
     public String getLoadLocksByResourceUrisPreparedStatement(String[] uris) {
 
         String query = "select r.uri as uri, l.* from VORTEX_RESOURCE r "
@@ -180,14 +174,9 @@ public class QueryProvider {
 
 
 
-    public String getLoadLockTypeIdFromNamePreparedStatement() {
-        return "select lock_type_id from LOCK_TYPE where  name = ?";
-    }
-
-
     public String getUpdateLockPreparedStatement() {
         String query = "update VORTEX_LOCK set "
-            + "lock_type_id = ?, lock_owner = ?, lock_owner_info = ?, "
+            + "lock_owner = ?, lock_owner_info = ?, "
             + "depth = ?, timeout = ? " + "where token = ?";
         return query;
     }
@@ -195,7 +184,7 @@ public class QueryProvider {
 
     public String getInsertLockPreparedStatement() {
         String query = "insert into VORTEX_LOCK "
-            + "(lock_id, token, resource_id, lock_type_id, lock_owner, "
+            + "(lock_id, token, resource_id, lock_owner, "
             + "lock_owner_info, depth, timeout) "
             + "values (nextval('vortex_lock_seq_pk'), "
             + "?, ?, ?, ?, ?, ?, ?)";
@@ -279,7 +268,7 @@ public class QueryProvider {
 
     public String getInsertPropertyEntryPreparedStatement() {
         return "insert into EXTRA_PROP_ENTRY " 
-            + "(extra_prop_entry_id, resource_id, prop_type_id, name_space, name, value) "
+            + "(extra_prop_entry_id, resource_id, name_space, name, value) "
             + "values (nextval('extra_prop_entry_seq_pk'), ?, ?, ?, ?, ?)";
     }
 

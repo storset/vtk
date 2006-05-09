@@ -69,8 +69,7 @@ import org.vortikal.util.web.URLUtil;
  * This class is going to be a "generic" JDBC database accessor. Currently, only
  * PostgreSQL is supported. 
  * 
- * XXX: remove lockType
- *
+ * @deprecated This class has been replaced by {@link SqlMapDataAccessor}.
  */
 public class JDBCClient extends AbstractDataAccessor {
 
@@ -301,24 +300,6 @@ public class JDBCClient extends AbstractDataAccessor {
     }
 
 
-    public static String getURIWildcard(String uri) {
-        if ("/".equals(uri)) {
-            return "/%";
-        }
-        return uri + "/%";
-    }
-    
-
-    public static int getURIDepth(String uri) {
-        if ("/".equals(uri)) {
-            return 0;
-        }
-        int count = 0;
-        for (int index = 0; (index = uri.indexOf('/', index)) != -1; count++, index ++);
-        return count;
-    }
-
-    
     /**
      * Small helper-class for multi-valued property loading 
      */
@@ -360,10 +341,10 @@ public class JDBCClient extends AbstractDataAccessor {
      * 
      * Does not close ResultSet.
      */
-    private PropHolder[] getPropHoldersFromResultSet(ResultSet rs) throws SQLException {
+    private SqlDaoUtils.PropHolder[] getPropHoldersFromResultSet(ResultSet rs) throws SQLException {
         Map propMap = new HashMap();
         while (rs.next()) {
-            PropHolder prop = new PropHolder();
+            SqlDaoUtils.PropHolder prop = new SqlDaoUtils.PropHolder();
             prop.namespaceUri = rs.getString("name_space");
             prop.name = rs.getString("name");
             prop.resourceId = rs.getInt("resource_id");
@@ -378,7 +359,7 @@ public class JDBCClient extends AbstractDataAccessor {
             values.add(rs.getString("value"));
         }
         
-        return (PropHolder[])propMap.keySet().toArray(new PropHolder[]{});
+        return (SqlDaoUtils.PropHolder[])propMap.keySet().toArray(new SqlDaoUtils.PropHolder[]{});
     }
 
     /**
@@ -395,13 +376,13 @@ public class JDBCClient extends AbstractDataAccessor {
         pstmt.setInt(1, resource.getID());
         ResultSet rs = pstmt.executeQuery();
 
-        PropHolder[] propHolders = getPropHoldersFromResultSet(rs);
+        SqlDaoUtils.PropHolder[] propHolders = getPropHoldersFromResultSet(rs);
         
         rs.close();
         pstmt.close();
         
         for (int i=0; i<propHolders.length; i++) {
-            PropHolder prop = propHolders[i];
+            SqlDaoUtils.PropHolder prop = propHolders[i];
 
             Property property = this.propertyManager.createProperty(
                     prop.namespaceUri, prop.name, 
@@ -421,8 +402,8 @@ public class JDBCClient extends AbstractDataAccessor {
         String query = this.queryProvider.getLoadPropertiesForChildrenPreparedStatement();
 
         PreparedStatement propStmt = conn.prepareStatement(query);
-        propStmt.setString(1, getURIWildcard(parent.getURI()));
-        propStmt.setInt(2, getURIDepth(parent.getURI()) + 1);
+        propStmt.setString(1, SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+        propStmt.setInt(2, SqlDaoUtils.getUriDepth(parent.getURI()) + 1);
         
         ResultSet rs = propStmt.executeQuery();
         Map resourceMap = new HashMap();
@@ -431,12 +412,12 @@ public class JDBCClient extends AbstractDataAccessor {
             resourceMap.put(new Integer(resources[i].getID()), resources[i]);
         }
         
-        PropHolder[] propHolders = getPropHoldersFromResultSet(rs);
+        SqlDaoUtils.PropHolder[] propHolders = getPropHoldersFromResultSet(rs);
         rs.close();
         propStmt.close();
         
         for (int i=0; i<propHolders.length; i++) {
-            PropHolder holder = propHolders[i];
+            SqlDaoUtils.PropHolder holder = propHolders[i];
                         
             Property property = this.propertyManager.createProperty(
                     holder.namespaceUri,
@@ -487,7 +468,7 @@ public class JDBCClient extends AbstractDataAccessor {
             int type = Integer.parseInt(loggerType);
 
             String statement = this.queryProvider.getInsertRecursiveChangeLogEntryStatement(
-                resourceId, uri, getURIWildcard(uri), id, type, operation);
+                resourceId, uri, SqlDaoUtils.getUriSqlWildcard(uri), id, type, operation);
             
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(statement);
@@ -535,7 +516,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
 
-        stmt.setString(2, getURIWildcard(uri));
+        stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(uri));
 
         ResultSet rs = stmt.executeQuery();
         List result = new ArrayList();
@@ -619,7 +600,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         String query = this.queryProvider.getListSubTreePreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(parent.getURI()));
+        stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
         ResultSet rs = stmt.executeQuery();
         ArrayList l = new ArrayList();
         while (rs.next()) {
@@ -770,7 +751,7 @@ public class JDBCClient extends AbstractDataAccessor {
                                      Date lastModified)
             throws SQLException, IOException {
 
-        int depth = getURIDepth(uri);
+        int depth = SqlDaoUtils.getUriDepth(uri);
 
         String statement = this.queryProvider.getInsertResourcePreparedStatement();
 
@@ -826,7 +807,6 @@ public class JDBCClient extends AbstractDataAccessor {
         if (lock != null) {
             String lockToken = lock.getLockToken();
             Date timeout = lock.getTimeout();
-            String type = lock.getLockType();
             String user = lock.getPrincipal().getQualifiedName();
             String ownerInfo = lock.getOwnerInfo();
             String depth = lock.getDepth();
@@ -840,32 +820,32 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt.close();
 
 
-            query = this.queryProvider.getLoadLockTypeIdFromNamePreparedStatement();
-            stmt = conn.prepareStatement(query);
-            stmt.setString(1, type);
-            rs = stmt.executeQuery();
+//             query = this.queryProvider.getLoadLockTypeIdFromNamePreparedStatement();
+//             stmt = conn.prepareStatement(query);
+//             stmt.setString(1, type);
+//             rs = stmt.executeQuery();
 
-            if (!rs.next()) {
-                rs.close();
-                stmt.close();
-                throw new SQLException("Unknown lock type: " + type);
-            }
+//             if (!rs.next()) {
+//                 rs.close();
+//                 stmt.close();
+//                 throw new SQLException("Unknown lock type: " + type);
+//             }
 
-            int lockType = rs.getInt("lock_type_id");
+//             int lockType = rs.getInt("lock_type_id");
 
-            rs.close();
-            stmt.close();
+//             rs.close();
+//             stmt.close();
 
             if (exists) {
                 query = this.queryProvider.getUpdateLockPreparedStatement();
                 PreparedStatement updateStmt = conn.prepareStatement(query);
 
-                updateStmt.setInt(1, lockType);
-                updateStmt.setString(2, user);
-                updateStmt.setString(3, ownerInfo);
-                updateStmt.setString(4, depth);
-                updateStmt.setTimestamp(5, new Timestamp(timeout.getTime()));
-                updateStmt.setString(6, lockToken);
+//                 updateStmt.setInt(1, lockType);
+                updateStmt.setString(1, user);
+                updateStmt.setString(2, ownerInfo);
+                updateStmt.setString(3, depth);
+                updateStmt.setTimestamp(4, new Timestamp(timeout.getTime()));
+                updateStmt.setString(5, lockToken);
 
                 updateStmt.executeUpdate();
                 updateStmt.close();
@@ -875,11 +855,11 @@ public class JDBCClient extends AbstractDataAccessor {
 
                 insertStmt.setString(1, lockToken);
                 insertStmt.setInt(2, r.getID());
-                insertStmt.setInt(3, lockType);
-                insertStmt.setString(4, user);
-                insertStmt.setString(5, ownerInfo);
-                insertStmt.setString(6, depth);
-                insertStmt.setTimestamp(7, new Timestamp(timeout.getTime()));
+//                 insertStmt.setInt(3, lockType);
+                insertStmt.setString(3, user);
+                insertStmt.setString(4, ownerInfo);
+                insertStmt.setString(5, depth);
+                insertStmt.setTimestamp(6, new Timestamp(timeout.getTime()));
 
                 insertStmt.executeUpdate();
                 insertStmt.close();
@@ -952,7 +932,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
     
     private void insertACLEntries(Connection conn, ResourceImpl resource)
-        throws SQLException{
+        throws SQLException {
 
         String query = this.queryProvider.getLoadActionTypesPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
@@ -1069,7 +1049,7 @@ public class JDBCClient extends AbstractDataAccessor {
         String query = this.queryProvider.getDeleteAclEntriesByUriPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
 
-        stmt.setString(1, getURIWildcard(resource.getURI()));
+        stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
@@ -1080,7 +1060,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         query = this.queryProvider.getDeleteLocksByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(resource.getURI()));
+        stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
@@ -1091,7 +1071,7 @@ public class JDBCClient extends AbstractDataAccessor {
         
         query = this.queryProvider.getDeletePropertiesByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(resource.getURI()));
+        stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
         stmt.setInt(2, resource.getID());
         stmt.executeUpdate();
         stmt.close();
@@ -1103,7 +1083,7 @@ public class JDBCClient extends AbstractDataAccessor {
         query = this.queryProvider.getDeleteResourcesByUriPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, resource.getURI());
-        stmt.setString(2, getURIWildcard(resource.getURI()));
+        stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
         stmt.executeUpdate();
         stmt.close();
 
@@ -1111,7 +1091,7 @@ public class JDBCClient extends AbstractDataAccessor {
 // IS:
 //         query = "delete from vortex_resource where uri like ?";
 //         stmt = conn.prepareStatement(query);
-//         stmt.setString(1, getURIWildcard(resource.getURI()));
+//         stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
 //         stmt.executeUpdate();
 //         stmt.close();
 
@@ -1144,8 +1124,8 @@ public class JDBCClient extends AbstractDataAccessor {
 
         String query = this.queryProvider.getLoadChildUrisPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(uri));
-        stmt.setInt(2, getURIDepth(uri) + 1);
+        stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(uri));
+        stmt.setInt(2, SqlDaoUtils.getUriDepth(uri) + 1);
         
         ResultSet rs = stmt.executeQuery();
 
@@ -1167,8 +1147,8 @@ public class JDBCClient extends AbstractDataAccessor {
 
         String query = this.queryProvider.getLoadChildrenPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setInt(1, getURIDepth(parent.getURI()) + 1);
-        stmt.setString(2, getURIWildcard(parent.getURI()));
+        stmt.setInt(1, SqlDaoUtils.getUriDepth(parent.getURI()) + 1);
+        stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
 
         ResultSet rs = stmt.executeQuery();
         List resources = new ArrayList();
@@ -1210,8 +1190,8 @@ public class JDBCClient extends AbstractDataAccessor {
         }
         String query = this.queryProvider.getLoadChildUrisPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(parent.getURI()));
-        stmt.setInt(2, getURIDepth(parent.getURI()) + 2);
+        stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+        stmt.setInt(2, SqlDaoUtils.getUriDepth(parent.getURI()) + 2);
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
@@ -1373,8 +1353,8 @@ public class JDBCClient extends AbstractDataAccessor {
   
         stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
         
-        stmt.setString(2, getURIWildcard(parent.getURI()));
-        stmt.setInt(3, getURIDepth(parent.getURI()) + 1);
+        stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+        stmt.setInt(3, SqlDaoUtils.getUriDepth(parent.getURI()) + 1);
         
         ResultSet rs = stmt.executeQuery();
         Map result = new HashMap();
@@ -1402,7 +1382,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         String query = this.queryProvider.getDiscoverAclsPreparedStatement();
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, getURIWildcard(uri));
+        stmt.setString(1, SqlDaoUtils.getUriSqlWildcard(uri));
         ResultSet rs = stmt.executeQuery();
         
         List uris = new ArrayList();
@@ -1426,7 +1406,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
         long timestamp = System.currentTimeMillis();
 
-        int depthDiff = getURIDepth(destURI) - getURIDepth(resource.getURI());
+        int depthDiff = SqlDaoUtils.getUriDepth(destURI) - SqlDaoUtils.getUriDepth(resource.getURI());
     
         String query = setOwner ?
             this.queryProvider.getCopyResourceSetOwnerPreparedStatement() :
@@ -1441,7 +1421,7 @@ public class JDBCClient extends AbstractDataAccessor {
             
         } 
         stmt.setString(i++, resource.getURI());
-        stmt.setString(i++, getURIWildcard(resource.getURI()));
+        stmt.setString(i++, SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
         stmt.executeUpdate();
         stmt.close();
 
@@ -1449,7 +1429,7 @@ public class JDBCClient extends AbstractDataAccessor {
         query = this.queryProvider.getCopyPropertiesPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, destURI);
-        stmt.setString(2, getURIWildcard(destURI));
+        stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(destURI));
         stmt.executeUpdate();
         stmt.close();
 
@@ -1459,7 +1439,7 @@ public class JDBCClient extends AbstractDataAccessor {
             query = this.queryProvider.getCopyAclsPreparedStatement();
             stmt = conn.prepareStatement(query);
             stmt.setString(1, destURI);
-            stmt.setString(2, getURIWildcard(destURI));
+            stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(destURI));
             stmt.executeUpdate();
             stmt.close();
 
@@ -1472,7 +1452,7 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, destNearestACL);
             stmt.setString(2, destURI);
-            stmt.setString(3, getURIWildcard(destURI));
+            stmt.setString(3, SqlDaoUtils.getUriSqlWildcard(destURI));
             stmt.setInt(4, srcNearestACL);
             stmt.executeUpdate();
             stmt.close();
@@ -1485,7 +1465,7 @@ public class JDBCClient extends AbstractDataAccessor {
                 query = this.queryProvider.getUpdateAclInheritedFromByPrevResourceIdPreparedStatement();            
                 stmt = conn.prepareStatement(query);
                 stmt.setString(1, destURI);
-                stmt.setString(2, getURIWildcard(destURI));
+                stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(destURI));
                 stmt.executeUpdate();
                 stmt.close();
                 
@@ -1495,7 +1475,7 @@ public class JDBCClient extends AbstractDataAccessor {
 
                 stmt = conn.prepareStatement(query);
                 stmt.setString(1, destURI);
-                stmt.setString(2, getURIWildcard(destURI));
+                stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(destURI));
                 ResultSet rs = stmt.executeQuery();
 
                 Map inheritedMap = new HashMap();
@@ -1527,7 +1507,7 @@ public class JDBCClient extends AbstractDataAccessor {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, nearestAclNode);
             stmt.setString(2, destURI);
-            stmt.setString(3, getURIWildcard(destURI));
+            stmt.setString(3, SqlDaoUtils.getUriSqlWildcard(destURI));
             stmt.executeUpdate();
             stmt.close();
         }
@@ -1535,7 +1515,7 @@ public class JDBCClient extends AbstractDataAccessor {
         query = this.queryProvider.getClearPrevResourceIdPreparedStatement();
         stmt = conn.prepareStatement(query);
         stmt.setString(1, destURI);
-        stmt.setString(2, getURIWildcard(destURI));
+        stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(destURI));
         stmt.executeUpdate();
         stmt.close();
 

@@ -37,8 +37,6 @@ import org.vortikal.security.Principal;
  */
 public interface Lock extends java.io.Serializable, Cloneable {
 
-    public String getLockType();
-
     public String getDepth();
 
     public Principal getPrincipal();

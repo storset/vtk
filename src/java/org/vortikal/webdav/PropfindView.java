@@ -57,7 +57,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.LockType;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -434,12 +433,8 @@ public class PropfindView implements View, InitializingBean {
         Element activeLock = new Element("activelock",
                 WebdavConstants.DAV_NAMESPACE);
 
-        String type = "";
-        String scope = "";
-        if (lock.getLockType().equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
-            scope = "exclusive";
-            type = "write";
-        }
+        String type = "exclusive";
+        String scope = "write";
 
         activeLock.addContent(new Element("locktype",
                 WebdavConstants.DAV_NAMESPACE).addContent(new Element(type,

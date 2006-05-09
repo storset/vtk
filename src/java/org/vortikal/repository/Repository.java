@@ -378,8 +378,6 @@ public interface Repository {
      *
      * @param token identifies the client's authenticated session
      * @param uri identifies the resource to lock
-     * @param lockType the type of lock requested. Currently, the
-     * legal values are <code>read</code> and <code>write</code>
      * @param ownerInfo user supplied information about the person
      * requesting the lock, e.g. an email address, etc. Note that this
      * is not the actual <i>username</i> of the person, such
@@ -411,7 +409,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception IOException if an I/O error occurs
      */
-    public Resource lock(String token, String uri, String lockType,
+    public Resource lock(String token, String uri,
             String ownerInfo, String depth, int requestedTimoutSeconds, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 

@@ -48,7 +48,6 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.LockType;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
@@ -90,7 +89,6 @@ public class LockController extends AbstractWebdavController {
             throw new AuthenticationException("A principal is required to lock resources");
         }
 
-        String type = LockType.LOCKTYPE_EXCLUSIVE_WRITE;
         String lockToken = null;
         ifHeader = new IfHeaderImpl(request);
         
@@ -145,7 +143,7 @@ public class LockController extends AbstractWebdavController {
                     msg += " (refreshing with token: " + lockToken + ")";
                 logger.debug(msg);
             }
-            lockedResource = repository.lock(token, uri, type, ownerInfo, depth, timeout, lockToken);
+            lockedResource = repository.lock(token, uri, ownerInfo, depth, timeout, lockToken);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Locking " + uri + " succeeded");

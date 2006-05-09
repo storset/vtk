@@ -49,7 +49,6 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.springframework.web.servlet.View;
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.LockType;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.InvalidModelException;
 
@@ -85,6 +84,7 @@ public class LockView implements View {
 
         Element lockDiscovery = buildLockDiscovery(lock);
 
+
         Document doc = new Document(lockDiscovery);
 
         Format format = Format.getPrettyFormat();
@@ -92,6 +92,7 @@ public class LockView implements View {
         //format.setLineSeparator("\r\n");
         //format.setIndent("  ");
         XMLOutputter outputter = new XMLOutputter(format);
+        
         String xml = outputter.outputString(doc);
         byte[] buffer = null;
         try {
@@ -126,14 +127,9 @@ public class LockView implements View {
 
     public static Element buildLockDiscovery(Lock lockInfo) {
 
-        String type = "invalid";
-        String scope = "invalid";
+        String type = "write";
+        String scope = "exclusive";
 
-        if (lockInfo.getLockType().equals(LockType.LOCKTYPE_EXCLUSIVE_WRITE)) {
-            scope = "exclusive";
-            type = "write";
-        }
-        
         Element lockDiscovery = new Element("lockdiscovery", WebdavConstants.DAV_NAMESPACE);
         Element activeLock = new Element("activelock", WebdavConstants.DAV_NAMESPACE);
 

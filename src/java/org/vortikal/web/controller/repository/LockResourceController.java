@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-import org.vortikal.repository.LockType;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -86,7 +85,7 @@ public class LockResourceController extends AbstractController {
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
         if (resource.getLock() == null) {
-            repository.lock(token, uri, LockType.LOCKTYPE_EXCLUSIVE_WRITE,
+            repository.lock(token, uri,
                             securityContext.getPrincipal().getQualifiedName(), "0",
                             this.requestedTimeoutSeconds, null);
         }

@@ -413,8 +413,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
 
-    public Resource lock(String token, String uri, String lockType,
-            String ownerInfo, String depth, int requestedTimeoutSeconds, 
+    public Resource lock(String token, String uri, String ownerInfo, String depth,
+                         int requestedTimeoutSeconds, 
             String lockToken) throws ResourceNotFoundException, 
             AuthorizationException, AuthenticationException, 
             FailedDependencyException, ResourceLockedException, 
@@ -675,7 +675,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             
             this.dao.store(parent);
 
-            newResource = (ResourceImpl)newResource.clone();
+            newResource = (ResourceImpl) newResource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
                 "clone() resource: " + uri);

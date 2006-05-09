@@ -230,9 +230,9 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return repository.exists(token, uri);
     }
 
-    public Resource lock(String token, String uri, String lockType,
-                       String ownerInfo, String depth, int requestedTimoutSeconds,
-                       String lockToken)
+    public Resource lock(String token, String uri, String ownerInfo,
+                         String depth, int requestedTimoutSeconds,
+                         String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, FailedDependencyException, 
         ResourceLockedException, IllegalOperationException, 
@@ -242,8 +242,8 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        return repository.lock(token, uri, lockType, ownerInfo,
-                               depth, requestedTimoutSeconds, lockToken);
+        return repository.lock(token, uri, ownerInfo, depth,
+                               requestedTimoutSeconds, lockToken);
     }
 
     public void unlock(String token, String uri, String lockToken)

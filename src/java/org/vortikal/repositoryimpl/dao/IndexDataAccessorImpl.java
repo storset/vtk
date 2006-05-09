@@ -85,7 +85,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
                 + "where r.uri = ? or r.uri like ? order by r.uri, p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, startURI);
-            stmt.setString(2, JDBCClient.getURIWildcard(startURI));
+            stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(startURI));
             ResultSet rs = stmt.executeQuery();
             
             return new ResultSetIteratorImpl(this.propertyManager, this.principalManager, rs);

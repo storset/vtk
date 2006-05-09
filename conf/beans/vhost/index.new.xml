@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
   <!-- Data accessor for indexing -->
   <bean id="indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
     <property name="propertyManager" ref="propertyManager"/>
@@ -10,7 +9,7 @@
   </bean>
 
   <!-- Document mapper -->
-  <bean id="indexDocumentMapper" class="org.vortikal.repositoryimpl.query.DocumentMapper">
+  <bean id="documentMapper" class="org.vortikal.repositoryimpl.query.DocumentMapper">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="valueFactory" ref="valueFactory"/>
   </bean>
@@ -25,7 +24,7 @@
   <!-- Property set index based on a single Lucene index. -->
   <bean id="newSystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
     <property name="index" ref="luceneIndexAccessor"/>
-    <property name="documentMapper" ref="indexDocumentMapper"/>
+    <property name="documentMapper" ref="documentMapper"/>
     <property name="propertyManager" ref="propertyManager"/>
   </bean>
 
@@ -35,6 +34,17 @@
     <property name="index" ref="newSystemIndex"/>
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="indexDataAccessor" ref="indexDataAccessor"/>
+  </bean>
+
+  <bean id="newSystemIndexSearcher"
+        class="org.vortikal.repositoryimpl.query.SearcherImpl">
+    <property name="index" ref="luceneIndexAccessor"/>
+    <property name="documentMapper" ref="documentMapper"/>
+
+    <!--
+    <property name="queryAuthorizationManager" ref="queryAuthorizationManager"/>
+    -->
+
   </bean>
 
   <!-- Simple re-indexer for a propety set index. -->

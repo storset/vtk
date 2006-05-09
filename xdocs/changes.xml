@@ -11,6 +11,16 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="update">
+        Switched to using iBATIS for the default JDBC-based backend
+        implementation.
+      </action>
+
+      <action dev="gormap" type="remove">
+        Removed lock types (as the only supported locks are exclusive
+        write locks).
+      </action>
+
       <action dev="oyviste" type="add">
         Added support for storing/retrieving special property 'contentLength'
         in database. Also added storing/retrieving of meta-property 

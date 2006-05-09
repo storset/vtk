@@ -67,15 +67,17 @@ public class UnlockController extends AbstractWebdavController {
         try {
             ifHeader = new IfHeaderImpl(request);
             Resource resource = repository.retrieve(token, uri, false);
-            if (!matchesIfHeader(resource, true)) {
-                logger.debug("handleRequest: matchesIfHeader false");
-                throw new ResourceLockedException();
-            } else {
-                logger.debug("handleRequest: matchesIfHeader true");
-            }
+
+            verifyIfHeader(resource, false);
             
             String lockToken = getLockToken(request);
-
+            logger.debug("lockToken:" + lockToken);
+            logger.debug("resource.getLock():" + resource.getLock());
+            
+            if (resource.getLock() != null && !resource.getLock().getLockToken().equals(lockToken)) {
+                throw new PreconditionFailedException();
+            }
+            
             if (logger.isDebugEnabled()) {
                 logger.debug("Attempting to unlock " + uri + ", lock token: "
                              + lockToken);
@@ -105,6 +107,14 @@ public class UnlockController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
+        } catch (PreconditionFailedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Caught PreconditionFailedException for URI " + uri);
+            }
+            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                      new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
+            
         } catch (ResourceLockedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caught ResourceLockedException for URI " + uri);

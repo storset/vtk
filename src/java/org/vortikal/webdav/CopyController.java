@@ -82,23 +82,9 @@ public class CopyController extends AbstractWebdavController {
         Map model = new HashMap();
 
         try {
-            ifHeader = new IfHeaderImpl(request);
             Resource resource = repository.retrieve(token, uri, false);
-            if (!matchesIfHeader(resource, true)) {
-                logger.debug("handleRequest: src matchesIfHeader false");
-                throw new ResourceLockedException();
-            } else {
-                logger.debug("handleRequest: src matchesIfHeader true");
-            }
-            
-            Resource destination = repository.retrieve(token, destURI, false);
-            if (!matchesIfHeader(destination, true)) {
-                logger.debug("handleRequest: destination matchesIfHeader false");
-                throw new ResourceLockedException();
-            } else {
-                logger.debug("handleRequest: destination matchesIfHeader true");
-            }
-            
+            ifHeader = new IfHeaderImpl(request);
+            verifyIfHeader(resource, false);
             
             if (destURI == null || destURI.trim().equals("")) {
                 throw new InvalidRequestException(
@@ -134,6 +120,11 @@ public class CopyController extends AbstractWebdavController {
             }
 
             boolean existed = repository.exists(token, destURI);
+            
+            if (existed) {
+                Resource destination = repository.retrieve(token, destURI, false);
+                verifyIfHeader(destination, true);
+            }
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Copying " + uri + " to " + destURI + ", depth = "

@@ -128,14 +128,7 @@ public class PutController extends AbstractWebdavController {
                 logger.debug("Resource already exists");
                 resource = repository.retrieve(token, uri, false);
                 ifHeader = new IfHeaderImpl(request);
-                
-                if (!matchesIfHeader(resource, true)) {
-                    logger.debug("handleRequest: matchesIfHeader false");
-                    throw new ResourceLockedException();
-                } else {
-                    logger.debug("handleRequest: matchesIfHeader true");
-                }
-                
+                verifyIfHeader(resource, true);
                 
                 /* if lock-null resource, act as if it did not exist.. */
                 if (resource.getContentLength() == 0 &&
@@ -239,7 +232,7 @@ public class PutController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
-
+            
         } catch (IllegalOperationException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caught IllegalOperationException for URI " + uri, e);

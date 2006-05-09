@@ -46,6 +46,7 @@ import org.jdom.Namespace;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.webdav.ifheader.IfHeader;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
@@ -59,8 +60,10 @@ public abstract class AbstractWebdavController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    // A way of partly disabling work in progress regarding if-headers
-    protected boolean ignoreIfHeader = true;
+    /**
+     * If true: Only use ifheaders when refreshing locks
+     */ 
+    protected boolean ignoreIfHeaderVerify = false;
     
     protected IfHeader ifHeader;
 
@@ -154,26 +157,43 @@ public abstract class AbstractWebdavController implements Controller {
         return uri;
     }
 
-    protected boolean matchesIfHeader(Resource resource, boolean shouldMatchOnNoIfHeader) {
-        if (ignoreIfHeader) {
-            return true;
+        
+    protected void verifyIfHeader(Resource resource, boolean ifHeaderRequiredIfLocked) {
+        if (ignoreIfHeaderVerify) {
+            return;
         }
+        logger.debug("resource.getLock(): " + resource.getLock());
+        logger.debug("ifHeader.hasTokens(): " + ifHeader.hasTokens());
+        if (ifHeaderRequiredIfLocked) {
+            if (resource.getLock() != null && !ifHeader.hasTokens()) {
+                logger.debug("resource locked and if-header hasn't any locktokens");
+                throw new ResourceLockedException();
+            }
+        }
+        if (!matchesIfHeader(resource, true)) {
+            logger.debug("verifyIfHeader: matchesIfHeader false");
+            throw new ResourceLockedException();
+        } else {
+            logger.debug("verifyIfHeader: matchesIfHeader true");
+        }
+    }
+  
+    protected boolean matchesIfHeader(Resource resource, boolean shouldMatchOnNoIfHeader) {
         if (ifHeader == null) {
             return shouldMatchOnNoIfHeader;
         }
         return ifHeader.matches(resource, shouldMatchOnNoIfHeader);
     }
     
-    protected boolean matchesIfHeaderEtags(Resource resource, boolean shouldMatchOnNoIfHeader) {
-        if (ignoreIfHeader) {
-            return true;
-        }
-        if (ifHeader == null) {
-            return shouldMatchOnNoIfHeader;
-        }
-        return ifHeader.matchesEtags(resource, shouldMatchOnNoIfHeader);
-    }
-       
-  
+//    protected boolean matchesIfHeaderEtags(Resource resource, boolean shouldMatchOnNoIfHeader) {
+//        if (ignoreIfHeader) {
+//            return true;
+//        }
+//        if (ifHeader == null) {
+//            return shouldMatchOnNoIfHeader;
+//        }
+//        return ifHeader.matchesEtags(resource, shouldMatchOnNoIfHeader);
+//    }
+//   
 }
 

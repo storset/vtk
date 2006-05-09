@@ -79,20 +79,9 @@ public class MoveController extends AbstractWebdavController {
         Map model = new HashMap();
 
         try {
-            ifHeader = new IfHeaderImpl(request);
             Resource resource = repository.retrieve(token, uri, false);
-            
-            if (!ignoreIfHeader && resource.getLock() != null && !ifHeader.hasTokens()) {
-                logger.debug("handleRequest: resource locked and if-header hasn't any locktokens");
-                throw new ResourceLockedException();
-            }
-            
-            if (!matchesIfHeader(resource, true)) {
-                logger.debug("handleRequest: matchesIfHeader false");
-                throw new ResourceLockedException();
-            } else {
-                logger.debug("handleRequest: matchesIfHeader true");
-            }
+            ifHeader = new IfHeaderImpl(request);
+            verifyIfHeader(resource, true);
             
             if (destURI == null || destURI.trim().equals("")) {
                 throw new InvalidRequestException(

@@ -86,16 +86,9 @@ public class ProppatchController extends AbstractWebdavController  {
         Map model = new HashMap();
 
         try {
-
-            ifHeader = new IfHeaderImpl(request);
             Resource resource = repository.retrieve(token, uri, false);
-            if (!matchesIfHeader(resource, true)) {
-                logger.debug("handleRequest: matchesIfHeader false");
-                throw new ResourceLockedException();
-            } else {
-                logger.debug("handleRequest: matchesIfHeader true");
-            }
-            
+            ifHeader = new IfHeaderImpl(request);
+            verifyIfHeader(resource, true);
             
             /* Parse the request body XML: */
             Document requestBody = parseRequestBody(request);

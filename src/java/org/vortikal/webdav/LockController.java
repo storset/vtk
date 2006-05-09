@@ -83,23 +83,19 @@ public class LockController extends AbstractWebdavController {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         Map model = new HashMap();
-        Resource lockedResource;
+        Resource resource;
         
         if (securityContext.getPrincipal() == null) {
             throw new AuthenticationException("A principal is required to lock resources");
         }
 
         String lockToken = null;
-        ifHeader = new IfHeaderImpl(request);
         
         try {
-            lockedResource = repository.retrieve(token, uri, false);
-            if (!matchesIfHeader(lockedResource, true)) {
-                logger.debug("andleRequest: matchesIfHeader false");
-                throw new ResourceLockedException();
-            } else {
-                logger.debug("handleRequest: matchesIfHeader true");
-            }
+            resource = repository.retrieve(token, uri, false);
+            ifHeader = new IfHeaderImpl(request);
+            verifyIfHeader(resource, true);           
+
             String ownerInfo = securityContext.getPrincipal().toString();
             String depth = request.getHeader("Depth");
             if (depth == null) {
@@ -108,14 +104,12 @@ public class LockController extends AbstractWebdavController {
             depth = depth.toLowerCase();
             boolean exists = repository.exists(token, uri);
             int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));
-
-            
+           
             if (request.getContentLength() <= 0) { // -1 if not known
-                //If contentLength <= 0 we assume we want vto refresh a lock
+                //If contentLength <= 0 we assume we want to refresh a lock
                 if (exists) {
-                    //lockedResource = repository.retrieve(token, uri, false);
-                    if (matchesIfHeader(lockedResource, false)) {
-                        lockToken = lockedResource.getLock().getLockToken();
+                    if (matchesIfHeader(resource, false)) {
+                        lockToken = resource.getLock().getLockToken();
                     }
                 }
             } else {
@@ -143,7 +137,8 @@ public class LockController extends AbstractWebdavController {
                     msg += " (refreshing with token: " + lockToken + ")";
                 logger.debug(msg);
             }
-            lockedResource = repository.lock(token, uri, ownerInfo, depth, timeout, lockToken);
+
+            resource = repository.lock(token, uri, type, ownerInfo, depth, timeout, lockToken);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Locking " + uri + " succeeded");
@@ -151,7 +146,7 @@ public class LockController extends AbstractWebdavController {
 
             //Resource lockedResource = repository.retrieve(token, uri, false);
 
-            model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE, lockedResource);
+            model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE, resource);
 
             return new ModelAndView("LOCK", model);
 

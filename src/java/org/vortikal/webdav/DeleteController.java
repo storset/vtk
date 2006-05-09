@@ -76,21 +76,7 @@ public class DeleteController extends AbstractWebdavController {
             ifHeader = new IfHeaderImpl(request);
             Resource resource = repository.retrieve(token, uri, false);
             
-            logger.debug("resource.getLock(): " + resource.getLock());
-            logger.debug("ifHeader.hasTokens(): " + ifHeader.hasTokens());
-            if (!ignoreIfHeader && resource.getLock() != null && !ifHeader.hasTokens()) {
-                logger.debug("resource locked and if-header hasn't any locktokens");
-                throw new ResourceLockedException();
-            }
-            
-            if (!matchesIfHeader(resource, true)) {
-                logger.debug("handleRequest: matchesIfHeader false");
-                throw new ResourceLockedException();
-            } else {
-                logger.debug("handleRequest: matchesIfHeader true");
-            }
-            
-
+            verifyIfHeader(resource, true);
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Attempting to delete resource " + uri);

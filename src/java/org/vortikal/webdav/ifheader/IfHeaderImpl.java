@@ -40,6 +40,7 @@ public class IfHeaderImpl implements IfHeader {
     public IfHeaderImpl(HttpServletRequest request) {
         super();
         headerValue = request.getHeader("If");
+        logger.debug("if-header: " + headerValue);
         stateEntryList = parse();
     }
     
@@ -65,19 +66,19 @@ public class IfHeaderImpl implements IfHeader {
      *      exists in the <em>If</em> header or if the <em>IfList</em> for the
      *      given tag matches the token and etag given.
      */
-    public boolean matches(Resource resource) {
+    public boolean matches(Resource resource, boolean shouldMatchOnNoIfHeader) {
         if (stateEntryList == null) {
-            logger.debug("matches: No If header, assume match");
-            return true;
+            logger.debug("matches: No If header, assume match: " + shouldMatchOnNoIfHeader);
+            return shouldMatchOnNoIfHeader;
         } else {
             return stateEntryList.matches(resource);
         }
     }
     
-    public boolean matchesEtags(Resource resource) {
+    public boolean matchesEtags(Resource resource, boolean shouldMatchOnNoIfHeader) {
         if (stateEntryList == null) {
-            logger.debug("matchesEtags: No If header, assume match");
-            return true;
+            logger.debug("matchesEtags: No If header, assume match: " + shouldMatchOnNoIfHeader);
+            return shouldMatchOnNoIfHeader;
         } else {
             return stateEntryList.matchesEtags(resource);
         }
@@ -91,6 +92,10 @@ public class IfHeaderImpl implements IfHeader {
         return allTokens.iterator();
     }
 
+    public boolean hasTokens() {
+        return !allTokens.isEmpty();
+    }
+    
     /**
      * @return an interator over all NOT tokens present in the if header, that
      * were explicitely denied.

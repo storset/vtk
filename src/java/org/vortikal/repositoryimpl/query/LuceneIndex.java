@@ -43,6 +43,7 @@ import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
  * New class for low-level index access.
  * 
  * XXX: not finished.
+ * XXX: cache index searchers/readers.
  * @author oyviste
  *
  */
@@ -51,8 +52,9 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
     
     private Log logger = LogFactory.getLog(this.getClass());
     
-    private int optimizeInterval = 500;
+    private int optimizeInterval = 100;
     private int commitCounter = 0;
+    private boolean dirty = false;
     
     /** This is our FIFO write lock on this index. Operations requiring write-access
      *  will need to acquire this before doing the operation. This includes all 

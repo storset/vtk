@@ -268,9 +268,9 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     
     private void evalCreate(Principal principal, ResourceImpl newResource,
                             Date time, boolean isCollection, ResourceTypeDefinition rt,
-                            PropertyTypeDefinition[] def, List newProps) {
-        for (int i = 0; i < def.length; i++) {
-            PropertyTypeDefinition propertyDef = def[i];
+                            PropertyTypeDefinition[] definitions, List newProps) {
+        for (int i = 0; i < definitions.length; i++) {
+            PropertyTypeDefinition propertyDef = definitions[i];
             
             CreatePropertyEvaluator evaluator = propertyDef.getCreateEvaluator();            
 
@@ -688,10 +688,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private void evalContentModification(Principal principal, ResourceImpl newResource,
                                          Resource original, Content content, Date time,
                                          ResourceTypeDefinition rt,
-                                         PropertyTypeDefinition[] def, List newProps) {
+                                         PropertyTypeDefinition[] definitions, List newProps) {
 
-        for (int i = 0; i < def.length; i++) {
-            PropertyTypeDefinition propertyDef = def[i];
+        for (int i = 0; i < definitions.length; i++) {
+            PropertyTypeDefinition propertyDef = definitions[i];
             
             Property prop = original.getProperty(rt.getNamespace(), propertyDef.getName());
             ContentModificationPropertyEvaluator evaluator =
@@ -777,7 +777,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                                    String[] stringValues, int type) 
         throws ValueFormatException {
         
-        Namespace namespace = (Namespace)this.namespaceUriMap.get(namespaceUrl);
+        Namespace namespace = (Namespace) this.namespaceUriMap.get(namespaceUrl);
         
         if (namespace == null) 
             namespace = new Namespace(namespaceUrl);
@@ -803,7 +803,8 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 logger.error("Cannot convert multiple values to a single-value prop"
                              + " for property " + prop);
                 throw new ValueFormatException(
-                    "Cannot convert multiple values to a single-value prop"
+                    "Cannot convert multiple values: " + Arrays.asList(stringValues)
+                    + " to a single-value prop"
                     + " for property " + prop);
             }
             
@@ -853,12 +854,12 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
         sb.append("[").append(def.getNamespace()).append("] ").append(def.getName()).append("\n");
 
-        PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
-        if (propDefs.length > 0) {
-            for (int i = 0; i < propDefs.length; i++) {
+        PropertyTypeDefinition[] definitions = def.getPropertyTypeDefinitions();
+        if (definitions.length > 0) {
+            for (int i = 0; i < definitions.length; i++) {
                 for (int j = 0; j < level; j++) sb.append("  ");
                 sb.append("  prop: ");
-                sb.append(propDefs[i].getName());
+                sb.append(definitions[i].getName());
                 sb.append("\n");
             }
         }
@@ -874,7 +875,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     private void addNamespacesAndProperties(ResourceTypeDefinition def) {
         // Populate map of property type definitions
-        PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
+        PropertyTypeDefinition[] definitions = def.getPropertyTypeDefinitions();
         Namespace namespace = def.getNamespace();
 
         if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri()))
@@ -890,13 +891,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             // XXX: what about prefix when using namespaces as map keys?
             this.propertyTypeDefinitions.put(namespace, propDefMap);
         }
-        for (int u = 0; u < propDefs.length; u++) {
+        for (int u = 0; u < definitions.length; u++) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Registering property type definition "
-                             + propDefs[u].getName());
+                             + definitions[u].getName());
             }
 
-            propDefMap.put(propDefs[u].getName(), propDefs[u]);
+            propDefMap.put(definitions[u].getName(), definitions[u]);
         }
     }
     
@@ -1025,13 +1026,13 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         // Return flat list of prop defs
         // XXX: equivalent methods for resource-types, mixin-types, etc ?
         // Indexing system needs type config information in a more available manner.
-        ArrayList propDefs = new ArrayList();
+        ArrayList definitions = new ArrayList();
         
         for (Iterator i = this.propertyTypeDefinitions.values().iterator(); i.hasNext();) {
             Map propMap = (Map)i.next();
-            propDefs.addAll(propMap.values());
+            definitions.addAll(propMap.values());
         }
         
-        return propDefs;
+        return definitions;
     }
 }

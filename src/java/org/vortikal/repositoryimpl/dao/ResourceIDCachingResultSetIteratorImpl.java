@@ -112,7 +112,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
 
             PropertySetImpl propertySet = new PropertySetImpl(currentURI);
 
-            JDBCClient.populateStandardProperties(this.propertyManager, this.principalManager,
+            SqlDaoUtils.populateStandardProperties(this.propertyManager, this.principalManager,
                                                   propertySet, this.rs);
 
             putResourceId(currentURI, rs.getInt("resource_id"));
@@ -123,7 +123,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
 
             while (currentURI.equals(uri)) {
 
-                JDBCClient.PropHolder holder = new JDBCClient.PropHolder();
+                SqlDaoUtils.PropHolder holder = new SqlDaoUtils.PropHolder();
                 holder.namespaceUri = rs.getString("name_space");
                 holder.name = rs.getString("name");
                 holder.resourceId = rs.getInt("resource_id");
@@ -150,7 +150,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
             }
 
             for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
-                JDBCClient.PropHolder holder = (JDBCClient.PropHolder) i.next();
+                SqlDaoUtils.PropHolder holder = (SqlDaoUtils.PropHolder) i.next();
                 Property property = this.propertyManager.createProperty(
                     holder.namespaceUri, holder.name, 
                     (String[]) holder.values.toArray(new String[]{}), holder.type);

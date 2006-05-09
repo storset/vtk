@@ -22,7 +22,7 @@
     <result property="contentLength" column="content_length" />
     <result property="characterEncoding" column="character_encoding" />
     <result property="guessedCharacterEncoding" column="guessed_character_encoding" />
-    <result property="userSpecifiedCharacterEncoding" column="user_specified_character_encoding" />
+    <result property="userSpecifiedCharacterEncoding" column="user_character_encoding" />
     <result property="isCollection" column="is_collection" />
     <result property="aclInheritedFrom" column="acl_inherited_from" />
   </resultMap>
@@ -105,7 +105,7 @@
       content_type = #contentType#,
       character_encoding = #characterEncoding#,
       guessed_character_encoding = #guessedCharacterEncoding#,
-      user_specified_character_encoding = #userSpecifiedCharacterEncoding#,
+      user_character_encoding = #userSpecifiedCharacterEncoding#,
       creation_time = #creationTime#,
       resource_type = #resourceType#,
       content_length = #contentLength#,
@@ -134,7 +134,7 @@
        content_type,
        character_encoding,
        guessed_character_encoding,
-       user_specified_character_encoding,
+       user_character_encoding,
        is_collection,
        acl_inherited_from,
        created_by, modified_by,
@@ -185,7 +185,7 @@
        content_type,
        character_encoding,
        guessed_character_encoding,
-       user_specified_character_encoding,
+       user_character_encoding,
        is_collection,
        acl_inherited_from,
        created_by,
@@ -211,7 +211,7 @@
       content_type,
       character_encoding,
       guessed_character_encoding,
-      user_specified_character_encoding,
+      user_character_encoding,
       is_collection,
       acl_inherited_from,
       created_by,

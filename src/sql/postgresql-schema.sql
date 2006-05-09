@@ -82,22 +82,6 @@ END;
 
 
 -----------------------------------------------------------------------------
--- lock_type
------------------------------------------------------------------------------
-DROP TABLE lock_type CASCADE;
-
-CREATE TABLE lock_type
-(
-    lock_type_id int NOT NULL,
-    name VARCHAR (64) NOT NULL
-);
-
-ALTER TABLE lock_type
-    ADD CONSTRAINT lock_type_PK
-PRIMARY KEY (lock_type_id);
-
-
------------------------------------------------------------------------------
 -- vortex_lock
 -----------------------------------------------------------------------------
 DROP SEQUENCE vortex_lock_seq_pk;
@@ -111,7 +95,6 @@ CREATE TABLE vortex_lock
     lock_id int NOT NULL,
     resource_id int NOT NULL,
     token VARCHAR (128) NOT NULL,
-    lock_type_id int NOT NULL,
     lock_owner VARCHAR (128) NOT NULL,
     lock_owner_info VARCHAR (128) NOT NULL,
     depth CHAR (1) DEFAULT '1' NOT NULL,
@@ -125,11 +108,6 @@ PRIMARY KEY (lock_id);
 ALTER TABLE vortex_lock
     ADD CONSTRAINT vortex_lock_FK_1 FOREIGN KEY (resource_id)
     REFERENCES vortex_resource (resource_id)
-;
-
-ALTER TABLE vortex_lock
-    ADD CONSTRAINT vortex_lock_FK_2 FOREIGN KEY (lock_type_id)
-    REFERENCES lock_type (lock_type_id)
 ;
 
 CREATE INDEX vortex_lock_index1 ON vortex_lock(resource_id);
@@ -282,9 +260,6 @@ INSERT INTO action_type (action_type_id, name) VALUES (2, 'write');
 INSERT INTO action_type (action_type_id, name) VALUES (3, 'all');
 INSERT INTO action_type (action_type_id, name) VALUES (4, 'read-processed');
 INSERT INTO action_type (action_type_id, name) VALUES (5, 'bind');
-
-INSERT INTO LOCK_TYPE (lock_type_id, name) 
-VALUES (1, 'EXCLUSIVE_WRITE');
 
 -- root resource
 

@@ -30,7 +30,7 @@ CREATE TABLE vortex_resource
     resource_owner VARCHAR (64) NOT NULL,
     display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,
-    content_type VARCHAR (64) NOT NULL,
+    content_type VARCHAR (64) NULL,
     content_length bigint NULL, -- NULL for collections.
     resource_type VARCHAR(64) NOT NULL,
     character_encoding VARCHAR (64) NULL,

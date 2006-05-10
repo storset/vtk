@@ -156,6 +156,8 @@ public final class FieldMapper {
 
     // XXX: Used for ancestor ids field.
     public static int[] getIntegersFromUnencodedMultiValueField(Field field) {
+        if ("".equals(field.stringValue())) return new int[0];
+        
         String[] stringValues = field.stringValue().split(
                 Character.toString(MULTI_VALUE_FIELD_SEPARATOR));
         int[] integers = new int[stringValues.length];

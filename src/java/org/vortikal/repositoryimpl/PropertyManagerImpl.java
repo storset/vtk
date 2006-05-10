@@ -43,13 +43,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
@@ -101,7 +99,10 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
     private PrimaryResourceTypeDefinition rootResourceTypeDefinition;
     private boolean init = false;
     
-    // Currently maps a parent resource type def. to its children (arrays)
+    /* Currently maps a parent resource type def. to its children (arrays)
+     * XXX: Resource type definitions that have no children are _not_
+     *      represented as keys in this map. Beware if using key set iteration.
+     */
     private Map resourceTypeDefinitions = new HashMap();
     
     // Currently maps namespaceUris to maps which map property names to defs.
@@ -115,7 +116,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     private ApplicationContext applicationContext;
     
-    private PrimaryResourceTypeDefinition[] getResourceTypeDefinitionChildren(
+    private PrimaryResourceTypeDefinition[] getResourceTypeDefinitionChildrenInternal(
         PrimaryResourceTypeDefinition rt) {
 
         PrimaryResourceTypeDefinition[] children =
@@ -167,21 +168,26 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             PrimaryResourceTypeDefinition parent = def.getParentTypeDefinition();
             PrimaryResourceTypeDefinition[] children = 
                     (PrimaryResourceTypeDefinition[]) this.resourceTypeDefinitions.get(parent);
-            
+
             // Array append (or create if not exists for given parent)
             PrimaryResourceTypeDefinition[] newChildren = null;
+
             if (children == null) {
                 newChildren = new PrimaryResourceTypeDefinition[1];
                 newChildren[0] = def;
             } else {
-                newChildren = new PrimaryResourceTypeDefinition[children.length+1];
+                newChildren = new PrimaryResourceTypeDefinition[children.length + 1];
                 System.arraycopy(children, 0, newChildren, 0, children.length);
-                newChildren[newChildren.length-1] = def;
+                newChildren[newChildren.length - 1] = def;
             }
+
             this.resourceTypeDefinitions.put(parent, newChildren);
             this.mixinTypeDefinitions.put(def, getMixinTypes(def));
 
         }
+        // Remove null-key (which is the root resource type's "parent")
+        this.resourceTypeDefinitions.remove(null);   
+        
         Collection mixins = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
                     MixinResourceTypeDefinition.class, false, false).values();
@@ -251,7 +257,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
 
         // Checking child resource types by delegating
-        PrimaryResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
+        PrimaryResourceTypeDefinition[] children = getResourceTypeDefinitionChildrenInternal(rt);
         
         if (children == null) return rt;
         
@@ -472,7 +478,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
 
         // Checking child resource types by delegating
-        PrimaryResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
+        PrimaryResourceTypeDefinition[] children = getResourceTypeDefinitionChildrenInternal(rt);
         for (int i = 0; i < children.length; i++) {
             PrimaryResourceTypeDefinition resourceType = 
                 propertiesModification(principal, newResource, dto, time,
@@ -671,7 +677,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
 
         // Checking child resource types by delegating
-        PrimaryResourceTypeDefinition[] children = getResourceTypeDefinitionChildren(rt);
+        PrimaryResourceTypeDefinition[] children = getResourceTypeDefinitionChildrenInternal(rt);
         for (int i = 0; i < children.length; i++) {
             ResourceTypeDefinition resourceType = 
                 contentModification(principal, newResource,
@@ -1025,11 +1031,12 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
     }
 
-
+    /**
+     * Return flat list of property definitions.
+     * XXX: equivalent methods for resource-types, mixin-types, etc ?
+     * @return
+     */
     public List getPropertyTypeDefinitions() {
-        // Return flat list of prop defs
-        // XXX: equivalent methods for resource-types, mixin-types, etc ?
-        // Indexing system needs type config information in a more available manner.
         ArrayList definitions = new ArrayList();
         
         for (Iterator i = this.propertyTypeDefinitions.values().iterator(); i.hasNext();) {
@@ -1038,5 +1045,34 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         }
         
         return definitions;
+    }
+    
+    /**
+     * Return flat list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
+     * @return list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
+     */
+    public List getPrimaryResourceTypeDefinitions() {
+        return new ArrayList(
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
+                    PrimaryResourceTypeDefinition.class, false, false).values());
+    }
+    
+    /**
+     * Return a <code>List</code> of the immediate children of the given resource type.
+     * @param def
+     * @return
+     */
+    public List getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def) {
+        PrimaryResourceTypeDefinition[] children = 
+            getResourceTypeDefinitionChildrenInternal(def);
+        
+        ArrayList childList = new ArrayList();
+        if (children != null) {
+            for (int i=0; i<children.length; i++) {
+                childList.add(children[i]);
+            }
+        }
+        
+        return childList;
     }
 }

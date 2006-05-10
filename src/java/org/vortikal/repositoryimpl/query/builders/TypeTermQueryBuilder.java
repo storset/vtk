@@ -1,6 +1,12 @@
 package org.vortikal.repositoryimpl.query.builders;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
@@ -17,28 +23,32 @@ import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
 public class TypeTermQueryBuilder implements QueryBuilder {
 
     private TypeTermQuery ttq;
+    private Map typeDescendantNames;
     
-    public TypeTermQueryBuilder(TypeTermQuery ttq) {
+    public TypeTermQueryBuilder(Map typeDescendantNames, TypeTermQuery ttq) {
         this.ttq = ttq;
+        this.typeDescendantNames = typeDescendantNames; 
     }
 
     public Query buildQuery() {
-        
-        
-        // TypeOperator.IN must be handled specially, as this information is 
-        // currently not contained in index.
-        //
-        // Soltions: 1) handle before making Lucene query tree (delegate to "other" query processor), 
-        //              then combine results
-        //           2) store ancestor resource types in index, and make it searchable.
-        //           3) ..?
-        if (ttq.getOperator() != TypeOperator.EQ) {
-            throw new QueryBuilderException("Only the 'EQ' TermOperator is currently not implemented.");
-        }
-        
         String typeTerm = ttq.getTerm();
         
-        return new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm));
+        if (ttq.getOperator() == TypeOperator.EQ) {
+            return new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm));
+        } else if (ttq.getOperator() == TypeOperator.IN) {
+            
+            BooleanQuery bq = new BooleanQuery(true);
+            bq.add(new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm)),
+                                BooleanClause.Occur.SHOULD);
+            List descendantNames = (List)typeDescendantNames.get(typeTerm);
+            for (Iterator i = descendantNames.iterator();i.hasNext();) {
+                Term t = new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, (String)i.next());
+                bq.add(new TermQuery(t),  BooleanClause.Occur.SHOULD);
+            }
+            
+            return bq;
+        } else throw new QueryBuilderException("Unsupported type operator: " + ttq.getOperator());
+
     }
 
 }

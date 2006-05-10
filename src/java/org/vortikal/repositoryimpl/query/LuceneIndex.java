@@ -42,8 +42,11 @@ import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
 /**
  * New class for low-level index access.
  * 
- * XXX: not finished.
- * XXX: cache index searchers/readers.
+ * XXX: not quite finished.
+ * 
+ * XXX: cache/re-use index searcher !!! 
+ * XXX: This will be very important for multi-threaded performance.
+ * 
  * @author oyviste
  *
  */

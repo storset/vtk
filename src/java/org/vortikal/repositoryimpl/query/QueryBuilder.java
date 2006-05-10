@@ -39,6 +39,6 @@ package org.vortikal.repositoryimpl.query;
  */
 public interface  QueryBuilder {
 
-    public org.apache.lucene.search.Query buildQuery();
+    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException;
     
 }

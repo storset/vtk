@@ -51,9 +51,11 @@ import org.vortikal.repositoryimpl.query.query.Query;
 public class QueryTreeBuilder implements QueryBuilder {
 
     AbstractMultipleQuery query;
+    QueryBuilderFactory factory;
     
-    public QueryTreeBuilder(AbstractMultipleQuery query) {
+    public QueryTreeBuilder(QueryBuilderFactory factory, AbstractMultipleQuery query) {
         this.query = query;
+        this.factory = factory;
     }
 
     public org.apache.lucene.search.Query buildQuery() {
@@ -85,7 +87,7 @@ public class QueryTreeBuilder implements QueryBuilder {
             
         } else {
             
-            return QueryBuilderFactory.getBuilder(query).buildQuery();
+            return this.factory.getBuilder(query).buildQuery();
         }
     }
 }

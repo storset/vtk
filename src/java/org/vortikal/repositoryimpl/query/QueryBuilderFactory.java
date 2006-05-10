@@ -30,6 +30,18 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
@@ -44,12 +56,29 @@ import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
 
-public final class QueryBuilderFactory {
+public final class QueryBuilderFactory implements InitializingBean {
 
-    public static QueryBuilder getBuilder(Query query) {
+    Log logger = LogFactory.getLog(QueryBuilderFactory.class);
+    
+    private PropertyManagerImpl propertyManager;
+
+    /* Map resource type name to flat list of _all_ descendant resource type names.
+     * (Supports fast lookup for 'IN'-resource-type queries)
+     */
+    private Map resourceTypeDescendantNames;
+    
+    public void afterPropertiesSet() throws BeanInitializationException {
+        if (this.propertyManager == null) {
+            throw new BeanInitializationException("Property 'propertyManager' not set.");
+        }
+    
+        initializeResourceTypeDescendants();
+    }
+    
+    public QueryBuilder getBuilder(Query query) {
         
        if (query instanceof AbstractMultipleQuery) {
-           return new QueryTreeBuilder((AbstractMultipleQuery)query);
+           return new QueryTreeBuilder(this, (AbstractMultipleQuery)query);
        }
         
        if (query instanceof NameTermQuery) {
@@ -69,10 +98,59 @@ public final class QueryBuilderFactory {
        }
 
        if (query instanceof TypeTermQuery) {
-           return new TypeTermQueryBuilder((TypeTermQuery)query);
+           return new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
+                                          (TypeTermQuery)query);
        }
        
        throw new QueryBuilderException("Unsupported query type: " + query);
     }
 
+    /* Initialize map of resource type names to names of all descendants */
+    private void initializeResourceTypeDescendants() {
+        List definitions = propertyManager.getPrimaryResourceTypeDefinitions();
+        
+        this.resourceTypeDescendantNames = new HashMap();
+        
+        for (Iterator i = definitions.iterator(); i.hasNext();) {
+            PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
+            List descendantNames = new ArrayList();
+            getAllDescendantNames(descendantNames, def);
+            this.resourceTypeDescendantNames.put(def.getName(), descendantNames);
+        }
+        
+        if (logger.isDebugEnabled()) {
+            for (Iterator i=this.resourceTypeDescendantNames.entrySet().iterator(); i.hasNext();) {
+                Map.Entry entry = (Map.Entry)i.next();
+                String name = (String)entry.getKey();
+                List descendantNames = (List)entry.getValue();
+                
+                StringBuffer buf = new StringBuffer("Descendant resource types of [" + name + "]: [");
+                for (Iterator u = descendantNames.iterator();u.hasNext();) {
+                    buf.append(u.next());
+                    if (u.hasNext()) {
+                        buf.append(", ");
+                    }
+                }
+                buf.append("]");
+                logger.debug(buf.toString());
+            }
+        }
+    }
+    
+    /* Recursively get all descendant names for a given resource type */
+    private void getAllDescendantNames(List names, PrimaryResourceTypeDefinition def) {
+        List children = propertyManager.getResourceTypeDefinitionChildren(def);
+        
+        for (Iterator i=children.iterator();i.hasNext();) {
+            PrimaryResourceTypeDefinition child = 
+                (PrimaryResourceTypeDefinition)i.next();
+            names.add(child.getName());
+            getAllDescendantNames(names, child);
+        }
+    }
+
+    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+        this.propertyManager = propertyManager;
+    }
+    
 }

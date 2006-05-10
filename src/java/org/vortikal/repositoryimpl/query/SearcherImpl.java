@@ -59,6 +59,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
     private LuceneIndex index;
     private DocumentMapper documentMapper;
     private QueryAuthorizationManager queryAuthorizationManager;
+    private QueryBuilderFactory queryBuilderFactory;
     
     public void afterPropertiesSet() throws BeanInitializationException {
         if (index == null) {
@@ -78,8 +79,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
      */
     public ResultSet execute(String token, Query query) throws QueryException {
         
-        org.apache.lucene.search.Query q = QueryBuilderFactory.getBuilder(query).buildQuery();
-        
+        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
         IndexSearcher searcher = null;
         try {
             searcher = index.getIndexSearcher();
@@ -150,5 +150,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
 
     public void setQueryAuthorizationManager(QueryAuthorizationManager queryAuthorizationManager) {
         this.queryAuthorizationManager = queryAuthorizationManager;
+    }
+
+    public void setQueryBuilderFactory(QueryBuilderFactory queryBuilderFactory) {
+        this.queryBuilderFactory = queryBuilderFactory;
     }
 }

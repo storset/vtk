@@ -29,22 +29,27 @@
   </bean>
 
   <!-- Perform incremental updates on property set index from resource changes. -->
-  <bean id="newSystemIndexUpdater" 
+  <!-- <bean id="newSystemIndexUpdater" 
         class="org.vortikal.repositoryimpl.query.observation.PropertySetIndexUpdater">
     <property name="index" ref="newSystemIndex"/>
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="indexDataAccessor" ref="indexDataAccessor"/>
+  </bean>-->
+
+  <bean id="queryBuilderFactory"
+        class="org.vortikal.repositoryimpl.query.QueryBuilderFactory">
+    <property name="propertyManager" ref="propertyManager"/>
   </bean>
 
   <bean id="newSystemIndexSearcher"
         class="org.vortikal.repositoryimpl.query.SearcherImpl">
     <property name="index" ref="luceneIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
+    <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
 
     <!--
     <property name="queryAuthorizationManager" ref="queryAuthorizationManager"/>
     -->
-
   </bean>
 
   <!-- Simple re-indexer for a propety set index. -->

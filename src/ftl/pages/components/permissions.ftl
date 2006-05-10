@@ -106,8 +106,11 @@
               <li>${resourceContext.currentResource.owner.name}&nbsp;(<@vrtx.msg code="permissions.owner" default="owner"/>)</li>
               <#break>
             <#default>
-              <li>${user.name}&nbsp;(&nbsp;<a href="${withdrawUserURLs[user_index]?html}"><#t/>
+              <li>${user.name}
+                <#if widthdrawUserURLS?exists>
+                  &nbsp;(&nbsp;<a href="${withdrawUserURLs[user_index]?html}"><#t/>
                   <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
+               </#if>
               </li>
           </#switch>
         </#list>

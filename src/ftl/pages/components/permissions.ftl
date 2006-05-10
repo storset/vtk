@@ -107,7 +107,7 @@
               <#break>
             <#default>
               <li>${user.name}
-                <#if widthdrawUserURLS?exists>
+                <#if widthdrawUserURLs?exists>
                   &nbsp;(&nbsp;<a href="${withdrawUserURLs[user_index]?html}"><#t/>
                   <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
                </#if>

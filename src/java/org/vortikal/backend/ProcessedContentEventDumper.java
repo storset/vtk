@@ -39,7 +39,7 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.ResourceImpl;
-import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
+import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PseudoPrincipal;
@@ -47,7 +47,7 @@ import org.vortikal.security.PseudoPrincipal;
 
 public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
-    protected AbstractDataAccessor dataAccessor;
+    protected DataAccessor dataAccessor;
 
     private final static String CREATED = "created";
     private final static String DELETED = "deleted";
@@ -62,7 +62,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
      *
      * @param dataAccessor Value to assign to this.oracleDatabase
      */
-    public void setDataAccessor(AbstractDataAccessor dataAccessor)  {
+    public void setDataAccessor(DataAccessor dataAccessor)  {
         this.dataAccessor = dataAccessor;
     }
 

@@ -35,13 +35,13 @@ import java.io.IOException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.dao.AbstractDataAccessor;
+import org.vortikal.repositoryimpl.dao.DataAccessor;
 
 
 
 public class InternalReplicationEventDumper extends AbstractRepositoryEventDumper {
 
-    protected AbstractDataAccessor dataAccessor;
+    protected DataAccessor dataAccessor;
 
     private final static String CREATED = "created";
     private final static String DELETED = "deleted";
@@ -56,7 +56,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
      *
      * @param dataAccessor Value to assign to this.dataAccessor
      */
-    public void setDataAccessor(AbstractDataAccessor dataAccessor)  {
+    public void setDataAccessor(DataAccessor dataAccessor)  {
         this.dataAccessor = dataAccessor;
     }
 

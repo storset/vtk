@@ -50,8 +50,8 @@ import org.vortikal.repositoryimpl.query.query.Query;
  */
 public class QueryTreeBuilder implements QueryBuilder {
 
-    AbstractMultipleQuery query;
-    QueryBuilderFactory factory;
+    private AbstractMultipleQuery query;
+    private QueryBuilderFactory factory;
     
     public QueryTreeBuilder(QueryBuilderFactory factory, AbstractMultipleQuery query) {
         this.query = query;

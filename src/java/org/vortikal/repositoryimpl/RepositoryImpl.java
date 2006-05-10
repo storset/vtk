@@ -667,6 +667,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             newResource.setACL((Acl)parent.getAcl().clone());
             //newResource.setInheritedACL(true);
             newResource.setAclInheritedFrom(parent.getID());
+            newResource.getAcl().setInherited(true);
             this.dao.store(newResource);
             newResource = this.dao.load(uri);
 

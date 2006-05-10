@@ -3,4 +3,5 @@
     "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
 <sqlMapConfig>
   <sqlMap resource="org/vortikal/repositoryimpl/dao/ibatis/DefaultSqlMaps.xml"/>
+  <sqlMap resource="org/vortikal/repositoryimpl/dao/ibatis/OracleSqlMaps.xml"/>
 </sqlMapConfig>

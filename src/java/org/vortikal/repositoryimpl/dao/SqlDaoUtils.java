@@ -128,7 +128,7 @@ class SqlDaoUtils {
             propertySet.addProperty(prop);
         }
         
-        string = rs.getString("user_specified_character_encoding");
+        string = rs.getString("user_character_encoding");
         if (string != null) {
             prop = propertyManager.createProperty(
                 Namespace.DEFAULT_NAMESPACE, 

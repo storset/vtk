@@ -42,6 +42,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.QueryException;
+import org.vortikal.repositoryimpl.query.builders.QueryTreeBuilder;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.security.QueryAuthorizationManager;
 import org.vortikal.repositoryimpl.queryparser.ResultSet;
@@ -78,7 +79,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
      */
     public ResultSet execute(String token, Query query) throws QueryException {
         
-        org.apache.lucene.search.Query q = new QueryTreeBuilder(query).buildQuery();
+        org.apache.lucene.search.Query q = QueryBuilderFactory.getBuilder(query).buildQuery();
+        
         IndexSearcher searcher = null;
         try {
             searcher = index.getIndexSearcher();

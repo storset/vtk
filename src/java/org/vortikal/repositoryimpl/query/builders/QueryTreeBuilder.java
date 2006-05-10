@@ -28,13 +28,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.query.builders;
 
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.vortikal.repositoryimpl.query.QueryBuilder;
+import org.vortikal.repositoryimpl.query.QueryBuilderFactory;
+import org.vortikal.repositoryimpl.query.query.AbstractMultipleQuery;
 import org.vortikal.repositoryimpl.query.query.AndQuery;
 import org.vortikal.repositoryimpl.query.query.OrQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
@@ -47,9 +50,9 @@ import org.vortikal.repositoryimpl.query.query.Query;
  */
 public class QueryTreeBuilder implements QueryBuilder {
 
-    Query query;
+    AbstractMultipleQuery query;
     
-    public QueryTreeBuilder(Query query) {
+    public QueryTreeBuilder(AbstractMultipleQuery query) {
         this.query = query;
     }
 

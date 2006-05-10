@@ -34,6 +34,8 @@ import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.QueryTreeBuilder;
+import org.vortikal.repositoryimpl.query.query.AbstractMultipleQuery;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.query.NameTermQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
@@ -43,6 +45,10 @@ import org.vortikal.repositoryimpl.query.query.Query;
 public final class QueryBuilderFactory {
 
     public static QueryBuilder getBuilder(Query query) {
+        
+       if (query instanceof AbstractMultipleQuery) {
+           return new QueryTreeBuilder((AbstractMultipleQuery)query);
+       }
         
        if (query instanceof NameTermQuery) {
            return new NameTermQueryBuilder((NameTermQuery)query);

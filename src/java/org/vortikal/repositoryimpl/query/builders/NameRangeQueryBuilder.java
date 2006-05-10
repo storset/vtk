@@ -28,40 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.query.builders;
 
-import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
-import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
-import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
-import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
+import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.Query;
+import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
-import org.vortikal.repositoryimpl.query.query.NameTermQuery;
-import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
-import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
-import org.vortikal.repositoryimpl.query.query.Query;
 
-public final class QueryBuilderFactory {
+public class NameRangeQueryBuilder implements QueryBuilder {
 
-    public static QueryBuilder getBuilder(Query query) {
+    private NameRangeQuery nrq;
+    
+    public NameRangeQueryBuilder(NameRangeQuery nrq) {
+        this.nrq = nrq;
+    }
+
+    public Query buildQuery() {
         
-       if (query instanceof NameTermQuery) {
-           return new NameTermQueryBuilder((NameTermQuery)query);
-       }
-
-       if (query instanceof NameRangeQuery) {
-           return new NameRangeQueryBuilder((NameRangeQuery)query);
-       }
-       
-       if (query instanceof PropertyTermQuery) {
-           return new PropertyTermQueryBuilder((PropertyTermQuery)query);
-       }
-       
-       if (query instanceof PropertyRangeQuery) {
-           return new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
-       }
-
-       
-       throw new QueryBuilderException("Unsupported query type: " + query);
+        String from = nrq.getFromTerm();
+        String to = nrq.getToTerm();
+        
+        ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(
+                DocumentMapper.NAME_FIELD_NAME, from, to, nrq.isInclusive(), nrq.isInclusive());
+        
+        return csrq;
     }
 
 }

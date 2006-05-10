@@ -359,8 +359,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 this.contentStore.createResource(r.getURI(), r.isCollection());
             } 
 
-            System.out.println("__acl: " + r.getAcl());
-            System.out.println("__dirtyacl: " + r.getAcl().isDirty());
             if (r.getAcl().isDirty()) {
                 if (existed) {
                     // Save the ACL:
@@ -555,12 +553,10 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
                 sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
                 int n = this.sqlMapClient.update(sqlMap, parameters);
-                System.out.println("__updated " + n + " resources using sql map '" + sqlMap + "'");
 
                 if (this.optimizedAclCopySupported) {
                     sqlMap = getSqlMap("updateAclInheritedFromByPreviousResourceId");
                     n = this.sqlMapClient.update(sqlMap, parameters);
-                    System.out.println("__updated " + n + " resources using sql map '" + sqlMap + "'");
                 } else {
                     sqlMap = getSqlMap("loadPreviousInheritedFromMap");
                     List list = this.sqlMapClient.queryForList(sqlMap, parameters);
@@ -921,7 +917,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             }
 
             if (acl == null) {
-                System.out.println("__acl_map: " + map);
                 throw new SQLException(
                     "Resource " + resources[i] + " has no ACL entry (ac_inherited_from = "
                     + resources[i].getAclInheritedFrom() + ")");

@@ -232,6 +232,11 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
         if (resource.isCollection()) {
             throw new IllegalStateException("Unable to display collections");
         }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Putting resource " + resource + " in model");
+        }
+
+
         model.put("resource", resource);
 
         InputStream stream = repository.getInputStream(token, uri, true);
@@ -244,10 +249,13 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
             document = builder.build(stream);
             document.setBaseURI(uri);
 
-        } catch (Exception e) {
+        } catch (Throwable t) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to build JDOM document of resource " + resource, t);
+            }
             if (!this.ignoreXMLErrors) {
-                e.fillInStackTrace();
-                throw e;
+                
+                throw new RuntimeException(t.fillInStackTrace());
             }
         }
 
@@ -255,6 +263,10 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
 
             if (!this.ignoreXMLErrors) {
                 transformerManager.getTransformer(resource, document);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Successfully obtained XSLT transformer for resource "
+                                 + resource);
+                }
             }
             model.put("jdomDocument", document);
         }

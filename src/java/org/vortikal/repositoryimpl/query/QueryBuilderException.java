@@ -30,6 +30,8 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import org.vortikal.repositoryimpl.queryparser.QueryException;
+
 public class QueryBuilderException extends QueryException {
 
     public QueryBuilderException() {

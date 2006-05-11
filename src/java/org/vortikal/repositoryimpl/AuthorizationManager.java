@@ -52,7 +52,7 @@ import org.vortikal.util.repository.URIUtil;
 
 /**
  * <p>Manager that takes care of authorizing a principal for a specific authorization level.
- * 
+ * XXX: Extract as interface in 'repository' package
  */
 public class AuthorizationManager {
 

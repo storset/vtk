@@ -48,7 +48,7 @@ import org.vortikal.security.PseudoPrincipal;
 
 public class AclImpl implements Acl {
 
-    private boolean inherited;
+    private boolean inherited = true;
     private boolean dirty = false; 
     
     /**
@@ -80,6 +80,14 @@ public class AclImpl implements Acl {
     public Set getPrincipalSet(String action) {
         return (Set) actionSets.get(action);
     }
+
+    public void clear() {
+        this.actionSets = new HashMap();
+        this.inherited = true;
+        addEntry(Privilege.ALL, PseudoPrincipal.OWNER);
+        dirty = true;
+    }
+    
 
     public void addEntry(String action, Principal p) throws IllegalArgumentException {
         if (!Privilege.PRIVILEGES.contains(action))

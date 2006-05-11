@@ -51,7 +51,7 @@
     <result property="type" column="prop_type" />
     <result property="typeId" column="prop_type_id" javaType="int" />
     <result property="name" column="name" />
-    <result property="namespace" column="name_space" />
+    <result property="namespaceUri" column="name_space" />
     <result property="value" column="value" />
   </resultMap>
 
@@ -306,9 +306,9 @@
     select
       p.*,
       t.prop_type_name as prop_type
-    from extra_prop_entry p, prop_type t
+    from extra_prop_entry p
+      inner join prop_type t on p.prop_type_id = t.prop_type_id
     where resource_id = #value#
-      and t.prop_type_id = p.prop_type_id
   </select>
 
 
@@ -317,12 +317,12 @@
     select
       p.*,
       t.prop_type_name as prop_type
-    from extra_prop_entry p, prop_type t
+    from extra_prop_entry p
+      inner join prop_type t on p.prop_type_id = t.prop_type_id
     where p.resource_id in
       (select resource_id from vortex_resource
         where uri like #uriWildcard# and depth = #depth#)
   </select>
-
 
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry

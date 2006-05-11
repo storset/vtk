@@ -113,7 +113,11 @@ public class MoveController extends AbstractWebdavController {
             }
 
             boolean existed = repository.exists(token, destURI);
-
+            
+            if (existed) {
+                Resource destination = repository.retrieve(token, destURI, false);
+                verifyIfHeader(destination, true);
+            }
             if (logger.isDebugEnabled()) {
                 logger.debug("Moving " + uri + " to " + destURI + ", depth = "
                              + depth + ", overwrite = " + overwrite

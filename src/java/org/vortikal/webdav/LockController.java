@@ -106,9 +106,9 @@ public class LockController extends AbstractWebdavController {
             if (request.getContentLength() <= 0) { // -1 if not known
                 //If contentLength <= 0 we assume we want to refresh a lock
                 if (exists) {
-                    if (matchesIfHeader(resource, false)) {
-                        lockToken = resource.getLock().getLockToken();
-                    }
+                    // If-header has already been verified in verifyIfHeader so we don't need to
+                    // verify the if-header again
+                    lockToken = resource.getLock().getLockToken();
                 }
             } else {
                 Document requestBody = parseRequestBody(request);

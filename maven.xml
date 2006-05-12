@@ -94,16 +94,8 @@
                 tofile="${maven.war.webapp.dir}/WEB-INF/classes/vortikal-custom.properties" />
     </u:available>
 
-    <j:choose>
-      <j:when test="${resin3}">
-        <v:merge template="resin-3.0.conf" basedir="${maven.conf.dir}"
-                 name="${maven.build.dir}/resin.conf" />
-      </j:when>
-      <j:otherwise>
-        <v:merge template="resin.conf" basedir="${maven.conf.dir}"
-                 name="${maven.build.dir}/resin.conf" />
-      </j:otherwise>
-    </j:choose>
+    <v:merge template="resin.conf" basedir="${maven.conf.dir}"
+             name="${maven.build.dir}/resin.conf" />
 
     <v:merge template="log4j.vortex.xml" basedir="${maven.conf.dir}"
              name="${maven.war.webapp.dir}/WEB-INF/classes/log4j.vortex.xml" />

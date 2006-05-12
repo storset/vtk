@@ -53,8 +53,8 @@ public class ResourcePropertyRegexpAssertion
         this.name = name;
     }
     
-    public void setNamespace(String namespace) {
-        this.namespace = Namespace.getNamespace(namespace);
+    public void setNamespace(Namespace namespace) {
+        this.namespace = namespace;
     }
 
     public void setPattern(String pattern) {

@@ -143,7 +143,8 @@ public class TransformerManager implements InitializingBean {
     public void setTransformationURIResolvers(List transformationURIResolvers) {
         this.transformationURIResolvers = transformationURIResolvers;
         URIResolver[] resolverArray = (URIResolver[])
-            compilationURIResolvers.toArray(new URIResolver[compilationURIResolvers.size()]);
+            transformationURIResolvers.toArray(
+                new URIResolver[transformationURIResolvers.size()]);
         this.transformationURIResolver = new ChainedURIResolver(resolverArray);
     }
     
@@ -161,6 +162,12 @@ public class TransformerManager implements InitializingBean {
             throw new BeanInitializationException(
                 "Bean property 'transformationURIResolvers' must be set");
         }
+
+        logger.info("Using compilation style sheet URI resolvers: "
+                    + this.compilationURIResolvers);
+
+        logger.info("Using transformation style sheet URI resolvers: "
+                    + this.transformationURIResolvers);
     }
     
     
@@ -219,6 +226,13 @@ public class TransformerManager implements InitializingBean {
 
         Transformer transformer = templates.newTransformer();
         transformer.setURIResolver(this.transformationURIResolver);
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                "Returning [transformer: " + transformer + " URI resolver: "
+                + this.transformationURIResolver
+                + "] for style sheet identifier " + stylesheetIdentifier + "");
+        }
+
         return transformer;
     }
     
@@ -292,12 +306,34 @@ public class TransformerManager implements InitializingBean {
         }
 
         public Source resolve(String href, String base) throws TransformerException {
-            for (int i = 0; i < chain.length; i++) {
-                Source s = chain[i].resolve(href, base);
-                if (s != null) return s;
+            String uri = "[href = " + href + ", base = " + base + "]";
+
+            for (int i = 0; i < this.chain.length; i++) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Attempting to resolve URI " + uri
+                                 + " using resolver " + this.chain[i]);
+                }
+
+                Source s = this.chain[i].resolve(href, base);
+                if (s != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Resolved URI " + uri + " to source " + s
+                                     + " using resolver " + this.chain[i]);
+                    }
+                    return s;
+                }                
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to resolve URI " + uri + " using resolvers "
+                             + java.util.Arrays.asList(this.chain));
             }
             // FIXME: return empty Source
             return null;
         }
+
+        public String toString() {
+            return "Chain: " + java.util.Arrays.asList(this.chain);
+        }
+        
     }
 }

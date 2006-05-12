@@ -31,7 +31,7 @@
 
   <bean id="schemaIsStudieretning" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-    <property name="namespace" value="http://www.uio.no/vortex/custom-properties" />
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
     <property name="name" value="schema" />
     <property name="pattern" value="http://www.uio.no/xsd/studier/studieretning-hjemmeside/v00.*" />
   </bean>

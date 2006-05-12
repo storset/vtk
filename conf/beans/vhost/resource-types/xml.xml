@@ -7,7 +7,7 @@
 
   <bean id="xmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="xml-resource"/>
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
       <list>
@@ -64,9 +64,14 @@
 -->
   </bean>
 
+  <bean id="defaultXmlCharacterEncoding" class="java.lang.String">
+    <constructor-arg><value>utf-8</value></constructor-arg>
+  </bean>
 
   <bean id="xmlCharacterEncodingEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
+        class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
+    <property name="defaultEncoding" ref="defaultXmlCharacterEncoding" />
+  </bean>
 
 
 </beans>

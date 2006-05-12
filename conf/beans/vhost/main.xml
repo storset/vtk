@@ -19,13 +19,10 @@
   <import resource="actions.xml" />
   <import resource="repository.xml" />
   <!--import resource="in-memory-repository.xml" /-->
-  <!--
+
   <import resource="changelog.xml" />
-  -->
+
   <import resource="schema-registry.xml" />
-
-  <!--import resource="resin-fix.xml" /-->
-
 
   <import resource="vortex.xml" />
 
@@ -51,10 +48,10 @@
 
 
   <!-- Indexing configuration files -->
-  <!--
+
   <import resource="index.xml" />
   <import resource="index.new.xml" />
-  -->
+
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml"/>

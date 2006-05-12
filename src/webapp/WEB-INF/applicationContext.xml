@@ -43,7 +43,7 @@
    </bean>
    -->
 
-  <!-- #if ( $resin3 == 'true' && $srunPort != '' ) -->
+  <!-- #if ( $srunPort != '' ) -->
 
    <!-- Fix for resin 3.0 -->
    <bean class="org.vortikal.web.filter.StandardRequestFilter">

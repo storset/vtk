@@ -206,8 +206,15 @@ public class PropertyEditController extends SimpleFormController
         return value;
     }
 
-
-
+    protected boolean isFormSubmission(HttpServletRequest request) {
+        boolean isFormSubmission = super.isFormSubmission(request);
+        if ("toggle".equals(request.getParameter("action"))) {
+            return true;
+        }
+        return isFormSubmission;
+    }
+    
+ 
     protected void doSubmitAction(Object command) throws Exception {    
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -228,7 +235,6 @@ public class PropertyEditController extends SimpleFormController
             
             PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
             if (isFocusedProperty(def, propertyCommand.getNamespace(), propertyCommand.getName())) {
-                
                 Property property = resource.getProperty(def.getNamespace(), def.getName());
 
                 String stringValue = propertyCommand.getValue();
@@ -249,9 +255,14 @@ public class PropertyEditController extends SimpleFormController
                         Value[] values = this.valueFactory.createValues(splitValues, def.getType());
                         property.setValues(values);
                     } else {
+                        if (def.getType() == PropertyType.TYPE_BOOLEAN) {
+                            boolean oldValue = property.getBooleanValue();
+                            property.setBooleanValue(!oldValue);
+                        } else {
                         Value value = this.valueFactory.createValue(
                             stringValue, def.getType());
                         property.setValue(value);
+                        }
                     }
                 }
                 this.repository.store(token, resource);
@@ -261,12 +272,10 @@ public class PropertyEditController extends SimpleFormController
 
         propertyCommand.clear();
         propertyCommand.setDone(true);
-
     }
     
 
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = this.service;
@@ -292,10 +301,13 @@ public class PropertyEditController extends SimpleFormController
                     urlParameters.put("namespace", namespaceURI);
                 }
                 urlParameters.put("name", def.getName());
+                if (def.getType() == PropertyType.TYPE_BOOLEAN) {
+                    urlParameters.put("action", "toggle");
+                } else {
+                }
                 try {
                     editURL = service.constructLink(resource, securityContext.getPrincipal(),
                             urlParameters);
-
                 } catch (ServiceUnlinkableException e) {
                     // Assertion doesn't match, OK in this case
                 }
@@ -342,10 +354,5 @@ public class PropertyEditController extends SimpleFormController
     public void setService(Service service) {
         this.service = service;
     }
-
-
-    
-    
-
 
 }

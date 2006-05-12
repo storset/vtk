@@ -84,40 +84,43 @@ public class LockController extends AbstractWebdavController {
         Resource resource;
         
         if (securityContext.getPrincipal() == null) {
-            throw new AuthenticationException("A principal is required to lock resources");
+            throw new AuthenticationException(
+                "A principal is required to lock resources");
         }
 
         String lockToken = null;
         
         try {
-            resource = repository.retrieve(token, uri, false);
-            ifHeader = new IfHeaderImpl(request);
-            verifyIfHeader(resource, true);           
-
             String ownerInfo = securityContext.getPrincipal().toString();
             String depth = request.getHeader("Depth");
             if (depth == null) {
                 depth = "infinity";
             }
             depth = depth.toLowerCase();
-            boolean exists = repository.exists(token, uri);
             int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));
            
-            if (request.getContentLength() <= 0) { // -1 if not known
-                //If contentLength <= 0 we assume we want to refresh a lock
-                if (exists) {
+            boolean exists = repository.exists(token, uri);
+
+            if (exists) {
+                resource = repository.retrieve(token, uri, false);
+                ifHeader = new IfHeaderImpl(request);
+                verifyIfHeader(resource, true);           
+
+                if (request.getContentLength() <= 0) { // -1 if not known
+                    //If contentLength <= 0 we assume we want to refresh a lock
                     // If-header has already been verified in verifyIfHeader so we don't need to
                     // verify the if-header again
                     lockToken = resource.getLock().getLockToken();
-                }
-            } else {
-                Document requestBody = parseRequestBody(request);
-                validateRequest(requestBody);
-                String suppliedOwnerInfo = getLockOwner(requestBody);
-                if (suppliedOwnerInfo != null) {
-                    ownerInfo = suppliedOwnerInfo;
+                } else {
+                    Document requestBody = parseRequestBody(request);
+                    validateRequest(requestBody);
+                    String suppliedOwnerInfo = getLockOwner(requestBody);
+                    if (suppliedOwnerInfo != null) {
+                        ownerInfo = suppliedOwnerInfo;
+                    }
                 }
             }
+
 
             if (!exists) {
                 if (logger.isDebugEnabled()) {

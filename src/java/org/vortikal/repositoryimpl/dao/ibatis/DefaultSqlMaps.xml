@@ -326,9 +326,9 @@
 
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry
-      (extra_prop_entry_id, resource_id, name_space, name, value)
-    values (nextval('extra_prop_entry_seq_pk'), #resourceId#, #namespaceUri#,
-            #name#, #value#)
+      (extra_prop_entry_id, resource_id, prop_type_id, name_space, name, value)
+    values (nextval('extra_prop_entry_seq_pk'), #resourceId#, #type#,
+            #namespaceUri#, #name#, #value#)
   </insert>
 
 

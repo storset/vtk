@@ -238,9 +238,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         try {
             this.sqlMapClient.startTransaction();
 
+            // XXX: convert to numerical values:
+            Integer id = new Integer(Integer.parseInt(loggerID));
+            Integer type = new Integer(Integer.parseInt(loggerType));
+
             Map parameters = new HashMap();
-            parameters.put("loggerId", loggerID);
-            parameters.put("loggerType", loggerType);
+            parameters.put("loggerId", id);
+            parameters.put("loggerType", type);
             parameters.put("uri", uri);
             parameters.put("operation", operation);
             parameters.put("resourceId", resourceId == -1 ? null : new Integer(resourceId));
@@ -257,6 +261,9 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             this.sqlMapClient.update(sqlMap, parameters);
             this.sqlMapClient.commitTransaction();
 
+        } catch (NumberFormatException e) {
+            logger.warn("No changelog entry added! Only numerical types and " +
+                "IDs are supported by this database backend.");
         } catch (SQLException e) {
             logger.warn("Error occurred while adding changelog entry: " + operation
                         + " for resource: " + uri, e);

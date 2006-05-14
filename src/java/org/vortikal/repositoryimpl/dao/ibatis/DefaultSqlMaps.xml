@@ -540,7 +540,7 @@
   </select>
   
   
-  <insert id="insertChangelogEntriesRecursively">
+  <insert id="insertChangelogEntriesRecursively" parameterClass="java.util.Map">
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
@@ -551,7 +551,7 @@
   </insert>
 
 
-  <insert id="insertChangelogEntry">
+  <insert id="insertChangelogEntry" parameterClass="java.util.Map" >
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)

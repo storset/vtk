@@ -183,7 +183,7 @@
   </insert>
 
 
-  <insert id="oracle.insertChangelogEntriesRecursively">
+  <insert id="oracle.insertChangelogEntriesRecursively" parameterClass="java.util.Map">
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
@@ -194,7 +194,7 @@
   </insert>
 
 
-  <insert id="oracle.insertChangelogEntry">
+  <insert id="oracle.insertChangelogEntry" parameterClass="java.util.Map">
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)

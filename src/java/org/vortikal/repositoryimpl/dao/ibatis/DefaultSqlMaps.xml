@@ -544,7 +544,7 @@
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
-    select nextval('changelog_entry_seq_pk'), #id#, #type#,
+    select nextval('changelog_entry_seq_pk'), #loggerId#, #loggerType#,
       #operation#, now(), uri, resource_id, is_collection 
     from vortex_resource 
     where uri = #uri# or uri like #uriWildcard#

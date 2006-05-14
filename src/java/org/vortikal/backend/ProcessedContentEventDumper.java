@@ -68,7 +68,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
 
     public void afterPropertiesSet() {
-
+        super.afterPropertiesSet();
         if (dataAccessor == null) {
             throw new BeanInitializationException("Bean property 'dataAccessor' not set.");
         }

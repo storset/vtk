@@ -62,7 +62,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
 
     public void afterPropertiesSet() {
-
+        super.afterPropertiesSet();
         if (dataAccessor == null) {
             throw new BeanInitializationException("Bean property 'dataAccessor' not set.");
         }

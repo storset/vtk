@@ -1000,7 +1000,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             parameters.put("depth", lock.getDepth());
             parameters.put("resourceId", new Integer(r.getID()));
 
-            sqlMap = exists ? "updateLock" : "insertLock";
+            sqlMap = exists ? getSqlMap("updateLock") : getSqlMap("insertLock");
             this.sqlMapClient.update(sqlMap, parameters);
         }
     }

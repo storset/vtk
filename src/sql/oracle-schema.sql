@@ -199,7 +199,7 @@ CREATE TABLE extra_prop_entry
     extra_prop_entry_id NUMBER NOT NULL,
     resource_id NUMBER NOT NULL,
     prop_type_id NUMBER DEFAULT 0 NOT NULL,
-    name_space VARCHAR2 (128) NOT NULL,
+    name_space VARCHAR2 (128) NULL,
     name VARCHAR2 (64) NOT NULL,
     value VARCHAR2 (2048) NOT NULL
 );

@@ -50,7 +50,6 @@
   <!-- Indexing configuration files -->
 
   <import resource="index.xml" />
-  <import resource="index.new.xml" />
 
 
   <!-- OperationLog interceptor for Repository -->

@@ -95,8 +95,8 @@ public interface Searcher {
      *              executing the query.
      * @param query The <code>Query</code> object, containing the query
      *              conditions.
-     * @param maxResults Number of results to include from cursor position.
-     * @param cursor     Positition to start in the query result set.
+     * @param maxResults Number of results to include from (and including) cursor position.
+     * @param cursor     Positition to start in the query result set (zero-based).
      * 
      * @return      A <code>ResultSet</code> containing a subset of the results.
      * 

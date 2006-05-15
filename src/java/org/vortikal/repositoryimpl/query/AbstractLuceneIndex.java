@@ -39,21 +39,19 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 
 
 /**
- * Some common Lucene index functionality. This class does not handle locking, 
+ * Some common Lucene index functionality. This class does not handle locking explicitly, 
  * but returns IndexWriter/IndexReader instances in a mutually exclusive fashion, 
- * automatically closing one or the other.
+ * automatically closing one or the other. It is, by itself, synchronized, and
+ * this should be thread safe.
  * 
  * TODO: JavaDoc
  * @author oyviste
  */
-public abstract class AbstractLuceneIndex implements InitializingBean {
+public abstract class AbstractLuceneIndex {
     
     private static Log logger = LogFactory.getLog(AbstractLuceneIndex.class.getName());
     
@@ -62,19 +60,11 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     private int minMergeDocs = 100;
     private int maxMergeDocs = 10000;
     
-    /** 
-     * Can be set to <code>true</code> to erase _all_ contents in index <code>Directory</code>, 
-     * upon first time initialization. Will delete all files and empty subdirectories, 
-     * regardless if they belong to Lucene or not. This is potentially dangerous if the
-     * underlying directory implementation is file system based, and should be used
-     * with caution.
-     * Warning: Read description once more.
-     */
-    private boolean eraseExistingIndex = false;
-    
     /** Specifies if any existing index should be forcibly unlocked, if it was
      *  locked at init-time.  */
     private boolean forceUnlock = false;
+    
+    private boolean eraseExistingIndex = false;
     
     /** <code>IndexWriter</code> instance. */
     private IndexWriter writer;
@@ -88,25 +78,31 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     /** Lucene <code>Analyzer</code> implementation used. */
     private Analyzer analyzer;
     
-    public void afterPropertiesSet() 
-        throws BeanInitializationException {
-        if (this.analyzer == null) {
-            this.analyzer = new KeywordAnalyzer(); // Default (and simplest) Analyzer
-        } 
-        
-        try {
-            directory = createDirectory(this.eraseExistingIndex);
-            if (directory == null) {
-                throw new BeanInitializationException("Directory was null");
-            }
-            initializeIndex(this.directory);
-        } catch (IOException io) {
-            logger.warn("Got IOException while initializing index: " + io.getMessage());
-            throw new BeanInitializationException("Got IOException while " +
-                                                  "initializing index: ", io);
-        }
+    /**
+     * Constructor with some sensible defaults.
+     * @throws IOException
+     */
+    public AbstractLuceneIndex() {
+        this(new KeywordAnalyzer(), false, false);
     }
-    
+
+    /**
+     * Constructor with selectable analyzer implementation and some 
+     * parameters controlling initialization.
+     * 
+     * @param analyzer
+     * @param eraseExistingIndex
+     * @param forceUnlock
+     * @throws IOException
+     */
+    public AbstractLuceneIndex(Analyzer analyzer, boolean eraseExistingIndex, 
+                                                  boolean forceUnlock) {
+        this.analyzer = analyzer;
+        this.forceUnlock = forceUnlock;
+        this.eraseExistingIndex = eraseExistingIndex;
+        
+    }
+
     protected synchronized IndexWriter getIndexWriter() throws IOException {
         // Check if we are already providing a reader, close it if so.
         if (reader != null) {
@@ -137,21 +133,17 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         
         return reader;
     }
-
-    protected IndexReader getReadOnlyIndexReader() throws IOException {
+    
+    protected IndexReader getNewReadOnlyIndexReader() throws IOException {
         return IndexReader.open(this.directory);
     }
-    
-    protected IndexSearcher getIndexSearcher() throws IOException {
-        return new IndexSearcher(this.directory);
-    }
-    
+
     protected synchronized void commit() throws IOException {
         if (! IndexReader.isLocked(this.directory)) {
             // No lock on index means there are no pending changes.
             return;
         }
-
+        
         if (reader != null) {
             reader.close();
             reader = null;
@@ -181,7 +173,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         if (directory != null) {
             directory.close();
             // Don't null directory here. This closes a small race between this
-            // method and getReadOnlyIndexReader(), getIndexSearcher(). If we don't
+            // method and getNewReadOnlyIndexReader(). If we don't
             // null here, they might get the old closed instance, and might throw an IOException, 
             // but that's much better than a null-pointer exception.
             // The read-only/searcher methods are not synchronized for performance reasons.
@@ -205,7 +197,6 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
             writer.close();
             writer = null;
         }
-        
 
         if (directory != null) {
             if (IndexReader.isLocked(directory)) {
@@ -225,6 +216,18 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         getIndexWriter().optimize();
     }
     
+    /**
+     * Should be called once before any of the other methods.
+     * @throws IOException
+     */
+    protected void initialize() throws IOException {
+        directory = createDirectory(this.eraseExistingIndex);
+        if (directory == null) {
+            throw new IOException("Directory was null");
+        }
+        initializeIndex(this.directory);
+    }
+    
     /** Initialize Lucene index */
     private void initializeIndex(Directory directory) throws IOException {
         // Check index lock, no matter if a valid index exists in directory
@@ -238,7 +241,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         // Check status on index, create new if necessary
         if (! IndexReader.indexExists(directory)) {
             new IndexWriter(directory, analyzer, true).close();
-            logger.debug("New index created.");
+            logger.info("Empty new index created.");
         } 
     }
     
@@ -261,18 +264,10 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     protected abstract Directory createDirectory(boolean eraseContents) 
         throws IOException;
 
-    protected Directory getDirectory() {
+    protected synchronized Directory getDirectory() {
         return this.directory;
     }
     
-    protected Analyzer getAnalyzer() {
-        return this.analyzer;
-    }
-    
-    protected void setAnalyzer(Analyzer analyzer) {
-        this.analyzer = analyzer;
-    }
-
     public int getMergeFactor() {
         return mergeFactor;
     }
@@ -297,19 +292,4 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         this.maxMergeDocs = maxMergeDocs;
     }
 
-    public boolean isForceUnlock() {
-        return forceUnlock;
-    }
-
-    public void setForceUnlock(boolean forceUnlock) {
-        this.forceUnlock = forceUnlock;
-    }
-    
-    public boolean isEraseExistingIndex() {
-        return this.eraseExistingIndex;
-    }
-    
-    public void setEraseExistingIndex(boolean eraseExistingIndex) {
-        this.eraseExistingIndex = eraseExistingIndex;
-    }
 }

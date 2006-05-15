@@ -111,6 +111,9 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         return this.enabled;
     }
     
+    /**
+     * 
+     */
     public void setBeanName(String beanName) {
         this.beanName = beanName;
         

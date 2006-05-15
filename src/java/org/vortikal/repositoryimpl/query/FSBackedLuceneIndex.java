@@ -36,27 +36,18 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 
 
 /**
  * File system backed Lucene index.
  * @author oyviste
  */
-public class FSBackedLuceneIndex extends AbstractLuceneIndex 
-    implements InitializingBean {
+public class FSBackedLuceneIndex extends AbstractLuceneIndex {
     
     private static final Log logger = LogFactory.getLog(FSBackedLuceneIndex.class);
-    
-    public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.indexPath == null) {
-            throw new BeanInitializationException("Required property 'indexPath' not set.");
-        }
-        super.afterPropertiesSet();
-    }
     
     /**
      * Path to index directory on local file system.
@@ -64,7 +55,16 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex
     private String indexPath;
     
     /** Creates a new instance of FSBackedStandardLuceneIndex */
-    public FSBackedLuceneIndex() {
+    public FSBackedLuceneIndex(String indexPath, 
+                               Analyzer analyzer, 
+                               boolean eraseExistingIndex,
+                               boolean forceUnlock) throws IOException {
+        
+        super(analyzer, eraseExistingIndex, forceUnlock);
+        
+        this.indexPath = indexPath;
+        
+        super.initialize();
     }
     
     /**
@@ -90,10 +90,10 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex
     
     public long getIndexByteSize() throws IOException {
         long length = 0;
-        File indexDir = new File(getIndexPath());
+        File indexDir = new File(this.indexPath);
         if (!indexDir.isDirectory()) 
             throw new IOException("Index path is not a directory: '" +
-                                  getIndexPath() + "'");
+                                  this.indexPath + "'");
 
         File[] contents = indexDir.listFiles();
         for (int i=0; i<contents.length; i++) {
@@ -102,12 +102,4 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex
         return length;
     }
 
-    public void setIndexPath(String indexPath) {
-        this.indexPath = indexPath;
-    }
-
-    public String getIndexPath() {
-        return indexPath;
-    }
-    
 }

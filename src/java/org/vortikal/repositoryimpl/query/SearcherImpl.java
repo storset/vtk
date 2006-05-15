@@ -31,10 +31,14 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.HitCollector;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -47,10 +51,12 @@ import org.vortikal.repositoryimpl.query.security.QueryAuthorizationManager;
 import org.vortikal.repositoryimpl.queryparser.ResultSet;
 import org.vortikal.repositoryimpl.queryparser.ResultSetImpl;
 import org.vortikal.repositoryimpl.queryparser.Searcher;
+import org.vortikal.security.AuthenticationException;
 
 /**
  * @author oyviste
  *
+ * TODO: support sorting when our own sorting interface is finished.
  */
 public class SearcherImpl implements Searcher, InitializingBean {
 
@@ -78,27 +84,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
      * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String, org.vortikal.repositoryimpl.query.query.Query)
      */
     public ResultSet execute(String token, Query query) throws QueryException {
-        
-        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
-        IndexSearcher searcher = null;
-        try {
-            searcher = index.getIndexSearcher();
-            
-            Hits hits = searcher.search(q);
-            
-            ResultSet rs = buildResultSet(hits, token);
-            
-            return rs;
-        } catch (IOException io) {
-            logger.warn("IOException while performing query on index", io);
-            throw new QueryException("IOException while performing query on index", io);
-        } finally {
-            if (searcher != null) {
-                try {
-                    searcher.close();
-                } catch (IOException io){}
-            }
-        }
+        return execute(token, query, Integer.MAX_VALUE, 0);
     }
 
     /* (non-Javadoc)
@@ -106,7 +92,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
      */
     public ResultSet execute(String token, Query query, int maxResults)
             throws QueryException {
-        throw new UnsupportedOperationException("Searching with max results not yet implemented, coming soon.");
+        
+        return execute(token, query, maxResults, 0);
+        
     }
 
     /* (non-Javadoc)
@@ -114,21 +102,63 @@ public class SearcherImpl implements Searcher, InitializingBean {
      */
     public ResultSet execute(String token, Query query, int maxResults, int cursor)
             throws QueryException {
-        throw new UnsupportedOperationException("Searching with max results and cursor not yet implemented, coming soon.");
+
+        
+        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
+        IndexSearcher searcher = null;
+        
+        // TODO: Use simpler HitCollector if no sorting is required.
+        try {
+            searcher = index.getIndexSearcher();
+            
+            Hits hits = searcher.search(q);
+            
+            // TODO: Provide a ResultSet implementation backed directly by hits object
+            //       or index reader used in search (mapping documents to property sets on 
+            //       the fly, and caching the mapped property set instances).
+            //       (Don't cache every result)
+            ResultSet rs = buildResultSet(hits, token, maxResults, cursor);
+            
+            return rs;
+        } catch (IOException io) {
+            logger.warn("IOException while performing query on index", io);
+            throw new QueryException("IOException while performing query on index", io);
+        } finally {
+            try {
+                index.releaseIndexSearcher(searcher);
+            } catch (IOException io){}
+        }
     }
 
     
-    private ResultSet buildResultSet(Hits hits, String token) throws IOException {
+    private ResultSetImpl buildResultSet(Hits hits, String token, int maxResults, 
+                                                                  int cursor)
+        throws IOException, QueryException {
+        
+        if (cursor >= hits.length()) {
+            throw new QueryException("Cursor value is bigger than (number of results)-1."
+                    + "The cursor is zero-based.");
+        }
+        
+        if (maxResults < 0) maxResults = 0;
+        
+        int end = (cursor + maxResults) < hits.length() ? 
+                                        cursor + maxResults : hits.length();
         
         ResultSetImpl rs = new ResultSetImpl();
-        for (int i=0; i<hits.length(); i++) {
+        for (int i=cursor; i < end; i++) {
             Document doc = hits.doc(i);
+
             if (this.queryAuthorizationManager != null) {
                 try {
                     this.queryAuthorizationManager.authorizeQueryResult(token, 
-                                        FieldMapper.getIntegerFromUnencodedField(doc.getField(DocumentMapper.ID_FIELD_NAME)),
-                                        FieldMapper.getIntegerFromUnencodedField(doc.getField(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME)));
-                } catch (AuthorizationException authEx) {
+                     FieldMapper.getIntegerFromUnencodedField(
+                             doc.getField(DocumentMapper.ID_FIELD_NAME)),
+                     FieldMapper.getIntegerFromUnencodedField(
+                             doc.getField(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME)));
+                } catch (AuthorizationException e) {
+                    continue;
+                } catch (AuthenticationException e) {
                     continue;
                 }
             }
@@ -154,5 +184,24 @@ public class SearcherImpl implements Searcher, InitializingBean {
 
     public void setQueryBuilderFactory(QueryBuilderFactory queryBuilderFactory) {
         this.queryBuilderFactory = queryBuilderFactory;
+    }
+    
+    /**
+     * Collect all document numbers that match a query, discard all scores.
+     * Can only be used in a no-sorting scenario, as Lucene uses its own
+     * special collectors for sorting, internally.
+     */
+    private static class SimpleDocNumberHitCollector extends HitCollector {
+        
+        List docNums = new ArrayList();
+        
+        public void collect(int doc, float score) {
+            docNums.add(new Integer(doc));
+        }
+        
+        public Iterator iterator() {
+            return docNums.iterator();
+        }
+        
     }
 }

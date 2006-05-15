@@ -32,9 +32,9 @@ package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Memory-based Lucene index.
@@ -42,14 +42,15 @@ import org.springframework.beans.factory.InitializingBean;
  * @author oyviste
  *
  */
-public class VolatileLuceneIndex extends AbstractLuceneIndex implements InitializingBean {
+public class VolatileLuceneIndex extends AbstractLuceneIndex  {
 
-    public void afterPropertiesSet() {
-        super.afterPropertiesSet();
-    }
-    
-    public VolatileLuceneIndex() {
-        super();
+    public VolatileLuceneIndex(Analyzer analyzer, 
+                               boolean eraseExistingIndex, 
+                               boolean forceUnlock) throws IOException {
+        
+        super(analyzer, eraseExistingIndex, forceUnlock);
+        super.initialize();
+        
     }
     
     protected Directory createDirectory(boolean eraseContents)

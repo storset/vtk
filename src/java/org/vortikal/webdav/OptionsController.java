@@ -30,29 +30,68 @@
  */
 package org.vortikal.webdav;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
-
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 /**
  * Handler for OPTIONS requests
- *
+ * 
  */
 public class OptionsController extends AbstractWebdavController {
 
     /*
-     * Write the following headers:
-     * DAV: 1, 2
-     * Allow: GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, 
-     * PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK, TRACE
+     * Write the following headers: DAV: 1, 2 Allow: GET, HEAD, POST, PUT,
+     * DELETE, CONNECT, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE,
+     * LOCK, UNLOCK, TRACE
      */
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
-         
-        return new ModelAndView("OPTIONS", new java.util.HashMap());
+            HttpServletResponse response) {
+
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String uri = requestContext.getResourceURI();
+        Map model = new HashMap();
+
+        if (!uri.equals("*")) {
+            Resource resource;
+            try {
+                resource = repository.retrieve(token, uri, false);
+                model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
+
+            } catch (ResourceNotFoundException e) {
+                logger.debug("Caught ResourceNotFoundException for URI " + uri);
+                model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+                model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                          new Integer(HttpServletResponse.SC_NOT_FOUND));
+
+            } catch (AuthorizationException e) {
+                logger.debug("Caught AuthorizationException for URI " + uri, e);
+                
+            } catch (AuthenticationException e) {
+                logger.debug("Caught AuthorizationException for URI " + uri, e);
+                
+            } catch (IOException e) {
+                logger.debug("Caught IOException for URI " + uri, e);
+                model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+                model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                        new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            }
+        }
+
+        return new ModelAndView("OPTIONS", model);
     }
-   
-   
+
 }

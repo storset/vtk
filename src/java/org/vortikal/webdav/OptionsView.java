@@ -61,6 +61,11 @@ public class OptionsView implements View {
         allowHeader.append("LOCK, UNLOCK, TRACE");
         response.setHeader("Allow", allowHeader.toString());
         response.setHeader("MS-Author-Via", "DAV");
+        
+        String etag = (String) model.get(WebdavConstants.WEBDAVMODEL_ETAG);
+        if (etag != null) {
+            response.setHeader(WebdavConstants.WEBDAVMODEL_ETAG, etag);
+        }
     }
     
 

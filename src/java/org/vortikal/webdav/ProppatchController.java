@@ -110,8 +110,8 @@ public class ProppatchController extends AbstractWebdavController  {
                       new Integer(HttpServletResponse.SC_OK));
             model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE,
                       resource);
-            return new ModelAndView("PROPPATCH", model);
-            
+            model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
+
         } catch (InvalidRequestException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caught InvalidRequestException for URI "

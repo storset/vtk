@@ -94,6 +94,7 @@ public class MkColController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_CREATED_RESOURCE, resource);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_CREATED));
+            model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (IllegalOperationException e) {
             if (logger.isDebugEnabled()) {

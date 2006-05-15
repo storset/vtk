@@ -156,7 +156,6 @@ public class PropfindController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
-            return new ModelAndView("HTTP_STATUS_VIEW", model);
 
         } catch (ResourceNotFoundException e) {
             if (logger.isDebugEnabled()) {
@@ -166,7 +165,6 @@ public class PropfindController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
-            return new ModelAndView("HTTP_STATUS_VIEW", model);
 
         } catch (ResourceLockedException e) {
             if (logger.isDebugEnabled()) {
@@ -176,15 +174,15 @@ public class PropfindController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
-            return new ModelAndView("HTTP_STATUS_VIEW", model);
 
         } catch (IOException e) {
             logger.debug("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-            return new ModelAndView("HTTP_STATUS_VIEW", model);
         }
+
+        return new ModelAndView("HTTP_STATUS_VIEW", model);
     }
    
 

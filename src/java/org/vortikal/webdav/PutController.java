@@ -215,6 +215,8 @@ public class PutController extends AbstractWebdavController {
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                           new Integer(HttpServletResponse.SC_CREATED));
             }
+
+            model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
             return new ModelAndView(this.viewName, model);
 
         } catch (ResourceNotFoundException e) {

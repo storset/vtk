@@ -71,7 +71,12 @@ public class SimpleHttpStatusView extends AbstractView {
         }
         
         response.setStatus(status.intValue());
-
+        
+        String etag = (String) model.get(WebdavConstants.WEBDAVMODEL_ETAG);
+        if (etag != null) {
+            response.setHeader(WebdavConstants.WEBDAVMODEL_ETAG, etag);
+        }
+        
 //        int sc = status.intValue();
 //        // Send as error if sc >= 400. Note that with Resin 3, this gives the HTTP response 
 //        // a body, which might not be desired for SimpleHttpStatusView ?

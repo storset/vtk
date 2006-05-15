@@ -85,6 +85,9 @@ public class WebdavConstants {
     public static final Namespace VORTIKAL_PROPERTYVALUES_XML_NAMESPACE =
         Namespace.getNamespace("vx", "http://vortikal.org/xml-value-list");
 
+
+    public static final String WEBDAVMODEL_ETAG = "ETag";
+
 //    /**
 //     * Describe <code>buildLockDiscovery</code> method here.
 //     *

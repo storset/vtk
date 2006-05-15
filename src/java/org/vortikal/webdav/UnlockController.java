@@ -89,7 +89,7 @@ public class UnlockController extends AbstractWebdavController {
 
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_OK));
-            return new ModelAndView("UNLOCK", model);
+            model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (InvalidRequestException e) {
             if (logger.isDebugEnabled()) {

@@ -148,18 +148,16 @@
   <bean id="localPrincipalStore" class="org.vortikal.security.PropertyConfigurableMD5PrincipalStore">
     <property name="order" value="10" />
     <!--property name="domain" value="localhost" /-->
-    <property name="realm" value="Vortex" />
+    <property name="realm" value="${authenticationRealm}" />
 <!--    <property name="principals" ref="localPrincipals" />-->
     <property name="principals">
       <props>
-       <prop key="root@localhost">0a4872c6927f992f3808955b0938f808</prop>
-        <prop key="vortex@localhost">b46c78fb2455c0875e8f5d35515e9fe7</prop>
-        <!-- password = 'pw': -->
-        <prop key="user@localhost">6292e997b1b4cf500c7356d6c6593b7e</prop>
+       <prop key="root@localhost">${password.root@localhost}</prop>
+        <prop key="vortex@localhost">${password.vortex@localhost}"</prop>
+        <prop key="user@localhost">${password.user@localhost}</prop>
         <!-- is not possible to authenticate as: -->
         <prop key="trustedUser@localhost">NO_REAL_VALUE</prop>
-        <!-- duper: -->
-        <prop key="super@localhost">768f9142d878dadc4dadedc44077adf9</prop>
+        <prop key="super@localhost">${password.super@localhost}</prop>
       </props>
     </property>
     <property name="groups">

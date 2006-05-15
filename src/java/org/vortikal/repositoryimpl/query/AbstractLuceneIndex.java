@@ -46,7 +46,7 @@ import org.apache.lucene.store.Directory;
  * Some common Lucene index functionality. This class does not handle locking explicitly, 
  * but returns IndexWriter/IndexReader instances in a mutually exclusive fashion, 
  * automatically closing one or the other. It is, by itself, synchronized, and
- * this should be thread safe.
+ * thus should be thread safe.
  * 
  * TODO: JavaDoc
  * @author oyviste

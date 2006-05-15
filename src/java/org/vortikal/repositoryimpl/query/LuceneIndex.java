@@ -154,7 +154,7 @@ public class LuceneIndex implements InitializingBean {
     
     /**
      * Get an <code>IndexSearcher</code> instance for this index.
-     * The instance must be relased with #relaseIndexSearcher(IndexSearcher)
+     * The instance must be released with #releaseIndexSearcher(IndexSearcher)
      * after usage because of reference-counting.
      * 
      * XXX: locking might be too aggressive and provoke thread lock contention on
@@ -344,7 +344,6 @@ public class LuceneIndex implements InitializingBean {
      * is forcibly closed and nullified, no matter if its ref-count is still > 0.
      * The map contains readers as keys with an Integer ref-count as values.
      * 
-     * @author oyviste
      */
     private static class IndexReaderRefCountMap extends LinkedHashMap {
         

@@ -135,8 +135,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
                                                                   int cursor)
         throws IOException, QueryException {
         
-        if (cursor >= hits.length()) {
-            throw new QueryException("Cursor value is bigger than (number of results)-1."
+        if (cursor > hits.length()) {
+            throw new QueryException("Cursor value is bigger than (number of results)."
                     + "The cursor is zero-based.");
         }
         

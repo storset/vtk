@@ -74,7 +74,7 @@ public class EscapedMultiValueFieldTokenizer extends Tokenizer {
 
             if (c == splitChar) {
                 if (esc) {
-                    tOff--;
+                    --tOff;
                 } else {
                     if (tOff == 0) { // Drop empty tokens
                         esc = false;

@@ -48,6 +48,7 @@ import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.QueryTreeBuilder;
 import org.vortikal.repositoryimpl.query.builders.TypeTermQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.UriTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.query.AbstractMultipleQuery;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.query.NameTermQuery;
@@ -55,6 +56,7 @@ import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
+import org.vortikal.repositoryimpl.query.query.UriTermQuery;
 
 public final class QueryBuilderFactory implements InitializingBean {
 
@@ -100,6 +102,10 @@ public final class QueryBuilderFactory implements InitializingBean {
        if (query instanceof TypeTermQuery) {
            return new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
                                           (TypeTermQuery)query);
+       }
+       
+       if (query instanceof UriTermQuery) {
+           return new UriTermQueryBuilder(((UriTermQuery)query).getUri());
        }
        
        throw new QueryBuilderException("Unsupported query type: " + query);

@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.queryparser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,15 +64,12 @@ public class ResultSetImpl implements ResultSet {
 
     public List getResults(int maxIndex) {
         int max = Math.min(maxIndex, this.results.size());
-        List list = new ArrayList();
-        for (int i=0; i<max; i++) {
-            list.add(results.get(i));
-        }
-        return list;
+        
+        return results.subList(0, max);
     }
 
     public List getAllResults() {
-        return Collections.unmodifiableList(this.results);
+        return this.results;
     }
 
     public int getSize() {
@@ -89,7 +85,7 @@ public class ResultSetImpl implements ResultSet {
     }
     
     public Iterator iterator() {
-        return Collections.unmodifiableList(this.results).iterator();
+        return this.results.iterator();
     }
 
 }

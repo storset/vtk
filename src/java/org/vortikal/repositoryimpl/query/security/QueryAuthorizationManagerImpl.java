@@ -7,11 +7,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.PrincipalManager;
 
 /**
+ * TODO: finish
  * @author oyviste
- *
  */
 public class QueryAuthorizationManagerImpl 
     implements QueryAuthorizationManager, InitializingBean {
@@ -27,7 +28,8 @@ public class QueryAuthorizationManagerImpl
         }
     }
 
-    public void authorizeQueryResult(String token, String uri) throws AuthorizationException {
+    public void authorizeQueryResult(String token, String uri) 
+        throws AuthorizationException, AuthenticationException {
         // TODO Auto-generated method stub
         
     }
@@ -36,7 +38,7 @@ public class QueryAuthorizationManagerImpl
      * @see org.vortikal.repositoryimpl.query.security.QueryAuthorizationManager#authorizeQueryResult(java.lang.String, int, int)
      */
     public void authorizeQueryResult(String token, int resourceId, int aclInheritedFrom)
-            throws AuthorizationException {
+            throws AuthorizationException, AuthenticationException {
 
         // TODO Auto-generated method stub
     }

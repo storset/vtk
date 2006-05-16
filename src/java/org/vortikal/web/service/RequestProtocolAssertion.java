@@ -54,6 +54,8 @@ public class RequestProtocolAssertion implements Assertion {
     private final static String PROTO_HTTPS = "https";
     private final static String PROTO_ANY = "*";
     
+    private boolean preferRequestProtocol = false;
+
 
     private String[] protocols;
 
@@ -75,6 +77,11 @@ public class RequestProtocolAssertion implements Assertion {
             }
             throw new IllegalArgumentException("Illegal protocol value: '" + protocol + "'");
         }
+    }
+    
+    
+    public void setPreferRequestProtocol(boolean preferRequestProtocol) {
+        this.preferRequestProtocol = preferRequestProtocol;
     }
     
 
@@ -110,7 +117,7 @@ public class RequestProtocolAssertion implements Assertion {
                               Principal principal, boolean match) {
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext != null) {
+        if (requestContext != null && this.preferRequestProtocol) {
 
             String requestProtocol = getProtocol(requestContext.getServletRequest());
 
@@ -120,6 +127,25 @@ public class RequestProtocolAssertion implements Assertion {
                     url.setProtocol(requestProtocol);
                 }
             }
+        } else {
+            boolean set = false;
+            for (int i = 0; i < this.protocols.length; i++) {
+
+                if (!PROTO_ANY.equals(this.protocols[i])) {
+                    url.setProtocol(this.protocols[i]);
+                    set = true;
+                    break;
+                }
+            }
+            if (!set) {
+                if (requestContext != null) {
+                    String requestProtocol = getProtocol(requestContext.getServletRequest());
+                    url.setProtocol(requestProtocol);
+                } else {
+                    url.setProtocol(PROTO_HTTP);
+                }
+            }
+
         }
         return true;
     }

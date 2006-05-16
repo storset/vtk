@@ -420,6 +420,10 @@ public class VortikalServlet extends DispatcherServlet {
             responseWrapper.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logError(request, e);
 
+        } catch (Throwable t) {
+            logError(request, t);
+            throw new ServletException(t.fillInStackTrace());
+
         } finally {
 
             long processingTime = System.currentTimeMillis() - startTime;
@@ -629,11 +633,21 @@ public class VortikalServlet extends DispatcherServlet {
             // errors, etc.). The safest thing to do here is to log
             // the error and throw a ServletException and let the
             // container handle it.
+            if (logger.isDebugEnabled()) {
+                logger.debug("Caught unexpected throwable " + t.getClass()
+                             + " with no Spring context available, "
+                             + "logging as internal server error");
+            }
+
             logError(req, t);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new ServletException(t);
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Caught unexpected throwable " + t.getClass()
+                         + ", resolving error handler");
+        }
         ErrorHandler handler = resolveErrorHandler(t);
         if (handler == null) {
             logError("No error handler configured for " + t.getClass().getName(), req, t);

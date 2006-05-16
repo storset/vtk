@@ -49,17 +49,15 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
-import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
-import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.PropertyQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.QueryTreeBuilder;
 import org.vortikal.repositoryimpl.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.UriTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.query.AbstractMultipleQuery;
+import org.vortikal.repositoryimpl.query.query.AbstractPropertyQuery;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.query.NameTermQuery;
-import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
-import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
 import org.vortikal.repositoryimpl.query.query.UriPrefixQuery;
@@ -106,14 +104,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
            return new NameRangeQueryBuilder((NameRangeQuery)query);
        }
        
-       if (query instanceof PropertyTermQuery) {
-           return new PropertyTermQueryBuilder((PropertyTermQuery)query);
+       if (query instanceof AbstractPropertyQuery) {
+           return new PropertyQueryBuilder((AbstractPropertyQuery)query);
        }
        
-       if (query instanceof PropertyRangeQuery) {
-           return new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
-       }
-
        if (query instanceof TypeTermQuery) {
            return new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
                                           (TypeTermQuery)query);
@@ -128,7 +122,8 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
            return new UriPrefixQueryBuilder(idTerm);
        }
        
-       throw new QueryBuilderException("Unsupported query type: " + query);
+       throw new QueryBuilderException("Unsupported query type: " 
+                                   + query.getClass().getSimpleName());
     }
     
     private Term getPropertySetIdTermFromIndex(String uri) 

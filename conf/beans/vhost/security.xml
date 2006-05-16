@@ -130,11 +130,11 @@
   <bean id="principalManager" class="org.vortikal.security.PrincipalManagerImpl">
     <property name="defaultDomain" value="${defaultPrincipalDomain}" />
     <!--property name="principalStore" ref="principalStore"/-->
-    <property name="domainURLMap" ref="domainURLMap" />
+    <property name="principalDomainURLMap" ref="principalDomainURLMap" />
   </bean>
 
 
-  <bean id="domainURLMap" class="java.util.HashMap">
+  <bean id="principalDomainURLMap" class="java.util.HashMap">
     <constructor-arg>
       <map>
       </map>

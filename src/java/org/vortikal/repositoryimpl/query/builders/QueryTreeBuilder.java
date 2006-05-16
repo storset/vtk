@@ -36,7 +36,7 @@ import java.util.List;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderFactoryImpl;
+import org.vortikal.repositoryimpl.query.QueryBuilderFactory;
 import org.vortikal.repositoryimpl.query.query.AbstractMultipleQuery;
 import org.vortikal.repositoryimpl.query.query.AndQuery;
 import org.vortikal.repositoryimpl.query.query.OrQuery;
@@ -51,9 +51,9 @@ import org.vortikal.repositoryimpl.query.query.Query;
 public class QueryTreeBuilder implements QueryBuilder {
 
     private AbstractMultipleQuery query;
-    private QueryBuilderFactoryImpl factory;
+    private QueryBuilderFactory factory;
     
-    public QueryTreeBuilder(QueryBuilderFactoryImpl factory, AbstractMultipleQuery query) {
+    public QueryTreeBuilder(QueryBuilderFactory factory, AbstractMultipleQuery query) {
         this.query = query;
         this.factory = factory;
     }
@@ -88,6 +88,7 @@ public class QueryTreeBuilder implements QueryBuilder {
         } else {
             
             return this.factory.getBuilder(query).buildQuery();
+            
         }
     }
 }

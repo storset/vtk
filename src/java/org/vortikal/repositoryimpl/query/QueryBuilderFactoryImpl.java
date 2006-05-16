@@ -136,12 +136,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         throws QueryBuilderException {
         
         TermDocs td = null;
-        IndexSearcher searcher = null;
         IndexReader reader = null;
         try {
-            searcher = indexAccessor.getIndexSearcher();
-            reader = searcher.getIndexReader();
-            
+            reader = indexAccessor.getReadOnlyIndexReader();
+
             td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, uri));
             
             if (td.next()) {
@@ -156,7 +154,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         } finally {
             try {
                 if (td != null) td.close();
-                indexAccessor.releaseIndexSearcher(searcher);
+                indexAccessor.releaseReadOnlyIndexReader(reader);
             } catch (IOException io) {}
         }
     }

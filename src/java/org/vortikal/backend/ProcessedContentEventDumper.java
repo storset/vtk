@@ -81,25 +81,6 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), CREATED, -1,
                                            resource.isCollection(), true);
 
-//             dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), CREATED, -1,
-//                                            resource.isCollection(), false);
-//             if (resource.isCollection()) {
-                
-                
-//                 String[] descendants = dataAccessor.listSubTree(
-//                     dataAccessor.load(resource.getURI()));
-
-//                 for (int i = 0; i < descendants.length; i++) {
-
-//                     org.vortikal.repositoryimpl.Resource descendant =
-//                         dataAccessor.load(descendants[i]);
-//                     dataAccessor.addChangeLogEntry(
-//                         id, loggerType, descendant.getURI(),
-//                         CREATED, -1, descendant.isCollection());
-//                 }
-
-
-//             }
         } catch (IOException e) {
             logger.warn(
                 "Caught IOException while reporting resource creation " +

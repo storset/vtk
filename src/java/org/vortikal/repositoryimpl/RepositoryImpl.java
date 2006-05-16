@@ -454,8 +454,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         this.authorizationManager.authorizeWrite(uri, principal);
         
-        String newLockToken = this.lockManager.lockResource(r, principal, ownerInfo, depth,
-                requestedTimeoutSeconds, (lockToken != null));
+        String newLockToken = this.lockManager.lockResource(
+            r, principal, ownerInfo, depth, requestedTimeoutSeconds,
+            (lockToken != null));
 
         return r;
     }

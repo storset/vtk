@@ -12,7 +12,7 @@
   </bean>
 -->
 
-  <!-- Data accessor for indexing -->
+  <!-- Database data accessor for indexing system -->
   <bean id="indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="principalManager" ref="principalManager"/>
@@ -25,17 +25,36 @@
     <property name="valueFactory" ref="valueFactory"/>
   </bean>
 
-  <!-- A Lucene index instance. Managed by property set index. -->
-  <bean id="luceneIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
+  <!-- A Lucene index instance. Manages low-level access. -->
+  <bean id="newLuceneSystemIndex" class="org.vortikal.repositoryimpl.query.LuceneIndex">
     <property name="primaryIndexPath" value="${newSystemIndexPath}"/>
     <property name="forceUnlock" value="true"/>
   </bean>
 
-  <!-- Property set index based on a single Lucene index. -->
+  <!-- Property set index based on a single Lucene index instance. -->
   <bean id="newSystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
-    <property name="index" ref="luceneIndexAccessor"/>
+    <property name="index" ref="newLuceneSystemIndex"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="propertyManager" ref="propertyManager"/>
+  </bean>
+
+  <!-- Factory for building Lucene queries. -->
+  <bean id="queryBuilderFactory"
+        class="org.vortikal.repositoryimpl.query.QueryBuilderFactoryImpl">
+    <property name="propertyManager" ref="propertyManager"/>
+    <property name="indexAccessor" ref="newLuceneSystemIndex"/>
+  </bean>
+
+  <!-- Searcher -->
+  <bean id="newSystemIndexSearcher"
+        class="org.vortikal.repositoryimpl.query.SearcherImpl">
+    <property name="indexAccessor" ref="newLuceneSystemIndex"/>
+    <property name="documentMapper" ref="documentMapper"/>
+    <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
+
+    <!--
+    <property name="queryAuthorizationManager" ref="queryAuthorizationManager"/>
+    -->
   </bean>
 
   <!-- Perform incremental updates on property set index from resource changes. -->
@@ -46,23 +65,7 @@
     <property name="indexDataAccessor" ref="indexDataAccessor"/>
   </bean>
 
-  <bean id="queryBuilderFactory"
-        class="org.vortikal.repositoryimpl.query.QueryBuilderFactory">
-    <property name="propertyManager" ref="propertyManager"/>
-  </bean>
-
-  <bean id="newSystemIndexSearcher"
-        class="org.vortikal.repositoryimpl.query.SearcherImpl">
-    <property name="index" ref="luceneIndexAccessor"/>
-    <property name="documentMapper" ref="documentMapper"/>
-    <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
-
-    <!--
-    <property name="queryAuthorizationManager" ref="queryAuthorizationManager"/>
-    -->
-  </bean>
-
-  <!-- Simple re-indexer for a propety set index. -->
+  <!-- Simple re-indexer for propety set index 'newSystemIndex'. -->
   <bean id="newSystemIndexReindexer" class="org.vortikal.repositoryimpl.query.Reindexer">
     <property name="indexDataAccessor" ref="indexDataAccessor"/>
     <property name="index" ref="newSystemIndex"/>

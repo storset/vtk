@@ -32,7 +32,8 @@ package org.vortikal.repositoryimpl.query;
 
 
 /**
- * Interface for implementations that build different Lucene queries.
+ * Interface for implementations that build different Lucene queries from
+ * our own query types.
  * 
  * @author oyviste
  *

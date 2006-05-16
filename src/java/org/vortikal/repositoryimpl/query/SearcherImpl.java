@@ -62,14 +62,14 @@ public class SearcherImpl implements Searcher, InitializingBean {
 
     Log logger = LogFactory.getLog(SearcherImpl.class);
     
-    private LuceneIndex index;
+    private LuceneIndex indexAccessor;
     private DocumentMapper documentMapper;
     private QueryAuthorizationManager queryAuthorizationManager;
     private QueryBuilderFactory queryBuilderFactory;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (index == null) {
-            throw new BeanInitializationException("Property 'index' not set.");
+        if (indexAccessor == null) {
+            throw new BeanInitializationException("Property 'indexAccessor' not set.");
         } else if (documentMapper == null) {
             throw new BeanInitializationException("Property 'documentMapper' not set.");
         }
@@ -84,6 +84,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
      * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String, org.vortikal.repositoryimpl.query.query.Query)
      */
     public ResultSet execute(String token, Query query) throws QueryException {
+        
         return execute(token, query, Integer.MAX_VALUE, 0);
     }
 
@@ -107,9 +108,10 @@ public class SearcherImpl implements Searcher, InitializingBean {
         org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
         IndexSearcher searcher = null;
         
-        // TODO: Use simpler HitCollector if no sorting is required.
+        // TODO: Use simpler HitCollector (see bottom of this class definition) 
+        //       if no sorting is required.
         try {
-            searcher = index.getIndexSearcher();
+            searcher = indexAccessor.getIndexSearcher();
             
             Hits hits = searcher.search(q);
             
@@ -125,7 +127,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
             throw new QueryException("IOException while performing query on index", io);
         } finally {
             try {
-                index.releaseIndexSearcher(searcher);
+                indexAccessor.releaseIndexSearcher(searcher);
             } catch (IOException io){}
         }
     }
@@ -174,8 +176,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
         this.documentMapper = documentMapper;
     }
 
-    public void setIndex(LuceneIndex index) {
-        this.index = index;
+    public void setIndexAccessor(LuceneIndex indexAccessor) {
+        this.indexAccessor = indexAccessor;
     }
 
     public void setQueryAuthorizationManager(QueryAuthorizationManager queryAuthorizationManager) {

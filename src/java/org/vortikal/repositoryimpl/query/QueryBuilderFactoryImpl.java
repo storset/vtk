@@ -89,7 +89,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             throw new BeanInitializationException("Property 'propertyManager' not set.");
         }
     
-        this.resourceTypeDescendantNames = initializeResourceTypeDescendants();
+        this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
     }
     
     public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
@@ -161,8 +161,8 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         }
     }
 
-    /* Initialize map of resource type names to names of all descendants */
-    private Map initializeResourceTypeDescendants() {
+    /* Build map of resource type names to names of all descendants */
+    private Map buildResourceTypeDescendantsMap() {
         List definitions = propertyManager.getPrimaryResourceTypeDefinitions();
         
         Map resourceTypeDescendantNames = new HashMap();

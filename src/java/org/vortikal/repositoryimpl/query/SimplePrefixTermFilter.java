@@ -40,17 +40,17 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Filter;
 
 /**
- * A Lucene <code>Filter</code> that filters on the given prefix.
+ * A Lucene <code>Filter</code> that filters on the given prefix term.
  * @author oyviste
  *
  */
-public class SimplePrefixFilter extends Filter {
+public class SimplePrefixTermFilter extends Filter {
 
     Term prefixTerm;
     /**
      * 
      */
-    public SimplePrefixFilter(Term prefixTerm) {
+    public SimplePrefixTermFilter(Term prefixTerm) {
         this.prefixTerm = prefixTerm;
     }
 
@@ -76,7 +76,7 @@ public class SimplePrefixFilter extends Filter {
                     while (tdocs.next()) {
                         bits.set(tdocs.doc());
                     }
-                }
+                } else break;
             } while (tenum.next());
         } finally {
             tenum.close();
@@ -85,6 +85,13 @@ public class SimplePrefixFilter extends Filter {
         
         return bits;
 
+    }
+    
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("SimplePrefixFilter[field='").append(this.prefixTerm.field());
+        buffer.append("', prefix='").append(this.prefixTerm.text()).append("']");
+        return buffer.toString();
     }
 
 }

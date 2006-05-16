@@ -20,7 +20,7 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
     /**
      * 
      * @param idTerm The <code>Term</code> containing the special id of the property set
-     *        that represents the uri prefix.
+     *        that represents the URI prefix (the ancestor).
      */
     public UriPrefixQueryBuilder(Term idTerm) {
         this.idTerm = idTerm;

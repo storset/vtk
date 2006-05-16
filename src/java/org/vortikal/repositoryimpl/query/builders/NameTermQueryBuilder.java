@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
@@ -47,15 +48,46 @@ public class NameTermQueryBuilder implements QueryBuilder {
     }
     
     public org.apache.lucene.search.Query buildQuery() {
+        String term = ntq.getTerm();
         
-        if (ntq.getOperator() != TermOperator.EQ) {
-            throw new QueryBuilderException("Only the 'EQ' TermOperator is currently implemented");
+        if (ntq.getOperator() == TermOperator.EQ) {
+            TermQuery tq = 
+                new TermQuery(new Term(DocumentMapper.NAME_FIELD_NAME, term));
+            
+            return tq;
         }
         
-        TermQuery tq = new TermQuery(new Term(DocumentMapper.NAME_FIELD_NAME,
-                    ntq.getTerm()));
+        boolean includeLower = false;
+        boolean includeUpper = false;
+        String upperTerm = null;
+        String lowerTerm = null;
         
-        return tq;
+        if (ntq.getOperator() == TermOperator.GE) {
+            lowerTerm = term;
+            includeLower = true;
+            includeUpper = true;
+        } else if (ntq.getOperator() == TermOperator.GT) {
+            lowerTerm = term;
+            includeUpper = true;
+        } else if (ntq.getOperator() == TermOperator.LE) {
+            upperTerm = term;
+            includeUpper = true;
+            includeLower = true;
+        } else if (ntq.getOperator() == TermOperator.LT) {
+            upperTerm = term;
+            includeLower = true;
+        } else if (ntq.getOperator() == TermOperator.NE) {
+            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
+        } else {
+            throw new QueryBuilderException("Unknown term operator"); 
+        }
+        
+        return new ConstantScoreRangeQuery(DocumentMapper.NAME_FIELD_NAME, 
+                                           lowerTerm, 
+                                           upperTerm, 
+                                           includeLower, 
+                                           includeUpper);
+        
     }
 
 }

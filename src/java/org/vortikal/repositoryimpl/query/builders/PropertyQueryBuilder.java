@@ -31,8 +31,9 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
-import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -40,6 +41,7 @@ import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.FieldMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
+import org.vortikal.repositoryimpl.query.SimplePrefixTermFilter;
 import org.vortikal.repositoryimpl.query.query.AbstractPropertyQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
@@ -90,7 +92,8 @@ public class PropertyQueryBuilder implements QueryBuilder {
         
         String fieldName = getPropertyFieldName(propDef);
 
-        String fieldValue = FieldMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType());
+        String fieldValue = FieldMapper.encodeIndexFieldValue(ptq.getTerm(), 
+                                                            propDef.getType());
         
         TermQuery tq = new TermQuery(new Term(fieldName, fieldValue));
         
@@ -125,15 +128,15 @@ public class PropertyQueryBuilder implements QueryBuilder {
         
         if (! (def.getType() == PropertyType.TYPE_PRINCIPAL ||
                def.getType() == PropertyType.TYPE_STRING)) {
-            throw new QueryBuilderException("Prefix queries only supported for "
+            throw new QueryBuilderException("Prefix queries are only supported for "
                 + "property types 'String' and 'Principal'. " 
                 + "Use range queries for dates and numbers.");
         }
         
-        // TODO: Use ConstantScoreQuery with a filter (using FilteredTermEnum or something similar)
-        PrefixQuery pq = new PrefixQuery(new Term(getPropertyFieldName(def), term));
+        Filter filter = new SimplePrefixTermFilter(
+                                new Term(getPropertyFieldName(def), term));
         
-        return pq;
+        return new ConstantScoreQuery(filter);
     }
     
     private String getPropertyFieldName(PropertyTypeDefinition def) {

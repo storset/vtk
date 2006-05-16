@@ -63,6 +63,7 @@
      <property name="protocol">
        <value>${webdavProtocol}</value>
      </property>
+     <property name="preferRequestProtocol" value="false" />
    </bean>
 
    <bean id="webdavPortAssertion"

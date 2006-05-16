@@ -347,13 +347,7 @@
   <bean id="editTransformerManager" class="org.vortikal.xml.TransformerManager">
     <property name="alwaysCompile" value="true" />
     <property name="stylesheetReferenceResolvers" ref="editXslStylesheetResolvers" />
-     <property name="compilationURIResolvers">
-       <list>
-         <ref bean="xsltCompilationFilePathURIResolver" />
-         <!--ref bean="xsltCompilationRepositoryURIResolver" /-->
-         <ref bean="xsltCompilationFileURIResolver" />
-       </list>
-     </property>
+     <property name="compilationURIResolvers" ref="standardXslCompilationResolvers" />
      <property name="transformationURIResolvers">
        <list>
          <ref bean="xsltTransformationRepositoryURIResolver" />

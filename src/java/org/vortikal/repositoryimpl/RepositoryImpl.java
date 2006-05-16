@@ -287,7 +287,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         if (dest != null) {
             this.dao.delete(dest);
         }
-        this.dao.copy(src, destUri, preserveACL, false, principal.getQualifiedName());
+        this.dao.copy(src, destUri, preserveACL, true, principal.getQualifiedName());
 
         try {
 

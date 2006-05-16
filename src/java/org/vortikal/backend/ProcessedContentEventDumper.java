@@ -38,10 +38,8 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PseudoPrincipal;
 
 

@@ -152,9 +152,24 @@ public class LuceneIndex implements InitializingBean {
         }
     }
     
+    protected void releaseIndexSearcher(IndexSearcher searcher) 
+        throws IOException {
+        if (searcher == null) {
+            return;
+        }
+        
+        releaseReadOnlyIndexReader(searcher.getIndexReader());
+    }
+    
+    protected IndexSearcher getIndexSearcher() 
+        throws IOException {
+        
+        return new IndexSearcher(getReadOnlyIndexReader());
+    }
+
     /**
-     * Get an <code>IndexSearcher</code> instance for this index.
-     * The instance must be released with #releaseIndexSearcher(IndexSearcher)
+     * Get a <em>read-only</em> <code>IndexReader</code> instance for this index.
+     * The instance must be released with #releaseIndexReader(IndexReader)
      * after usage because of reference-counting.
      * 
      * XXX: locking might be too aggressive and provoke thread lock contention on
@@ -163,7 +178,7 @@ public class LuceneIndex implements InitializingBean {
      * @return
      * @throws IOException
      */
-    protected IndexSearcher getIndexSearcher() throws IOException {
+    protected IndexReader getReadOnlyIndexReader() throws IOException {
         synchronized (this.indexSearcherManagementLock) {
             if (this.searchReaderOutdated) {
                 if (logger.isDebugEnabled()) {
@@ -204,25 +219,25 @@ public class LuceneIndex implements InitializingBean {
             }
             
             // Return new searcher on the reader
-            return new IndexSearcher(this.searchIndexReader);
+            return this.searchIndexReader;
         }
     }
     
+    
     /**
-     * Release an <code>IndexSearcher</code> instance obtained with
-     * #getIndexSearcher().
+     * Release a read-only <code>IndexReader</code> instance obtained with
+     * #getReadOnlyIndexReader().
      * 
      * @param searcher
      * @throws IOException
      */
-    protected void releaseIndexSearcher(IndexSearcher searcher)
+    protected void releaseReadOnlyIndexReader(IndexReader reader)
         throws IOException {
+        if (reader == null) {
+            return;
+        }
+        
         synchronized(this.indexSearcherManagementLock) {
-            if (searcher == null) {
-                return;
-            }
-            
-            IndexReader reader = searcher.getIndexReader();
             
             if (reader == this.searchIndexReader) {
                 // Decrease ref-count

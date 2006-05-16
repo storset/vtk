@@ -134,13 +134,15 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
             doc = documentMapper.getDocument((PropertySetImpl)propertySet);
             
             if (logger.isDebugEnabled()) {
-                logger.debug("Adding new property set at URI '" + propertySet.getURI() + "'");
+                logger.debug("Adding new property set at URI '" 
+                                                + propertySet.getURI() + "'");
                 logger.debug("Document mapper created the following document: ");
                 
                 Enumeration fieldEnum = doc.fields();
                 while (fieldEnum.hasMoreElements()) {
                     Field field = (Field)fieldEnum.nextElement();
-                    logger.debug("Field '" + field.name() + "', value: '" + field.stringValue() + "'");
+                    logger.debug("Field '" + field.name() + "', value: '" 
+                                                    + field.stringValue() + "'");
                 }
             }
             

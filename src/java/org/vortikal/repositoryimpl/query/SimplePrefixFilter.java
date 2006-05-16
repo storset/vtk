@@ -28,33 +28,63 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
+package org.vortikal.repositoryimpl.query;
 
+import java.io.IOException;
+import java.util.BitSet;
+
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.TermQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.UriTermQuery;
+import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.search.Filter;
 
 /**
- * 
+ * A Lucene <code>Filter</code> that filters on the given prefix.
  * @author oyviste
  *
  */
-public class UriTermQueryBuilder implements QueryBuilder {
+public class SimplePrefixFilter extends Filter {
 
-    private UriTermQuery query;
-    public UriTermQueryBuilder(UriTermQuery query) {
-        this.query = query;
+    Term prefixTerm;
+    /**
+     * 
+     */
+    public SimplePrefixFilter(Term prefixTerm) {
+        this.prefixTerm = prefixTerm;
     }
-    
-    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
-        String uri = this.query.getUri();
+
+    /* (non-Javadoc)
+     * @see org.apache.lucene.search.Filter#bits(org.apache.lucene.index.IndexReader)
+     */
+    public BitSet bits(IndexReader reader) throws IOException {
         
-        TermQuery tq = new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+        BitSet bits = new BitSet(reader.maxDoc());
+        String fieldName = prefixTerm.field();
+        String prefix = prefixTerm.text();
+        TermEnum tenum = reader.terms(prefixTerm);
+        TermDocs tdocs = reader.termDocs();
+        try {
+            do {
+                Term term = tenum.term();
+                if (term != null 
+                    && term.field() == fieldName // Field names from terms are intern()'ed
+                    && term.text().startsWith(prefix)) {
+                    
+                    tdocs.seek(tenum);
+                    
+                    while (tdocs.next()) {
+                        bits.set(tdocs.doc());
+                    }
+                }
+            } while (tenum.next());
+        } finally {
+            tenum.close();
+            tdocs.close();
+        }
         
-        return tq;
+        return bits;
+
     }
 
 }

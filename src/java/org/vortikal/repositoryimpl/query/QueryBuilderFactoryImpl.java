@@ -47,6 +47,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyQueryBuilder;
@@ -56,6 +57,7 @@ import org.vortikal.repositoryimpl.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.UriTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.query.AbstractMultipleQuery;
 import org.vortikal.repositoryimpl.query.query.AbstractPropertyQuery;
+import org.vortikal.repositoryimpl.query.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.query.NameTermQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
@@ -87,7 +89,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             throw new BeanInitializationException("Property 'propertyManager' not set.");
         }
     
-        initializeResourceTypeDescendants();
+        this.resourceTypeDescendantNames = initializeResourceTypeDescendants();
     }
     
     public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
@@ -96,6 +98,19 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
            return new QueryTreeBuilder(this, (AbstractMultipleQuery)query);
        }
         
+       if (query instanceof UriTermQuery) {
+           return new UriTermQueryBuilder((UriTermQuery)query);
+       }
+       
+       if (query instanceof UriPrefixQuery) {
+           Term idTerm = getPropertySetIdTermFromIndex(((UriPrefixQuery)query).getUri());
+           return new UriPrefixQueryBuilder(idTerm);
+       }
+
+       if (query instanceof AbstractPropertyQuery) {
+           return new PropertyQueryBuilder((AbstractPropertyQuery)query);
+       }
+       
        if (query instanceof NameTermQuery) {
            return new NameTermQueryBuilder((NameTermQuery)query);
        }
@@ -104,22 +119,13 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
            return new NameRangeQueryBuilder((NameRangeQuery)query);
        }
        
-       if (query instanceof AbstractPropertyQuery) {
-           return new PropertyQueryBuilder((AbstractPropertyQuery)query);
+       if (query instanceof NamePrefixQuery) {
+           return new NamePrefixQueryBuilder((NamePrefixQuery)query);
        }
        
        if (query instanceof TypeTermQuery) {
            return new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
                                           (TypeTermQuery)query);
-       }
-       
-       if (query instanceof UriTermQuery) {
-           return new UriTermQueryBuilder(((UriTermQuery)query).getUri());
-       }
-       
-       if (query instanceof UriPrefixQuery) {
-           Term idTerm = getPropertySetIdTermFromIndex(((UriPrefixQuery)query).getUri());
-           return new UriPrefixQueryBuilder(idTerm);
        }
        
        throw new QueryBuilderException("Unsupported query type: " 
@@ -156,20 +162,20 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     }
 
     /* Initialize map of resource type names to names of all descendants */
-    private void initializeResourceTypeDescendants() {
+    private Map initializeResourceTypeDescendants() {
         List definitions = propertyManager.getPrimaryResourceTypeDefinitions();
         
-        this.resourceTypeDescendantNames = new HashMap();
+        Map resourceTypeDescendantNames = new HashMap();
         
         for (Iterator i = definitions.iterator(); i.hasNext();) {
             PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
             List descendantNames = new ArrayList();
             getAllDescendantNames(descendantNames, def);
-            this.resourceTypeDescendantNames.put(def.getName(), descendantNames);
+            resourceTypeDescendantNames.put(def.getName(), descendantNames);
         }
         
         if (logger.isDebugEnabled()) {
-            for (Iterator i=this.resourceTypeDescendantNames.entrySet().iterator(); i.hasNext();) {
+            for (Iterator i=resourceTypeDescendantNames.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry)i.next();
                 String name = (String)entry.getKey();
                 List descendantNames = (List)entry.getValue();
@@ -185,6 +191,8 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
                 logger.debug(buf.toString());
             }
         }
+        
+        return resourceTypeDescendantNames;
     }
     
     /* Recursively get all descendant names for a given resource type */

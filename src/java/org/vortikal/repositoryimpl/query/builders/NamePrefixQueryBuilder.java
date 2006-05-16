@@ -31,30 +31,43 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.UriTermQuery;
+import org.vortikal.repositoryimpl.query.SimplePrefixFilter;
+import org.vortikal.repositoryimpl.query.query.NamePrefixQuery;
 
 /**
+ * XXX: Somewhat experimental, as it uses a constant-score query with a filter
+ *      to do the actual prefix query. It has no upper limitation on the number
+ *      of matches (we don't risk the BooleanQuery.TooManyClauses-exception).
  * 
  * @author oyviste
- *
  */
-public class UriTermQueryBuilder implements QueryBuilder {
+public class NamePrefixQueryBuilder implements QueryBuilder {
 
-    private UriTermQuery query;
-    public UriTermQueryBuilder(UriTermQuery query) {
+    private NamePrefixQuery query;
+    public NamePrefixQueryBuilder(NamePrefixQuery query) {
         this.query = query;
+        
     }
     
-    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
-        String uri = this.query.getUri();
+    /* (non-Javadoc)
+     * @see org.vortikal.repositoryimpl.query.QueryBuilder#buildQuery()
+     */
+    public Query buildQuery() throws QueryBuilderException {
         
-        TermQuery tq = new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+        Term prefixTerm = new Term(DocumentMapper.NAME_FIELD_NAME, 
+                                                        this.query.getTerm());
         
-        return tq;
+        Filter filter = new SimplePrefixFilter(prefixTerm);
+        
+        ConstantScoreQuery csq = new ConstantScoreQuery(filter);
+        
+        return csq;
     }
 
 }

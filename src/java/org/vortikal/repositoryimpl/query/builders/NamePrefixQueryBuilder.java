@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
@@ -63,7 +64,7 @@ public class NamePrefixQueryBuilder implements QueryBuilder {
         Term prefixTerm = new Term(DocumentMapper.NAME_FIELD_NAME, 
                                                         this.query.getTerm());
         
-        Filter filter = new SimplePrefixTermFilter(prefixTerm);
+        Filter filter = new CachingWrapperFilter(new SimplePrefixTermFilter(prefixTerm));
         
         ConstantScoreQuery csq = new ConstantScoreQuery(filter);
         

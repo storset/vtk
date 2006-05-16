@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Filter;
@@ -82,7 +83,7 @@ public class PropertyQueryBuilder implements QueryBuilder {
                                                     PropertyTermQuery ptq) 
         throws QueryBuilderException {
         
-        // TODO: Use ConstantScoreQuery with a TermEnum filter to support
+        // TODO: Use ConstantScoreRangeQuery to support
         //       other operators
         if (ptq.getOperator() != TermOperator.EQ) {
             throw new QueryBuilderException("Only the 'EQ' TermOperator is currently implemented");
@@ -136,7 +137,7 @@ public class PropertyQueryBuilder implements QueryBuilder {
         Filter filter = new SimplePrefixTermFilter(
                                 new Term(getPropertyFieldName(def), term));
         
-        return new ConstantScoreQuery(filter);
+        return new ConstantScoreQuery(new CachingWrapperFilter(filter));
     }
     
     private String getPropertyFieldName(PropertyTypeDefinition def) {

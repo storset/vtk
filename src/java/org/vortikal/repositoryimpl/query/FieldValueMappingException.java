@@ -30,24 +30,24 @@
  */
 package org.vortikal.repositoryimpl.query;
 
-public class FieldMappingException extends DocumentMappingException {
+public class FieldValueMappingException extends DocumentMappingException {
 
-    public FieldMappingException() {
+    public FieldValueMappingException() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-    public FieldMappingException(String message) {
+    public FieldValueMappingException(String message) {
         super(message);
         // TODO Auto-generated constructor stub
     }
 
-    public FieldMappingException(String message, Throwable cause) {
+    public FieldValueMappingException(String message, Throwable cause) {
         super(message, cause);
         // TODO Auto-generated constructor stub
     }
 
-    public FieldMappingException(Throwable cause) {
+    public FieldValueMappingException(Throwable cause) {
         super(cause);
         // TODO Auto-generated constructor stub
     }

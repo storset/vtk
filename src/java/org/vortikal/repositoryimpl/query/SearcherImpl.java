@@ -260,9 +260,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
         throws AuthorizationException, AuthenticationException {
         if (this.queryAuthorizationManager != null) {
                 this.queryAuthorizationManager.authorizeQueryResult(token, 
-                 FieldMapper.getIntegerFromUnencodedField(
+                 FieldValueMapper.getIntegerFromUnencodedField(
                          doc.getField(DocumentMapper.ID_FIELD_NAME)),
-                 FieldMapper.getIntegerFromUnencodedField(
+                 FieldValueMapper.getIntegerFromUnencodedField(
                          doc.getField(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME)));
         }
     }

@@ -36,7 +36,7 @@ package org.vortikal.repositoryimpl.query;
  * @author oyviste
  *
  */
-public class FieldValueEncodingException extends FieldMappingException {
+public class FieldValueEncodingException extends FieldValueMappingException {
 
     public FieldValueEncodingException() {
         super();

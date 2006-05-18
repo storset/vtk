@@ -38,7 +38,7 @@ import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.FieldMapper;
+import org.vortikal.repositoryimpl.query.FieldValueMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.query.SimplePrefixTermFilter;
@@ -92,7 +92,7 @@ public class PropertyQueryBuilder implements QueryBuilder {
         
         String fieldName = getPropertyFieldName(propDef);
 
-        String fieldValue = FieldMapper.encodeIndexFieldValue(ptq.getTerm(), 
+        String fieldValue = FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), 
                                                             propDef.getType());
         
         TermQuery tq = new TermQuery(new Term(fieldName, fieldValue));
@@ -108,8 +108,8 @@ public class PropertyQueryBuilder implements QueryBuilder {
         String to = prq.getToTerm();
         PropertyTypeDefinition def = prq.getPropertyDefinition();
         
-        String fromEncoded = FieldMapper.encodeIndexFieldValue(from, def.getType());
-        String toEncoded = FieldMapper.encodeIndexFieldValue(to, def.getType());
+        String fromEncoded = FieldValueMapper.encodeIndexFieldValue(from, def.getType());
+        String toEncoded = FieldValueMapper.encodeIndexFieldValue(to, def.getType());
         
         String fieldName = getPropertyFieldName(def);
         

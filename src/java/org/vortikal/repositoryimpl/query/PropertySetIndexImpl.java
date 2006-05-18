@@ -91,7 +91,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         
         KeywordAnalyzer keywordAnalyzer = new KeywordAnalyzer();
         EscapedMultiValueFieldAnalyzer multiValueAnalyzer = 
-            new EscapedMultiValueFieldAnalyzer(FieldMapper.MULTI_VALUE_FIELD_SEPARATOR);
+            new EscapedMultiValueFieldAnalyzer(FieldValueMapper.MULTI_VALUE_FIELD_SEPARATOR);
         
         PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(keywordAnalyzer);
         

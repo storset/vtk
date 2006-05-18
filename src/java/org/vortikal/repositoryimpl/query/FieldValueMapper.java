@@ -42,12 +42,12 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
  * 
  * @author oyviste
  */
-public final class FieldMapper {
+public final class FieldValueMapper {
     
 
     public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
     
-    private FieldMapper() {} // Util
+    private FieldValueMapper() {} // Util
      
     // No encoding (un-typed)
     public static Field getKeywordField(String name, int value) {

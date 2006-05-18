@@ -103,30 +103,30 @@ public class DocumentMapper implements InitializingBean {
         
         // Special fields
         // uri
-        Field uriField = FieldMapper.getKeywordField(URI_FIELD_NAME, propSet.getURI());
+        Field uriField = FieldValueMapper.getKeywordField(URI_FIELD_NAME, propSet.getURI());
         doc.add(uriField);
         
         // name
-        Field nameField = FieldMapper.getKeywordField(NAME_FIELD_NAME, propSet.getName());
+        Field nameField = FieldValueMapper.getKeywordField(NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
         
         // resourceType
         Field resourceTypeField =
-            FieldMapper.getKeywordField(RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
+            FieldValueMapper.getKeywordField(RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
         doc.add(resourceTypeField);
         
         // _ANCESTOR_IDS (index system field)
         Field ancestorIdsField = 
-            FieldMapper.getUnencodedMultiValueFieldFromIntegers(ANCESTORIDS_FIELD_NAME, 
+            FieldValueMapper.getUnencodedMultiValueFieldFromIntegers(ANCESTORIDS_FIELD_NAME, 
                                                                     propSet.getAncestorIds());
         doc.add(ancestorIdsField);
         
         // _ID (index system field)
-        Field idField = FieldMapper.getKeywordField(ID_FIELD_NAME, propSet.getID());
+        Field idField = FieldValueMapper.getKeywordField(ID_FIELD_NAME, propSet.getID());
         doc.add(idField);
         
         // _ACL_INHERITED_FROM (index system field)
-        Field aclField = FieldMapper.getKeywordField(ACL_INHERITED_FROM_FIELD_NAME, 
+        Field aclField = FieldValueMapper.getKeywordField(ACL_INHERITED_FROM_FIELD_NAME, 
                                             propSet.getAclInheritedFrom());
         doc.add(aclField);
         
@@ -152,7 +152,7 @@ public class DocumentMapper implements InitializingBean {
         propSet.setAclInheritedFrom(Integer.parseInt(doc.get(ACL_INHERITED_FROM_FIELD_NAME)));
         propSet.setID(Integer.parseInt(doc.get(ID_FIELD_NAME)));
         propSet.setResourceType(doc.get(RESOURCETYPE_FIELD_NAME));
-        propSet.setAncestorIds(FieldMapper.getIntegersFromUnencodedMultiValueField(
+        propSet.setAncestorIds(FieldValueMapper.getIntegersFromUnencodedMultiValueField(
                 doc.getField(ANCESTORIDS_FIELD_NAME)));
         
         Enumeration e = doc.fields();
@@ -171,9 +171,9 @@ public class DocumentMapper implements InitializingBean {
      * 
      * @param fields
      * @return
-     * @throws FieldMappingException
+     * @throws FieldValueMappingException
      */
-    private Property getPropertyFromField(Field field) throws FieldMappingException {
+    private Property getPropertyFromField(Field field) throws FieldValueMappingException {
         
         String[] fieldNameComponents = field.name().split(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
         String nsPrefix = null;
@@ -186,7 +186,7 @@ public class DocumentMapper implements InitializingBean {
             name = fieldNameComponents[1];
         } else {
             logger.warn("Invalid index field name: '" + field.name() + "'");
-            throw new FieldMappingException("Invalid index field name: '" 
+            throw new FieldValueMappingException("Invalid index field name: '" 
                     + field.name() + "'");
         }
         
@@ -197,21 +197,21 @@ public class DocumentMapper implements InitializingBean {
         
         if (def != null) {
             if (def.isMultiple()) {
-                property.setValues(FieldMapper.getValuesFromField(field, valueFactory, 
+                property.setValues(FieldValueMapper.getValuesFromField(field, valueFactory, 
                         def.getType()));
             } else {
-                property.setValue(FieldMapper.getValueFromField(field, valueFactory, 
+                property.setValue(FieldValueMapper.getValueFromField(field, valueFactory, 
                         def.getType()));
             }
         } else {
-            property.setValue(FieldMapper.getValueFromField(field, valueFactory, 
+            property.setValue(FieldValueMapper.getValueFromField(field, valueFactory, 
                     PropertyType.TYPE_STRING));
         }
         
         return property;
     }    
     
-    private Field getFieldFromProperty(Property property) throws FieldMappingException {
+    private Field getFieldFromProperty(Property property) throws FieldValueMappingException {
         String name = property.getName();
         String prefix = property.getNamespace().getPrefix();
         String fieldName = null;
@@ -222,21 +222,21 @@ public class DocumentMapper implements InitializingBean {
         }
 
         if (RESERVED_FIELD_NAMES.contains(fieldName)) {
-            throw new FieldMappingException("Property field name '" + fieldName 
+            throw new FieldValueMappingException("Property field name '" + fieldName 
                     + "' is a reserved index field.");
         }
         
         PropertyTypeDefinition def = property.getDefinition();
         if (def != null && def.isMultiple()) {
                 Value[] values = property.getValues();
-                return FieldMapper.getFieldFromValues(fieldName, values);
+                return FieldValueMapper.getFieldFromValues(fieldName, values);
         } else {
-            return FieldMapper.getFieldFromValue(fieldName, property.getValue());
+            return FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
         }
     }
     
     public static String getFieldName(PropertyTypeDefinition def) 
-        throws FieldMappingException {
+        throws FieldValueMappingException {
 
         String name = def.getName();
         String prefix = def.getNamespace().getPrefix();
@@ -248,7 +248,7 @@ public class DocumentMapper implements InitializingBean {
         }
 
         if (RESERVED_FIELD_NAMES.contains(fieldName)) {
-            throw new FieldMappingException("Property field name '" + fieldName 
+            throw new FieldValueMappingException("Property field name '" + fieldName 
                     + "' is a reserved index field.");
         }
         

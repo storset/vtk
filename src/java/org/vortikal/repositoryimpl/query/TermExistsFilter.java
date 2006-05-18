@@ -28,51 +28,67 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
+package org.vortikal.repositoryimpl.query;
 
+import java.io.IOException;
+import java.util.BitSet;
+
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.SimplePrefixTermFilter;
-import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
 
 /**
- * 
+ * XXX: Experimental, probably an extremly slow filter for common terms. 
+ *      Avoid if you can.
+ *      
  * @author oyviste
  *
  */
-public class PropertyPrefixQueryBuilder implements QueryBuilder {
-
-    private PropertyPrefixQuery ppq;
-    public PropertyPrefixQueryBuilder(PropertyPrefixQuery ppq) {
-        this.ppq = ppq;
+public class TermExistsFilter extends Filter {
+    
+    private String fieldName;
+    private BitSet bits;
+    
+    public TermExistsFilter(String fieldName) {
+        this.fieldName = fieldName;
     }
-
-    public Query buildQuery() throws QueryBuilderException {
-        
-        PropertyTypeDefinition def = ppq.getPropertyDefinition();
-        String term = ppq.getTerm();
-        
-        if (! (def.getType() == PropertyType.TYPE_PRINCIPAL ||
-               def.getType() == PropertyType.TYPE_STRING)) {
-            throw new QueryBuilderException("Prefix queries are only supported for "
-                + "property types '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_STRING] 
-                + "' and '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_PRINCIPAL] 
-                + "'. Use range queries for dates and numbers.");
+    
+    public BitSet bits(IndexReader reader) throws IOException {
+        synchronized(this) {
+            if (this.bits == null) {
+                this.bits = getBits(reader);
+            }
         }
         
-        Filter filter = new SimplePrefixTermFilter(
-                                new Term(DocumentMapper.getFieldName(def), term));
-        
-        return new ConstantScoreQuery(filter);
-        
-        
+        return this.bits;
     }
-
+    
+    private BitSet getBits(IndexReader reader) throws IOException {
+        BitSet bits = new BitSet(reader.maxDoc());
+        Term term = new Term(this.fieldName, "");
+        
+        TermEnum tenum = reader.terms(term);
+        TermDocs tdocs = reader.termDocs(term);
+        try {
+            do {
+                Term t = tenum.term();
+                
+                if (t != null && t.field() == term.field()) {
+                    // Add the docs
+                    tdocs.seek(tenum);
+                    while (tdocs.next()) {
+                        bits.set(tdocs.doc());
+                    }
+                } else break;
+                
+            } while (tenum.next());
+        } finally {
+            tenum.close();
+            tdocs.close();
+        }
+        
+        return bits;
+    }
 }

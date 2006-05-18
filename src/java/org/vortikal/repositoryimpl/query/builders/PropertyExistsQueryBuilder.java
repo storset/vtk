@@ -30,49 +30,36 @@
  */
 package org.vortikal.repositoryimpl.query.builders;
 
-import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.SimplePrefixTermFilter;
-import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
+import org.vortikal.repositoryimpl.query.TermExistsFilter;
+import org.vortikal.repositoryimpl.query.query.PropertyExistsQuery;
 
 /**
- * 
+ * XXX: Experimental, might be extremely slow to execute !
  * @author oyviste
  *
  */
-public class PropertyPrefixQueryBuilder implements QueryBuilder {
+public class PropertyExistsQueryBuilder implements QueryBuilder {
 
-    private PropertyPrefixQuery ppq;
-    public PropertyPrefixQueryBuilder(PropertyPrefixQuery ppq) {
-        this.ppq = ppq;
+    private PropertyExistsQuery query;
+    public PropertyExistsQueryBuilder(PropertyExistsQuery query) {
+        this.query = query;
     }
 
-    public Query buildQuery() throws QueryBuilderException {
+    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
         
-        PropertyTypeDefinition def = ppq.getPropertyDefinition();
-        String term = ppq.getTerm();
+        PropertyTypeDefinition def = query.getPropertyDefinition();
         
-        if (! (def.getType() == PropertyType.TYPE_PRINCIPAL ||
-               def.getType() == PropertyType.TYPE_STRING)) {
-            throw new QueryBuilderException("Prefix queries are only supported for "
-                + "property types '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_STRING] 
-                + "' and '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_PRINCIPAL] 
-                + "'. Use range queries for dates and numbers.");
-        }
+        String fieldName = DocumentMapper.getFieldName(def);
         
-        Filter filter = new SimplePrefixTermFilter(
-                                new Term(DocumentMapper.getFieldName(def), term));
+        Filter filter = new TermExistsFilter(fieldName);
         
         return new ConstantScoreQuery(filter);
-        
-        
     }
 
 }

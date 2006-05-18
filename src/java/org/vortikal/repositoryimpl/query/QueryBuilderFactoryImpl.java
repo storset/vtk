@@ -31,9 +31,9 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +50,7 @@ import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameWildcardQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.PropertyExistsQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyPrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
@@ -64,6 +65,7 @@ import org.vortikal.repositoryimpl.query.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.query.NameTermQuery;
 import org.vortikal.repositoryimpl.query.query.NameWildcardQuery;
+import org.vortikal.repositoryimpl.query.query.PropertyExistsQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
@@ -165,6 +167,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
         }
         
+        if (query instanceof PropertyExistsQuery) {
+            return new PropertyExistsQueryBuilder((PropertyExistsQuery)query);
+        }
+        
         throw new QueryBuilderException("Unsupported property query type: " 
                                         + query.getClass().getSimpleName());
     }
@@ -204,7 +210,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         
         for (Iterator i = definitions.iterator(); i.hasNext();) {
             PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
-            List descendantNames = new ArrayList();
+            List descendantNames = new LinkedList();
             getAllDescendantNames(descendantNames, def);
             resourceTypeDescendantNames.put(def.getName(), descendantNames);
         }

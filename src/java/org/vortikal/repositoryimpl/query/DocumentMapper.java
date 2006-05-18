@@ -130,7 +130,7 @@ public class DocumentMapper implements InitializingBean {
                                             propSet.getAclInheritedFrom());
         doc.add(aclField);
         
-        // Add all other properties
+        // Add all other properties.
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Field field = getFieldFromProperty((Property)i.next());
             doc.add(field);
@@ -222,8 +222,8 @@ public class DocumentMapper implements InitializingBean {
         }
 
         if (RESERVED_FIELD_NAMES.contains(fieldName)) {
-            throw new FieldMappingException("Property name '" + fieldName 
-                    + "' maps to reserved index field.");
+            throw new FieldMappingException("Property field name '" + fieldName 
+                    + "' is a reserved index field.");
         }
         
         PropertyTypeDefinition def = property.getDefinition();
@@ -233,8 +233,29 @@ public class DocumentMapper implements InitializingBean {
         } else {
             return FieldMapper.getFieldFromValue(fieldName, property.getValue());
         }
-    }    
+    }
     
+    public static String getFieldName(PropertyTypeDefinition def) 
+        throws FieldMappingException {
+
+        String name = def.getName();
+        String prefix = def.getNamespace().getPrefix();
+        String fieldName = null;
+        if (prefix == null) {
+            fieldName = name;
+        } else {
+            fieldName = prefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + name;
+        }
+
+        if (RESERVED_FIELD_NAMES.contains(fieldName)) {
+            throw new FieldMappingException("Property field name '" + fieldName 
+                    + "' is a reserved index field.");
+        }
+        
+        return fieldName;
+    }
+    
+
     public void setPropertyManager(PropertyManagerImpl propertyManager) {
         this.propertyManager = propertyManager;
     }

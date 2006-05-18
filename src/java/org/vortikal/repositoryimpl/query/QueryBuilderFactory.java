@@ -40,5 +40,5 @@ public interface QueryBuilderFactory {
 
     public QueryBuilder getBuilder(Query query) 
         throws QueryBuilderException;
-
+    
 }

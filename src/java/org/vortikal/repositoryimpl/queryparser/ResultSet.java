@@ -72,6 +72,16 @@ public interface ResultSet {
     public List getResults(int maxIndex);
     
     /**
+     * Get a subset of the result-set (fromIndex inclusive, toIndex exclusive).
+     * @param fromIndex
+     * @param toIndex
+     * @return
+     * @throws IndexOutOfBoundsException
+     */
+    public List getResults(int fromIndex, int toIndex)
+        throws IndexOutOfBoundsException;
+    
+    /**
      * Get all the results in the result set, as a 
      * <code>List</code>
      * 

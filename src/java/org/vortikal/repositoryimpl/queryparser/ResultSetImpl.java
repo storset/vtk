@@ -30,8 +30,8 @@
  */
 package org.vortikal.repositoryimpl.queryparser;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.vortikal.repository.PropertySet;
@@ -39,25 +39,24 @@ import org.vortikal.repository.PropertySet;
 
 
 /**
- * Simple cached result set.
+ * Simple cached result set. Uses <code>LinkedList</code> internally, as it
+ * suits the current usage pattern best.  
  * 
- * XXX: Result type is assumed to be a <code>PropertySet</code>, but might as well be
- * a <code>Resource</code> ? What should clients expect, etc ? 
+ * XXX: Result type is assumed to be <code>PropertySet</code> instances.
  * 
- * @author ovyiste
+ * @author oyviste
  */
 public class ResultSetImpl implements ResultSet {
 
     private List results;
     
-    public ResultSetImpl(List results) {
-        this.results = results;
-    }
-    
     public ResultSetImpl() {
-        results = new ArrayList();
+        results = new LinkedList();
     }
     
+    /**
+     * Not efficient with linked lists.
+     */
     public Object getResult(int index) {
         return results.get(index);
     }
@@ -66,6 +65,13 @@ public class ResultSetImpl implements ResultSet {
         int max = Math.min(maxIndex, this.results.size());
         
         return results.subList(0, max);
+    }
+   
+    /**
+     * Probably not efficient with linked lists.
+     */
+    public List getResults(int fromIndex, int toIndex) {
+        return results.subList(fromIndex, toIndex);
     }
 
     public List getAllResults() {
@@ -78,10 +84,6 @@ public class ResultSetImpl implements ResultSet {
     
     public void addResult(PropertySet propSet) {
         this.results.add(propSet);
-    }
-    
-    public void removeResult(int index) {
-        this.results.remove(index);
     }
     
     public Iterator iterator() {

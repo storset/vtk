@@ -140,10 +140,7 @@ public class PropertyQueryBuilder implements QueryBuilder {
     }
     
     private String getPropertyFieldName(PropertyTypeDefinition def) {
-        String nsPrefix = def.getNamespace().getPrefix();
-        return nsPrefix != null ? 
-                nsPrefix + DocumentMapper.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR 
-                + def.getName() : def.getName();
+        return DocumentMapper.getFieldName(def);
     }
 
 }

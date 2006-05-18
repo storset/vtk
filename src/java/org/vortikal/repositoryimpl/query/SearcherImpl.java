@@ -38,6 +38,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.HitCollector;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -69,11 +70,15 @@ public class SearcherImpl implements Searcher, InitializingBean {
     private QueryAuthorizationManager queryAuthorizationManager;
     private QueryBuilderFactory queryBuilderFactory;
     
+    private SortBuilder sortBuilder = new SortBuilderImpl();
+    
     public void afterPropertiesSet() throws BeanInitializationException {
         if (indexAccessor == null) {
             throw new BeanInitializationException("Property 'indexAccessor' not set.");
         } else if (documentMapper == null) {
             throw new BeanInitializationException("Property 'documentMapper' not set.");
+        } else if (queryBuilderFactory == null) {
+            throw new BeanInitializationException("Property 'queryBuilderFactory' not set.");
         }
         
         if (this.queryAuthorizationManager == null) {
@@ -87,7 +92,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
      */
     public ResultSet execute(String token, Query query) throws QueryException {
         
-        return execute(token, query, Integer.MAX_VALUE, 0);
+        return executeUnsortedQuery(token, query, Integer.MAX_VALUE, 0);
     }
 
     /* (non-Javadoc)
@@ -96,97 +101,153 @@ public class SearcherImpl implements Searcher, InitializingBean {
     public ResultSet execute(String token, Query query, int maxResults)
             throws QueryException {
         
-        return execute(token, query, maxResults, 0);
+        return executeUnsortedQuery(token, query, maxResults, 0);
         
     }
     
-    
-
     /* (non-Javadoc)
      * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String, org.vortikal.repositoryimpl.query.query.Query, int, int)
      */
     public ResultSet execute(String token, Query query, int maxResults, int cursor)
             throws QueryException {
-
         
-        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
-        IndexSearcher searcher = null;
-        
-        Sort sort = null; // When we get sorting in our own query classes.
-        
-        // TODO: Use simpler HitCollector (see bottom of this class definition) 
-        //       if no sorting is required.
-        try {
-            searcher = indexAccessor.getIndexSearcher();
-            
-            Hits hits = searcher.search(q);
-            
-            // TODO: Provide a ResultSet implementation backed directly by hits object
-            //       or index reader used in search (mapping documents to property sets on 
-            //       the fly, and caching the mapped property set instances).
-            //       (Don't cache every result)
-            ResultSet rs = buildResultSet(hits, token, maxResults, cursor);
-            
-            return rs;
-        } catch (IOException io) {
-            logger.warn("IOException while performing query on index", io);
-            throw new QueryException("IOException while performing query on index", io);
-        } finally {
-            try {
-                indexAccessor.releaseIndexSearcher(searcher);
-            } catch (IOException io){}
-        }
+        return executeUnsortedQuery(token, query, maxResults, cursor);
     }
     
     public ResultSet execute(String token, Query query, Sorting sorting) 
         throws QueryException {
 
-        throw new UnsupportedOperationException("Not implemented yet");
+        return executeSortedQuery(token, query, sorting, Integer.MAX_VALUE, 0);
     }
 
     public ResultSet execute(String token, Query query, Sorting sorting,
         int maxResults) throws QueryException {
     
-        throw new UnsupportedOperationException("Not implemented yet");
+        return executeSortedQuery(token, query, sorting, maxResults, 0);
     }
 
     public ResultSet execute(String token, Query query, Sorting sorting,
         int maxResults, int cursor) throws QueryException {
     
-        throw new UnsupportedOperationException("Not implemented yet"); 
+        return executeSortedQuery(token, query, sorting, maxResults, cursor);
     }
 
-    private ResultSetImpl buildResultSet(Hits hits, String token, int maxResults, 
-                                                                  int cursor)
-        throws IOException, QueryException {
+    private ResultSet executeUnsortedQuery(String token, Query query, 
+            int maxResults, int cursor) throws QueryException {
         
-        if (cursor > hits.length()) {
-            throw new QueryException("Cursor value is bigger than (number of results)."
-                    + "The cursor is zero-based.");
+        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
+        
+        IndexSearcher searcher = null;
+        try {
+            searcher = indexAccessor.getIndexSearcher();
+            
+            SimpleHitCollector collector = new SimpleHitCollector();
+            
+            searcher.search(q, collector);
+            
+            return buildResultSet(collector, searcher.getIndexReader(), 
+                                                    token, maxResults, cursor);
+        } catch (IOException io) {
+            logger.warn("IOException while performing query on index", io);
+            throw new QueryException("IOException while performing query on index", io);
+        } finally {
+            try {
+                indexAccessor.releaseIndexSearcher(searcher);                
+            } catch (IOException io) {}
         }
         
-        if (maxResults < 0) maxResults = 0;
+    }
+    
+    private ResultSet executeSortedQuery(String token, Query query, Sorting sorting,
+            int maxResults, int cursor) throws QueryException {
+
+        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
         
-        int end = (cursor + maxResults) < hits.length() ? 
-                                        cursor + maxResults : hits.length();
+        IndexSearcher searcher = null;
+        try {
+            searcher = indexAccessor.getIndexSearcher();
+            
+            Sort sort = sortBuilder.buildSort(sorting);
+            
+            Hits hits = searcher.search(q, sort);
+            
+            return buildResultSet(hits, token, maxResults, cursor);
+            
+        } catch (IOException io) {
+            logger.warn("IOException while performing query on index", io);
+            throw new QueryException("IOException while performing query on index", io);
+        } finally {
+            try {
+                indexAccessor.releaseIndexSearcher(searcher);                
+            } catch (IOException io) {}
+        }
+        
+    }
+    
+    private ResultSetImpl buildResultSet(SimpleHitCollector collector, 
+                IndexReader reader, String token, int maxResults, int cursor) 
+        throws IOException {
         
         ResultSetImpl rs = new ResultSetImpl();
-        for (int i=cursor; i < end; i++) {
-            Document doc = hits.doc(i);
+        
+        int length = collector.length();
+        
+        if (length == 0 || cursor >= length) {
+            return rs; // Empty result set
+        }
 
-            if (this.queryAuthorizationManager != null) {
+        if (maxResults < 0) maxResults = 0;
+        
+        int end = (cursor + maxResults) < length ? 
+                                        cursor + maxResults : length;
+        
+        for (int i=cursor; i < end; i++) {
+            Document doc = reader.document(collector.doc(i));
+
                 try {
-                    this.queryAuthorizationManager.authorizeQueryResult(token, 
-                     FieldMapper.getIntegerFromUnencodedField(
-                             doc.getField(DocumentMapper.ID_FIELD_NAME)),
-                     FieldMapper.getIntegerFromUnencodedField(
-                             doc.getField(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME)));
+                    authorizeQueryResult(token, doc);
                 } catch (AuthorizationException e) {
                     continue;
                 } catch (AuthenticationException e) {
                     continue;
                 }
-            }
+            
+            PropertySet propSet = this.documentMapper.getPropertySet(doc);
+            rs.addResult(propSet);
+        }
+        
+        return rs;
+        
+    }
+            
+
+    private ResultSetImpl buildResultSet(Hits hits, String token, int maxResults, 
+                                                                  int cursor)
+        throws IOException {
+        
+        ResultSetImpl rs = new ResultSetImpl();
+        
+        int length = hits.length();
+        
+        if (length == 0 || cursor >= length) {
+            return rs; // Empty result set
+        }
+
+        if (maxResults < 0) maxResults = 0;
+        
+        int end = (cursor + maxResults) < length ? 
+                                        cursor + maxResults : length;
+
+        for (int i=cursor; i < end; i++) {
+            Document doc = hits.doc(i);
+
+                try {
+                    authorizeQueryResult(token, doc);
+                } catch (AuthorizationException e) {
+                    continue;
+                } catch (AuthenticationException e) {
+                    continue;
+                }
             
             PropertySet propSet = this.documentMapper.getPropertySet(doc);
             rs.addResult(propSet);
@@ -194,7 +255,18 @@ public class SearcherImpl implements Searcher, InitializingBean {
         
         return rs;
     }
-
+    
+    private void authorizeQueryResult(String token, Document doc)
+        throws AuthorizationException, AuthenticationException {
+        if (this.queryAuthorizationManager != null) {
+                this.queryAuthorizationManager.authorizeQueryResult(token, 
+                 FieldMapper.getIntegerFromUnencodedField(
+                         doc.getField(DocumentMapper.ID_FIELD_NAME)),
+                 FieldMapper.getIntegerFromUnencodedField(
+                         doc.getField(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME)));
+        }
+    }
+    
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
@@ -216,7 +288,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
      * Can only be used in a no-sorting scenario, as Lucene uses its own
      * special collectors for sorting, internally.
      */
-    private static class SimpleDocNumberHitCollector extends HitCollector {
+    private static class SimpleHitCollector extends HitCollector {
         
         List docNums = new ArrayList();
         
@@ -224,8 +296,12 @@ public class SearcherImpl implements Searcher, InitializingBean {
             docNums.add(new Integer(doc));
         }
         
-        public Iterator iterator() {
-            return docNums.iterator();
+        public int doc(int index) {
+            return ((Integer)docNums.get(index)).intValue();
+        }
+        
+        public int length() {
+            return docNums.size();
         }
         
     }

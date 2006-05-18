@@ -41,14 +41,26 @@ import org.apache.lucene.search.Filter;
 
 /**
  * A Lucene <code>Filter</code> that filters on the given prefix term.
+ * 
+ * NOTE: This filter is only meant as a short-lived filter for a single query.
+ *       The results are cached once, and only once, and applies to the reader
+ *       that was passed in after the first call to {@link #bits(IndexReader)}.
+ *       Sub-sequent calls with different readers will not update the cached
+ *       results ! So don't re-use instances of this class.
+ *       
+ *       Long-term filters which rarely change should be wrapped with
+ *       {@link org.apache.lucene.search.CachingWrapperFilter} instead.
+ * 
  * @author oyviste
  *
  */
 public class SimplePrefixTermFilter extends Filter {
 
-    Term prefixTerm;
+    private Term prefixTerm;
+    private BitSet bits = null;
+    
     /**
-     * 
+     * Construct filter with the given prefix term.
      */
     public SimplePrefixTermFilter(Term prefixTerm) {
         this.prefixTerm = prefixTerm;
@@ -58,7 +70,16 @@ public class SimplePrefixTermFilter extends Filter {
      * @see org.apache.lucene.search.Filter#bits(org.apache.lucene.index.IndexReader)
      */
     public BitSet bits(IndexReader reader) throws IOException {
+        synchronized(this) {
+            if (this.bits == null) {
+                this.bits = getBits(reader);
+            }
+        }
         
+        return this.bits;
+    }
+
+    private BitSet getBits(IndexReader reader) throws IOException {
         BitSet bits = new BitSet(reader.maxDoc());
         String fieldName = prefixTerm.field();
         String prefix = prefixTerm.text();
@@ -84,7 +105,6 @@ public class SimplePrefixTermFilter extends Filter {
         }
         
         return bits;
-
     }
     
     public String toString() {

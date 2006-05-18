@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Filter;
@@ -137,7 +136,7 @@ public class PropertyQueryBuilder implements QueryBuilder {
         Filter filter = new SimplePrefixTermFilter(
                                 new Term(getPropertyFieldName(def), term));
         
-        return new ConstantScoreQuery(new CachingWrapperFilter(filter));
+        return new ConstantScoreQuery(filter);
     }
     
     private String getPropertyFieldName(PropertyTypeDefinition def) {

@@ -64,7 +64,7 @@ public class NamePrefixQueryBuilder implements QueryBuilder {
         Term prefixTerm = new Term(DocumentMapper.NAME_FIELD_NAME, 
                                                         this.query.getTerm());
         
-        Filter filter = new CachingWrapperFilter(new SimplePrefixTermFilter(prefixTerm));
+        Filter filter = new SimplePrefixTermFilter(prefixTerm);
         
         ConstantScoreQuery csq = new ConstantScoreQuery(filter);
         

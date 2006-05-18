@@ -45,7 +45,7 @@ public class SortingImpl implements Sorting {
         this.sortFields = sortFields;
     }
     
-    public void addSortField(SimpleSortField sortField) {
+    public void addSortField(SortField sortField) {
         this.sortFields.add(sortField);
     }
     

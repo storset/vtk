@@ -31,68 +31,56 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreRangeQuery;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.WildcardTermEnum;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.NameTermQuery;
-import org.vortikal.repositoryimpl.query.query.TermOperator;
+import org.vortikal.repositoryimpl.query.SimpleWildcardTermFilter;
+import org.vortikal.repositoryimpl.query.query.PropertyWildcardQuery;
 
 /**
  * 
  * @author oyviste
  *
  */
-public class NameTermQueryBuilder implements QueryBuilder {
+public class PropertyWildcardQueryBuilder implements QueryBuilder {
 
-    NameTermQuery ntq;
+    private PropertyWildcardQuery query;
     
-    public NameTermQueryBuilder(NameTermQuery q) {
-        this.ntq = q;
+    public PropertyWildcardQueryBuilder(PropertyWildcardQuery query) {
+        this.query = query;
     }
-    
-    public org.apache.lucene.search.Query buildQuery() {
-        String term = ntq.getTerm();
-        TermOperator op = ntq.getOperator();
+
+    public Query buildQuery() throws QueryBuilderException {
         
-        if (op == TermOperator.EQ) {
-            TermQuery tq = 
-                new TermQuery(new Term(DocumentMapper.NAME_FIELD_NAME, term));
-            
-            return tq;
+        PropertyTypeDefinition def = query.getPropertyDefinition();
+        String wildcard = query.getTerm();
+
+        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
+                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
+            throw new QueryBuilderException("The search term '" 
+                    + wildcard + "' does not have any wildcard characters (?,*) !");
         }
         
-        boolean includeLower = false;
-        boolean includeUpper = false;
-        String upperTerm = null;
-        String lowerTerm = null;
-        
-        if (op == TermOperator.GE) {
-            lowerTerm = term;
-            includeLower = true;
-            includeUpper = true;
-        } else if (op == TermOperator.GT) {
-            lowerTerm = term;
-            includeUpper = true;
-        } else if (op == TermOperator.LE) {
-            upperTerm = term;
-            includeUpper = true;
-            includeLower = true;
-        } else if (op == TermOperator.LT) {
-            upperTerm = term;
-            includeLower = true;
-        } else if (op == TermOperator.NE) {
-            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
-        } else {
-            throw new QueryBuilderException("Unknown term operator"); 
+        if (! (def.getType() == PropertyType.TYPE_PRINCIPAL ||
+               def.getType() == PropertyType.TYPE_STRING)) {
+            throw new QueryBuilderException("Wildcard queries are only supported for "
+                + "property types + '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_STRING]
+                + "' and '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_PRINCIPAL] + "'. "
+                + "Use range queries for dates and numbers.");
         }
         
-        return new ConstantScoreRangeQuery(DocumentMapper.NAME_FIELD_NAME, 
-                                           lowerTerm, 
-                                           upperTerm, 
-                                           includeLower, 
-                                           includeUpper);
+        String fieldName = DocumentMapper.getFieldName(def);
+        Term wTerm = new Term(fieldName, wildcard);
+
+        Filter filter = new SimpleWildcardTermFilter(wTerm);
+        
+        return new ConstantScoreQuery(filter);
     }
 
 }

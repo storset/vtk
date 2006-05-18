@@ -31,68 +31,46 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreRangeQuery;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.WildcardTermEnum;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.NameTermQuery;
-import org.vortikal.repositoryimpl.query.query.TermOperator;
+import org.vortikal.repositoryimpl.query.SimpleWildcardTermFilter;
+import org.vortikal.repositoryimpl.query.query.NameWildcardQuery;
 
 /**
  * 
  * @author oyviste
  *
  */
-public class NameTermQueryBuilder implements QueryBuilder {
+public class NameWildcardQueryBuilder implements QueryBuilder {
 
-    NameTermQuery ntq;
-    
-    public NameTermQueryBuilder(NameTermQuery q) {
-        this.ntq = q;
+    private NameWildcardQuery nwq;
+    public NameWildcardQueryBuilder(NameWildcardQuery nwq) { 
+        this.nwq = nwq;
+
     }
-    
-    public org.apache.lucene.search.Query buildQuery() {
-        String term = ntq.getTerm();
-        TermOperator op = ntq.getOperator();
+
+    public Query buildQuery() throws QueryBuilderException {
         
-        if (op == TermOperator.EQ) {
-            TermQuery tq = 
-                new TermQuery(new Term(DocumentMapper.NAME_FIELD_NAME, term));
-            
-            return tq;
+        String wildcard = this.nwq.getTerm();
+        
+        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
+                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
+            throw new QueryBuilderException("The search term '" 
+                    + wildcard + "' does not have any wildcard characters (?,*) !");
         }
         
-        boolean includeLower = false;
-        boolean includeUpper = false;
-        String upperTerm = null;
-        String lowerTerm = null;
+        Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
         
-        if (op == TermOperator.GE) {
-            lowerTerm = term;
-            includeLower = true;
-            includeUpper = true;
-        } else if (op == TermOperator.GT) {
-            lowerTerm = term;
-            includeUpper = true;
-        } else if (op == TermOperator.LE) {
-            upperTerm = term;
-            includeUpper = true;
-            includeLower = true;
-        } else if (op == TermOperator.LT) {
-            upperTerm = term;
-            includeLower = true;
-        } else if (op == TermOperator.NE) {
-            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
-        } else {
-            throw new QueryBuilderException("Unknown term operator"); 
-        }
+        Filter filter = 
+            new SimpleWildcardTermFilter(wTerm);
         
-        return new ConstantScoreRangeQuery(DocumentMapper.NAME_FIELD_NAME, 
-                                           lowerTerm, 
-                                           upperTerm, 
-                                           includeLower, 
-                                           includeUpper);
+        return new ConstantScoreQuery(filter);
+        
     }
 
 }

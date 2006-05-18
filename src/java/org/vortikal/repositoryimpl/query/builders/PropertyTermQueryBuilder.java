@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -55,12 +56,7 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
 
     public Query buildQuery() throws QueryBuilderException {
         
-        // TODO: Use ConstantScoreRangeQuery to support
-        //       other operators
-        if (ptq.getOperator() != TermOperator.EQ) {
-            throw new QueryBuilderException("Only the 'EQ' TermOperator is currently implemented");
-        }
-        
+        TermOperator op = ptq.getOperator();
         PropertyTypeDefinition propDef = ptq.getPropertyDefinition();
         
         String fieldName = DocumentMapper.getFieldName(propDef);
@@ -68,10 +64,37 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         String fieldValue = FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), 
                                                             propDef.getType());
         
-        TermQuery tq = new TermQuery(new Term(fieldName, fieldValue));
+        if (op == TermOperator.EQ) {
+            return new TermQuery(new Term(fieldName, fieldValue));
+        }
         
-        return tq;
+        boolean includeLower = false;
+        boolean includeUpper = false;
+        String upperTerm = null;
+        String lowerTerm = null;
         
+        if (op == TermOperator.GE) {
+            lowerTerm = fieldValue;
+            includeLower = true;
+            includeUpper = true;
+        } else if (op == TermOperator.GT) {
+            lowerTerm = fieldValue;
+            includeUpper = true;
+        } else if (op == TermOperator.LE) {
+            upperTerm = fieldValue;
+            includeUpper = true;
+            includeLower = true;
+        } else if (op == TermOperator.LT) {
+            upperTerm = fieldValue;
+            includeLower = true;
+        } else if (op == TermOperator.NE) {
+            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
+        } else {
+            throw new QueryBuilderException("Unknown term operator"); 
+        }
+        
+        return new ConstantScoreRangeQuery(fieldName, lowerTerm, upperTerm, 
+                                                    includeLower, includeUpper);
     }
 
 }

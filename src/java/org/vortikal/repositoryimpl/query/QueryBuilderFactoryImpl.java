@@ -49,9 +49,11 @@ import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.NameWildcardQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyPrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.PropertyWildcardQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.QueryTreeBuilder;
 import org.vortikal.repositoryimpl.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.UriPrefixQueryBuilder;
@@ -61,9 +63,11 @@ import org.vortikal.repositoryimpl.query.query.AbstractPropertyQuery;
 import org.vortikal.repositoryimpl.query.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.query.NameTermQuery;
+import org.vortikal.repositoryimpl.query.query.NameWildcardQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
+import org.vortikal.repositoryimpl.query.query.PropertyWildcardQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
 import org.vortikal.repositoryimpl.query.query.UriPrefixQuery;
@@ -126,11 +130,17 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
        if (query instanceof NamePrefixQuery) {
            return new NamePrefixQueryBuilder((NamePrefixQuery)query);
        }
+
+       if (query instanceof NameWildcardQuery) {
+           return new NameWildcardQueryBuilder((NameWildcardQuery)query);
+       }
        
        if (query instanceof TypeTermQuery) {
            return new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
                                           (TypeTermQuery)query);
        }
+       
+       
        
        throw new QueryBuilderException("Unsupported query type: " 
                                    + query.getClass().getSimpleName());
@@ -149,6 +159,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         
         if (query instanceof PropertyRangeQuery) {
             return new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
+        }
+        
+        if (query instanceof PropertyWildcardQuery) {
+            return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
         }
         
         throw new QueryBuilderException("Unsupported property query type: " 

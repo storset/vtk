@@ -38,7 +38,7 @@ import org.apache.lucene.search.WildcardTermEnum;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.SimpleWildcardTermFilter;
+import org.vortikal.repositoryimpl.query.WildcardTermFilter;
 import org.vortikal.repositoryimpl.query.query.NameWildcardQuery;
 
 /**
@@ -67,7 +67,7 @@ public class NameWildcardQueryBuilder implements QueryBuilder {
         Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
         
         Filter filter = 
-            new SimpleWildcardTermFilter(wTerm);
+            new WildcardTermFilter(wTerm);
         
         return new ConstantScoreQuery(filter);
         

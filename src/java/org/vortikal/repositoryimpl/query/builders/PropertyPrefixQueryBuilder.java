@@ -39,7 +39,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.SimplePrefixTermFilter;
+import org.vortikal.repositoryimpl.query.PrefixTermFilter;
 import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
 
 /**
@@ -67,7 +67,7 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
                 + "'. Use range queries for dates and numbers.");
         }
         
-        Filter filter = new SimplePrefixTermFilter(
+        Filter filter = new PrefixTermFilter(
                                 new Term(DocumentMapper.getFieldName(def), term));
         
         return new ConstantScoreQuery(filter);

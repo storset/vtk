@@ -40,7 +40,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.SimpleWildcardTermFilter;
+import org.vortikal.repositoryimpl.query.WildcardTermFilter;
 import org.vortikal.repositoryimpl.query.query.PropertyWildcardQuery;
 
 /**
@@ -78,7 +78,7 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         String fieldName = DocumentMapper.getFieldName(def);
         Term wTerm = new Term(fieldName, wildcard);
 
-        Filter filter = new SimpleWildcardTermFilter(wTerm);
+        Filter filter = new WildcardTermFilter(wTerm);
         
         return new ConstantScoreQuery(filter);
     }

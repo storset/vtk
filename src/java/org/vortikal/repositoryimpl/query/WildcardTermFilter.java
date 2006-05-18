@@ -36,11 +36,13 @@ import java.util.BitSet;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.WildcardTermEnum;
 
 /**
- * A Lucene <code>Filter</code> that filters on the given prefix term.
+ * A Lucene <code>Filter</code> that filters on the given wildcard term.
+ * 
+ * @see org.apache.lucene.search.WildcardTermEnum
  * 
  * NOTE: This filter is only meant as a short-lived filter for a single query.
  *       The results are cached once, and only once, and applies to the reader
@@ -54,21 +56,15 @@ import org.apache.lucene.search.Filter;
  * @author oyviste
  *
  */
-public class SimplePrefixTermFilter extends Filter {
+public class WildcardTermFilter extends Filter {
 
-    private Term prefixTerm;
     private BitSet bits = null;
+    private Term wildcardTerm;
     
-    /**
-     * Construct filter with the given prefix term.
-     */
-    public SimplePrefixTermFilter(Term prefixTerm) {
-        this.prefixTerm = prefixTerm;
+    public WildcardTermFilter(Term wildcardTerm) {
+        this.wildcardTerm = wildcardTerm;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.lucene.search.Filter#bits(org.apache.lucene.index.IndexReader)
-     */
     public BitSet bits(IndexReader reader) throws IOException {
         synchronized(this) {
             if (this.bits == null) {
@@ -80,18 +76,15 @@ public class SimplePrefixTermFilter extends Filter {
     }
 
     private BitSet getBits(IndexReader reader) throws IOException {
+        
         BitSet bits = new BitSet(reader.maxDoc());
-        String fieldName = prefixTerm.field();
-        String prefix = prefixTerm.text();
-        TermEnum tenum = reader.terms(prefixTerm);
+        String fieldName = wildcardTerm.field();
+        WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
         TermDocs tdocs = reader.termDocs();
         try {
             do {
                 Term term = tenum.term();
-                if (term != null 
-                    && term.field() == fieldName // Field names from terms are intern()'ed
-                    && term.text().startsWith(prefix)) {
-                    
+                if (term != null && term.field() == fieldName) {
                     tdocs.seek(tenum);
                     
                     while (tdocs.next()) {
@@ -105,13 +98,6 @@ public class SimplePrefixTermFilter extends Filter {
         }
         
         return bits;
+        
     }
-    
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("SimplePrefixFilter[field='").append(this.prefixTerm.field());
-        buffer.append("', prefix='").append(this.prefixTerm.text()).append("']");
-        return buffer.toString();
-    }
-
 }

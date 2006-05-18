@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.search.IndexSearcher;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
@@ -50,7 +49,9 @@ import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
-import org.vortikal.repositoryimpl.query.builders.PropertyQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.PropertyPrefixQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.PropertyRangeQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.QueryTreeBuilder;
 import org.vortikal.repositoryimpl.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.UriPrefixQueryBuilder;
@@ -60,6 +61,9 @@ import org.vortikal.repositoryimpl.query.query.AbstractPropertyQuery;
 import org.vortikal.repositoryimpl.query.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.query.NameTermQuery;
+import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
+import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
+import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
 import org.vortikal.repositoryimpl.query.query.UriPrefixQuery;
@@ -98,6 +102,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
            return new QueryTreeBuilder(this, (AbstractMultipleQuery)query);
        }
         
+       if (query instanceof AbstractPropertyQuery) {
+           return getAbstractPropertyQueryBuilder(query);
+       }
+       
        if (query instanceof UriTermQuery) {
            return new UriTermQueryBuilder((UriTermQuery)query);
        }
@@ -107,10 +115,6 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
            return new UriPrefixQueryBuilder(idTerm);
        }
 
-       if (query instanceof AbstractPropertyQuery) {
-           return new PropertyQueryBuilder((AbstractPropertyQuery)query);
-       }
-       
        if (query instanceof NameTermQuery) {
            return new NameTermQueryBuilder((NameTermQuery)query);
        }
@@ -130,6 +134,25 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
        
        throw new QueryBuilderException("Unsupported query type: " 
                                    + query.getClass().getSimpleName());
+    }
+    
+    private QueryBuilder getAbstractPropertyQueryBuilder(Query query)
+        throws QueryBuilderException {
+        
+        if (query instanceof PropertyTermQuery) {
+            return new PropertyTermQueryBuilder((PropertyTermQuery)query);
+        }
+        
+        if (query instanceof PropertyPrefixQuery) {
+            return new PropertyPrefixQueryBuilder((PropertyPrefixQuery)query);
+        }
+        
+        if (query instanceof PropertyRangeQuery) {
+            return new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
+        }
+        
+        throw new QueryBuilderException("Unsupported property query type: " 
+                                        + query.getClass().getSimpleName());
     }
     
     private Term getPropertySetIdTermFromIndex(String uri) 

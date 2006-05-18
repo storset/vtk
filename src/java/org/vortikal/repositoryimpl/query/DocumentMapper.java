@@ -235,24 +235,18 @@ public class DocumentMapper implements InitializingBean {
         }
     }
     
-    public static String getFieldName(PropertyTypeDefinition def) 
-        throws FieldValueMappingException {
-
-        String name = def.getName();
-        String prefix = def.getNamespace().getPrefix();
-        String fieldName = null;
-        if (prefix == null) {
-            fieldName = name;
-        } else {
-            fieldName = prefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + name;
-        }
-
-        if (RESERVED_FIELD_NAMES.contains(fieldName)) {
-            throw new FieldValueMappingException("Property field name '" + fieldName 
-                    + "' is a reserved index field.");
+    public static String getFieldName(PropertyTypeDefinition def) {
+        if (def == null) {
+            throw new IllegalArgumentException("Definition cannot be null");
         }
         
-        return fieldName;
+        String name = def.getName();
+        String prefix = def.getNamespace().getPrefix();
+        if (prefix == null) {
+            return name;
+        } else {
+            return prefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + name;
+        }
     }
     
 

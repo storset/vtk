@@ -30,16 +30,30 @@
  */
 package org.vortikal.repositoryimpl.query.query;
 
-public class SortFieldDirection {
+import java.util.LinkedList;
+import java.util.List;
 
-    /**
-     * Defines ascending sort order (smallest first).
-     */
-    public static final SortFieldDirection ASC = new SortFieldDirection();
+public class SortingImpl implements Sorting {
+
+    private List sortFields;
     
-    /**
-     * Defines descending sort order (biggest first).
+    public SortingImpl() {
+        this.sortFields = new LinkedList();
+    }
+    
+    public SortingImpl(List sortFields) {
+        this.sortFields = sortFields;
+    }
+    
+    public void addSortField(SimpleSortField sortField) {
+        this.sortFields.add(sortField);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.vortikal.repositoryimpl.query.query.SortingInt#getSortFields()
      */
-    public static final SortFieldDirection DESC = new SortFieldDirection();
-
+    public List getSortFields() {
+        return this.sortFields;
+    }
+    
 }

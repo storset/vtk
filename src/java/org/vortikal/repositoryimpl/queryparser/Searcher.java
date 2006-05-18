@@ -32,11 +32,12 @@ package org.vortikal.repositoryimpl.queryparser;
 
 import org.vortikal.repository.query.QueryException;
 import org.vortikal.repositoryimpl.query.query.Query;
+import org.vortikal.repositoryimpl.query.query.Sorting;
 
 /**
  * Simple search interface
  *
- *
+ * XXX: Sorting is missing for methods that have maxresults and cursor.
  */
 public interface Searcher {
 
@@ -55,7 +56,7 @@ public interface Searcher {
      * @throws QueryException If the query could not be executed.
      */
     public ResultSet execute(String token, Query query) throws QueryException;
-    
+
     /**
      * Perform a query on repository resources with a hard limit on how
      * many results that should be returned.
@@ -74,8 +75,8 @@ public interface Searcher {
      *
      * @throws QueryException If the query could not be executed.
      */
-    public ResultSet execute(String token, Query query, int maxResults) throws
-        QueryException;
+    public ResultSet execute(String token, Query query, int maxResults)
+        throws QueryException;
 
 
     /**
@@ -102,7 +103,46 @@ public interface Searcher {
      * 
      * @throws QueryException If the query could not be executed.
      */
-    public ResultSet execute(String token, Query query, int maxResults,
-                          int cursor) throws QueryException;
+    public ResultSet execute(String token, Query query, int maxResults, int cursor) 
+        throws QueryException;
+    
+    /**
+     * Execute sorted query.
+     * FIXME: javadoc
+     * @param token
+     * @param query
+     * @param sorting
+     * @return
+     * @throws QueryException
+     */
+    public ResultSet execute(String token, Query query, Sorting sorting)
+        throws QueryException;
+    
+    /**
+     * FIXME: javadoc
+     * @param token
+     * @param query
+     * @param sorting
+     * @param maxResults
+     * @return
+     * @throws QueryException
+     */
+    public ResultSet execute(String token, Query query, Sorting sorting, 
+            int maxResults) throws QueryException;
+    
+    /**
+     * FIXME: javadoc
+     * @param token
+     * @param query
+     * @param sorting
+     * @param maxResults
+     * @param cursor
+     * @return
+     * @throws QueryException
+     */
+    public ResultSet execute(String token, Query query, Sorting sorting,
+            int maxResults, int cursor) throws QueryException;
+
+    
 
 }

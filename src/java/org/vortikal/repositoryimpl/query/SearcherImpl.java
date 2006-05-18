@@ -41,12 +41,14 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.HitCollector;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Sort;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.QueryException;
 import org.vortikal.repositoryimpl.query.query.Query;
+import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.security.QueryAuthorizationManager;
 import org.vortikal.repositoryimpl.queryparser.ResultSet;
 import org.vortikal.repositoryimpl.queryparser.ResultSetImpl;
@@ -97,6 +99,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
         return execute(token, query, maxResults, 0);
         
     }
+    
+    
 
     /* (non-Javadoc)
      * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String, org.vortikal.repositoryimpl.query.query.Query, int, int)
@@ -107,6 +111,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
         
         org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
         IndexSearcher searcher = null;
+        
+        Sort sort = null; // When we get sorting in our own query classes.
         
         // TODO: Use simpler HitCollector (see bottom of this class definition) 
         //       if no sorting is required.
@@ -131,8 +137,25 @@ public class SearcherImpl implements Searcher, InitializingBean {
             } catch (IOException io){}
         }
     }
-
     
+    public ResultSet execute(String token, Query query, Sorting sorting) 
+        throws QueryException {
+
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public ResultSet execute(String token, Query query, Sorting sorting,
+        int maxResults) throws QueryException {
+    
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public ResultSet execute(String token, Query query, Sorting sorting,
+        int maxResults, int cursor) throws QueryException {
+    
+        throw new UnsupportedOperationException("Not implemented yet"); 
+    }
+
     private ResultSetImpl buildResultSet(Hits hits, String token, int maxResults, 
                                                                   int cursor)
         throws IOException, QueryException {

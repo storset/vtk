@@ -30,16 +30,21 @@
  */
 package org.vortikal.repositoryimpl.query.query;
 
-public class SortFieldDirection {
+public class SimpleSortField extends AbstractSortField {
 
-    /**
-     * Defines ascending sort order (smallest first).
-     */
-    public static final SortFieldDirection ASC = new SortFieldDirection();
+    private String name;
     
-    /**
-     * Defines descending sort order (biggest first).
-     */
-    public static final SortFieldDirection DESC = new SortFieldDirection();
-
+    public SimpleSortField(String name) {
+        this.name = name;
+    }
+    
+    public SimpleSortField(String name, SortFieldDirection direction) {
+        super(direction);
+        this.name = name;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+    
 }

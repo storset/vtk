@@ -145,7 +145,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
        
        
        throw new QueryBuilderException("Unsupported query type: " 
-                                   + query.getClass().getSimpleName());
+                                   + query.getClass().getName());
     }
     
     private QueryBuilder getAbstractPropertyQueryBuilder(Query query)
@@ -172,7 +172,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         }
         
         throw new QueryBuilderException("Unsupported property query type: " 
-                                        + query.getClass().getSimpleName());
+                                        + query.getClass().getName());
     }
     
     private Term getPropertySetIdTermFromIndex(String uri) 

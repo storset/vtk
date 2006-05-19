@@ -54,7 +54,7 @@ public abstract class AbstractDependencyInjectionSpringStringContextTests extend
 
     static {
         BasicConfigurator.configure();
-        Category.getRoot().setLevel(Level.DEBUG);
+        Logger.getRootLogger().setLevel(Level.DEBUG);
     }
     
     /**

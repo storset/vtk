@@ -640,7 +640,14 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
 
 
         newResource.setResourceType(rt.getName());
-        
+        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
+            Property prop = (Property) i.next();
+
+            // Preserve dead properties:
+            if (prop.getDefinition() == null) {
+                newResource.addProperty(prop);
+            }
+        }
         return newResource;
     }
     

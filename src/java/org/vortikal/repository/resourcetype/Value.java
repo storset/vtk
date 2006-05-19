@@ -75,10 +75,6 @@ public final class Value implements Cloneable {
         this.principalValue = principalValue;
     }
 
-    public String getValue() {
-        return value;
-    }
-    
     public int getType() {
         return type;
     }
@@ -102,6 +98,38 @@ public final class Value implements Cloneable {
     public Principal getPrincipalValue() {
         return this.principalValue;
     }
+
+    public String getValue() {
+        return this.value;
+    }
+ 
+        
+   public Object getObjectValue() {
+        switch (this.type) {
+        
+            case PropertyType.TYPE_BOOLEAN:
+                return new Boolean(this.booleanValue);
+            
+            case PropertyType.TYPE_DATE:
+                return this.dateValue;
+            
+            case PropertyType.TYPE_INT:
+                return new Integer(this.intValue);
+            
+            case PropertyType.TYPE_LONG:
+                return new Long(this.longValue);
+
+            case PropertyType.TYPE_STRING:
+                return this.value;
+            
+            case PropertyType.TYPE_PRINCIPAL:
+                return this.principalValue;
+        }
+        
+        throw new IllegalStateException(
+            "Unable to return value: Illeal type: " + type);
+    }
+    
 
     // XXX: Use hashCode?
     public boolean equals(Object obj) {

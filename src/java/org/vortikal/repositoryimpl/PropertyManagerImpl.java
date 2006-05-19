@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,16 +42,19 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
@@ -62,6 +64,7 @@ import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -826,6 +829,52 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
         
     }
     
+
+
+    public PropertySet getFixedCopyProperties(Resource resource, Principal principal, String destUri)
+        throws CloneNotSupportedException {
+        PropertySetImpl fixedProps = new PropertySetImpl(destUri);
+
+        java.util.Date now = new java.util.Date();
+
+        Property owner = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME).clone();
+        owner.setPrincipalValue(principal);
+        fixedProps.addProperty(owner);
+        
+        Property lastModified = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME).clone();
+        lastModified.setDateValue(now);
+        fixedProps.addProperty(lastModified);
+
+        Property contentLastModified = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME).clone();
+        contentLastModified.setDateValue(now);
+        fixedProps.addProperty(contentLastModified);
+
+        Property propertiesLastModified = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME).clone();
+        propertiesLastModified.setDateValue(now);
+        fixedProps.addProperty(propertiesLastModified);
+
+        Property modifiedBy = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME).clone();
+        modifiedBy.setPrincipalValue(principal);
+        fixedProps.addProperty(modifiedBy);
+
+        Property contentModifiedBy = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME).clone();
+        contentModifiedBy.setPrincipalValue(principal);
+        fixedProps.addProperty(contentModifiedBy);
+
+        Property propertiesModifiedBy = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME).clone();
+        propertiesModifiedBy.setPrincipalValue(principal);
+        fixedProps.addProperty(propertiesModifiedBy);
+
+        return fixedProps;
+    }
+
 
     private PropertyTypeDefinition findPropertyTypeDefinition(Namespace namespace, 
                                                           String name) {

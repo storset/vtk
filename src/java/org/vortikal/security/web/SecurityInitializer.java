@@ -127,20 +127,21 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     public boolean createContext(HttpServletRequest req,
                                  HttpServletResponse resp) {
 
-        HttpSession session = req.getSession(true);
+        HttpSession session = req.getSession(false);
 
         String token = null;
-        try {
-            token = (String) session.getAttribute(
-            SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
-        } catch (IllegalStateException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Session has been invalidated, creating new");
+        if (session != null) {
+            try {
+                token = (String) session.getAttribute(
+                    SecurityContext.SECURITY_TOKEN_ATTRIBUTE);
+            } catch (IllegalStateException e) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Session has been invalidated, creating new");
+                }
+                session.invalidate();
+                session = req.getSession(true);
             }
-            session.invalidate();
-            session = req.getSession(true);
         }
-
         
         if (token != null) {
             Principal principal = tokenManager.getPrincipal(token);

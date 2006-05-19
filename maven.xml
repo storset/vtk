@@ -80,7 +80,9 @@
 
     <j:set var="targetPath" value="${maven.build.dir}" />
     <j:set var="logPath" value="${maven.build.dir}/logs" /> 
+    <!-- 
     <j:set var="xercesPath" value="${maven.home.local}/xerces/jars/xerces-2.4.0.jar" /> 
+    -->
     <j:set var="webappDir" value="${maven.war.webapp.dir}" />
     <j:set var="beanConfigDir" value="${destination.beanconfig.dir}" />
     <j:set var="srunPort" value="${srunPort}" />

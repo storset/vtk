@@ -37,10 +37,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -161,7 +163,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
     public Acl getACL(String token, String uri) throws AuthenticationException,
-    ResourceNotFoundException, AuthorizationException, IOException {
+        ResourceNotFoundException, AuthorizationException, IOException {
 
         Principal principal = tokenManager.getPrincipal(token);
 
@@ -287,9 +289,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         if (dest != null) {
             this.dao.delete(dest);
         }
-        this.dao.copy(src, destUri, preserveACL, true, principal.getQualifiedName());
 
         try {
+        
+            PropertySet fixedProps = this.propertyManager.getFixedCopyProperties(src, principal, destUri);
+            this.dao.copy(src, destUri, preserveACL, fixedProps);
 
             dest = (ResourceImpl)dao.load(destUri).clone();
 
@@ -355,7 +359,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                     dest.isCollection()));
         }
         
-        this.dao.copy(src, destUri, true, true, principal.getQualifiedName());
+        this.dao.copy(src, destUri, true, null);
 
         try {
             dest = (ResourceImpl) dao.load(destUri).clone();
@@ -369,7 +373,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         context.publishEvent(new ResourceDeletionEvent(this, srcUri,
                 src.getID(), src.isCollection()));
 
-}
+    }
+
+
+    
+
 
     public void delete(String token, String uri)
         throws IllegalOperationException, AuthorizationException, 

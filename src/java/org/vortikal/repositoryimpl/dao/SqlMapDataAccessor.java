@@ -30,8 +30,11 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-import com.ibatis.sqlmap.client.SqlMapClient;
 
+
+
+
+import com.ibatis.sqlmap.client.SqlMapClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -44,17 +47,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
@@ -519,10 +520,27 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         }
 
     }
-
-
+    
+    private void supplyFixedProperties(Map parameters, PropertySet properties) {
+        List propertyList = properties.getProperties(Namespace.DEFAULT_NAMESPACE);
+        for (Iterator i = propertyList.iterator(); i.hasNext();) {
+            Property property = (Property) i.next();
+            if (PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
+                Object value = property.getValue().getObjectValue();
+                if (property.getValue().getType() == PropertyType.TYPE_PRINCIPAL) {
+                    value = ((Principal) value).getQualifiedName();
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Copy: fixed property: " + property.getName() + ": " + value);
+                }
+                parameters.put(property.getName(), value);
+            }
+        }
+    }
+    
+    
     public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
-                     boolean setOwner, String owner) throws IOException {
+                     PropertySet fixedProperties) throws IOException {
         try {
             this.sqlMapClient.startTransaction();
 
@@ -535,7 +553,10 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             parameters.put("destUri", destURI);
             parameters.put("destUriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI));
             parameters.put("depthDiff", new Integer(depthDiff));
-            if (setOwner) parameters.put("owner", owner);
+
+            if (fixedProperties != null) {
+                supplyFixedProperties(parameters, fixedProperties);
+            }
 
             String sqlMap = getSqlMap("copyResource");
             this.sqlMapClient.update(sqlMap, parameters);

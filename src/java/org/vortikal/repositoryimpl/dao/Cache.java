@@ -30,6 +30,8 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -40,13 +42,14 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.repository.URIUtil;
-
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
 
 
 /**
@@ -345,7 +348,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     public void copy(ResourceImpl r, String destURI, boolean copyACLs,
-                     boolean setOwner, String owner) throws IOException {
+                     PropertySet fixedProperties) throws IOException {
         
         List uris = new ArrayList();
         uris.add(r.getURI());
@@ -365,7 +368,7 @@ public class Cache implements DataAccessor, InitializingBean {
         this.lockManager.lock(uris);
 
         try {
-            this.wrappedAccessor.copy(r, destURI, copyACLs, setOwner, owner);
+            this.wrappedAccessor.copy(r, destURI, copyACLs, fixedProperties);
 
             if (this.items.containsURI(destParentURI)) {
                 this.items.remove(destParentURI);

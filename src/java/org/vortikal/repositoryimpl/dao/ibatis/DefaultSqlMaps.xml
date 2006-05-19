@@ -166,6 +166,7 @@
   </insert>
 
 
+  <!-- Allows overriding most of the properties by supplying values in the parameter map -->
   <insert id="copyResource" parameterClass="java.util.Map">
     insert into vortex_resource 
       (resource_id,
@@ -199,24 +200,38 @@
       resource_type,
       content_length,
       depth + #depthDiff#,
-      creation_time,
-      content_last_modified,
-      properties_last_modified,
-      content_modified_by,
-      properties_modified_by,
+      <isPropertyAvailable property="creationTime">#creationTime#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="creationTime">creation_time,</isNotPropertyAvailable>
+      <isPropertyAvailable property="contentLastModified">#contentLastModified#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="contentLastModified">content_last_modified,</isNotPropertyAvailable>
+      <isPropertyAvailable property="propertiesLastModified">#propertiesLastModified#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="propertiesLastModified">properties_last_modified,</isNotPropertyAvailable>
+      <isPropertyAvailable property="contentModifiedBy">#contentModifiedBy#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="contentModifiedBy">content_modified_by,</isNotPropertyAvailable>
+      <isPropertyAvailable property="propertiesModifiedBy">#propertiesModifiedBy#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="propertiesModifiedBy">properties_modified_by,</isNotPropertyAvailable>
       <isPropertyAvailable property="owner">#owner#,</isPropertyAvailable>
       <isNotPropertyAvailable property="owner">resource_owner,</isNotPropertyAvailable>
-      display_name,
-      content_language,
-      content_type,
-      character_encoding,
-      guessed_character_encoding,
-      user_character_encoding,
+      <isPropertyAvailable property="displayName">#displayName#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="displayName">display_name,</isNotPropertyAvailable>
+      <isPropertyAvailable property="contentLanguage">#contentLanguage#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="contentLanguage">content_language,</isNotPropertyAvailable>
+      <isPropertyAvailable property="contentType">#contentType#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="contentType">content_type,</isNotPropertyAvailable>
+      <isPropertyAvailable property="characterEncoding">#characterEncoding#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="characterEncoding">character_encoding,</isNotPropertyAvailable>
+      <isPropertyAvailable property="guessedCharacterEncoding">#guessedCharacterEncoding#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="guessedCharacterEncoding">guessed_character_encoding,</isNotPropertyAvailable>
+      <isPropertyAvailable property="userSetEncoding">#userSetCharacterEncoding#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="userSetCharacterEncoding">user_character_encoding,</isNotPropertyAvailable>
       is_collection,
       acl_inherited_from,
-      created_by,
-      modified_by,
-      last_modified
+      <isPropertyAvailable property="createdBy">#createdBy#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="createdBy">created_by,</isNotPropertyAvailable>
+      <isPropertyAvailable property="modifiedBy">#modifiedBy#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="modifiedBy">modified_by,</isNotPropertyAvailable>
+      <isPropertyAvailable property="lastModified">#lastModified#</isPropertyAvailable>
+      <isNotPropertyAvailable property="lastModified">last_modified</isNotPropertyAvailable>
     from vortex_resource
     where uri = #uri# or uri like #uriWildcard#
   </insert>

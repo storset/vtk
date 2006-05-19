@@ -30,10 +30,10 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ResourceImpl;
 
 
@@ -111,9 +111,15 @@ public interface DataAccessor {
 
     /**
      * Atomically copies a resource to a new destination.
+     * @param resource the resource to copy from
+     * @param destURI the destination path
+     * @param copyACLs whether to copy ACLs from the existing
+     * resource, or to inherit from the new parent resource
+     * @param fixedProperties a set of properties to set on the new
+     * resource(s) instead of copying from the existing
      */
     public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
-                     boolean setOwner, String owner) throws IOException;
+                     PropertySet fixedProperties) throws IOException;
 
 
     //public void move(Resource resource, String destURI);

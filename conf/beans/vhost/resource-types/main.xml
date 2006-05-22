@@ -9,6 +9,7 @@
   <import resource="collection.xml"/>
   <import resource="text.xml" />
   <import resource="html.xml" />
+  <import resource="xhtml10.xml" />
   <import resource="xml.xml" />
   <import resource="managed-xml.xml" />
   <import resource="emne.xml" />

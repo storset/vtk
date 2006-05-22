@@ -16,7 +16,8 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="guessedXmlCharacterEncodingPropDef" />
+        <ref bean="xmlGuessedCharacterEncodingPropDef" />
+        <ref bean="xmlCharacterEncodingPropDef" />
         <ref bean="schemaPropDef" />
       </list>
     </property>
@@ -41,13 +42,16 @@
         class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
 
-  <bean id="guessedXmlCharacterEncodingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <!-- Overrides 'guessedCharacterEncodingPropDef' in 'abstractTextResource' resource type -->
+  <bean id="xmlGuessedCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+
     <property name="name" value="guessedCharacterEncoding" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="xmlCharacterEncodingEvaluator" />
-    <property name="contentModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
+    <property name="createEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
+    <property name="contentModificationEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
 <!--
     <property name="defaultValue">
       <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -64,14 +68,37 @@
 -->
   </bean>
 
+
+
   <bean id="defaultXmlCharacterEncoding" class="java.lang.String">
     <constructor-arg><value>utf-8</value></constructor-arg>
   </bean>
 
-  <bean id="xmlCharacterEncodingEvaluator" 
+  <bean id="xmlGuessedCharacterEncodingEvaluator" 
         class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
     <property name="defaultEncoding" ref="defaultXmlCharacterEncoding" />
   </bean>
 
+
+  <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->
+  <bean id="xmlCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="characterEncoding" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="characterEncodingEvaluator" />
+    <property name="contentModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
+  </bean>
+
+  <bean id="xmlCharacterEncodingEvaluator"
+        class="org.vortikal.repository.resourcetype.property.FirstMatchPropertyEvaluator">
+    <property name="propertyDefinitions">
+      <list>
+        <ref bean="userSetCharacterEncodingPropDef" />
+        <ref bean="xmlGuessedCharacterEncodingPropDef" />
+      </list>
+    </property>
+  </bean>
 
 </beans>

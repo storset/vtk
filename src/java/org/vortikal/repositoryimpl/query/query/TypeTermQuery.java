@@ -27,4 +27,14 @@ public class TypeTermQuery implements Query {
     public void setTerm(String term) {
         this.term = term;
     }
+
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+        
+        buf.append(prefix).append("Operator = ").append(operator);
+        buf.append(", term = ").append(term).append("\n");
+        return buf.toString();
+    }
+
 }

@@ -3,10 +3,10 @@
 
 <beans>
   <bean id="queryParser"
-        class="org.vortikal.repositoryimpl.queryparser.QueryParser" />
+        class="org.vortikal.repositoryimpl.query.parser.QueryParser" />
 
 <!--  <bean id="queryManager"
-        class="org.vortikal.repositoryimpl.queryparser.Test">
+        class="org.vortikal.repositoryimpl.query.parser.QueryManager">
     <property name="parser" ref="queryParser" />
     <property name="searcher" ref="searcher" />
   </bean>

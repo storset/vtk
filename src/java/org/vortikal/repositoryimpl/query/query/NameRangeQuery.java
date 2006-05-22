@@ -25,4 +25,15 @@ public class NameRangeQuery implements NameQuery {
         return toTerm;
     }
 
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+
+        buf.append(prefix).append("fromTerm = '").append(fromTerm);
+        buf.append("', toTerm = '").append(toTerm).append("', inclusive = '");
+        buf.append(inclusive).append("'\n");
+        
+        return buf.toString();
+    }
+
 }

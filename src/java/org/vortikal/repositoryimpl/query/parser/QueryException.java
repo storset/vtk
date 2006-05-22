@@ -1,4 +1,4 @@
-package org.vortikal.repositoryimpl.queryparser;
+package org.vortikal.repositoryimpl.query.parser;
 
 import org.vortikal.repository.RepositoryException;
 

@@ -1,6 +1,6 @@
 package org.vortikal.repositoryimpl.query;
 
-import org.vortikal.repositoryimpl.queryparser.QueryException;
+import org.vortikal.repositoryimpl.query.parser.QueryException;
 
 public class SortBuilderException extends QueryException {
 

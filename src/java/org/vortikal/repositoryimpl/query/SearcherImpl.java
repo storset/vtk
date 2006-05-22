@@ -47,12 +47,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.QueryException;
+import org.vortikal.repositoryimpl.query.parser.ResultSet;
+import org.vortikal.repositoryimpl.query.parser.ResultSetImpl;
+import org.vortikal.repositoryimpl.query.parser.Searcher;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.security.QueryAuthorizationManager;
-import org.vortikal.repositoryimpl.queryparser.ResultSet;
-import org.vortikal.repositoryimpl.queryparser.ResultSetImpl;
-import org.vortikal.repositoryimpl.queryparser.Searcher;
 import org.vortikal.security.AuthenticationException;
 
 /**

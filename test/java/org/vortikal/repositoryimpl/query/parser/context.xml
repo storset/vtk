@@ -4,6 +4,6 @@
 <beans>
 
   <bean id="queryParser"
-        class="org.vortikal.repositoryimpl.queryparser.QueryParser" />
+        class="org.vortikal.repositoryimpl.query.parser.QueryParser" />
 
 </beans>

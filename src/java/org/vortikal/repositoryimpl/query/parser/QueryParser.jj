@@ -1,0 +1,297 @@
+options {
+  // MULTI = true;
+  STATIC = false;
+  //  DEBUG_PARSER = true;
+  //  DEBUG_LOOKAHEAD = true;
+  //  DEBUG_TOKEN_MANAGER = true;
+  // JAVA_UNICODE_ESCAPE = true;
+  UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(QueryParser)
+
+package org.vortikal.repositoryimpl.query.parser;
+
+import java.io.StringReader;
+import java.util.List;
+import java.util.Iterator;
+
+import org.vortikal.repositoryimpl.query.query.*;
+
+/**
+* Partial implementation of a query parser based on javacc.
+* <p>Try the parser out with:
+* <p>java -cp target/classes org.vortikal.repositoryimpl.queryparser.QueryParser "((pre:post=c AND s:s=s) OR ff=2211)"
+*/
+public class QueryParser implements Parser {
+
+    public QueryParser() {
+        this(new StringReader(""));
+    }
+
+    public static void main(String args[]) throws ParseException {
+        if (args.length == 0) {
+            System.out.println("Usage: java org.vortikal.repositoryimpl.queryparser.QueryParser <input>");
+            System.exit(0);
+        }
+        QueryParser parser = new QueryParser(new StringReader(args[0]));
+        Query q = parser.Query();
+        System.out.println(args[0]);
+        System.out.println(q.dump("  "));
+    }
+
+    private static void print(Query q) {
+        System.out.println(q.getClass().getName());
+
+        if (q instanceof AndQuery | q instanceof OrQuery) {
+            
+            List children = ((AbstractMultipleQuery)q).getQueries();
+            for (Iterator i = children.iterator(); i.hasNext();) {
+                print((Query)i.next());
+            }
+        }
+    }
+
+    public Query parse(String query) {
+        ReInit(new StringReader(query));
+        try {
+            return Query();
+        } catch (TokenMgrError tme) {
+            throw new RuntimeException(tme.getMessage());
+        } catch (ParseException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+}
+
+PARSER_END(QueryParser)
+
+<DEFAULT, Value> SKIP : {" "}
+
+TOKEN : {
+    <URI: "uri">
+        | <NAME: "name">
+        | <TYPE: "type">
+        | <EQ: "="> : Value
+        | <NE: "!="> : Value
+        | <GT: ">"> : Value
+        | <GE: ">="> : Value
+        | <LT: "<"> : Value
+        | <LE: "<="> : Value
+        | <IN: "IN"> : Value
+        | <NI: "NOT IN"> : Value
+        | <ASTERISK: "*">
+        | <AND: "AND">
+        | <OR: "OR">
+        | <LP: "(">
+        | <RP: ")">
+        | <NLP: ~["("] >
+        | <NRP: ~[")"] >
+}
+
+
+<DEFAULT, Value> TOKEN : {
+        <ESCAPED_CHAR: "\\" ("(" | ")" | "\\") >
+}
+
+<Value> TOKEN : {
+    <#VALUE_CHAR: (<ESCAPED_CHAR> | ~["*", " ", ")"]) > 
+        | <VALUE: (<VALUE_CHAR>)+ > : DEFAULT
+         | <WILDVALUE:  (<VALUE_CHAR> ((<VALUE_CHAR>)* ([ "*", "?" ])+ (<VALUE_CHAR>)*)+ <VALUE_CHAR>)> : DEFAULT
+}
+
+
+// Main method:
+Query Query() : 
+{
+    Query q;
+}
+{ 
+    ( 
+        LOOKAHEAD((Closed() | SimpleQuery()) <AND>) q=AndQuery() 
+        | LOOKAHEAD((Closed() | SimpleQuery()) <OR>) q=OrQuery() 
+        | q=SimpleQuery() 
+    )
+        { return q; }
+}
+
+void Closed() : {}
+{
+    <LP> (<ESCAPED_CHAR> | <NLP>)* [Closed() (<ESCAPED_CHAR> | <NRP>)*] <RP>
+}
+
+
+Query AndQuery() : 
+{
+    AndQuery q = new AndQuery();
+    Query tmp;
+}
+{ 
+    (
+        tmp=SimpleQuery()
+            { q.add(tmp);}
+        (<AND> tmp=SimpleQuery()
+            { q.add(tmp);}
+        )+
+    )
+        { return q; }
+}
+
+Query OrQuery() : 
+{
+    OrQuery q = new OrQuery();
+    Query tmp;
+}
+{ 
+    (
+        tmp=SimpleQuery()
+            { q.add(tmp);}
+        (<OR> tmp=SimpleQuery()
+            { q.add(tmp);}
+        )+
+    )
+        { return q; }
+}
+
+Query SimpleQuery() : 
+{
+    Query q;
+}
+{
+    (
+        q=ClosedQuery() 
+        | LOOKAHEAD(2) q=NameQuery() 
+        | LOOKAHEAD(2) q=UriQuery() 
+        | LOOKAHEAD(2) q=TypeQuery() 
+        //        | q=PropertyQuery()
+    )
+        { return q; }
+}
+
+Query ClosedQuery() : 
+{
+    Query q;
+}
+{
+    <LP> q=Query() <RP>
+        { return q;}
+}
+
+Query UriQuery() : 
+{
+    Query q;
+}
+{
+    (LOOKAHEAD(4) q=UriPrefixQuery() | q=UriTermQuery())
+        { return q; }
+}
+
+Query UriPrefixQuery() : 
+{
+    Token t;
+}
+{
+    <URI> <EQ> t=<VALUE> <ASTERISK>
+        { return new UriPrefixQuery(t.image); }
+}
+
+Query UriTermQuery() : 
+{
+    Token t, eq = null, ne = null;
+    UriOperator o;
+}
+{
+    <URI> (eq=<EQ> | ne=<NE>) t=<VALUE>
+        {  
+            if (eq != null) 
+                o = UriOperator.EQ;
+            else
+                o = UriOperator.NE;
+
+            return new UriTermQuery(t.image, o);
+        }
+}
+
+
+Query TypeQuery() : 
+{
+    Query q;
+    Token eq = null, ne = null, in = null, ni = null, v;
+    TypeOperator o;
+}
+{
+    (<TYPE> (eq=<EQ> | ne=<NE> | in=<IN> | ni=<NI>) v=<VALUE>)
+        { 
+            TypeOperator operator = null;
+            if (eq != null)
+                o = TypeOperator.EQ;
+            else if (ne != null)
+                o = TypeOperator.NE;
+            else if (in != null)
+                o = TypeOperator.IN;
+            else
+                o = TypeOperator.NI;
+
+            return new TypeTermQuery(v.image, o);
+        }
+}
+
+Query NameQuery() : 
+{
+    Query q;
+}
+{
+    (LOOKAHEAD(4) q=NamePrefixQuery() /**| q=NameRangeQuery() | q=NameWildcardQuery() **/| q=NameTermQuery())
+        { return q; }
+}
+
+Query NamePrefixQuery() : 
+{
+    Token t;
+}
+{
+    <NAME> <EQ> t=<VALUE> <ASTERISK>
+        { return new UriPrefixQuery(t.image); }
+}
+
+Query NameTermQuery() : 
+{
+    Token t, eq = null, ne = null, gt = null, lt = null, ge = null, le = null;
+    TermOperator o;
+}
+{
+    <NAME> (eq=<EQ> | ne=<NE> | gt=<GT> | lt=<LT> | ge=<GE> | le=<LE>) t=<VALUE>
+        {  
+            if (eq != null) 
+                o = TermOperator.EQ;
+            else if (ne != null)
+                o = TermOperator.NE;
+            else if (gt != null)
+                o = TermOperator.GT;
+            else if (lt != null)
+                o = TermOperator.LT;
+            else if (ge != null)
+                o = TermOperator.GE;
+            else
+                o = TermOperator.LE;
+
+            return new NameTermQuery(t.image, o);
+        }
+}
+
+// Query NameRangeQuery() :
+// {}{}
+
+// Query NameWildcardQuery() :
+// {
+// }{
+// }
+
+// Query PropertyQuery() : 
+// {
+//     Query q;
+// }
+// {
+    
+// }

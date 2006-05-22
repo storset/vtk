@@ -13,4 +13,12 @@ public class NameWildcardQuery implements NameQuery {
         return term;
     }
 
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+        
+        buf.append(prefix).append("Term = ").append(term).append("\n");
+        return buf.toString();
+    }
+
 }

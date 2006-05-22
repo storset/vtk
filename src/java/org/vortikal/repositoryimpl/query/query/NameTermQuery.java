@@ -28,4 +28,13 @@ public class NameTermQuery implements NameQuery {
     public void setTerm(String term) {
         this.term = term;
     }
+
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+        
+        buf.append(prefix).append("Term = '").append(term).append("', operator = '").append(operator).append("'\n");
+        return buf.toString();
+    }
+
 }

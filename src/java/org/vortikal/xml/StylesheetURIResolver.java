@@ -57,20 +57,6 @@ public interface StylesheetURIResolver extends URIResolver {
 
 
     /**
-     * Resolves a URI.
-     *
-     * @param href An href attribute, which may be relative or
-     * absolute.
-     * @param base The base URI in effect when the href attribute was
-     * encountered.
-     * @return a <code>Source</code>
-     * @exception TransformerException if an error occurs
-     */
-    public Source resolve(String href, String base) throws TransformerException;
-    
-
-
-    /**
      * Decides whether this stylesheet resolver recognizes a given
      * stylesheet identifier.
      *

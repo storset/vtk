@@ -248,9 +248,32 @@
        Although one could specify a file path URI resolver here, it
        would make no sense in most cases, as document() calls works
        with documents located preferably in the repository.
+
+       Added caching of mapping file documents:
      </description>
+     
+     <property name="simpleCache" ref="mappingCache" />
+     <property name="cacheIdentifiers" ref="mappingIdentifiers" />
    </bean>
 
+  <bean id="mappingCache"
+        class="org.vortikal.util.cache.SimpleCacheImpl">
+    <property name="timeoutSeconds" value="600" />
+    <property name="refreshTimestampOnGet" value="false" />
+  </bean>
+
+  <bean id="mappingIdentifiers" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>path:///vrtx/mapping/mapping-emne.xml</value>
+        <value>path:///vrtx/mapping/mapping-kurs.xml</value>
+        <value>path:///vrtx/mapping/mapping-emnegruppe.xml</value>
+        <value>path:///vrtx/mapping/mapping-studieprogram.xml</value>
+        <value>path:///vrtx/mapping/mapping-studieretning.xml</value>
+        <value>path:///vrtx/mapping/UB-mapping.xml</value>
+      </list>
+    </constructor-arg>
+  </bean>
 
   <bean id="standardXslStylesheetResolvers" class="java.util.ArrayList">
     <constructor-arg>

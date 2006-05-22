@@ -140,12 +140,8 @@ public class TransformerManager implements InitializingBean {
      *
      * @param transformationURIResolvers an <code>URIResolver[]</code> value
      */
-    public void setTransformationURIResolvers(List transformationURIResolvers) {
-        this.transformationURIResolvers = transformationURIResolvers;
-        URIResolver[] resolverArray = (URIResolver[])
-            transformationURIResolvers.toArray(
-                new URIResolver[transformationURIResolvers.size()]);
-        this.transformationURIResolver = new ChainedURIResolver(resolverArray);
+    public void setTransformationURIResolvers(URIResolver[] transformationURIResolvers) {
+        this.transformationURIResolver = new ChainedURIResolver(transformationURIResolvers);
     }
     
 

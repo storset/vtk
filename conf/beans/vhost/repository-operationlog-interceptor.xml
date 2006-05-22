@@ -17,7 +17,7 @@
   </bean>
   
   <bean id="repository.repositoryOperationLogInterceptor"
-    class="org.vortikal.aop.interceptor.RepositoryOperationLogInterceptor">
+    class="org.vortikal.repositoryimpl.RepositoryOperationLogInterceptor">
     <property name="tokenManager" ref="tokenManager"/>
   </bean>
   

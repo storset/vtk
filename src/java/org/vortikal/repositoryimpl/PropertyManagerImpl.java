@@ -287,7 +287,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
             if (evaluator != null &&  evaluator.create(principal, prop, newResource,
                                                       isCollection, time)) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Property evaluated: " + prop);
+                    logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
                 }
             }
 
@@ -563,7 +563,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
                     addProperty = true;
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Property evaluated: " + prop);
+                        logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
                     }
                 } else if (propertyDef.isMandatory()) {
                     Value defaultValue = propertyDef.getDefaultValue();
@@ -719,7 +719,7 @@ public class PropertyManagerImpl implements InitializingBean, ApplicationContext
                 if (evaluator.contentModification(principal, prop, newResource, content, time)) {
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Property evaluated: " + prop);
+                        logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
                     }
                     newProps.add(prop);
                 } 

@@ -14,7 +14,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro propertyList propertyList>
-
   <div style="padding-left:0.5em;padding-right:0.5em;padding-bottom:1em;">
 
     <table style="clear: both;" class="resourceInfo">
@@ -76,7 +75,8 @@
                   Not set
               </#if>
             </td>
-            <td><#if item.editURL?exists>( <a href="${item.editURL?html}">edit</a> )</#if></td>
+            <#-- type boolean = 4 -->
+           <td><#if item.editURL?exists>( <a href="${item.editURL?html}"><#if item.definition.type = 4><@vrtx.msg code="propertyEditor.toggle" default="toggle" /><#else><@vrtx.msg code="propertyEditor.edit" default="edit" /></#if></a> )</#if></td>
           </#if>
         </tr>
       </#list>

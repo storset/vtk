@@ -135,7 +135,10 @@ public class SearcherImpl implements Searcher, InitializingBean {
             int maxResults, int cursor) throws QueryException {
         
         org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
-        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Parsed query " + query + " into Lucene query: " + q);
+        }
+
         IndexSearcher searcher = null;
         try {
             searcher = indexAccessor.getIndexSearcher();
@@ -143,7 +146,10 @@ public class SearcherImpl implements Searcher, InitializingBean {
             SimpleHitCollector collector = new SimpleHitCollector();
             
             searcher.search(q, collector);
-            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Got " + collector.length() + " hits for lucene query: " + q);
+            }
+
             return buildResultSet(collector, searcher.getIndexReader(), 
                                                     token, maxResults, cursor);
         } catch (IOException io) {
@@ -161,7 +167,10 @@ public class SearcherImpl implements Searcher, InitializingBean {
             int maxResults, int cursor) throws QueryException {
 
         org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
-        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Parsed query " + query + " into Lucene query: " + q);
+        }
+
         IndexSearcher searcher = null;
         try {
             searcher = indexAccessor.getIndexSearcher();
@@ -169,6 +178,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
             Sort sort = sortBuilder.buildSort(sorting);
             
             Hits hits = searcher.search(q, sort);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Got " + hits.length() + " hits for lucene query: " + q);
+            }
             
             return buildResultSet(hits, token, maxResults, cursor);
             

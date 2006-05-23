@@ -35,17 +35,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -80,6 +83,8 @@ import org.vortikal.xml.TransformerManager;
  */
 public class CreateResourceFromResourceController implements Controller,
         InitializingBean {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private Repository repository;
     private String resourceName;
@@ -164,12 +169,8 @@ public class CreateResourceFromResourceController implements Controller,
 
         try {
             transformerManager.getTransformer(stylesheetIdentifier);
-        } catch (StylesheetCompilationException e) {
-            throw new BeanInitializationException("Stylesheet '" + stylesheetIdentifier
-                    + "' didn't compile", e);
         } catch (Exception e) {
-            throw new BeanInitializationException("Error trying to compile stylesheet '" + stylesheetIdentifier
-                    + "'", e);
+            logger.warn("Error trying to compile stylesheet '" + stylesheetIdentifier + "'", e);
         }
     }
 

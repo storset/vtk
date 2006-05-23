@@ -16,6 +16,8 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Iterator;
 
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.query.query.*;
 
 /**
@@ -25,31 +27,11 @@ import org.vortikal.repositoryimpl.query.query.*;
 */
 public class QueryParser implements Parser {
 
-    public QueryParser() {
+    private PropertyManagerImpl propertyManager;
+
+    public QueryParser(PropertyManagerImpl propertyManager) {
         this(new StringReader(""));
-    }
-
-    public static void main(String args[]) throws ParseException {
-        if (args.length == 0) {
-            System.out.println("Usage: java org.vortikal.repositoryimpl.queryparser.QueryParser <input>");
-            System.exit(0);
-        }
-        QueryParser parser = new QueryParser(new StringReader(args[0]));
-        Query q = parser.Query();
-        System.out.println(args[0]);
-        System.out.println(q.dump("  "));
-    }
-
-    private static void print(Query q) {
-        System.out.println(q.getClass().getName());
-
-        if (q instanceof AndQuery | q instanceof OrQuery) {
-            
-            List children = ((AbstractMultipleQuery)q).getQueries();
-            for (Iterator i = children.iterator(); i.hasNext();) {
-                print((Query)i.next());
-            }
-        }
+        this.propertyManager = propertyManager;
     }
 
     public Query parse(String query) {
@@ -63,6 +45,15 @@ public class QueryParser implements Parser {
         }
     }
 
+    private Query getExistsQuery(String prefix, String name, boolean exists) {
+        PropertyTypeDefinition def = 
+            propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + prefix + ":" + name);
+
+        return new PropertyExistsQuery(def, exists);
+    }
+
 }
 
 PARSER_END(QueryParser)
@@ -73,6 +64,7 @@ TOKEN : {
     <URI: "uri">
         | <NAME: "name">
         | <TYPE: "type">
+
         | <EQ: "="> : Value
         | <NE: "!="> : Value
         | <GT: ">"> : Value
@@ -81,18 +73,29 @@ TOKEN : {
         | <LE: "<="> : Value
         | <IN: "IN"> : Value
         | <NI: "NOT IN"> : Value
+
+        | <AND: "AND" | "&&">
+        | <OR: "OR" | "||">
+
         | <ASTERISK: "*">
-        | <AND: "AND">
-        | <OR: "OR">
+
         | <LP: "(">
         | <RP: ")">
-        | <NLP: ~["("] >
-        | <NRP: ~[")"] >
+
+        | <NLP: ~["(", ":"] >
+        | <NRP: ~[")", ":"] >
 }
 
+TOKEN : { < COLON: ":"> }
+
+TOKEN : { < EXISTS: "exists"> }
+TOKEN : { < NOTEXISTS: "not exists" | "!exists"> }
+
+TOKEN : { < #ID: ~[" ", "\\", "\"", "=", "<", ">", "!", "(", ")", ":"] > }
+TOKEN : { < STRING: (<ID> | <ESCAPED_CHAR>)+ > }
 
 <DEFAULT, Value> TOKEN : {
-        <ESCAPED_CHAR: "\\" ("(" | ")" | "\\") >
+    <ESCAPED_CHAR: "\\" (" " | "\\" | "!" | "(" | ")" | ":" | "\"" | "|" | "&" | "=" | "<" | ">") >
 }
 
 <Value> TOKEN : {
@@ -116,9 +119,10 @@ Query Query() :
         { return q; }
 }
 
+// Used for lookahead only:
 void Closed() : {}
 {
-    <LP> (<ESCAPED_CHAR> | <NLP>)* [Closed() (<ESCAPED_CHAR> | <NRP>)*] <RP>
+    <LP> (<ESCAPED_CHAR> | <COLON> | <NLP>)* [Closed() (<ESCAPED_CHAR> | <COLON> | <NRP>)*] <RP>
 }
 
 
@@ -164,7 +168,7 @@ Query SimpleQuery() :
         | LOOKAHEAD(2) q=NameQuery() 
         | LOOKAHEAD(2) q=UriQuery() 
         | LOOKAHEAD(2) q=TypeQuery() 
-        //        | q=PropertyQuery()
+        | q=PropertyQuery()
     )
         { return q; }
 }
@@ -288,10 +292,77 @@ Query NameTermQuery() :
 // }{
 // }
 
-// Query PropertyQuery() : 
+Query PropertyQuery() : 
+{
+    Query q;
+}
+{
+    (LOOKAHEAD(4) q=PropertyExistsQuery() /*| q=PropertyTermQuery()*/)
+        { return q;}
+}    
+
+
+
+
+
+// Property exists:
+Query PropertyExistsQuery() : {
+    Token p=null, name, ex=null;
+}
+{
+    ([LOOKAHEAD(2) p=<STRING> <COLON>] name=<STRING> (ex=<EXISTS> | <NOTEXISTS>))
+        {
+            String prefix = null;
+            if (p != null) prefix = p.image;
+            boolean exists = ex != null; 
+            return getExistsQuery(prefix, name.image, exists);
+        }
+
+}
+
+// Property value query:
+// void PropertyValueQuery() : {}
 // {
-//     Query q;
+//     [LOOKAHEAD(2) Prefix() <COLON>] Name() ComparatorValue()
+// }
+
+// void ComparatorValue() #void : {}
+// {
+//     Comparator() Value()
+// }
+
+// void Prefix() : 
+// {
+//     Token t;
 // }
 // {
-    
+//   t=<STRING>
+//   {
+//     jjtThis.setValue(t.image);
+//   }
+// }
+
+// void Name() : 
+// {
+//     Token t;
+// }
+// {
+//   t=<STRING>
+//   {
+//     jjtThis.setValue(t.image);
+//   }
+// }
+
+// void Value() : 
+// {
+//   Token t;
+// }
+// {
+//     ("\"" t=<STRING> "\"" | t=<STRING>)
+//   {
+      
+//       jjtThis.setValue(unescape(t.image));
+//   }
+// }
+
 // }

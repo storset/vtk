@@ -3,7 +3,9 @@
 
 <beans>
   <bean id="queryParser"
-        class="org.vortikal.repositoryimpl.query.parser.QueryParser" />
+        class="org.vortikal.repositoryimpl.query.parser.QueryParser">
+    <constructor-arg ref="propertyManager" />
+  </bean>
 
 <!--  <bean id="queryManager"
         class="org.vortikal.repositoryimpl.query.parser.QueryManager">

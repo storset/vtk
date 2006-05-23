@@ -30,35 +30,39 @@
  */
 package org.vortikal.webdav;
 
-
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Namespace;
+
 import org.springframework.web.servlet.mvc.Controller;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.webdav.ifheader.IfHeader;
 
 
-
-
 /**
  * The superclass of all the WebDAV method controllers.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>repository</code> - the {@link Repository content
+ *   repository}
+ *   <li><code>ignoreIfHeaderVerify</code> - If true: Only use
+ *   ifheaders when refreshing locks. Default is <code>false</code>.
+ * </ul>
  */
 public abstract class AbstractWebdavController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    /**
-     * If true: Only use ifheaders when refreshing locks
-     */ 
-    protected boolean ignoreIfHeaderVerify = false;
+    protected boolean ignoreIfHeaderVerify = true;
     
     protected IfHeader ifHeader;
 
@@ -68,6 +72,11 @@ public abstract class AbstractWebdavController implements Controller {
         this.repository = repository;
     }
     
+    public void setIgnoreIfHeaderVerify(boolean ignoreIfHeaderVerify) {
+        this.ignoreIfHeaderVerify = ignoreIfHeaderVerify;
+    }
+    
+
     /**
      * The standard WebDAV XML properties supported by the WebDAV
      * controllers.
@@ -157,19 +166,31 @@ public abstract class AbstractWebdavController implements Controller {
         if (ignoreIfHeaderVerify) {
             return;
         }
-        logger.debug("resource.getLock(): " + resource.getLock());
-        logger.debug("ifHeader.hasTokens(): " + ifHeader.hasTokens());
+        if (logger.isDebugEnabled()) {
+            logger.debug("resource.getLock(): " + resource.getLock());
+            logger.debug("ifHeader.hasTokens(): " + ifHeader.hasTokens());
+        }
+
         if (ifHeaderRequiredIfLocked) {
             if (resource.getLock() != null && !ifHeader.hasTokens()) {
-                logger.debug("resource locked and if-header hasn't any locktokens");
-                throw new ResourceLockedException();
+                String msg = "Resource " + resource + " is locked and "
+                    + "If-header does not have any lock tokens";
+                if (logger.isDebugEnabled()) {
+                    logger.debug(msg);
+                }
+                throw new ResourceLockedException(msg);
             }
         }
         if (!matchesIfHeader(resource, true)) {
-            logger.debug("verifyIfHeader: matchesIfHeader false");
-            throw new ResourceLockedException();
+            String msg = "If-header did not match resource " + resource;
+            if (logger.isDebugEnabled()) {
+                logger.debug(msg);
+            }
+            throw new ResourceLockedException(msg);
         } else {
-            logger.debug("verifyIfHeader: matchesIfHeader true");
+            if (logger.isDebugEnabled()) {
+                logger.debug("verifyIfHeader: matchesIfHeader true");
+            }
         }
     }
   

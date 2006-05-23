@@ -7,6 +7,14 @@
     <constructor-arg ref="propertyManager" />
   </bean>
 
+<!--
+  <bean id="queryManager" class="org.vortikal.repositoryimpl.query.parser.QueryManager">
+    <property name="parser" ref="queryParser" />
+    <property name="searcher" ref="newSystemIndexSearcher" />
+    <property name="propertyManager" ref="propertyManager" />
+  </bean>
+-->
+
 <!--  <bean id="queryManager"
         class="org.vortikal.repositoryimpl.query.parser.QueryManager">
     <property name="parser" ref="queryParser" />

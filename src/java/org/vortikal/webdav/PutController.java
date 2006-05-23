@@ -55,12 +55,13 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
 /**
  * Handler for PUT requests.
  *
- * <p>Configurable JavaBean properties:
+ * <p>Configurable JavaBean properties (in addition to those defined
+ * by the {@link AbstractWebdavController superclass}):
  * <ul>
  *   <li><code>maxUploadSize</code> - optional long value specifying
- *   the maximum upload size in bytes. Default is <code>-1</code> (no
- *   limit).
- *   <li><code>viewName</code> - the name of the view to return (default
+ *   the maximum upload size in bytes. Default is <code>-1</code> (a
+ *   negative number means no limit).
+ *   <li><code>viewName</code> - the view name (default is
  *   <code>PUT</code>).
  *   <li><code>requestFilters</code> - an optional array of {@link
  *   RequestFilter request filters} to be executed before the PUT
@@ -76,9 +77,10 @@ public class PutController extends AbstractWebdavController {
     
 
     public void setMaxUploadSize(long maxUploadSize) {
-
-        if (maxUploadSize <= 0) {
-            throw new IllegalArgumentException("maxUploadSize must be a number > 0");
+        if (maxUploadSize == 0) {
+            throw new IllegalArgumentException(
+                "Invalid upload size: " + maxUploadSize
+                + " (must be a number != 0)");
         }
 
         this.maxUploadSize = maxUploadSize;
@@ -128,6 +130,7 @@ public class PutController extends AbstractWebdavController {
                 logger.debug("Resource already exists");
                 resource = repository.retrieve(token, uri, false);
                 ifHeader = new IfHeaderImpl(request);
+
                 verifyIfHeader(resource, true);
                 
                 /* if lock-null resource, act as if it did not exist.. */

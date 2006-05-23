@@ -229,17 +229,35 @@
 
 -->
 
-<!--
-  <bean id="xsltSearchProvider"
-    class="org.vortikal.web.referencedata.provider.XsltSearchProvider">
-    <property name="xmlSearcher" ref="xmlSearcher" />
-  </bean>
 
   <bean id="xmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
     <property name="parser" ref="queryParser" />
     <property name="searcher" ref="newSystemIndexSearcher" />
   </bean>
--->
+
+  <bean id="xsltSearchProvider"
+    class="org.vortikal.web.referencedata.provider.XsltSearchProvider">
+    <property name="xmlSearcher" ref="xmlSearcher" />
+  </bean>
+
+
+  <!-- Add the XSL search provider to the central list: -->
+
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="transformXmlView" />
+    <property name="targetMethod" value="addReferenceDataProvider" />
+    <property name="arguments">
+      <list>
+        <ref bean="xsltSearchProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+
+
+
+
   <bean id="xmlStylesheetInDocumentResolver"
         class="org.vortikal.xml.StylesheetInDocumentResolver" />
 

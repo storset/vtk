@@ -229,6 +229,17 @@
 
 -->
 
+<!--
+  <bean id="xsltSearchProvider"
+    class="org.vortikal.web.referencedata.provider.XsltSearchProvider">
+    <property name="xmlSearcher" ref="xmlSearcher" />
+  </bean>
+
+  <bean id="xmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
+    <property name="parser" ref="queryParser" />
+    <property name="searcher" ref="newSystemIndexSearcher" />
+  </bean>
+-->
   <bean id="xmlStylesheetInDocumentResolver"
         class="org.vortikal.xml.StylesheetInDocumentResolver" />
 

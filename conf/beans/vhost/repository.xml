@@ -186,10 +186,4 @@
     <property name="targetMethod"><value>deleteExpiredLocks</value></property>
   </bean>
 
-
-  <!--
-  <bean id="repository.importer" class="org.vortikal.repositoryimpl.DataImportUtil">
-    <property name="repository" ref="repository" />
-  </bean>
-  -->
 </beans>

@@ -11,6 +11,12 @@
     <property name="name" value="abstractTextResource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <!-- FIXME -->
+        <ref bean="contentTypeIsTextual" />
+      </list>
+    </property>
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="userSetCharacterEncodingPropDef" />

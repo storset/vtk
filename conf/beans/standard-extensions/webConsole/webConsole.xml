@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  
+  <bean id="webConsoleService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-300"/>
+    <property name="parent" ref="repositoryManageService"/>
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">1000</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode"/>
+          <property name="parameterValue" value="webconsole"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="webConsoleHandler"/>
+  </bean>
+
+
+
+  <bean id="webConsoleHandler"
+        class="org.vortikal.web.controller.CommandExecutorController"
+        parent="requestLocalRepositoryAware">
+
+    <property name="formView" value="webConsole" />
+    <property name="successView" value="webConsole" />
+    <property name="commandName" value="commandForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.ExecutorCommand" />
+    <property name="console" ref="beanShellWebConsole" />
+  </bean>
+
+  <bean id="webConsoleView" parent="freemarkerView">
+    <property name="url" value="pages/webconsole.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="adminCSSProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="webConsoleViewResolver" parent="rootViewResolver">
+    <property name="views">
+      <map>
+        <entry key="webConsole" value-ref="webConsoleView" />
+      </map>
+    </property>
+  </bean>
+
+  
+  <bean id="beanShellWebConsole" class="org.vortikal.shell.BeanShellConsole">
+      <property name="runEvalLoop" value="false" />
+  </bean>
+
+</beans>

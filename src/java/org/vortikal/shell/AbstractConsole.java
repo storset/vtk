@@ -104,7 +104,7 @@ public abstract class AbstractConsole
      * @param name the name of the variable
      * @param o the object to bind to the name
      */
-    protected abstract void bind(String name, Object o);
+    public abstract void bind(String name, Object o);
 
 
     /**
@@ -113,7 +113,7 @@ public abstract class AbstractConsole
      * @param line the line to evaluate.
      * @param out the PrintStream to write output to
      */
-    protected abstract void eval(String line, PrintStream out);
+    public abstract void eval(String line, PrintStream out);
     
 
     public final void setBeanName(String name) {

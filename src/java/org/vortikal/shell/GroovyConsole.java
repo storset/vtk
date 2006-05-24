@@ -55,7 +55,7 @@ public class GroovyConsole extends AbstractConsole {
     }
     
 
-    protected void bind(String name, Object o) {
+    public void bind(String name, Object o) {
         try {
             shell.getContext().setVariable(name, o);
         } catch (GroovyRuntimeException e) {
@@ -74,7 +74,7 @@ public class GroovyConsole extends AbstractConsole {
     }
     
 
-    protected void eval(String line, PrintStream out) {
+    public void eval(String line, PrintStream out) {
         try {
             if (line != null && !"".equals(line.trim())) {
                 Object o = shell.evaluate(line);

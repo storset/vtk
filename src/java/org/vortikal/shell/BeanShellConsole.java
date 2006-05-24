@@ -51,7 +51,7 @@ public class BeanShellConsole extends AbstractConsole {
     }
     
 
-    protected void bind(String name, Object o) {
+    public void bind(String name, Object o) {
         try {
             interpreter.set(name, o);
         } catch (Throwable t) {

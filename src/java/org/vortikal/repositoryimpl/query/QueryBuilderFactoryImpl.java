@@ -45,7 +45,7 @@ import org.apache.lucene.index.TermDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
@@ -86,7 +86,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
 
     Log logger = LogFactory.getLog(QueryBuilderFactoryImpl.class);
     
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private LuceneIndex indexAccessor;
 
     /* Map resource type name to flat list of _all_ descendant resource type names.
@@ -248,7 +248,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         }
     }
 
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+    public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
     

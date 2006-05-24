@@ -28,47 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.parser;
+package org.vortikal.repositoryimpl;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.PropertyManager;
-import org.vortikal.repositoryimpl.query.query.Query;
+import java.io.IOException;
 
-public class QueryManager implements InitializingBean {
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 
-    private Parser parser;
-    private Searcher searcher;
-    private PropertyManager propertyManager;
-    
-    public void afterPropertiesSet() throws Exception {
-    }
+public interface RepositoryPropertyHelper {
 
-    public void setParser(Parser parser) {
-        this.parser = parser;
-    }
+    public ResourceImpl create(Principal principal, String uri,
+            boolean collection);
 
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
-    }
-    
-    public ResultSet execute(String token, String queryString) throws QueryException {
-        Query q = parser.parse(queryString);
-        
-        return execute(token, q); 
-    }
-    
-    public ResultSet execute(String token, Query query) {
+    /**
+     * Evaluates and validates properties on a resource before
+     * storing.
+     *
+     * @param resource a the original resource
+     * @param principal the principal performing the store operation
+     * @param dto the user-supplied resource
+     * @return the resulting resource after property evaluation
+     */
+    public ResourceImpl storeProperties(ResourceImpl resource,
+            Principal principal, Resource dto) throws AuthenticationException,
+            AuthorizationException, CloneNotSupportedException, IOException;
 
-        validateQuery(query);
-        
-        return searcher.execute(token, query);
-    }
-    
-    private void validateQuery(Query query) {
-       
-    }
+    public ResourceImpl collectionContentModification(ResourceImpl resource,
+            Principal principal);
 
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
+    public ResourceImpl fileContentModification(ResourceImpl resource,
+            Principal principal);
+
+    public PropertySet getFixedCopyProperties(Resource resource,
+            Principal principal, String destUri)
+            throws CloneNotSupportedException;
+
 }

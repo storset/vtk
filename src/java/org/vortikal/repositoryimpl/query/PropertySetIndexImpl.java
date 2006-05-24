@@ -52,7 +52,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.index.IndexException;
 
@@ -72,7 +72,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     private LuceneIndex index; // Underlying Lucene index accessor.
     private DocumentMapper documentMapper;
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private Analyzer analyzer;
 
     public void afterPropertiesSet() throws BeanInitializationException {
@@ -268,7 +268,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         this.index = index;
     }
 
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+    public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
 

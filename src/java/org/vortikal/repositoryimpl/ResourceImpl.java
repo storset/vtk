@@ -60,10 +60,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     private Lock lock = null;
     private String[] childURIs = null;
     
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private AuthorizationManager authorizationManager;
     
-    public ResourceImpl(String uri, PropertyManagerImpl propertyManager, 
+    public ResourceImpl(String uri, PropertyManager propertyManager, 
             AuthorizationManager authorizationManager) {
         super(uri);
         this.propertyManager = propertyManager;

@@ -44,7 +44,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.security.PrincipalManager;
 
@@ -59,7 +59,7 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
     private static Log logger = LogFactory.getLog(ResultSetIteratorImpl.class);
     
     private ResultSet rs;
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private PrincipalManager principalManager;
     
     private boolean hasNext = true;
@@ -67,7 +67,7 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
     private String currentURI = null;
     
     
-    public ResultSetIteratorImpl(PropertyManagerImpl propertyManager,
+    public ResultSetIteratorImpl(PropertyManager propertyManager,
                                  PrincipalManager principalManager, ResultSet rs) throws IOException {
         this.propertyManager = propertyManager;
         this.principalManager = principalManager;

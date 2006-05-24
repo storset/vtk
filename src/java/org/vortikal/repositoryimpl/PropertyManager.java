@@ -28,47 +28,49 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.parser;
+package org.vortikal.repositoryimpl;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.PropertyManager;
-import org.vortikal.repositoryimpl.query.query.Query;
+import java.util.List;
 
-public class QueryManager implements InitializingBean {
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 
-    private Parser parser;
-    private Searcher searcher;
-    private PropertyManager propertyManager;
-    
-    public void afterPropertiesSet() throws Exception {
-    }
+public interface PropertyManager {
 
-    public void setParser(Parser parser) {
-        this.parser = parser;
-    }
+    public Property createProperty(Namespace namespace, String name);
 
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
-    }
-    
-    public ResultSet execute(String token, String queryString) throws QueryException {
-        Query q = parser.parse(queryString);
-        
-        return execute(token, q); 
-    }
-    
-    public ResultSet execute(String token, Query query) {
+    public Property createProperty(Namespace namespace, String name,
+            Object value) throws ValueFormatException;
 
-        validateQuery(query);
-        
-        return searcher.execute(token, query);
-    }
-    
-    private void validateQuery(Query query) {
-       
-    }
+    public Property createProperty(String namespaceUrl, String name,
+            String[] stringValues, int type) throws ValueFormatException;
 
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
+
+    public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix,
+            String name);
+
+    /**
+     * Return flat list of property definitions.
+     * XXX: equivalent methods for resource-types, mixin-types, etc ?
+     * @return
+     */
+    public List getPropertyTypeDefinitions();
+
+    /**
+     * Return flat list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
+     * @return list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
+     */
+    public List getPrimaryResourceTypeDefinitions();
+
+    /**
+     * Return a <code>List</code> of the immediate children of the given resource type.
+     * @param def
+     * @return
+     */
+    public List getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
+
+
 }

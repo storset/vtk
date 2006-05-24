@@ -42,12 +42,12 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.security.PrincipalManager;
 
 public class IndexDataAccessorImpl implements IndexDataAccessor {
     
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private PrincipalManager principalManager;
     private DataSource dataSource;
 
@@ -171,7 +171,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor {
         this.dataSource = dataSource;
     }
 
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+    public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
     

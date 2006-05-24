@@ -37,7 +37,7 @@ import java.util.List;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -64,7 +64,7 @@ class SqlDaoUtils {
 
     
     public static void populateStandardProperties(
-        PropertyManagerImpl propertyManager, PrincipalManager principalManager,
+        PropertyManager propertyManager, PrincipalManager principalManager,
         PropertySetImpl propertySet, ResultSet rs) throws SQLException {
 
         propertySet.setID(rs.getInt("resource_id"));

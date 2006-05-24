@@ -85,7 +85,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private RoleManager roleManager;
     private TokenManager tokenManager;
     private LockManager lockManager;
-    private PropertyManagerImpl propertyManager;
+    private RepositoryPropertyHelper propertyManager;
     private AuthorizationManager authorizationManager;
     private URIValidator uriValidator = new URIValidator();
     
@@ -734,7 +734,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.context = context;
     }
 
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+    public void setPropertyManager(RepositoryPropertyHelper propertyManager) {
         this.propertyManager = propertyManager;
     }
 

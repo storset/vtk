@@ -54,6 +54,27 @@ public class QueryParser implements Parser {
         return new PropertyExistsQuery(def, exists);
     }
 
+    private Query getPropTermQuery(String prefix, String name, String value, 
+                                   TermOperator operator) {
+        PropertyTypeDefinition def = 
+            propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + prefix + ":" + name);
+
+        return new PropertyTermQuery(def, value, operator);
+    }
+
+    private String unescape(String escaped) {
+        char[] caSource = escaped.toCharArray();
+        char[] caDest = new char[caSource.length];
+        int j = 0;
+        for (int i = 0; i < caSource.length; i++) {
+            if ((caSource[i] != '\\') || (i > 0 && caSource[i-1] == '\\')) {
+                caDest[j++]=caSource[i];
+            }
+        }
+        return new String(caDest, 0, j);
+    }
 }
 
 PARSER_END(QueryParser)
@@ -92,7 +113,7 @@ TOKEN : { < EXISTS: "exists"> }
 TOKEN : { < NOTEXISTS: "not exists" | "!exists"> }
 
 TOKEN : { < #ID: ~[" ", "\\", "\"", "=", "<", ">", "!", "(", ")", ":"] > }
-TOKEN : { < STRING: (<ID> | <ESCAPED_CHAR>)+ > }
+TOKEN : { < NAMEVALUE: (<ID> | <ESCAPED_CHAR>)+ > }
 
 <DEFAULT, Value> TOKEN : {
     <ESCAPED_CHAR: "\\" (" " | "\\" | "!" | "(" | ")" | ":" | "\"" | "|" | "&" | "=" | "<" | ">") >
@@ -262,25 +283,25 @@ Query NamePrefixQuery() :
 Query NameTermQuery() : 
 {
     Token t, eq = null, ne = null, gt = null, lt = null, ge = null, le = null;
-    TermOperator o;
+    TermOperator operator;
 }
 {
     <NAME> (eq=<EQ> | ne=<NE> | gt=<GT> | lt=<LT> | ge=<GE> | le=<LE>) t=<VALUE>
         {  
             if (eq != null) 
-                o = TermOperator.EQ;
+                operator = TermOperator.EQ;
             else if (ne != null)
-                o = TermOperator.NE;
+                operator = TermOperator.NE;
             else if (gt != null)
-                o = TermOperator.GT;
+                operator = TermOperator.GT;
             else if (lt != null)
-                o = TermOperator.LT;
+                operator = TermOperator.LT;
             else if (ge != null)
-                o = TermOperator.GE;
+                operator = TermOperator.GE;
             else
-                o = TermOperator.LE;
+                operator = TermOperator.LE;
 
-            return new NameTermQuery(t.image, o);
+            return new NameTermQuery(t.image, operator);
         }
 }
 
@@ -297,7 +318,7 @@ Query PropertyQuery() :
     Query q;
 }
 {
-    (LOOKAHEAD(4) q=PropertyExistsQuery() /*| q=PropertyTermQuery()*/)
+    (LOOKAHEAD(4) q=PropertyExistsQuery() | q=PropertyTermQuery())
         { return q;}
 }    
 
@@ -310,7 +331,7 @@ Query PropertyExistsQuery() : {
     Token p=null, name, ex=null;
 }
 {
-    ([LOOKAHEAD(2) p=<STRING> <COLON>] name=<STRING> (ex=<EXISTS> | <NOTEXISTS>))
+    ([LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] name=<NAMEVALUE> (ex=<EXISTS> | <NOTEXISTS>))
         {
             String prefix = null;
             if (p != null) prefix = p.image;
@@ -321,48 +342,39 @@ Query PropertyExistsQuery() : {
 }
 
 // Property value query:
-// void PropertyValueQuery() : {}
-// {
-//     [LOOKAHEAD(2) Prefix() <COLON>] Name() ComparatorValue()
-// }
+Query PropertyTermQuery() : {
+    Token p=null, n, v;
+    Token ne=null, ge=null, le=null, eq=null, gt=null, lt=null;
+}
+{
+    [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> 
+        (ne=<NE> | ge =<GE> | le=<LE> | eq=<EQ> | gt=<GT> | lt=<LT>)
+        //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
+        v=<VALUE>
+        {
+            String prefix = null;
+            if (p != null) prefix = p.image;
+            String name = n.image;
+            
+            String value = unescape(v.image);
 
-// void ComparatorValue() #void : {}
-// {
-//     Comparator() Value()
-// }
+            TermOperator operator = null;
+            if (ne != null)
+                operator = TermOperator.NE;
+            else if (ge != null)
+                operator = TermOperator.GE;
+            else if (le != null)
+                operator = TermOperator.LE;
+            else if (eq != null)
+                operator = TermOperator.EQ;
+            else if (gt != null)
+                operator = TermOperator.GT;
+            else
+                operator = TermOperator.LT;
 
-// void Prefix() : 
-// {
-//     Token t;
-// }
-// {
-//   t=<STRING>
-//   {
-//     jjtThis.setValue(t.image);
-//   }
-// }
 
-// void Name() : 
-// {
-//     Token t;
-// }
-// {
-//   t=<STRING>
-//   {
-//     jjtThis.setValue(t.image);
-//   }
-// }
+            return getPropTermQuery(prefix, name, value, operator);
+        }
 
-// void Value() : 
-// {
-//   Token t;
-// }
-// {
-//     ("\"" t=<STRING> "\"" | t=<STRING>)
-//   {
-      
-//       jjtThis.setValue(unescape(t.image));
-//   }
-// }
+}
 
-// }

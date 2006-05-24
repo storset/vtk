@@ -86,7 +86,8 @@ import org.vortikal.web.service.RepositoryAssertion;
  * XXX: Validate all logic!
  * XXX: catch or declare evaluation and authorization exceptions on a reasonable level
  */
-public class PropertyManagerImpl implements InitializingBean, ApplicationContextAware {
+public class PropertyManagerImpl implements PropertyManager, 
+    RepositoryPropertyHelper, InitializingBean, ApplicationContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
 

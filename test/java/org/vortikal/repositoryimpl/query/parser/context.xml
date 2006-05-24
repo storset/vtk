@@ -5,7 +5,7 @@
 
   <!--bean id="queryParser"
         class="org.vortikal.repositoryimpl.query.parser.QueryParser">
-     <property name="propertyManager" ref="propertyManager" />         
+     <property name="propertyManager" ref="mockPropertyManager" />         
   </bean-->
-
+     
 </beans>

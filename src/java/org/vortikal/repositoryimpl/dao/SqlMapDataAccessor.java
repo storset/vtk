@@ -61,7 +61,7 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
 import org.vortikal.repositoryimpl.AuthorizationManager;
 import org.vortikal.repositoryimpl.LockImpl;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
@@ -82,7 +82,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     private Log logger = LogFactory.getLog(this.getClass());
 
     private ContentStore contentStore;
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private PrincipalManager principalManager;
     private AuthorizationManager authorizationManager;
     private SqlMapClient sqlMapClient;
@@ -93,7 +93,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         this.contentStore = contentStore;
     }
 
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+    public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
 
@@ -1119,7 +1119,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     
 
     public static void populateStandardProperties(
-        PropertyManagerImpl propertyManager, PrincipalManager principalManager,
+        PropertyManager propertyManager, PrincipalManager principalManager,
         PropertySetImpl propertySet, Map resourceMap) {
 
         propertySet.setID(((Number)resourceMap.get("id")).intValue());

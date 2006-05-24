@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.Property;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.security.PrincipalManager;
 
@@ -70,7 +70,7 @@ import org.vortikal.security.PrincipalManager;
 public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator {
 
     private ResultSet rs;
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private PrincipalManager principalManager;
     
     private boolean hasNext = true;
@@ -79,7 +79,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
     
     private Map resourceIdCache;
     
-    public ResourceIDCachingResultSetIteratorImpl(PropertyManagerImpl propertyManager,
+    public ResourceIDCachingResultSetIteratorImpl(PropertyManager propertyManager,
                                  PrincipalManager principalManager, ResultSet rs) throws IOException {
         this.propertyManager = propertyManager;
         this.principalManager = principalManager;

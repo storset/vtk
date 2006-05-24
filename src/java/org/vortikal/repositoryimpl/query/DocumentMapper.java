@@ -47,7 +47,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 
 /**
@@ -86,7 +86,7 @@ public class DocumentMapper implements InitializingBean {
     
     public DocumentMapper() {}
     
-    private PropertyManagerImpl propertyManager;
+    private PropertyManager propertyManager;
     private ValueFactory valueFactory;
     
     public void afterPropertiesSet() {
@@ -250,7 +250,7 @@ public class DocumentMapper implements InitializingBean {
     }
     
 
-    public void setPropertyManager(PropertyManagerImpl propertyManager) {
+    public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
 

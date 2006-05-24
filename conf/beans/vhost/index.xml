@@ -113,48 +113,11 @@
     class="org.vortikal.repositoryimpl.index.lucene.RuntimeManagerImpl"/>
   
 
-  <!-- Temporary web-accessible index runtime manager controller. --> 
-  <bean id="indexManagementHandler"
-    class="org.vortikal.web.controller.index.IndexManagementController">
-    <property name="runtimeManager" ref="indexRuntimeManager"/>
-    <!--<property name="viewName" value="redirectToManage"/>-->
-  </bean>
-
-
   <!-- Query tester -->
   <!--bean id="indexQueryTestingService" class="org.vortikal.index.test.QueryTester">
     <property name="searcher" ref="dmsIndexSearcher"/>
     <property name="token" ref="trustedToken"/>
   </bean-->
-  
-  <!-- Index management service. Belongs in 'management.xml' ? -->
-  <bean id="indexManagementService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-300"/>
-    <property name="parent" ref="manageService"/>
-    <property name="categories">
-      <set>
-        <value>tabMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="tabOrder"><value type="java.lang.Integer">1000</value></entry>
-      </map>
-    </property>
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
-          <property name="username" value="root@localhost"/>
-        </bean>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="index"/>
-          <property name="parameterValue" value="manage"/>
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="indexManagementHandler"/>
-  </bean>
-
   
   <!-- Search related -->
   <!-- This provides search access to a Lucene index (old implementation, 

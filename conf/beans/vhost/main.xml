@@ -31,6 +31,7 @@
   <import resource="service.xml" />
   <import resource="manage.xml" />
   <import resource="edit-properties.xml" />
+  <import resource="root-management.xml" />
   <import resource="browse.xml" />
   <!--import resource="xml-edit.xml" /-->
   <import resource="webdav.xml" />

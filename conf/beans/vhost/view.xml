@@ -4,7 +4,8 @@
 
 <beans>
 
-  <bean id="viewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+  <bean id="viewResolver" 
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="httpOptions">

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+
+  <bean id="repositoryManageService" 
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="-9600" />
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">-400</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="root" />
+        </bean>      
+      </list>
+    </property>
+    <property name="handler" ref="root1Handler" />
+  </bean>        
+
+  <bean id="root1Handler"
+        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="rootView" />
+  </bean>
+
+  <bean id="rootView" parent="freemarkerView">
+    <property name="url" value="pages/root1.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="adminCSSProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="rootViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="rootView" value-ref="rootView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="rootManageViewWrapper" />
+  </bean>
+
+
+  <bean id="rootManageViewWrapper" 
+        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+    <description>
+      This wrapper wraps manage views with the manage view layout
+      items. It uses three filters for head, header and footer
+    </description>
+    <property name="propagateExceptions" value="true" />
+    <property name="staticHeaders">
+      <map>
+        <entry key="Cache-Control" value="no-cache, must-revalidate" />
+        <entry key="Expires" value="0" />
+      </map>
+    </property>
+    <property name="contentFilters">
+      <list>
+        <ref bean="manageHeadContentFilter" />
+        <ref bean="manageHeaderContentFilter" />
+        <ref bean="manageFooterContentFilter" />
+      </list>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="leaveAdminLinkProvider" />
+        <ref bean="logoutLinkProvider" />
+        <ref bean="rootTabsProvider" />
+        <ref bean="resourceContextProvider" />
+
+        <ref bean="versionProvider" />
+
+        <ref bean="resourceMenuProvider" /> 
+        <ref bean="switchLocaleActionsProvider" />
+        <ref bean="lockUnlockActionsProvider" />
+        <ref bean="manageBreadCrumbProvider" />
+        <ref bean="resourceTitleProvider" />
+        <ref bean="adminHtmlTitleProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="rootTabsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="rootTabServicesFactory" />
+    <constructor-arg value="tabs"/>
+    <constructor-arg ref="repository.requestLocal"/>
+    <property name="matchAncestorServices" value="true" />
+  </bean>
+
+  <bean id="rootTabServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="rootMenu" />
+    <property name="comparator">
+      <bean class="org.vortikal.web.service.ServiceAttributeComparator">
+        <property name="attributeName" value="tabOrder" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <!-- Index management service. Belongs in 'management.xml' ? -->
+  <bean id="indexManagementService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-300"/>
+    <property name="parent" ref="repositoryManageService"/>
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">1000</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="index"/>
+          <property name="parameterValue" value="manage"/>
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="indexManagementHandler"/>
+  </bean>
+
+  <!-- Temporary web-accessible index runtime manager controller. --> 
+  <bean id="indexManagementHandler"
+    class="org.vortikal.web.controller.index.IndexManagementController">
+    <property name="runtimeManager" ref="indexRuntimeManager"/>
+    <!--<property name="viewName" value="redirectToManage"/>-->
+  </bean>
+
+
+  
+
+</beans>

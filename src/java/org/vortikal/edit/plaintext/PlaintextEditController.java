@@ -241,8 +241,10 @@ public class PlaintextEditController extends SimpleFormController
         }
 
         String content = plaintextEditCommand.getContent();
-        logger.warn("Decoding posted string using encoding: " + characterEncoding);
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Decoding posted string using encoding: " + characterEncoding);
+        }
         repository.storeContent(token, uri, 
                 new ByteArrayInputStream(content.getBytes(characterEncoding)));
 

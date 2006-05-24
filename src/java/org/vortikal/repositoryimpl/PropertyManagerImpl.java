@@ -949,7 +949,7 @@ public class PropertyManagerImpl implements PropertyManager,
             this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
 
         if (!this.namespacePrefixMap.containsKey(def.getNamespace().getPrefix()))
-            this.namespaceUriMap.put(def.getNamespace().getPrefix(), def.getNamespace());
+            this.namespacePrefixMap.put(def.getNamespace().getPrefix(), def.getNamespace());
 
         Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
         

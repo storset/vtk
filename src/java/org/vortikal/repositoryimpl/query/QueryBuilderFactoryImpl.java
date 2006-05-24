@@ -104,75 +104,83 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     
     public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
         
-       if (query instanceof AbstractMultipleQuery) {
-           return new QueryTreeBuilder(this, (AbstractMultipleQuery)query);
-       }
-        
-       if (query instanceof AbstractPropertyQuery) {
-           return getAbstractPropertyQueryBuilder(query);
-       }
-       
-       if (query instanceof UriTermQuery) {
-           return new UriTermQueryBuilder((UriTermQuery)query);
-       }
-       
-       if (query instanceof UriPrefixQuery) {
-           Term idTerm = getPropertySetIdTermFromIndex(((UriPrefixQuery)query).getUri());
-           return new UriPrefixQueryBuilder(idTerm);
-       }
+        QueryBuilder builder = null;
 
-       if (query instanceof NameTermQuery) {
-           return new NameTermQueryBuilder((NameTermQuery)query);
-       }
+        if (query instanceof AbstractMultipleQuery) {
+            builder = new QueryTreeBuilder(this, (AbstractMultipleQuery)query);
+        }
 
-       if (query instanceof NameRangeQuery) {
-           return new NameRangeQueryBuilder((NameRangeQuery)query);
-       }
+        else if (query instanceof AbstractPropertyQuery) {
+            builder = getAbstractPropertyQueryBuilder(query);
+        }
        
-       if (query instanceof NamePrefixQuery) {
-           return new NamePrefixQueryBuilder((NamePrefixQuery)query);
-       }
+        else if (query instanceof UriTermQuery) {
+            builder = new UriTermQueryBuilder((UriTermQuery)query);
+        }
+       
+        else if (query instanceof UriPrefixQuery) {
+            Term idTerm = getPropertySetIdTermFromIndex(((UriPrefixQuery)query).getUri());
+            builder =  new UriPrefixQueryBuilder(idTerm);
+        }
 
-       if (query instanceof NameWildcardQuery) {
-           return new NameWildcardQueryBuilder((NameWildcardQuery)query);
-       }
+        else if (query instanceof NameTermQuery) {
+            builder = new NameTermQueryBuilder((NameTermQuery)query);
+        }
+
+        else if (query instanceof NameRangeQuery) {
+            builder = new NameRangeQueryBuilder((NameRangeQuery)query);
+        }
        
-       if (query instanceof TypeTermQuery) {
-           return new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
-                                          (TypeTermQuery)query);
-       }
+        else if (query instanceof NamePrefixQuery) {
+            builder = new NamePrefixQueryBuilder((NamePrefixQuery)query);
+        }
+
+        else if (query instanceof NameWildcardQuery) {
+            builder = new NameWildcardQueryBuilder((NameWildcardQuery)query);
+        }
        
+        else if (query instanceof TypeTermQuery) {
+            builder = new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
+                                               (TypeTermQuery)query);
+        }
        
-       
-       throw new QueryBuilderException("Unsupported query type: " 
-                                   + query.getClass().getName());
+        if (builder == null) {
+            throw new QueryBuilderException("Unsupported query type: " 
+                                            + query.getClass().getName());
+        }
+        return builder;
     }
     
     private QueryBuilder getAbstractPropertyQueryBuilder(Query query)
         throws QueryBuilderException {
+
+        QueryBuilder builder = null;
         
         if (query instanceof PropertyTermQuery) {
-            return new PropertyTermQueryBuilder((PropertyTermQuery)query);
+            builder = new PropertyTermQueryBuilder((PropertyTermQuery)query);
         }
         
         if (query instanceof PropertyPrefixQuery) {
-            return new PropertyPrefixQueryBuilder((PropertyPrefixQuery)query);
+            builder = new PropertyPrefixQueryBuilder((PropertyPrefixQuery)query);
         }
         
         if (query instanceof PropertyRangeQuery) {
-            return new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
+            builder = new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
         }
         
         if (query instanceof PropertyWildcardQuery) {
-            return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
+            builder = new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
         }
         
         if (query instanceof PropertyExistsQuery) {
-            return new PropertyExistsQueryBuilder((PropertyExistsQuery)query);
+            builder = new PropertyExistsQueryBuilder((PropertyExistsQuery)query);
         }
         
-        throw new QueryBuilderException("Unsupported property query type: " 
+        if (builder == null) {
+            throw new QueryBuilderException("Unsupported property query type: " 
                                         + query.getClass().getName());
+        }
+        return builder;
     }
     
     private Term getPropertySetIdTermFromIndex(String uri) 

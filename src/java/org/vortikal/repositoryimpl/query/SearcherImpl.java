@@ -134,9 +134,11 @@ public class SearcherImpl implements Searcher, InitializingBean {
     private ResultSet executeUnsortedQuery(String token, Query query, 
             int maxResults, int cursor) throws QueryException {
         
-        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
+        org.apache.lucene.search.Query q =
+            this.queryBuilderFactory.getBuilder(query).buildQuery();
+
         if (logger.isDebugEnabled()) {
-            logger.debug("Parsed query " + query + " into Lucene query: " + q);
+            logger.debug("Built lucene query '" + q + "' from query" + query.dump(""));
         }
 
         IndexSearcher searcher = null;
@@ -166,9 +168,11 @@ public class SearcherImpl implements Searcher, InitializingBean {
     private ResultSet executeSortedQuery(String token, Query query, Sorting sorting,
             int maxResults, int cursor) throws QueryException {
 
-        org.apache.lucene.search.Query q = this.queryBuilderFactory.getBuilder(query).buildQuery();
+        org.apache.lucene.search.Query q =
+            this.queryBuilderFactory.getBuilder(query).buildQuery();
+
         if (logger.isDebugEnabled()) {
-            logger.debug("Parsed query " + query + " into Lucene query: " + q);
+            logger.debug("Built lucene query '" + q + "' from query" + query.dump(""));
         }
 
         IndexSearcher searcher = null;

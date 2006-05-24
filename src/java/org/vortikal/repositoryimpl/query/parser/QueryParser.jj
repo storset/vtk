@@ -64,6 +64,15 @@ public class QueryParser implements Parser {
         return new PropertyTermQuery(def, value, operator);
     }
 
+    private Query getPropPrefixQuery(String prefix, String name, String value) {
+        PropertyTypeDefinition def = 
+            propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+        if (def == null)
+            throw new RuntimeException("Unknown property " + prefix + ":" + name);
+
+        return new PropertyPrefixQuery(def, value);
+    }
+
     private String unescape(String escaped) {
         char[] caSource = escaped.toCharArray();
         char[] caDest = new char[caSource.length];
@@ -318,13 +327,11 @@ Query PropertyQuery() :
     Query q;
 }
 {
-    (LOOKAHEAD(4) q=PropertyExistsQuery() | q=PropertyTermQuery())
+    (LOOKAHEAD(4) q=PropertyExistsQuery() 
+     | LOOKAHEAD(6) q=PropertyPrefixQuery()
+     | q=PropertyTermQuery())
         { return q;}
 }    
-
-
-
-
 
 // Property exists:
 Query PropertyExistsQuery() : {
@@ -340,6 +347,27 @@ Query PropertyExistsQuery() : {
         }
 
 }
+
+Query PropertyPrefixQuery() : 
+{
+    Token p=null, n, v;
+}
+{
+    [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> 
+        <EQ>
+        //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
+        v=<VALUE> <ASTERISK>
+        { 
+            String prefix = null;
+            if (p != null) prefix = p.image;
+            String name = n.image;
+            
+            String value = unescape(v.image);
+
+            return getPropPrefixQuery(prefix, name, value); 
+        }
+}
+
 
 // Property value query:
 Query PropertyTermQuery() : {

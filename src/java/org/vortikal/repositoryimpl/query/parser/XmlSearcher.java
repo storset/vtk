@@ -36,6 +36,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.DOMOutputter;
@@ -62,6 +65,8 @@ import org.vortikal.security.SecurityContext;
  * in an XML structure.
  */
 public class XmlSearcher implements InitializingBean {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private Searcher searcher;
     private Parser parser;
@@ -120,6 +125,7 @@ public class XmlSearcher implements InitializingBean {
                                                  this.maxResults);
             rootElement = resultSetToElement(rs);
         } catch (Exception e) {
+            logger.warn("Error occurred while performing query: '" + query + "'", e);
             rootElement = new Element("error");
             rootElement.setAttribute("exception", e.getClass().getName());
             rootElement.setAttribute("query", query);
@@ -151,19 +157,32 @@ public class XmlSearcher implements InitializingBean {
         propertySetElement.setAttribute("type", propertySet.getResourceType());
         for (Iterator i = propertySet.getProperties().iterator(); i.hasNext();) {
             Property property = (Property) i.next();
-            propertySetElement.addContent(propertyToElement(property));
+            Element propertyElement = propertyToElement(property);
+            if (propertyElement != null) {
+                propertySetElement.addContent(propertyElement);
+            }
         }
         return propertySetElement;
     }
     
 
     private Element propertyToElement(Property property) {
+        if (property.getDefinition() == null) {
+            return null;
+        }
+
         Element propertyElement = new Element("property");
         String namespaceUri = property.getNamespace().getUri();
         if (namespaceUri != null) {
             propertyElement.setAttribute("namespace", namespaceUri);
         }
-        propertyElement.setAttribute("name", property.getName());
+        String prefix = property.getNamespace().getPrefix();
+        if (prefix != null) {
+            propertyElement.setAttribute("name", prefix + ":" + property.getName());
+        } else {
+            propertyElement.setAttribute("name", property.getName());
+        }
+        
         if (property.getDefinition().isMultiple()) {
             Element valuesElement = new Element("values");
             Value[] values = property.getValues();
@@ -219,8 +238,7 @@ public class XmlSearcher implements InitializingBean {
         
             for (int i = 0; i < fields.length; i++) {
                 String field = fields[i].trim();
-                boolean invert = false;
-            
+                SortFieldDirection direction = SortFieldDirection.ASC;
                 int separatorIdx = field.indexOf(":");
                 if (separatorIdx != -1) {
                     if (separatorIdx == 0 || separatorIdx == field.length() - 1) {
@@ -230,13 +248,11 @@ public class XmlSearcher implements InitializingBean {
                     String modifier = field.substring(separatorIdx + 1).trim();
                     field = field.substring(0, separatorIdx).trim();
                     if ("descending".startsWith(modifier)) {
-                        invert = true;
+                        direction = SortFieldDirection.ASC;
                     }
                 }
-                SortFieldDirection direction = invert ?
-                    SortFieldDirection.ASC : SortFieldDirection.DESC;
+
                 SortField sortField = null;
-            
                 if ("uri".equals(field) || "type".equals(field) || "name".equals(field)) {
                     sortField = new SimpleSortField(field, direction);
                 } else {

@@ -191,11 +191,11 @@
     <property name="repository" ref="repository" />
   </bean>
 
-<!--
+
   <bean id="repository.evaluator" class="org.vortikal.repositoryimpl.EvaluatorUtil">
     <property name="propertyManager" ref="propertyManager" />
     <property name="dataAccessor" ref="repository.database" />
   </bean>
--->
+
 
 </beans>

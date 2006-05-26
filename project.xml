@@ -354,7 +354,7 @@
     <dependency>
       <!-- RSS feed -->
       <id>rome</id>
-      <version>0.8</version>
+      <version>0.8-20060526</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

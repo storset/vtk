@@ -46,7 +46,8 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
     private String name;
     
 
-    public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition, String value) {
+    public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition,
+                               String value) {
         super(submitURL);
         this.definition = definition;
         this.value = value;
@@ -54,8 +55,8 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         this.name = definition != null ? definition.getName() : null;
     }
 
-    public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition, String value,
-                               String[] possibleValues) {
+    public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition,
+                               String value, String[] possibleValues) {
         super(submitURL);
         this.definition = definition;
         this.value = value;
@@ -107,7 +108,8 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
             if (possibleValues == null) {
                 buffer.append(", possibleValues = ").append("null");
             } else {
-                buffer.append(", possibleValues = ").append(Arrays.asList(possibleValues).toString());
+                buffer.append(", possibleValues = ").append(
+                    Arrays.asList(possibleValues).toString());
             }
             buffer.append(", value = ").append(value);
             buffer.append(", namespace = ").append(namespace);

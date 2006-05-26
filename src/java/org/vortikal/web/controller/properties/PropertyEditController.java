@@ -36,12 +36,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -50,6 +50,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -63,6 +64,7 @@ public class PropertyEditController extends SimpleFormController
   implements ReferenceDataProvider, ReferenceDataProviding, InitializingBean {
 
     private Repository repository;
+    private PrincipalManager principalManager;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private ValueFactory valueFactory;
     private String dateFormat;
@@ -77,6 +79,10 @@ public class PropertyEditController extends SimpleFormController
     
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
 
     public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
@@ -114,7 +120,12 @@ public class PropertyEditController extends SimpleFormController
             throw new BeanInitializationException(
                 "JavaBean property 'dateFormat' not set");
         }
-        setValidator(new PropertyEditValidator(valueFactory));
+        if (this.principalManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'principalManager' not set");
+        }
+        setValidator(new PropertyEditValidator(this.valueFactory,
+                                               this.principalManager));
     }
     
 
@@ -183,12 +194,13 @@ public class PropertyEditController extends SimpleFormController
             }
         }
         
-        PropertyEditCommand propertyEditCommand = new PropertyEditCommand(editURL, definition, value,
-                                       formAllowedValues);
+        PropertyEditCommand propertyEditCommand = new PropertyEditCommand(
+            editURL, definition, value, formAllowedValues);
         return propertyEditCommand;
     }
 
-    private String getValueForPropertyAsString(Property property) throws IllegalOperationException {
+    private String getValueForPropertyAsString(Property property)
+        throws IllegalOperationException {
         String value;
         int type = property.getDefinition().getType();
         switch (type) {
@@ -234,7 +246,8 @@ public class PropertyEditController extends SimpleFormController
         for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
             
             PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
-            if (isFocusedProperty(def, propertyCommand.getNamespace(), propertyCommand.getName())) {
+            if (isFocusedProperty(def, propertyCommand.getNamespace(),
+                                  propertyCommand.getName())) {
                 Property property = resource.getProperty(def.getNamespace(), def.getName());
 
                 String stringValue = propertyCommand.getValue();
@@ -252,7 +265,8 @@ public class PropertyEditController extends SimpleFormController
 
                     if (def.isMultiple()) {
                         String[] splitValues = stringValue.split(",");
-                        Value[] values = this.valueFactory.createValues(splitValues, def.getType());
+                        Value[] values = this.valueFactory.createValues(
+                            splitValues, def.getType());
                         property.setValues(values);
                     } else {
                         if (def.getType() == PropertyType.TYPE_BOOLEAN) {
@@ -293,7 +307,8 @@ public class PropertyEditController extends SimpleFormController
 
             String editURL = null;
 
-            if (resource.isAuthorized(def.getProtectionLevel(), securityContext.getPrincipal())) {
+            if (resource.isAuthorized(def.getProtectionLevel(),
+                                      securityContext.getPrincipal())) {
                 
                 Map urlParameters = new HashMap();
                 String namespaceURI = def.getNamespace().getUri();
@@ -321,7 +336,8 @@ public class PropertyEditController extends SimpleFormController
     }
     
 
-    private boolean isFocusedProperty(PropertyTypeDefinition propDef, HttpServletRequest request) {
+    private boolean isFocusedProperty(PropertyTypeDefinition propDef,
+                                      HttpServletRequest request) {
         String inputNamespace = request.getParameter("namespace");
         String inputName = request.getParameter("name");
         return isFocusedProperty(propDef, inputNamespace, inputName);

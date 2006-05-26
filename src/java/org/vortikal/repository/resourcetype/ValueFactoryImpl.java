@@ -131,12 +131,13 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         case PropertyType.TYPE_PRINCIPAL:
             try {
                 Principal principal = principalManager.getUserPrincipal(stringValue);
-                if (!principalManager.validatePrincipal(principal)) {
-                    logger.debug("Validation failed for principal with stringValue '" + stringValue);
-                    throw new ValueFormatException(
-                            "Unable to convert string to valid principal. Principal '"
-                                    + stringValue + "' does not exists");
-                }
+                
+//                 if (!principalManager.validatePrincipal(principal)) {
+//                     logger.debug("Validation failed for principal with stringValue '" + stringValue);
+//                     throw new ValueFormatException(
+//                             "Unable to convert string to valid principal. Principal '"
+//                                     + stringValue + "' does not exists");
+//                 }
                 value.setPrincipalValue(principal);
             } catch (InvalidPrincipalException e) {
                 logger.debug("Exception for stringValue '" + stringValue + "': " + e);

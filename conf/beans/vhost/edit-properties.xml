@@ -75,6 +75,7 @@
   <bean id="editStandardPropertiesHandler" 
     class="org.vortikal.web.controller.properties.PropertyEditController"
     parent="requestLocalRepositoryAware">
+    <property name="principalManager" ref="principalManager" />
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="ownerPropDef" />
@@ -113,6 +114,7 @@
   <bean id="editUhtmlPropertiesHandler" 
     class="org.vortikal.web.controller.properties.PropertyEditController"
     parent="requestLocalRepositoryAware">
+    <property name="principalManager" ref="principalManager" />
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="unitPropDef" />

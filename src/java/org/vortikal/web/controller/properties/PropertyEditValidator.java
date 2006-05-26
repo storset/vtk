@@ -30,25 +30,30 @@
  */
 package org.vortikal.web.controller.properties;
 
+
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
 import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.security.PrincipalManager;
 
 
 public class PropertyEditValidator implements Validator {
     
     private ValueFactory valueFactory;
     
+    private PrincipalManager principalManager;
     
 
-    public PropertyEditValidator(ValueFactory valueFactory) {
+    public PropertyEditValidator(ValueFactory valueFactory,
+                                 PrincipalManager principalManager) {
         this.valueFactory = valueFactory;
+        this.principalManager = principalManager;
     }
     
 
@@ -77,11 +82,28 @@ public class PropertyEditValidator implements Validator {
             
             if (command.getDefinition().isMultiple()) {
                 String[] splitValues = formValue.split(",");
-                Value[] values = this.valueFactory.createValues(splitValues,
-                                                                command.getDefinition().getType());
+                Value[] values = this.valueFactory.createValues(
+                    splitValues, command.getDefinition().getType());
+
+                if (command.getDefinition().getType() == PropertyType.TYPE_PRINCIPAL) {
+                    for (int i = 0; i < values.length; i++) {
+                        
+                        if (!this.principalManager.validatePrincipal(
+                                values[i].getPrincipalValue())) {
+                            throw new ValueFormatException("Invalid principal " + values[i]);
+                        }
+                        
+                    }
+                }
+
             } else {
                 Value value = this.valueFactory.createValue(
                     formValue, command.getDefinition().getType());
+                if (command.getDefinition().getType() == PropertyType.TYPE_PRINCIPAL) {
+                    if (!this.principalManager.validatePrincipal(value.getPrincipalValue())) {
+                            throw new ValueFormatException("Invalid principal " + value);
+                    }
+                }
 
                 Constraint constraint = command.getDefinition().getConstraint();
                 if (constraint != null) {

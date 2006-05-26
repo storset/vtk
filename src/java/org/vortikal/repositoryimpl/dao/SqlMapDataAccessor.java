@@ -30,11 +30,8 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-
-
-
-
 import com.ibatis.sqlmap.client.SqlMapClient;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -47,10 +44,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;

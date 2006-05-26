@@ -17,19 +17,28 @@
 <html>
 <head>
   <title>Web console</title>
+  <style type="text/css">
+    .webConsoleResults {
+       font-family: monospace;
+    }
+  </style>
 </head>
 <body>
   <#if commandForm?exists>
   <p>
     <form class="webConsole" action="${commandForm.submitURL}" method="POST">
-      Enter command: <input type="text" name="command" size="60" />
+      <pre>Enter command:</pre>
+      <input type="text" name="command" size="60" />
     </form>
   </p>
   </#if>
   <#if commandForm.result?exists>
-    <div class="webConsoleResults">
-      ${commandForm.result?html}
-    </div>
+<p>
+<pre>
+Result:
+${commandForm.result?html}
+</pre>
+</p>
   </#if>
 
 </body>

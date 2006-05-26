@@ -399,7 +399,8 @@ public class PropertyManagerImpl implements PropertyManager,
             } 
         }
         
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this,
+                                                    this.authorizationManager);
         newResource.setID(resource.getID());
         newResource.setACL((Acl)resource.getAcl().clone());
 
@@ -588,7 +589,6 @@ public class PropertyManagerImpl implements PropertyManager,
                     logger.debug("No properties modification evaluator for property "
                                  + propertyDef + ", and it did not already exist, not adding");
                 }
-                System.out.println("deleted_props: " + deletedProps);
             }
 
             if (!addProperty && propertyDef.isMandatory()) {
@@ -819,7 +819,7 @@ public class PropertyManagerImpl implements PropertyManager,
             }
         } else {
             // Not multi-value, stringValues must be of length 1, otherwise there are
-            // inconsistency problems between database and config.
+            // inconsistency problems between data store and config.
             if (stringValues.length > 1) {
                 logger.error("Cannot convert multiple values to a single-value prop"
                              + " for property " + prop);
@@ -827,6 +827,10 @@ public class PropertyManagerImpl implements PropertyManager,
                     "Cannot convert multiple values: " + Arrays.asList(stringValues)
                     + " to a single-value prop"
                     + " for property " + prop);
+            }
+            if (def == null) {
+                // Dead, ensure value is interpreted as string:
+                type = PropertyType.TYPE_STRING;
             }
             
             Value value = valueFactory.createValue(stringValues[0], type);

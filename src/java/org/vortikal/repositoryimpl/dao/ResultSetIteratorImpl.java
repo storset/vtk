@@ -124,13 +124,21 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
                     values.add(rs.getString("value"));
                 }
 
-                if (!this.rs.isLast()) {
-                    this.rs.next();
-                    uri = rs.getString("uri");
+                if (this.rs.next()) {
+                    uri = this.rs.getString("uri");
                 } else {
                     uri = null;
                     this.hasNext = false;
                 }
+
+// OLD (not supported by Oracle):
+//                 if (!this.rs.isLast()) {
+//                     this.rs.next();
+//                     uri = rs.getString("uri");
+//                 } else {
+//                     uri = null;
+//                     this.hasNext = false;
+//                 }
             }
 
             for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {

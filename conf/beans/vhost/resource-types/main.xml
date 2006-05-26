@@ -13,14 +13,12 @@
   <import resource="xml.xml" />
   <import resource="managed-xml.xml" />
   <import resource="emne.xml" />
-
-  <import resource="managed-xml.xml" />
-
-  <import resource="emne.xml" />
   <import resource="semester.xml" />
   <import resource="emnegruppe.xml" />
   <import resource="studieprogram.xml" />
   <import resource="studieretning.xml" />
+
+  <import resource="image.xml" />
 
   <import resource="uhtml.xml" />
   <import resource="publish.xml" />

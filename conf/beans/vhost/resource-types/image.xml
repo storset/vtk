@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Image resource -->
+
+  <bean id="imageResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="image"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesImage" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="imageHeightPropDef" />
+        <ref bean="imageWidthPropDef" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="contentTypeMatchesImage" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="image/(.+)" />
+  </bean>
+
+  <bean id="imageHeightPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="pixelHeight" />
+    <property name="type" ref="TYPE_INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="imageHeightEvaluator" />
+  </bean>
+
+  <bean id="imageHeightEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
+    <property name="evaluateHeight" value="true" />
+  </bean>
+
+  <bean id="imageWidthPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="pixelWidth" />
+    <property name="type" ref="TYPE_INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="imageWidthEvaluator" />
+  </bean>
+
+  <bean id="imageWidthEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
+    <property name="evaluateHeight" value="false" />
+  </bean>
+
+</beans>
+
+

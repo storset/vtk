@@ -141,6 +141,7 @@
   <bean id="jdomContentFactory" class="org.vortikal.repositoryimpl.content.JDOMContentFactory" />
 
   <bean id="jtidyContentFactory" class="org.vortikal.repositoryimpl.content.JTidyContentFactory" />
+  <bean id="bufferedImageContentFactory" class="org.vortikal.repositoryimpl.content.BufferedImageContentFactory" />
 
 
   <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManager">
@@ -185,5 +186,16 @@
     <property name="targetObject"><ref bean="repository.database"/></property>
     <property name="targetMethod"><value>deleteExpiredLocks</value></property>
   </bean>
+
+  <bean id="repository.importer" class="org.vortikal.repositoryimpl.DataImportUtil">
+    <property name="repository" ref="repository" />
+  </bean>
+
+<!--
+  <bean id="repository.evaluator" class="org.vortikal.repositoryimpl.EvaluatorUtil">
+    <property name="propertyManager" ref="propertyManager" />
+    <property name="dataAccessor" ref="repository.database" />
+  </bean>
+-->
 
 </beans>

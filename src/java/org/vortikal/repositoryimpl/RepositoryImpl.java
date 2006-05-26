@@ -260,10 +260,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("Invalid URI: '" + destUri + "'");
         }
         
-        uriValidator.validateCopyURIs(srcUri, destUri);
-        
+        uriValidator.validateCopyURIs(srcUri, destUri);        
         ResourceImpl src = dao.load(srcUri);
-
         if (src == null) {
             throw new ResourceNotFoundException(srcUri);
         }
@@ -277,25 +275,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         } 
         
         String destParentUri = URIUtil.getParentURI(destUri);
-
         ResourceImpl destParent = dao.load(destParentUri);
-
         if ((destParent == null) || !destParent.isCollection()) {
-            throw new IllegalOperationException("destination is either a document or does not exist");
+            throw new IllegalOperationException(
+                "destination is either a document or does not exist");
         }
 
-        this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
+        this.authorizationManager.authorizeCopy(srcUri, destUri,
+                                                principal, overwrite);
         
         if (dest != null) {
             this.dao.delete(dest);
         }
 
         try {
-        
-            PropertySet fixedProps = this.propertyManager.getFixedCopyProperties(src, principal, destUri);
+            PropertySet fixedProps = this.propertyManager.getFixedCopyProperties(
+                src, principal, destUri);
             this.dao.copy(src, destUri, preserveACL, fixedProps);
+// XXX: file extension of of destination resource may have changed,
+// might need re-evaluation.
 
-            dest = (ResourceImpl)dao.load(destUri).clone();
+            dest = (ResourceImpl) dao.load(destUri).clone();
 
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
@@ -670,7 +670,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.authorizationManager.authorizeCreate(uri, principal);
         
         ResourceImpl newResource = 
-            propertyManager.create(principal, uri, collection);
+            this.propertyManager.create(principal, uri, collection);
 
         try {
             newResource.setACL((Acl)parent.getAcl().clone());

@@ -402,28 +402,22 @@
 
   <bean id="romeFeedView" class="org.vortikal.web.view.RomeFeedView"  abstract="true" />
 
-    
   <bean id="collectionListingAsFeedView" parent="romeFeedView">
+    <property name="browsingService" ref="viewService" />
+    <property name="defaultFeedType" value="atom_1.0" />
+    <property name="useTimestampInIdentifier" value="true" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="viewCollectionListingAsFeedProvider"/>
-        <ref bean="viewRomeFeedProvider"/>
       </list>
     </property>
+    
   </bean>
   
   <bean id="viewCollectionListingAsFeedProvider"
     class="org.vortikal.web.referencedata.provider.CollectionListingAsFeedProvider"
     parent="requestLocalRepositoryAware" >
     <property name="browsingService" ref="viewService" />
-  </bean>
-  
-  <bean id="viewRomeFeedProvider"
-    class="org.vortikal.web.referencedata.provider.RomeFeedProvider">
-    <property name="browsingService" ref="viewService" />
-    <property name="defaultFeedType" value="atom_1.0" />
-    <property name="useTimestampInIdentifier" value="true" />
-    <!-- <property name="charset" value="utf-8" /> -->
   </bean>
   
 </beans>

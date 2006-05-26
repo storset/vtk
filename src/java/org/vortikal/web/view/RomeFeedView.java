@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,9 @@ package org.vortikal.web.view;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,31 +45,79 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
+import org.vortikal.web.service.Service;
 
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
 
 /**
- * This view renders a rssfeed based on a object in the model of type
- * {@link com.sun.syndication.feed.synd.SyndFeed} with key "romeFeed".
+ * This view renders a rssfeed based on a object in the model of type {@link java.util.Map} with key
+ * "feedModel".
  * 
- * The feedType is specified in the feed object.
- *  
- * Configurable properties:
+ * <p>
+ * feedModel can contain the following data:
+ * </p>
  * <ul>
- *  <li>none</li>
+ * <li><code>title</code> - title for the rssfeed to be used in
+ * {@link com.sun.syndication.feed.synd.SyndFeed#setTitle}
+ * <li><code>description</code> - description for the rssfeed to be used in
+ * {@link com.sun.syndication.feed.synd.SyndFeed#setDescription}
+ * <li><code>url</code> - url for the feed to be used in
+ * {@link com.sun.syndication.feed.synd.SyndFeed#setLink}
+ * <li><code>resources</code> - An array of {@link org.vortikal.repository.Resource} to be
+ * included in the rssfeed
  * </ul>
- *
- * (This view is copied from noticeboard)
+ * 
+ * <p>
+ * Configurable properties:
+ * </p>
+ * <ul>
+ * <li><code>browsingService</code> - The service used for constructing the link to the resource in the list "resources"</li>
+ * <li><code>defaultFeedType</code> - The feedType which will be used for the feed if the
+ * parameter "format" is not available in the request or this parameter contains an unssupported
+ * feedType. Legal values for format in rome 0.8:
+ * <ul>
+ * <li>rss_0.9</li>
+ * <li>rss_0.91</li>
+ * <li>rss_0.92</li>
+ * <li>rss_0.93</li>
+ * <li>rss_0.94</li>
+ * <li>rss_1.0</li>
+ * <li>rss_2.0</li>
+ * <li>atom_0.3</li>
+ * <li>atom_1.0</li>
+ * </ul>
+ * </li>
+ * <li><code>charset</code> - The characterset used for the feed. Default is utf-8</li>
+ * <li><code>useTimestampInIdentifier</code> - Use resource lastModified as anchor in the url for
+ * each entry to make Thunderbird beleve the entry is modified</li>
+ * </ul>
  * 
  */
 public class RomeFeedView implements View, ReferenceDataProviding, InitializingBean {
 
+    private static final int RSS_ENTRY_TITLE_MAX_LENGTH = 99;
+    
     private ReferenceDataProvider[] referenceDataProviders;
 
+    private final String FORMAT_PARAMETER_NAME = "format";
+    private Service browsingService;
+
+    private String defaultFeedType;
+    
+    private boolean useTimestampInIdentifier = false;
+    
+    private String charset = "utf-8";
+    
     private static Log logger = LogFactory.getLog(RomeFeedView.class);
 
     /**
@@ -74,13 +125,53 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
      * @see org.springframework.web.servlet.View#render(java.util.Map,
      *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void render(Map model, HttpServletRequest req, HttpServletResponse resp)
+    public void render(Map model, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
-        SyndFeed feed = (SyndFeed) model.get("romeFeed");
+        Map feedModel = (Map) model.get("feedModel");
         
-        resp.setContentType("text/xml; charset=" + feed.getEncoding());
-        PrintWriter writer = resp.getWriter();
+        if (feedModel == null) {
+            return;
+        }
+        // Generate and write RSS file:
+        SyndFeed feed = new SyndFeedImpl();
+
+        String title = (String) feedModel.get("title");
+        feed.setTitle(title);
+
+        String description = (String) feedModel.get("description");
+        feed.setDescription(description);
+
+        String url = (String) feedModel.get("url");
+        feed.setLink(url);
+        feed.setUri(url);
+
+        Resource[] resources = (Resource[]) feedModel.get("resources");
+        // Created and add list of entries
+        // (Each entry is set with a title, link, published date and a description)
+        // ( -> Description can be plain text or HTML)
+        List feedEntries = new ArrayList();
+
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+
+        for (int i = 0; i < resources.length; i++) {
+            SyndEntry entry = getSyndEntryForResource(resources[i], principal);
+            feedEntries.add(entry);
+        }
+       
+        feed.setFeedType(getFormatFromRequest(request, feed));
+        feed.setEncoding(charset);
+
+        // Maybe a better implemantation is to set publishedDate for the feed to the lastest of the
+        // updated
+        // dates for the entries.
+        feed.setPublishedDate(Calendar.getInstance().getTime());
+
+        feed.setEntries(feedEntries);
+
+        
+        response.setContentType("text/xml; charset=" + feed.getEncoding());
+        PrintWriter writer = response.getWriter();
 
         try {
             SyndFeedOutput output = new SyndFeedOutput();
@@ -95,7 +186,100 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
         }
     } // end of render()
 
- 
+    private String getFormatFromRequest(HttpServletRequest request, SyndFeed feed) {
+        String feedType = request.getParameter(FORMAT_PARAMETER_NAME);
+        if (feedType == null || !isSuuportedFeedType(feedType, feed)) {
+            feedType = defaultFeedType;
+        }
+        return feedType;
+    }
+    
+    private boolean isSuuportedFeedType(String feedType, SyndFeed feed) {
+        return feed.getSupportedFeedTypes().contains(feedType);
+    }
+
+    /**
+     * Helper method to build a RSS SyndEntry from provided arguments
+     * 
+     * @param String
+     *            title, String url, String publishDate, String doctype, String tilhorighet
+     * @return SyndEntry RSS feed with values corresponding to document values
+     */
+    private SyndEntry getSyndEntryForResource(Resource resource, Principal principal) {
+        // RSS entry objects
+        SyndEntry entry = new SyndEntryImpl();
+        String title = resource.getName();
+        if (!title.equals("")) {
+            // Throws FeedException if title exceeds 100 characters        
+            if (title.length() > RSS_ENTRY_TITLE_MAX_LENGTH) {
+                String truncationString = "...";
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Title of a feed entry cannot exceed " + RSS_ENTRY_TITLE_MAX_LENGTH + " characters. Title is \'" + title + "\'");
+                }
+                title = title.substring(0, RSS_ENTRY_TITLE_MAX_LENGTH
+                        - truncationString.length())
+                        + truncationString;
+            }
+  
+            entry.setTitle(formatTitle(title));
+        } else {
+            entry.setTitle("title is missing");
+        }
+        
+        entry.setAuthor(resource.getOwner().getName());
+     
+        String link = browsingService.constructLink(resource, principal);
+        entry.setLink(link);
+
+        if (useTimestampInIdentifier) {
+            long lastModified = resource.getLastModified().getTime();
+            entry.setUri(link + "#" + lastModified); 
+        } else {
+            entry.setUri(link); 
+        }
+        
+        entry.setPublishedDate(resource.getCreationTime());
+        //entry.setPublishedDate(resource.getLastModified());
+        entry.setUpdatedDate(resource.getLastModified());
+        return entry;
+    }
+
+    /**
+     * Private helper method for setEntry() to format a title which contains multiple, separated
+     * elements
+     * 
+     * @param noticeTitle
+     * @return title with any occurences of separators "|" replaced by ": "
+     */
+    private String formatTitle(String noticeTitle) {
+        return noticeTitle.replaceAll("\\|", ": ");
+    }
+
+    public void setBrowsingService(Service browsingService) {
+        this.browsingService = browsingService;
+    }
+
+    /**
+     * 
+     * @param defaultFeedType
+     *            
+     */
+    public void setDefaultFeedType(String defaultFeedType) {
+        this.defaultFeedType = defaultFeedType;
+    }
+
+    /**
+     * 
+     * @param charset
+     */
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
+    public void setUseTimestampInIdentifier(boolean useTimestampInIdentifier) {
+        this.useTimestampInIdentifier = useTimestampInIdentifier;
+    }
+    
     public void afterPropertiesSet() throws Exception {
         //doNothing
     }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,21 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
+/**
+ * Directory listing ass feed model builder. Creates a model map 'feedModel' with a list of
+ * children and associated data for the requested collection.
+ * <p>
+ * Configurable properties:
+ * </p>
+ * <ul>
+ * <li><code>browsingService</code> - The service used for constructing the link to the resource
+ * in the list "resources"</li>
+ * </ul>
+ */
 
 public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
+
+    private static final int RSS_TITLE_MAX_LENGTH = 40;
 
     //public static final String DEFAULT_SORT_BY_PARAMETER = "name";
     public static final String DEFAULT_SORT_BY_PARAMETER = "last-modified";
@@ -73,7 +86,7 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
     
     private Repository repository;
     private Service browsingService;
-    //private boolean retrieveForProcessing = false;
+
     private Set contentTypeFilter;
     private Pattern contentTypeRegexpFilter;
     
@@ -145,9 +158,14 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
    
         String feedTitleText = resource.getName();
         // Set format and feed header info (title, link, description)
-        if (feedTitleText.length() > 40) {
-            logger.warn("Title of the feed cannot exceed 40 characters");
-            feedTitleText = feedTitleText.substring(0, 35) + "...";
+        if (feedTitleText.length() > RSS_TITLE_MAX_LENGTH) {
+            String truncationString = "...";
+            if (logger.isWarnEnabled()) {
+                logger.warn("Title of the feed cannot exceed " + RSS_TITLE_MAX_LENGTH + " characters.Title is \'" + feedTitleText + "\'");
+            }
+            feedTitleText = feedTitleText.substring(0, RSS_TITLE_MAX_LENGTH
+                    - truncationString.length())
+                    + truncationString;
         }
         feedModel.put("title", feedTitleText);
         

@@ -47,4 +47,7 @@ public class SimpleSortField extends AbstractSortField {
         return this.name;
     }
     
+    public String toString() {
+        return this.name + " " + getDirection().toString();
+    }
 }

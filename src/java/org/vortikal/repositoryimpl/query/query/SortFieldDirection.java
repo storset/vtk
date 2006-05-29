@@ -32,14 +32,26 @@ package org.vortikal.repositoryimpl.query.query;
 
 public class SortFieldDirection {
 
+    private String name;
+
+    private SortFieldDirection(String name) {
+        this.name = name;
+    }
+    
+
     /**
      * Defines ascending sort order (smallest first).
      */
-    public static final SortFieldDirection ASC = new SortFieldDirection();
+    public static final SortFieldDirection ASC = new SortFieldDirection("asc");
     
     /**
      * Defines descending sort order (biggest first).
      */
-    public static final SortFieldDirection DESC = new SortFieldDirection();
+    public static final SortFieldDirection DESC = new SortFieldDirection("desc");
 
+
+    public String toString() {
+        return this.name;
+    }
+    
 }

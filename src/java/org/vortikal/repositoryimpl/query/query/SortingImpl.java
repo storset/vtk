@@ -56,4 +56,10 @@ public class SortingImpl implements Sorting {
         return this.sortFields;
     }
     
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": ").append(this.sortFields);
+        return sb.toString();
+    }
+    
 }

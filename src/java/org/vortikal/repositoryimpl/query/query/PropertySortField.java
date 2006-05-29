@@ -49,4 +49,8 @@ public class PropertySortField extends AbstractSortField {
         return this.definition;
     }
 
+    public String toString() {
+        return this.definition.getName() + " " + getDirection().toString();
+    }
+    
 }

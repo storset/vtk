@@ -57,6 +57,7 @@ import org.vortikal.repositoryimpl.PropertySetImpl;
  * objects and vice-versa.
  * 
  * XXX: more error-checking
+ * TODO: Javadoc
  * 
  * @author oyviste
  */
@@ -241,7 +242,9 @@ public class DocumentMapper implements InitializingBean {
                 return FieldValueMapper.getFieldFromValues(fieldName, values);
         } else if (def != null) {
             return FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
-        } 
+        }
+        
+        // Dead property
         return null;
     }
     

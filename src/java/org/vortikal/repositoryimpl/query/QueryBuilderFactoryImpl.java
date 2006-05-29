@@ -74,6 +74,7 @@ import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
 import org.vortikal.repositoryimpl.query.query.UriPrefixQuery;
 import org.vortikal.repositoryimpl.query.query.UriTermQuery;
+import org.vortikal.util.repository.URIUtil;
 
 /**
  * Factory that helps in building different Lucene queries 
@@ -119,8 +120,9 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         }
        
         else if (query instanceof UriPrefixQuery) {
-            Term idTerm = getPropertySetIdTermFromIndex(((UriPrefixQuery)query).getUri());
-            builder =  new UriPrefixQueryBuilder(idTerm);
+            String uri = ((UriPrefixQuery)query).getUri();
+            Term idTerm = getPropertySetIdTermFromIndex(uri);
+            builder =  new UriPrefixQueryBuilder(uri, idTerm);
         }
 
         else if (query instanceof NameTermQuery) {
@@ -148,6 +150,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             throw new QueryBuilderException("Unsupported query type: " 
                                             + query.getClass().getName());
         }
+        
         return builder;
     }
     
@@ -191,7 +194,8 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         try {
             reader = indexAccessor.getReadOnlyIndexReader();
 
-            td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, 
+                                                URIUtil.stripTrailingSlash(uri)));
             
             if (td.next()) {
                 String fieldValue = reader.document(td.doc()).get(DocumentMapper.ID_FIELD_NAME);

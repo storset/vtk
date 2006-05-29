@@ -79,7 +79,7 @@ public class LuceneIndex implements InitializingBean {
     private boolean searchReaderOutdated = false;
     private int currentSearchIndexReaderRefCount = 0;
     private IndexReaderRefCountMap outdatedReaders = 
-        new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_INDEX_READERS*2);
+        new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_INDEX_READERS * 2);
     
     private FSBackedLuceneIndex primaryFSIndex;
 //    private FSBackedLuceneIndex secondaryFSIndex;

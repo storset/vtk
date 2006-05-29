@@ -35,6 +35,7 @@ import org.apache.lucene.search.TermQuery;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
+import org.vortikal.repositoryimpl.query.query.UriOperator;
 import org.vortikal.repositoryimpl.query.query.UriTermQuery;
 
 /**
@@ -52,9 +53,15 @@ public class UriTermQueryBuilder implements QueryBuilder {
     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
         String uri = this.query.getUri();
         
-        TermQuery tq = new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+        if (this.query.getOperator() == UriOperator.EQ) {
+            // URI equality
+            return new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+        } else {
+            // URI NOT equal
+            throw new QueryBuilderException("UriOperator 'NE' not yet implemented.");
+        }
         
-        return tq;
+        
     }
 
 }

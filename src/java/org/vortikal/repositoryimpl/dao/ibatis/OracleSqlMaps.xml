@@ -135,7 +135,7 @@
           p.value
         from vortex_resource r inner join extra_prop_entry p 
              on r.prev_resource_id = p.resource_id
-        where (r.uri = #desturi# or r.uri like #destUriWildcard#)
+        where (r.uri = #destUri# or r.uri like #destUriWildcard#)
           and r.prev_resource_id is not null
           order by p.extra_prop_entry_id) t
   </insert>    

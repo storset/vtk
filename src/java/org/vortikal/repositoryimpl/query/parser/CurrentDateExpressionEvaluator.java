@@ -42,7 +42,7 @@ public class CurrentDateExpressionEvaluator implements ExpressionEvaluator {
     
     private Pattern compilePattern() {
         return Pattern.compile(
-            "(" + this.variableName + ")" + "(([+-])(\\d+[ymdhMs](\\d+[ymdhMs])*))?");
+            "(" + this.variableName + ")" + "(([+-])(\\d+[ymwdhMs](\\d+[ymwdhMs])*))?");
     }
     
     public void setVariableName(String variableName) {
@@ -78,6 +78,7 @@ public class CurrentDateExpressionEvaluator implements ExpressionEvaluator {
     private void processQuantityString(Calendar currentDate, boolean add, String params) {
         Integer years = findNamedQuantity(params, "y", add);
         Integer months = findNamedQuantity(params, "m", add);
+        Integer weeks = findNamedQuantity(params, "w", add);
         Integer days = findNamedQuantity(params, "d", add);
         Integer hours = findNamedQuantity(params, "h", add);
         Integer minutes = findNamedQuantity(params, "M", add);
@@ -85,6 +86,7 @@ public class CurrentDateExpressionEvaluator implements ExpressionEvaluator {
         
         if (years != null) currentDate.add(Calendar.YEAR, years.intValue());
         if (months != null) currentDate.add(Calendar.MONTH, months.intValue());
+        if (weeks != null) currentDate.add(Calendar.DAY_OF_YEAR, weeks.intValue() * 7);
         if (days != null) currentDate.add(Calendar.DAY_OF_YEAR, days.intValue());
         if (hours != null) currentDate.add(Calendar.HOUR, hours.intValue());
         if (minutes != null) currentDate.add(Calendar.MINUTE, minutes.intValue());

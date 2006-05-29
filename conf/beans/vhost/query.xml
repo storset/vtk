@@ -7,13 +7,25 @@
     <constructor-arg ref="propertyManager" />
   </bean>
 
-<!--
+
   <bean id="queryManager" class="org.vortikal.repositoryimpl.query.parser.QueryManager">
     <property name="parser" ref="queryParser" />
     <property name="searcher" ref="newSystemIndexSearcher" />
     <property name="propertyManager" ref="propertyManager" />
+    <property name="queryStringProcessor" ref="queryStringProcessor" />
   </bean>
--->
+
+
+  <bean id="queryStringProcessor"
+        class="org.vortikal.repositoryimpl.query.parser.QueryStringProcessor">
+    <property name="expressionEvaluators">
+      <list>
+        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentDateExpressionEvaluator" />
+        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentURIExpressionEvaluator"
+              parent="requestLocalRepositoryAware" />
+      </list>
+    </property>
+  </bean>
 
 <!--  <bean id="queryManager"
         class="org.vortikal.repositoryimpl.query.parser.QueryManager">

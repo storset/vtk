@@ -49,7 +49,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.QueryException;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repositoryimpl.PropertyManager;
+import org.vortikal.repositoryimpl.query.query.PropertySortField;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.SimpleSortField;
 import org.vortikal.repositoryimpl.query.query.SortField;
@@ -57,7 +60,6 @@ import org.vortikal.repositoryimpl.query.query.SortFieldDirection;
 import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.security.SecurityContext;
-
 
 
 /**
@@ -69,7 +71,8 @@ public class XmlSearcher implements InitializingBean {
     private Log logger = LogFactory.getLog(this.getClass());
 
     private Searcher searcher;
-    private Parser parser;
+    private QueryManager queryManager;
+    private PropertyManager propertyManager;
     private SortParser sortParser = new SortParser();
     private int maxResults = 1000;
 
@@ -77,8 +80,12 @@ public class XmlSearcher implements InitializingBean {
         this.searcher = searcher;
     }
 
-    public void setParser(Parser parser) {
-        this.parser = parser;
+    public void setQueryManager(QueryManager queryManager) {
+        this.queryManager = queryManager;
+    }
+    
+    public void setPropertyManager(PropertyManager propertyManager) {
+        this.propertyManager = propertyManager;
     }
     
     public void setMaxResults(int maxResults) {
@@ -88,11 +95,15 @@ public class XmlSearcher implements InitializingBean {
     public void afterPropertiesSet() {
         if (this.searcher == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'searcher' noe set");
+                "JavaBean property 'searcher' not set");
         }
-        if (this.parser == null) {
+        if (this.queryManager == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'parser' noe set");
+                "JavaBean property 'queryManager' not set");
+        }
+        if (this.propertyManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'propertyManager' not set");
         }
     }
     
@@ -119,9 +130,8 @@ public class XmlSearcher implements InitializingBean {
             if (limit > this.maxResults) {
                 limit = this.maxResults;
             }
-            Query parsedQuery = this.parser.parse(query);
             Sorting sorting = this.sortParser.parseSortString(sort);
-            ResultSet rs = this.searcher.execute(token, parsedQuery, sorting,
+            ResultSet rs = this.queryManager.execute(token, query, sorting,
                                                  this.maxResults);
             rootElement = resultSetToElement(rs);
         } catch (Exception e) {
@@ -237,26 +247,39 @@ public class XmlSearcher implements InitializingBean {
             Set referencedFields = new HashSet();
         
             for (int i = 0; i < fields.length; i++) {
-                String field = fields[i].trim();
+                String specifier = fields[i].trim();
+                String field = null;
                 SortFieldDirection direction = SortFieldDirection.ASC;
-                int separatorIdx = field.indexOf(":");
-                if (separatorIdx != -1) {
-                    if (separatorIdx == 0 || separatorIdx == field.length() - 1) {
-                        // Skip field
-                        continue;
+                String[] pair = specifier.split("\\s+");
+                if (pair.length == 2) {
+                    field = pair[0];
+                    if ("descending".startsWith(pair[1])) {
+                        direction = SortFieldDirection.DESC;
                     }
-                    String modifier = field.substring(separatorIdx + 1).trim();
-                    field = field.substring(0, separatorIdx).trim();
-                    if ("descending".startsWith(modifier)) {
-                        direction = SortFieldDirection.ASC;
-                    }
+                } else if (pair.length == 1) {
+                    field = pair[0];
+                } else {
+                    throw new QueryException("Invalid sort field: '" + specifier + "'");
                 }
-
                 SortField sortField = null;
                 if ("uri".equals(field) || "type".equals(field) || "name".equals(field)) {
                     sortField = new SimpleSortField(field, direction);
                 } else {
-                    throw new QueryException("Unknown sort field: '" + field + "'");
+                    String prefix = null;
+                    String name = null;
+
+                    String[] components = field.split(":");
+                    if (components.length == 2) {
+                        prefix = components[0];
+                        name = components[1];
+                    } else if (components.length == 1) {
+                        name = components[0];
+                    } else {
+                        throw new QueryException("Unknown sort field: '" + field + "'");
+                    }
+                    PropertyTypeDefinition def =
+                        propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+                    sortField = new PropertySortField(def, direction);
                 }
                 if (referencedFields.contains(field)) {
                     throw new QueryException(

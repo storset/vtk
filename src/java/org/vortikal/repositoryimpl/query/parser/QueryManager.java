@@ -30,18 +30,19 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.query.Query;
+import org.vortikal.repositoryimpl.query.query.Sorting;
 
 public class QueryManager implements InitializingBean {
 
     private Parser parser;
     private Searcher searcher;
     private PropertyManager propertyManager;
+    private QueryStringProcessor queryStringProcessor;
     
-    public void afterPropertiesSet() throws Exception {
-    }
 
     public void setParser(Parser parser) {
         this.parser = parser;
@@ -51,24 +52,61 @@ public class QueryManager implements InitializingBean {
         this.searcher = searcher;
     }
     
-    public ResultSet execute(String token, String queryString) throws QueryException {
-        Query q = parser.parse(queryString);
-        
-        return execute(token, q); 
-    }
-    
-    public ResultSet execute(String token, Query query) {
-
-        validateQuery(query);
-        
-        return searcher.execute(token, query);
-    }
-    
-    private void validateQuery(Query query) {
-       
-    }
-
     public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
+
+    public void setQueryStringProcessor(QueryStringProcessor queryStringProcessor)  {
+        this.queryStringProcessor = queryStringProcessor;
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        if (this.parser == null) {
+            throw new BeanInitializationException("JavaBean property 'parser' not set");
+        }
+        if (this.searcher == null) {
+            throw new BeanInitializationException("JavaBean property 'searcher' not set");
+        }
+        if (this.propertyManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'propertyManager' not set");
+        }
+        if (this.queryStringProcessor == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'queryStringProcessor' not set");
+        }
+
+    }
+
+    public ResultSet execute(String token, String queryString) throws QueryException {
+        Query q = parser.parse(queryString);
+        return execute(token, q); 
+    }
+    
+    public ResultSet execute(String token, String queryString,
+                             Sorting sorting, int maxResults)
+        throws QueryException {
+        queryString = this.queryStringProcessor.processQueryString(queryString);
+        Query q = parser.parse(queryString);
+        return execute(token, q, sorting, maxResults); 
+    }
+    
+    public ResultSet execute(String token, Query query) throws QueryException {
+        validateQuery(query);
+        return searcher.execute(token, query);
+    }
+    
+    public ResultSet execute(String token, Query query, Sorting sorting, int maxResults)
+        throws QueryException {
+        validateQuery(query);
+        return searcher.execute(token, query, sorting, maxResults);
+    }
+    
+    private void validateQuery(Query query) throws QueryException{
+        
+    }
+
+
+
+    
 }

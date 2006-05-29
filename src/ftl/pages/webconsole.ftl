@@ -28,17 +28,19 @@
   <p>
     <form class="webConsole" action="${commandForm.submitURL}" method="POST">
       <pre>Enter command:</pre>
-      <input type="text" name="command" size="60" />
+      <input type="text" name="command" size="80" />
     </form>
   </p>
   </#if>
   <#if commandForm.result?exists>
-<p>
-<pre>
-Result:
+    <p>
+      <pre>
+<#if commandForm.command?exists>[${commandForm.command?html}]:</#if>
+      </pre>
+      <textarea cols="80" rows="20">
 ${commandForm.result?html}
-</pre>
-</p>
+      </textarea>
+    </p>
   </#if>
 
 </body>

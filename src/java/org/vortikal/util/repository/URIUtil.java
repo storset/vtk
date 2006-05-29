@@ -250,10 +250,6 @@ public class URIUtil {
      * @return An URI String with any trailing slash stripped
      */
     public static String stripTrailingSlash(String uri) {
-        if (! uri.startsWith("/")) {
-            throw new InvalidURIException("The URI '" + uri + "' is not absolute.");
-        }
-        
         if (uri.length() > 1 && uri.endsWith("/")) {
             return uri.substring(0, uri.length()-1);
         } else {

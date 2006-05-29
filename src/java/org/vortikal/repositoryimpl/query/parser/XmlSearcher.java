@@ -132,7 +132,7 @@ public class XmlSearcher implements InitializingBean {
             }
             Sorting sorting = this.sortParser.parseSortString(sort);
             ResultSet rs = this.queryManager.execute(token, query, sorting,
-                                                 this.maxResults);
+                                                     limit);
             rootElement = resultSetToElement(rs);
         } catch (Exception e) {
             logger.warn("Error occurred while performing query: '" + query + "'", e);

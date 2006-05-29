@@ -130,10 +130,10 @@ public class DocumentMapper implements InitializingBean {
                                             propSet.getAclInheritedFrom());
         doc.add(aclField);
         
-        // Add all other properties.
+        // Add all other properties except dead ones.
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Field field = getFieldFromProperty((Property)i.next());
-            doc.add(field);
+            if (field != null) doc.add(field);
         }
         
         return doc;
@@ -211,6 +211,15 @@ public class DocumentMapper implements InitializingBean {
         return property;
     }    
     
+
+    /**
+     * Creates a Lucene field from a property.
+     *
+     * @param property the property
+     * @return the Lucene field, or <code>null</code> if no property
+     * definition exists (i.e. the property is dead)
+     * @exception FieldValueMappingException if an error occurs
+     */
     private Field getFieldFromProperty(Property property) throws FieldValueMappingException {
         String name = property.getName();
         String prefix = property.getNamespace().getPrefix();
@@ -230,9 +239,10 @@ public class DocumentMapper implements InitializingBean {
         if (def != null && def.isMultiple()) {
                 Value[] values = property.getValues();
                 return FieldValueMapper.getFieldFromValues(fieldName, values);
-        } else {
+        } else if (def != null) {
             return FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
-        }
+        } 
+        return null;
     }
     
     public static String getFieldName(PropertyTypeDefinition def) {

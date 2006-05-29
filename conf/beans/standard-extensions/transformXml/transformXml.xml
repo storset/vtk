@@ -231,8 +231,9 @@
 
 
   <bean id="xmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
-    <property name="parser" ref="queryParser" />
+    <property name="queryManager" ref="queryManager" />
     <property name="searcher" ref="newSystemIndexSearcher" />
+    <property name="propertyManager" ref="propertyManager" />
   </bean>
 
   <bean id="xsltSearchProvider"

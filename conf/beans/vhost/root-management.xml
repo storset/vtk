@@ -9,16 +9,6 @@
         class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
     <property name="order" value="-9600" />
-    <property name="categories">
-      <set>
-        <value>rootMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="tabOrder"><value type="java.lang.Integer">-400</value></entry>
-      </map>
-    </property>
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
@@ -30,8 +20,23 @@
         </bean>      
       </list>
     </property>
-    <property name="handler" ref="root1Handler" />
   </bean>        
+
+  <bean id="repositoryManageDefaultService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryManageService" />
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">-400</value></entry>
+      </map>
+    </property>
+    <property name="handler" ref="root1Handler" />
+  </bean>
 
   <bean id="root1Handler"
         class="org.springframework.web.servlet.mvc.ParameterizableViewController">

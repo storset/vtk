@@ -30,15 +30,15 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
 
+
+
+import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -47,6 +47,7 @@ import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.security.Principal;
+import java.util.List;
 
 
 
@@ -61,7 +62,7 @@ import org.vortikal.security.Principal;
  *   extracted values are treated as string values.
  * </ul>
  *
- * <p>TODO: Handle list values.
+ * <p>XXX: Handle list values.
  */
 public class XPathEvaluator implements ContentModificationPropertyEvaluator {
 
@@ -69,7 +70,6 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
 
     private ValueFactory valueFactory;
     private XPath xPath;
-
 
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
@@ -80,9 +80,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
         this.xPath = XPath.newInstance(value);
     }
     
-
     public void afterPropertiesSet() {
-        
         if (this.xPath == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'xPath' not specified");
@@ -96,20 +94,43 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
                                        Content content, 
                                        Date time) {
         Document doc = null;
-
         try {
+
             doc = (Document) content.getContentRepresentation(Document.class);
-            String stringVal = this.xPath.valueOf(doc);
-            
-            Value value = null;
-            if (this.valueFactory != null) {
-                int type = property.getDefinition().getType();
-                value = this.valueFactory.createValue(stringVal, type);
-            } else {
-                value = new Value();
-                value.setValue(stringVal);
+            if (doc == null) {
+                return false;
             }
-            property.setValue(value);
+
+            if (property.getDefinition().isMultiple()) {
+                List list = this.xPath.selectNodes(doc);
+                Value[] values = new Value[list.size()];
+                for (int i = 0; i < list.size(); i++) {
+                    org.jdom.Content c = (org.jdom.Content) list.get(i);
+                    System.out.println("__content value: " + c);
+                    Value value = null;
+                    if (this.valueFactory != null) {
+                        int type = property.getDefinition().getType();
+                        value = this.valueFactory.createValue(c.getValue(), type);
+                    } else {
+                        value = new Value();
+                        value.setValue(c.getValue());
+                    }
+                    values[i] = value;
+                }
+                property.setValues(values);
+            } else {
+                String stringVal = this.xPath.valueOf(doc);
+                Value value = new Value();
+                if (this.valueFactory != null) {
+                    int type = property.getDefinition().getType();
+                    value = this.valueFactory.createValue(stringVal, type);
+
+                } else {
+                    value = new Value();
+                    value.setValue(stringVal);
+                }
+                property.setValue(value);
+            }
             return true;
         } catch (Exception e) {
             return false;

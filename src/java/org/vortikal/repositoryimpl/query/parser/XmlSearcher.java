@@ -30,25 +30,27 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
+
+
+
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.DOMOutputter;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.QueryException;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.PropertyManager;
@@ -161,10 +163,14 @@ public class XmlSearcher implements InitializingBean {
 
 
     private Element propertySetToElement(PropertySet propertySet) {
-        Element propertySetElement = new Element("propertyset");
-        propertySetElement.setAttribute("uri", propertySet.getURI());
-        propertySetElement.setAttribute("name", propertySet.getName());
-        propertySetElement.setAttribute("type", propertySet.getResourceType());
+        Element propertySetElement = new Element("resource");
+
+        Element uri = new Element("uri").addContent(propertySet.getURI());
+        Element name = new Element("name").addContent(propertySet.getName());
+        Element type = new Element("type").addContent(propertySet.getResourceType());
+        
+        propertySetElement.addContent(uri).addContent(name).addContent(type);
+
         for (Iterator i = propertySet.getProperties().iterator(); i.hasNext();) {
             Property property = (Property) i.next();
             Element propertyElement = propertyToElement(property);
@@ -198,18 +204,31 @@ public class XmlSearcher implements InitializingBean {
             Value[] values = property.getValues();
             for (int i = 0; i < values.length; i++) {
                 Element valueElement = new Element("value");
-                valueElement.setText(values[i].toString());
+                valueElement.setText(valueToString(values[i]));
                 valuesElement.addContent(valueElement);
             }
             propertyElement.addContent(valuesElement);
         } else {
             Element valueElement = new Element("value");
             Value value = property.getValue();
-            valueElement.setText(value.toString());
+            valueElement.setText(valueToString(value));
             propertyElement.addContent(valueElement);
         }
         propertyElement.setAttribute("name", property.getName());
         return propertyElement;
+    }
+    
+
+    private String valueToString(Value value) {
+        switch (value.getType()) {
+            case PropertyType.TYPE_DATE:
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+                return format.format(value.getDateValue());
+            case PropertyType.TYPE_PRINCIPAL:
+                return value.getPrincipalValue().getName();
+            default:
+                return value.toString();
+        }
     }
     
 

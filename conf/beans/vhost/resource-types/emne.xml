@@ -41,7 +41,7 @@
 
   <bean id="schemaIsEmne" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="schema" />
     <property name="pattern" value="http://www.uio.no/xsd/studier/emne/v00.*" />
   </bean>
@@ -131,13 +131,14 @@
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="undervisningssemester.bestemte" />
     <property name="type" ref="TYPE_STRING" /> <!-- egentlig en liste - håndteres av evaluator ? -->
+    <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterBestemteSemestreEvaluator" />
   </bean>
 
   <bean id="emneUndervisningsSemesterBestemteSemestreEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/emne/undervisningssemester/bestemte-semestre" />
+    <property name="expression" value="/emne/undervisningssemester/bestemte-semestre/bestemt-semester" />
   </bean>
 
 
@@ -177,13 +178,14 @@
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="eksamenssemester.bestemte" />
     <property name="type" ref="TYPE_STRING" /> <!-- egentlig liste -->
+    <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneEksamensSemesterBestemteSemestreEvaluator" />
   </bean>
 
   <bean id="emneEksamensSemesterBestemteSemestreEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/emne/eksamenssemester/bestemte-semestre" />
+    <property name="expression" value="/emne/eksamenssemester/bestemte-semestre/bestemt-semester" />
   </bean>
 
 

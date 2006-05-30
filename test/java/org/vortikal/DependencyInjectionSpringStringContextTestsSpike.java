@@ -30,16 +30,90 @@
  */
 package org.vortikal;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import no.uio.usit.miyagi.BeanOverloadException;
+import no.uio.usit.miyagi.Miyagi;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
-public class DependencyInjectionSpringStringContextTestsSpike extends AbstractDependencyInjectionSpringStringContextTests {
 
+public class DependencyInjectionSpringStringContextTestsSpike 
+    extends AbstractDependencyInjectionSpringStringContextTests {
 
-    protected String  getConfigAsString() {
-        return("<?xml version=\"1.0\" encoding=\"UTF-8\"?> <!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org /dtd/spring-beans.dtd\"><beans> <bean abstract=\"true\" id=\"test\"/></beans>");
+    private static final Log LOG = LogFactory.getLog(DependencyInjectionSpringStringContextTestsSpike.class);
+    
+    protected String getConfigAsString() {
+        LOG.debug("getConfigAsString()");
+        String configAsString = null;
+
+        try {
+            List fileList = findAllXmlFiles(new File("target/classes/vortikal/beans/vhost/"));
+            
+            fileList.add(new File("target/vortikal/WEB-INF/applicationContext.xml"));
+            
+            Miyagi m = new Miyagi(fileList);
+            m.setBeanOverloadingAllowed(true);
+            m.buildBeans();
+
+            List beanIdList = new ArrayList();
+            beanIdList.add("collectionListingAsFeedView");
+            beanIdList.add("localPrincipalStore");
+            configAsString = m.getXml(beanIdList);
+        } catch (BeanOverloadException e) {
+            // found overloaded bean (not interesting in this context)
+            LOG.debug("overloaded bean found: ", e);
+        }
+
+        return configAsString;
     }
     
     public void testSpike() {
         assertTrue(true);
     }
+
+    /**
+     * Find all xml-files under given dir (pDir)
+     * @param pDir given dir
+     * @return List of files
+     */
+    private List findAllXmlFiles(File pDir) {
+        List fileList = new ArrayList();
+
+        visitAllFiles(pDir, fileList);
+
+        return fileList;
+    }
+
+    /**
+     * Put all files under dir in <code>_xmlFiles</code>.
+     * This method is recursive.
+     *
+     * @param dir
+     */
+    private void visitAllFiles(File dir, List pFileList) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+
+            for (int i = 0; i < children.length; i++) {
+                visitAllFiles(new File(dir, children[i]), pFileList);
+            }
+        } else {
+            try {
+                if (dir.getCanonicalPath().endsWith(".xml")
+                        && !dir.getCanonicalPath().endsWith("decorators.xml")) {
+                    pFileList.add(dir);
+//                    LOG.debug(dir);
+                }
+            } catch (IOException e) {
+                LOG.error(e);
+            }
+        }
+    }
+
 }

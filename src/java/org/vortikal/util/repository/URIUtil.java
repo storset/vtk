@@ -245,9 +245,9 @@ public class URIUtil {
     }
     
     /**
-     * Strip the trailing slash from an URI, if there is any.
-     * @param uri An URI String
-     * @return An URI String with any trailing slash stripped
+     * Strip the trailing slash from a URI, if there is any.
+     * @param uri A URI String
+     * @return A URI String with any trailing slash stripped
      */
     public static String stripTrailingSlash(String uri) {
         if (uri.length() > 1 && uri.endsWith("/")) {

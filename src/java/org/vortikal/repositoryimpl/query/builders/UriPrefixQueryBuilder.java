@@ -38,6 +38,8 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
             // Don't include parent
             // XXX: Note that the root URI '/' is a special case, it will not be included
             //      as part of URI prefix query results (only the children).
+            //      If we need to differentiate between the "include-self or not"-case
+            //      for the root resource, this info has to be explicitly available in query class.
             return uriDescendants;
         } else {
             // Include the parent URI as well

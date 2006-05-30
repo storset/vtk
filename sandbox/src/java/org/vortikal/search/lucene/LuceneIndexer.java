@@ -56,6 +56,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -258,17 +259,17 @@ public class LuceneIndexer implements
             
             query.add(new org.apache.lucene.search.TermQuery(
                           new org.apache.lucene.index.Term("uri", uri)),
-                      false, false);
+                      BooleanClause.Occur.SHOULD);
             query.add(
                 new org.apache.lucene.search.TermQuery(
                     new org.apache.lucene.index.Term(
                         "folders", getFolders(uri) + " " + uri)),
-                    false, false);
+                    BooleanClause.Occur.SHOULD);
             query.add(
                 new org.apache.lucene.search.WildcardQuery(
                     new org.apache.lucene.index.Term(
                         "folders", getFolders(uri) + " " + uri + " *")),
-                    false, false);
+                    BooleanClause.Occur.SHOULD);
 
             searcher = 
                 new org.apache.lucene.search.IndexSearcher(this.indexDirectory);
@@ -300,7 +301,7 @@ public class LuceneIndexer implements
 
             for (int i = 0; i < docs.length; i++) {
                 logger.debug("Deleting index document: " + docs[i]);
-                reader.delete(docs[i]);
+                reader.deleteDocument(docs[i]);
             }
         } finally {
             if (reader != null) {
@@ -325,7 +326,7 @@ public class LuceneIndexer implements
 
             reader = IndexReader.open(this.index);
             Term t = new Term("folders", uri);
-            int deleted = reader.delete(t);
+            int deleted = reader.deleteDocuments(t);
             logger.debug("Deleted from index: " + uri);
             reader.close();
 
@@ -352,7 +353,7 @@ public class LuceneIndexer implements
                 reader = IndexReader.open(this.index);
                 logger.debug(
                     "Deleted " + 
-                    reader.delete(new Term("uri", resource.getURI())) +
+                    reader.deleteDocuments(new Term("uri", resource.getURI())) +
                     " previously indexed document(s): for resource " + 
                     resource.getURI());
                 reader.close();

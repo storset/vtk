@@ -38,6 +38,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -185,12 +186,19 @@ public class SearcherImpl extends AbstractSearcher
             
             try {
                 if (pqc.isMultiField()) {
-                    String[] fields = (String[]) reader.getFieldNames(true).toArray(new String[]{});
-                    return MultiFieldQueryParser.parse(expression, fields, 
-                            index.getAnalyzer());
+                    String[] fields = 
+                        (String[]) reader.getFieldNames(IndexReader.FieldOption.INDEXED).toArray(new String[]{});
+                    
+                    BooleanClause.Occur[] occur = new BooleanClause.Occur[fields.length];
+                    for (int i=0; i<occur.length; i++) {
+                        occur[i] = BooleanClause.Occur.SHOULD;
+                    }
+                    
+                    return MultiFieldQueryParser.parse(expression, fields, occur, index.getAnalyzer());
                 } else {
-                    return QueryParser.parse(expression, this.defaultField, 
-                            index.getAnalyzer()); 
+                    QueryParser parser = new QueryParser(this.defaultField, index.getAnalyzer());
+                    //return QueryParser.parse(expression, index.getAnalyzer());
+                    return parser.parse(expression);
                 }
             } catch (org.apache.lucene.queryParser.ParseException pe) {
                 throw new ParseException("Query parse error: " + pe.getMessage());
@@ -209,7 +217,11 @@ public class SearcherImpl extends AbstractSearcher
             return new TermQuery(new Term(field, text));
         } else if (condition instanceof Not) {
             BooleanQuery bq = new BooleanQuery();
-            bq.add(prepareLuceneQuery(((Not)condition).getCondition(), reader), false, true);
+            //bq.add(prepareLuceneQuery(((Not)condition).getCondition(), reader), false, true);
+            
+            bq.add(prepareLuceneQuery(((Not)condition).getCondition(), reader), 
+                    BooleanClause.Occur.MUST_NOT);
+            
             return bq;
         } else if (condition instanceof Or) {
             // Process left and right conditions
@@ -220,8 +232,11 @@ public class SearcherImpl extends AbstractSearcher
 
             // 'OR' the left and right conditions
             BooleanQuery bq = new BooleanQuery();
-            bq.add(left, false, false);
-            bq.add(right, false, false);
+            //bq.add(left, false, false);
+            //bq.add(right, false, false);
+            
+            bq.add(left, BooleanClause.Occur.SHOULD);
+            bq.add(right, BooleanClause.Occur.SHOULD);
             return bq;
         } else if (condition instanceof And) {
             // 'AND' left and right conditions
@@ -231,8 +246,11 @@ public class SearcherImpl extends AbstractSearcher
                   prepareLuceneQuery(((And)condition).getRightCondition(), reader);
 
             BooleanQuery bq = new BooleanQuery();
-            bq.add(left, true, false);
-            bq.add(right, true, false);
+//            bq.add(left, true, false);
+//            bq.add(right, true, false);
+            
+            bq.add(left, BooleanClause.Occur.MUST);
+            bq.add(right, BooleanClause.Occur.MUST);
             return bq;
         }
         

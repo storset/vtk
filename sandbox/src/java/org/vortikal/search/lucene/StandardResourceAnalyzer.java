@@ -42,9 +42,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -64,35 +66,57 @@ public class StandardResourceAnalyzer implements ResourceAnalyzer {
 
     public void processResource(Resource resource, Repository repository,
                                 String token, Document doc) {
-        doc.add(Field.Keyword("uri", resource.getURI()));
+        //doc.add(Field.Keyword("uri", resource.getURI()));
+        doc.add(new Field("uri", resource.getURI(), Store.YES, Index.UN_TOKENIZED));
 
         String folders = LuceneIndexer.getFolders(resource.getURI());
         if (folders != null) {
-            doc.add(Field.Keyword("folders", folders));
+            //doc.add(Field.Keyword("folders", folders));
+            doc.add(new Field("folders", folders, Store.YES, Index.UN_TOKENIZED));
         }
 
-        doc.add(Field.Keyword("owner", resource.getOwner().getQualifiedName()));
-        doc.add(Field.Keyword("modifiedBy", resource.getModifiedBy().getQualifiedName()));
+        //doc.add(Field.Keyword("owner", resource.getOwner().getQualifiedName()));
+        doc.add(new Field("owner", resource.getOwner().getQualifiedName(), 
+                Store.YES, Index.UN_TOKENIZED));
+        
+        //doc.add(Field.Keyword("modifiedBy", resource.getModifiedBy().getQualifiedName()));
+        doc.add(new Field("modifiedBy", resource.getModifiedBy().getQualifiedName(), Store.YES, 
+                Index.UN_TOKENIZED));
 
         try {
             Acl acl = repository.getACL(token, resource.getURI());
             // FIXME:
             boolean inheritedACL = acl.isInherited();
-            doc.add(Field.Keyword("inheritedACL",
-                                  new Boolean(inheritedACL).toString()));
+//            doc.add(Field.Keyword("inheritedACL",
+//                                  new Boolean(inheritedACL).toString()));
+            
+            doc.add(new Field("inheritedACL", new Boolean(inheritedACL).toString(), Store.YES, Index.UN_TOKENIZED));
+            
         } catch (IOException e) {
             logger.warn("Errors processing resource " + resource.getURI() +
                         " for indexing. Unable to load ACL", e);
         }
-        doc.add(Field.Keyword("creationTime",
-                              DateField.timeToString(
-                                  resource.getCreationTime().getTime())));
-        doc.add(Field.Keyword("lastmodified",
-                              DateField.timeToString(
-                                  resource.getLastModified().getTime())));
-        doc.add(Field.Keyword("name", resource.getName()));
-        doc.add(Field.Keyword("displayName", resource.getDisplayName()));
-        doc.add(Field.Keyword("contentType", resource.getContentType()));
+//        doc.add(Field.Keyword("creationTime",
+//                              DateField.timeToString(
+//                                  resource.getCreationTime().getTime())));
+        doc.add(new Field("creationTime", DateTools.timeToString(resource.getCreationTime().getTime(), 
+                DateTools.Resolution.SECOND), Store.YES, Index.UN_TOKENIZED));
+        
+        
+//        doc.add(Field.Keyword("lastmodified",
+//                              DateField.timeToString(
+//                                  resource.getLastModified().getTime())));
+//        
+        doc.add(new Field("lastmodified", 
+                DateTools.timeToString(resource.getLastModified().getTime(), DateTools.Resolution.SECOND),
+                Store.YES, Index.UN_TOKENIZED));
+        
+        //doc.add(Field.Keyword("name", resource.getName()));
+        doc.add(new Field("name", resource.getName(), Store.YES, Index.UN_TOKENIZED));
+        //doc.add(Field.Keyword("displayName", resource.getDisplayName()));
+        doc.add(new Field("displayName", resource.getDisplayName(), Store.YES, Index.UN_TOKENIZED));
+        //doc.add(Field.Keyword("contentType", resource.getContentType()));
+        doc.add(new Field("contentType", resource.getContentType(), Store.YES, Index.UN_TOKENIZED));
         
         
         // Add custom properties:
@@ -106,7 +130,9 @@ public class StandardResourceAnalyzer implements ResourceAnalyzer {
             String value = prop.getStringValue();
             logger.debug("Adding custom property " + key + " = " + value + 
                          " to indexed resource " + resource.getURI());
-            doc.add(Field.Keyword(key, value));
+            //doc.add(Field.Keyword(key, value));
+            
+            doc.add(new Field(key, value, Store.YES, Index.UN_TOKENIZED));
         }
         
         try {
@@ -124,11 +150,14 @@ public class StandardResourceAnalyzer implements ResourceAnalyzer {
                     len = 100;
                 }
                 //doc.add(Field.Text("summary", fulltext.substring(0, len)));
-                doc.add(Field.UnIndexed("summary", fulltext.substring(0, len)));
+                //doc.add(Field.UnIndexed("summary", fulltext.substring(0, len)));
+                doc.add(new Field("summary", fulltext.substring(0, len), Store.YES, Index.NO));
+                
 
                 Reader reader = new BufferedReader(
                     new InputStreamReader(new ByteArrayInputStream(bytes)));
-                doc.add(Field.Text("contents", reader));
+                //doc.add(Field.Text("contents", reader));
+                doc.add(new Field("contents", reader));
                 //logger.debug("added contents: " + fulltext);
             }
 

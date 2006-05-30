@@ -75,21 +75,27 @@ public class IndexDocumentUtil {
             logger.debug("Adding reserved field: " + IndexConstants.PARENT_IDS_FIELD
                     + " = " + parentIds);
         }
-        doc.add(Field.Text(IndexConstants.PARENT_IDS_FIELD, parentIds));
+        //doc.add(Field.Text(IndexConstants.PARENT_IDS_FIELD, parentIds));
+        doc.add(new Field(IndexConstants.PARENT_IDS_FIELD, parentIds, Field.Store.YES, 
+                Field.Index.TOKENIZED));
         
         // Add CLASS field.
         if (logger.isDebugEnabled()) {
             logger.debug("Adding reserved field: " + IndexConstants.CLASS_FIELD +
                     " = " + beanClass.getName());
         }
-        doc.add(Field.Keyword(IndexConstants.CLASS_FIELD, beanClass.getName()));
+        //doc.add(Field.Keyword(IndexConstants.CLASS_FIELD, beanClass.getName()));
+        doc.add(new Field(IndexConstants.CLASS_FIELD, beanClass.getName(), Field.Store.YES, 
+                Field.Index.UN_TOKENIZED));
         
         // Add URI field.
         if (logger.isDebugEnabled()) {
             logger.debug("Adding reserved field: " + IndexConstants.URI_FIELD +
                     " = " + uri);
         }
-        doc.add(Field.Keyword(IndexConstants.URI_FIELD, uri));
+        //doc.add(Field.Keyword(IndexConstants.URI_FIELD, uri));
+        doc.add(new Field(IndexConstants.URI_FIELD, uri, Field.Store.YES, 
+                Field.Index.UN_TOKENIZED));
 
         // Add custom index bean fields
         PropertyDescriptor[] props = wrapper.getPropertyDescriptors();
@@ -124,26 +130,38 @@ public class IndexDocumentUtil {
             if (fieldInfo != null) {
                 switch (fieldInfo.getFieldType()) {
                     case(FieldInfo.FIELDTYPE_DATE):
-                        field = Field.Keyword(name, value.toString());
+                        //field = Field.Keyword(name, value.toString());
+                        field = new Field(name, value.toString(), Field.Store.YES, 
+                                Field.Index.UN_TOKENIZED);
                         break;
                     case(FieldInfo.FIELDTYPE_KEYWORD):
-                        field = Field.Keyword(name, value.toString());
+                        //field = Field.Keyword(name, value.toString());
+                        field = new Field(name, value.toString(), Field.Store.YES, 
+                                Field.Index.UN_TOKENIZED);
                         break;
                     case(FieldInfo.FIELDTYPE_TEXT):
-                        field = Field.Text(name, value.toString());
+                        //field = Field.Text(name, value.toString());
+                        field = new Field(name, value.toString(), Field.Store.YES, 
+                                Field.Index.TOKENIZED);
                         break;
                     case(FieldInfo.FIELDTYPE_TEXT_UNSTORED):
-                        field = Field.UnStored(name, value.toString());
+                        //field = Field.UnStored(name, value.toString());
+                        field = new Field(name, value.toString(), Field.Store.NO, 
+                                Field.Index.TOKENIZED);
                         break;
                     case(FieldInfo.FIELDTYPE_TEXT_UNINDEXED):
-                        field = Field.UnIndexed(name, value.toString());
+                        //field = Field.UnIndexed(name, value.toString());
+                        field = new Field(name, value.toString(), Field.Store.YES, 
+                                Field.Index.NO);
                 }
             }
         }
 
         if (field == null) {
             // Create field with defaults.
-            field = new Field(name, value.toString(), true, true, false);
+            //field = new Field(name, value.toString(), true, true, false);
+            field = new Field(name, value.toString(), 
+                    Field.Store.YES, Field.Index.UN_TOKENIZED);
         }
 
         return field;

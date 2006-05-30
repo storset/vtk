@@ -99,7 +99,7 @@ public class LuceneIndexStatus implements IndexStatus {
         IndexReader reader = null;
         try {
             reader = index.getReadOnlyIndexReader();
-            return new ArrayList(reader.getFieldNames());
+            return new ArrayList(reader.getFieldNames(IndexReader.FieldOption.ALL));
         } catch (IOException io) {
             throw new IndexStatusException("IOException while getting field names: " 
                     + io.getMessage());

@@ -196,7 +196,7 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
      * @see #deleteDocument(String)
      */
     protected boolean deleteDocument(IndexReader reader, String uri) throws IOException {
-        if (reader.delete(new Term(IndexConstants.URI_FIELD, uri)) > 0)
+        if (reader.deleteDocuments(new Term(IndexConstants.URI_FIELD, uri)) > 0)
             return true;
         
         return false;
@@ -223,10 +223,10 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
         throws IOException {
         
         // Delete subtree
-        int deleted = reader.delete(new Term(IndexConstants.PARENT_IDS_FIELD, resourceId));
+        int deleted = reader.deleteDocuments(new Term(IndexConstants.PARENT_IDS_FIELD, resourceId));
         
         // Delete collection, in case this index also stores collections as documents.
-        deleted += reader.delete(new Term(IndexConstants.URI_FIELD, uri));    
+        deleted += reader.deleteDocuments(new Term(IndexConstants.URI_FIELD, uri));    
 
         return deleted;
     }
@@ -274,7 +274,7 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
         Hits hits = searcher.search(pq);
         int nHits = hits.length();
         for (int i=0; i<nHits; i++) {
-            reader.delete(hits.id(i));
+            reader.deleteDocument(hits.id(i));
         }
         searcher.close();
         

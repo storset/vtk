@@ -35,6 +35,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.WildcardQuery;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.search.And;
 import org.vortikal.search.Condition;
@@ -47,19 +61,6 @@ import org.vortikal.search.ResultEntry;
 import org.vortikal.search.SearchException;
 import org.vortikal.search.Searcher;
 import org.vortikal.search.UnsupportedConditionException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.WildcardQuery;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 
 
 public class LuceneSearcher implements Searcher, InitializingBean {
@@ -219,15 +220,15 @@ public class LuceneSearcher implements Searcher, InitializingBean {
         if (condition instanceof And) {
 
             BooleanQuery luceneQuery = new BooleanQuery();
-            luceneQuery.add(prepareLuceneQuery(((And) condition).getLeftCondition()), true, false);
-            luceneQuery.add(prepareLuceneQuery(((And) condition).getRightCondition()), true, false);
+            luceneQuery.add(prepareLuceneQuery(((And) condition).getLeftCondition()), BooleanClause.Occur.MUST);
+            luceneQuery.add(prepareLuceneQuery(((And) condition).getRightCondition()), BooleanClause.Occur.MUST);
             return luceneQuery;
 
         } else if (condition instanceof Or) {
 
             BooleanQuery luceneQuery = new BooleanQuery();
-            luceneQuery.add(prepareLuceneQuery(((Or) condition).getLeftCondition()), false, false);
-            luceneQuery.add(prepareLuceneQuery(((Or) condition).getRightCondition()), false, false);
+            luceneQuery.add(prepareLuceneQuery(((Or) condition).getLeftCondition()), BooleanClause.Occur.SHOULD);
+            luceneQuery.add(prepareLuceneQuery(((Or) condition).getRightCondition()), BooleanClause.Occur.SHOULD);
             return luceneQuery;
 
         } else if (condition instanceof Not) {
@@ -328,9 +329,13 @@ public class LuceneSearcher implements Searcher, InitializingBean {
             return (String) val;
         }
         if (val instanceof java.util.Date) {
-            return org.apache.lucene.document.DateField.dateToString(
-                (java.util.Date) val);
+//            return org.apache.lucene.document.DateField.dateToString(
+//                (java.util.Date) val);
+            
+            return DateTools.timeToString(((java.util.Date)val).getTime(), 
+                    DateTools.Resolution.SECOND);
         }
+        
         return val.toString();
     }
     

@@ -37,11 +37,11 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
  */
 public class PropertyExistsQuery extends AbstractPropertyQuery {
 
-    private boolean invert;
+    private boolean inverted;
     
-    public PropertyExistsQuery(PropertyTypeDefinition propertyDefinition, boolean invert) {
+    public PropertyExistsQuery(PropertyTypeDefinition propertyDefinition, boolean inverted) {
         super(propertyDefinition);
-        this.invert = invert;
+        this.inverted = inverted;
     }
 
     public String dump(String prefix) {
@@ -52,8 +52,12 @@ public class PropertyExistsQuery extends AbstractPropertyQuery {
         
         buf.append(prefix).append("Property namespace = ").append(def.getNamespace());
         buf.append(", name = ").append(def.getName()).append("\n");
-        buf.append("Inverted: " + invert);
+        buf.append("Inverted: " + inverted);
         return buf.toString();
+    }
+
+    public boolean isInverted() {
+        return inverted;
     }
 
 }

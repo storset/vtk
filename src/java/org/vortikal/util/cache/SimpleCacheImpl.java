@@ -142,6 +142,11 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
     }
 
 
+    public int getSize() {
+        return this.cache.size();
+    }
+    
+
     /**
      * Cleans up expired cached information periodically.
      * 

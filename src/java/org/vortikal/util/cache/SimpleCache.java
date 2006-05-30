@@ -41,6 +41,8 @@ public interface SimpleCache {
     public Object get(Object key);
     
     public Object remove(Object key);
+
+    public int getSize();
     
     public void cleanupExpiredItems();
 }

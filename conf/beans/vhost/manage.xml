@@ -650,32 +650,10 @@
     </property>
     <property name="services">
       <list>
-        <ref bean="previewXmlTransformService" />
         <ref bean="previewHTMLService" />
         <ref bean="previewImageService" />
         <ref bean="previewTextService" />
       </list>    
-    </property>
-  </bean>
-
-
-  <bean id="previewXmlTransformService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesXml" />
-        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace" ref="CUSTOM_NAMESPACE" />
-          <property name="name">
-            <value>transform-view</value>
-          </property>
-          <property name="value">
-            <value>yes</value>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="previewXmlResourceHandler" />
     </property>
   </bean>
 
@@ -740,8 +718,6 @@
     <property name="handler" ref="previewCollectionHandler" />
     <property name="services">
       <list>
-        <ref bean="previewTransformIndexXmlFileService" />
-        <ref bean="previewTransformIndexEngXmlFileService" />
         <ref bean="previewDisplayIndexHtmlFileService" />
         <ref bean="previewDisplayIndexEngHtmlFileService" />
       </list>    
@@ -770,46 +746,6 @@
   </bean>
 
 
-  <bean id="previewTransformIndexXmlFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName">
-            <value>index.xml</value>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="previewCollectionListingServiceInterceptor" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="previewIndexXmlHandler" />
-    </property>
-  </bean>                
-
-  <bean id="previewTransformIndexEngXmlFileService"
-        class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName">
-            <value>index-eng.xml</value>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="previewCollectionListingServiceInterceptor" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="previewIndexEngXmlHandler" />
-    </property>
-  </bean>                
 
   <bean id="previewDisplayIndexHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
@@ -1265,22 +1201,6 @@
   </bean>
 
 
-  <bean id="previewIndexXmlHandler" 
-        class="org.vortikal.web.controller.ResourceServiceURLController"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="collectionListingService" />
-    <property name="viewName" value="previewIframe"/>
-    <property name="childName" value="index.xml" />
-  </bean>
-
-  <bean id="previewIndexEngXmlHandler" 
-        class="org.vortikal.web.controller.ResourceServiceURLController"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="collectionListingService" />
-    <property name="viewName" value="previewIframe"/>
-    <property name="childName" value="index-eng.xml" />
-  </bean>
-
   <bean id="previewIndexHtmlHandler" 
         class="org.vortikal.web.controller.ResourceServiceURLController"
         parent="requestLocalRepositoryAware">
@@ -1304,14 +1224,6 @@
     <property name="childName" value="index.htm" />
     <property name="viewName" value="previewIframe" />
   </bean>
-
-  <bean id="previewXmlResourceHandler" 
-    class="org.vortikal.web.controller.ResourceServiceURLController"
-    parent="requestLocalRepositoryAware">
-    <property name="service" ref="displayResourceService" />
-    <property name="viewName" value="previewIframe" />
-  </bean>
-
 
   <bean id="previewHTMLHandler"
         class="org.vortikal.web.controller.ResourceServiceURLController"
@@ -1370,10 +1282,6 @@
   </bean>
 
   <!-- Manage wrapping -->
-
-
-
-
 
   <bean id="manageViewWrapper" 
         class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
@@ -1774,59 +1682,6 @@
   </bean>
 
 
-  <bean id="abstractManageXsltErrorHandler"
-        class="org.vortikal.web.DefaultErrorHandler"
-        parent="abstractReferencedataProvidingErrorHandler" abstract="true">
-    <description>Provides specific handling of XSLT-related errors in the manage service</description>
-    <property name="service" ref="manageService" />
-    <property name="errorViewName" value="manageXsltError" />
-  </bean>
-
-
-
-  <bean id="manageXmlBuildErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
-        parent="abstractReferencedataProvidingErrorHandler">
-    <description>
-      Provides error handling errors that occur when building XML
-      (JDOM) documents for services in the 'manageService' tree.
-    </description>
-    <property name="service" ref="manageService" />
-    <property name="errorType">
-      <bean class="java.lang.Class" factory-method="forName">
-        <constructor-arg value="org.jdom.input.JDOMParseException" />
-      </bean>
-    </property>
-    <property name="errorViewName" value="manageXmlBuildError" />
-  </bean>
-
-
-  <bean id="manageStylesheetCompilationExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
-    <property name="errorType">
-      <bean class="java.lang.Class" factory-method="forName">
-        <constructor-arg value="org.vortikal.xml.StylesheetCompilationException" />
-      </bean>
-    </property>
-  </bean>
-
-
-  <bean id="manageTransformerConfigurationExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
-    <property name="errorType">
-      <bean class="java.lang.Class" factory-method="forName">
-        <constructor-arg value="javax.xml.transform.TransformerConfigurationException" />
-      </bean>
-    </property>
-  </bean>
-
-
-  <bean id="manageTransformerExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
-    <property name="errorType">
-      <bean class="java.lang.Class" factory-method="forName">
-        <constructor-arg value="javax.xml.transform.TransformerException" />
-      </bean>
-    </property>
-  </bean>
-
-
   <bean id="defaultManageErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
     <property name="service" ref="manageService" />
     <property name="errorViewName" value="defaultManageError" />
@@ -1844,14 +1699,11 @@
         class="org.vortikal.web.view.wrapper.MappingViewResolver">
     <property name="views">
       <map>
-        <entry key="manageXsltError" value-ref="manageXsltErrorView" />
-        <entry key="manageXmlBuildError" value-ref="manageXmlBuildErrorView" />
         <entry key="defaultManageError" value-ref="defaultManageErrorView" />
       </map>
     </property>
     <property name="viewWrapper" ref="manageViewWrapper" />
   </bean>
-  
 
   <!--
   <bean id="manageErrorHandlerViewWrapper"
@@ -1859,15 +1711,6 @@
     <property name="viewWrapper" ref="manageViewWrapper" />
   </bean>
   -->
-
-  <bean id="manageXsltErrorView" parent="freemarkerView">
-    <property name="url" value="pages/error/xslt-error.ftl" />
-  </bean>
-
-  <bean id="manageXmlBuildErrorView" parent="freemarkerView">
-    <property name="url" value="pages/error/preview-xml-error.ftl" />
-  </bean>
-
 
   <bean id="defaultManageErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/default-manage-error.ftl" />

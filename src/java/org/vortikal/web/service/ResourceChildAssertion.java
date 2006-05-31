@@ -37,15 +37,19 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 /**
- * Assertion checking the existence of a child resource with name <code>childName</code>.
- * In addition an optional <code>Assertion</code> may be specified to be evaluated against the child
- * if the child exists. If an assertion is specified, the repository must be supplied as well.
+ * Assertion checking the existence of a child resource with name
+ * <code>childName</code>.  In addition an optional list of {@link
+ * Assertion assertions} may be specified to be evaluated against the
+ * child if the child exists. If the list of assertions is specified,
+ * the repository must be supplied as well.
  *
  * <p>Configurable properties:
  * <ul>
  *   <li><code>childName</code> - the name of the child resource.
- *   <li><code>childResourceAssertion</code> - optional assertion to evaluate against the child resource. Note that
- *   this assertion only should assert about the resource, the request and principal parameters to match will be null! 
+ *   <li><code>childResourceAssertions</code> - optional list of
+ *   assertions to evaluate against the child resource. Note that this
+ *   assertions should only assert about the resource, the request and
+ *   principal parameters to match will be null!
  *   <li><code>repository</code> - required if childAssertion is set
  *   <li><code>trustedToken</code> - required if childAssertion is set.
  * </ul>
@@ -53,7 +57,7 @@ import org.vortikal.security.Principal;
 public class ResourceChildAssertion extends AbstractRepositoryAssertion implements InitializingBean  {
 
     private String childName;
-    private Assertion childResourceAssertion;
+    private Assertion[] childResourceAssertions;
     private Repository repository;
     private String trustedToken;
     
@@ -68,11 +72,16 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
         for (int i = 0; i < childURIs.length; i++) {
             String childURI = childURIs[i];
             if (childURI.substring(childURI.lastIndexOf("/") + 1).equals(childName)) {
-                if (childResourceAssertion == null) return true;
+                if (childResourceAssertions == null) return true;
                 
                 try {
                     Resource child = repository.retrieve(trustedToken, childURI, true);
-                    return childResourceAssertion.matches(null, child, null);
+                    for (int j = 0; j < childResourceAssertions.length; j++) {
+                        if (childResourceAssertions[j].matches(null, child, null)) {
+                            return true;
+                        }
+                    }
+                    return false;
                 } catch (Exception e) {
                     return false;
                         //FIXME: catch IO/Auth/Repos instead?
@@ -99,12 +108,15 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
         
         sb.append(super.toString());
         sb.append("; childName = ").append(this.childName);
-
+        if (this.childResourceAssertions != null) {
+            sb.append("; childResourceAssertions = ");
+            sb.append(java.util.Arrays.asList(this.childResourceAssertions));
+        }
         return sb.toString();
     }
 
-    public void setChildResourceAssertion(Assertion childResourceAssertion) {
-        this.childResourceAssertion = childResourceAssertion;
+    public void setChildResourceAssertions(Assertion[] childResourceAssertions) {
+        this.childResourceAssertions = childResourceAssertions;
     }
 
     public void setRepository(Repository repository) {
@@ -113,11 +125,14 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
 
     public void afterPropertiesSet() throws Exception {
         if (childName == null) 
-            throw new BeanInitializationException("Required property 'childName' not set");
-        if (childResourceAssertion != null && repository == null) 
-            throw new BeanInitializationException("Property 'repository' required when property 'childResourceAssertion' is set");
-        if (childResourceAssertion != null && trustedToken == null) 
-            throw new BeanInitializationException("Property 'trustedToken' required when property 'childResourceAssertion' is set");
+            throw new BeanInitializationException(
+                "Required property 'childName' not set");
+        if (childResourceAssertions != null && repository == null) 
+            throw new BeanInitializationException(
+                "Property 'repository' required when property 'childResourceAssertions' is set");
+        if (childResourceAssertions != null && trustedToken == null) 
+            throw new BeanInitializationException(
+                "Property 'trustedToken' required when property 'childResourceAssertions' is set");
     }
 
     public void setTrustedToken(String trustedToken) {

@@ -20,12 +20,18 @@
     </property>
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+          <property name="resourceTypeDefinition" ref="managedXmlResource" />
+        </bean>
+        <ref bean="editXslPropSet" />
+        <!--
         <ref bean="contentTypeMatchesXml" />
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
           <property name="namespace" ref="CUSTOM_NAMESPACE" />
           <property name="name" value="web-edit" />
           <property name="value" value="yes" />
         </bean>
+        -->
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="vrtx" />
           <property name="parameterValue" value="edit" />

@@ -14,8 +14,12 @@
           <property name="childName" value="index.html" />
           <property name="trustedToken" ref="trustedToken" />
           <property name="repository" ref="repository" />
-          <property name="childResourceAssertion" 
-                    ref="contentTypeMatchesXml" />
+          <property name="childResourceAssertions">
+            <list>
+              <ref bean="resourceIsManagedXml" />
+              <ref bean="viewXslPropSet" />
+            </list>
+          </property>
         </bean>
       </list>
     </property>
@@ -34,8 +38,11 @@
           <property name="childName" value="index-eng.html" />
           <property name="trustedToken" ref="trustedToken" />
           <property name="repository" ref="repository" />
-          <property name="childResourceAssertion">
-            <ref bean="contentTypeMatchesXml" />
+          <property name="childResourceAssertions">
+            <list>
+              <ref bean="resourceIsManagedXml" />
+              <ref bean="viewXslPropSet" />
+            </list>
           </property>
         </bean>
       </list>
@@ -70,13 +77,16 @@
     </property>
   </bean>
 
-  <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
 
-    <property name="parent" ref="displayResourceService" />
-    <property name="order" value="100" />
-
+  <bean id="previewXmlTransformService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="order" value="0" />
     <property name="assertions">
       <list>
+        <ref bean="resourceIsManagedXml" />
+        <ref bean="viewXslPropSet" />
+
+        <!--
         <ref bean="contentTypeMatchesXml" />
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
           <property name="namespace" ref="CUSTOM_NAMESPACE" />
@@ -87,6 +97,104 @@
             <value>yes</value>
           </property>
         </bean>
+        -->
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewXmlResourceHandler" />
+    </property>
+  </bean>
+
+
+  <bean id="previewTransformIndexXmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewCollectionListingService" />
+    <property name="order" value="0" />
+
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName">
+            <value>index.xml</value>
+          </property>
+          <property name="repository" ref="repository" />
+          <property name="trustedToken" ref="trustedToken" />
+          <property name="childResourceAssertions">
+            <list>
+              <ref bean="resourceIsManagedXml" />
+              <ref bean="viewXslPropSet" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="previewCollectionListingServiceInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewIndexXmlHandler" />
+    </property>
+  </bean>                
+
+  <bean id="previewTransformIndexEngXmlFileService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewCollectionListingService" />
+    <property name="order" value="1" />
+
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceChildAssertion">
+          <property name="childName">
+            <value>index-eng.xml</value>
+          </property>
+          <property name="repository" ref="repository" />
+          <property name="trustedToken" ref="trustedToken" />
+          <property name="childResourceAssertions">
+            <list>
+              <ref bean="resourceIsManagedXml" />
+              <ref bean="viewXslPropSet" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="previewCollectionListingServiceInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewIndexEngXmlHandler" />
+    </property>
+  </bean>                
+
+
+  <bean id="resourceIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="managedXmlResource" />
+  </bean>
+
+  <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
+
+    <property name="parent" ref="displayResourceService" />
+    <property name="order" value="100" />
+
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsManagedXml" />
+        <ref bean="viewXslPropSet" />
+        <!--
+        <ref bean="contentTypeMatchesXml" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="CUSTOM_NAMESPACE" />
+          <property name="name">
+            <value>transform-view</value>
+          </property>
+          <property name="value">
+            <value>yes</value>
+          </property>
+        </bean>
+        -->
       </list>
     </property>
     <property name="handler">
@@ -169,8 +277,10 @@
                 <property name="childName" value="index.xml" />
                 <property name="trustedToken" ref="trustedToken" />
                 <property name="repository" ref="repository" />
-                <property name="childResourceAssertion">
-                  <ref bean="contentTypeMatchesHtml" />
+                <property name="childResourceAssertions">
+                  <list>
+                    <ref bean="contentTypeMatchesHtml" />
+                  </list>
                 </property>
               </bean>
             </list>
@@ -202,8 +312,10 @@
                 <property name="childName" value="index-eng.xml" />
                 <property name="trustedToken" ref="trustedToken" />
                 <property name="repository" ref="repository" />
-                <property name="childResourceAssertion">
-                  <ref bean="contentTypeMatchesHtml" />
+                <property name="childResourceAssertions">
+                  <list>
+                    <ref bean="contentTypeMatchesHtml" />
+                  </list>
                 </property>
               </bean>
             </list>
@@ -445,6 +557,30 @@
   </bean>
 
 
+  <bean id="previewIndexXmlHandler" 
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingService" />
+    <property name="viewName" value="previewIframe"/>
+    <property name="childName" value="index.xml" />
+  </bean>
+
+  <bean id="previewIndexEngXmlHandler" 
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingService" />
+    <property name="viewName" value="previewIframe"/>
+    <property name="childName" value="index-eng.xml" />
+  </bean>
+
+  <bean id="previewXmlResourceHandler" 
+    class="org.vortikal.web.controller.ResourceServiceURLController"
+    parent="requestLocalRepositoryAware">
+    <property name="service" ref="displayResourceService" />
+    <property name="viewName" value="previewIframe" />
+  </bean>
+
+
   <bean id="displayXmlResourceHandler" 
     class="org.vortikal.web.controller.DisplayXmlResourceController"
     parent="requestLocalRepositoryAware">
@@ -458,6 +594,81 @@
     parent="requestLocalRepositoryAware">
     <property name="transformerManager" ref="rssTransformerManager" />
     <property name="viewName" value="transformRssResource" />
+  </bean>
+
+
+  <bean id="abstractManageXsltErrorHandler"
+        class="org.vortikal.web.DefaultErrorHandler"
+        parent="abstractReferencedataProvidingErrorHandler" abstract="true">
+    <description>Provides specific handling of XSLT-related errors in the manage service</description>
+    <property name="service" ref="manageService" />
+    <property name="errorViewName" value="manageXsltError" />
+  </bean>
+
+
+  <!-- Add error handlers and views to the manage service -->
+
+  <bean id="manageXmlBuildErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
+        parent="abstractReferencedataProvidingErrorHandler">
+    <description>
+      Provides error handling errors that occur when building XML
+      (JDOM) documents for services in the 'manageService' tree.
+    </description>
+    <property name="service" ref="manageService" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.jdom.input.JDOMParseException" />
+      </bean>
+    </property>
+    <property name="errorViewName" value="manageXmlBuildError" />
+  </bean>
+
+
+  <bean id="manageStylesheetCompilationExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.xml.StylesheetCompilationException" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="manageTransformerConfigurationExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="javax.xml.transform.TransformerConfigurationException" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="manageTransformerExceptionErrorHandler" parent="abstractManageXsltErrorHandler">
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="javax.xml.transform.TransformerException" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="transformXmlManageErrorViewResolver"
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="manageXsltError" value-ref="manageXsltErrorView" />
+        <entry key="manageXmlBuildError" value-ref="manageXmlBuildErrorView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="manageViewWrapper" />
+  </bean>
+  
+
+  <bean id="manageXsltErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/xslt-error.ftl" />
+  </bean>
+
+  <bean id="manageXmlBuildErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/preview-xml-error.ftl" />
   </bean>
 
 

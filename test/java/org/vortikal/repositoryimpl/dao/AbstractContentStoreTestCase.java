@@ -344,7 +344,7 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
     public void testMultithreadedAccessAndModification() throws IOException {
         
         // The number of threads to run concurrently against content store
-        int numWorkers = 100;
+        int numWorkers = 1000;
         
         final class Worker implements Runnable {
             ContentStore store;

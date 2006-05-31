@@ -127,9 +127,9 @@ public class PropertyEditValidator implements Validator {
             }
 
         } catch (ValueFormatException e) {
-            errors.rejectValue("value", "Illegal value"); // XXX
+            errors.rejectValue("value", "Illegal value: " + e.getMessage()); // XXX
         } catch (ConstraintViolationException e) {
-            errors.rejectValue("value", "Illegal value"); // XXX
+            errors.rejectValue("value", "Illegal value: " + e.getMessage()); // XXX
         }
     }
     

@@ -59,6 +59,9 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
     private static Log logger = LogFactory.getLog(ResultSetIteratorImpl.class);
     
     private ResultSet rs;
+    private Statement stmt;
+    private Connection conn;
+
     private PropertyManager propertyManager;
     private PrincipalManager principalManager;
     
@@ -68,11 +71,15 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
     
     
     public ResultSetIteratorImpl(PropertyManager propertyManager,
-                                 PrincipalManager principalManager, ResultSet rs) throws IOException {
+                                 PrincipalManager principalManager,
+                                 ResultSet rs,
+                                 Statement stmt,
+                                 Connection conn) throws IOException {
         this.propertyManager = propertyManager;
         this.principalManager = principalManager;
         this.rs = rs;
-
+        this.stmt = stmt;
+        this.conn = conn;
         try {
             this.hasNext = this.rs.next();
             this.hasNext = this.hasNext && ! rs.isAfterLast();
@@ -130,15 +137,6 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
                     uri = null;
                     this.hasNext = false;
                 }
-
-// OLD (not supported by Oracle):
-//                 if (!this.rs.isLast()) {
-//                     this.rs.next();
-//                     uri = rs.getString("uri");
-//                 } else {
-//                     uri = null;
-//                     this.hasNext = false;
-//                 }
             }
 
             for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
@@ -159,30 +157,33 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
 
         this.hasNext = false;
 
-        Statement stmt = null;
-        Connection conn = null;
+//         Statement stmt = null;
+//         Connection conn = null;
 
         try {
-            stmt = this.rs.getStatement();
-            if (stmt != null) {
-                conn = stmt.getConnection();
-            }
+//             stmt = this.rs.getStatement();
+//             if (stmt != null) {
+//                 conn = stmt.getConnection();
+//             }
+            logger.info("Closing result set " + this.rs);
             this.rs.close();
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                logger.info("Closing statement " + this.stmt);
+                if (this.stmt != null) {
+                    this.stmt.close();
                 }
                 
             } catch (SQLException e) {
                 throw new IOException(e.getMessage());
             } finally {
                 try {
-                    if (conn != null) {
-                        conn.commit();
-                        conn.close();
+                    logger.info("Closing connection " + this.conn);
+                    if (this.conn != null) {
+                        this.conn.commit();
+                        this.conn.close();
                     }
                 } catch (SQLException e) {
                     throw new IOException(e.getMessage());

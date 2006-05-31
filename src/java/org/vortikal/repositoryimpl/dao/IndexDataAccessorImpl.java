@@ -120,7 +120,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(startURI));
             ResultSet rs = stmt.executeQuery();
             
-            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager, rs);
+            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager,
+                                             rs, stmt, conn);
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
         }
@@ -142,7 +143,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             ResultSet rs = stmt.executeQuery();
             
             ResultSetIterator iterator =  new ResultSetIteratorImpl(
-                this.propertyManager, this.principalManager, rs);
+                this.propertyManager, this.principalManager, rs, stmt, conn);
             
             PropertySet propSet = null;
 
@@ -208,11 +209,12 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                     "DELETE FROM vortex_uri_tmp WHERE session_id=?");
             deleteFromTempStmt.setInt(1, sessionId);
             deleteFromTempStmt.executeUpdate();
-            deleteFromTempStmt.close();
+//             deleteFromTempStmt.close();
             
-            conn.commit();
+//             conn.commit();
             
-            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager, rs);
+            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager,
+                                             rs, deleteFromTempStmt, conn);
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
         }

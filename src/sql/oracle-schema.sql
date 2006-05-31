@@ -60,7 +60,11 @@ CREATE INDEX vortex_resource_acl_index ON vortex_resource(acl_inherited_from);
 CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 
 
-/* Stored function for getting string of ancestor ids */
+-----------------------------------------------------------------------------
+-- resource_ancestor_ids
+-- Stored function for retrieving a resource's ancestor IDs.
+-- Returns a VARCHAR of space-separated id integers.
+-----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION resource_ancestor_ids(uri IN VARCHAR)
 RETURN VARCHAR AS
   ancestor VARCHAR(1500) DEFAULT '/';
@@ -82,6 +86,22 @@ BEGIN
 END resource_ancestor_ids;
 /
 show errors;
+
+
+-----------------------------------------------------------------------------
+-- vortex_uri_tmp - Auxiliary temp-table used to hold lists of URIs
+-----------------------------------------------------------------------------
+DROP SEQUENCE vortex_uri_tmp_session_id_seq;
+CREATE SEQUENCE vortex_uri_tmp_session_id_seq INCREMENT BY 1 START WITH 1000;
+
+DROP TABLE vortex_uri_tmp;
+CREATE TABLE vortex_uri_tmp (
+    session_id NUMBER,
+    uri VARCHAR2(2048)
+);
+
+CREATE INDEX vortex_uri_tmp_index ON vortex_uri_tmp(uri);
+
 
 
 

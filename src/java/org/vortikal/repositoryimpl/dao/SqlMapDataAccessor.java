@@ -30,13 +30,10 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-import com.ibatis.sqlmap.client.SqlMapClient;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,10 +44,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
@@ -70,6 +65,8 @@ import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 
+import com.ibatis.sqlmap.client.SqlMapClient;
+
 
 
 /**
@@ -77,7 +74,7 @@ import org.vortikal.util.web.URLUtil;
  */
 public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
-    private Map sqlMaps = new HashMap();
+    private Map sqlMaps;
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -137,7 +134,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         }
         if (this.sqlMapClient == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'principalManager' not specified");
+                "JavaBean property 'sqlMapClient' not specified");
         }
         if (this.sqlMaps == null) {
             throw new BeanInitializationException(

@@ -2,7 +2,7 @@
 <!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
 
 <sqlMap>
-
+  
   <resultMap id="Resource" class="java.util.HashMap">
     <result property="uri" column="uri" />
     <result property="id" column="resource_id"/>
@@ -82,6 +82,120 @@
     <result property="timeout" column="timeout" javaType="date" />
   </resultMap>
 
+  <!-- FIXME: a lot of duplication here. There must be a better way ... -->
+  <resultMap id="ResourceAndExtraProperties" class="java.util.HashMap">
+    <!-- Copied from result map 'Resource' -->
+    <result property="uri" column="uri" />
+    <result property="id" column="resource_id"/>
+    <result property="resourceType" column="resource_type"/>
+    <result property="creationTime" column="creation_time" javaType="date"/>
+    <result property="createdBy" column="created_by" />
+    <result property="contentLastModified" column="content_last_modified" javaType="date"/>
+    <result property="propertiesLastModified" column="properties_last_modified" javaType="date"/>
+    <result property="lastModified" column="last_modified" javaType="date"/>
+    <result property="contentModifiedBy" column="content_modified_by" />
+    <result property="propertiesModifiedBy" column="properties_modified_by" />
+    <result property="modifiedBy" column="modified_by" />
+    <result property="owner" column="resource_owner" />
+    <result property="displayName" column="display_name" />
+    <result property="contentLanguage" column="content_language" />
+    <result property="contentType" column="content_type" />
+    <result property="contentLength" column="content_length" javaType="long" />
+    <result property="characterEncoding" column="character_encoding" />
+    <result property="guessedCharacterEncoding" column="guessed_character_encoding" />
+    <result property="userSpecifiedCharacterEncoding" column="user_character_encoding" />
+    <result property="isCollection" column="is_collection" />
+    <result property="aclInheritedFrom" column="acl_inherited_from" javaType="int" />
+    
+    <!-- Some columns from 'extra_prop_entry' -->
+    <result property="propEntryId" column="extra_prop_entry_id" javaType="int" />
+    <result property="type" column="prop_type" />
+    <result property="typeId" column="prop_type_id" javaType="int" />
+    <result property="name" column="name" />
+    <result property="namespaceUri" column="name_space" />
+    <result property="value" column="value" />
+  </resultMap>
+
+  <resultMap id="ResourceAndExtraPropertiesWithAncestorIds" class="java.util.HashMap">
+    <!-- Resource ancestor ids -->
+    <result property="ancestorIds" column="ancestor_ids" javaType="string"/>
+    
+    <!-- Copied from result map 'Resource' -->
+    <result property="uri" column="uri" />
+    <result property="id" column="resource_id"/>
+    <result property="resourceType" column="resource_type"/>
+    <result property="creationTime" column="creation_time" javaType="date"/>
+    <result property="createdBy" column="created_by" />
+    <result property="contentLastModified" column="content_last_modified" javaType="date"/>
+    <result property="propertiesLastModified" column="properties_last_modified" javaType="date"/>
+    <result property="lastModified" column="last_modified" javaType="date"/>
+    <result property="contentModifiedBy" column="content_modified_by" />
+    <result property="propertiesModifiedBy" column="properties_modified_by" />
+    <result property="modifiedBy" column="modified_by" />
+    <result property="owner" column="resource_owner" />
+    <result property="displayName" column="display_name" />
+    <result property="contentLanguage" column="content_language" />
+    <result property="contentType" column="content_type" />
+    <result property="contentLength" column="content_length" javaType="long" />
+    <result property="characterEncoding" column="character_encoding" />
+    <result property="guessedCharacterEncoding" column="guessed_character_encoding" />
+    <result property="userSpecifiedCharacterEncoding" column="user_character_encoding" />
+    <result property="isCollection" column="is_collection" />
+    <result property="aclInheritedFrom" column="acl_inherited_from" javaType="int" />
+    
+    <!-- All columns from 'extra_prop_entry' -->
+    <result property="propEntryId" column="extra_prop_entry_id" javaType="int" />
+    <result property="type" column="prop_type" />
+    <result property="typeId" column="prop_type_id" javaType="int" />
+    <result property="name" column="name" />
+    <result property="namespaceUri" column="name_space" />
+    <result property="value" column="value" />
+  </resultMap>
+  
+  <select id="loadAllResourcesAndExtraProperties" 
+          resultMap="ResourceAndExtraProperties">
+    select r.*, p.* from vortex_resource r
+    left outer join extra_prop_entry p on r.resource_id = p.resource_id
+    order by r.uri, p.extra_prop_entry_id
+  </select>
+  
+  <select id="loadResourcesAndExtraPropertiesStartFromUri"
+          parameterClass="java.util.Map"
+          resultMap="ResourceAndExtraPropertiesWithAncestorIds">
+    select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r
+    left outer join extra_prop_entry p  on r.resource_id = p.resource_id
+    where r.uri = #uri# or r.uri like #uriWildcard# order by r.uri, p.extra_prop_entry_id
+  </select>
+  
+  <select id="loadResourceAndExtraPropertiesByUri" 
+          parameterClass="java.util.Map"
+          resultMap="ResourceAndExtraPropertiesWithAncestorIds">
+    select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r
+    left outer join extra_prop_entry p on r.resource_id = p.resource_id
+    where r.uri = #uri# order by p.extra_prop_entry_id
+  </select>
+  
+  <select id="loadResourcesAndExtraPropertiesByTempTable" 
+          parameterClass="java.util.Map"
+          resultMap="ResourceAndExtraPropertiesWithAncestorIds">
+    select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.*
+    from vortex_uri_tmp vu, vortex_resource r
+    left outer join extra_prop_entry p on r.resource_id = p.resource_id
+    where r.uri = vu.uri AND vu.session_id=#sessionId#
+    order by p.resource_id, p.extra_prop_entry_id     
+  </select>
+  
+  <select id="nextTempTableSessionId" resultClass="java.lang.Integer">
+    select nextval('vortex_uri_tmp_session_id_seq')
+  </select>
+  
+  <insert id="insertIntoUriTempTable" parameterClass="java.util.Map">
+    insert into vortex_uri_tmp(session_id, uri) values (#sessionId#, #uri#)
+  </insert>
+  
+  <delete id="deleteFromUriTempTableBySessionId" parameterClass="java.util.Map">
+    delete from vortex_uri_tmp where session_id = #sessionId#
+  </delete>
 
   <select id="loadResourceByUri" resultMap="Resource">
     select * from vortex_resource where uri = #value#
@@ -253,8 +367,6 @@
     select uri from vortex_resource where uri like #uriWildcard# and depth = #depth#
   </select>
 
-
-              
   <update id="updateAclInheritedFromByResourceId" parameterClass="java.util.Map">
     update vortex_resource
       set acl_inherited_from = #inheritedFrom#

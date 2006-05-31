@@ -49,7 +49,6 @@ import org.vortikal.repository.IllegalOperationException;
  * 
  * It maintains an internal tree structure of content- and directory-nodes.
  *
- * TODO: Smarter and more refined synchronization.
  * @author oyviste
  *
  */
@@ -85,10 +84,7 @@ public class MemoryContentStore implements ContentStore {
     }
 
     public long getContentLength(String uri) throws IllegalOperationException {
-        Node node = null;
-        synchronized (this) {
-            node = getNode(uri);
-        }
+        Node node = getNode(uri);
         
         if (node == null) {
             return 0; // Same behaviour as java.io.File#length()
@@ -100,16 +96,18 @@ public class MemoryContentStore implements ContentStore {
 
     }
 
-    public synchronized void deleteResource(String uri) {
+    public void deleteResource(String uri) {
         String name = getName(uri);
         DirectoryNode parent = getParent(uri);
         
         if (parent != null) {
-            parent.entries.remove(name);
+            synchronized (this) {
+                parent.entries.remove(name);
+            }
         }
     }
 
-    public synchronized InputStream getInputStream(String uri) throws IOException {
+    public InputStream getInputStream(String uri) throws IOException {
         Node node = getNode(uri);
         
         if (node == null) {
@@ -126,10 +124,7 @@ public class MemoryContentStore implements ContentStore {
     public void storeContent(String uri, InputStream inputStream)
             throws IOException {
         
-        Node node = null;
-        synchronized (this) {
-            node = getNode(uri);
-        }
+        Node node = getNode(uri);
         
         if (node == null) {
             throw new IOException("Node does not exist.");
@@ -174,7 +169,7 @@ public class MemoryContentStore implements ContentStore {
     }
     
     public boolean exists(String uri) {
-        return (getNode(uri) != null);
+            return (getNode(uri) != null);
     }
     
     public boolean isCollection(String uri) throws IOException {
@@ -224,18 +219,20 @@ public class MemoryContentStore implements ContentStore {
         
         String[] components = uri.substring(URI_COMPONENT_SEPARATOR.length(), 
                                 uri.length()).split(URI_COMPONENT_SEPARATOR);
-
-        DirectoryNode dir = root;
+        
         Node node = null;
-        for (int i=0; i< components.length; i++) {
-            if ((node = (Node)dir.entries.get(components[i])) != null) {
-                if (node instanceof DirectoryNode) {
-                    dir = (DirectoryNode)node;
-                } else if (i < components.length-1) {
+        DirectoryNode dir = this.root;
+        synchronized (this) {
+            for (int i=0; i< components.length; i++) {
+                if ((node = (Node)dir.entries.get(components[i])) != null) {
+                    if (node instanceof DirectoryNode) {
+                        dir = (DirectoryNode)node;
+                    } else if (i < components.length-1) {
+                        return null;
+                    }
+                } else {
                     return null;
                 }
-            } else {
-                return null;
             }
         }
         

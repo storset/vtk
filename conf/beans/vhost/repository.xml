@@ -79,6 +79,7 @@
         <entry key="insertChangelogEntriesRecursively" value="oracle.insertChangelogEntriesRecursively" />
         <entry key="insertChangelogEntry" value="oracle.insertChangelogEntry" />
         <entry key="updateAclInheritedFromByPreviousResourceId" value="oracle.updateAclInheritedFromByPreviousResourceId" />
+        <entry key="nextTempTableSessionId" value="oracle.nextTempTableSessionId"/>
       </map>
     </constructor-arg>
   </bean>
@@ -97,6 +98,11 @@
     <property name="dataSource" ref="repository.dataSource" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="principalManager" ref="principalManager" />
+    <property name="sqlMapClient" ref="sqlMapClientFactory"/>
+    <property name="sqlMaps" ref="repository.statementMappings.${sqlDialect}"/>
+    
+    <!-- Only temporary -->
+    <property name="sqlDialect" value="${sqlDialect}"/>
   </bean>
 
   <bean id="repository.contentStore" 

@@ -55,8 +55,11 @@ CREATE INDEX vortex_resource_acl_index ON vortex_resource(acl_inherited_from);
 CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 
 
+-----------------------------------------------------------------------------
+-- resource_ancestor_ids
 -- Stored function for retrieving a resource's ancestor IDs.
 -- Returns a VARCHAR of space-separated id integers.
+-----------------------------------------------------------------------------
 DROP FUNCTION resource_ancestor_ids(varchar); CREATE OR REPLACE
 FUNCTION resource_ancestor_ids(varchar) RETURNS VARCHAR AS ' DECLARE
   parent varchar DEFAULT ''/'';
@@ -79,6 +82,20 @@ BEGIN
   RETURN ids;
 END;
 ' LANGUAGE plpgsql;
+
+-----------------------------------------------------------------------------
+-- vortex_uri_tmp - Auxiliary temp-table used to hold lists of URIs
+-----------------------------------------------------------------------------
+DROP SEQUENCE vortex_uri_tmp_session_id_seq;
+CREATE SEQUENCE vortex_uri_tmp_session_id_seq INCREMENT 1 START 1000;
+
+DROP TABLE vortex_uri_tmp;
+CREATE TABLE vortex_uri_tmp (
+    session_id INTEGER,
+    uri VARCHAR(2048)
+);
+
+CREATE INDEX vortex_uri_tmp_index ON vortex_uri_tmp(uri);
 
 
 -----------------------------------------------------------------------------

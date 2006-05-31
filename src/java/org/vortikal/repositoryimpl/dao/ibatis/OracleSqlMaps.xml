@@ -212,5 +212,10 @@
            and r1.acl_inherited_from is not null
            and r1.acl_inherited_from != #inheritedFrom#
   </update>
+  
+  <select id="oracle.nextTempTableSessionId" resultClass="java.lang.Integer">
+    select vortex_uri_tmp_session_id_seq.nextval from dual
+  </select>
+  
 
 </sqlMap>

@@ -34,13 +34,6 @@
   </bean>
 -->
 
-  <!-- Database data accessor for indexing system -->
-  <bean id="indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
-    <property name="propertyManager" ref="propertyManager"/>
-    <property name="principalManager" ref="principalManager"/>
-    <property name="dataSource" ref="repository.dataSource"/>
-  </bean>
-
   <!-- Document mapper -->
   <bean id="documentMapper" class="org.vortikal.repositoryimpl.query.DocumentMapper">
     <property name="propertyManager" ref="propertyManager"/>
@@ -84,12 +77,12 @@
         class="org.vortikal.repositoryimpl.query.observation.PropertySetIndexUpdater">
     <property name="index" ref="newSystemIndex"/>
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
-    <property name="indexDataAccessor" ref="indexDataAccessor"/>
+    <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
   </bean>
 
   <!-- Simple re-indexer for propety set index 'newSystemIndex'. -->
   <bean id="newSystemIndexReindexer" class="org.vortikal.repositoryimpl.query.Reindexer">
-    <property name="indexDataAccessor" ref="indexDataAccessor"/>
+    <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
     <property name="index" ref="newSystemIndex"/>
   </bean>
 </beans>

@@ -205,6 +205,10 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
      * @return array of integers
      */
     private int[] getAncestorIdsFromString(String idString) {
+        if (idString == null || "".equals(idString)) {
+            return new int[0];
+        }
+        
         String[] ids = idString.trim().split(" ");
         
         int[] integerIds = new int[ids.length];

@@ -31,16 +31,19 @@
 package org.vortikal.util.text;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Text;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -112,8 +115,8 @@ public final class EvenStructuredText implements StructuredText {
         tagNames.put("reference", "refrence");
         tagNames.put("reference-type", "type");
         tagNames.put("sub", "sub");
-        tagNames.put("super", "sup");
-        tagNames.put("newline", "linjeskift");
+        tagNames.put("sup", "sup");
+        tagNames.put("newline", "newline");
     }
     
     
@@ -735,7 +738,7 @@ public final class EvenStructuredText implements StructuredText {
         StringBuffer substring = removeESCAPEchars(text, startPos, endPos);
         String supertext = substring.toString();
         
-        Element sup = new Element(lookupTag("super"));
+        Element sup = new Element(lookupTag("sup"));
         sup.addContent(supertext);
         parent.addContent(sup);
 
@@ -790,7 +793,11 @@ public final class EvenStructuredText implements StructuredText {
                 Element child = (Element) object;
                                 
                 String tagName = reverseLookupTag(child.getName());
-
+                
+                
+                System.out.print("\n\n\n ############################ \n" + tagName + "\n ############################ \n\n\n");
+                
+                
                 if (tagName.equals("bold")) {
                     buffer.append(BOLD_START);
                     //buffer.append(generateStructuredText(child));
@@ -850,14 +857,14 @@ public final class EvenStructuredText implements StructuredText {
                     //buffer.append(generateStructuredText(child));
                     buffer.append(addEscapeChar(escapeQuotes(child.getText())));
                     buffer.append(SUB_END);
-                } else if (tagName.equals("super")) {
+                } else if (tagName.equals("sup")) {
                     buffer.append(SUPER_START);
                     //buffer.append(generateStructuredText(child));
                     buffer.append(addEscapeChar(escapeQuotes(child.getText())));
                     buffer.append(SUPER_END);
                 } else { // plaintextelement
                     throw new StructuredTextException(
-                            "Unexpected element name: " + tagName);
+                            "Unexpected element name: " + tagName + " - KS");
                 }
             } else if (object instanceof Text) { // plaintextelement
 
@@ -1008,64 +1015,160 @@ public final class EvenStructuredText implements StructuredText {
         }
     }
     
+        
     
+    /**
+     * Test funtion main()
+     * 
+     * USAGE:
+     * To test convertion of StructuredText -> XML and back, run:
+     *    org.vortikal.util.text.EvenStructuredText <en|no> <textfile>
+     * or to parse <structuredtext> within an XML-document:
+     *    org.vortikal.util.text.EvenStructuredText <en|no> -xml <xmlfile>
+     * 
+     * REMARKS:
+     * - 'no' => norwegian XML (fritekst)
+     * - 'en' => english XML (structuredtext) [default]
+     * - When parsing XML only, this test function will ONLY test the first
+     *   occuring structuredtext/fritekst node contained by the XML root node
+     */
     public static void main(String[] args) {
         try {
-            EvenStructuredText parser = new EvenStructuredText();
-            
-            Map tagNames = new HashMap();
-            tagNames.put("root", "fritekst");
-            tagNames.put("bold", "fet");
-            tagNames.put("italic", "kursiv");
-            tagNames.put("reference", "referanse");
-            tagNames.put("reference-type", "type");
-            tagNames.put("reference-language", "spraak");
-            tagNames.put("link", "weblenke");
-            tagNames.put("url", "webadresse");
-            tagNames.put("url-description", "lenketekst");
-            tagNames.put("unordered-list", "usortertliste");
-            tagNames.put("ordered-list", "sortertliste");
-            tagNames.put("listitem", "listepunkt");
-            tagNames.put("paragraph", "avsnitt");
-            tagNames.put("sub", "sub");
-            tagNames.put("super", "sup");
-            tagNames.put("newline", "linjeskift");
-            
-            parser.setTextMappings(tagNames);
+            EvenStructuredText parser = new EvenStructuredText();            
             
             if (args.length < 1) {
-                System.out.println("Usage: " + parser.getClass().getName()
-                        + " <textfile>");
+                printUsageText( parser.getClass().getName() );
                 return;
             }
             
-            File textFile = new File(args[0]);
-            if (!textFile.exists()) {
-                System.out.println("No such file: " + textFile.getName());
-                return;
+            // Norwegian XML
+            if ( "no".equals(args[0]) ) {
+                parser.setTextMappings( getNorwegianTagNames() );                
+            } 
+            // English XML (default)
+            else {
+                // error if URI
+                if (args[0].lastIndexOf('/') != -1 
+                        || args[0].lastIndexOf('\\') != -1 ) {
+                    printUsageText( parser.getClass().getName() );
+                    return;
+                }
+                else {
+                    parser.setTextMappings( getEnglishTagNames() );
+                }
             }
             
-            
-            char[] buffer = new char[(int) textFile.length()];
-            FileReader reader = new FileReader(textFile);
-            reader.read(buffer);
-            
-            String text = new String(buffer);
-            
-            System.out.println("Orginal tekst: " + "\n" + text);
-            
-            Element root = parser.parseStructuredText(text);
-            Document doc = new Document(root);
-            
+            // Either parse StructuredText -> XML and back
+            //  or
+            // Parse only XML -> StructuredText 
+            Document doc;
+            String structuredtext;
+            // StructuredText -> XML -> StructuredText
+            if ( !"-xml".equals(args[1]) ) {
+                File textFile = new File(args[1]);
+                if (!textFile.exists()) {
+                    System.out.println("No such textfile: " + textFile.getName());
+                    return;
+                }                
+                
+                char[] buffer = new char[(int) textFile.length()];
+                FileReader reader = new FileReader(textFile);
+                reader.read(buffer);
+                
+                String text = new String(buffer);
+                
+                System.out.println("Orginal tekst: " + "\n" + text);
+                
+                Element root = parser.parseStructuredText(text);
+                doc = new Document(root); 
+                structuredtext = parser.parseElement(root);
+            } 
+            // XML -> StructuredText only
+            else {
+                SAXBuilder saxparser = new SAXBuilder();
+                String xmlpath = args[2];
+                if ( xmlpath.startsWith("http") ) {  
+                    try {
+                        doc = saxparser.build(xmlpath);    
+                    } catch (FileNotFoundException fnfe ) {
+                        System.out.println("XML files not found at " + xmlpath);
+                        return;
+                    }
+                    
+                } else {
+                    File xmlFile = new File(args[2]);                                        
+                    if (!xmlFile.exists()) {
+                        System.out.println("No such XML file: " + xmlFile.getName());
+                        return;
+                    }
+                    doc = saxparser.build(xmlFile);
+                }
+                
+                Element root = doc.getRootElement();
+                Element fritekst = root.getChild("fritekst");
+                structuredtext = parser.parseElement(fritekst);
+            }
+                                 
             dumpXML(doc, System.out);
             
             // make structuredtext
-            String structuredtext = parser.parseElement(root);
-            
             System.out.println("Converted back: ");
             System.out.println(structuredtext);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    
     } // end main
+
+    
+    /*
+     * Private helper methods used by test function main()
+     */
+    private static void printUsageText(String parser) {
+        System.out.print("\nUsage: \n" + 
+                parser + " <en|no> <textfile path> \n\t or:\n" +
+                parser + " <en|no> -xml <XML-file path|XML-URL>");
+        
+    }
+    
+    private static Map getEnglishTagNames() {
+        Map tagNames = new HashMap();
+        tagNames.put("root", "evenstructuredtext");
+        tagNames.put("bold", "bold");
+        tagNames.put("italic", "it");
+        tagNames.put("link", "link");
+        tagNames.put("url", "url");
+        tagNames.put("url-description", "description");
+        tagNames.put("unordered-list", "unsortedlist");
+        tagNames.put("ordered-list", "sortedlist");
+        tagNames.put("listitem", "listitem");
+        tagNames.put("paragraph", "paragraph");
+        tagNames.put("reference", "refrence");
+        tagNames.put("reference-type", "type");
+        tagNames.put("sub", "sub");
+        tagNames.put("sup", "sup");
+        tagNames.put("newline", "newline");
+        return tagNames;
+    }
+    
+    private static Map getNorwegianTagNames() {
+        Map tagNames = new HashMap();
+        tagNames.put("root", "fritekst");
+        tagNames.put("bold", "fet");
+        tagNames.put("italic", "kursiv");
+        tagNames.put("reference", "referanse");
+        tagNames.put("reference-type", "type");
+        tagNames.put("reference-language", "spraak");
+        tagNames.put("link", "weblenke");
+        tagNames.put("url", "webadresse");
+        tagNames.put("url-description", "lenketekst");
+        tagNames.put("unordered-list", "punktliste");
+        tagNames.put("ordered-list", "nummerertliste");
+        tagNames.put("listitem", "listepunkt");
+        tagNames.put("paragraph", "avsnitt");
+        tagNames.put("sub", "sub");
+        tagNames.put("sup", "sup");
+        tagNames.put("newline", "linjeskift");
+        return tagNames;
+    }
 }

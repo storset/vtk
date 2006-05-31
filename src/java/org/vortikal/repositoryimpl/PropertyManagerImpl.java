@@ -30,6 +30,9 @@
  */
 package org.vortikal.repositoryimpl;
 
+
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,16 +42,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
@@ -67,6 +67,7 @@ import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvalua
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyValidator;
+import org.vortikal.repository.resourcetype.ResourceType;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -109,6 +110,11 @@ public class PropertyManagerImpl implements PropertyManager,
      */
     private Map resourceTypeDefinitions = new HashMap();
     
+    /**
+     * Maps resource type names to resource type objects
+     */
+    private Map resourceTypeNameMap = new HashMap();
+
     // Currently maps namespaceUris to maps which map property names to defs.
     private Map propertyTypeDefinitions = new HashMap();
     
@@ -160,12 +166,14 @@ public class PropertyManagerImpl implements PropertyManager,
         if (init) return;
 
         Collection resourceTypeDefinitionBeans = 
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     PrimaryResourceTypeDefinition.class, false, false).values();
 
         for (Iterator i = resourceTypeDefinitionBeans.iterator(); i.hasNext();) {
             PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
             
+            this.resourceTypeNameMap.put(def.getName(), def);
+
             addNamespacesAndProperties(def);
             
             // Populate map of resourceTypeDefiniton parent -> children
@@ -190,13 +198,14 @@ public class PropertyManagerImpl implements PropertyManager,
 
         }
         // Remove null-key (which is the root resource type's "parent")
-        this.resourceTypeDefinitions.remove(null);   
+        this.resourceTypeDefinitions.remove(null);
         
         Collection mixins = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
                     MixinResourceTypeDefinition.class, false, false).values();
         for (Iterator iter = mixins.iterator(); iter.hasNext();) {
             ResourceTypeDefinition def = (ResourceTypeDefinition) iter.next();
+            this.resourceTypeNameMap.put(def.getName(), def);
             addNamespacesAndProperties(def);
         }
 
@@ -1136,4 +1145,37 @@ public class PropertyManagerImpl implements PropertyManager,
         
         return childList;
     }
+
+    public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName) {
+
+
+        ResourceTypeDefinition type = (ResourceTypeDefinition)
+            this.resourceTypeNameMap.get(resourceTypeName);
+        if (!(type instanceof PrimaryResourceTypeDefinition)) {
+            throw new IllegalArgumentException("Supplied argument '" + resourceTypeName
+                                               + "'not a primary resource type");
+        }
+
+        if (type == null) {
+            return false;
+        }
+
+        ResourceTypeDefinition parent = type;
+        while (parent != null) {
+            if (def instanceof MixinResourceTypeDefinition) {
+                MixinResourceTypeDefinition[] mixins = parent.getMixinTypeDefinitions();
+                for (int i = 0; i < mixins.length; i++) {
+                    if (mixins[i].equals(def)) {
+                        return true;
+                    }
+                }
+            } else if (parent.equals(def)) {
+                return true;
+            }
+            parent = ((PrimaryResourceTypeDefinition) parent).getParentTypeDefinition();
+        }
+        return false;
+    }
+    
+
 }

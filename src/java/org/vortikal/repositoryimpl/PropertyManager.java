@@ -30,25 +30,73 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.util.List;
 
+import java.util.List;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
 public interface PropertyManager {
 
+
+    /**
+     * Creates (instantiates) a property with a given namespace and
+     * name. The created property will have no value set. The type is
+     * set according to its {@link PropertyDefinition property
+     * definition}, or {@link PropertyType.TYPE_STRING} if it has no
+     * definition
+     *
+     * @param namespace the namespace
+     * @param name the name
+     * @return a property instance
+     */
     public Property createProperty(Namespace namespace, String name);
 
+
+    /**
+     * Creates (instantiates) a property with a given namespace, name
+     * and value. The type is set according to its {@link
+     * PropertyDefinition property definition}, or {@link
+     * PropertyType.TYPE_STRING} if it has no definition
+     *
+     * @param namespace the namespace
+     * @param name the name
+     * @return a property instance
+     * @throws ValueFormatException if the supplied value's type does
+     * not match that of the property definition
+     */
     public Property createProperty(Namespace namespace, String name,
             Object value) throws ValueFormatException;
 
+
+    /**
+     * Creates (instantiates) a property with a given namespace, name
+     * and values. The type is set according to its {@link
+     * PropertyDefinition property definition}, or {@link
+     * PropertyType.TYPE_STRING} if it has no definition
+     *
+     * @param namespace the namespace
+     * @param name the name
+     * @param type the property type
+     * @return a property instance
+     * @throws ValueFormatException if the supplied values' type does
+     * not match that of the property definition
+     */
     public Property createProperty(String namespaceUrl, String name,
             String[] stringValues, int type) throws ValueFormatException;
 
 
+    /**
+     * Gets a property type definition by prefix and name
+     *
+     * @param prefix the prefix of the property type
+     * @param name the name of the property
+     * @return a the property definition, or <code>null</code> if not found
+     */
     public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix,
             String name);
 
@@ -71,6 +119,16 @@ public interface PropertyManager {
      * @return
      */
     public List getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
+
+    /**
+     * Determines whether a named resource type is contained in another resource type
+     * @param def the resource type definition
+     * @param resourceTypeName the resource type to check for
+     * @return <code>true</code> if the named type exists and equals,
+     * or is a child of, or is a mixin of the given type definition,
+     * <code>false</code> otherwise
+     */
+    public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName);
 
 
 }

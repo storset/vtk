@@ -30,12 +30,16 @@
  */
 package org.vortikal.repository;
 
+
 import java.util.Date;
 import java.util.List;
 
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 
 public interface Resource extends PropertySet {
+
+    public boolean isOfType(ResourceTypeDefinition type);
 
     public boolean isAuthorized(String privilege, Principal principal);
 

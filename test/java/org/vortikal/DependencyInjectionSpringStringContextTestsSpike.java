@@ -54,14 +54,16 @@ public class DependencyInjectionSpringStringContextTestsSpike
 
         try {
             List fileList = findAllXmlFiles(new File("target/classes/vortikal/beans/vhost/"));
-            
             fileList.add(new File("target/vortikal/WEB-INF/applicationContext.xml"));
+            
             
             Miyagi m = new Miyagi(fileList);
             m.setBeanOverloadingAllowed(true);
             m.buildBeans();
 
             List beanIdList = new ArrayList();
+            beanIdList.add("propertyConfigurer");
+            beanIdList.add("repository.statementMappings.default");
             beanIdList.add("collectionListingAsFeedView");
             beanIdList.add("localPrincipalStore");
             configAsString = m.getXml(beanIdList);

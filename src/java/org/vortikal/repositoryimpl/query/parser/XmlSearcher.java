@@ -165,10 +165,12 @@ public class XmlSearcher implements InitializingBean {
     private Element propertySetToElement(PropertySet propertySet) {
         Element propertySetElement = new Element("resource");
 
-        Element uri = new Element("uri").addContent(propertySet.getURI());
-        Element name = new Element("name").addContent(propertySet.getName());
-        Element type = new Element("type").addContent(propertySet.getResourceType());
-        
+        Element uri = new Element("property").setAttribute("name", "uri")
+            .addContent(new Element("value").setText(propertySet.getURI()));
+        Element name = new Element("property").setAttribute("name", "name")
+            .addContent(new Element("value").setText(propertySet.getName()));
+        Element type = new Element("property").setAttribute("name", "type")
+            .addContent(new Element("value").setText(propertySet.getResourceType()));
         propertySetElement.addContent(uri).addContent(name).addContent(type);
 
         for (Iterator i = propertySet.getProperties().iterator(); i.hasNext();) {

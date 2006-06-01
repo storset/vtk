@@ -47,9 +47,65 @@
     <property name="url" value="pages/root1.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <bean class="org.vortikal.web.referencedata.provider.ShellExecutionResultProvider">
+          <property name="shell" ref="beanShellEvaluator" />
+          <property name="modelName" value="managementStats" />
+          <property name="groups">
+            <map>
+              <entry key="Principals">
+                <map>
+                  <entry key="Principal manager tokens">
+                    <value>context.getBean("tokenManagerCache").getSize()</value>
+                  </entry>
+                </map>
+              </entry>
+              <entry key="Repository">
+                <map>
+                  <entry key="Cache size">
+                    <value>context.getBean("repository.backend").size()</value>
+                  </entry>
+                </map>
+              </entry>
+              <entry key="Resource types">
+                <map>
+                  <entry key="Resource type tree">
+                    <value>"\n" + context.getBean("propertyManager").getResourceTypeTreeAsString();</value>
+                  </entry>
+                </map>
+              </entry>
+<!--
+              <entry key="Database">
+                <map>
+                  <entry key="Active connections">
+                    <value>
+                      connMgr = oracle.jdbc.pool.OracleConnectionCacheManager
+                                .getConnectionCacheManagerInstance();
+                      connMgr.getNumberOfAvailableConnections("${repositoryID"});
+                    </value>
+                  </entry>
+                  <entry key="Available connections">
+                    <value>
+                      connMgr = oracle.jdbc.pool.OracleConnectionCacheManager
+                                .getConnectionCacheManagerInstance();
+                      connMgr.getNumberOfActiveConnections("${repositoryID}");
+                    </value>
+                  </entry>
+                </map>
+              </entry>
+-->
+
+            </map>
+          </property>
+        </bean>
         <ref bean="adminCSSProvider" />
       </list>
     </property>
+  </bean>
+
+
+  <bean id="beanShellEvaluator" class="org.vortikal.shell.BeanShellConsole">
+    <property name="runEvalLoop" value="false" />
+    <property name="wrapOutputInBrackets" value="false" />
   </bean>
 
   <bean id="rootViewResolver" parent="adminViewResolver">

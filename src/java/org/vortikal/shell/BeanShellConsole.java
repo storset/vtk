@@ -46,8 +46,14 @@ import bsh.Interpreter;
 public class BeanShellConsole extends AbstractConsole {
 
     private Interpreter interpreter = new Interpreter();
+    private boolean wrapOutputInBrackets = true;
 
     protected void init() {
+    }
+    
+
+    public void setWrapOutputInBrackets(boolean wrapOutputInBrackets) {
+        this.wrapOutputInBrackets = wrapOutputInBrackets;
     }
     
 
@@ -82,7 +88,11 @@ public class BeanShellConsole extends AbstractConsole {
             if (line != null && !"".equals(line.trim())) {
                 interpreter.setOut(out);
                 Object o = interpreter.eval(line);
-                out.println("[" + o + "]");
+                if (this.wrapOutputInBrackets) {
+                    out.println("[" + o + "]");
+                } else {
+                    out.println(o);
+                }
             }
         } catch (EvalError e) {
             out.println("Evaluation error: " + e.getMessage());

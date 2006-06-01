@@ -74,10 +74,6 @@ public class EvaluatorUtil implements InitializingBean {
         }
         logger.info("Evaluating: " + resource.getURI());
 
-        resource = 
-            this.propertyManager.storeProperties(
-                resource, resource.getOwner(), resource);
-
         if (!resource.isCollection()) {
             resource = this.propertyManager.fileContentModification(
                 resource, resource.getOwner());
@@ -85,6 +81,10 @@ public class EvaluatorUtil implements InitializingBean {
             resource = this.propertyManager.collectionContentModification(
                 resource, resource.getOwner());
         }
+
+        resource = 
+            this.propertyManager.storeProperties(
+                resource, resource.getOwner(), resource);
 
 
         this.dataAccessor.store(resource);

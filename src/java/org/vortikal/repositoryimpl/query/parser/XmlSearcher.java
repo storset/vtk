@@ -30,23 +30,23 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
-
-
-
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.DOMOutputter;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.QueryException;
@@ -126,15 +126,17 @@ public class XmlSearcher implements InitializingBean {
     public org.w3c.dom.NodeList executeQuery(String token, String query, String sort,
                                              String maxResults) throws QueryException {
         Element rootElement = null;
+        int limit = this.maxResults;
+        try {
+            limit = Integer.parseInt(maxResults);
+        } catch (NumberFormatException e) {}
+        if (limit > this.maxResults) {
+            limit = this.maxResults;
+        }
 
         try {
-            int limit = Integer.parseInt(maxResults);
-            if (limit > this.maxResults) {
-                limit = this.maxResults;
-            }
             Sorting sorting = this.sortParser.parseSortString(sort);
-            ResultSet rs = this.queryManager.execute(token, query, sorting,
-                                                     limit);
+            ResultSet rs = this.queryManager.execute(token, query, sorting, limit);
             rootElement = resultSetToElement(rs);
         } catch (Exception e) {
             logger.warn("Error occurred while performing query: '" + query + "'", e);
@@ -216,7 +218,6 @@ public class XmlSearcher implements InitializingBean {
             valueElement.setText(valueToString(value));
             propertyElement.addContent(valueElement);
         }
-        propertyElement.setAttribute("name", property.getName());
         return propertyElement;
     }
     

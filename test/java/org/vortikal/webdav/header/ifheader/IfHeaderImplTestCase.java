@@ -72,7 +72,6 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         resource = (Resource) mockResource.proxy();
         
         assertTrue(ifHeader.matches(resource, true));
-        assertTrue(ifHeader.matchesEtags(resource, true));
     }
     
     public void testMatchWrongEtag() {
@@ -90,7 +89,6 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         resource = (Resource) mockResource.proxy();
         
         assertFalse(ifHeader.matches(resource, true));
-        assertFalse(ifHeader.matchesEtags(resource, true));
     }
 
     public void testMatchWrongLockToken() {
@@ -108,7 +106,6 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         resource = (Resource) mockResource.proxy();
         
         assertFalse(ifHeader.matches(resource, true));
-        assertTrue(ifHeader.matchesEtags(resource, true));
     }
     
 }

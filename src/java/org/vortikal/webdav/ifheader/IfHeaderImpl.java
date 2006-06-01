@@ -89,15 +89,7 @@ public class IfHeaderImpl implements IfHeader {
             return stateEntryList.matches(resource);
         }
     }
-    
-    public boolean matchesEtags(Resource resource, boolean shouldMatchOnNoIfHeader) {
-        if (stateEntryList == null) {
-            logger.debug("matchesEtags: No If header, assume match: " + shouldMatchOnNoIfHeader);
-            return shouldMatchOnNoIfHeader;
-        } else {
-            return stateEntryList.matchesEtags(resource);
-        }
-    }
+        
 
     /**
      * @return an interator over all tokens present in the if header, that were not denied by a

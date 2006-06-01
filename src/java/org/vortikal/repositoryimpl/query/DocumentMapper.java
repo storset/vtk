@@ -191,10 +191,9 @@ public class DocumentMapper implements InitializingBean {
                     + field.name() + "'");
         }
         
-        Namespace ns = Namespace.getNamespaceFromPrefix(nsPrefix);
+        PropertyTypeDefinition def = propertyManager.getPropertyDefinitionByPrefix(nsPrefix, name);
+        Namespace ns = def == null ? Namespace.getNamespaceFromPrefix(nsPrefix) : def.getNamespace();
         Property property = propertyManager.createProperty(ns, name);
-        
-        PropertyTypeDefinition def = property.getDefinition();
         
         if (def != null) {
             if (def.isMultiple()) {

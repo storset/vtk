@@ -50,68 +50,68 @@
         <bean class="org.vortikal.web.referencedata.provider.ShellExecutionResultProvider">
           <property name="shell" ref="beanShellEvaluator" />
           <property name="modelName" value="managementStats" />
-          <property name="groups">
-            <map>
-              <entry key="Principals">
-                <map>
-                  <entry key="Principal manager tokens">
-                    <value>context.getBean("tokenManagerCache").getSize()</value>
-                  </entry>
-                </map>
-              </entry>
-              <entry key="Servlet">
-                <map>
-                  <entry key="Average requests per second">
-                    <value>context.getBean("requestMonitorListener").getAvgRequestsPerSecond()</value>
-                  </entry>
-                  <entry key="Total requests">
-                    <value>context.getBean("requestMonitorListener").getTotalRequests()</value>
-                  </entry>
-                </map>
-              </entry>
-              <entry key="Repository">
-                <map>
-                  <entry key="Cache size">
-                    <value>context.getBean("repository.backend").size()</value>
-                  </entry>
-                </map>
-              </entry>
-              <entry key="Resource types">
-                <map>
-                  <entry key="Resource type tree">
-                    <value>"\n" + context.getBean("propertyManager").getResourceTypeTreeAsString()</value>
-                  </entry>
-                </map>
-              </entry>
-<!--
-              <entry key="Database">
-                <map>
-                  <entry key="Active connections">
-                    <value>
-                      connMgr = oracle.jdbc.pool.OracleConnectionCacheManager
-                                .getConnectionCacheManagerInstance();
-                      connMgr.getNumberOfAvailableConnections("${repositoryID"});
-                    </value>
-                  </entry>
-                  <entry key="Available connections">
-                    <value>
-                      connMgr = oracle.jdbc.pool.OracleConnectionCacheManager
-                                .getConnectionCacheManagerInstance();
-                      connMgr.getNumberOfActiveConnections("${repositoryID}");
-                    </value>
-                  </entry>
-                </map>
-              </entry>
--->
-
-            </map>
-          </property>
+          <property name="groups" ref="managementStatsGroups" />
         </bean>
         <ref bean="adminCSSProvider" />
       </list>
     </property>
   </bean>
 
+
+  <bean id="managementStatsGroups" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Principals" value-ref="principalStatsGroup" />
+        <entry key="Servlet" value-ref="servletStatsGroup" />       
+        <entry key="Repository" value-ref="repositoryStatsGroup" />
+        <entry key="Resource types" value-ref="resourceTypesStatsGroup" />
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="principalStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Principal manager tokens">
+          <value>context.getBean("tokenManagerCache").getSize()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="servletStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Average requests per second">
+          <value>context.getBean("requestMonitorListener").getAvgRequestsPerSecond()</value>
+        </entry>
+        <entry key="Total requests">
+          <value>context.getBean("requestMonitorListener").getTotalRequests()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="repositoryStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Cache size">
+          <value>context.getBean("repository.backend").size()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="resourceTypesStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Resource type tree">
+          <value>"\n" + context.getBean("propertyManager").getResourceTypeTreeAsString()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+  
 
   <bean id="requestMonitorListener" class="org.vortikal.web.context.RequestMonitorListener" />
 

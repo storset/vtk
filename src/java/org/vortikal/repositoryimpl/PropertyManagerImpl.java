@@ -958,12 +958,18 @@ public class PropertyManagerImpl implements PropertyManager,
         PropertyTypeDefinition[] definitions = def.getPropertyTypeDefinitions();
         Namespace namespace = def.getNamespace();
 
-        if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri()))
+        if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri())) {
+            logger.info("Adding namespace URI mapping: " + def.getNamespace().getUri()
+                        + " -> " + def.getNamespace());
             this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
+        }        
 
-        if (!this.namespacePrefixMap.containsKey(def.getNamespace().getPrefix()))
+        if (!this.namespacePrefixMap.containsKey(def.getNamespace().getPrefix())) {            
+            logger.info("Adding namespace prefix mapping: " + def.getNamespace().getPrefix()
+                        + " -> " + def.getNamespace());
             this.namespacePrefixMap.put(def.getNamespace().getPrefix(), def.getNamespace());
-
+        }
+        
         Map propDefMap = (Map)this.propertyTypeDefinitions.get(namespace);
         
         if (propDefMap == null) {

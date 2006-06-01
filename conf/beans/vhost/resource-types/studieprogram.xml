@@ -24,7 +24,7 @@
   </bean>
 
   <bean id="STUDIEPROGRAM_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="emne" />
+    <constructor-arg value="studieprogram" />
     <constructor-arg value="http://www.uio.no/xsd/studier/studieprogram" />
   </bean>
 

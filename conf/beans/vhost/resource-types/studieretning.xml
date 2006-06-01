@@ -24,7 +24,7 @@
   </bean>
 
   <bean id="STUDIERETNING_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="emne" />
+    <constructor-arg value="studieretning" />
     <constructor-arg value="http://www.uio.no/xsd/studier/studieretning" />
   </bean>
 
@@ -63,13 +63,13 @@
 
   <bean id="studieretningProgramkodeReferansePropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="programkode-referanse" />
+    <property name="name" value="programkode" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieretningProgramkodeReferanseEvaluator" />
+    <property name="contentModificationEvaluator" ref="studieretningProgramkodeEvaluator" />
   </bean>
 
-  <bean id="studieretningProgramkodeReferanseEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="studieretningProgramkodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
 </beans>

@@ -14,12 +14,14 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <bean class="org.vortikal.web.controller.DisplayClassPathResourceController">
-        <property name="uriPrefix" value="${cssBaseURL}" />
-        <property name="basePath" value="/vortikal/resources/default-theme" />
-      </bean>
-    </property>
+    <property name="handler" ref="defaultClassPathResourceHandler" />
+  </bean>
+
+  <bean id="defaultClassPathResourceHandler"
+        class="org.vortikal.web.controller.DisplayClassPathResourceController">
+    <property name="uriPrefix" value="${cssBaseURL}" />
+    <property name="basePath" value="/vortikal/resources/default-theme" />
+    <property name="expiresSeconds" value="${staticResourcesCacheSeconds}" />
   </bean>
 
 </beans>

@@ -71,6 +71,8 @@ import org.vortikal.web.RequestContext;
  *   placed in the model instead of the resource directly.
  *   <lI><code>viewName</code> - optional viewName, used with
  *   <code>resourceInModelName</code>
+ *   <lI><code>expiresSeconds</code> - optional integer, will be sent
+ *   as the <code>Expires</code> HTTP header 
  * </ul>
  */
 public class DisplayClassPathResourceController 
@@ -81,6 +83,7 @@ public class DisplayClassPathResourceController
     private String uriPrefix;
     private ApplicationContext applicationContext;
 
+    private int expiresSeconds = -1;
     private String resourceInModelName;
     private ResourceTransformer resourceTransformer;
     private String viewName;
@@ -109,6 +112,10 @@ public class DisplayClassPathResourceController
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+    
+    public void setExpiresSeconds(int expiresSeconds) {
+        this.expiresSeconds = expiresSeconds;
     }
     
 
@@ -172,12 +179,16 @@ public class DisplayClassPathResourceController
                     model.put(this.resourceInModelName, modelObject);
                     return new ModelAndView(this.viewName, model);
                 }
-            }
+            } 
 
 
             inStream = resource.getInputStream();                
             outStream  = response.getOutputStream();
             byte[] buffer = new byte[5000];
+
+            if (this.expiresSeconds >= 0) {
+                response.setHeader("Expires", String.valueOf(this.expiresSeconds) + "s");
+            }
 
             response.setContentType(MimeHelper.map(uri));
 

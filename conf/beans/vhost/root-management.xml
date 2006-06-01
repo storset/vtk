@@ -59,6 +59,16 @@
                   </entry>
                 </map>
               </entry>
+              <entry key="Servlet">
+                <map>
+                  <entry key="Average requests per second">
+                    <value>context.getBean("requestMonitorListener").getAvgRequestsPerSecond()</value>
+                  </entry>
+                  <entry key="Total requests">
+                    <value>context.getBean("requestMonitorListener").getTotalRequests()</value>
+                  </entry>
+                </map>
+              </entry>
               <entry key="Repository">
                 <map>
                   <entry key="Cache size">
@@ -69,7 +79,7 @@
               <entry key="Resource types">
                 <map>
                   <entry key="Resource type tree">
-                    <value>"\n" + context.getBean("propertyManager").getResourceTypeTreeAsString();</value>
+                    <value>"\n" + context.getBean("propertyManager").getResourceTypeTreeAsString()</value>
                   </entry>
                 </map>
               </entry>
@@ -101,6 +111,9 @@
       </list>
     </property>
   </bean>
+
+
+  <bean id="requestMonitorListener" class="org.vortikal.web.context.RequestMonitorListener" />
 
 
   <bean id="beanShellEvaluator" class="org.vortikal.shell.BeanShellConsole">

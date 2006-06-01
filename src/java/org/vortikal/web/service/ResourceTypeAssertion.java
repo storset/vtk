@@ -74,9 +74,9 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
     public boolean matches(Resource resource, Principal principal) {
 
         if (resource != null) {
-            return !invert && resource.isOfType(this.resourceTypeDefinition);
+            return !this.invert && resource.isOfType(this.resourceTypeDefinition);
         }
-        return invert;
+        return this.invert;
     }
     
 

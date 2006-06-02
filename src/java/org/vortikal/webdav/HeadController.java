@@ -44,6 +44,8 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.webdav.ifheader.IfMatchHeader;
+import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
 
 
 
@@ -79,6 +81,16 @@ public class HeadController extends AbstractWebdavController {
                 throw new ResourceNotFoundException(uri);
             }
             
+            IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
+            if (!ifMatchHeader.matches(resource)) {
+                throw new PreconditionFailedException();
+            }
+                
+            IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
+            if (!ifNoneMatchHeader.matches(resource)) {
+                throw new PreconditionFailedException();
+            }
+            
             model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE, resource);
             return new ModelAndView("HEAD", model);
             
@@ -103,6 +115,15 @@ public class HeadController extends AbstractWebdavController {
                       new Integer(HttpUtil.SC_LOCKED));
             return new ModelAndView("HTTP_STATUS_VIEW", model);
 
+        } catch (PreconditionFailedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Caught PreconditionFailedException for URI " + uri);
+            }
+            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                      new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
+            return new ModelAndView("HTTP_STATUS_VIEW", model);
+            
         } catch (IOException e) {
             logger.info("Caught IOException for URI " + uri);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);

@@ -105,7 +105,7 @@ public class QueryManager implements InitializingBean {
         if (logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
             logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
-                         + ") hits took " + (now - start) + " ms");
+                         + " hits) took " + (now - start) + " ms");
         }
         return result;
     }
@@ -118,7 +118,7 @@ public class QueryManager implements InitializingBean {
         if (logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
             logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
-                         + ") hits took " + (now - start) + " ms");
+                         + " hits) took " + (now - start) + " ms");
         }
         return result;
     }

@@ -364,6 +364,11 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 this.contentStore.createResource(r.getURI(), r.isCollection());
             } 
 
+            if (!existed) {
+                // Make sure ACL is inherited for new resources:
+                updateAcl(r);
+            }
+
             if (r.getAcl().isDirty()) {
                 if (existed) {
                     // Save the ACL:

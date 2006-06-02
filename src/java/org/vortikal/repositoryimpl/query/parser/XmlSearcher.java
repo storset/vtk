@@ -154,11 +154,16 @@ public class XmlSearcher implements InitializingBean {
 
 
     private Element resultSetToElement(ResultSet resultSet) {
+        long start = System.currentTimeMillis();
         Element resultElement = new Element("results");
         resultElement.setAttribute("size", String.valueOf(resultSet.getSize()));
         for (Iterator i = resultSet.iterator(); i.hasNext();) {
             PropertySet propertySet = (PropertySet) i.next();
             resultElement.addContent(propertySetToElement(propertySet));
+        }
+        if (logger.isDebugEnabled()) {
+            long now = System.currentTimeMillis();
+            logger.debug("Building XML result set took " + (now - start) + " ms");
         }
         return resultElement;
     }

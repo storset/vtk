@@ -30,13 +30,20 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.Sorting;
 
+
 public class QueryManager implements InitializingBean {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private Parser parser;
     private Searcher searcher;
@@ -93,13 +100,27 @@ public class QueryManager implements InitializingBean {
     
     public ResultSet execute(String token, Query query) throws QueryException {
         validateQuery(query);
-        return searcher.execute(token, query);
+        long start = System.currentTimeMillis();
+        ResultSet result = searcher.execute(token, query);
+        if (logger.isDebugEnabled()) {
+            long now = System.currentTimeMillis();
+            logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
+                         + ") hits took " + (now - start) + " ms");
+        }
+        return result;
     }
     
     public ResultSet execute(String token, Query query, Sorting sorting, int maxResults)
         throws QueryException {
         validateQuery(query);
-        return searcher.execute(token, query, sorting, maxResults);
+        long start = System.currentTimeMillis();
+        ResultSet result = searcher.execute(token, query, sorting, maxResults);
+        if (logger.isDebugEnabled()) {
+            long now = System.currentTimeMillis();
+            logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
+                         + ") hits took " + (now - start) + " ms");
+        }
+        return result;
     }
     
     private void validateQuery(Query query) throws QueryException{

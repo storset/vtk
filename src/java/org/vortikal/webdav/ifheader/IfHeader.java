@@ -24,9 +24,7 @@ import org.vortikal.repository.Resource;
 public interface IfHeader {
 
     public boolean matches(Resource resource, boolean shouldMatchOnNoIfHeader);
-    
-    //public boolean matchesEtags(Resource resource, boolean shouldMatchOnNoIfHeader);
-    
+        
     public Iterator getAllTokens();
 
     public Iterator getAllNotTokens();

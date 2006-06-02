@@ -251,7 +251,8 @@
        user_character_encoding,
        is_collection,
        acl_inherited_from,
-       created_by, modified_by,
+       created_by,
+       modified_by,
        last_modified)
 
     values 

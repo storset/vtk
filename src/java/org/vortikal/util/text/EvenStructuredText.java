@@ -362,8 +362,7 @@ public final class EvenStructuredText implements StructuredText {
     
     
     protected String unifyNewlines( String text ) {
-        text = text.replaceAll("[\r\n]", "\n");
-        text = text.replaceAll("\r", "\n");
+        text = text.replaceAll("(\r\n)(\n)", "\n");
         return text;
     }
     

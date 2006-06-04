@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>403 - Forbidden</title>
-  <link href="http://www.uio.no/visuell-profil/css/uio.css" type="text/css" rel="stylesheet"/>
+  <link href="http://www.uio.no/visuell-profil/css/uio.css" type="text/css" rel="stylesheet">
 </head>
 <body>
 <DIV CLASS="navmarginbrod" ID="brodtekst">
@@ -30,7 +30,7 @@ more information and how?"</A>.</P>
   <A HREF="http://www.uio.no/hjelp/kontakt.htm">Kontakt&nbsp;UiO</A>
 
   &nbsp;&nbsp;&nbsp;<A HREF="http://www.uio.no/hjelp/">Hjelp</A>
-  <P>Server-administrator: <A HREF="mailto:webmaster@uio.no">webmaster@uio.no</A>
+  <P>Server-administrator: <A HREF="mailto:webmaster@uio.no">webmaster@uio.no</A></P>
 </DIV>
 </body>
 </html>

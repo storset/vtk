@@ -464,6 +464,7 @@
     parent="requestLocalRepositoryAware">
     <property name="viewName"><value>webdavDisplayResource</value></property>
     <property name="ignoreLastModified"><value>true</value></property>
+    <property name="supportIfHeaders"><value>true</value></property>
   </bean>
 
 

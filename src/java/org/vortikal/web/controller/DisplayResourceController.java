@@ -54,6 +54,9 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.webdav.PreconditionFailedException;
+import org.vortikal.webdav.ifheader.IfMatchHeader;
+import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
 
 
 /**
@@ -90,6 +93,8 @@ import org.vortikal.web.RequestContext;
  *   <li><code>ignoreLastModifiedOnCollections</code> - wether or not to ignore the
  *       resource's <code>lastModified</code> value when the resource is a collection.
  *       Default is <code>false</code>.
+ *   <li><code>supportIfHeaders</code> - wether or not to look for If-Match and 
+ *   If-None-Match headers. Default is <code>false</code>.</li>
  * </ul>
  * </p>
  *
@@ -123,6 +128,7 @@ public class DisplayResourceController
     private boolean streamToString = false;
     private boolean ignoreLastModified = false;
     private boolean ignoreLastModifiedOnCollections = false;
+    private boolean supportIfHeaders = false;
     
     public void setChildName(String childName) {
         this.childName = childName;
@@ -143,6 +149,9 @@ public class DisplayResourceController
         this.view = view;
     }
     
+    public void setSupportIfHeaders(boolean supportIfHeaders) {
+        this.supportIfHeaders = supportIfHeaders;
+    }
 
     public void setIgnoreLastModified(boolean ignoreLastModified) {
         this.ignoreLastModified = ignoreLastModified;
@@ -196,13 +205,23 @@ public class DisplayResourceController
         String token = securityContext.getToken();
 
         Map model = new HashMap();
-
         Resource resource = repository.retrieve(token, uri, displayProcessed);
-
         if (unsupportedResourceTypes.contains(resource.getContentType())) {
             return new ModelAndView(unsupportedResourceView);
         }
 
+        if (supportIfHeaders) {
+            IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
+            if (!ifMatchHeader.matches(resource)) {
+                throw new PreconditionFailedException();
+            }
+                
+            IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
+            if (!ifNoneMatchHeader.matches(resource)) {
+                throw new PreconditionFailedException();
+            }
+        }
+        
         model.put("resource", resource);
 
 
@@ -315,7 +334,6 @@ public class DisplayResourceController
             logger.debug("Returning last-modified value for resource "
                          + uri + ": " + resource.getLastModified());
         }
-
 
         return resource.getLastModified().getTime();
     }

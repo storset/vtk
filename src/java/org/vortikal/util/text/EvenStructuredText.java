@@ -326,7 +326,8 @@ public final class EvenStructuredText implements StructuredText {
     public Element parseStructuredText(String text) {
 
         String structureText = unifyNewlines(text);
-
+        structureText = removeStartingAndTrailingNewlines(structureText);
+                
         // All structuretext m� inn i avsnitt eller liste
         if ((!structureText.startsWith(PARAGRAPH_START))
                 || (!structureText.startsWith(LIST_START))
@@ -335,10 +336,10 @@ public final class EvenStructuredText implements StructuredText {
         }
 
         Element root = new Element(lookupTag("root"));
-
+        
         int pos = 0;
         int nextPos = 0;
-
+                
         while (pos < structureText.length()) {
             if (listAtPos(structureText, pos + LINE_SEPARATOR.length())) {
                 nextPos = parseList(structureText, pos
@@ -367,6 +368,32 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
+    private String removeStartingAndTrailingNewlines(String structureText) {
+        // Strip newlines at start of structuredText 
+        // (will else incorrectly be saved as <newline/> 
+        int startpos = 0;
+        while (NEWLINE == structureText.charAt(startpos) ) {
+            ++startpos;
+        }
+        // Strip newlines at end of structuredText 
+        // (will else incorrectly be displayed as '\'
+        while (NEWLINE == structureText.charAt(structureText.length()-1) ) {
+            structureText = structureText.substring(startpos, 
+                    structureText.length()-1);
+        }
+                
+        // Remove trailing ESCAPE
+        // (if text has trailing NEWLINE, an ESCAPE character may be added when
+        // converting from XML to structured text)
+        if (structureText.charAt(structureText.length()-1) == ESCAPE 
+                && structureText.charAt(structureText.length()-2) != ESCAPE) {
+            structureText = structureText.substring(0, structureText.length()-1);
+        }
+                
+        return structureText;
+    }
+        
+    
     protected int parseParagraph(String text, int startPos, Element root) {
 
         Element paragraphElement = new Element(lookupTag("paragraph"));
@@ -374,8 +401,7 @@ public final class EvenStructuredText implements StructuredText {
 
         int pos = startPos + PARAGRAPH_START.length();
 
-        // slutte avsnitt n�r nytt avsnitt eller liste begynner, eller ved slutt
-        // p� tekst.
+        // end paragraph when new paragraph or new list begins, or at end of text
         int endPos = text.length();
         int nextParagraph = text.indexOf(PARAGRAPH_START, pos);
         int nextList = text.indexOf(LIST_START, pos);
@@ -389,13 +415,13 @@ public final class EvenStructuredText implements StructuredText {
             endPos = nextNumlist;
 
         while (pos < endPos) {
-            // inneholdet skal n� v�re basictekst
+            // contents will now be basictekst
             pos = parseBasicText(text, pos, paragraphElement);
         }
 
         return endPos;
-        // returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes
-        // til � starte nytt element
+        // return without adding PARAGRAPH_CLOSE 
+        // (because newline signifies a new element)
     }
     
         
@@ -435,8 +461,7 @@ public final class EvenStructuredText implements StructuredText {
 
         int pos = startPos + LIST_START.length();
 
-        // slutte avsnitt n�r nytt avsnitt begynner eller liste
-        // slutter, eller ved slutt p� tekst.
+        // end paragraph when new paragraph or new list begins, or at end of text
         int endPos = text.length();
         int nextParagraph = text.indexOf(PARAGRAPH_START, pos);
         int listClose = text.indexOf(LIST_CLOSE, pos);
@@ -456,8 +481,8 @@ public final class EvenStructuredText implements StructuredText {
             pos = parseListitem(text, pos, listElement);
         }
         return endPos;
-        // returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes
-        // til � starte nytt element
+        // return without adding PARAGRAPH_CLOSE 
+        // (because newline signifies a new element)
     }
     
     
@@ -468,8 +493,7 @@ public final class EvenStructuredText implements StructuredText {
 
         int pos = startPos + NUMLIST_START.length();
 
-        // slutte avsnitt n�r nytt avsnitt begynner eller liste slutter, eller
-        // ved slutt p� tekst.
+        // end paragraph when new paragraph or new list begins, or at end of text
         int endPos = text.length();
         int nextParagraph = text.indexOf(PARAGRAPH_START, pos);
         int numlistClose = text.indexOf(NUMLIST_CLOSE, pos);
@@ -489,8 +513,8 @@ public final class EvenStructuredText implements StructuredText {
             pos = parseNumlistitem(text, pos, listElement);
         }
         return endPos;
-        // returenerer uten � legge til PARAGRAPH_CLOSE fordi linjeskift brukes
-        // til � starte nytt element
+        // return without adding PARAGRAPH_CLOSE 
+        // (because newline signifies a new element)
     }
     
     
@@ -542,7 +566,7 @@ public final class EvenStructuredText implements StructuredText {
         parent.addContent(listitemElement);
 
         while (pos < endPos) {
-            // inneholdet skal n� v�re basictekst
+            // contents will now be basictekst
             pos = parseBasicText(text, pos, listitemElement);
         }
 
@@ -793,10 +817,6 @@ public final class EvenStructuredText implements StructuredText {
                                 
                 String tagName = reverseLookupTag(child.getName());
                 
-                
-                System.out.print("\n\n\n ############################ \n" + tagName + "\n ############################ \n\n\n");
-                
-                
                 if (tagName.equals("bold")) {
                     buffer.append(BOLD_START);
                     //buffer.append(generateStructuredText(child));
@@ -935,7 +955,8 @@ public final class EvenStructuredText implements StructuredText {
     
     public String parseElement(Element root) {
         String text = generateStructuredText(root);
-
+        text = removeStartingAndTrailingNewlines(text);
+        
         if (root.getChildren().size() == 0)
             return "";
 
@@ -1076,7 +1097,7 @@ public final class EvenStructuredText implements StructuredText {
                 
                 String text = new String(buffer);
                 
-                System.out.println("Orginal tekst: " + "\n" + text);
+                System.out.println("Orginal tekst: " + "\n'" + text + "'");
                 
                 Element root = parser.parseStructuredText(text);
                 doc = new Document(root); 
@@ -1112,11 +1133,10 @@ public final class EvenStructuredText implements StructuredText {
             
             // make structuredtext
             System.out.println("Converted back: ");
-            System.out.println(structuredtext);
+            System.out.println("'"+structuredtext+"'");
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    
+        }  
     } // end main
 
     

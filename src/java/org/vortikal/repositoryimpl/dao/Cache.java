@@ -190,8 +190,9 @@ public class Cache implements DataAccessor, InitializingBean {
         
         ResourceImpl[] resources = null;
         
+        String[] obtainedLocks = new String[0];
         try {
-            this.lockManager.lock(uris);
+            obtainedLocks = this.lockManager.lock(uris);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Loading " + uris.length + " resources");
@@ -203,7 +204,7 @@ public class Cache implements DataAccessor, InitializingBean {
                 enterResource(resources[i]);
             }
         } finally {
-            this.lockManager.unlock(uris);
+            this.lockManager.unlock(obtainedLocks);
         }
 
         if (logger.isDebugEnabled()) {

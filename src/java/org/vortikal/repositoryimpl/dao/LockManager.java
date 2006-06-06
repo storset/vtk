@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -58,8 +59,8 @@ public class LockManager {
      *
      * @param uri the URI to lock
      */
-    public void lock(String uri) {
-        lock(new String[] { uri });
+    public String[] lock(String uri) {
+        return lock(new String[] { uri });
     }
 
     /**
@@ -68,7 +69,7 @@ public class LockManager {
      *
      * @param uris the <code>List</code> of URIs (Strings) to lock
      */
-    public void lock(List uris) {
+    public String[] lock(List uris) {
         String[] list = new String[uris.size()];
 
         int index = 0;
@@ -79,7 +80,7 @@ public class LockManager {
             list[index++] = uri;
         }
 
-        lock(list);
+        return lock(list);
     }
 
     /**
@@ -88,9 +89,9 @@ public class LockManager {
      *
      * @param uris the list of URIs to lock
      */
-    public void lock(String[] uris) {
+    public String[] lock(String[] uris) {
         Arrays.sort(uris, comparator);
-
+        List claimedLocks = new ArrayList();
         for (int i = 0; i < uris.length; i++) {
             Lock lock = null;
             boolean haveLock = false;
@@ -121,6 +122,7 @@ public class LockManager {
                                      + ", iterations = " + iterations);
                     }
                     haveLock = true;
+                    claimedLocks.add(uris[i]);
                 } else {
                     if (logger.isDebugEnabled()) {
                         logger.debug("failed: locking " + uris[i]
@@ -139,6 +141,7 @@ public class LockManager {
                 }
             }
         }
+        return (String[]) claimedLocks.toArray(new String[claimedLocks.size()]);
     }
 
 

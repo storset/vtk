@@ -3,7 +3,7 @@
 
 <beans>
 
-  <!-- Resource type 'collection' -->
+  <!-- Resource type 'portal-page' -->
   <bean id="portalPageResourceTypeDefinition"
     class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="portal-page"/>
@@ -11,7 +11,6 @@
     <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="assertions">
       <list>
-        <!-- FIXME -->
         <ref bean="typeIsPortalPage" />
       </list>
     </property>
@@ -38,7 +37,8 @@
   <bean id="typeIsPortalPage" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="CUSTOM_NAMESPACE" />
-    <property name="name" value="portal-page" />    
+    <property name="name" value="type" />    
+    <property name="value" value="portal-page" />
     <property name="checkExistenceOnly" value="false" />
   </bean>
 

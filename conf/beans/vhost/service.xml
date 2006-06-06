@@ -86,15 +86,6 @@
 
   <bean id="webHostNameAssertion" class="org.vortikal.web.service.RequestHostNameAssertion">
     <property name="hostName" value="${webHostName}" />
-
-<!--
-    <property name="hostName" value="${webHostName}" />
-    <property name="additionalHostNames">
-      <set>
-        <value>${secondaryWebHostName}</value>
-      </set>
-    </property>
--->
   </bean>
 
   <!-- Logout service -->

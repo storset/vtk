@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Resource type 'collection' -->
+  <bean id="portalPageResourceTypeDefinition"
+    class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="portal-page"/>
+    <property name="namespace" ref="CUSTOM_NAMESPACE"/>
+    <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <!-- FIXME -->
+        <ref bean="typeIsPortalPage" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="portletListPropDef"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="typePropDef" />
+    <property name="targetMethod" value="addAllowedValue" />
+    <property name="arguments">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <property name="value" value="portal-page" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="typeIsPortalPage" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="name" value="portal-page" />    
+    <property name="checkExistenceOnly" value="false" />
+  </bean>
+
+  <bean id="portletListPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="portlet-list"/>
+    <property name="type" ref="TYPE_STRING"/>
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+  
+</beans>

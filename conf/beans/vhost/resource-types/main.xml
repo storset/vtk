@@ -20,6 +20,8 @@
 
   <import resource="image.xml" />
 
+  <import resource="portal-page.xml" />
+
   <import resource="uhtml.xml" />
   <import resource="publish.xml" />
 

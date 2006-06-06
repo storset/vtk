@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -563,12 +564,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         this.authorizationManager.authorizeWrite(uri, principal);
-    
+        File tempFile = null;
         try {
+
+            // Write to a temporary file to avoid locking:
+            tempFile = writeTempFile(r.getName(), byteStream);
             Resource original = (ResourceImpl) r.clone();
 
-            this.dao.storeContent(uri, byteStream);
-            
+            this.dao.storeContent(uri, new java.io.BufferedInputStream(
+                                      new java.io.FileInputStream(tempFile)));
+
             r = this.propertyManager.fileContentModification(r, principal);
             
             this.dao.store(r);
@@ -580,7 +585,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
                 "clone() resource: " + r);
+        } finally {
+            
+            if (tempFile != null) tempFile.delete();
         }
+
     }
 
 
@@ -695,6 +704,33 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         return newResource;
     }    
+
+
+    /**
+     * XXX: extend dao API to support temporary files
+     */
+    private File writeTempFile(String name, InputStream byteStream) throws IOException {
+        byteStream = new java.io.BufferedInputStream(byteStream);
+        File tempFile = File.createTempFile(name, null);
+        java.io.OutputStream stream = new java.io.FileOutputStream(tempFile);
+
+        // XXX: Review impl.
+        /* Write the input data to the resource: */
+        byte[] buffer = new byte[100000];
+        int n = 0;
+
+        while ((n = byteStream.read(buffer, 0, buffer.length)) != -1) {
+            stream.write(buffer, 0, n);
+        }
+
+        stream.flush();
+        stream.close();
+        byteStream.close();
+            
+        return tempFile;
+    }
+    
+
 
     public void setReadOnly(String token, boolean readOnly) 
     throws AuthorizationException {

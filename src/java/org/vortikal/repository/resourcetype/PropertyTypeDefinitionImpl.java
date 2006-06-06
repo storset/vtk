@@ -151,6 +151,13 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.allowedValues = allowedValues;
     }
     
+    public void addAllowedValue(Value allowedValue) {
+        java.util.List l = new java.util.ArrayList(java.util.Arrays.asList(this.allowedValues));
+        l.add(allowedValue);
+        this.allowedValues = (Value[]) l.toArray(new Value[l.size()]);
+    }
+    
+
     public Namespace getNamespace() {
         return namespace;
     }

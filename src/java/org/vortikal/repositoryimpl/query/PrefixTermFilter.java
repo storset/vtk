@@ -48,6 +48,8 @@ import org.apache.lucene.search.Filter;
  *       Sub-sequent calls with different readers will not update the cached
  *       results ! So don't re-use instances of this class.
  *       
+ *       Not thread safe (common usage scenario doesn't require this).
+ *       
  *       Long-term filters which rarely change should be wrapped with
  *       {@link org.apache.lucene.search.CachingWrapperFilter} instead.
  * 
@@ -70,10 +72,8 @@ public class PrefixTermFilter extends Filter {
      * @see org.apache.lucene.search.Filter#bits(org.apache.lucene.index.IndexReader)
      */
     public BitSet bits(IndexReader reader) throws IOException {
-        synchronized(this) {
-            if (this.bits == null) {
-                this.bits = getBits(reader);
-            }
+        if (this.bits == null) {
+            this.bits = getBits(reader);
         }
         
         return this.bits;

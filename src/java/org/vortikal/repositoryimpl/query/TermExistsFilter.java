@@ -43,6 +43,8 @@ import org.apache.lucene.search.Filter;
  * XXX: Experimental, probably an extremly slow filter for common terms. 
  *      Avoid if you can.
  *      
+ * Not thread safe. A new instance should be created for every query.
+ *      
  * @author oyviste
  *
  */
@@ -56,12 +58,10 @@ public class TermExistsFilter extends Filter {
     }
     
     public BitSet bits(IndexReader reader) throws IOException {
-        synchronized(this) {
-            if (this.bits == null) {
-                this.bits = getBits(reader);
-            }
+        if (this.bits == null) {
+            this.bits = getBits(reader);
         }
-        
+
         return this.bits;
     }
     

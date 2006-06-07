@@ -407,12 +407,12 @@
   <bean id="mappingIdentifiers" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>path:///vrtx/mapping/mapping-emne.xml</value>
-        <value>path:///vrtx/mapping/mapping-kurs.xml</value>
-        <value>path:///vrtx/mapping/mapping-emnegruppe.xml</value>
-        <value>path:///vrtx/mapping/mapping-studieprogram.xml</value>
-        <value>path:///vrtx/mapping/mapping-studieretning.xml</value>
-        <value>path:///vrtx/mapping/UB-mapping.xml</value>
+        <value>/vrtx/mapping/mapping-emne.xml</value>
+        <value>/vrtx/mapping/mapping-kurs.xml</value>
+        <value>/vrtx/mapping/mapping-emnegruppe.xml</value>
+        <value>/vrtx/mapping/mapping-studieprogram.xml</value>
+        <value>/vrtx/mapping/mapping-studieretning.xml</value>
+        <value>/vrtx/mapping/UB-mapping.xml</value>
       </list>
     </constructor-arg>
   </bean>

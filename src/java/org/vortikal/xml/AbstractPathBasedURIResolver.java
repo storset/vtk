@@ -66,7 +66,7 @@ import org.xml.sax.SAXException;
  *  <li><code>simpleCache</code> - a cache for source ids contained in
  *      <code>cacheIdentifiers</code>
  *  <li><code>cacheIdentifiers</code> - a list of path ids to resources to be cached.
- *      required if simpleCache is spacified.
+ *      required if simpleCache is specified.
  *  <!--li><code>pathRegexp</code> - regular expression denoting the
  *      legal values of stylesheet references. If this regexp does not
  *      match the value of the expanded repository URI, the resolver
@@ -187,9 +187,11 @@ public abstract class AbstractPathBasedURIResolver
             Source source = null;
 
             if (simpleCache != null) {
-                simpleCache.get(path);
+                source = (Source) simpleCache.get(path);
 
                 if (source != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using cached source for resource: " + path);
                     return source;
                 }
             }
@@ -214,7 +216,8 @@ public abstract class AbstractPathBasedURIResolver
                                 + path + "'", e);
                     }
                     
-                        simpleCache.put(path, source);
+                    simpleCache.put(path, source);
+
                 } else {
                     source = new StreamSource(inStream);
                 }

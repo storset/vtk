@@ -260,8 +260,6 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             logger.warn("SQLException while inserting into vrtx_uri_tmp: ", e);
             logger.warn("Next exception: ", e.getNextException());
             logger.warn("Cause: ", e.getCause());
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw e;
         }
         

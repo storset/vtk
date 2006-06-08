@@ -58,8 +58,8 @@ import org.vortikal.repository.event.ResourceModificationEvent;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.TokenManager;
 import org.vortikal.security.roles.RoleManager;
+import org.vortikal.security.token.TokenManager;
 import org.vortikal.util.repository.URIUtil;
 
 

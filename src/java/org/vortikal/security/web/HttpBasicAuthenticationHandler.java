@@ -29,15 +29,15 @@ package org.vortikal.security.web;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
-import org.vortikal.security.MD5PasswordPrincipalStore;
 import org.vortikal.security.Principal;
+import org.vortikal.security.store.MD5PasswordStore;
 
 public class HttpBasicAuthenticationHandler extends
         AbstractHttpBasicAuthenticationHandler {
 
-    private MD5PasswordPrincipalStore principalStore = null;
+    private MD5PasswordStore principalStore = null;
 
-    public void setPrincipalStore(MD5PasswordPrincipalStore principalStore) {
+    public void setPrincipalStore(MD5PasswordStore principalStore) {
         this.principalStore = principalStore;
     }
 
@@ -46,7 +46,7 @@ public class HttpBasicAuthenticationHandler extends
         if (this.principalStore == null) {
             throw new BeanInitializationException(
                     "Bean property 'principalStore' not set. Must be set to an instance of "
-                            + MD5PasswordPrincipalStore.class.getName());
+                            + MD5PasswordStore.class.getName());
         }
     }
 

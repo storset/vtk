@@ -50,7 +50,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.security.TokenManager;
+import org.vortikal.security.token.TokenManager;
 
 
 

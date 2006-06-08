@@ -31,7 +31,7 @@
 package org.vortikal.security;
 
 
-public interface PrincipalManager extends PrincipalStore {
+public interface PrincipalManager {
 
     /**
      * Gets a principal object. Principals should be instantiated from
@@ -45,5 +45,48 @@ public interface PrincipalManager extends PrincipalStore {
     public Principal getUserPrincipal(String id);
     
     public Principal getGroupPrincipal(String id);
+
+    
+    /**
+     * Validates the existence of a given group.
+     *
+     * @param group the group to validate
+     * @return <code>true</code> if the group exists,
+     * <code>false</code> otherwise.
+     */
+    public boolean validateGroup(Principal group)
+        throws AuthenticationProcessingException;
+
+
+    /**
+     * Validates the existence of a given principal.
+     *
+     * @param principal - the pincipal to validate
+     * @return <code>true</code> if the principal exists,
+     * <code>false</code> otherwise.
+     */
+    public boolean validatePrincipal(Principal principal)
+        throws AuthenticationProcessingException;
+
+    /**
+     * Lists the members of a group.
+     *
+     * @param groupName the group in question
+     * @return an array of the principals that are members of the group
+     */
+//    public String[] resolveGroup(Principal group)
+//        throws AuthenticationProcessingException;
+    
+    
+    /**
+     * Convenience method for determining whether a principal is a
+     * member of a group.
+     *
+     * @param principal the name of the principal
+     * @param group the group in question 
+     * @return true if the group exists and the given principal is a
+     * member of that group, false otherwise.
+     */
+    public boolean isMember(Principal principal, Principal group);
 
 }

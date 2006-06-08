@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security;
+package org.vortikal.security.store;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,10 +39,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.security.AuthenticationProcessingException;
+import org.vortikal.security.GroupStore;
+import org.vortikal.security.Principal;
 import org.vortikal.util.cache.SimpleCache;
 
 
-public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
+public class ChainedGroupStore implements InitializingBean, GroupStore {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -53,14 +56,14 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     private SimpleCache cache = null;
     
 
-    public ChainedPrincipalStore() {
+    public ChainedGroupStore() {
     }
 
-    public ChainedPrincipalStore(List managers) {
+    public ChainedGroupStore(List managers) {
         this.managers = managers;
     }
 
-    public ChainedPrincipalStore(List managers, SimpleCache cache) {
+    public ChainedGroupStore(List managers, SimpleCache cache) {
         this.managers = managers;
         this.cache = cache;
     }
@@ -85,30 +88,10 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     }
 
 
-    public boolean validatePrincipal(Principal principal)
-        throws AuthenticationProcessingException {
-
-        for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            PrincipalStore manager = (PrincipalStore) i.next();
-            if (manager.validatePrincipal(principal)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validated principal '" + principal.getQualifiedName()
-                                 + "' using manager " + manager);
-                }
-                return true;
-            }
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Principal '" + principal.getQualifiedName() + "' doesn't exist");
-        }
-        return false;
-    }
-
-
     public boolean validateGroup(Principal group)
         throws AuthenticationProcessingException {
         for (Iterator i = managers.iterator(); i.hasNext();) {
-            PrincipalStore manager = (PrincipalStore) i.next();
+            GroupStore manager = (GroupStore) i.next();
             if (manager.validateGroup(group)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Validated group '" + group
@@ -157,7 +140,7 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
         throws AuthenticationProcessingException {
 
         for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            PrincipalStore manager = (PrincipalStore) i.next();
+            GroupStore manager = (GroupStore) i.next();
             if (manager.validateGroup(group)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Validated group membership for principal '"
@@ -206,14 +189,10 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
 
 
         for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            PrincipalStore manager = (PrincipalStore) i.next();
+            GroupStore manager = (GroupStore) i.next();
+            // XXX: We currently have two group stores for the same domain,
+            // Should both member sets be checked? (currently only the first)
             if (manager.validateGroup(group)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validated group membership for principal '"
-                            + principal + "', group '" + groupName + "' using "
-                            + "manager " + manager);
-                }
-
                 boolean isMember = manager.isMember(principal, group);
 
                 if (isMember) {
@@ -221,6 +200,12 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
                 } else {
                     item.getGroupsMap().put(groupName, null);
                 }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Validated group membership to '" + isMember 
+                            + "' for principal '" + principal + "', group '" 
+                            + group + "' using " + "manager " + manager);
+                }
+
                 return isMember;
             }
         }
@@ -246,6 +231,11 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
         sb.append(": managers = [").append(this.managers).append("]");
         sb.append(", cache = ").append(this.cache);
         return sb.toString();
+    }
+
+    public int getOrder() {
+        // XXX: DUMMY - not used, but should be refactored
+        return 0;
     }
     
 }

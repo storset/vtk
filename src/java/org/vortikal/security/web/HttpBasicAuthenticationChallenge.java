@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.security.AuthenticationProcessingException;
-import org.vortikal.security.MD5PasswordPrincipalStore;
+import org.vortikal.security.store.MD5PasswordStore;
 
 
 public class HttpBasicAuthenticationChallenge
@@ -57,7 +57,7 @@ public class HttpBasicAuthenticationChallenge
         }
     }
     
-    public void setPrincipalStore(MD5PasswordPrincipalStore store) {
+    public void setPrincipalStore(MD5PasswordStore store) {
         realm = store.getRealm();
     }
     

@@ -44,10 +44,10 @@ import org.springframework.core.Ordered;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
-import org.vortikal.security.MD5PasswordPrincipalStore;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.security.store.MD5PasswordStore;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.Base64;
 import org.vortikal.util.codec.MD5;
@@ -90,7 +90,7 @@ public class HttpDigestAuthenticationHandler
 
     private Log logger = LogFactory.getLog(this.getClass());
     private String nonceKey = NetUtils.guessHostName() + "." + System.currentTimeMillis();
-    private MD5PasswordPrincipalStore principalStore = null;
+    private MD5PasswordStore principalStore = null;
     private PrincipalManager principalManager = null;
     private Set recognizedDomains = null;
     private Set excludedPrincipals = new HashSet();
@@ -99,7 +99,7 @@ public class HttpDigestAuthenticationHandler
     private int order = Integer.MAX_VALUE;
     
 
-    public void setPrincipalStore(MD5PasswordPrincipalStore principalStore) {
+    public void setPrincipalStore(MD5PasswordStore principalStore) {
         this.principalStore = principalStore;
     }
 

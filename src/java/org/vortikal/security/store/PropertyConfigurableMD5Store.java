@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security;
+package org.vortikal.security.store;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
 
 
@@ -64,8 +66,8 @@ import org.vortikal.util.codec.MD5;
  * </ul>
  * 
  */
-public class PropertyConfigurableMD5PrincipalStore
-  implements MD5PasswordPrincipalStore, InitializingBean, Ordered {
+public class PropertyConfigurableMD5Store
+  implements MD5PasswordStore, InitializingBean, Ordered {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -162,9 +164,6 @@ public class PropertyConfigurableMD5PrincipalStore
             }
         }
 
-
-
-        
         String groupName = group.getUnqualifiedName();
         if (groupName == null) {
             if (logger.isDebugEnabled()) {

@@ -49,7 +49,7 @@ import org.vortikal.repositoryimpl.OperationLog;
 import org.vortikal.repositoryimpl.RepositoryImpl;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.TokenManager;
+import org.vortikal.security.token.TokenManager;
 
 /**
  * Spring AOP method interceptor class for excplicit logging for 

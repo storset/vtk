@@ -28,8 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security;
+package org.vortikal.security.token;
 
+import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationHandler;
 
 

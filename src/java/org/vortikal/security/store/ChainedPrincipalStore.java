@@ -28,87 +28,73 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.service;
+package org.vortikal.security.store;
+
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.security.token.TokenManager;
-import org.vortikal.security.web.AuthenticationHandler;
+import org.vortikal.security.PrincipalStore;
 
 
-public class LogoutSupportedAssertion extends AbstractRepositoryAssertion implements InitializingBean {
+public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
 
     private Log logger = LogFactory.getLog(this.getClass());
-    
 
-    private TokenManager tokenManager = null;
+    private List managers = null;
 
+    public ChainedPrincipalStore() {
+    }
 
-    public void setTokenManager(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
+    public ChainedPrincipalStore(List managers) {
+        this.managers = managers;
+    }
+
+    public void setManagers(List managers) {
+        this.managers = managers;
     }
     
-    public void afterPropertiesSet() {
-        if (this.tokenManager == null) {
+    public void afterPropertiesSet() throws Exception {
+        if (this.managers == null) {
             throw new BeanInitializationException(
-                "Bean property 'tokenManager' must be set");
+                "Bean property 'managers' cannot be null");
         }
     }
-    
 
-    public boolean matches(Resource resource, Principal principal) {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
 
-        if (token == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No authentication token present, match = false");
+    public boolean validatePrincipal(Principal principal)
+        throws AuthenticationProcessingException {
+
+        for (Iterator i = this.managers.iterator(); i.hasNext();) {
+            PrincipalStore manager = (PrincipalStore) i.next();
+            if (manager.validatePrincipal(principal)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Validated principal '" + principal.getQualifiedName()
+                                 + "' using manager " + manager);
+                }
+                return true;
             }
-            return false;
         }
-
-        AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(token);
-
-        if (handler == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No authentication handler for token "
-                             + token + ", match = false");
-            }
-            return false;
-        }
-
-        if (!handler.isLogoutSupported()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Authentication handler " + handler
-                             + " does not support logout, match = false");
-            }
-            return false;
-        }
-
         if (logger.isDebugEnabled()) {
-            logger.debug("Authentication handler " + handler
-                         + " supports logout, match = true");
+            logger.debug("Principal '" + principal.getQualifiedName() + "' doesn't exist");
         }
-        
-        return true;
-    }
-
-
-    public boolean conflicts(Assertion assertion) {
         return false;
     }
 
-
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": managers = [").append(this.managers).append("]");
         return sb.toString();
+    }
+    
+    public int getOrder() {
+        // XXX: DUMMY - not used, but should be refactored
+        return 0;
     }
 
 }

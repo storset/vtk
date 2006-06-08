@@ -46,7 +46,7 @@
   <!-- =============================================================== -->
 
 
-  <bean id="tokenManager" class="org.vortikal.security.TokenManagerImpl">
+  <bean id="tokenManager" class="org.vortikal.security.token.TokenManagerImpl">
     <description>
       The token manager. Tokens are "tickets" assigned to users
       when logging into the system, and are used for repository
@@ -141,15 +141,17 @@
     </constructor-arg>
   </bean>
 
-
-  <bean id="groupMembershipFastLookupCache"
-        class="org.vortikal.util.cache.SimpleCacheImpl">
-    <property name="timeoutSeconds" value="60" />
-    <property name="refreshTimestampOnGet" value="false" />
+  <bean id="domaingroupStore"
+    class="org.vortikal.security.store.DomainGroupStore">
+    <property name="order" value="0" />
+    <property name="knownDomains">
+      <list>
+        <value>uio.no</value>
+      </list>
+    </property>
   </bean>
 
-
-  <bean id="localPrincipalStore" class="org.vortikal.security.PropertyConfigurableMD5PrincipalStore">
+  <bean id="localPrincipalStore" class="org.vortikal.security.store.PropertyConfigurableMD5Store">
     <property name="order" value="10" />
     <!--property name="domain" value="localhost" /-->
     <property name="realm" value="${authenticationRealm}" />

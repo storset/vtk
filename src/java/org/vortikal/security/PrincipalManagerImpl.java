@@ -32,7 +32,6 @@ package org.vortikal.security;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +43,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
-import org.springframework.core.Ordered;
+import org.vortikal.security.store.ChainedGroupStore;
+import org.vortikal.security.store.ChainedPrincipalStore;
 import org.vortikal.util.cache.SimpleCacheImpl;
 
 
@@ -65,6 +65,7 @@ import org.vortikal.util.cache.SimpleCacheImpl;
  *   thereby forming a unique URL for each principal. This URL can be
  *   acessed using the {@link Principal#getURL} method.
  * </ul>
+ * XXX: reevaluate lookup strategy for stores!
  */
 public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
                                              ApplicationContextAware {
@@ -74,7 +75,9 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
     private String delimiter = "@";
     private String defaultDomain;
     private Map domainURLMap;
+
     private PrincipalStore principalStore;
+    private GroupStore groupStore;
     
     private ApplicationContext applicationContext;
     
@@ -119,19 +122,11 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 applicationContext, PrincipalStore.class, true, false);
     
-            List allStores = new ArrayList(matchingBeans.values());
-            List stores = new ArrayList();
-            for (Iterator iter = allStores.iterator(); iter.hasNext();) {
-                PrincipalStore store = (PrincipalStore) iter.next();
-                if (store instanceof Ordered) {
-                    stores.add(store);
-                }
-            }
-
+            List stores = new ArrayList(matchingBeans.values());
             Collections.sort(stores, new OrderComparator());
 
             if (stores.size() > 0) {
-                this.principalStore = new ChainedPrincipalStore(stores, new SimpleCacheImpl(60));
+                this.principalStore = new ChainedPrincipalStore(stores);
             }
         }
         
@@ -139,9 +134,35 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             throw new BeanInitializationException(
                 "JavaBean Property 'principalStore' must be specified");
         }
+
         if (logger.isInfoEnabled()) {
             logger.info("Using principal store " + this.principalStore);
         }
+
+        if (this.groupStore == null) {
+            
+            // Try to look up principal stores from the context
+
+            Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+                applicationContext, GroupStore.class, true, false);
+    
+            List stores = new ArrayList(matchingBeans.values());
+            Collections.sort(stores, new OrderComparator());
+
+            if (stores.size() > 0) {
+                this.groupStore = new ChainedGroupStore(stores, new SimpleCacheImpl(60));
+            }
+        }
+        
+        if (this.groupStore == null) {
+            throw new BeanInitializationException(
+                "JavaBean Property 'groupStore' must be specified");
+        }
+
+        if (logger.isInfoEnabled()) {
+            logger.info("Using group store " + this.groupStore);
+        }
+
     }
     
     public Principal getUserPrincipal(String id) {
@@ -187,22 +208,26 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
         String domain = null;
         String qualifiedName = id;
         
+        String defDomain = 
+            (type == Principal.TYPE_GROUP) ? null : this.defaultDomain;
+
         if (id.indexOf(this.delimiter) > 0) {
 
             /* id is a fully qualified principal with a domain part: */
             domain = id.substring(id.indexOf(this.delimiter) + 1);
 
-            if (this.defaultDomain != null && this.defaultDomain.equals(domain)) {
+            
+            if (defDomain != null && defDomain.equals(domain)) {
                 /* In cases where domain equals default domain, strip
                  * the domain part off the name: */
                 name = id.substring(0, id.indexOf(this.delimiter));
             } 
                         
-        } else if (this.defaultDomain != null) {
+        } else if (defDomain != null) {
 
             /* id is not a fully qualified principal, but since we
              * have a default domain, we append it: */
-            domain = this.defaultDomain;
+            domain = defDomain;
             qualifiedName = name + this.delimiter + domain;
         }
 
@@ -226,7 +251,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
 
 
     public boolean validateGroup(Principal group) throws AuthenticationProcessingException {
-        return this.principalStore.validateGroup(group);
+        return this.groupStore.validateGroup(group);
     }
 
 
@@ -236,6 +261,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
 
 
     public boolean isMember(Principal principal, Principal group) {
-        return this.principalStore.isMember(principal, group);
+        return this.groupStore.isMember(principal, group);
     }
 }

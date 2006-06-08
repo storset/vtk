@@ -28,7 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security;
+package org.vortikal.security.store;
+
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.AuthenticationProcessingException;
+import org.vortikal.security.GroupStore;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalStore;
 
 
 
@@ -36,7 +42,7 @@ package org.vortikal.security;
  * A principal store exposing a hashed representation of users and
  * passwords.
  */
-public interface MD5PasswordPrincipalStore extends PrincipalStore {
+public interface MD5PasswordStore extends PrincipalStore, GroupStore {
 
     
     /**

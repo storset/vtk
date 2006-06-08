@@ -38,7 +38,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.TokenManager;
+import org.vortikal.security.token.TokenManager;
 import org.vortikal.web.service.RepositoryAssertion;
 
 

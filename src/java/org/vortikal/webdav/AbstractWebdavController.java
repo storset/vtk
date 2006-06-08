@@ -61,8 +61,8 @@ import org.vortikal.webdav.ifheader.IfHeader;
 public abstract class AbstractWebdavController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
-
-    protected boolean ignoreIfHeaderVerify = true;
+    
+    protected boolean supportIfHeaders = true;
     
     protected IfHeader ifHeader;
 
@@ -72,8 +72,8 @@ public abstract class AbstractWebdavController implements Controller {
         this.repository = repository;
     }
     
-    public void setIgnoreIfHeaderVerify(boolean ignoreIfHeaderVerify) {
-        this.ignoreIfHeaderVerify = ignoreIfHeaderVerify;
+    public void setSupportIfHeaders(boolean ignoreIfHeaderVerify) {
+        this.supportIfHeaders = ignoreIfHeaderVerify;
     }
     
 
@@ -163,7 +163,7 @@ public abstract class AbstractWebdavController implements Controller {
 
         
     protected void verifyIfHeader(Resource resource, boolean ifHeaderRequiredIfLocked) {
-        if (ignoreIfHeaderVerify) {
+        if (supportIfHeaders) {
             return;
         }
         if (logger.isDebugEnabled()) {

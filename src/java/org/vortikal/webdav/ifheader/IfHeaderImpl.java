@@ -408,7 +408,7 @@ public class IfHeaderImpl implements IfHeader {
 
         // log the error
         logger.error("logIllegalState: Unexpected character '"+effString+" in state "+state+", expected any of "+expChar);
-
+        logger.error("logIllegalState: headerValue: " + headerValue);
         // catch up if a reader is given
         if (reader != null && effChar >= 0) {
             try {

@@ -81,14 +81,16 @@ public class HeadController extends AbstractWebdavController {
                 throw new ResourceNotFoundException(uri);
             }
             
-            IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
-            if (!ifMatchHeader.matches(resource)) {
-                throw new PreconditionFailedException();
-            }
-                
-            IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
-            if (!ifNoneMatchHeader.matches(resource)) {
-                throw new PreconditionFailedException();
+            if (supportIfHeaders) {
+                IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
+                if (!ifMatchHeader.matches(resource)) {
+                    throw new PreconditionFailedException();
+                }
+
+                IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
+                if (!ifNoneMatchHeader.matches(resource)) {
+                    throw new PreconditionFailedException();
+                }
             }
             
             model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE, resource);

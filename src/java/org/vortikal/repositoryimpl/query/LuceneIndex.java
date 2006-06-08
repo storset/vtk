@@ -73,24 +73,23 @@ public class LuceneIndex implements InitializingBean {
     
     private static Log logger = LogFactory.getLog(LuceneIndex.class);
     
-    private static final int MAX_OUTDATED_SEARCH_INDEX_READERS = 10;
-    
-    private int commitCounter = 0;
-    private boolean searchReaderOutdated = false;
-    private int currentSearchIndexReaderRefCount = 0;
-    private IndexReaderRefCountMap outdatedReaders = 
-        new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_INDEX_READERS * 2);
+    private static final int MAX_OUTDATED_SEARCH_READERS = 10;
+
+    private boolean currentSearchReaderOutdated = false;
+    private int currentSearchReaderRefCount = 0;
+    private IndexReaderRefCountMap outdatedSearchReaders = 
+        new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_READERS + 2);
+    private IndexReader currentSearchReader;
+    private Object searchReaderManagementLock = new Object();
     
     private FSBackedLuceneIndex primaryFSIndex;
-//    private FSBackedLuceneIndex secondaryFSIndex;
-//    private VolatileLuceneIndex vIndex;
-    
-    private IndexReader searchIndexReader;
-    private Object indexSearcherManagementLock = new Object();
+//  private FSBackedLuceneIndex secondaryFSIndex;
+//  private VolatileLuceneIndex vIndex;
     
     private String primaryIndexPath;
     private String secondaryIndexPath;
     private int optimizeInterval = 100;
+    private int commitCounter = 0;
     private int mergeFactor = 10;
     private int minMergeDocs = 100;
     private int maxMergeDocs = 10000;
@@ -121,7 +120,7 @@ public class LuceneIndex implements InitializingBean {
             this.primaryFSIndex.setMergeFactor(this.mergeFactor);
             this.primaryFSIndex.setMinMergeDocs(this.minMergeDocs);
             
-            this.searchIndexReader = this.primaryFSIndex.getNewReadOnlyIndexReader();
+            this.currentSearchReader = this.primaryFSIndex.getNewReadOnlyIndexReader();
             
         } catch (IOException io) {
             logger.error("Got IOException while initializing indexes: " + io.getMessage());
@@ -132,13 +131,13 @@ public class LuceneIndex implements InitializingBean {
     /**
      * Removes and closes all outdated search index readers.
      */
-    protected void cleanupOutdatedSearchIndexReaders() {
-        synchronized(this.indexSearcherManagementLock) {
-            for (Iterator i = this.outdatedReaders.keySet().iterator(); i.hasNext();) {
+    protected void cleanupOutdatedSearchReaders() {
+        synchronized(this.searchReaderManagementLock) {
+            for (Iterator i = this.outdatedSearchReaders.keySet().iterator(); i.hasNext();) {
                 IndexReader reader = (IndexReader)i.next();
                 if (logger.isDebugEnabled()) {
                     logger.debug("Closing and removing an outdated search index reader with" 
-                            + " ref-count = " + this.outdatedReaders.get(reader));
+                            + " ref-count = " + this.outdatedSearchReaders.get(reader));
                 }
                 
                 i.remove();
@@ -179,47 +178,47 @@ public class LuceneIndex implements InitializingBean {
      * @throws IOException
      */
     protected IndexReader getReadOnlyIndexReader() throws IOException {
-        synchronized (this.indexSearcherManagementLock) {
-            if (this.searchReaderOutdated) {
+        synchronized (this.searchReaderManagementLock) {
+            if (this.currentSearchReaderOutdated) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Current search index reader is outdated !");
                 }
                 
-                if (this.currentSearchIndexReaderRefCount > 0) {
+                if (this.currentSearchReaderRefCount > 0) {
                     // Still in use, put it into outdated readers storage
                     // (schedule for closing either when too old, or when ref-count
                     // eventually reaches 0)
-                    outdatedReaders.put(this.searchIndexReader, 
-                            new Integer(this.currentSearchIndexReaderRefCount));
+                    outdatedSearchReaders.put(this.currentSearchReader, 
+                            new Integer(this.currentSearchReaderRefCount));
                     if (logger.isDebugEnabled()) {
                         logger.debug("Added outdated but still in-use search index reader to map of outdated readers.");
                         logger.debug("Current number of outdated, but still open readers is " 
-                                + this.outdatedReaders.size());
+                                + this.outdatedSearchReaders.size());
                     }
                 } else {
-                    this.searchIndexReader.close();
+                    this.currentSearchReader.close();
                     if (logger.isDebugEnabled()) {
                         logger.debug("Closed outdated and un-used search index reader");
                     }
                 }
                 
-                this.searchIndexReader = primaryFSIndex.getNewReadOnlyIndexReader();
-                this.currentSearchIndexReaderRefCount = 0;
+                this.currentSearchReader = primaryFSIndex.getNewReadOnlyIndexReader();
+                this.currentSearchReaderRefCount = 0;
 
                 // No longer out-dated
-                this.searchReaderOutdated = false;
+                this.currentSearchReaderOutdated = false;
             } 
             
             // Bump ref-count
-            ++this.currentSearchIndexReaderRefCount;
+            ++this.currentSearchReaderRefCount;
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Search index reader ref-count increased to " 
-                        + this.currentSearchIndexReaderRefCount);
+                        + this.currentSearchReaderRefCount);
             }
             
             // Return new searcher on the reader
-            return this.searchIndexReader;
+            return this.currentSearchReader;
         }
     }
     
@@ -237,16 +236,16 @@ public class LuceneIndex implements InitializingBean {
             return;
         }
         
-        synchronized(this.indexSearcherManagementLock) {
+        synchronized(this.searchReaderManagementLock) {
             
-            if (reader == this.searchIndexReader) {
+            if (reader == this.currentSearchReader) {
                 // Decrease ref-count
-                if (this.currentSearchIndexReaderRefCount > 0) {
-                    --this.currentSearchIndexReaderRefCount;
+                if (this.currentSearchReaderRefCount > 0) {
+                    --this.currentSearchReaderRefCount;
                     
                     if (logger.isDebugEnabled()) {
                         logger.debug("Search index reader ref-count decreased to " 
-                                + this.currentSearchIndexReaderRefCount);
+                                + this.currentSearchReaderRefCount);
                     }
                 } else {
                     logger.warn("Ref-count for current search index reader below zero, something is wrong !");
@@ -255,7 +254,7 @@ public class LuceneIndex implements InitializingBean {
                 // Searcher released an outdated reader, decrease ref-count and close
                 // if we can.
                 
-                Integer refCount = (Integer)this.outdatedReaders.get(reader);
+                Integer refCount = (Integer)this.outdatedSearchReaders.get(reader);
                 if (refCount == null) {
                     // We no longer have any pointer to this, ignore release-request.
                     return;
@@ -264,11 +263,11 @@ public class LuceneIndex implements InitializingBean {
                 int c = refCount.intValue()-1;
                 if (c == 0) {
                     // OK, last reference released, we close it.
-                    this.outdatedReaders.remove(reader);
+                    this.outdatedSearchReaders.remove(reader);
                     reader.close();
                 } else {
                     // Still references left, we put it back with a decreased counter.
-                    this.outdatedReaders.put(reader, new Integer(c));
+                    this.outdatedSearchReaders.put(reader, new Integer(c));
                 }
             }
         }
@@ -310,15 +309,20 @@ public class LuceneIndex implements InitializingBean {
         }
         
         primaryFSIndex.commit();
-        checkForOutdatedSearcher();
+
+        synchronized (this.searchReaderManagementLock) {
+            if (logger.isDebugEnabled()) {
+                if (this.currentSearchReader.isCurrent()) {
+                    logger.debug("Current search reader reports that it is current.");
+                } else {
+                    logger.debug("Current search reader reports that it is outdated.");
+                }
+            }
+            
+            this.currentSearchReaderOutdated = ! this.currentSearchReader.isCurrent();
+        }        
     }
 
-    private void checkForOutdatedSearcher() throws IOException {
-        synchronized (this.indexSearcherManagementLock) {
-            this.searchReaderOutdated = !this.searchIndexReader.isCurrent();
-        }
-    }
-    
     // Explicit write locking. Must be acquired before doing any write
     // operations on index, using either the reader or the writer.
     protected boolean writeLockAcquire() {
@@ -367,7 +371,7 @@ public class LuceneIndex implements InitializingBean {
         }
         
         protected boolean removeEldestEntry(Map.Entry entry) {
-            if (super.size() <= LuceneIndex.MAX_OUTDATED_SEARCH_INDEX_READERS) {
+            if (super.size() <= LuceneIndex.MAX_OUTDATED_SEARCH_READERS) {
                 return false;
             }
             

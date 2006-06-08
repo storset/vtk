@@ -42,6 +42,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
@@ -51,6 +53,8 @@ import org.vortikal.security.PrincipalManager;
 import com.ibatis.sqlmap.client.SqlMapClient;
 
 public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBean {
+    
+    Log logger = LogFactory.getLog(IndexDataAccessorImpl.class);
     
     private PropertyManager propertyManager;
     private PrincipalManager principalManager;
@@ -223,33 +227,43 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
     private int insertIntoTempTable(List uris, Connection conn)
         throws SQLException {
         
-        String nextvalQuery = this.oracle ? 
-                "SELECT vortex_uri_tmp_session_id_seq.nextval FROM dual" :
-                "SELECT nextval('vortex_uri_tmp_session_id_seq')";
-        
-        PreparedStatement pstmt = conn.prepareStatement(nextvalQuery);
-        ResultSet rs = pstmt.executeQuery();
-        
         int sessionId = -1;
-        if (rs.next()) {
-            sessionId = rs.getInt(1);
-        } else {
-            throw new SQLException("Unable to get next value from session id sequence");
+        
+        try {
+            String nextvalQuery = this.oracle ? 
+                    "SELECT vortex_uri_tmp_session_id_seq.nextval FROM dual" :
+                    "SELECT nextval('vortex_uri_tmp_session_id_seq')";
+            
+            PreparedStatement pstmt = conn.prepareStatement(nextvalQuery);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                sessionId = rs.getInt(1);
+            } else {
+                throw new SQLException("Unable to get next value from session id sequence");
+            }
+            rs.close();
+            pstmt.close();
+            
+            pstmt = conn.prepareStatement(
+                    "INSERT INTO vortex_uri_tmp(session_id, uri) VALUES (?,?)");
+            
+            for (Iterator i = uris.iterator(); i.hasNext();) {
+                pstmt.setInt(1, sessionId);
+                pstmt.setString(2, (String)i.next());
+                pstmt.addBatch();
+            }
+            
+            pstmt.executeBatch();
+            pstmt.close();
+        } catch (SQLException e) {
+            logger.warn("SQLException while inserting into vrtx_uri_tmp: ", e);
+            logger.warn("Next exception: ", e.getNextException());
+            logger.warn("Cause: ", e.getCause());
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw e;
         }
-        rs.close();
-        pstmt.close();
-        
-        pstmt = conn.prepareStatement(
-                "INSERT INTO vortex_uri_tmp(session_id, uri) VALUES (?,?)");
-        
-        for (Iterator i = uris.iterator(); i.hasNext();) {
-            pstmt.setInt(1, sessionId);
-            pstmt.setString(2, (String)i.next());
-            pstmt.addBatch();
-        }
-        
-        pstmt.executeBatch();
-        pstmt.close();
         
         return sessionId;
     }

@@ -320,6 +320,8 @@ public class LuceneIndex implements InitializingBean {
             }
             
             this.currentSearchReaderOutdated = ! this.currentSearchReader.isCurrent();
+            
+            logger.debug("this.currentSearchReaderOutdated=" + this.currentSearchReaderOutdated);
         }        
     }
 

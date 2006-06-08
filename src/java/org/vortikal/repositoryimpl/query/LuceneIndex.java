@@ -72,7 +72,7 @@ import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
 public class LuceneIndex implements InitializingBean {
     
     private static Log logger = LogFactory.getLog(LuceneIndex.class);
-    
+
     private static final int MAX_OUTDATED_SEARCH_READERS = 10;
 
     private boolean currentSearchReaderOutdated = false;
@@ -180,6 +180,7 @@ public class LuceneIndex implements InitializingBean {
     protected IndexReader getReadOnlyIndexReader() throws IOException {
         synchronized (this.searchReaderManagementLock) {
             logger.debug("getReadOnlyIndexReader(): this.currentSearchReaderOutdated=" + this.currentSearchReaderOutdated);
+            logger.debug("Instance: " + this);
 
             if (this.currentSearchReaderOutdated) {
                 if (logger.isDebugEnabled()) {
@@ -324,6 +325,7 @@ public class LuceneIndex implements InitializingBean {
             this.currentSearchReaderOutdated = ! this.currentSearchReader.isCurrent();
             
             logger.debug("commit(): this.currentSearchReaderOutdated=" + this.currentSearchReaderOutdated);
+            logger.debug("Instance: " + this);
         }        
     }
 

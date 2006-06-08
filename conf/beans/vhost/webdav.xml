@@ -482,7 +482,6 @@
 
   <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController"
     parent="requestLocalRepositoryAware" >
-    <property name="ignoreIfHeaderVerify" value="false" />
     <property name="maxUploadSize" value="-1" />
   </bean>
 

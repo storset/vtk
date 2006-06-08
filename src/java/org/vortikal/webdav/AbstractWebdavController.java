@@ -163,7 +163,7 @@ public abstract class AbstractWebdavController implements Controller {
 
         
     protected void verifyIfHeader(Resource resource, boolean ifHeaderRequiredIfLocked) {
-        if (supportIfHeaders) {
+        if (!supportIfHeaders) {
             return;
         }
         if (logger.isDebugEnabled()) {

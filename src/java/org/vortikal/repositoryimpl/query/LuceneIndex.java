@@ -42,6 +42,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
@@ -69,7 +70,7 @@ import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
  * @author oyviste
  *
  */
-public class LuceneIndex implements InitializingBean {
+public class LuceneIndex implements InitializingBean, DisposableBean {
     
     private static Log logger = LogFactory.getLog(LuceneIndex.class);
 
@@ -93,6 +94,7 @@ public class LuceneIndex implements InitializingBean {
     private int mergeFactor = 10;
     private int minMergeDocs = 100;
     private int maxMergeDocs = 10000;
+    private int maxLockAcquireTimeOnShutdown = 30; // 30 seconds max to wait for lock
     private boolean eraseExistingIndex = false;
     private boolean forceUnlock = false;
     
@@ -328,6 +330,23 @@ public class LuceneIndex implements InitializingBean {
             logger.debug("Instance: " + this);
         }        
     }
+    
+    
+    
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.DisposableBean#destroy()
+     */
+    public void destroy() throws Exception {
+       logger.info("Graceful index shutdown, waiting for write lock ..");
+       if (writeLockAttempt(this.maxLockAcquireTimeOnShutdown * 1000)) {
+           logger.info("Got write lock, closing down.");
+           this.primaryFSIndex.close();
+       } else {
+           logger.warn("Failed to acquire the write lock within "
+                   + " the time limit of " + this.maxLockAcquireTimeOnShutdown 
+                   + " seconds, index might be corrupted.");
+       }
+    }
 
     // Explicit write locking. Must be acquired before doing any write
     // operations on index, using either the reader or the writer.
@@ -463,6 +482,13 @@ public class LuceneIndex implements InitializingBean {
 
     public void setSecondaryIndexPath(String secondaryIndexPath) {
         this.secondaryIndexPath = secondaryIndexPath;
+    }
+
+    /**
+     * @param maxLockAcquireTimeOnShutdown The maxLockAcquireTimeOnShutdown to set.
+     */
+    public void setMaxLockAcquireTimeOnShutdown(int maxLockAcquireTimeOnShutdown) {
+        this.maxLockAcquireTimeOnShutdown = maxLockAcquireTimeOnShutdown;
     }
     
 }

@@ -154,6 +154,22 @@ public abstract class AbstractLuceneIndex {
             writer = null;
         }
     }
+    
+    protected synchronized void close() throws IOException {
+        if (reader != null) {
+            reader.close();
+            reader = null;
+        }
+        
+        if (writer != null) {
+            writer.close();
+            writer = null;
+        }
+
+        if (directory != null) {
+            directory.close();
+        }
+    }
 
     /**
      * Re-initializes index directory.

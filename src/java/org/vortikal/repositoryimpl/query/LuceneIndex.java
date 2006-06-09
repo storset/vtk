@@ -310,7 +310,10 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     protected void commit() throws IOException {
         // Optimize index, if we've reached 'optimizeInterval' number of commits.
         if (++commitCounter % optimizeInterval == 0) {
+            logger.info("Reached " + commitCounter 
+                                        + " commits, auto-optimizing index ..");
             primaryFSIndex.optimize();
+            logger.info("Auto-optimization completed.");
         }
         
         primaryFSIndex.commit();

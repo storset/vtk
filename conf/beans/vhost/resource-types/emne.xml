@@ -213,7 +213,7 @@
   </bean>
 
   <bean id="emneEmnetypeEvaluator" parent="abstractXPathEvaluator">
-    <property name="expression" value="/emne/undervisningssemester/@semester" />
+    <property name="expression" value="/emne/emnetype/@emnetype" />
   </bean>
 
 

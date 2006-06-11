@@ -437,6 +437,7 @@
     from extra_prop_entry p
       inner join prop_type t on p.prop_type_id = t.prop_type_id
     where resource_id = #value#
+    order by p.extra_prop_entry_id
   </select>
 
 
@@ -450,6 +451,7 @@
     where p.resource_id in
       (select resource_id from vortex_resource
         where uri like #uriWildcard# and depth = #depth#)
+    order by p.resource_id, p.extra_prop_entry_id
   </select>
 
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">

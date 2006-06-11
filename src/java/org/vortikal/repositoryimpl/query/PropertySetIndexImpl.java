@@ -121,6 +121,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         wrapper.addAnalyzer(DocumentMapper.ANCESTORIDS_FIELD_NAME, multiValueAnalyzer);
         wrapper.addAnalyzer(DocumentMapper.RESOURCETYPE_FIELD_NAME, keywordAnalyzer);
         wrapper.addAnalyzer(DocumentMapper.URI_FIELD_NAME, keywordAnalyzer);
+        wrapper.addAnalyzer(DocumentMapper.URI_DEPTH_FIELD_NAME, keywordAnalyzer);
         
         return wrapper;
     }

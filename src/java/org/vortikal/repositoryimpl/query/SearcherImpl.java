@@ -233,7 +233,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
     private ResultSetImpl buildResultSet(ScoreDoc[] docs, IndexReader reader, 
                                          String token, int maxResults,
                                          int cursor) throws IOException {
-        
+
         ResultSetImpl rs = new ResultSetImpl();
         
         int length = docs.length;

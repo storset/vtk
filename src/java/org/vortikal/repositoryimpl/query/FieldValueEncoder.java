@@ -37,6 +37,8 @@ import org.apache.lucene.document.DateTools;
 
 /**
  * Low-level index field value encoder/decoder for some single-value data types.
+ * Encodes/decodes to/from lexicographically sortable string representations
+ * and pure binary representations (for efficient storage and re-creation).
  * 
  * @author oyviste
  *
@@ -46,6 +48,7 @@ public final class FieldValueEncoder {
     private static final char[] HEX_CHARS = {
         '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
         
+    private static int BYTE_MASK = 0xFF;
     
     private FieldValueEncoder() {} // Util
 
@@ -54,7 +57,7 @@ public final class FieldValueEncoder {
      * @param dateValue
      * @return
      */
-    public static String encodeDateValue(long dateValue) {
+    public static String encodeDateValueToString(long dateValue) {
         return DateTools.timeToString(dateValue, DateTools.Resolution.SECOND);
     }
     
@@ -63,7 +66,7 @@ public final class FieldValueEncoder {
      * @param encodedDateValue
      * @return
      */
-    public static long decodeDateValue(String encodedDateValue) 
+    public static long decodeDateValueFromString(String encodedDateValue) 
         throws FieldValueEncodingException {
         try {
             return DateTools.stringToTime(encodedDateValue);
@@ -79,20 +82,20 @@ public final class FieldValueEncoder {
      * @param i number to encode
      * @return
      */
-   public static String encodeInteger(int i) {
+    public static String encodeIntegerToString(int i) {
         long uint = (long)i + 0x80000000L;
         char[] hex = Long.toHexString(uint).toCharArray();
         char[] output = {'0','0','0','0','0','0','0','0'};
         System.arraycopy(hex, 0, output, 8-hex.length, hex.length);
         return String.valueOf(output);
     }
-
+    
     /**
      * TODO: javadoc
      * @param encodedInteger
      * @return
      */
-    public static int decodeInteger(String encodedInteger) 
+    public static int decodeIntegerFromString(String encodedInteger) 
         throws FieldValueEncodingException {
         try {
             long uint = Long.parseLong(encodedInteger, 16);
@@ -110,7 +113,7 @@ public final class FieldValueEncoder {
      * @param l number to encode
      * @return
      */
-    public static String encodeLong(long l) {
+    public static String encodeLongToString(long l) {
         // Create 64 bits unsigned long representation for lexicographical sorting
         byte[] ulong = new byte[8];
 
@@ -121,7 +124,7 @@ public final class FieldValueEncoder {
         }
         
         for (int i=0; i<8; i++) {
-            ulong[i] |= (byte)((l >>> (56-i*8)) & 0xFF);
+            ulong[i] |= (byte)((l >>> (56-i*8)) & BYTE_MASK);
         }
         
         return unsignedLongToPaddedHexString(ulong);
@@ -132,7 +135,7 @@ public final class FieldValueEncoder {
      * @param encodedLong
      * @return
      */
-    public static long decodeLong(String encodedLong) 
+    public static long decodeLongFromString(String encodedLong) 
         throws FieldValueEncodingException {
       
         try {
@@ -142,6 +145,115 @@ public final class FieldValueEncoder {
         } catch (NumberFormatException nfe) {
             throw new FieldValueEncodingException(nfe.getMessage());
         }
+    }
+
+    /**
+     * 
+     * @param b
+     * @return
+     */
+    public static byte[] encodeBooleanToBinary(boolean b) {
+        return b ? new byte[] {1} : new byte[] {0};
+    }
+    
+    /**
+     * 
+     * @param value
+     * @return
+     */
+    public static boolean decodeBooleanFromBinary(byte[] value) {
+        if (value.length != 1) {
+            throw new IllegalArgumentException("Byte array length of 1 required");
+        }
+
+        return (value[0] == 0 ? false : true);
+    }
+    
+    /**
+     * 
+     * @param dateValue
+     * @return
+     */
+    public static byte[] encodeDateValueToBinary(long dateValue) {
+        return encodeLongToBinary(dateValue);
+    }
+    
+    /**
+     * 
+     * @param value
+     * @return
+     */
+    public static long decodeDateValueFromBinary(byte[] value) {
+        return decodeLongFromBinary(value);
+    }
+    
+    /**
+     * 
+     * @param n
+     * @return
+     */
+    public static byte[] encodeLongToBinary(long n) {
+        byte[] value = new byte[8];
+        for (int i=7; i != -1; i--) {
+            value[i] = (byte)((n >>> i*8) & BYTE_MASK);
+        }
+        
+        return value;
+    }
+    
+    /**
+     * 
+     * @param value
+     * @return
+     */
+    public static long decodeLongFromBinary(byte[] value) {
+        if (value.length != 8) {
+            throw new IllegalArgumentException("Byte array of length 8 is " 
+                                           + "required to decode to a long");
+        }
+        
+        long n = 0L;
+        for (int i=7; i != -1; i--) {
+            n |= ((long)value[i] & BYTE_MASK) << i*8;
+        }
+        
+        return n;
+    }
+    
+    /**
+     * Encodes integer to binary representation for efficient storage in index.
+     * @param n
+     * @return
+     */
+    public static byte[] encodeIntegerToBinary(int n) {
+        byte[] value = new byte[4];
+        for (int i=3; i != -1; i--) {
+            value[i] = (byte)((n >>> i*8) & BYTE_MASK);  
+        }
+        
+        return value;
+    }
+
+
+    /**
+     * Decodes integer from binary representation encoded by 
+     * {@link #encodeIntegerToBinary(int)}
+     * 
+     * @param value A byte array of length 4 containing the represenation
+     * @return
+     */
+    public static int decodeIntegerFromBinary(byte[] value) {
+        if (value.length != 4) {
+            throw new IllegalArgumentException("Byte array of length 4 is " 
+                                       + "required to decode to an integer");
+        }
+        
+        int n = 0;
+        for (int i=3; i != -1; i--) {
+            n |= ((int)value[i] & BYTE_MASK) << i*8;
+        }
+        
+        return n;
     }
 
     /**

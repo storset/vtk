@@ -48,20 +48,34 @@ public final class FieldValueMapper {
     public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
     
     private FieldValueMapper() {} // Util
-     
+    
     // No encoding (un-typed)
     public static Field getKeywordField(String name, int value) {
-        return getKeywordField(name, Integer.toString(value));
+        return new Field(name, Integer.toString(value), Field.Store.NO, 
+                Field.Index.NO_NORMS);
     }
     
     // No encoding (un-typed)
     public static Field getKeywordField(String name, String value) {
+        return new Field(name, value, Field.Store.NO, Field.Index.NO_NORMS);
+    }
+    
+    // No encoding (un-typed)
+    public static Field getStoredKeywordField(String name, int value) {
+        return new Field(name, Integer.toString(value), Field.Store.YES, 
+                Field.Index.NO_NORMS);
+    }
+    
+    // No encoding (un-typed)
+    public static Field getStoredKeywordField(String name, String value) {
         return new Field(name, value, Field.Store.YES, 
                 Field.Index.NO_NORMS);
     }
 
     /**
-     * Create <code>Field</code> from multiple <code>Value</code>s.
+     * Create indexed (but not stored) <code>Field</code> from 
+     * multiple <code>Value</code> objects. Should be analyzed with
+     * {@link EscapedMultiValueFieldAnalyzer}.
      *  
      * @param name
      * @param values
@@ -77,13 +91,14 @@ public final class FieldValueMapper {
             if (i < values.length-1) fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);
         }
 
-        Field field = new Field(name, fieldValue.toString(), Field.Store.YES, Field.Index.TOKENIZED);
+        Field field = new Field(name, fieldValue.toString(), Field.Store.NO, 
+                                                             Field.Index.TOKENIZED);
         
         return field;
     }
     
     /**
-     * Create <code>Field</code> from single <code>Value</code>.
+     * Create indexed <code>Field</code> from single <code>Value</code>.
      *  
      * @param name
      * @param value
@@ -140,6 +155,7 @@ public final class FieldValueMapper {
     // XXX: Used for generating ancestor ids field. We don't bother to encode
     //      it because of its system-specific nature, and that it should never
     //      be used as a sane sorting key or in range queries.
+    // XXX: Review if storing this is really necessary (don't think so)
     public static Field getUnencodedMultiValueFieldFromIntegers(String name, 
                                                                 int[] integers) {
         StringBuffer fieldValue = new StringBuffer();
@@ -154,7 +170,7 @@ public final class FieldValueMapper {
                                                       Field.Index.TOKENIZED);
     }
 
-    // XXX: Used for ancestor ids field.
+    // XXX: Used for ancestor ids field. Expensive.
     public static int[] getIntegersFromUnencodedMultiValueField(Field field) {
         if ("".equals(field.stringValue())) return new int[0];
         
@@ -184,15 +200,15 @@ public final class FieldValueMapper {
                                // representation already present in index.
 
         case (PropertyType.TYPE_DATE):
-            return Long.toString(FieldValueEncoder.decodeDateValue(fieldValue));
+            return Long.toString(FieldValueEncoder.decodeDateValueFromString(fieldValue));
             
         case (PropertyType.TYPE_INT):
-            return Integer.toString(FieldValueEncoder.decodeInteger(fieldValue));
+            return Integer.toString(FieldValueEncoder.decodeIntegerFromString(fieldValue));
             
         case (PropertyType.TYPE_LONG):
-            return Long.toString(FieldValueEncoder.decodeLong(fieldValue));
+            return Long.toString(FieldValueEncoder.decodeLongFromString(fieldValue));
             
-        default: throw new ValueFormatException("Unknown type " + type);
+        default: throw new FieldValueEncodingException("Unknown type " + type);
                 
         }
     }
@@ -207,15 +223,15 @@ public final class FieldValueMapper {
             return value.getNativeStringRepresentation();
         
         case(PropertyType.TYPE_DATE):
-            return FieldValueEncoder.encodeDateValue(value.getDateValue().getTime());
+            return FieldValueEncoder.encodeDateValueToString(value.getDateValue().getTime());
         
         case(PropertyType.TYPE_INT):
-            return FieldValueEncoder.encodeInteger(value.getIntValue());
+            return FieldValueEncoder.encodeIntegerToString(value.getIntValue());
         
         case(PropertyType.TYPE_LONG):
-            return FieldValueEncoder.encodeLong(value.getLongValue());
+            return FieldValueEncoder.encodeLongToString(value.getLongValue());
         
-        default: throw new IllegalArgumentException("Unknown type: " + value.getType());
+        default: throw new FieldValueEncodingException("Unknown type: " + value.getType());
         
         }
         
@@ -241,7 +257,7 @@ public final class FieldValueMapper {
         case(PropertyType.TYPE_DATE):
             try {
                 long l = Long.parseLong(stringValue);
-                return FieldValueEncoder.encodeDateValue(l);
+                return FieldValueEncoder.encodeDateValueToString(l);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException("Unable to encode date string value to " 
                         + "to index field value representation: " + nfe.getMessage());
@@ -251,7 +267,7 @@ public final class FieldValueMapper {
             try {
                 // Validate and encode 
                 int n = Integer.parseInt(stringValue);
-                return FieldValueEncoder.encodeInteger(n);
+                return FieldValueEncoder.encodeIntegerToString(n);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException("Unable to encode integer string value to "
                         + "to index field value representation: " + nfe.getMessage());
@@ -261,7 +277,7 @@ public final class FieldValueMapper {
             try {
                 // Validate and pad
                 long l = Long.parseLong(stringValue);
-                return FieldValueEncoder.encodeLong(l);
+                return FieldValueEncoder.encodeLongToString(l);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException(
                         "Unable to encode long integer string value to "
@@ -269,7 +285,7 @@ public final class FieldValueMapper {
                                 + nfe.getMessage());
             }
             
-        default: throw new IllegalArgumentException("Unknown type " + type);
+        default: throw new FieldValueEncodingException("Unknown type " + type);
         
         }
 

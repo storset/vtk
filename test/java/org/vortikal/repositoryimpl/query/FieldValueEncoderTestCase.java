@@ -15,13 +15,23 @@ public class FieldValueEncoderTestCase extends TestCase {
         super.tearDown();
     }
     
-    public void testDateEncoding() {
+    public void testBinaryBooleanEncoding() {
+                
+        byte[] encoded = FieldValueEncoder.encodeBooleanToBinary(false);
+        assertFalse(FieldValueEncoder.decodeBooleanFromBinary(encoded));
+        
+        encoded = FieldValueEncoder.encodeBooleanToBinary(true);
+        assertTrue(FieldValueEncoder.decodeBooleanFromBinary(encoded));
+        
+    }
+    
+    public void testDateStringEncoding() {
         
         Calendar test = Calendar.getInstance();
         
-        String encoded = FieldValueEncoder.encodeDateValue(test.getTimeInMillis());
+        String encoded = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis());
         
-        Date decodedDate = new Date(FieldValueEncoder.decodeDateValue(encoded));
+        Date decodedDate = new Date(FieldValueEncoder.decodeDateValueFromString(encoded));
         
         Calendar decoded = Calendar.getInstance();
         decoded.setTime(decodedDate);
@@ -41,26 +51,35 @@ public class FieldValueEncoderTestCase extends TestCase {
         
         int testNumber = 666;
         
-        String encoded = FieldValueEncoder.encodeInteger(testNumber);
+        String encoded = FieldValueEncoder.encodeIntegerToString(testNumber);
         
         assertEquals("8000029a", encoded);
         
-        int decoded = FieldValueEncoder.decodeInteger(encoded);
+        int decoded = FieldValueEncoder.decodeIntegerFromString(encoded);
         
         assertEquals(testNumber, decoded);
+        
+        byte[] encodedBinary = FieldValueEncoder.encodeIntegerToBinary(testNumber);
+        assertEquals(4, encodedBinary.length);
+        
+        assertEquals(testNumber, FieldValueEncoder.decodeIntegerFromBinary(encodedBinary));
     }
     
     public void testLongEncoding() {
         
         long testNumber = Long.MIN_VALUE + 100;
         
-        String encoded = FieldValueEncoder.encodeLong(testNumber);
+        String encoded = FieldValueEncoder.encodeLongToString(testNumber);
         
         assertEquals("0000000000000064", encoded);
         
-        long decoded = FieldValueEncoder.decodeLong(encoded);
+        long decoded = FieldValueEncoder.decodeLongFromString(encoded);
         
         assertEquals(testNumber, decoded);
         
+        byte[] encodedBinary = FieldValueEncoder.encodeLongToBinary(testNumber);
+        assertEquals(8, encodedBinary.length);
+        
+        assertEquals(testNumber, FieldValueEncoder.decodeLongFromBinary(encodedBinary));
     }
 }

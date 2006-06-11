@@ -173,6 +173,20 @@ public class URIUtil {
         
         return ancestorUris;
     }
+
+    /**
+     * Calculate URI depth
+     * @param uri
+     * @return
+     */
+    public static int getUriDepth(String uri) {
+        if ("/".equals(uri)) {
+            return 0;
+        }
+        int count = 0;
+        for (int index = 0; (index = uri.indexOf('/', index)) != -1; count++, index ++);
+        return count;
+    }
     
     /**
      * Expands '../' strings in resource URIs. 

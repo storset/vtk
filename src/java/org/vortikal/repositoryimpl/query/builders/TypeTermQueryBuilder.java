@@ -41,9 +41,12 @@ public class TypeTermQueryBuilder implements QueryBuilder {
             bq.add(new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm)),
                                 BooleanClause.Occur.SHOULD);
             List descendantNames = (List)typeDescendantNames.get(typeTerm);
-            for (Iterator i = descendantNames.iterator();i.hasNext();) {
-                Term t = new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, (String)i.next());
-                bq.add(new TermQuery(t),  BooleanClause.Occur.SHOULD);
+            
+            if (descendantNames != null) {
+                for (Iterator i = descendantNames.iterator();i.hasNext();) {
+                    Term t = new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, (String)i.next());
+                    bq.add(new TermQuery(t),  BooleanClause.Occur.SHOULD);
+                }
             }
             
             return bq;

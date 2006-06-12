@@ -37,14 +37,14 @@
                         </#if>
                       </#list>
                     <#else>
-                      <#if form.value?exists>
+                      <#if form.value?exists && item.property?exists>
                          <#if item.definition.type = 5>
-                	        <#assign value=item.property.principalValue.name>
+                	       <#assign value=item.property.principalValue.name>
                          <#else>
-                            <#assign value=item.property.value>
-                         </#if>
+                           <#assign value=item.property.value>
+                         </#if> 
                       </#if>
-                      <li><input type="text" name="value" value="${value}">
+                      <li><input type="text" name="value" value="${value?if_exists}">
                         </li>
                     </#if>
 

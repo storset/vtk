@@ -37,7 +37,14 @@
                         </#if>
                       </#list>
                     <#else>
-                      <li><input type="text" name="value" value="${form.value?if_exists}">
+                      <#if form.value?exists>
+                         <#if item.definition.type = 5>
+                	        <#assign value=item.property.principalValue.name>
+                         <#else>
+                            <#assign value=item.property.value>
+                         </#if>
+                      </#if>
+                      <li><input type="text" name="value" value="${value}">
                         </li>
                     </#if>
 
@@ -69,7 +76,12 @@
                   <#if item.property.values?size &lt; 0>
                   </#if>
                 <#else>
-                  ${(item.property.value?string)}
+                  <#-- type principal = 5 -->
+                  <#if item.definition.type = 5>
+                	 ${item.property.principalValue.name}
+                  <#else>
+                     ${(item.property.value?string)}
+                  </#if>
                 </#if>
               <#else>
                   Not set

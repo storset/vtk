@@ -44,7 +44,7 @@ import org.vortikal.util.cache.ReusableObjectCache;
  * so this should help in avoiding some of that overhead.
  * 
  * @see java.text.DateFormat
- * @see org.vortikal.util.cache.AbstractReusableObjectStackCache
+ * @see org.vortikal.util.cache.AbstractReusableObjectArrayStackCache
  * @see org.vortikal.util.cache.ReusableObjectCache
  * 
  * @author oyviste

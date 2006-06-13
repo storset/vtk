@@ -42,7 +42,7 @@ import junit.framework.TestCase;
 /**
  * <code>TestCase</code> for <code>SimpleDateFormatCache</code> 
  * (and indirectly for 
- * {@link org.vortikal.util.cache.AbstractReusableObjectStackCache})
+ * {@link org.vortikal.util.cache.AbstractReusableObjectArrayStackCache})
  *  
  * @author oyviste
  *

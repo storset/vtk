@@ -50,7 +50,8 @@ public interface ReusableObjectCache {
      * 
      * It should never return the same instance twice, if instances haven't 
      * been put back with {@link #putInstance(Object)}. Therefore, it should be
-     * safe to use from multithreaded code. 
+     * safe to use from multithreaded code for object types that aren't themselves
+     * thread safe.
      * 
      * @return An object instance
      */

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,14 +40,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.DOMOutputter;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.QueryException;
@@ -55,13 +53,14 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.query.PropertySortField;
-import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.SimpleSortField;
 import org.vortikal.repositoryimpl.query.query.SortField;
 import org.vortikal.repositoryimpl.query.query.SortFieldDirection;
 import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.cache.ReusableObjectCache;
+import org.vortikal.util.text.SimpleDateFormatCache;
 
 
 /**
@@ -77,6 +76,8 @@ public class XmlSearcher implements InitializingBean {
     private PropertyManager propertyManager;
     private SortParser sortParser = new SortParser();
     private int maxResults = 1000;
+    private ReusableObjectCache dateFormatCache = 
+                            new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss z");
 
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
@@ -230,8 +231,11 @@ public class XmlSearcher implements InitializingBean {
     private String valueToString(Value value) {
         switch (value.getType()) {
             case PropertyType.TYPE_DATE:
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-                return format.format(value.getDateValue());
+                DateFormat f = (DateFormat)this.dateFormatCache.getInstance();
+                String formattedDate = f.format(value.getDateValue());
+                this.dateFormatCache.putInstance(f);
+
+                return formattedDate;
             case PropertyType.TYPE_PRINCIPAL:
                 return value.getPrincipalValue().getName();
             default:

@@ -715,7 +715,14 @@ public class SchemaDocumentDefinition {
              */
             
             if (element == null) {
-               element = elementDefinition.getChild("simpleContent", XSD_NAMESPACE).getChild("extension", XSD_NAMESPACE);            	  
+                try {
+                    element = elementDefinition.getChild("simpleContent", 
+                            XSD_NAMESPACE).getChild("extension", XSD_NAMESPACE);
+                } catch (NullPointerException npe) {
+                    // For elements defined as empty, 'extension' is null
+                    logger.debug("Could not retrieve 'extension' value from element: "
+                            + elementDefinition.getAttributeValue("name"));
+                }
             }
             
             if (element == null) return;
@@ -723,14 +730,23 @@ public class SchemaDocumentDefinition {
     		
         for (Iterator it = element.getChildren().iterator(); it.hasNext();) {
             element = (Element) it.next();
-            String value = element.getAttributeValue("name");
+            String name = element.getAttributeValue("name");
+            String type = element.getAttributeValue("type"); 
             Element appInfo = element.getChild("annotation", XSD_NAMESPACE);
             
             if (appInfo == null) continue;	
             
             appInfo = appInfo.getChild("appinfo", XSD_NAMESPACE);            	
-            map.put(appInfo.getText(), value);            
-
+            map.put(appInfo.getText(), name);    
+            
+            // 'type' returns NULL for elements (in Schema) withtout type definition
+            if (type == null) {
+                logger.warn("XML element '" + name + "' has no type, probably " +
+                            "incorrect XML Schema definition syntax for the element");
+                continue;
+            }
+            
+            
             /* Check if the child is a SEQUENCE_ELEMENT */
             if (!element.getAttributeValue("type").equals("xsd:string")) {
                 element = findInElementList(element.getAttributeValue("type"),

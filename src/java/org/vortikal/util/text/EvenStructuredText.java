@@ -39,6 +39,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -46,6 +48,8 @@ import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
+
 
 /**
  * @author Even Halvorsen & Kristian Syversen
@@ -57,6 +61,13 @@ import org.jdom.output.XMLOutputter;
  */
 public final class EvenStructuredText implements StructuredText {
 
+
+    
+    //  sjekk org.vortikal.edit.xml.EditDocument  !!!
+    //  her blir JDOM'en lagret
+
+
+    
     public EvenStructuredText() {
         initTagNames();
     }
@@ -64,6 +75,8 @@ public final class EvenStructuredText implements StructuredText {
     public void setTextMappings(Map customMappings) {
         tagNames = customMappings;
     }
+    
+    private Log logger = LogFactory.getLog(this.getClass());
 
     protected String LINE_SEPARATOR = "\n";
     protected String SPACE = " ";
@@ -324,7 +337,6 @@ public final class EvenStructuredText implements StructuredText {
     
     
     public Element parseStructuredText(String text) {
-
         String structureText = unifyNewlines(text);
         structureText = removeStartingAndTrailingNewlines(structureText);
                 
@@ -363,7 +375,8 @@ public final class EvenStructuredText implements StructuredText {
     
     
     protected String unifyNewlines( String text ) {
-        text = text.replaceAll("(\r\n)(\n)", "\n");
+        text = text.replaceAll("\r\n", "\n");
+        text = text.replaceAll("\r", "\n");
         return text;
     }
     
@@ -372,22 +385,27 @@ public final class EvenStructuredText implements StructuredText {
         // Strip newlines at start of structuredText 
         // (will else incorrectly be saved as <newline/> 
         int startpos = 0;
-        while (NEWLINE == structureText.charAt(startpos) ) {
-            ++startpos;
-        }
-        // Strip newlines at end of structuredText 
-        // (will else incorrectly be displayed as '\'
-        while (NEWLINE == structureText.charAt(structureText.length()-1) ) {
-            structureText = structureText.substring(startpos, 
-                    structureText.length()-1);
-        }
-                
-        // Remove trailing ESCAPE
-        // (if text has trailing NEWLINE, an ESCAPE character may be added when
-        // converting from XML to structured text)
-        if (structureText.charAt(structureText.length()-1) == ESCAPE 
-                && structureText.charAt(structureText.length()-2) != ESCAPE) {
-            structureText = structureText.substring(0, structureText.length()-1);
+        try {
+            while (NEWLINE == structureText.charAt(startpos) ) {
+                ++startpos;
+            }
+            // Strip newlines at end of structuredText 
+            // (will else incorrectly be displayed as '\'
+            while (NEWLINE == structureText.charAt(structureText.length()-1) ) {
+                structureText = structureText.substring(startpos, 
+                        structureText.length()-1);
+            }
+                    
+            // Remove trailing ESCAPE
+            // (if text has trailing NEWLINE, an ESCAPE character may be added 
+            // when converting from XML to structured text)
+            if (structureText.charAt(structureText.length()-1) == ESCAPE 
+                    && structureText.charAt(structureText.length()-2) != ESCAPE) {
+                structureText = structureText.substring(0, structureText.length()-1);
+            }
+        } catch (Exception e) {
+            logger.warn(
+                    "Attempting to parse invalid or empty StructuredText string");
         }
                 
         return structureText;
@@ -606,7 +624,7 @@ public final class EvenStructuredText implements StructuredText {
     
     // helper method to remove ESCAPE characters from an substring
     // (when using escape character for signifficant symbols within a context)
-    private StringBuffer removeESCAPEchars(String text, int startPos, int endPos) {
+    private StringBuffer removeEscapeChars(String text, int startPos, int endPos) {
         StringBuffer substring = new StringBuffer( text.substring(startPos, endPos) );
         for (int i = 0; i < substring.length(); i++) {
             if (substring.charAt(i) == ESCAPE) {
@@ -627,7 +645,7 @@ public final class EvenStructuredText implements StructuredText {
             endPos = text.indexOf(BOLD_CLOSE, ++endPos);
         } while ( text.charAt(endPos-1) == ESCAPE );
                 
-        StringBuffer substring = removeESCAPEchars(text, startPos, endPos);
+        StringBuffer substring = removeEscapeChars(text, startPos, endPos);
         String boldText = substring.toString();
         
         Element bold = new Element(lookupTag("bold"));
@@ -648,7 +666,7 @@ public final class EvenStructuredText implements StructuredText {
             endPos = text.indexOf(ITALIC_CLOSE, ++endPos);
         } while ( text.charAt(endPos-1) == ESCAPE );
 
-        StringBuffer substring = removeESCAPEchars(text, startPos, endPos);
+        StringBuffer substring = removeEscapeChars(text, startPos, endPos);
         String italicText = substring.toString();
 
         Element italic = new Element(lookupTag("italic"));
@@ -738,7 +756,7 @@ public final class EvenStructuredText implements StructuredText {
             endPos = text.indexOf(SUB_END, ++endPos);
         } while ( text.charAt(endPos-1) == ESCAPE );
         
-        StringBuffer substring = removeESCAPEchars(text, startPos, endPos);
+        StringBuffer substring = removeEscapeChars(text, startPos, endPos);
         String subtext = substring.toString();
         
         Element sub = new Element(lookupTag("sub"));
@@ -758,7 +776,7 @@ public final class EvenStructuredText implements StructuredText {
             endPos = text.indexOf(SUPER_END, ++endPos);
         } while ( text.charAt(endPos-1) == ESCAPE );
         
-        StringBuffer substring = removeESCAPEchars(text, startPos, endPos);
+        StringBuffer substring = removeEscapeChars(text, startPos, endPos);
         String supertext = substring.toString();
         
         Element sup = new Element(lookupTag("sup"));
@@ -883,7 +901,7 @@ public final class EvenStructuredText implements StructuredText {
                     buffer.append(SUPER_END);
                 } else { // plaintextelement
                     throw new StructuredTextException(
-                            "Unexpected element name: " + tagName + " - KS");
+                            "Unexpected element name: " + tagName);
                 }
             } else if (object instanceof Text) { // plaintextelement
 
@@ -927,7 +945,8 @@ public final class EvenStructuredText implements StructuredText {
      * ESCAPE char must be added for:
      * - "\" (escaped backslash)
      * - "\\n" (escaped newline)
-     * - "\n-" ('-' as first char in paragraph or after newline)
+     * - "\n-" ('-' as first char in paragraph or after newline, which when 
+     *         escaped and parsed to XML will actually be its own element)
      * - "\n#" ('#' as first char in paragraph or after newline)
      */
     protected String addEscapeChar(String contents) {        
@@ -935,8 +954,9 @@ public final class EvenStructuredText implements StructuredText {
         /**
          * FIXME
          * Ikke sikkert dette er kompatibelt med andre versjoner av JDOM!
-         * (forutsetter at i det escapet char legges til foreldre-noden,
-         * se parseEscapeChar(), forblir dette et separat element i DOM-treet)
+         * (forutsetter at hver eneste escapet char legges til foreldre-noden,
+         * se parseEscapeChar(), som et _separat_ element i DOM-treet)
+         * Men fungerer i alle fall for/med gjeldende versjoner/biblioteker...
          */
         if ( contents.equals( String.valueOf(ESCAPE) )
                 || contents.equals( String.valueOf(NEWLINE) )
@@ -1133,7 +1153,7 @@ public final class EvenStructuredText implements StructuredText {
             
             // make structuredtext
             System.out.println("Converted back: ");
-            System.out.println("'"+structuredtext+"'");
+            System.out.println(structuredtext);
         } catch (Exception e) {
             e.printStackTrace();
         }  
@@ -1143,6 +1163,7 @@ public final class EvenStructuredText implements StructuredText {
     /*
      * Private helper methods used by test function main()
      */
+    
     private static void printUsageText(String parser) {
         System.out.print("\nUsage: \n" + 
                 parser + " <en|no> <textfile path> \n\t or:\n" +

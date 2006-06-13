@@ -52,41 +52,6 @@ public abstract class AbstractReusableObjectArrayStackCache
     private Object[] stack;
     
     /**
-     * @see org.vortikal.util.cache.ReusableObjectCache#getInstance()
-     */
-    public final synchronized Object getInstance() {
-        if (top == -1) {
-            // Cache empty
-            return createNewInstance();
-        } else {
-            // Return instance at the top
-            Object object = this.stack[top];
-            this.stack[top--] = null;
-            return object;
-        }
-    }
-
-    /**
-     * @see org.vortikal.util.cache.ReusableObjectCache#putInstance(Object)
-     */
-    public final synchronized void putInstance(Object object) {
-        if (top == stack.length-1) {
-            // Cache full
-            return;
-        } else {
-            // Add at the top
-            stack[++top] = object;
-        }
-    }
-    
-    /**
-     * @see org.vortikal.util.cache.ReusableObjectCache#size()
-     */
-    public final synchronized int size() {
-        return this.top + 1;
-    }
-    
-    /**
      * Construct an instance with a default maximum capacity
      *
      */
@@ -102,6 +67,48 @@ public abstract class AbstractReusableObjectArrayStackCache
         this.stack = new Object[capacity > 0 ? capacity : DEFAULT_CAPACITY];
     }
     
+    /**
+     * @see org.vortikal.util.cache.ReusableObjectCache#getInstance()
+     */
+    public final Object getInstance() {
+        Object object = pop();
+        return object != null ? object : createNewInstance();
+    }
+    
+    /**
+     * @see org.vortikal.util.cache.ReusableObjectCache#putInstance(Object)
+     */
+    public final void putInstance(Object object) {
+        push(object);
+    }
+    
+    /**
+     * @see org.vortikal.util.cache.ReusableObjectCache#size()
+     */
+    public final synchronized int size() {
+        return this.top + 1;
+    }
+    
+    private final synchronized Object pop() {
+        if (top == -1) {
+            return null;
+        } else {
+            // Return instance at the top
+            Object object = this.stack[top];
+            this.stack[top--] = null;
+            return object;
+        }
+    }
+
+    private final synchronized void push(Object object) {
+        if (top == stack.length-1) {
+            // Cache full
+            return;
+        } else {
+            // Add at the top
+            stack[++top] = object;
+        }
+    }
     
     /**
      * Create a new instance of the desired type. Must be overridden by

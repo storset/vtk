@@ -106,7 +106,6 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
                 Value[] values = new Value[list.size()];
                 for (int i = 0; i < list.size(); i++) {
                     org.jdom.Content c = (org.jdom.Content) list.get(i);
-                    System.out.println("__content value: " + c);
                     Value value = null;
                     if (this.valueFactory != null) {
                         int type = property.getDefinition().getType();

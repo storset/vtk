@@ -51,7 +51,8 @@ import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
 
 /**
- * <p>Manager that takes care of authorizing a principal for a specific authorization level.
+ * <p>Manager that takes care of authorizing a principal for a
+ * specific authorization level.
  * XXX: Extract as interface in 'repository' package
  */
 public class AuthorizationManager {
@@ -94,7 +95,9 @@ public class AuthorizationManager {
 
     public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
         if (!roleManager.hasRole(principal, RoleManager.ROOT)) {
-            throw new AuthorizationException("Not authorized to perform repository administration");
+            throw new AuthorizationException(
+                "Principal '" + principal
+                + "' not authorized to perform repository administration");
         }
     }
     
@@ -149,7 +152,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeReadProcessed(String uri, Principal principal) 
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException,
+        ResourceLockedException, IOException {
         ResourceImpl resource = this.dao.load(uri);
 
         if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
@@ -172,7 +176,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeRead(String uri, Principal principal) 
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException,
+        ResourceLockedException, IOException {
 
         ResourceImpl resource = this.dao.load(uri);
 
@@ -196,8 +201,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeCreate(String uri, Principal principal)
-    throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-    ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, ReadOnlyException, 
+        ResourceLockedException, IOException {
 
         checkReadOnly(principal);
 
@@ -224,8 +229,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeWrite(String uri, Principal principal)
-    throws AuthenticationException, AuthorizationException, ReadOnlyException,
-    ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException {
 
         checkReadOnly(principal);
 
@@ -252,8 +257,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeWriteAcl(String uri, Principal principal)
-    throws AuthenticationException, AuthorizationException, ReadOnlyException,
-    ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException {
 
         checkReadOnly(principal);
         
@@ -279,8 +284,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeUnlock(String uri, Principal principal) 
-    throws AuthenticationException, AuthorizationException, ReadOnlyException,
-    ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException {
 
         checkReadOnly(principal);
         
@@ -308,8 +313,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizeDelete(String uri, Principal principal) 
-    throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-    ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, ReadOnlyException, 
+        ResourceLockedException, IOException {
 
         checkReadOnly(principal);
 
@@ -334,19 +339,26 @@ public class AuthorizationManager {
     /**
      * All of:
      * <ul>
-     *   <li>Action write
-     *   <li>Role ROOT or ADMIN
+     *   <li>Action WRITE
+     *   <li>Action ALL or role ROOT
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizePropertyEditAdminRole(String uri, Principal principal) 
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
-
-        if (!(this.roleManager.hasRole(principal, RoleManager.ROOT) ||
-                this.roleManager.hasRole(principal, RoleManager.ADMIN)))
-            throw new AuthorizationException();
+        throws AuthenticationException, AuthorizationException,
+        ResourceLockedException, IOException {
+        if (principal == null) {
+            throw new AuthorizationException(
+                "NULL principal not authorized to edit properties using admin privilege ");
+        }
         
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT)) {
+            return;
+        }
+
+        Resource resource = this.dao.load(uri);
+        aclAuthorize(principal, resource, new String[] {Privilege.ALL});
         authorizeWrite(uri, principal);
         
     }
@@ -362,7 +374,8 @@ public class AuthorizationManager {
      * @throws IOException
      */
     public void authorizePropertyEditRootRole(String uri, Principal principal)
-    throws AuthenticationException, AuthorizationException, ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException,
+        ResourceLockedException, IOException {
 
         if (!this.roleManager.hasRole(principal, RoleManager.ROOT))
             throw new AuthorizationException();
@@ -374,17 +387,17 @@ public class AuthorizationManager {
     /**
      * All of:
      * <ul>
-     *   <li>READ action on source tree
-     *   <li>CREATE action on destination
-     *   <li>if overwrite, DELETE action on dest
+     *   <li>Action READ on source tree
+     *   <li>Action CREATE on destination
+     *   <li>if overwrite, action DELETE on dest
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeCopy(String srcUri, String destUri, 
             Principal principal, boolean deleteDestination) 
-    throws AuthenticationException, AuthorizationException, ReadOnlyException,
-    ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException {
 
         checkReadOnly(principal);
 
@@ -409,15 +422,15 @@ public class AuthorizationManager {
      * All of:
      * <ul>
      *   <li>COPY action
-     *   <li>DELETE action on source
+     *   <li>Action DELETE on source
      * </ul>
      * @return is authorized
      * @throws IOException
      */
     public void authorizeMove(String srcUri, String destUri,
             Principal principal, boolean deleteDestination) 
-    throws AuthenticationException, AuthorizationException, ReadOnlyException,
-    ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException {
 
         checkReadOnly(principal);
 
@@ -448,7 +461,7 @@ public class AuthorizationManager {
      * identifier and the user is a member of that group
      **/
     private void aclAuthorize(Principal principal, Resource resource, String[] privileges) 
-    throws AuthenticationException, AuthorizationException {
+        throws AuthenticationException, AuthorizationException {
         
         Acl acl = resource.getAcl();
 
@@ -480,7 +493,8 @@ public class AuthorizationManager {
             }
 
             // Condition 3:
-            if (resource.getOwner().equals(principal) && principalSet.contains(PseudoPrincipal.OWNER)) {
+            if (resource.getOwner().equals(principal)
+                && principalSet.contains(PseudoPrincipal.OWNER)) {
                 return;
             }
 
@@ -535,10 +549,6 @@ public class AuthorizationManager {
         this.dao = dao;
     }
 
-
-    /**
-     * @param lockManager The lockManager to set.
-     */
     public void setLockManager(LockManager lockManager) {
         this.lockManager = lockManager;
     }

@@ -109,13 +109,13 @@ public class CopyController extends AbstractWebdavController {
          
             boolean overwrite = false;
             String overwriteHeader = request.getHeader("Overwrite");
-            if (overwriteHeader != null && overwriteHeader.equals("T")) {
+            if ("T".equals(overwriteHeader)) {
                 overwrite = true;
             }
          
             boolean preserveACL = false;
             String preserveACLHeader = request.getHeader(PRESERVE_ACL_HEADER);
-            if (preserveACLHeader != null && preserveACLHeader.equals("T")) {
+            if ("T".equals(preserveACLHeader)) {
                 preserveACL = true;
             }
 

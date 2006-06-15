@@ -65,7 +65,7 @@ public class AclImpl implements Acl {
     }
 
     public boolean hasPrivilege(String privilege, Principal principal) {
-        Set actionSet = (Set)this.actionSets.get(privilege);
+        Set actionSet = (Set) this.actionSets.get(privilege);
         
         if (actionSet != null && actionSet.contains(principal)) 
             return true;
@@ -78,7 +78,11 @@ public class AclImpl implements Acl {
     }
 
     public Set getPrincipalSet(String action) {
-        return (Set) actionSets.get(action);
+        Set set = (Set) actionSets.get(action);
+        if (set == null) {
+            return new HashSet();
+        }
+        return set;
     }
 
     public void clear() {
@@ -205,7 +209,7 @@ public class AclImpl implements Acl {
                 actions.add(action);
         }
         
-        return (String[])actions.toArray(new String[actions.size()]);
+        return (String[]) actions.toArray(new String[actions.size()]);
     }
 
 

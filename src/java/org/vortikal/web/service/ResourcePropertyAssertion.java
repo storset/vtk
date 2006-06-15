@@ -113,9 +113,6 @@ public class ResourcePropertyAssertion
                         || (this.value != null && this.value.equals(other.getValue()));
                     
                 }
-
-
-
                 if (!this.invert && !other.invert)
                     return  !same;
                 else if (this.invert != other.invert)
@@ -144,7 +141,9 @@ public class ResourcePropertyAssertion
 
     public boolean matches(Resource resource, Principal principal) {
 
+
         if (resource != null) {
+
             Property property = resource.getProperty(namespace, name);
 
             if (this.checkExistenceOnly) {

@@ -31,18 +31,18 @@
 package org.vortikal.repositoryimpl.query.parser;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.DOMOutputter;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Property;
@@ -61,6 +61,8 @@ import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.cache.ReusableObjectCache;
 import org.vortikal.util.text.SimpleDateFormatCache;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 /**
@@ -123,10 +125,17 @@ public class XmlSearcher implements InitializingBean {
         return executeQuery(token, query, sort, maxResults);
     }
 
-
-    public org.w3c.dom.NodeList executeQuery(String token, String query, String sort,
-                                             String maxResults) throws QueryException {
-        Element rootElement = null;
+    public org.w3c.dom.NodeList executeQuery(String token, String query, 
+                String sort, String maxResults) throws QueryException {
+        
+        Document doc = null;
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            doc = builder.newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new QueryException(e.getMessage());
+        }
+        
         int limit = this.maxResults;
         try {
             limit = Integer.parseInt(maxResults);
@@ -134,100 +143,119 @@ public class XmlSearcher implements InitializingBean {
         if (limit > this.maxResults) {
             limit = this.maxResults;
         }
-
+        
         try {
             Sorting sorting = this.sortParser.parseSortString(sort);
             ResultSet rs = this.queryManager.execute(token, query, sorting, limit);
-            rootElement = resultSetToElement(rs);
+            
+            addResultSetToDocument(rs, doc);
         } catch (Exception e) {
             logger.warn("Error occurred while performing query: '" + query + "'", e);
-            rootElement = new Element("error");
-            rootElement.setAttribute("exception", e.getClass().getName());
-            rootElement.setAttribute("query", query);
-            rootElement.setAttribute("sort", sort);
-            String msg = e.getMessage();
-            if (msg == null) msg = "No message";
-            rootElement.setText(msg);
+            
+            Element errorElement = doc.createElement("error");
+            doc.appendChild(errorElement);
+            errorElement.setAttribute("exception", e.getClass().getName());
+            errorElement.setAttribute("query", query);
+            errorElement.setAttribute("sort", sort);
+            String msg = e.getMessage() != null ? e.getMessage() : "No message";
+            errorElement.setTextContent(msg);
         }
-        Document doc = new Document(rootElement);
-        return getW3CNodeList(doc);
+        
+        return doc.getDocumentElement().getChildNodes();
     }
-
-
-    private Element resultSetToElement(ResultSet resultSet) {
+  
+    private void addResultSetToDocument(ResultSet rs, Document doc) {
         long start = System.currentTimeMillis();
-        Element resultElement = new Element("results");
-        resultElement.setAttribute("size", String.valueOf(resultSet.getSize()));
-        for (Iterator i = resultSet.iterator(); i.hasNext();) {
-            PropertySet propertySet = (PropertySet) i.next();
-            resultElement.addContent(propertySetToElement(propertySet));
+        
+        Element resultElement = doc.createElement("results");
+        doc.appendChild(resultElement);
+        resultElement.setAttribute("size", String.valueOf(rs.getSize()));
+        for (Iterator i = rs.iterator(); i.hasNext();) {
+            PropertySet propSet = (PropertySet)i.next();
+            addPropertySetToResults(doc, resultElement, propSet);
         }
+        
         if (logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
             logger.debug("Building XML result set took " + (now - start) + " ms");
         }
-        return resultElement;
-    }
-
-
-    private Element propertySetToElement(PropertySet propertySet) {
-        Element propertySetElement = new Element("resource");
-
-        Element uri = new Element("property").setAttribute("name", "uri")
-            .addContent(new Element("value").setText(propertySet.getURI()));
-        Element name = new Element("property").setAttribute("name", "name")
-            .addContent(new Element("value").setText(propertySet.getName()));
-        Element type = new Element("property").setAttribute("name", "type")
-            .addContent(new Element("value").setText(propertySet.getResourceType()));
-        propertySetElement.addContent(uri).addContent(name).addContent(type);
-
-        for (Iterator i = propertySet.getProperties().iterator(); i.hasNext();) {
-            Property property = (Property) i.next();
-            Element propertyElement = propertyToElement(property);
-            if (propertyElement != null) {
-                propertySetElement.addContent(propertyElement);
-            }
-        }
-        return propertySetElement;
     }
     
-
-    private Element propertyToElement(Property property) {
-        if (property.getDefinition() == null) {
-            return null;
+    private void addPropertySetToResults(Document doc, Element resultsElement, 
+                            PropertySet propSet) {
+        
+        Element propertySetElement = doc.createElement("resource");
+        resultsElement.appendChild(propertySetElement);
+        
+        Element uri = doc.createElement("property");
+        uri.setAttribute("name", "uri");
+        Element uriValue = doc.createElement("value");
+        uriValue.setTextContent(propSet.getURI());
+        uri.appendChild(uriValue);
+        
+        Element name = doc.createElement("property");
+        name.setAttribute("name", "name");
+        Element nameValue = doc.createElement("value");
+        nameValue.setTextContent(propSet.getName());
+        name.appendChild(nameValue);
+        
+        Element type = doc.createElement("property");
+        type.setAttribute("name", "type");
+        Element typeValue = doc.createElement("value");
+        typeValue.setTextContent(propSet.getResourceType());
+        type.appendChild(typeValue);
+        
+        propertySetElement.appendChild(uri);
+        propertySetElement.appendChild(name);
+        propertySetElement.appendChild(type);
+        
+        for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
+            Property prop = (Property) i.next();
+            addPropertyToPropertySetElement(doc, propertySetElement, prop);
         }
-
-        Element propertyElement = new Element("property");
-        String namespaceUri = property.getNamespace().getUri();
+        
+    }
+    
+    private void addPropertyToPropertySetElement(Document doc, Element propSetElement,
+            Property prop) {
+        
+        if (prop.getDefinition() == null) {
+            return;
+        }
+        
+        Element propertyElement = doc.createElement("property");
+        
+        String namespaceUri = prop.getNamespace().getUri();
         if (namespaceUri != null) {
             propertyElement.setAttribute("namespace", namespaceUri);
         }
-        String prefix = property.getNamespace().getPrefix();
+        
+        String prefix = prop.getNamespace().getPrefix();
         if (prefix != null) {
-            propertyElement.setAttribute("name", prefix + ":" + property.getName());
+            propertyElement.setAttribute("name", prefix + ":" + prop.getName());
         } else {
-            propertyElement.setAttribute("name", property.getName());
+            propertyElement.setAttribute("name", prop.getName());
         }
         
-        if (property.getDefinition().isMultiple()) {
-            Element valuesElement = new Element("values");
-            Value[] values = property.getValues();
-            for (int i = 0; i < values.length; i++) {
-                Element valueElement = new Element("value");
-                valueElement.setText(valueToString(values[i]));
-                valuesElement.addContent(valueElement);
+        if (prop.getDefinition().isMultiple()) {
+            Element valuesElement = doc.createElement("values");
+            Value[] values = prop.getValues();
+            for (int i=0; i<values.length; i++) {
+                Element valueElement = doc.createElement("value");
+                valueElement.setTextContent(valueToString(values[i]));
+                valuesElement.appendChild(valueElement);
             }
-            propertyElement.addContent(valuesElement);
+            propertyElement.appendChild(valuesElement);
         } else {
-            Element valueElement = new Element("value");
-            Value value = property.getValue();
-            valueElement.setText(valueToString(value));
-            propertyElement.addContent(valueElement);
+            Element valueElement = doc.createElement("value");
+            Value value = prop.getValue();
+            valueElement.setTextContent(valueToString(value));
+            propertyElement.appendChild(valueElement);
         }
-        return propertyElement;
+        
+        propSetElement.appendChild(propertyElement);        
     }
     
-
     private String valueToString(Value value) {
         switch (value.getType()) {
             case PropertyType.TYPE_DATE:
@@ -241,20 +269,6 @@ public class XmlSearcher implements InitializingBean {
             default:
                 return value.toString();
         }
-    }
-    
-
-    
-    private org.w3c.dom.NodeList getW3CNodeList(org.jdom.Document jdomDocument) {
-        org.w3c.dom.Document domDoc = null;
-
-        try {
-            DOMOutputter oupt = new DOMOutputter();
-            domDoc = oupt.output(jdomDocument);
-        }
-        catch (Exception e) {}
-        
-        return domDoc != null ? domDoc.getDocumentElement().getChildNodes() : null;
     }
 
     private class SortParser {
@@ -326,7 +340,5 @@ public class XmlSearcher implements InitializingBean {
             return new SortingImpl(result);
         }
     }
-    
-
 
 }

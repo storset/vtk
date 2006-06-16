@@ -63,6 +63,7 @@ import org.vortikal.util.cache.ReusableObjectCache;
 import org.vortikal.util.text.SimpleDateFormatCache;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 
 /**
@@ -158,7 +159,9 @@ public class XmlSearcher implements InitializingBean {
             errorElement.setAttribute("query", query);
             errorElement.setAttribute("sort", sort);
             String msg = e.getMessage() != null ? e.getMessage() : "No message";
-            errorElement.setTextContent(msg);
+            Text text = doc.createTextNode(msg);
+            errorElement.appendChild(text);
+            //errorElement.setTextContent(msg);
         }
         
         return doc.getDocumentElement().getChildNodes();
@@ -190,19 +193,24 @@ public class XmlSearcher implements InitializingBean {
         Element uri = doc.createElement("property");
         uri.setAttribute("name", "uri");
         Element uriValue = doc.createElement("value");
-        uriValue.setTextContent(propSet.getURI());
+        Text text = doc.createTextNode(propSet.getURI());
+        uriValue.appendChild(text);
         uri.appendChild(uriValue);
         
         Element name = doc.createElement("property");
         name.setAttribute("name", "name");
         Element nameValue = doc.createElement("value");
-        nameValue.setTextContent(propSet.getName());
+        text = doc.createTextNode(propSet.getName());
+        //nameValue.setTextContent(propSet.getName());
+        nameValue.appendChild(text);
         name.appendChild(nameValue);
         
         Element type = doc.createElement("property");
         type.setAttribute("name", "type");
         Element typeValue = doc.createElement("value");
-        typeValue.setTextContent(propSet.getResourceType());
+        text = doc.createTextNode(propSet.getResourceType());
+        //typeValue.setTextContent(propSet.getResourceType());
+        typeValue.appendChild(text);
         type.appendChild(typeValue);
         
         propertySetElement.appendChild(uri);
@@ -242,14 +250,18 @@ public class XmlSearcher implements InitializingBean {
             Value[] values = prop.getValues();
             for (int i=0; i<values.length; i++) {
                 Element valueElement = doc.createElement("value");
-                valueElement.setTextContent(valueToString(values[i]));
+                Text text = doc.createTextNode(valueToString(values[i]));
+                //valueElement.setTextContent(valueToString(values[i]));
+                valueElement.appendChild(text);
                 valuesElement.appendChild(valueElement);
             }
             propertyElement.appendChild(valuesElement);
         } else {
             Element valueElement = doc.createElement("value");
             Value value = prop.getValue();
-            valueElement.setTextContent(valueToString(value));
+            Text text = doc.createTextNode(valueToString(value));
+            //valueElement.setTextContent(valueToString(value));
+            valueElement.appendChild(text);
             propertyElement.appendChild(valueElement);
         }
         

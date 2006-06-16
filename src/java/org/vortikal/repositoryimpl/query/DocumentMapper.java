@@ -112,25 +112,25 @@ public class DocumentMapper implements InitializingBean {
         Document doc = new Document();
         
         // Special fields
-        // Uri
+        // uri
         Field uriField = FieldValueMapper.getStoredKeywordField(URI_FIELD_NAME, propSet.getURI());
         doc.add(uriField);
         
-        // Uri depth (not stored, but indexed for use in searches)
+        // uriDepth (not stored, but indexed for use in searches)
         int uriDepth = URIUtil.getUriDepth(propSet.getURI());
         Field uriDepthField = FieldValueMapper.getKeywordField(URI_DEPTH_FIELD_NAME, uriDepth);
         doc.add(uriDepthField);
         
-        // Name
+        // name
         Field nameField = FieldValueMapper.getStoredKeywordField(NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
         
-        // ResourceType
+        // resourceType
         Field resourceTypeField =
             FieldValueMapper.getStoredKeywordField(RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
         doc.add(resourceTypeField);
         
-        // ANCESTOR_IDS (index system field)
+        // ANCESTORIDS (index system field)
         Field ancestorIdsField = 
             FieldValueMapper.getUnencodedMultiValueFieldFromIntegers(ANCESTORIDS_FIELD_NAME, 
                                                                     propSet.getAncestorIds());

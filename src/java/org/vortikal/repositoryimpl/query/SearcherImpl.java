@@ -177,7 +177,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
             this.queryBuilderFactory.getBuilder(query).buildQuery();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Built lucene query '" + q + "' from query" + query.dump(""));
+            logger.debug("Built lucene query '" + q + "' from query " + query.dump(""));
         }
 
         IndexSearcher searcher = null;

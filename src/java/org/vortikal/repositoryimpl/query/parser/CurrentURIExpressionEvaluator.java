@@ -31,19 +31,12 @@
 package org.vortikal.repositoryimpl.query.parser;
 
 
-
-
-
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.RequestContext;
-import org.apache.commons.logging.LogFactory;
 
 
 public class CurrentURIExpressionEvaluator implements ExpressionEvaluator {

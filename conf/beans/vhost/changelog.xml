@@ -28,34 +28,45 @@
     class="org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifierImpl">
     <property name="changeFetcher" ref="repository.dbResourceChangeFetcher"/>
   </bean>
+
+  <!-- Simple trigger bean for pollChanges() in 
+       'repository.resourceChangeNotifier' -->
+  <bean id="repository.indexUpdateTrigger" 
+        class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    
+    <property name="targetMethodName" value="pollChanges"/>
+    <property name="targetObject" ref="repository.resourceChangeNotifier"/>
+    <property name="triggerThreadName" value="indexupdater"/>
+    <property name="startDelay" value="20000"/>
+    <property name="repeatInterval" value="5000"/>
+    <property name="startTriggerAfterInitialization" value="true"/>
+    <property name="abortTriggerOnTargetMethodException" value="false"/>
+
+  </bean>
   
 
-  <!-- Quartz scheduler factory for resourceChangeNotifier -->
-  <bean id="repository.DMSSchedulerfactory" 
-        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    <property name="triggers">
-      <list>
-        <!-- Triggers -->
-        <!-- Trigger: poll resource changes from Vortex -->
-        <bean id="repository.pollChangesTrigger"
-          class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-          <property name="jobDetail">
-            <bean id="repository.pollChangesJobDetail"
-                  class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-              <property name="group" value="repository" />
-              <property name="targetObject" ref="repository.resourceChangeNotifier" />
-              <property name="targetMethod" value="pollChanges" />
-              <property name="concurrent" value="false" />
-            </bean>
-          </property>
-          <!-- A start delay is necessary to let all interested observers get a chance
-               to register themselves before polling starts. -->
-          <property name="startDelay" value="20000"/>
-          <property name="repeatInterval" value="5000"/>
-        </bean>
-      </list>
-    </property>
-  </bean>
+<!-- Quartz scheduler factory for resourceChangeNotifier -->
+<!--   <bean id="repository.DMSSchedulerfactory"  -->
+<!--         class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
+<!--     <property name="triggers"> -->
+<!--       <list> -->
+<!--         <bean id="repository.pollChangesTrigger" -->
+<!--           class="org.springframework.scheduling.quartz.SimpleTriggerBean"> -->
+<!--           <property name="jobDetail"> -->
+<!--             <bean id="repository.pollChangesJobDetail" -->
+<!--                   class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean"> -->
+<!--               <property name="group" value="repository" /> -->
+<!--               <property name="targetObject" ref="repository.resourceChangeNotifier" /> -->
+<!--               <property name="targetMethod" value="pollChanges" /> -->
+<!--               <property name="concurrent" value="false" /> -->
+<!--             </bean> -->
+<!--           </property> -->
+<!--           <property name="startDelay" value="20000"/> -->
+<!--           <property name="repeatInterval" value="5000"/> -->
+<!--         </bean> -->
+<!--       </list> -->
+<!--     </property> -->
+<!--   </bean> -->
 
 
 </beans>

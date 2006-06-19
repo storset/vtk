@@ -692,7 +692,7 @@ public class SchemaDocumentDefinition {
         }
         return e;
     }
-
+    
     
     /**
      * Recursive helper method for <code>getTextMappings</code>, picking up the mappings.
@@ -704,37 +704,49 @@ public class SchemaDocumentDefinition {
          * Type definition elements for texthack elements must be defined with
          * choice or sequence elements
          */
-
-    	Element element = elementDefinition.getChild("choice", XSD_NAMESPACE);
+        Element element = elementDefinition.getChild("choice", XSD_NAMESPACE);
         if (element == null) {
-        	element = elementDefinition.getChild("sequence", XSD_NAMESPACE);
+                element = elementDefinition.getChild("sequence", XSD_NAMESPACE);
             /*
              * To make it possible to add xml:space
              * attribute we must check for simpleContent
              * as well. simpleContent = xsd:string Any
              * other construct will justf return...
              */
-            
             if (element == null) {
-               element = elementDefinition.getChild("simpleContent", XSD_NAMESPACE).getChild("extension", XSD_NAMESPACE);            	  
+                try {
+                    element = elementDefinition.getChild("simpleContent", 
+                            XSD_NAMESPACE).getChild("extension", XSD_NAMESPACE);
+                } catch (NullPointerException npe) {
+                    // For elements defined as empty, 'extension' is null
+                    logger.debug("Could not retrieve 'extension' value from element: "
+                            + elementDefinition.getAttributeValue("name"));
+                }
             }
-            
             if (element == null) return;
         }
-    		
+                
         for (Iterator it = element.getChildren().iterator(); it.hasNext();) {
             element = (Element) it.next();
-            String value = element.getAttributeValue("name");
+            String name = element.getAttributeValue("name");
+            String type = element.getAttributeValue("type"); 
             Element appInfo = element.getChild("annotation", XSD_NAMESPACE);
             
-            if (appInfo == null) continue;	
+            if (appInfo == null) continue;      
             
-            appInfo = appInfo.getChild("appinfo", XSD_NAMESPACE);            	
-            map.put(appInfo.getText(), value);            
-
+            appInfo = appInfo.getChild("appinfo", XSD_NAMESPACE);               
+            map.put(appInfo.getText(), name);    
+            
+            // 'type' returns NULL for elements (in Schema) withtout type definition
+            if (type == null) {
+                logger.warn("XML element '" + name + "' has no type, probably " +
+                            "incorrect XML Schema definition syntax for the element");
+                continue;
+            }
+                        
             /* Check if the child is a SEQUENCE_ELEMENT */
-            if (!element.getAttributeValue("type").equals("xsd:string")) {
-                element = findInElementList(element.getAttributeValue("type"),
+            if (!"xsd:string".equals(type)) {
+                element = findInElementList(type,
                         schema.getChildren("complexType", XSD_NAMESPACE));
                 getTextMappings(map, element);
             }

@@ -71,10 +71,11 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  */
 public class PutController extends AbstractWebdavController {
 
+	//supportIfHeaders defaults to true since we are in the webdav package
+	private boolean supportIfHeaders = true;
     private long maxUploadSize = -1;
     private String viewName = "PUT";
     private RequestFilter[] requestFilters;
-    
 
     public void setMaxUploadSize(long maxUploadSize) {
         if (maxUploadSize == 0) {
@@ -96,7 +97,9 @@ public class PutController extends AbstractWebdavController {
         this.requestFilters = requestFilters;
     }
     
-
+	public void setSupportIfHeaders(boolean supportIfHeaders) {
+		this.supportIfHeaders = supportIfHeaders;
+	}
 
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
@@ -131,7 +134,9 @@ public class PutController extends AbstractWebdavController {
                 resource = repository.retrieve(token, uri, false);
                 ifHeader = new IfHeaderImpl(request);
 
-                verifyIfHeader(resource, true);
+                if (supportIfHeaders) {
+                	verifyIfHeader(resource, true);
+                }
                 
                 /* if lock-null resource, act as if it did not exist.. */
                 if (resource.getContentLength() == 0 &&
@@ -273,7 +278,6 @@ public class PutController extends AbstractWebdavController {
         return new ModelAndView("PUT", model);
     }
    
-
    
     protected String getContentType(HttpServletRequest request, Resource resource) {
         String contentType = HttpUtil.getContentType(request);

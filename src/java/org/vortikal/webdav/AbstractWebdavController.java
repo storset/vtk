@@ -72,8 +72,8 @@ public abstract class AbstractWebdavController implements Controller {
         this.repository = repository;
     }
     
-    public void setSupportIfHeaders(boolean ignoreIfHeaderVerify) {
-        this.supportIfHeaders = ignoreIfHeaderVerify;
+    public void setSupportIfHeaders(boolean supportIfHeaders) {
+        this.supportIfHeaders = supportIfHeaders;
     }
     
 

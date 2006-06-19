@@ -703,28 +703,27 @@ public class SchemaDocumentDefinition {
          * Type definition elements for texthack elements must be defined with
          * choice or sequence elements
          */
-
     	Element element = elementDefinition.getChild("choice", XSD_NAMESPACE);
         if (element == null) {
-        	element = elementDefinition.getChild("sequence", XSD_NAMESPACE);
+            element = elementDefinition.getChild("sequence", XSD_NAMESPACE);
             /*
              * To make it possible to add xml:space
              * attribute we must check for simpleContent
              * as well. simpleContent = xsd:string Any
              * other construct will justf return...
              */
-            
             if (element == null) {
-                try {
-                    element = elementDefinition.getChild("simpleContent", 
-                            XSD_NAMESPACE).getChild("extension", XSD_NAMESPACE);
-                } catch (NullPointerException npe) {
-                    // For elements defined as empty, 'extension' is null
-                    logger.debug("Could not retrieve 'extension' value from element: "
-                            + elementDefinition.getAttributeValue("name"));
+                Element simpleContent = elementDefinition.getChild("simpleContent", 
+                        XSD_NAMESPACE);
+                if (simpleContent == null) {
+                    logger.debug("Element '"
+                            + elementDefinition.getAttributeValue("name")
+                            + "' is defined in Schema to have null content");
+                    return;
+                } else {
+                    element = simpleContent.getChild("extension", XSD_NAMESPACE);
                 }
             }
-            
             if (element == null) return;
         }
     		
@@ -745,11 +744,10 @@ public class SchemaDocumentDefinition {
                             "incorrect XML Schema definition syntax for the element");
                 continue;
             }
-            
-            
+                        
             /* Check if the child is a SEQUENCE_ELEMENT */
-            if (!element.getAttributeValue("type").equals("xsd:string")) {
-                element = findInElementList(element.getAttributeValue("type"),
+            if (!"xsd:string".equals(type)) {
+                element = findInElementList(type,
                         schema.getChildren("complexType", XSD_NAMESPACE));
                 getTextMappings(map, element);
             }

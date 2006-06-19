@@ -49,8 +49,6 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-
-
 /**
  * @author Even Halvorsen & Kristian Syversen
  *         (based on guru Gorm A. Paulsen's previous version
@@ -60,13 +58,6 @@ import org.jdom.output.XMLOutputter;
  * and methods for generating structured text from an XML-structure.
  */
 public final class EvenStructuredText implements StructuredText {
-
-
-    
-    //  sjekk org.vortikal.edit.xml.EditDocument  !!!
-    //  her blir JDOM'en lagret
-
-
     
     public EvenStructuredText() {
         initTagNames();
@@ -269,8 +260,8 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
-    // sjekker om visse spesialtegn dukker opp f�r sluttposisjonen til elementet
-    // som sjekkes.
+    // check if certain speacial characters occur before the end pos of the
+    // current element
     protected boolean endOfBlockLevelElement(String text, int pos, int endPos) {
         int paragraphPos = text.indexOf(PARAGRAPH_START, pos);
         if (paragraphPos > 0 && paragraphPos < endPos)
@@ -790,9 +781,9 @@ public final class EvenStructuredText implements StructuredText {
     protected int parsePlainText(String text, int pos, Element parent) {
         int startPos = pos;
 
-        // parse ett og ett tegn til man treffer et spesialtegn
+        // parse single char until one with a special meaning occurs
         while (pos < text.length()) {
-            pos++; // f�rste posisjon er allerede sjekket
+            pos++; // first position is already examined
                         
             if ( escapeAtPos(text, pos)
                     || paragraphAtPos(text, pos) 
@@ -999,7 +990,7 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
-    // Ymse metoder
+    // Various helper methods
     private String lookupTag(String tagName) {
         String tag = (String) tagNames.get(tagName);
         if (tag == null)
@@ -1117,7 +1108,8 @@ public final class EvenStructuredText implements StructuredText {
                 
                 String text = new String(buffer);
                 
-                System.out.println("Orginal tekst: " + "\n'" + text + "'");
+                System.out.println("Orginal tekst: ");
+                System.out.println(text);
                 
                 Element root = parser.parseStructuredText(text);
                 doc = new Document(root); 

@@ -46,15 +46,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
-import org.vortikal.repositoryimpl.AuthorizationManager;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
@@ -777,12 +780,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
         this.sqlMapClient.startBatch();
         for (Iterator i = actions.iterator(); i.hasNext();) {
-            String action = (String) i.next();
+            RepositoryAction action = (RepositoryAction) i.next();
+            String actionName = Privilege.getActionName(action);
             
             for (Iterator j = newAcl.getPrincipalSet(action).iterator(); j.hasNext();) {
                 Principal p = (Principal) j.next();
 
-                Integer actionID = (Integer) actionTypes.get(action);
+                Integer actionID = (Integer) actionTypes.get(actionName);
                 if (actionID == null) {
                     throw new SQLException("insertAcl(): Unable to "
                                            + "find id for action '" + action + "'");
@@ -978,7 +982,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             Map map = (Map) i.next();
 
             Integer resourceId = (Integer) map.get("resourceId");
-            String action = (String) map.get("action");
+            String privilege = (String) map.get("action");
 
             AclImpl acl = (AclImpl) resultMap.get(resourceId);
             
@@ -997,10 +1001,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 p = PseudoPrincipal.getPrincipal(name);
             else
                 p = principalManager.getUserPrincipal(name);
+            RepositoryAction action = Privilege.getActionByName(privilege);
             acl.addEntry(action, p);
         }
         return resultMap;
     }
+    
+
     
 
     private void storeLock(ResourceImpl r) throws SQLException {

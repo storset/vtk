@@ -150,7 +150,7 @@
   <bean id="bufferedImageContentFactory" class="org.vortikal.repositoryimpl.content.BufferedImageContentFactory" />
 
 
-  <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManager">
+  <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManagerImpl">
     <property name="readOnly" value="${repositoryReadOnly}" />
     <property name="principalManager" ref="principalManager" />
     <property name="lockManager" ref="lockManager" />

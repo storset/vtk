@@ -30,9 +30,6 @@
  */
 package org.vortikal.repositoryimpl;
 
-
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,19 +39,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
@@ -402,6 +404,10 @@ public class PropertyManagerImpl implements PropertyManager,
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
+                    if (userProp.getDefinition() == null) {
+                        throw new AuthorizationException("Property " + userProp
+                                                         + " is not editable");
+                    }
                     authorize(userProp.getDefinition().getProtectionLevel(), principal, uri);
                     addToPropsMap(alreadySetProperties, userProp);
                 }
@@ -1023,17 +1029,17 @@ public class PropertyManagerImpl implements PropertyManager,
 
 
 
-    private void authorize(String action, Principal principal, String uri) 
+    private void authorize(RepositoryAction action, Principal principal, String uri) 
         throws AuthenticationException, AuthorizationException, 
         ResourceLockedException, IOException{
 
-        if (AuthorizationManager.WRITE.equals(action)) {
+        if (RepositoryAction.WRITE.equals(action)) {
             this.authorizationManager.authorizeWrite(uri, principal);
-        } else if (AuthorizationManager.WRITE_ACL.equals(action)) {
+        } else if (RepositoryAction.WRITE_ACL.equals(action)) {
             this.authorizationManager.authorizeWriteAcl(uri, principal);
-        } else if (AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+        } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
             this.authorizationManager.authorizePropertyEditAdminRole(uri, principal);
-        } else if (AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
+        } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
             this.authorizationManager.authorizePropertyEditRootRole(uri, principal);
         } else {
             throw new AuthorizationException(

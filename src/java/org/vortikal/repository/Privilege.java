@@ -39,13 +39,54 @@ import java.util.Set;
  */
 public class Privilege {
     
-    public static final String READ_PROCESSED = "read-processed";
-    public static final String READ = "read";
-    public static final String BIND = "bind";
-    public static final String WRITE = "write";
-    public static final String ALL = "all";
-
-    public final static Set PRIVILEGES =
-        new HashSet(Arrays.asList(new String[] {READ_PROCESSED,READ,BIND,WRITE,ALL}));
+    public static final RepositoryAction READ_PROCESSED = RepositoryAction.READ_PROCESSED;
+    public static final RepositoryAction READ = RepositoryAction.READ;
+    public static final RepositoryAction BIND = RepositoryAction.CREATE;
+    public static final RepositoryAction WRITE = RepositoryAction.WRITE;
+    public static final RepositoryAction ALL = RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION;
     
+
+    public static final Set PRIVILEGES =
+        new HashSet(Arrays.asList(new RepositoryAction[] {READ_PROCESSED,READ,BIND,WRITE,ALL}));
+    
+
+    public static final RepositoryAction getActionByName(String actionName) {
+        if ("read".equals(actionName)) {
+            return READ;
+        }
+        if ("write".equals(actionName)) {
+            return WRITE;
+        }
+        if ("all".equals(actionName)) {
+            return ALL;
+        }
+        if ("read-processed".equals(actionName)) {
+            return READ_PROCESSED;
+        }
+        if ("bind".equals(actionName)) {
+            return BIND;
+        }
+        throw new IllegalArgumentException("Invalid ACL action: '" + actionName + "'");
+    }
+    
+
+    public static final String getActionName(RepositoryAction action) {
+
+        if (READ.equals(action)) {
+            return "read";
+        }
+        if (WRITE.equals(action)) {
+            return "write";
+        }
+        if (ALL.equals(action)) {
+            return "all";
+        }
+        if (READ_PROCESSED.equals(action)) {
+            return "read-processed";
+        }
+        if (BIND.equals(action)) {
+            return "bind";
+        }
+        throw new IllegalArgumentException("Invalid ACL privilege: '" + action + "'");
+    }
 }

@@ -31,15 +31,15 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
@@ -51,33 +51,9 @@ import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
 
 /**
- * <p>Manager that takes care of authorizing a principal for a
- * specific authorization level.
- * XXX: Extract as interface in 'repository' package
  */
-public class AuthorizationManager {
+public class AuthorizationManagerImpl implements AuthorizationManager {
 
-    // Defined authorization levels:
-    
-    public final static String READ_PROCESSED = "read-processed";
-    public final static String READ = "read";
-    public final static String CREATE = "create";
-    public final static String WRITE = "write";
-    public final static String WRITE_ACL = "write-acl";
-    public final static String UNLOCK = "unlock";
-    public final static String DELETE = "delete";
-    public final static String COPY = "copy";
-    public final static String MOVE = "move";
-    public final static String REPOSITORY_ADMIN_ROLE_ACTION = "property-edit-admin-role";
-    public final static String REPOSITORY_ROOT_ROLE_ACTION = "property-edit-root-role";
-
-    public final static String[] ACTION_AUTHORIZATIONS = 
-        new String[] {READ_PROCESSED, READ, CREATE, WRITE, WRITE_ACL, UNLOCK, 
-        DELETE, COPY, MOVE, REPOSITORY_ADMIN_ROLE_ACTION, REPOSITORY_ROOT_ROLE_ACTION};
-    
-    public final static Set ACTION_AUTHORIZATION_SET = 
-        new HashSet(Arrays.asList(ACTION_AUTHORIZATIONS));
-    
     private RoleManager roleManager;
     private PrincipalManager principalManager;
     private DataAccessor dao;
@@ -109,27 +85,27 @@ public class AuthorizationManager {
         }
     }
     
-    public boolean authorizeAction(String uri, String action, Principal principal) {
+    public boolean authorizeAction(String uri, RepositoryAction action, Principal principal) {
         try {
-            if (AuthorizationManager.READ_PROCESSED.equals(action)) {
+            if (RepositoryAction.READ_PROCESSED.equals(action)) {
                 authorizeReadProcessed(uri, principal);
-            } else if (AuthorizationManager.READ.equals(action)) {
+            } else if (RepositoryAction.READ.equals(action)) {
                 authorizeRead(uri, principal);
-            } else if (AuthorizationManager.CREATE.equals(action)) {
+            } else if (RepositoryAction.CREATE.equals(action)) {
                 authorizeCreate(uri, principal);
-            } else if (AuthorizationManager.WRITE.equals(action)) {
+            } else if (RepositoryAction.WRITE.equals(action)) {
                 authorizeWrite(uri, principal);
-            } else if (AuthorizationManager.WRITE_ACL.equals(action)) {
+            } else if (RepositoryAction.WRITE_ACL.equals(action)) {
                 authorizeWriteAcl(uri, principal);
-            } else if (AuthorizationManager.UNLOCK.equals(action)) {
+            } else if (RepositoryAction.UNLOCK.equals(action)) {
                 authorizeUnlock(uri, principal);
-            } else if (AuthorizationManager.DELETE.equals(action)) {
+            } else if (RepositoryAction.DELETE.equals(action)) {
                 authorizeDelete(uri, principal);
-            } else if (AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+            } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
                 authorizePropertyEditAdminRole(uri, principal);
-            } else if (AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
+            } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
                 authorizePropertyEditRootRole(uri, principal);
-            } else {
+            }else {
                 // XXX: copy/move shouldn't be allowed, currently ends up here
                 return false;
             }
@@ -160,8 +136,8 @@ public class AuthorizationManager {
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
             return;
 
-        String[] privileges = 
-            new String[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
+        RepositoryAction[] privileges = 
+            new RepositoryAction[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
 
         aclAuthorize(principal, resource, privileges);
     }
@@ -185,8 +161,8 @@ public class AuthorizationManager {
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
             return;
         
-        String[] privileges = 
-            new String[] {Privilege.ALL, Privilege.READ};
+        RepositoryAction[] privileges = 
+            new RepositoryAction[] {Privilege.ALL, Privilege.READ};
 
         aclAuthorize(principal, resource, privileges);
     }
@@ -213,8 +189,8 @@ public class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        String[] privileges = 
-            new String[] {Privilege.ALL, Privilege.WRITE, Privilege.BIND};
+        RepositoryAction[] privileges = 
+            new RepositoryAction[] {Privilege.ALL, Privilege.WRITE, Privilege.BIND};
 
         aclAuthorize(principal, parent, privileges);
     }
@@ -241,8 +217,8 @@ public class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        String[] privileges = 
-            new String[] {Privilege.ALL, Privilege.WRITE};
+        RepositoryAction[] privileges = 
+            new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
 
         aclAuthorize(principal, resource, privileges);
     }
@@ -269,8 +245,8 @@ public class AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        String[] privileges = 
-            new String[] {Privilege.ALL};
+        RepositoryAction[] privileges = 
+            new RepositoryAction[] {Privilege.ALL};
 
         aclAuthorize(principal, resource, privileges);
     }
@@ -296,8 +272,8 @@ public class AuthorizationManager {
         
         this.lockManager.lockAuthorize(resource, principal, false);
 
-        String[] privileges = 
-            new String[] {Privilege.ALL, Privilege.WRITE};
+        RepositoryAction[] privileges = 
+            new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
 
         aclAuthorize(principal, resource, privileges);
     }
@@ -329,8 +305,8 @@ public class AuthorizationManager {
             // Continue..
         }
 
-        String[] privileges = 
-            new String[] {Privilege.ALL};
+        RepositoryAction[] privileges = 
+            new RepositoryAction[] {Privilege.ALL};
 
         aclAuthorize(principal, resource, privileges);
     }
@@ -358,7 +334,7 @@ public class AuthorizationManager {
         }
 
         Resource resource = this.dao.load(uri);
-        aclAuthorize(principal, resource, new String[] {Privilege.ALL});
+        aclAuthorize(principal, resource, new RepositoryAction[] {Privilege.ALL});
         authorizeWrite(uri, principal);
         
     }
@@ -460,13 +436,13 @@ public class AuthorizationManager {
      * <p>5) (g, privilege) is present in the resource's ACL, where g is a group
      * identifier and the user is a member of that group
      **/
-    private void aclAuthorize(Principal principal, Resource resource, String[] privileges) 
+    private void aclAuthorize(Principal principal, Resource resource, RepositoryAction[] privileges) 
         throws AuthenticationException, AuthorizationException {
         
         Acl acl = resource.getAcl();
 
         for (int i = 0; i < privileges.length; i++) {
-            String privilege = privileges[i];
+            RepositoryAction privilege = privileges[i];
             Set principalSet = acl.getPrincipalSet(privilege);
 
             // Dont't need to test the conditions if (principalSet == null)
@@ -508,7 +484,7 @@ public class AuthorizationManager {
         if (principal == null) throw new AuthenticationException();
             
         for (int i = 0; i < privileges.length; i++) {
-            String action = privileges[i];
+            RepositoryAction action = privileges[i];
             Set principalSet = acl.getPrincipalSet(action);
             
             // Condition 5:

@@ -37,19 +37,19 @@ import org.vortikal.security.Principal;
 public interface Acl extends Cloneable {
 
 
-    public boolean hasPrivilege(String privilege, Principal principal);
+    public boolean hasPrivilege(RepositoryAction privilege, Principal principal);
 
-    public String[] getPrivilegeSet(Principal principal);
+    public RepositoryAction[] getPrivilegeSet(Principal principal);
     
-    public Principal[] listPrivilegedUsers(String privilegeName);
+    public Principal[] listPrivilegedUsers(RepositoryAction privilege);
 
-    public Principal[] listPrivilegedGroups(String privilegeName);
+    public Principal[] listPrivilegedGroups(RepositoryAction privilege);
     
-    public Principal[] listPrivilegedPseudoPrincipals(String action);
+    public Principal[] listPrivilegedPseudoPrincipals(RepositoryAction action);
 
     public boolean isInherited();
     
-    public Set getPrincipalSet(String action);
+    public Set getPrincipalSet(RepositoryAction action);
 
     public Set getActions();
 
@@ -62,10 +62,10 @@ public interface Acl extends Cloneable {
 
     public void setInherited(boolean inherited);
 
-    public void addEntry(String action, Principal principal) 
+    public void addEntry(RepositoryAction action, Principal principal) 
         throws IllegalArgumentException;
 
-    public void removeEntry(String privilegeName, Principal principal) 
+    public void removeEntry(RepositoryAction privilegeName, Principal principal) 
         throws IllegalArgumentException;
 
     public Object clone() throws CloneNotSupportedException;

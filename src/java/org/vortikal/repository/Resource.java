@@ -41,7 +41,7 @@ public interface Resource extends PropertySet {
 
     public boolean isOfType(ResourceTypeDefinition type);
 
-    public boolean isAuthorized(String privilege, Principal principal);
+    public boolean isAuthorized(RepositoryAction privilege, Principal principal);
 
     public Property createProperty(Namespace namespace, String name);
     

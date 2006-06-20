@@ -28,43 +28,48 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype;
+package org.vortikal.repository;
 
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.RepositoryAction;
-
-
-
-
-public interface PropertyTypeDefinition {
+public final class RepositoryAction {
     
-    public Namespace getNamespace();
+    public final static RepositoryAction READ_PROCESSED = new RepositoryAction("read-processed");
+
+    public final static RepositoryAction READ = new RepositoryAction("read");
+
+    public final static RepositoryAction CREATE = new RepositoryAction("create");
+
+    public final static RepositoryAction WRITE = new RepositoryAction("write");
+
+    public final static RepositoryAction WRITE_ACL = new RepositoryAction("write-acl");
+
+    public final static RepositoryAction UNLOCK = new RepositoryAction("unlock");
+
+    public final static RepositoryAction DELETE = new RepositoryAction("delete");
+
+    public final static RepositoryAction COPY = new RepositoryAction("copy");
+
+    public final static RepositoryAction MOVE = new RepositoryAction("move");
+
+    public final static RepositoryAction UNEDITABLE_ACTION =
+        new RepositoryAction("property-edit-uneditable-action");
+
+    public final static RepositoryAction REPOSITORY_ADMIN_ROLE_ACTION =
+        new RepositoryAction("property-edit-admin-role");
+
+    public final static RepositoryAction REPOSITORY_ROOT_ROLE_ACTION =
+        new RepositoryAction("property-edit-root-role");
+
+    private String name;
     
-    public String getName();
-
-    public int getType();
+    private RepositoryAction(String name) {
+        this.name = name;
+    }
     
-    public boolean isMultiple();
 
-    public RepositoryAction getProtectionLevel();
+    public String toString() {
+        return this.name;
+    }
     
-    public boolean isMandatory();
 
-    public Value getDefaultValue();
 
-    public Constraint getConstraint();
-
-    public CreatePropertyEvaluator getCreateEvaluator();
-
-    public ContentModificationPropertyEvaluator getContentModificationEvaluator();
-
-    public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator();
-
-    public PropertyValidator getValidator();
-    
-    public Value[] getAllowedValues();
 }
-
-
-
-

@@ -4,64 +4,99 @@
 
 <beans>
 
+  <!-- ACL privileges: -->
+
+  <bean id="PRIVILEGE_READ_PROCESSED"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Privilege.READ_PROCESSED" />
+  </bean>
+
+  <bean id="PRIVILEGE_READ"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Privilege.READ" />
+  </bean>
+
+  <bean id="PRIVILEGE_BIND"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Privilege.BIND" />
+  </bean>
+
+  <bean id="PRIVILEGE_WRITE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Privilege.WRITE" />
+  </bean>
+
+  <bean id="PRIVILEGE_ALL"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Privilege.ALL" />
+  </bean>
+
+
+  <!-- Repository actions -->
+
   <bean id="ACTION_READ_PROCESSED"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.READ_PROCESSED" />
+              value="org.vortikal.repository.RepositoryAction.READ_PROCESSED" />
   </bean>
 
   <bean id="ACTION_READ"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.READ" />
+              value="org.vortikal.repository.RepositoryAction.READ" />
   </bean>
 
   <bean id="ACTION_WRITE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.WRITE" />
+              value="org.vortikal.repository.RepositoryAction.WRITE" />
   </bean>
 
   <bean id="ACTION_WRITE_ACL"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.WRITE_ACL" />
+              value="org.vortikal.repository.RepositoryAction.WRITE_ACL" />
   </bean>
 
   <bean id="ACTION_UNLOCK"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.UNLOCK" />
+              value="org.vortikal.repository.RepositoryAction.UNLOCK" />
   </bean>
 
   <bean id="ACTION_DELETE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.DELETE" />
+              value="org.vortikal.repository.RepositoryAction.DELETE" />
   </bean>
 
   <bean id="ACTION_COPY"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.COPY" />
+              value="org.vortikal.repository.RepositoryAction.COPY" />
   </bean>
 
   <bean id="ACTION_MOVE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.MOVE" />
+              value="org.vortikal.repository.RepositoryAction.MOVE" />
   </bean>
 
   <bean id="ACTION_PROPERTY_EDIT_ADMIN_ROLE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION" />
+              value="org.vortikal.repository.RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION" />
   </bean>
 
   <bean id="ACTION_PROPERTY_EDIT_ROOT_ROLE"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.repositoryimpl.AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION" />
+              value="org.vortikal.repository.RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION" />
   </bean>
 
 </beans>

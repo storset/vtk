@@ -41,6 +41,7 @@ import java.util.Set;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PseudoPrincipal;
@@ -64,7 +65,7 @@ public class AclImpl implements Acl {
         return this.dirty;
     }
 
-    public boolean hasPrivilege(String privilege, Principal principal) {
+    public boolean hasPrivilege(RepositoryAction privilege, Principal principal) {
         Set actionSet = (Set) this.actionSets.get(privilege);
         
         if (actionSet != null && actionSet.contains(principal)) 
@@ -77,7 +78,7 @@ public class AclImpl implements Acl {
         return actionSets.keySet();
     }
 
-    public Set getPrincipalSet(String action) {
+    public Set getPrincipalSet(RepositoryAction action) {
         Set set = (Set) actionSets.get(action);
         if (set == null) {
             return new HashSet();
@@ -93,7 +94,7 @@ public class AclImpl implements Acl {
     }
     
 
-    public void addEntry(String action, Principal p) throws IllegalArgumentException {
+    public void addEntry(RepositoryAction action, Principal p) throws IllegalArgumentException {
         if (!Privilege.PRIVILEGES.contains(action))
             throw new IllegalArgumentException("Unknown acl privilege");
             
@@ -118,7 +119,7 @@ public class AclImpl implements Acl {
 
     }
     
-    public void removeEntry(String action, Principal principal) throws IllegalArgumentException {
+    public void removeEntry(RepositoryAction action, Principal principal) throws IllegalArgumentException {
 
         if (!Privilege.PRIVILEGES.contains(action))
             throw new IllegalArgumentException("Unknown acl privilege");
@@ -138,8 +139,8 @@ public class AclImpl implements Acl {
         actionEntry.remove(principal);
     }
 
-    public Principal[] listPrivilegedUsers(String action) {
-        Set principals = (Set)this.actionSets.get(action);
+    public Principal[] listPrivilegedUsers(RepositoryAction action) {
+        Set principals = (Set) this.actionSets.get(action);
 
         if (principals == null) return new Principal[0];
         
@@ -155,8 +156,8 @@ public class AclImpl implements Acl {
         return (Principal[]) userList.toArray(new Principal[userList.size()]);
     }
 
-    public Principal[] listPrivilegedGroups(String action) {
-        Set principals = (Set)this.actionSets.get(action);
+    public Principal[] listPrivilegedGroups(RepositoryAction action) {
+        Set principals = (Set) this.actionSets.get(action);
         
         if (principals == null) return new Principal[0];
         
@@ -172,8 +173,8 @@ public class AclImpl implements Acl {
         return (Principal[]) groupList.toArray(new Principal[groupList.size()]);
     }
     
-    public Principal[] listPrivilegedPseudoPrincipals(String action) {
-        Set principals = (Set)this.actionSets.get(action);
+    public Principal[] listPrivilegedPseudoPrincipals(RepositoryAction action) {
+        Set principals = (Set) this.actionSets.get(action);
         
         if (principals == null) return new Principal[0];
         
@@ -198,18 +199,18 @@ public class AclImpl implements Acl {
         this.inherited = inherited;
     }
 
-    public String[] getPrivilegeSet(Principal principal) {
+    public RepositoryAction[] getPrivilegeSet(Principal principal) {
         Set actions = new HashSet();
         
         for (Iterator iter = this.actionSets.entrySet().iterator(); iter.hasNext();) {
             Map.Entry entry = (Map.Entry) iter.next();
-            String action = (String)entry.getKey();
-            Set actionEntries = (Set)entry.getValue();
+            RepositoryAction action = (RepositoryAction) entry.getKey();
+            Set actionEntries = (Set) entry.getValue();
             if (actionEntries != null && actionEntries.contains(principal))
                 actions.add(action);
         }
         
-        return (String[]) actions.toArray(new String[actions.size()]);
+        return (RepositoryAction[]) actions.toArray(new String[actions.size()]);
     }
 
 
@@ -228,7 +229,7 @@ public class AclImpl implements Acl {
         }
 
         for (Iterator i = actions.iterator(); i.hasNext();) {
-            String action = (String) i.next();
+            RepositoryAction action = (RepositoryAction) i.next();
 
             if (!acl.actionSets.containsKey(action)) {
                 return false;
@@ -259,7 +260,7 @@ public class AclImpl implements Acl {
         Set actions = actionSets.keySet();
 
         for (Iterator i = actions.iterator(); i.hasNext();) {
-            String action = (String) i.next();
+            RepositoryAction action = (RepositoryAction) i.next();
             Set principals = (Set) actionSets.get(action);
 
             for (Iterator j = principals.iterator(); j.hasNext();) {
@@ -280,7 +281,7 @@ public class AclImpl implements Acl {
             Map.Entry entry = (Map.Entry) iter.next();
             for (Iterator iterator = ((Set)entry.getValue()).iterator(); iterator.hasNext();) {
                 Principal p = (Principal) iterator.next();
-                clone.addEntry((String)entry.getKey(), p);
+                clone.addEntry((RepositoryAction) entry.getKey(), p);
             }
         }
         clone.setDirty(this.dirty);
@@ -295,7 +296,7 @@ public class AclImpl implements Acl {
         sb.append("[inherited: ").append(this.inherited).append("] ");
         sb.append("access: ");
         for (Iterator i = actionSets.keySet().iterator(); i.hasNext();) {
-            String action = (String) i.next();
+            RepositoryAction action = (RepositoryAction) i.next();
             Set principalSet = (Set)actionSets.get(action);
 
             sb.append(" [");

@@ -44,6 +44,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -57,7 +58,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
     private Repository repository;
     private PrincipalManager principalManager;
-    private String privilege;
+    private RepositoryAction privilege;
     
     
     public ACLEditController() {
@@ -91,7 +92,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
     
 
-    public void setPrivilege(String privilege) {
+    public void setPrivilege(RepositoryAction privilege) {
         this.privilege = privilege;
     }
     
@@ -171,11 +172,12 @@ public class ACLEditController extends SimpleFormController implements Initializ
     
     
 
-    /** Override to reset actions in case of errors.
-     * 
-     * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+    /**
+     * Override to reset actions in case of errors.
      */
-    protected ModelAndView processFormSubmission(HttpServletRequest req, HttpServletResponse resp, Object command, BindException errors) throws Exception {
+    protected ModelAndView processFormSubmission(
+        HttpServletRequest req, HttpServletResponse resp,
+        Object command, BindException errors) throws Exception {
         if (errors.hasErrors()) {
             ACLEditCommand editCommand = (ACLEditCommand) command;
             editCommand.setAddGroupAction(null);
@@ -208,14 +210,14 @@ public class ACLEditController extends SimpleFormController implements Initializ
         Principal auth = PseudoPrincipal.AUTHENTICATED;
         
         // Setting or unsetting pseudo:authenticated 
-        if (!resource.isAuthorized(privilege, auth) && editCommand.isEveryone()) {
-            if (Privilege.READ.equals(privilege))
+        if (!resource.isAuthorized(this.privilege, auth) && editCommand.isEveryone()) {
+            if (Privilege.READ.equals(this.privilege))
                 acl.addEntry(Privilege.READ_PROCESSED, PseudoPrincipal.ALL);
-            acl.addEntry(privilege, auth);
+            acl.addEntry(this.privilege, auth);
         } else if (resource.isAuthorized(privilege, auth) && !editCommand.isEveryone()) {
-            if (Privilege.READ.equals(privilege)) 
+            if (Privilege.READ.equals(this.privilege)) 
                 acl.removeEntry(Privilege.READ_PROCESSED, PseudoPrincipal.ALL);
-            acl.removeEntry(privilege, auth);
+            acl.removeEntry(this.privilege, auth);
         }
         
         // Has the user asked to save?

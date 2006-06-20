@@ -41,11 +41,13 @@ import org.springframework.context.ApplicationContextAware;
 
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;

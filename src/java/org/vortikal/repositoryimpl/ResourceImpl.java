@@ -40,9 +40,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -76,7 +78,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     }
     
 
-    public boolean isAuthorized(String action, Principal principal) {
+    public boolean isAuthorized(RepositoryAction action, Principal principal) {
         return this.authorizationManager.authorizeAction(this.uri, action, principal);
     }
 

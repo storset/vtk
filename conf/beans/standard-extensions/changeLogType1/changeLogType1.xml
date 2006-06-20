@@ -5,7 +5,7 @@
 
   <!-- Publish events whenever changes to Vortex resources occur. -->
   <bean id="processedContentEventDumper" 
-    class="org.vortikal.backend.ProcessedContentEventDumper">
+    class="org.vortikal.repositoryimpl.ProcessedContentEventDumper">
     <property name="dataAccessor" ref="repository.database"/>
     <property name="id" value="1" />
     <property name="repository" ref="repository"/>

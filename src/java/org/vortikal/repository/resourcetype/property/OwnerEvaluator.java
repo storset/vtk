@@ -45,26 +45,32 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
     private PrincipalManager principalManager;
     
     public boolean create(Principal principal, Property property, 
-            PropertySet ancestorPropertySet, boolean isCollection, Date time) 
-    throws PropertyEvaluationException {
+                          PropertySet ancestorPropertySet, boolean isCollection, Date time) 
+        throws PropertyEvaluationException {
         property.setPrincipalValue(principal);
         return true;
     }
 
-    // XXX: implement me...
+    // XXX: implement me (only principals with permission ALL can TAKE ownership)...
     public void validate(Principal principal, PropertySet ancestorPropertySet, 
-            Property property) throws ConstraintViolationException {
+                         Property property) throws ConstraintViolationException {
 
         if (property.getPrincipalValue() == null) {
             throw new ConstraintViolationException("All resources must have an owner.");
         }
-//
-//        Principal owner = property.getPrincipalValue();
-//        if (!principalManager.validatePrincipal(owner)) {
-//            throw new ConstraintViolationException(
-//                    "Unable to set owner of resource to invalid owner: '" 
-//                    + principal.getQualifiedName() + "'");
-//        }
+
+       Principal owner = property.getPrincipalValue();
+       if (principal == null || !this.principalManager.validatePrincipal(owner)) {
+           throw new ConstraintViolationException(
+                   "Unable to set owner of resource to invalid value: '" 
+                   + principal + "'");
+       }
+
+       if (!principal.equals(property.getPrincipalValue())) {
+           throw new ConstraintViolationException(
+                   "Unable to set owner of resource to invalid value: '" 
+                   + principal + "'");
+       }
     }
 
     public void setPrincipalManager(PrincipalManager principalManager) {

@@ -42,8 +42,9 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.AuthorizationManager;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -97,7 +98,7 @@ public class ResourcePrincipalPermissionAssertion
     private static Log logger = LogFactory.getLog(
             ResourcePrincipalPermissionAssertion.class);
     
-    private String permission = null;
+    private RepositoryAction permission = null;
     private boolean requiresAuthentication = false;
     private PrincipalManager principalManager = null;
     private RoleManager roleManager = null;
@@ -113,7 +114,7 @@ public class ResourcePrincipalPermissionAssertion
     }
     
 
-    public void setPermission(String permission) {
+    public void setPermission(RepositoryAction permission) {
         this.permission = permission;
     }
 
@@ -201,9 +202,6 @@ public class ResourcePrincipalPermissionAssertion
     }
 
 
-    /**
-     * @param authorizationManager The authorizationManager to set.
-     */
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }

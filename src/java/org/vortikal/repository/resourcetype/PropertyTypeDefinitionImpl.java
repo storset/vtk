@@ -31,7 +31,9 @@
 package org.vortikal.repository.resourcetype;
 
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.RepositoryAction;
 
 
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
@@ -41,7 +43,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private String name;
     private int type = PropertyType.TYPE_STRING;
     private boolean multiple = false;
-    private String protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
+    private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private boolean mandatory = false;
     private Value defaultValue;
     private Constraint constraint;
@@ -119,11 +121,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.name = name;
     }
 
-    public String getProtectionLevel() {
+    public RepositoryAction getProtectionLevel() {
         return protectionLevel;
     }
 
-    public void setProtectionLevel(String protectionLevel) {
+    public void setProtectionLevel(RepositoryAction protectionLevel) {
         this.protectionLevel = protectionLevel;
     }
 

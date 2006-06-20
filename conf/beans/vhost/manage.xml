@@ -952,7 +952,7 @@
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
     <property name="principalManager" ref="principalManager" />
-    <property name="privilege" value="write" />
+    <property name="privilege" ref="PRIVILEGE_WRITE" />
     <property name="formView" value="permissions" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName"><value>editWritePermissionsForm</value></property>
@@ -972,7 +972,7 @@
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
     <property name="principalManager" ref="principalManager" />
-    <property name="privilege" value="read" />
+    <property name="privilege" ref="PRIVILEGE_READ" />
     <property name="formView" value="permissions" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName"><value>editReadPermissionsForm</value></property>
@@ -990,7 +990,7 @@
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
     <property name="principalManager" ref="principalManager" />
-    <property name="privilege" value="all" />
+    <property name="privilege" ref="PRIVILEGE_ALL" />
     <property name="formView" value="permissions" />
     <property name="successView" value="redirectToPermissions" />
     <property name="commandName" value="editWriteACLPermissionsForm" />

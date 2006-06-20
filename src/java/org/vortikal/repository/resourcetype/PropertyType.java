@@ -34,7 +34,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.vortikal.repositoryimpl.AuthorizationManager;
+import org.vortikal.repository.AuthorizationManager;
+import org.vortikal.repository.RepositoryAction;
 
 
 
@@ -66,20 +67,25 @@ public final class PropertyType {
     
     
     // Write privilege needed to edit prop
-    public static final String PROTECTION_LEVEL_ACL_WRITE = AuthorizationManager.WRITE;
+    public static final RepositoryAction PROTECTION_LEVEL_ACL_WRITE =
+        RepositoryAction.WRITE;
 
     // Principals with admin permissions can edit property
-    public static final String PROTECTION_LEVEL_ACL_ADMIN = AuthorizationManager.WRITE_ACL;
+    public static final RepositoryAction PROTECTION_LEVEL_ACL_ADMIN =
+        RepositoryAction.WRITE_ACL;
 
     // Used for special properties, only to be modified by special "admin" 
     // users in special cases. unsure about this one...
-    public static final String PROTECTION_LEVEL_ROLE_ADMIN = AuthorizationManager.REPOSITORY_ADMIN_ROLE_ACTION;
+    public static final RepositoryAction PROTECTION_LEVEL_ROLE_ADMIN =
+        RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION;
     
     // Only principals of the ROOT role  are allowed to set property
-    public static final String PROTECTION_LEVEL_ROLE_ROOT = AuthorizationManager.REPOSITORY_ROOT_ROLE_ACTION;
+    public static final RepositoryAction PROTECTION_LEVEL_ROLE_ROOT =
+        RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION;
 
     //  Property is uneditable
-    public static final String PROTECTION_LEVEL_UNEDITABLE = "UNEDITABLE";
+    public static final RepositoryAction PROTECTION_LEVEL_UNEDITABLE =
+        RepositoryAction.UNEDITABLE_ACTION;
  
     
     /*

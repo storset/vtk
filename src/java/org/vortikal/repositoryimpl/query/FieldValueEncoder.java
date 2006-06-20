@@ -48,7 +48,7 @@ public final class FieldValueEncoder {
     private static final char[] HEX_CHARS = {
         '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
         
-    private static int BYTE_MASK = 0xFF;
+    private static final int BYTE_MASK = 0xFF;
     
     private FieldValueEncoder() {} // Util
 
@@ -141,7 +141,8 @@ public final class FieldValueEncoder {
         try {
             BigInteger ulong = new BigInteger(encodedLong, 16);
             return ulong.subtract(
-                    BigInteger.valueOf(Long.MAX_VALUE)).subtract(BigInteger.ONE).longValue();
+                    BigInteger.valueOf(Long.MAX_VALUE)).subtract(
+                                                    BigInteger.ONE).longValue();
         } catch (NumberFormatException nfe) {
             throw new FieldValueEncodingException(nfe.getMessage());
         }

@@ -31,7 +31,7 @@
 package org.vortikal.repositoryimpl.query.security;
 
 /**
- * Gives relevent security info to allow property authorization 
+ * Gives relevent security info to allow proper authorization 
  * processing.
  * 
  * @author oyviste

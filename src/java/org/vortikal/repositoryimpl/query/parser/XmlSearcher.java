@@ -47,7 +47,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.query.QueryException;
+import org.vortikal.repositoryimpl.query.parser.QueryException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -161,7 +161,7 @@ public class XmlSearcher implements InitializingBean {
             String msg = e.getMessage() != null ? e.getMessage() : "No message";
             Text text = doc.createTextNode(msg);
             errorElement.appendChild(text);
-            //errorElement.setTextContent(msg);
+
         }
         
         return doc.getDocumentElement().getChildNodes();
@@ -201,7 +201,6 @@ public class XmlSearcher implements InitializingBean {
         name.setAttribute("name", "name");
         Element nameValue = doc.createElement("value");
         text = doc.createTextNode(propSet.getName());
-        //nameValue.setTextContent(propSet.getName());
         nameValue.appendChild(text);
         name.appendChild(nameValue);
         
@@ -209,7 +208,6 @@ public class XmlSearcher implements InitializingBean {
         type.setAttribute("name", "type");
         Element typeValue = doc.createElement("value");
         text = doc.createTextNode(propSet.getResourceType());
-        //typeValue.setTextContent(propSet.getResourceType());
         typeValue.appendChild(text);
         type.appendChild(typeValue);
         
@@ -251,7 +249,6 @@ public class XmlSearcher implements InitializingBean {
             for (int i=0; i<values.length; i++) {
                 Element valueElement = doc.createElement("value");
                 Text text = doc.createTextNode(valueToString(values[i]));
-                //valueElement.setTextContent(valueToString(values[i]));
                 valueElement.appendChild(text);
                 valuesElement.appendChild(valueElement);
             }
@@ -260,7 +257,6 @@ public class XmlSearcher implements InitializingBean {
             Element valueElement = doc.createElement("value");
             Value value = prop.getValue();
             Text text = doc.createTextNode(valueToString(value));
-            //valueElement.setTextContent(valueToString(value));
             valueElement.appendChild(text);
             propertyElement.appendChild(valueElement);
         }

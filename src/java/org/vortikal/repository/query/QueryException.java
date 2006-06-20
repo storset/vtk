@@ -36,6 +36,7 @@ import org.vortikal.repositoryimpl.index.IndexException;
 /**
  *
  * @author oyviste
+ * @deprecated
  */
 public class QueryException extends IndexException {
     

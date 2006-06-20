@@ -33,6 +33,7 @@ package org.vortikal.repositoryimpl.index;
 /**
  * General indexing runtime exception.
  * @author oyviste
+ * @deprecated
  */
 public class IndexException extends RuntimeException {
     

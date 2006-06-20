@@ -295,8 +295,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
             
             if (rsi.isAuthorized()) {
                 // Only create property sets for authorized hits
-                Document doc = rsi.getDocument();
-                rs.addResult(documentMapper.getPropertySet(doc));
+                rs.addResult(documentMapper.getPropertySet(rsi.getDocument()));
             }
             
         }

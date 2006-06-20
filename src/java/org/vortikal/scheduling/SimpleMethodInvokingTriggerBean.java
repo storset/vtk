@@ -67,10 +67,11 @@ import org.springframework.beans.factory.InitializingBean;
  *  correct order. Not required if the target method takes no arguments.
  *  </li>
  *  <li><code>startDelay</code> - Delay in <em>milliseconds</em> before starting 
- *  the interval triggering. Defaults to 0.
+ *  the interval triggering. Defaults to 0 ms.
  *  </li>
  *  <li><code>repeatInterval</code> - How long to sleep in <em>milliseconds</em> 
- *  between each invocation. Default is 5000.
+ *  between each invocation. The time used in the invoked method is <em>not</em>
+ *  included in this interval. Default is 5000 ms.
  *  </li>
  *  <li><code>repeatCount</code> - How many times to trigger the target method 
  *  in total. Optional, defaults to <code>REPEAT_INDEFINITELY</code> (-1).

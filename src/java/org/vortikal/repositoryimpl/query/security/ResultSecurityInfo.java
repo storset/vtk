@@ -47,4 +47,6 @@ public interface ResultSecurityInfo {
     
     public boolean isAuthorized();
     
+    public void setAuthorized(boolean authorized);
+    
 }

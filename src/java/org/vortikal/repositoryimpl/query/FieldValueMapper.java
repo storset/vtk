@@ -40,6 +40,8 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
  * Utility methods for mapping between <code>Value</code> and 
  * <code>org.apache.lucene.document.Field</code> objects.
  * 
+ * TODO: clean up
+ * 
  * @author oyviste
  */
 public final class FieldValueMapper {
@@ -71,7 +73,7 @@ public final class FieldValueMapper {
         return new Field(name, value, Field.Store.YES, 
                 Field.Index.NO_NORMS);
     }
-
+    
     /**
      * Create indexed (but not stored) <code>Field</code> from 
      * multiple <code>Value</code> objects. Should be analyzed with

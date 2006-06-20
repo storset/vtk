@@ -30,10 +30,10 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -137,12 +137,16 @@ public class DocumentMapper implements InitializingBean {
         doc.add(ancestorIdsField);
         
         // ID (index system field)
-        Field idField = FieldValueMapper.getStoredKeywordField(ID_FIELD_NAME, propSet.getID());
+        //Field idField = FieldValueMapper.getStoredKeywordField(ID_FIELD_NAME, propSet.getID());
+        Field idField = BinaryFieldValueMapper.getStoredBinaryIntegerField(ID_FIELD_NAME, 
+                                                                    propSet.getID());
         doc.add(idField);
         
         // ACL_INHERITED_FROM (index system field)
-        Field aclField = FieldValueMapper.getStoredKeywordField(ACL_INHERITED_FROM_FIELD_NAME, 
-                                            propSet.getAclInheritedFrom());
+        //Field aclField = FieldValueMapper.getStoredKeywordField(ACL_INHERITED_FROM_FIELD_NAME, 
+        //                                    propSet.getAclInheritedFrom());
+        Field aclField = BinaryFieldValueMapper.getStoredBinaryIntegerField(
+                ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
         doc.add(aclField);
         
         // Add all other properties except dead ones.
@@ -174,14 +178,18 @@ public class DocumentMapper implements InitializingBean {
      * @throws DocumentMappingException
      */
     public PropertySetImpl getPropertySet(Document doc) throws DocumentMappingException {
-        // XXX: exception handling
+        // XXX: Exception handling
         PropertySetImpl propSet = new PropertySetImpl(doc.get(URI_FIELD_NAME));
-        propSet.setAclInheritedFrom(Integer.parseInt(doc.get(ACL_INHERITED_FROM_FIELD_NAME)));
-        propSet.setID(Integer.parseInt(doc.get(ID_FIELD_NAME)));
+        propSet.setAclInheritedFrom(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+                doc.getField(ACL_INHERITED_FROM_FIELD_NAME)));
+        propSet.setID(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+                doc.getField(ID_FIELD_NAME)));
         propSet.setResourceType(doc.get(RESOURCETYPE_FIELD_NAME));
         
         // XXX: I don't think applications/clients are really interested in this
         //      so we don't bother doing the expensive parse-work involved.
+        //      If we determine that this needs to be populated, we'll store a binary
+        //      version of the field instead.
         //propSet.setAncestorIds(FieldValueMapper.getIntegersFromUnencodedMultiValueField(
         //      doc.getField(ANCESTORIDS_FIELD_NAME)));
         
@@ -202,7 +210,7 @@ public class DocumentMapper implements InitializingBean {
             if (currentName == null) {
                 // New field
                 currentName = field.name();
-                fields = new LinkedList();
+                fields = new ArrayList();
             }
             
             if (field.name().equals(currentName)) {
@@ -211,7 +219,7 @@ public class DocumentMapper implements InitializingBean {
                 propSet.addProperty(getPropertyFromStoredFieldValues(currentName,  
                                                                      fields));
 
-                fields = new LinkedList();
+                fields = new ArrayList();
                 currentName = field.name();
                 fields.add(field);
             }

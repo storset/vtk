@@ -360,7 +360,11 @@
       </properties>
     </dependency>
 
-
+    <dependency>
+      <artifactId>miyagi</artifactId>
+      <groupId>no.uio.usit.miyagi</groupId>
+      <version>0.1</version>
+    </dependency>
   </dependencies>
 
 

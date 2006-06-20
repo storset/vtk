@@ -63,6 +63,21 @@
           <xsd:appinfo>reference</xsd:appinfo>
         </xsd:annotation>        
       </xsd:element>
+      <xsd:element name="sub" type="xsd:string">
+        <xsd:annotation>
+          <xsd:appinfo>sub</xsd:appinfo>
+        </xsd:annotation>        
+      </xsd:element>
+      <xsd:element name="sup" type="xsd:string">
+        <xsd:annotation>
+          <xsd:appinfo>sup</xsd:appinfo>
+        </xsd:annotation>        
+      </xsd:element>
+      <xsd:element name="linjeskift" type="Linjeskift">
+        <xsd:annotation>
+          <xsd:appinfo>newline</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
     </xsd:choice>
     <xsd:attribute ref="xml:space" /> <!-- trengs denne ? -->
   </xsd:complexType>
@@ -103,5 +118,7 @@
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
+  
+  <xsd:complexType name="Linjeskift" />  <!-- always empty -->
 
 </xsd:schema>

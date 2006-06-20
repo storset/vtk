@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- contains new fritekst elements: 'sub', 'sup', 'newline' and escape characters -->
+<onlyFritekst2 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="test.xsd">
+  <ingress>
+    <avsnitt>Er Even like <fet>kul</fet> som tidligere?</avsnitt>
+  </ingress>
+    <fritekst><avsnitt><sub>subscript</sub> og <sup>superscript</sup>
+escaped newline<linjeskift/><fet>fet * stjerne</fet> og <kursiv>kursiv _ underscore</kursiv><linjeskift/># escaped ol<linjeskift/>- escaped ul</avsnitt>
+  </fritekst>
+</onlyFritekst2>

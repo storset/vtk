@@ -31,6 +31,8 @@
 package org.vortikal.edit.xml;
 
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -49,15 +51,18 @@ public class SchemaDocumentDefinitionTest extends TestCase {
         "org/vortikal/edit/xml/fritekst.xml";
     private static final String FRITEKST2_XML = 
         "org/vortikal/edit/xml/fritekst2.xml";
+    private static final String FRITEKST2NEW_XML = 
+        "org/vortikal/edit/xml/fritekst2new.xml";    
     private static final String TEST_XSD = 
         "org/vortikal/edit/xml/test.xsd";
     private static final String CONFLICT_XSD = 
         "org/vortikal/edit/xml/conflict.xsd";
     
-   Document testDocument = null;
+    Document testDocument = null;
     Document testIncludeDocument = null;
     Document fritekstOnTopLevelDocument;
     Document fritekst2OnTopLevelDocument;
+    Document fritekst2newOnTopLevelDocument;
     SchemaDocumentDefinition definition = null;
     SchemaDocumentDefinition fritekstDefinition = null;
     SchemaDocumentDefinition fritekst2Definition = null;
@@ -100,6 +105,10 @@ public class SchemaDocumentDefinitionTest extends TestCase {
             fritekstDefinition = new SchemaDocumentDefinition("onlyFritekst", testXSD);
             
             fritekst2Definition = new SchemaDocumentDefinition("onlyFritekst2", testXSD);
+            
+            URL fritekst2newOnTopLevelXML = this.getClass().getClassLoader().getResource(
+                    FRITEKST2NEW_XML);
+            fritekst2newOnTopLevelDocument = builder.build(fritekst2newOnTopLevelXML); 
 
         } catch (Exception e) {
             fail("Couldn't instantiate test schema" + e.getMessage());
@@ -242,5 +251,37 @@ public class SchemaDocumentDefinitionTest extends TestCase {
             element.detach();
             attributeTest1.detach();
         }
+    }
+    
+    // testing additions in fritekst-v002 Schema
+    
+    public void testOnlyFritekst2new() {
+        // <fritekst> as top level element
+        Element ingress = fritekst2newOnTopLevelDocument.getRootElement().getChild("ingress");
+        fritekst2Definition.translateToEditingElement(ingress);
+            
+        assertEquals("Er Even like *kul* som tidligere?",
+                fritekst2newOnTopLevelDocument.getRootElement().getChild("ingress").getText());
+
+        fritekst2Definition.setElementContents(ingress, "*Eva*");
+        assertNotNull(ingress.getChild("avsnitt"));
+        assertEquals("Eva", ingress.getChild("avsnitt").getChild("fet").getText());
+        
+        // <fritekst> as element, containing <sub>, <sup>, <linjeskift> and escape characters
+        Element fritekst = fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst");
+        fritekst2Definition.translateToEditingElement(fritekst);
+        
+        assertEquals("sub:\"subscript\" og super:\"superscript\"\\\nescaped newline\n*fet \\* stjerne* " +
+                        "og _kursiv \\_ underscore_\n# escaped ol\n- escaped ul",
+                fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst").getText());
+        
+        fritekst2Definition.setElementContents(fritekst, "*escaped \\* bold* _escaped \\_ underscore_" +
+                        "super:\"superscript\" sub:\"subscript\"");
+        assertNotNull(fritekst.getChild("avsnitt"));
+        
+        assertEquals("escaped * bold", fritekst.getChild("avsnitt").getChild("fet").getText());
+        assertEquals("escaped _ underscore", fritekst.getChild("avsnitt").getChild("kursiv").getText());
+        assertEquals("superscript", fritekst.getChild("avsnitt").getChild("sup").getText());
+        assertEquals("subscript", fritekst.getChild("avsnitt").getChild("sub").getText());
     }
 }

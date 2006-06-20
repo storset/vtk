@@ -908,10 +908,8 @@ public final class EvenStructuredText implements StructuredText {
                     Text child = (Text) object;
                     
                     String contents = child.getText();
-
-                    // add ESCAPE char where needed                    
+                    // add ESCAPE char where needed
                     buffer.append( addEscapeChar(contents) );
-                    //buffer.append( contents );
                 }
             }
         } // end for
@@ -942,17 +940,17 @@ public final class EvenStructuredText implements StructuredText {
      */
     protected String addEscapeChar(String contents) {        
         contents = unifyNewlines(contents);        
-        /**
-         * FIXME
-         * Ikke sikkert dette er kompatibelt med andre versjoner av JDOM!
-         * (forutsetter at hver eneste escapet char legges til foreldre-noden,
-         * se parseEscapeChar(), som et _separat_ element i DOM-treet)
-         * Men fungerer i alle fall for/med gjeldende versjoner/biblioteker...
-         */
+        // When being parsed from structured text, an escaped listitem-marker
+        // will be added as a separate DOM element.
+        // BUT: If the XML is edited as text og in external editor, the 
+        // element is interpreted as consecutive string
+        // HENCE: Will have to test for both posibilities!
         if ( contents.equals( String.valueOf(ESCAPE) )
                 || contents.equals( String.valueOf(NEWLINE) )
                 || contents.equals(LISTITEM_MARKER)
-                || contents.equals(NUMLISTITEM_MARKER) ) {
+                || contents.startsWith(LISTITEM_MARKER+SPACE)
+                || contents.equals(NUMLISTITEM_MARKER)
+                || contents.startsWith(NUMLISTITEM_MARKER+SPACE) ) {
             return String.valueOf(ESCAPE).concat(contents);
         }
         // if escapable char is not a node itself,
@@ -1140,7 +1138,8 @@ public final class EvenStructuredText implements StructuredText {
                 Element fritekst = root.getChild("fritekst");
                 structuredtext = parser.parseElement(fritekst);
             }
-                                 
+            
+            System.out.print("\n\nXML:\n");
             dumpXML(doc, System.out);
             
             // make structuredtext

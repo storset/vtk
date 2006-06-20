@@ -28,63 +28,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.parser;
+package org.vortikal.repositoryimpl.query.security;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.vortikal.repository.PropertySet;
-
-
+import org.vortikal.repositoryimpl.query.parser.QueryException;
 
 /**
- * Simple cached result set.  
- * 
- * XXX: Result type is assumed to be <code>PropertySet</code> instances.
  * 
  * @author oyviste
  */
-public class ResultSetImpl implements ResultSet {
+public class QueryAuthorizationException extends QueryException {
 
-    private List results;
-    
-    public ResultSetImpl() {
-        results = new ArrayList();
-    }
-    
-    public ResultSetImpl(int initialCapacity) {
-        results = new ArrayList(initialCapacity);
-    }
-    
-    public Object getResult(int index) {
-        return results.get(index);
+    /**
+     * 
+     */
+    public QueryAuthorizationException() {
+        super();
+        // TODO Auto-generated constructor stub
     }
 
-    public List getResults(int maxIndex) {
-        int max = Math.min(maxIndex, this.results.size());
-        
-        return results.subList(0, max);
-    }
-   
-    public List getResults(int fromIndex, int toIndex) {
-        return results.subList(fromIndex, toIndex);
-    }
-
-    public List getAllResults() {
-        return this.results;
+    /**
+     * @param message
+     * @param cause
+     */
+    public QueryAuthorizationException(String message, Throwable cause) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
     }
 
-    public int getSize() {
-        return results.size();
+    /**
+     * @param message
+     */
+    public QueryAuthorizationException(String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
     }
-    
-    public void addResult(PropertySet propSet) {
-        this.results.add(propSet);
-    }
-    
-    public Iterator iterator() {
-        return this.results.iterator();
+
+    /**
+     * @param cause
+     */
+    public QueryAuthorizationException(Throwable cause) {
+        super(cause);
+        // TODO Auto-generated constructor stub
     }
 
 }

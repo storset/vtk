@@ -28,63 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.parser;
+package org.vortikal.repositoryimpl.query.security;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.vortikal.repository.PropertySet;
-
-
-
 /**
- * Simple cached result set.  
- * 
- * XXX: Result type is assumed to be <code>PropertySet</code> instances.
+ * Generic interface for authorizing elements in a list of query results.
  * 
  * @author oyviste
+ *
  */
-public class ResultSetImpl implements ResultSet {
-
-    private List results;
+public interface QueryResultAuthorizationManager {
     
-    public ResultSetImpl() {
-        results = new ArrayList();
-    }
+    public void authorizeQueryResults(String token, List queryResultSecurityInfo)   
+        throws QueryAuthorizationException;
     
-    public ResultSetImpl(int initialCapacity) {
-        results = new ArrayList(initialCapacity);
-    }
     
-    public Object getResult(int index) {
-        return results.get(index);
-    }
-
-    public List getResults(int maxIndex) {
-        int max = Math.min(maxIndex, this.results.size());
-        
-        return results.subList(0, max);
-    }
-   
-    public List getResults(int fromIndex, int toIndex) {
-        return results.subList(fromIndex, toIndex);
-    }
-
-    public List getAllResults() {
-        return this.results;
-    }
-
-    public int getSize() {
-        return results.size();
-    }
-    
-    public void addResult(PropertySet propSet) {
-        this.results.add(propSet);
-    }
-    
-    public Iterator iterator() {
-        return this.results.iterator();
-    }
-
 }

@@ -28,63 +28,60 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.parser;
+package org.vortikal.repositoryimpl.query.security;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.vortikal.repository.PropertySet;
-
-
+import org.apache.lucene.document.Document;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repositoryimpl.query.BinaryFieldValueMapper;
+import org.vortikal.repositoryimpl.query.DocumentMapper;
 
 /**
- * Simple cached result set.  
- * 
- * XXX: Result type is assumed to be <code>PropertySet</code> instances.
+ * Extract relevant security info from a Lucene 
+ * {@link org.apache.lucene.document.Document}.
  * 
  * @author oyviste
+ *
  */
-public class ResultSetImpl implements ResultSet {
+public class LuceneResultSecurityInfo implements ResultSecurityInfo {
 
-    private List results;
+    private Document document;
+    private int aclInheritedFrom;
+    private int resourceId;
+    private boolean authorized = false; 
+    private String ownerAsUserOrGroupName;
     
-    public ResultSetImpl() {
-        results = new ArrayList();
-    }
-    
-    public ResultSetImpl(int initialCapacity) {
-        results = new ArrayList(initialCapacity);
-    }
-    
-    public Object getResult(int index) {
-        return results.get(index);
-    }
-
-    public List getResults(int maxIndex) {
-        int max = Math.min(maxIndex, this.results.size());
+    public LuceneResultSecurityInfo(Document doc) {
+        this.document = doc;
+        this.aclInheritedFrom = BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+                doc.getField(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME));
         
-        return results.subList(0, max);
-    }
-   
-    public List getResults(int fromIndex, int toIndex) {
-        return results.subList(fromIndex, toIndex);
-    }
-
-    public List getAllResults() {
-        return this.results;
-    }
-
-    public int getSize() {
-        return results.size();
+        this.resourceId = BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+                doc.getField(DocumentMapper.ID_FIELD_NAME));
+        
+        this.ownerAsUserOrGroupName = doc.get(PropertyType.OWNER_PROP_NAME);
     }
     
-    public void addResult(PropertySet propSet) {
-        this.results.add(propSet);
-    }
-    
-    public Iterator iterator() {
-        return this.results.iterator();
+    public int getAclInheritedFrom() {
+        return this.aclInheritedFrom;
     }
 
+    public int getResourceId() {
+        return this.resourceId;
+    }
+    
+    public String getOwnerAsUserOrGroupName() {
+        return this.ownerAsUserOrGroupName;
+    }
+
+    public Document getDocument() {
+        return this.document;
+    }
+
+    public boolean isAuthorized() {
+        return this.authorized;
+    }
+    
+    public void setAuthorized(boolean authorized) {
+        this.authorized = authorized;
+    }
 }

@@ -54,7 +54,6 @@ import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
  * XXX: Not to be considered finished, but functional, at least.

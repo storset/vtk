@@ -178,34 +178,16 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
 
             int sessionId = insertIntoTempTable(uris, conn);
             
-            String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* "
-                         + "from vortex_uri_tmp vu, vortex_resource r "
-                         + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
-                         + "where r.uri = vu.uri AND vu.session_id=? "
-                         + "order by p.resource_id, p.extra_prop_entry_id";            
+            String query =
+                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* "
+              + "from vortex_uri_tmp vu, vortex_resource r "
+              + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
+              + "where r.uri = vu.uri AND vu.session_id=? "
+              + "order by p.resource_id, p.extra_prop_entry_id";            
             
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, sessionId);
             
-//          Old IN (.., .., ..) style query code:            
-//            int n = uris.size();
-//            StringBuffer query = 
-//                new StringBuffer("select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
-//                + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
-//                + "where r.uri in (");
-//            for (int i=0; i<n; i++) {
-//                query.append("?");
-//                if (i < n-1) query.append(",");
-//            }
-//            query.append(") order by r.uri, p.extra_prop_entry_id");
-//
-//            PreparedStatement stmt = conn.prepareStatement(query.toString());
-//            n = 1;
-//            for (Iterator i = uris.iterator(); i.hasNext();) {
-//                String uri = (String)i.next();
-//                stmt.setString(n++, uri);
-//            }
-
             ResultSet rs = pstmt.executeQuery();
             
             // Remove rows from temporary URI table
@@ -213,12 +195,11 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                     "DELETE FROM vortex_uri_tmp WHERE session_id=?");
             deleteFromTempStmt.setInt(1, sessionId);
             deleteFromTempStmt.executeUpdate();
-//             deleteFromTempStmt.close();
             
-//             conn.commit();
-            
-            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager,
+            return new ResultSetIteratorImpl(this.propertyManager, 
+                                             this.principalManager,
                                              rs, deleteFromTempStmt, conn);
+            
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
         }
@@ -266,6 +247,24 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         return sessionId;
     }
  
+ 
+    public void processQueryResultsAuthorization(List principals, 
+                                        List resultSecurityInfo)
+        throws IOException {
+        
+        // XXX: not implemented
+        throw new UnsupportedOperationException("Not implemented yet.");
+        
+    }
+
+    public void processQueryResultsAuthorization(List resultSecurityInfo) 
+        throws IOException {
+        
+        // XXX: not implemented 
+        throw new UnsupportedOperationException("Not implemented yet.");
+        
+    }
+
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -290,6 +289,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         this.sqlDialect = sqlDialect;
     }
 
+    // For iBATIS
     private String getSqlMap(String statementId) {
         if (this.sqlMaps.containsKey(statementId)) {
             return (String) this.sqlMaps.get(statementId);

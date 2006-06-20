@@ -51,5 +51,29 @@ public interface IndexDataAccessor {
      * @throws IOException
      */
     public PropertySet getPropertySetForURI(String uri) throws IOException;
+    
+    
+    /**
+     * Process list of <code>ResultSecurityInfo</code> intances with regard to
+     * pseudo:all <-> RepositoryAction.READ_PROCESSED | RepositoryAction.READ
+     *  
+     * @param principals
+     * @param resultSecurityInfo
+     * @throws IOException
+     */
+    public void processQueryResultsAuthorization(List resultSecurityInfo)
+        throws IOException;
+    
+    /**
+     * Process list of <code>ResultSecurityInfo</code> instances
+     * against list of given users and/or groups (Strings)
+     * 
+     * @param principals
+     * @param resultSecurityInfo
+     * @throws IOException
+     */
+    public void processQueryResultsAuthorization(List usersAndGroups, 
+                                                 List resultSecurityInfo)
+        throws IOException;
 
 }

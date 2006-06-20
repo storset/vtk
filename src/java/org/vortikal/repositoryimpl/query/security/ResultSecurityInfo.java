@@ -28,63 +28,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.parser;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.vortikal.repository.PropertySet;
-
-
+package org.vortikal.repositoryimpl.query.security;
 
 /**
- * Simple cached result set.  
- * 
- * XXX: Result type is assumed to be <code>PropertySet</code> instances.
+ * Gives relevent security info to allow property authorization 
+ * processing.
  * 
  * @author oyviste
+ *
  */
-public class ResultSetImpl implements ResultSet {
+public interface ResultSecurityInfo {
 
-    private List results;
+    public int getAclInheritedFrom();
     
-    public ResultSetImpl() {
-        results = new ArrayList();
-    }
+    public int getResourceId();
     
-    public ResultSetImpl(int initialCapacity) {
-        results = new ArrayList(initialCapacity);
-    }
+    public String getOwnerAsUserOrGroupName();
     
-    public Object getResult(int index) {
-        return results.get(index);
-    }
-
-    public List getResults(int maxIndex) {
-        int max = Math.min(maxIndex, this.results.size());
-        
-        return results.subList(0, max);
-    }
-   
-    public List getResults(int fromIndex, int toIndex) {
-        return results.subList(fromIndex, toIndex);
-    }
-
-    public List getAllResults() {
-        return this.results;
-    }
-
-    public int getSize() {
-        return results.size();
-    }
+    public boolean isAuthorized();
     
-    public void addResult(PropertySet propSet) {
-        this.results.add(propSet);
-    }
-    
-    public Iterator iterator() {
-        return this.results.iterator();
-    }
-
 }

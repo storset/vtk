@@ -45,21 +45,20 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.query.QueryException;
+import org.vortikal.repositoryimpl.query.parser.QueryException;
 import org.vortikal.repositoryimpl.query.parser.ResultSet;
 import org.vortikal.repositoryimpl.query.parser.ResultSetImpl;
 import org.vortikal.repositoryimpl.query.parser.Searcher;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.Sorting;
-import org.vortikal.repositoryimpl.query.security.QueryAuthorizationManager;
-import org.vortikal.security.AuthenticationException;
+import org.vortikal.repositoryimpl.query.security.LuceneResultSecurityInfo;
+import org.vortikal.repositoryimpl.query.security.QueryResultAuthorizationManager;
 
 /**
  * @author oyviste
  *
  *  TODO: As efficient ACL filtering as possible
- *  TODO: Define behavoir when results are removed because of permissions
+ *  TODO: Define behaviour when results are removed because of permissions
  *        wrt. to expected number of maxResults, etc.
  *        
  *  <p>Configurable bean properties:</p>
@@ -90,7 +89,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
     
     private LuceneIndex indexAccessor;
     private DocumentMapper documentMapper;
-    private QueryAuthorizationManager queryAuthorizationManager;
+    private QueryResultAuthorizationManager queryResultAuthorizationManager;
     private QueryBuilderFactory queryBuilderFactory;
     
     private SortBuilder sortBuilder = new SortBuilderImpl();
@@ -113,7 +112,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
                                          + " must be an integer greater than zero.");
         }
         
-        if (this.queryAuthorizationManager == null) {
+        if (this.queryResultAuthorizationManager == null) {
             logger.warn("No authorization manager configured, queries will not be filtered with regard to"
                     + " permissions.");
         }
@@ -200,13 +199,13 @@ public class SearcherImpl implements Searcher, InitializingBean {
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Got " + topDocs.totalHits 
-                                        + " total hits for lucene query: " + q);
+                                        + " total hits for Lucene query: " + q);
                 
                 if (sorting != null) {
-                    logger.debug("Sorted lucene query took: " 
+                    logger.debug("Sorted Lucene query took: " 
                             + (System.currentTimeMillis()-start) + " ms");
                 } else {
-                    logger.debug("Unsorted (index-ordered) lucene query took: " 
+                    logger.debug("Unsorted (index-ordered) Lucene query took: " 
                             + (System.currentTimeMillis()-start) + " ms");
                 }
             }
@@ -215,7 +214,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
                                           token, maxResults, cursor);
             
             if (logger.isDebugEnabled()) {
-                logger.debug("Total query time: " + (System.currentTimeMillis()-start) + " ms");
+                logger.debug("Total query time including result set building: " 
+                        + (System.currentTimeMillis()-start) + " ms");
             }
             
             return rs;
@@ -249,178 +249,62 @@ public class SearcherImpl implements Searcher, InitializingBean {
         
         for (int i=cursor; i < end; i++) {
             Document doc = reader.document(docs[i].doc);
-            
-            try {
-                authorizeQueryResult(token, doc);
-            } catch (AuthorizationException e) {
-                continue;
-            } catch (AuthenticationException e) {
-                continue;
-            }
-            
             rs.addResult(this.documentMapper.getPropertySet(doc));
         }
         
         return rs;
     }
-
-//    private ResultSetImpl buildResultSet(Hits hits, String token, int maxResults, 
-//                                                                  int cursor)
-//        throws IOException {
-//        
-//        ResultSetImpl rs = new ResultSetImpl();
-//        
-//        int length = hits.length();
-//        
-//        if (length == 0 || cursor >= length) {
-//            return rs; // Empty result set
-//        }
-//
-//        if (maxResults < 0) maxResults = 0;
-//        
-//        int end = (cursor + maxResults) < length ? 
-//                                        cursor + maxResults : length;
-//
-//        for (int i=cursor; i < end; i++) {
-//            Document doc = hits.doc(i);
-//
-//                try {
-//                    authorizeQueryResult(token, doc);
-//                } catch (AuthorizationException e) {
-//                    continue;
-//                } catch (AuthenticationException e) {
-//                    continue;
-//                }
-//            
-//            PropertySet propSet = this.documentMapper.getPropertySet(doc);
-//            rs.addResult(propSet);
-//        }
-//        
-//        return rs;
-//    }
     
-//    private ResultSetImpl buildResultSet(SimpleHitCollector collector, 
-//            IndexReader reader, String token, int maxResults, int cursor) 
-//    throws IOException {
-//
-//        ResultSetImpl rs = new ResultSetImpl();
-//
-//        int length = collector.length();
-//
-//        if (length == 0 || cursor >= length) {
-//            return rs; // Empty result set
-//        }
-//
-//        if (maxResults < 0) maxResults = 0;
-//
-//        int end = (cursor + maxResults) < length ? cursor + maxResults : length;
-//
-//        for (int i = cursor; i < end; i++) {
-//            Document doc = reader.document(collector.doc(i));
-//
-//            try {
-//                authorizeQueryResult(token, doc);
-//            } catch (AuthorizationException e) {
-//                continue;
-//            } catch (AuthenticationException e) {
-//                continue;
-//            }
-//
-//            PropertySet propSet = this.documentMapper.getPropertySet(doc);
-//            rs.addResult(propSet);
-//        }
-//
-//        return rs;
-//
-//    }
+    private ResultSetImpl buildAuthorizedResultSet(ScoreDoc[] docs, 
+            IndexReader reader, String token, int maxResults, int cursor)
+            throws IOException {
 
-//  private ResultSet executeUnsortedQuery(String token, Query query, 
-//  int maxResults, int cursor) throws QueryException {
-//
-//org.apache.lucene.search.Query q =
-//  this.queryBuilderFactory.getBuilder(query).buildQuery();
-//
-//if (logger.isDebugEnabled()) {
-//  logger.debug("Built lucene query '" + q + "' from query" + query.dump(""));
-//}
-//
-//IndexSearcher searcher = null;
-//try {
-//  searcher = indexAccessor.getIndexSearcher();
-//  
-//  SimpleHitCollector collector = new SimpleHitCollector();
-//  
-//  long start = System.currentTimeMillis();
-//  searcher.search(q, collector);
-//  if (logger.isDebugEnabled()) {
-//      logger.debug("Got " + collector.length() + " hits for lucene query: " + q);
-//      logger.debug("Lucene query took: " + (System.currentTimeMillis()-start) + " ms");
-//  }
-//
-//  ResultSet rs = buildResultSet(collector, searcher.getIndexReader(), 
-//                                          token, maxResults, cursor);
-//  
-//  if (logger.isDebugEnabled()) {
-//      logger.debug("Total query time: " + (System.currentTimeMillis() - start) + " ms");
-//  }
-//  
-//  return rs;
-//  
-//} catch (IOException io) {
-//  logger.warn("IOException while performing query on index", io);
-//  throw new QueryException("IOException while performing query on index", io);
-//} finally {
-//  try {
-//      indexAccessor.releaseIndexSearcher(searcher);                
-//  } catch (IOException io) {}
-//}
-//
-//}
+        ResultSetImpl rs = new ResultSetImpl();
 
-//private ResultSet executeSortedQuery(String token, Query query, Sorting sorting,
-//  int maxResults, int cursor) throws QueryException {
-//
-//org.apache.lucene.search.Query q =
-//  this.queryBuilderFactory.getBuilder(query).buildQuery();
-//
-//if (logger.isDebugEnabled()) {
-//  logger.debug("Built lucene query '" + q + "' from query" + query.dump(""));
-//}
-//
-//IndexSearcher searcher = null;
-//try {
-//  searcher = indexAccessor.getIndexSearcher();
-//  
-//  Sort sort = sortBuilder.buildSort(sorting);
-//  
-//  Hits hits = searcher.search(q, sort);
-//  if (logger.isDebugEnabled()) {
-//      logger.debug("Got " + hits.length() + " hits for lucene query: " + q);
-//  }
-//  
-//  return buildResultSet(hits, token, maxResults, cursor);
-//  
-//} catch (IOException io) {
-//  logger.warn("IOException while performing query on index", io);
-//  throw new QueryException("IOException while performing query on index", io);
-//} finally {
-//  try {
-//      indexAccessor.releaseIndexSearcher(searcher);                
-//  } catch (IOException io) {}
-//}
-//
-//}
-    private void authorizeQueryResult(String token, Document doc)
-        throws AuthorizationException, AuthenticationException {
-        if (this.queryAuthorizationManager != null) {
-                this.queryAuthorizationManager.authorizeQueryResult(token, 
-                 FieldValueMapper.getIntegerFromUnencodedField(
-                         doc.getField(DocumentMapper.ID_FIELD_NAME)),
-                 FieldValueMapper.getIntegerFromUnencodedField(
-                         doc.getField(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME)));
+        int length = docs.length;
+
+        if (length == 0 || cursor >= length) {
+            return rs; // Empty result set
         }
+
+        if (maxResults < 0)
+            maxResults = 0;
+
+        int end = (cursor + maxResults) < length ? cursor + maxResults : length;
+
+        // XXX: cursor/maxresults might be confusing after filtering, define it 
+        //      properly and fix this.
+        List rsiList = new ArrayList(end-cursor+1);
+        for (int i = cursor; i < end; i++) {
+            Document doc = reader.document(docs[i].doc);
+            rsiList.add(new LuceneResultSecurityInfo(doc));
+        }
+        
+        if (this.queryResultAuthorizationManager != null) {
+            this.queryResultAuthorizationManager.authorizeQueryResults(token, 
+                                                                        rsiList);
+        }
+        
+        // XXX: fix cursor crap, give client the expected number of results, even
+        // after security filtering, figure out best solution (use dummy results ?)
+        // Add only authorized docs to ResultSet
+        // XXX: logging
+        for (int i = 0; i < rsiList.size(); i++) {
+            LuceneResultSecurityInfo rsi = 
+                                        (LuceneResultSecurityInfo)rsiList.get(i);
+            
+            if (rsi.isAuthorized()) {
+                // Only create property sets for authorized hits
+                Document doc = rsi.getDocument();
+                rs.addResult(documentMapper.getPropertySet(doc));
+            }
+            
+        }
+        
+        return rs;
     }
     
+
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
@@ -429,8 +313,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
         this.indexAccessor = indexAccessor;
     }
 
-    public void setQueryAuthorizationManager(QueryAuthorizationManager queryAuthorizationManager) {
-        this.queryAuthorizationManager = queryAuthorizationManager;
+    public void setQueryAuthorizationManager(
+            QueryResultAuthorizationManager queryResultAuthorizationManager) {
+        this.queryResultAuthorizationManager = queryResultAuthorizationManager;
     }
 
     public void setQueryBuilderFactory(QueryBuilderFactory queryBuilderFactory) {

@@ -193,4 +193,20 @@ public final class BinaryFieldValueMapper {
         return values;
     }
     
+    public static Field getStoredBinaryIntegerField(String name, int value) 
+        throws FieldValueMappingException {
+        return new Field(name, FieldValueEncoder.encodeIntegerToBinary(value), 
+                Field.Store.YES);
+    }
+    
+    public static int getIntegerFromStoredBinaryField(Field f) 
+        throws FieldValueMappingException {
+        
+        if (! f.isBinary()) {
+            throw new FieldValueMappingException("Not a binary stored field");
+        }
+        
+        return FieldValueEncoder.decodeIntegerFromBinary(f.binaryValue());
+    }
+    
 }

@@ -27,13 +27,6 @@
     </property>
   </bean>
 
-<!--  <bean id="queryManager"
-        class="org.vortikal.repositoryimpl.query.parser.QueryManager">
-    <property name="parser" ref="queryParser" />
-    <property name="searcher" ref="newSystemIndexSearcher" />
-  </bean>
--->
-
   <!-- Document mapper -->
   <bean id="documentMapper" class="org.vortikal.repositoryimpl.query.DocumentMapper">
     <property name="propertyManager" ref="propertyManager"/>
@@ -73,6 +66,13 @@
     <property name="queryAuthorizationManager" ref="queryAuthorizationManager"/>
     -->
   </bean>
+
+<!--   <bean id="queryResultAuthorizationManager" -->
+<!--         class="org.vortikal.repositoryimpl.query.security.DatabaseQueryResultAuthorizationManagaer"> -->
+<!--     <property name="principalManager" ref="principalManager"/> -->
+<!--     <property name="tokenManager" ref="tokenManager"/> -->
+<!--     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/> -->
+<!--   </bean> -->
 
   <!-- Perform incremental updates on property set index from resource changes. -->
   <bean id="newSystemIndexUpdater" 

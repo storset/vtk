@@ -404,10 +404,6 @@ public class PropertyManagerImpl implements PropertyManager,
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
-                    if (userProp.getDefinition() == null) {
-                        throw new AuthorizationException("Property " + userProp
-                                                         + " is not editable");
-                    }
                     authorize(userProp.getDefinition().getProtectionLevel(), principal, uri);
                     addToPropsMap(alreadySetProperties, userProp);
                 }

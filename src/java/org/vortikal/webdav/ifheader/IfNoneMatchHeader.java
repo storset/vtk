@@ -50,7 +50,7 @@ public class IfNoneMatchHeader {
     public IfNoneMatchHeader(final HttpServletRequest request) {
         super();
         headerValue = request.getHeader("If-None-Match");
-        logger.debug("if-header: " + headerValue);
+        logger.debug("if-none-match-header: " + headerValue);
         //stateEntryList = parse();
     }
     

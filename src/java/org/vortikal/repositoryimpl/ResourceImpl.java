@@ -175,8 +175,12 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
 
     public String getSerial() {
         String serial = getURI() + getContentLastModified() + getPropertiesLastModified();
-        String md5String = MD5.md5sum(serial);
-        return md5String;
+        serial = MD5.md5sum(serial);
+        serial = "vortex-" + serial;
+
+        logger.debug("etag: " + serial);
+
+        return serial;
     }
     
     public String getEtag() {

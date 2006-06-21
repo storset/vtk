@@ -48,7 +48,7 @@ public class IfMatchHeader {
     public IfMatchHeader(final HttpServletRequest request) {
         super();
         headerValue = request.getHeader("If-Match");
-        logger.debug("if-header: " + headerValue);
+        logger.debug("if-match-header: " + headerValue);
         // stateEntryList = parse();
     }
 

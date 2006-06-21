@@ -32,6 +32,11 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
@@ -40,10 +45,45 @@ import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
-public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidator {
+
+
+/**
+ * An evaluator and validator for the resource owner property. Sets
+ * the resource owner on creation to the principal performing the
+ * operation. Enforces that principals can only TAKE ownership of an
+ * existing resource (except root principals).
+ *
+ * <p>Further restrictions, such as associating certain privileges to
+ * the operation of taking ownership should be configured as a
+ * protection level in the property definition.
+ */
+public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidator,
+                                       InitializingBean {
 
     private PrincipalManager principalManager;
+    private AuthorizationManager authorizationManager;
     
+    
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
+    }
+    
+    public void afterPropertiesSet() {
+        if (this.principalManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'principalManager' not set");
+        }
+        if (this.authorizationManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'authorizationManager' not set");
+        }
+    }
+
+
     public boolean create(Principal principal, Property property, 
                           PropertySet ancestorPropertySet, boolean isCollection, Date time) 
         throws PropertyEvaluationException {
@@ -51,7 +91,7 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
         return true;
     }
 
-    // XXX: implement me (only principals with permission ALL can TAKE ownership)...
+
     public void validate(Principal principal, PropertySet ancestorPropertySet, 
                          Property property) throws ConstraintViolationException {
 
@@ -66,15 +106,18 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
                    + principal + "'");
        }
 
+       try {
+           authorizationManager.authorizeRootRoleAction(principal);
+           // Principal is root, allow any value:
+           return;
+       } catch (AuthorizationException e) { }
+
+       // Principals other than root may only TAKE ownership:
        if (!principal.equals(property.getPrincipalValue())) {
            throw new ConstraintViolationException(
                    "Unable to set owner of resource to invalid value: '" 
                    + principal + "'");
        }
     }
-
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-
+    
 }

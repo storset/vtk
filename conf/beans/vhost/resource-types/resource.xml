@@ -71,6 +71,7 @@
 
   <bean id="ownerEvaluator" class="org.vortikal.repository.resourcetype.property.OwnerEvaluator">
     <property name="principalManager" ref="principalManager" />
+    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
   
   <bean id="principalEvaluator" class="org.vortikal.repository.resourcetype.property.PrincipalEvaluator">

@@ -1,18 +1,18 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>412 - precondition failed</title>
+  <title>304 - not modified</title>
   <link href="http://www.uio.no/visuell-profil/css/uio.css" type="text/css" rel="stylesheet">
 </head>
 <body>
 <DIV CLASS="navmarginbrod" ID="brodtekst">
 
-<H2>412 - precondition failed</H2>
+<H2>304 - not modified</H2>
 
 
 <HR STYLE="width: 98%;">
 
-<H2>412 - precondition failed</H2>
+<H2>304 - not modified</H2>
 
 </div>
 

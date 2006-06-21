@@ -65,7 +65,25 @@
     </property>
   </bean>
   
-
+  <bean id="resourceNotModifiedErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
+    <property name="errorViewName" value="resourceNotModifiedError" />
+    <property name="errorType">
+      <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.vortikal.repository.ResourceNotModifiedException" />
+      </bean>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider"/>
+      </list>
+    </property>
+    <property name="statusCodeMappings">
+      <map>
+        <entry key="org.vortikal.webdav.PreconditionFailedException" value="304" />
+      </map>
+    </property>
+  </bean>
+  
   <bean id="defaultErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
     <property name="errorViewName" value="defaultError" />
     <property name="referenceDataProviders">
@@ -78,6 +96,8 @@
         <entry key="org.vortikal.webdav.PreconditionFailedException" value="412" />
         <entry key="org.vortikal.repository.ResourceNotFoundException" value="404" />
         <entry key="org.vortikal.repository.AuthorizationException" value="403" />
+        <entry key="org.vortikal.repository.ResourceNotModifiedException" value="304" />
+        
       </map>
     </property>
   </bean>
@@ -92,6 +112,7 @@
         <entry key="resourceNotFoundError" value-ref="resourceNotFoundErrorView" />
         <entry key="notAuthorizedError" value-ref="notAuthorizedErrorView" />
         <entry key="preconditionFailedError" value-ref="preconditionFailedErrorView" />
+        <entry key="resourceNotModifiedError" value-ref="resourceNotModifiedErrorView" />
         <entry key="defaultError" value-ref="defaultErrorView" />
       </map>
     </property>
@@ -108,7 +129,11 @@
   <bean id="preconditionFailedErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/412.ftl" />
   </bean>
-  
+
+  <bean id="resourceNotModifiedErrorView" parent="freemarkerView">
+    <property name="url" value="pages/error/304.ftl" />
+  </bean>
+    
   <bean id="defaultErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/default-error.ftl" />
   </bean>

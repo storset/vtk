@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.ResourceNotModifiedException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
@@ -80,7 +81,6 @@ public class HeadController extends AbstractWebdavController {
                 }
                 throw new ResourceNotFoundException(uri);
             }
-            
             if (supportIfHeaders) {
                 IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
                 if (!ifMatchHeader.matches(resource)) {
@@ -89,7 +89,7 @@ public class HeadController extends AbstractWebdavController {
 
                 IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
                 if (!ifNoneMatchHeader.matches(resource)) {
-                    throw new PreconditionFailedException();
+                    throw new ResourceNotModifiedException(uri);
                 }
             }
             
@@ -124,6 +124,15 @@ public class HeadController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
+            return new ModelAndView("HTTP_STATUS_VIEW", model);
+
+        } catch (ResourceNotModifiedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Caught ResourceNotModifiedException for URI " + uri);
+            }
+            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                      new Integer(HttpServletResponse.SC_NOT_MODIFIED));
             return new ModelAndView("HTTP_STATUS_VIEW", model);
             
         } catch (IOException e) {

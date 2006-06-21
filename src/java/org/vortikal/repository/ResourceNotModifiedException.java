@@ -28,52 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.webdav.ifheader;
+package org.vortikal.repository;
 
-import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.Resource;
+/**
+ * Indicates that a requested resource does not exist in the
+ * repository.
+ *
+ */
+public class ResourceNotModifiedException extends RepositoryException {
 
-public class IfNoneMatchHeader {
-
-    protected static Log logger = LogFactory.getLog(IfNoneMatchHeader.class);
+    private static final long serialVersionUID = 368935345110399323L;
     
-    /**
-     * The string representation of the header value
-     */
-    private final String headerValue;
+    private String uri = null;
 
-    
-    
-    public IfNoneMatchHeader(final HttpServletRequest request) {
-        super();
-        headerValue = request.getHeader("If-None-Match");
-        logger.debug("if-none-match-header: " + headerValue);
-        //stateEntryList = parse();
+    public ResourceNotModifiedException(String uri) {
+        this.uri = uri;
     }
-    
-    
-    
-    /**
-     * Assume resource exists and is not null
-     * 
-     * @param request
-     * @return
-     */
-    public boolean matches(final Resource resource) {
-		boolean match;
-		if (headerValue == null) {
-			match = true;
-		} else if (headerValue.equals("*")) {
-			match = false; //TODO: not sure about this one. Must check spec!
-		} else {
-			// TODO: Implement support for multiple etags in the header
-			match = !headerValue.equals(resource.getEtag());
-		}
-		logger.debug("match: " + match);
-		return match;
-	}
-    
+
+    public String getURI() {
+        return this.uri;
+    }
 }

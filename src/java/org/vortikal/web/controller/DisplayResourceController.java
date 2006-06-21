@@ -51,6 +51,7 @@ import org.springframework.web.servlet.mvc.LastModified;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotModifiedException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -218,7 +219,7 @@ public class DisplayResourceController
                 
             IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
             if (!ifNoneMatchHeader.matches(resource)) {
-                throw new PreconditionFailedException();
+                throw new ResourceNotModifiedException(uri);
             }
         }
         

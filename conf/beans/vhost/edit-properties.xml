@@ -32,35 +32,32 @@
     </property>
     <property name="services">
       <list>
-        <ref bean="editStandardPropertiesService" />
+        <ref bean="editBasicPropertiesService" />
         <ref bean="editUhtmlPropertiesService" />
+        <ref bean="editTechnicalDetailsPropertiesService" />
+        <ref bean="editInformationDescribingContentPropertiesService" />
       </list>
     </property>
-    <property name="handler" ref="editStandardPropertiesHandler" />
+    <property name="handler" ref="editBasicPropertiesHandler" />
   </bean>        
 
-  <bean id="editStandardPropertiesService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="editBasicPropertiesService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="editPropertiesService" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="group" />
-          <property name="parameterValue" value="standard" />
+          <property name="parameterValue" value="basic" />
         </bean>      
       </list>
     </property>
-    <property name="handler" ref="editStandardPropertiesHandler" />
+    <property name="handler" ref="editBasicPropertiesHandler" />
   </bean>        
 
   <bean id="editUhtmlPropertiesService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="editPropertiesService" />
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace" ref="WEB_3_0_NAMESPACE" />
-          <property name="name" value="description" />
-          <property name="value" value="yes" />
-        </bean>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="group" />
           <property name="parameterValue" value="uhtml" />
@@ -69,34 +66,55 @@
     </property>
     <property name="handler" ref="editUhtmlPropertiesHandler" />
   </bean>        
+
+
+  <bean id="editInformationDescribingContentPropertiesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editPropertiesService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="group" />
+          <property name="parameterValue" value="info-content" />
+        </bean>      
+      </list>
+    </property>
+    <property name="handler" ref="editInformationDescribingContentPropertiesHandler" />
+  </bean>        
   
-
-
-  <bean id="editStandardPropertiesHandler" 
+  <bean id="editTechnicalDetailsPropertiesService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editPropertiesService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="group" />
+          <property name="parameterValue" value="tecnical-details" />
+        </bean>      
+      </list>
+    </property>
+    <property name="handler" ref="editTechnicalDetailsPropertiesHandler" />
+  </bean>        
+  
+  
+  <bean id="editBasicPropertiesHandler" 
     class="org.vortikal.web.controller.properties.PropertyEditController"
     parent="requestLocalRepositoryAware">
     <property name="principalManager" ref="principalManager" />
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="ownerPropDef" />
-        <ref bean="createdByPropDef" />
-        <ref bean="collectionPropDef" />
+        <ref bean="lastModifiedPropDef" />
+        <ref bean="modifiedByPropDef" />
         <ref bean="creationTimePropDef" />
-        <ref bean="contentLastModifiedPropDef" />
-        <ref bean="contentModifiedByPropDef" />
-        <ref bean="propertiesLastModifiedPropDef" />
-        <ref bean="propertiesModifiedByPropDef" />
-
-        <ref bean="keywordsPropDef" />
-        <ref bean="descriptionPropDef" />
-
-        <ref bean="userSetCharacterEncodingPropDef" />
-        <ref bean="guessedCharacterEncodingPropDef" />
-        <ref bean="characterEncodingPropDef" />
+        <ref bean="createdByPropDef" />
+        <ref bean="ownerPropDef" />
+        <!-- resourceType -->
+        <!-- webadress -->
+        <!-- webDAVadress -->
+        <ref bean="contentLocalePropDef" />
+        <ref bean="contentLengthPropDef" />
       </list>
     </property>
-    <property name="modelKey" value="standardPropList" />
-    <property name="service" ref="editStandardPropertiesService" />
+    <property name="modelKey" value="basicPropList" />
+    <property name="service" ref="editBasicPropertiesService" />
 
     <property name="valueFactory" ref="valueFactory" />
     <property name="formView" value="editProperties" />
@@ -136,17 +154,75 @@
     -->
   </bean>
 
+  <bean id="editInformationDescribingContentPropertiesHandler" 
+    class="org.vortikal.web.controller.properties.PropertyEditController"
+    parent="requestLocalRepositoryAware">
+    <property name="principalManager" ref="principalManager" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <!-- ref bean="titlePropDef" / -->
+        <ref bean="shortTitlePropDef" />
+        <ref bean="keywordsPropDef" />
+        <ref bean="descriptionPropDef" />
+      </list>
+    </property>
+    <property name="modelKey" value="informationDescribingContentPropList" />
+    <property name="service" ref="editInformationDescribingContentPropertiesService" />
+
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="formView" value="editProperties" />
+    <property name="successView" value="editProperties" />
+
+    <property name="commandName" value="form" />
+    <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
+    <!--
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
+    </property>
+    -->
+  </bean>
+
+  <bean id="editTechnicalDetailsPropertiesHandler" 
+    class="org.vortikal.web.controller.properties.PropertyEditController"
+    parent="requestLocalRepositoryAware">
+    <property name="principalManager" ref="principalManager" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="contentTypePropDef" />
+        <ref bean="userSetCharacterEncodingPropDef" />
+        <ref bean="guessedCharacterEncodingPropDef" />
+        <ref bean="characterEncodingPropDef" />
+      </list>
+    </property>
+    <property name="modelKey" value="technicalDetailsPropList" />
+    <property name="service" ref="editTechnicalDetailsPropertiesService" />
+
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="formView" value="editProperties" />
+    <property name="successView" value="editProperties" />
+
+    <property name="commandName" value="form" />
+    <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
+    <!--
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
+    </property>
+    -->
+  </bean>
+
+
   <bean id="editPropertiesView" parent="freemarkerView">
     <property name="url" value="pages/properties-listing.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="editStandardPropertiesHandler" /> <!-- (Also a reference data provider) -->
+         <ref bean="editBasicPropertiesHandler" /> 
         <ref bean="editUhtmlPropertiesHandler" />
+        <ref bean="editInformationDescribingContentPropertiesHandler"/>
+        <ref bean="editTechnicalDetailsPropertiesHandler"/>
         <ref bean="adminCSSProvider" />
       </list>
     </property>
   </bean>
-
 
 
   <bean id="adminViewResolver2" 

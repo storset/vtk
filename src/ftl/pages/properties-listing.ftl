@@ -22,21 +22,46 @@
 <body>
 
 <#assign defaultHeader = vrtx.getMsg("resource.metadata.about", "About this resource") />
-<div class="resourceInfoHeader" style="padding-top:0;padding-bottom:1.5em;">
-  <h2 style="padding-top: 0px;float:left;">
+
+  <div class="resourceInfoHeader" style="padding-top:0;padding-bottom:1.5em;">
+    <h2 style="padding-top: 0px;float:left;">
+      <@vrtx.msg
+        code="resource.metadata.about.${resourceContext.currentResource.resourceType}"
+        default="${defaultHeader}"/>
+    </h2>
+  </div>
+  <p>Lorem ipsum dolere sit amet...</p>
+
+
+  <h3 class="resourceInfoHeader">
     <@vrtx.msg
-       code="resource.metadata.about.${resourceContext.currentResource.resourceType}"
-       default="${defaultHeader}"/>
-  </h2>
-</div>
+       code="resource.metadata.about.basic-information"
+       default="Basic information"/>
+  </h3>
+  <@propList.propertyList basicPropList />
 
-  <@propList.propertyList standardPropList />
 
-      <h2 class="resourceInfoHeader" style="padding-top:15px;">
-        <@vrtx.msg code="resourceProperties.visualProfile" default="UiOs visuelle profil"/>
-      </h2>
-
+  <h3 class="resourceInfoHeader">
+      <@vrtx.msg code="resourceProperties.visualProfile" default="UiOs visuelle profil"/>
+  </h3>
   <@propList.propertyList uhtmlPropList />
+
+
+  <h3 class="resourceInfoHeader">
+      <@vrtx.msg code="resourceProperties.information-describing-content" default="Information describing the content"/>
+  </h3>
+  <@propList.propertyList informationDescribingContentPropList />
+
+  <h3 class="resourceInfoHeader">
+      <@vrtx.msg code="resourceProperties.technical-details" default="Technical details"/>
+  </h3
+  <@propList.propertyList technicalDetailsPropList />
+
+
+
+
+    <!-- @propList.propertyList standardPropList / -->
+
 
 </body>
 </html>

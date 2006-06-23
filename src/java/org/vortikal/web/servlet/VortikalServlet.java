@@ -36,6 +36,7 @@ package org.vortikal.web.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -72,6 +73,7 @@ import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
 import org.vortikal.web.filter.RequestFilter;
+import org.vortikal.web.filter.StandardRequestFilter;
 import org.vortikal.web.service.Service;
 
 
@@ -530,9 +532,24 @@ public class VortikalServlet extends DispatcherServlet {
         msg.append(" - user agent: ").append(userAgent);
         msg.append(" - cached: ").append(wasCacheRequest);
         msg.append(" - time: ").append(processingTime);
+        msg.append(getIfHeaders(req));
         requestLogger.info(msg);
     }
     
+    private StringBuffer getIfHeaders(HttpServletRequest request) {
+        StringBuffer ifHeaders = new StringBuffer();
+        ifHeaders.append(" - ifheaders[ ");
+        Enumeration headers = request.getHeaderNames();
+        while (headers.hasMoreElements()) {
+            String header = (String) headers.nextElement();
+            if (header.startsWith("If") || header.startsWith("if")) {
+                ifHeaders.append(header + ": " + request.getHeader(header) + " ");
+            }
+        }
+        ifHeaders.append("]");
+        return ifHeaders;
+    }
+
 
 
     /**

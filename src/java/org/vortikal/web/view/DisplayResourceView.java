@@ -221,6 +221,7 @@ public class DisplayResourceView extends AbstractView
         setExpiresHeader(resource, model, request, response);
         setLastModifiedHeader(resource, model, request, response);
         setEtagHeader(resource, model, request, response);
+        response.setHeader("Cache-Control", "no-cache");
         response.setStatus(HttpServletResponse.SC_OK);
     }
     

@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -198,8 +199,13 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
                                                 URIUtil.stripTrailingSlash(uri)));
             
             if (td.next()) {
-                String fieldValue = reader.document(td.doc()).get(DocumentMapper.ID_FIELD_NAME);
-                return new Term(DocumentMapper.ID_FIELD_NAME, fieldValue);
+                Field field= reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
+                
+                String value = 
+                    Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(field));
+                
+                return new Term(DocumentMapper.ID_FIELD_NAME, value);
+                
             } else {
                 // URI not found, so the query should produce zero hits.
                 return new Term(DocumentMapper.ID_FIELD_NAME, "-1"); 

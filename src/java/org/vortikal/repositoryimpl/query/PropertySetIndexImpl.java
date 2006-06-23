@@ -181,7 +181,10 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                 }
                 return 0;
             } else {
-                String id = reader.document(td.doc()).get(DocumentMapper.ID_FIELD_NAME);
+                Field idField = reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
+                String id = 
+                    Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(idField));
+                
                 int n = reader.deleteDocuments(uriTerm);
                 n += reader.deleteDocuments(new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, id));
 

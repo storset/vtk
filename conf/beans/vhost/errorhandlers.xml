@@ -79,7 +79,7 @@
     </property>
     <property name="statusCodeMappings">
       <map>
-        <entry key="org.vortikal.webdav.PreconditionFailedException" value="304" />
+        <entry key="org.vortikal.repository.ResourceNotModifiedException" value="304" />
       </map>
     </property>
   </bean>

@@ -124,6 +124,7 @@ public class DisplayResourceView extends AbstractView
     private boolean includeExpiresHeader = true;
     private boolean includeContentLanguageHeader = true;
     private boolean includeEtagHeader = false;
+    private boolean includeNoCacheHeader = false;
     private ReferenceDataProvider[] referenceDataProviders;
     
     public ReferenceDataProvider[] getReferenceDataProviders() {
@@ -162,6 +163,10 @@ public class DisplayResourceView extends AbstractView
         this.includeEtagHeader = includeEtagHeader;
     }
     
+    public void setIncludeNoCacheHeader(boolean includeNoCacheHeader) {
+        this.includeNoCacheHeader = includeNoCacheHeader;
+    }
+
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
 
@@ -221,7 +226,7 @@ public class DisplayResourceView extends AbstractView
         setExpiresHeader(resource, model, request, response);
         setLastModifiedHeader(resource, model, request, response);
         setEtagHeader(resource, model, request, response);
-        response.setHeader("Cache-Control", "no-cache");
+        setCacheControlHeader(resource, model, request, response);
         response.setStatus(HttpServletResponse.SC_OK);
     }
     
@@ -330,7 +335,17 @@ public class DisplayResourceView extends AbstractView
         }
     }
     
-
+    protected void setCacheControlHeader(Resource resource, Map model, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        if (includeNoCacheHeader) {
+            response.setHeader("Cache-Control", "no-cache");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting header Cache-Control: no-cache");
+            }
+        }
+    }
+    
+    
     protected void setExpiresHeader(Resource resource, Map model, HttpServletRequest request,
                                     HttpServletResponse response) throws Exception {
         if (this.includeExpiresHeader) {

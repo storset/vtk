@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
@@ -50,9 +53,12 @@ import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
 
+
 /**
  */
 public class AuthorizationManagerImpl implements AuthorizationManager {
+
+    private Log logger = LogFactory.getLog(this.getClass());    
 
     private RoleManager roleManager;
     private PrincipalManager principalManager;
@@ -105,20 +111,33 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 authorizePropertyEditAdminRole(uri, principal);
             } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
                 authorizePropertyEditRootRole(uri, principal);
-            }else {
+            } else {
                 // XXX: copy/move shouldn't be allowed, currently ends up here
+                if (logger.isDebugEnabled()) {
+                    logger.debug("authorization: false for uri = " + uri + ", action = "
+                                 + action + ", principal = " + principal);
+                }
                 return false;
             }
         
+            if (logger.isDebugEnabled()) {
+                logger.debug("authorization: true for uri = " + uri + ", action = "
+                             + action + ", principal = " + principal);
+            }
             return true;
-        } catch (Exception e) {
-            // Nothing
-        }
+        } catch (Exception e) { }
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("authorization: false for uri = " + uri + ", action = "
+                         + action + ", principal = " + principal);
+        }
         return false;
     }
     
     
+    private static final RepositoryAction[] READ_PROCESSED_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
+
     /**
      * <ul>
      *   <li>Privilege READ_PROCESSED, READ or ALL in ACL
@@ -136,13 +155,14 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
             return;
 
-        RepositoryAction[] privileges = 
-            new RepositoryAction[] {Privilege.ALL, Privilege.READ, Privilege.READ_PROCESSED};
-
-        aclAuthorize(principal, resource, privileges);
+        aclAuthorize(principal, resource, READ_PROCESSED_AUTH_PRIVILEGES);
     }
 
     
+
+    private static final RepositoryAction[] READ_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL, Privilege.READ};
+
     /**
      * <ul>
      *   <li>Privilege READ or ALL in ACL
@@ -161,15 +181,16 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
             return;
         
-        RepositoryAction[] privileges = 
-            new RepositoryAction[] {Privilege.ALL, Privilege.READ};
-
-        aclAuthorize(principal, resource, privileges);
+        aclAuthorize(principal, resource, READ_AUTH_PRIVILEGES);
     }
+
+
+    private static final RepositoryAction[] CREATE_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE, Privilege.BIND};
 
     /**
      * <ul>
-     *   <li>Privilege BIND, WRITE or ALL on parent resource
+     *   <li>Privilege BIND, WRITE or ALL on resource
      *   <li>Role ROOT
      *   <li>+ parent not locked by another principal
      * </ul>
@@ -182,19 +203,21 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         checkReadOnly(principal);
 
-        ResourceImpl parent = this.dao.load(URIUtil.getParentURI(uri));
+//         ResourceImpl parent = this.dao.load(URIUtil.getParentURI(uri));
+        ResourceImpl resource = this.dao.load(uri);
         
-        this.lockManager.lockAuthorize(parent, principal, false);
+        this.lockManager.lockAuthorize(resource, principal, false);
         
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        RepositoryAction[] privileges = 
-            new RepositoryAction[] {Privilege.ALL, Privilege.WRITE, Privilege.BIND};
-
-        aclAuthorize(principal, parent, privileges);
+        aclAuthorize(principal, resource, CREATE_AUTH_PRIVILEGES);
     }
     
+
+    private static final RepositoryAction[] WRITE_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
+
     /**
      * <ul>
      *   <li>Privilege WRITE or ALL in ACL
@@ -217,12 +240,14 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        RepositoryAction[] privileges = 
-            new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
-
-        aclAuthorize(principal, resource, privileges);
+        aclAuthorize(principal, resource, WRITE_AUTH_PRIVILEGES);
     }
     
+
+    private static final RepositoryAction[] WRITE_ACL_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL};
+
+
     /**
      * <ul>
      *   <li>Privilege ALL in ACL
@@ -245,12 +270,14 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        RepositoryAction[] privileges = 
-            new RepositoryAction[] {Privilege.ALL};
-
-        aclAuthorize(principal, resource, privileges);
+        aclAuthorize(principal, resource, WRITE_ACL_AUTH_PRIVILEGES);
     }
     
+
+    private static final RepositoryAction[] UNLOCK_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
+
+
     /**
      * <ul>
      *   <li>privilege WRITE or ALL in Acl + resource not locked by another principal
@@ -272,11 +299,12 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         
         this.lockManager.lockAuthorize(resource, principal, false);
 
-        RepositoryAction[] privileges = 
-            new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
-
-        aclAuthorize(principal, resource, privileges);
+        aclAuthorize(principal, resource, UNLOCK_AUTH_PRIVILEGES);
     }
+
+
+    private static final RepositoryAction[] DELETE_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL};
 
 
     /**
@@ -305,12 +333,13 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             // Continue..
         }
 
-        RepositoryAction[] privileges = 
-            new RepositoryAction[] {Privilege.ALL};
-
-        aclAuthorize(principal, resource, privileges);
+        aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);
     }
     
+
+    private static final RepositoryAction[] ADMIN_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL};
+
 
     /**
      * All of:
@@ -334,7 +363,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         }
 
         Resource resource = this.dao.load(uri);
-        aclAuthorize(principal, resource, new RepositoryAction[] {Privilege.ALL});
+        aclAuthorize(principal, resource, ADMIN_AUTH_PRIVILEGES);
         authorizeWrite(uri, principal);
         
     }
@@ -475,6 +504,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             }
 
             // Condition 4:
+
             if (principalSet.contains(principal)) {
                 return;
             }
@@ -492,11 +522,10 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 return;
             }
         }
-        
-        throw new AuthorizationException();
-
+       throw new AuthorizationException();
     }
     
+
     private boolean groupMatch(Set principalList, Principal principal) {
 
         for (Iterator i = principalList.iterator(); i.hasNext();) {
@@ -508,7 +537,6 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 }
             }
         }
-
         return false;
     }
 

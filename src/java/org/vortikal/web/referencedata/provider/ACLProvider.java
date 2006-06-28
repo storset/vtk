@@ -30,16 +30,20 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -60,55 +64,39 @@ import org.vortikal.web.service.Service;
  *  <li><code>repository</code> - the {@link Repository} is required
  *  <li> <code>aclInheritanceService</code> - service for editing the 'inherited
  *  property' of the ACL for a resource
- *  <li> <code>editWritePermissionsService</code> - service for editing 'write'
- *  permissions for a resource
- *  <li> <code>editReadPermissionsService</code> - service for editing 'read'
- *  permissions for a resource
- *  <li> <code>editWriteACLPermissionsService</code> - service for editing 'write ACL'
- *  permissions for a resource
+ *  <li> <code>aclEditServices</code> - map from privileges to editing
+ *  services
+ *  <li> <code>modelName</code> - name of the sub-model provided
  * </ul>
  * 
- * Model data provided:
+ * Model data provided in the sub-model:
  * <ul>
- *   <li><code>readAuthorizedUsers</code> - the users having read
- *   permission
- *   <li><code>readAuthorizedGroups</code> - the groups having read
- *   permission
- *   <li><code>writeAuthorizedUsers</code> - the users having write
- *   permission
- *   <li><code>writeAuthorizedGroups</code> - the groups having write
- *   permission
- *   <li><code>writeAclAuthorizedUsers</code> - the users having write
- *   ACL permission
- *   <li><code>writeAclAuthorizedGroups</code> - the groups having
- *   write ACL permission
- *   <li><code>everyoneReadAuthorized</code> - whether all
- *      authenticated users have read permission
- *   <li><code>everyoneWriteAuthorized</code> - whether all
- *       authenticated users have write permission
- *   <li><code>everyoneWriteAclAuthorized</code> - whether all
- *       authenticated users have write ACL permission
- *   <li><code>aclInheritedFrom</code> - the resource from which the
- *       current resource inherits its ACL (may be null)
- *   <li><code>aclInheritanceServiceURL</code> - the URL to the ACL
  *   inheritance editing service
- *   <li><code>editWritePermissionsServiceURL</code> - the URL to the
- *   write permissions editing service
- *   <li><code>editReadAythorizedUsersServiceURL</code> - the URL to
- *   the read permissions editing service
- *   <li><code>editWriteACLPermissionsServiceURL</code> - the URL to
- *   the write ACL permissions editing service
+ *   <li><code>aclEditURLsL</code> - map from {@link RepositoryAction actions} to edit URLs
+ *   <li><code>privileges</code> - map from {@link Privilege#getName
+ *   privilege names} to {@link Privilege privilege objects}
+ *   <li><code>groupingPrivilegePrincipalMap</code> - map from
+ *   privileges to the grouping pseudo principal
+ *   <li><code>inherited</code> - whether or not the ACL of the
+ *   current resource is inherited
+ *   <li><code>privilegedPseudoPrincipals</code> - map from privileges
+ *   to a list of pseudo principals (from the ACL)
+ *   <li><code>privilegedUsers</code> - map from privileges to a list
+ *   of user principals (from the ACL)
+ *   <li><code>privilegedGroups</code> - map from privileges to a list
+ *   of groups (from the ACL)
  * </ul>
  */
 public class ACLProvider implements ReferenceDataProvider, InitializingBean {
 
     private Repository repository = null;
     private Service aclInheritanceService = null;
-    private Service editWritePermissionsService = null;
-    private Service editReadPermissionsService = null;
-    private Service editWriteACLPermissionsService = null;
     
+    private Map groupingPrivilegePrincipalMap;
 
+    private Map aclEditServices;
+    
+    private String modelName = "aclInfo";
     
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -118,32 +106,46 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         this.aclInheritanceService = aclInheritanceService;
     }
     
-    public void setEditWritePermissionsService(
-        Service editWritePermissionsService)  {
-        this.editWritePermissionsService = editWritePermissionsService;
-    }
+    public void setAclEditServices(Map aclEditServices) {
+        this.aclEditServices = aclEditServices;
+    }      
 
-    public void setEditReadPermissionsService(
-        Service editReadPermissionsService)  {
-        this.editReadPermissionsService = editReadPermissionsService;
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
-
-    public void setEditWriteACLPermissionsService(
-        Service editWriteACLPermissionsService)  {
-        this.editWriteACLPermissionsService = editWriteACLPermissionsService;
+    
+    public void setGroupingPrivilegePrincipalMap(Map groupingPrivilegePrincipalMap) {
+        this.groupingPrivilegePrincipalMap = groupingPrivilegePrincipalMap;
     }
-
+    
 
     public void afterPropertiesSet() {
         if (this.repository == null) {
             throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
+                "JavaBean property 'repository' must be set");
+        }
+        if (this.aclInheritanceService == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'aclInheritanceService' must be set");
+        }
+        if (this.aclEditServices == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'aclEditServices' must be set");
+        }
+        if (this.modelName == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'modelName' must be set");
+        }
+        if (this.groupingPrivilegePrincipalMap == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'groupingPrivilegePrincipalMap' must be set");
         }
     }
 
 
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
+
         Map aclModel = new HashMap();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -152,77 +154,66 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         String token = securityContext.getToken();
         
         Acl acl = repository.getACL(token, uri);
-
-        // XXX: Pseudo needs to be handled in the new way
-        // XXX: groups are now principals
-        Principal[] readAuthorizedUsers = acl.listPrivilegedUsers(Privilege.READ);
-        aclModel.put("readAuthorizedUsers", readAuthorizedUsers);
-        Principal[] readAuthorizedGroups = acl.listPrivilegedGroups(Privilege.READ);
-        aclModel.put("readAuthorizedGroups", readAuthorizedGroups);
-
-        Principal[] writeAuthorizedUsers = acl.listPrivilegedUsers(Privilege.WRITE);
-        aclModel.put("writeAuthorizedUsers", writeAuthorizedUsers);
-        Principal[] writeAuthorizedGroups = acl.listPrivilegedGroups(Privilege.WRITE);
-        aclModel.put("writeAuthorizedGroups", writeAuthorizedGroups);
-
-        Principal[] writeAclAuthorizedUsers = acl.listPrivilegedUsers(Privilege.ALL);
-        aclModel.put("writeAclAuthorizedUsers", writeAclAuthorizedUsers);
-        Principal[] writeAclAuthorizedGroups = acl.listPrivilegedGroups(Privilege.ALL);
-        aclModel.put("writeAclAuthorizedGroups", writeAclAuthorizedGroups);
-
-        Principal auth = PseudoPrincipal.AUTHENTICATED;
-        aclModel.put("everyoneReadAuthorized" , 
-                new Boolean(acl.hasPrivilege(Privilege.READ, auth)));
-        aclModel.put("everyoneWriteAuthorized", 
-                new Boolean(acl.hasPrivilege(Privilege.WRITE, auth)));
-        aclModel.put("everyoneWriteAclAuthorized", 
-                new Boolean(acl.hasPrivilege(Privilege.ALL, auth)));
-
-        aclModel.put("aclInherited", new Boolean(acl.isInherited()));
-
         Resource resource = repository.retrieve(token, uri, false);
+        Map editURLs = new HashMap();
+
+        if (!acl.isInherited()) {
+            for (Iterator i = this.aclEditServices.keySet().iterator(); i.hasNext();) {
+                RepositoryAction action = (RepositoryAction) i.next();
+                String privilegeName = Privilege.getActionName(action);
+                Service editService = (Service) this.aclEditServices.get(action);
+                try {
+                    String url = editService.constructLink(
+                        resource, securityContext.getPrincipal());
+                    editURLs.put(privilegeName, url);
+                } catch (Exception e) {System.out.println("error: " + e.getMessage()); e.printStackTrace(); }
+            }
+        }
 
         try {
             if (aclInheritanceService != null) {
                 String url = aclInheritanceService.constructLink(
                     resource, securityContext.getPrincipal());
-                aclModel.put("aclInheritanceServiceURL", url);
+                editURLs.put("inheritance", url);
             }
-        } catch (Exception e) {
-            // Ignore
+        } catch (Exception e) { }
+        
+
+        Map privileges = new HashMap();
+        Map privilegedUsers = new HashMap();
+        Map privilegedGroups = new HashMap();
+        Map privilegedPseudoPrincipals = new HashMap();
+
+        for (Iterator i = Privilege.PRIVILEGES.iterator(); i.hasNext();) {
+            RepositoryAction action = (RepositoryAction) i.next();
+            String actionName = Privilege.getActionName(action);
+            privileges.put(actionName, action);
+
+
+            privilegedUsers.put(actionName, acl.listPrivilegedUsers(action));
+            privilegedGroups.put(actionName, acl.listPrivilegedGroups(action));
+
+            List l = new ArrayList(java.util.Arrays.asList(acl.listPrivilegedPseudoPrincipals(action)));
+            if (!l.contains(PseudoPrincipal.OWNER)) {
+                l.add(0, PseudoPrincipal.OWNER);
+            }
+            privilegedPseudoPrincipals.put(actionName, l);
+        }
+        
+        Map pseudoPrincipalPrivilegeMap = new HashMap(this.groupingPrivilegePrincipalMap);
+        for (Iterator i = this.groupingPrivilegePrincipalMap.keySet().iterator(); i.hasNext();) {
+            RepositoryAction action = (RepositoryAction) i.next();
+            Principal p = (Principal) this.groupingPrivilegePrincipalMap.get(action);
+            pseudoPrincipalPrivilegeMap.put(Privilege.getActionName(action), p);
         }
 
-        try {
-            if (editWritePermissionsService != null) {
-                String url = editWritePermissionsService.constructLink(
-                        resource, securityContext.getPrincipal());
-                aclModel.put("editWritePermissionsServiceURL", url);
-            }
-        } catch (Exception e) {
-            // Ignore
-        }
-
-
-        try {
-            if (editReadPermissionsService != null) {
-                String url = editReadPermissionsService.constructLink(resource,
-                        securityContext.getPrincipal());
-                aclModel.put("editReadPermissionsServiceURL", url);
-            }
-        } catch (Exception e) {
-            // Ignore
-        }
-
-        try {
-            if (editWriteACLPermissionsService != null) {
-                String url = editWriteACLPermissionsService.constructLink(
-                        resource, securityContext.getPrincipal());
-                aclModel.put("editWriteACLPermissionsServiceURL", url);
-            }
-        } catch (Exception e) {
-            // Ignore
-        }
-
+        aclModel.put("aclEditURLs", editURLs);
+        aclModel.put("privileges", privileges);
+        aclModel.put("groupingPrivilegePrincipalMap", pseudoPrincipalPrivilegeMap);
+        aclModel.put("inherited", new Boolean(acl.isInherited()));
+        aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
+        aclModel.put("privilegedUsers", privilegedUsers);
+        aclModel.put("privilegedGroups", privilegedGroups);
         model.put("aclInfo", aclModel);
     }
 

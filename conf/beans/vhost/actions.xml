@@ -57,6 +57,12 @@
               value="org.vortikal.repository.RepositoryAction.WRITE" />
   </bean>
 
+  <bean id="ACTION_CREATE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.RepositoryAction.CREATE" />
+  </bean>
+
   <bean id="ACTION_WRITE_ACL"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"

@@ -678,7 +678,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                     "or parent is document");
         }
 
-        this.authorizationManager.authorizeCreate(uri, principal);
+        this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         
         ResourceImpl newResource = 
             this.propertyManager.create(principal, uri, collection);

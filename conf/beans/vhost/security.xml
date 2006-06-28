@@ -127,6 +127,7 @@
          <property name="timeoutSeconds" value="1800" />
     </bean>-->
 
+
   <bean id="principalManager" class="org.vortikal.security.PrincipalManagerImpl">
     <property name="defaultDomain" value="${defaultPrincipalDomain}" />
     <!--property name="principalStore" ref="principalStore"/-->
@@ -428,5 +429,26 @@
       </list>
     </property>
   </bean>
+
+  <!-- Pseudo principals: -->
+
+  <bean id="PRINCIPAL_ALL"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.security.PseudoPrincipal.ALL" />
+  </bean>
+
+  <bean id="PRINCIPAL_AUTHENTICATED"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.security.PseudoPrincipal.AUTHENTICATED" />
+  </bean>
+
+  <bean id="PRINCIPAL_OWNER"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.security.PseudoPrincipal.OWNER" />
+  </bean>
+
 
 </beans>

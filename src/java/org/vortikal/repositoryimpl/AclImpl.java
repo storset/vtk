@@ -139,6 +139,22 @@ public class AclImpl implements Acl {
         actionEntry.remove(principal);
     }
 
+
+    public boolean containsEntry(RepositoryAction action, Principal principal) throws IllegalArgumentException {
+
+        if (!Privilege.PRIVILEGES.contains(action))
+            throw new IllegalArgumentException("Unknown acl privilege");
+            
+        if (principal == null)
+            throw new IllegalArgumentException("Null principal");
+            
+        Set actionEntry = (Set) this.actionSets.get(action);
+        
+        if (actionEntry == null) return false;
+        return actionEntry.contains(principal);
+    }
+
+
     public Principal[] listPrivilegedUsers(RepositoryAction action) {
         Set principals = (Set) this.actionSets.get(action);
 
@@ -148,7 +164,7 @@ public class AclImpl implements Acl {
         for (Iterator iter = principals.iterator(); iter.hasNext();) {
             Principal p = (Principal) iter.next();
 
-            if (p.isUser()) {
+            if (p.getType() == Principal.TYPE_USER) {
                 userList.add(p);
             }
             

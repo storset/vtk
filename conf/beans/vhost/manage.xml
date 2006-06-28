@@ -107,7 +107,9 @@
         <ref bean="aclInheritanceService" />
         <ref bean="editWritePermissionsService" />
         <ref bean="editReadPermissionsService" />
-        <ref bean="editWriteACLPermissionsService" />
+        <ref bean="editAdminPermissionsService" />
+        <ref bean="editBindPermissionsService" />
+        <ref bean="editReadProcessedPermissionsService" />
       </list>
     </property>
     <property name="handler">
@@ -196,7 +198,7 @@
     </property>
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>
@@ -331,7 +333,7 @@
     </property>
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="bindPermissionAssertion" />
         <ref bean="resourceIsCollectionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
@@ -357,7 +359,7 @@
     </property>
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="bindPermissionAssertion" />
         <ref bean="resourceIsCollectionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
@@ -425,18 +427,12 @@
         <ref local="resourceNotRootAssertion" />
         <ref local="writeACLPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>update-acl-inheritance</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="toggle-acl-inheritance" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="aclInheritanceHandler" />
-    </property>
+    <property name="handler" ref="aclInheritanceHandler" />
   </bean>
 
   <bean id="editWritePermissionsService" class="org.vortikal.web.service.ServiceImpl">
@@ -444,18 +440,12 @@
       <list>
         <ref local="writeACLPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>edit-write-permissions</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-write-permissions" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="editWritePermissionsHandler" />
-    </property>
+    <property name="handler" ref="editWritePermissionsHandler" />
   </bean>
 
   <bean id="editReadPermissionsService" class="org.vortikal.web.service.ServiceImpl">
@@ -463,37 +453,53 @@
       <list>
         <ref local="writeACLPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>edit-read-permissions</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-read-permissions" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="editReadPermissionsHandler" />
-    </property>
+    <property name="handler" ref="editReadPermissionsHandler" />
   </bean>
 
-  <bean id="editWriteACLPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="editAdminPermissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
         <ref local="writeACLPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>edit-write-acl-permissions</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-admin-permissions" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="editWriteACLPermissionsHandler" />
-    </property>
+    <property name="handler" ref="editAdminPermissionsHandler" />
+  </bean>
+
+
+  <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-bind-permissions" />
+        </bean>
+      </list>
+    </property>  
+    <property name="handler" ref="editBindPermissionsHandler" />
+  </bean>
+
+
+  <bean id="editReadProcessedPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-read-processed-permissions" />
+        </bean>
+      </list>
+    </property>  
+    <property name="handler" ref="editReadProcessedPermissionsHandler" />
   </bean>
 
 
@@ -501,7 +507,7 @@
         class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>
@@ -520,7 +526,7 @@
   <bean id="setContentTypeService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>
@@ -539,7 +545,7 @@
   <bean id="setContentLanguageService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>
@@ -558,7 +564,7 @@
   <bean id="setCharacterEncodingService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>
@@ -580,7 +586,7 @@
         class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>
@@ -601,7 +607,7 @@
         class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <ref local="writePermissionAssertion" />
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>
@@ -939,26 +945,19 @@
   </bean>
 
   <bean id="aclInheritanceHandler" 
-    class="org.vortikal.web.controller.permissions.ACLInheritanceController"
+    class="org.vortikal.web.controller.permissions.ToggleAclInheritanceController"
     parent="requestLocalRepositoryAware">
-    <property name="formView" value="permissions" />
-    <property name="successView" value="redirectToPermissions" />
-    <property name="commandName" value="aclInheritanceForm" />
-    <property name="commandClass"
-              value="org.vortikal.web.controller.permissions.UpdateACLInheritanceCommand" />
+    <property name="viewName" value="redirectToPermissions" />
   </bean>
 
-  <bean id="editWritePermissionsHandler"
+  <bean id="abstractPermissionsHandler"
+        abstract="true"
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
     <property name="principalManager" ref="principalManager" />
-    <property name="privilege" ref="PRIVILEGE_WRITE" />
+    <property name="privilegePrincipalMap" ref="editPrivilegePrincipalMap" />
     <property name="formView" value="permissions" />
-    <property name="successView" value="redirectToPermissions" />
-    <property name="commandName"><value>editWritePermissionsForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.permissions.ACLEditCommand</value>
-    </property>
+    <property name="commandClass" value="org.vortikal.web.controller.permissions.ACLEditCommand" />
     <property name="validator">
       <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
         <property name="principalManager">
@@ -968,43 +967,55 @@
     </property>
   </bean>
 
-  <bean id="editReadPermissionsHandler"
-        class="org.vortikal.web.controller.permissions.ACLEditController"
-        parent="requestLocalRepositoryAware">
-    <property name="principalManager" ref="principalManager" />
+
+  <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
     <property name="privilege" ref="PRIVILEGE_READ" />
-    <property name="formView" value="permissions" />
     <property name="successView" value="redirectToPermissions" />
-    <property name="commandName"><value>editReadPermissionsForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.permissions.ACLEditCommand</value>
-    </property>
-    <property name="validator">
-      <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
-        <property name="principalManager" ref="principalManager" />
-      </bean>
-    </property>
+    <property name="commandName" value="permissionsForm_read" />
   </bean>
 
-  <bean id="editWriteACLPermissionsHandler"
-        class="org.vortikal.web.controller.permissions.ACLEditController"
-        parent="requestLocalRepositoryAware">
-    <property name="principalManager" ref="principalManager" />
-    <property name="privilege" ref="PRIVILEGE_ALL" />
-    <property name="formView" value="permissions" />
+  <bean id="editWritePermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" ref="PRIVILEGE_WRITE" />
     <property name="successView" value="redirectToPermissions" />
-    <property name="commandName" value="editWriteACLPermissionsForm" />
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.permissions.ACLEditCommand</value>
-    </property>
-    <property name="validator">
-      <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
-        <property name="principalManager">
-          <ref bean="principalManager" />
-        </property>
-      </bean>
-    </property>
+    <property name="commandName" value="permissionsForm_write" />
   </bean>
+
+  <bean id="editAdminPermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" ref="PRIVILEGE_ALL" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="permissionsForm_all" />
+  </bean>
+
+  <bean id="editBindPermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" ref="PRIVILEGE_BIND" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="permissionsForm_bind" />
+  </bean>
+
+  <bean id="editReadProcessedPermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" ref="PRIVILEGE_READ_PROCESSED" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="permissionsForm_read-processed" />
+  </bean>
+
+  <bean id="permissionsHandler" 
+    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="permissions" />
+  </bean>
+
+  <bean id="editPrivilegePrincipalMap" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key-ref="PRIVILEGE_READ" value-ref="PRINCIPAL_ALL" />
+        <entry key-ref="PRIVILEGE_WRITE" value-ref="PRINCIPAL_AUTHENTICATED" />
+        <entry key-ref="PRIVILEGE_ALL" value-ref="PRINCIPAL_AUTHENTICATED" />
+        <entry key-ref="PRIVILEGE_BIND" value-ref="PRINCIPAL_AUTHENTICATED" />
+        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="PRINCIPAL_ALL" />
+      </map>
+    </constructor-arg>
+  </bean>
+
 
   <bean id="editResourcePropertyController"
         class="org.vortikal.web.controller.properties.EditResourcePropertyController"
@@ -1012,12 +1023,11 @@
     <property name="propertyDescriptors">
       <ref bean="standardEditablePropertyList" />
     </property>
-    <property name="formView"><value>admin</value></property>
-    <property name="successView"><value>redirect</value></property>
-    <property name="commandName"><value>editResourcePropertyForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
-    </property>
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirect" />
+    <property name="commandName" value="editResourcePropertyForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand" />
   </bean>
 
   <bean id="standardEditablePropertyList" class="java.util.ArrayList">
@@ -1175,16 +1185,10 @@
     class="org.vortikal.web.controller.DeletePropertyController"
     parent="requestLocalRepositoryAware" /-->
 
-  <bean id="permissionsHandler" 
-    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
-    parent="requestLocalRepositoryAware">
-    <property name="viewName"><value>permissions</value></property>
-  </bean>
-
   <bean id="aboutResourceHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
-    <property name="viewName"><value>admin</value></property>
+    <property name="viewName" value="admin" />
   </bean>
 
   <bean id="manageCollectionListingHandler" 
@@ -1497,14 +1501,18 @@
   <bean id="adminACLProvider" 
         class="org.vortikal.web.referencedata.provider.ACLProvider" 
         parent="requestLocalRepositoryAware">
-    <property name="aclInheritanceService" 
-              ref="aclInheritanceService" />
-    <property name="editWritePermissionsService" 
-              ref="editWritePermissionsService" />
-    <property name="editReadPermissionsService" 
-              ref="editReadPermissionsService" />
-    <property name="editWriteACLPermissionsService" 
-              ref="editWriteACLPermissionsService" /> 
+
+    <property name="aclInheritanceService"  ref="aclInheritanceService" />
+    <property name="aclEditServices">
+      <map>
+        <entry key-ref="PRIVILEGE_READ" value-ref="editReadPermissionsService" />
+        <entry key-ref="PRIVILEGE_WRITE" value-ref="editWritePermissionsService" />
+        <entry key-ref="PRIVILEGE_ALL" value-ref="editAdminPermissionsService" />
+        <entry key-ref="PRIVILEGE_BIND" value-ref="editBindPermissionsService" />
+        <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
+      </map>
+    </property>
+    <property name="groupingPrivilegePrincipalMap" ref="editPrivilegePrincipalMap" />
   </bean>
 
   <bean id="manageCollectionlistingProvider" 
@@ -1600,10 +1608,16 @@
     <property name="permission" ref="ACTION_WRITE" />
   </bean>
 
+  <bean id="bindPermissionAssertion"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" ref="ACTION_CREATE" />
+  </bean>
+
   <bean id="writeACLPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" ref="ACTION_WRITE_ACL" />
   </bean>
+
 
   <bean id="readProcessedPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">

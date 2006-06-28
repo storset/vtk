@@ -30,12 +30,13 @@
  */
 package org.vortikal.web.controller.permissions;
 
+import java.util.List;
+import java.util.Map;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
-
-
 
 public class ACLEditCommand extends AbstractSaveCancelCommand {
 
@@ -43,203 +44,100 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
     private String removeUserAction = null;
     private String addGroupAction = null;
     private String removeGroupAction = null;
-    private boolean everyone;
+    private boolean grouped;
     private String owner;
-    private Principal[] users;
-    private Principal[] groups;
-    private String[] withdrawUserURLs;
-    private String[] withdrawGroupURLs;
-    private String userNames[];
-    private String groupNames[];
+    private List users;
+    private List groups;
+    private Map removeUserURLs;
+    private Map removeGroupURLs;
+    private String userNames[] = new String[0];
+    private String groupNames[] = new String[0];
     private Resource resource;
 
     public ACLEditCommand(String submitURL) {
         super(submitURL);
     }
     
-
-    /**
-     * Gets the value of addUserAction
-     *
-     * @return the value of addUserAction
-     */
     public String getAddUserAction() {
         return this.addUserAction;
     }
 
-    /**
-     * Sets the value of addUserAction
-     *
-     * @param addUserAction Value to assign to this.addUserAction
-     */
     public void setAddUserAction(String addUserAction) {
         this.addUserAction = addUserAction;
     }
 
-    /**
-     * Gets the value of removeUserAction
-     *
-     * @return the value of removeUserAction
-     */
     public String getRemoveUserAction() {
         return this.removeUserAction;
     }
 
-    /**
-     * Sets the value of removeUserAction
-     *
-     * @param removeUserAction Value to assign to this.removeUserAction
-     */
     public void setRemoveUserAction(String removeUserAction) {
         this.removeUserAction = removeUserAction;
     }
 
-    /**
-     * Gets the value of addGroupAction
-     *
-     * @return the value of addGroupAction
-     */
     public String getAddGroupAction() {
         return this.addGroupAction;
     }
 
-    /**
-     * Sets the value of addGroupAction
-     *
-     * @param addGroupAction Value to assign to this.addGroupAction
-     */
     public void setAddGroupAction(String addGroupAction) {
         this.addGroupAction = addGroupAction;
     }
 
-    /**
-     * Gets the value of removeGroupAction
-     *
-     * @return the value of removeGroupAction
-     */
     public String getRemoveGroupAction() {
         return this.removeGroupAction;
     }
 
-    /**
-     * Sets the value of removeGroupAction
-     *
-     * @param removeGroupAction Value to assign to this.removeGroupAction
-     */
     public void setRemoveGroupAction(String removeGroupAction) {
         this.removeGroupAction = removeGroupAction;
     }
     
-
-    /**
-     * Gets the value of everyone
-     *
-     * @return the value of everyone
-     */
-    public boolean isEveryone() {
-        return this.everyone;
+    public boolean isGrouped() {
+        return this.grouped;
     }
 
-    /**
-     * Sets the value of everyone
-     *
-     * @param everyone Value to assign to this.everyone
-     */
-    public void setEveryone(boolean everyone)  {
-        this.everyone = everyone;
+    public void setGrouped(boolean grouped)  {
+        this.grouped = grouped;
     }
 
-    /**
-     * Gets the value of users
-     *
-     * @return the value of users
-     */
-    public Principal[] getUsers() {
+    public List getUsers() {
         return this.users;
     }
 
-    /**
-     * Sets the value of users
-     *
-     * @param users Value to assign to this.users
-     */
-    public void setUsers(Principal[] users)  {
+    public void setUsers(List users)  {
         this.users = users;
     }
 
-    /**
-     * Gets the value of groups
-     *
-     * @return the value of groups
-     */
-    public Principal[] getGroups() {
+    public List getGroups() {
         return this.groups;
     }
 
-    /**
-     * Sets the value of groups
-     *
-     * @param groups Value to assign to this.groups
-     */
-    public void setGroups(Principal[] groups)  {
+    public void setGroups(List groups)  {
         this.groups = groups;
     }
     
-    /**
-     * Gets the value of owner
-     *
-     * @return the value of owner
-     */
     public String getOwner() {
         return this.owner;
     }
 
-    /**
-     * Sets the value of owner
-     *
-     * @param owner Value to assign to this.owner
-     */
     public void setOwner(String owner)  {
         this.owner = owner;
     }
 
-    /**
-     * Gets the value of withdrawUserURLs
-     *
-     * @return the value of withdrawUserURLs
-     */
-    public String[] getWithdrawUserURLs() {
-        return this.withdrawUserURLs;
+    public Map getRemoveUserURLs() {
+        return this.removeUserURLs;
     }
 
-    /**
-     * Sets the value of withdrawUserURLs
-     *
-     * @param withdrawUserURLs Value to assign to this.withdrawUserURLs
-     */
-    public void setWithdrawUserURLs(String[] withdrawUserURLs)  {
-        this.withdrawUserURLs = withdrawUserURLs;
+    public void setRemoveUserURLs(Map removeUserURLs)  {
+        this.removeUserURLs = removeUserURLs;
     }
 
-    /**
-     * Gets the value of withdrawGroupURLs
-     *
-     * @return the value of withdrawGroupURLs
-     */
-    public String[] getWithdrawGroupURLs() {
-        return this.withdrawGroupURLs;
+    public Map getRemoveGroupURLs() {
+        return this.removeGroupURLs;
     }
 
-    /**
-     * Sets the value of withdrawGroupURLs
-     *
-     * @param withdrawGroupURLs Value to assign to this.withdrawGroupURLs
-     */
-    public void setWithdrawGroupURLs(String[] withdrawGroupURLs)  {
-        this.withdrawGroupURLs = withdrawGroupURLs;
+    public void setRemoveGroupURLs(Map removeGroupURLs)  {
+        this.removeGroupURLs = removeGroupURLs;
     }
 
-    
     public void setResource(Resource resource)  {
         this.resource = resource;
     }
@@ -252,20 +150,37 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
         return groupNames;
     }
 
-
     public void setGroupNames(String[] groupNames) {
         this.groupNames = groupNames;
     }
-
 
     public String[] getUserNames() {
         return userNames;
     }
 
-
     public void setUserNames(String[] userNames) {
         this.userNames = userNames;
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append("[addUserAction=").append(this.addUserAction);
+        sb.append(", removeUserAction=").append(this.removeUserAction);
+        sb.append(", addGroupAction=").append(this.addGroupAction);
+        sb.append(", remoceGroupAction=").append(this.removeGroupAction);
+        sb.append(", grouped=").append(this.grouped);
+        sb.append(", owner=").append(this.owner);
+        sb.append(", users=").append(this.users);
+        sb.append(", groups=").append(this.groups);
+        sb.append(", removeUserURLs=").append(this.removeUserURLs);
+        sb.append(", removeGroupURLs=").append(this.removeGroupURLs);
+        sb.append(", userNames=").append(java.util.Arrays.asList(this.userNames));
+        sb.append(", groupNames=").append(java.util.Arrays.asList(this.groupNames));
+        sb.append(", resource=").append(this.resource);
+        sb.append("]");
+        return sb.toString();
+    }
+    
 
 }
 

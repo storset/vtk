@@ -68,6 +68,10 @@ public interface Acl extends Cloneable {
     public void removeEntry(RepositoryAction privilegeName, Principal principal) 
         throws IllegalArgumentException;
 
+    public boolean containsEntry(RepositoryAction privilegeName, Principal principal)
+        throws IllegalArgumentException;
+    
+
     public Object clone() throws CloneNotSupportedException;
     
 }

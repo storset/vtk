@@ -6,18 +6,35 @@
   - Description: A HTML page that displays resource properties
   - 
   - Required model data:
-  -  
+  -     - aboutItems
   - Optional model data:
   -
   -->
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<#if !aboutItems?exists>
+  <#stop "This template only works with 'aboutItems' model map supplied." />
+</#if>
+
 <#macro propertyList propertyList>
   <div style="padding-left:0.5em;padding-right:0.5em;padding-bottom:1em;">
 
     <table style="clear: both;" class="resourceInfo">
       <#list propertyList as item>
+        <@propertyItem item />
+      </#list>
+    </table>
+  </div>
+</#macro>
+
+<#macro propertyItemIfExists propertyName>
+  <#if aboutItems[propertyName]?exists>
+    <@propertyItem aboutItems[propertyName] />
+  </#if>
+</#macro>
+
+<#macro propertyItem item>
         <tr>
           <#if form?exists && form.definition?exists && form.definition = item.definition>
             <td colspan="3" class="expandedForm">
@@ -87,12 +104,16 @@
                   Not set
               </#if>
             </td>
-            <#-- type boolean = 4 -->
-           <td><#if item.editURL?exists>( <a href="${item.editURL?html}"><#if item.definition.type = 4><@vrtx.msg code="propertyEditor.toggle" default="toggle" /><#else><@vrtx.msg code="propertyEditor.edit" default="edit" /></#if></a> )</#if></td>
+           <td><#if item.editURL?exists>
+               ( <a href="${item.editURL?html}">
+                 <#if item.definition.type = 4> <#-- type boolean = 4 -->
+                   <@vrtx.msg code="propertyEditor.toggle" default="toggle" />
+                 <#else>
+                   <@vrtx.msg code="propertyEditor.edit" default="edit" />
+                 </#if>
+               </a> )
+               </#if>
+            </td>
           </#if>
         </tr>
-      </#list>
-    </table>
-
-  </div>
 </#macro>

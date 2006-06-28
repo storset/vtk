@@ -139,11 +139,10 @@ public class DisplayClassPathResourceController
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        if (!"GET".equals(request.getMethod())) {
+        if (!("GET".equals(request.getMethod()) || "HEAD".equals(request.getMethod()))) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return null;
         }
-
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
@@ -184,11 +183,6 @@ public class DisplayClassPathResourceController
                 }
             } 
 
-
-            inStream = resource.getInputStream();                
-            outStream  = response.getOutputStream();
-            byte[] buffer = new byte[5000];
-
             if (this.expiresSeconds >= 0) {
                 long expiresMilliseconds = this.expiresSeconds * 1000;
                 Date expires = new Date(System.currentTimeMillis() + expiresMilliseconds);
@@ -197,10 +191,18 @@ public class DisplayClassPathResourceController
 
             response.setContentType(MimeHelper.map(uri));
 
-            int n = 0;
-            while (((n = inStream.read(buffer, 0, 5000)) > 0)) {
-                outStream.write(buffer, 0, n);
+            if ("GET".equals(request.getMethod())) {
+
+                inStream = resource.getInputStream();                
+                outStream  = response.getOutputStream();
+                byte[] buffer = new byte[5000];
+
+                int n = 0;
+                while (((n = inStream.read(buffer, 0, 5000)) > 0)) {
+                    outStream.write(buffer, 0, n);
+                }
             }
+            
             if (logger.isDebugEnabled()) {
                 logger.debug("Successfully served resource: " + resource
                              + " from path: " + path);

@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.controller.properties;
 
+
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,11 +39,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -57,6 +57,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.repository.Namespace;
 
 
 
@@ -69,12 +70,19 @@ public class PropertyEditController extends SimpleFormController
     private ValueFactory valueFactory;
     private String dateFormat;
     
-    private String modelKey;
+    private String propertyListModelName;
+    private String propertyMapModelName;
+
+//     private String modelKey;
   
-    private Service service;
+//     private Service service;
     
-    public void setModelKey(String modelKey) {
-        this.modelKey = modelKey;
+    public void setPropertyListModelName(String propertyListModelName) {
+        this.propertyListModelName = propertyListModelName;
+    }
+    
+    public void setPropertyMapModelName(String propertyMapModelName) {
+        this.propertyMapModelName = propertyMapModelName;
     }
     
     public void setRepository(Repository repository) {
@@ -103,9 +111,14 @@ public class PropertyEditController extends SimpleFormController
     
 
     public void afterPropertiesSet() {
-        if (this.modelKey == null) {
+        if (this.propertyListModelName == null) {
             throw new BeanInitializationException(
-            "JavaBean property 'modelKey' not set");
+            "JavaBean property 'propertyListModelName' not set");
+        }
+        
+        if (this.propertyMapModelName == null) {
+            throw new BeanInitializationException(
+            "JavaBean property 'propertyMapModelName' not set");
         }
         
         if (this.repository == null) {
@@ -292,13 +305,15 @@ public class PropertyEditController extends SimpleFormController
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Service service = this.service;
-        if (service == null) service = requestContext.getService();
-        
+//         Service service = this.service;
+//         if (service == null) service = requestContext.getService();
+
+        Service service = requestContext.getService();
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                      requestContext.getResourceURI(), false);
 
         List propsList = new ArrayList();
+        Map propsMap = new HashMap();
         for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
 
             PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
@@ -330,9 +345,15 @@ public class PropertyEditController extends SimpleFormController
 
             PropertyItem item = new PropertyItem(property, def, editURL);
             propsList.add(item);
+            if (def.getNamespace() == Namespace.DEFAULT_NAMESPACE) {
+                propsMap.put(def.getName(), item);
+            } else {
+                propsMap.put(def.getNamespace().getPrefix() + ":" + def.getName(), item);
+            }
         }
 
-        model.put(modelKey, propsList);
+        model.put(this.propertyListModelName, propsList);
+        model.put(this.propertyMapModelName, propsMap);
     }
     
 
@@ -367,8 +388,8 @@ public class PropertyEditController extends SimpleFormController
         return propDef.getNamespace().getUri().equals(inputNamespace);
     }
 
-    public void setService(Service service) {
-        this.service = service;
-    }
+//     public void setService(Service service) {
+//         this.service = service;
+//     }
 
 }

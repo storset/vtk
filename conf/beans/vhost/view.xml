@@ -89,7 +89,7 @@
     <property name="exposeSpringMacroHelpers" value="true" />
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="encoding" value="utf-8" />
-    <property name="debug" value="true" />
+    <property name="debug" value="${freemarkerDebug}" />
   </bean>
 
   <bean id="collectionRedirectView" 

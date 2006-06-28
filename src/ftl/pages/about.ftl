@@ -74,4 +74,63 @@
         
       </td>
     </tr>
+
+    <tr>
+      <!-- Web address -->
+      <td>
+        <@vrtx.msg code="resource.viewURL" default="Web address"/>
+      </td>
+      <td>
+        <a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a>
+      </td>
+      <td>
+        
+      </td>
+    </tr>
+
+    <tr>
+      <!-- WebDAV address -->
+      <td>
+        <@vrtx.msg code="resource.webdavURL" default="WebDAV URL"/>:
+      </td>
+      <td>
+        <a href="${resourceDetail.webdavURL}">${resourceDetail.webdavURL}</a>
+      </td>
+      <td>
+        
+      </td>
+    </tr>
+
+      <!-- Owner -->
+      <@propertyItemIfExists aboutItems.owner />
+
+  <tr>
+      <!-- Size -->
+     <td><@vrtx.msg code="resource.contentLength" default="Content-length"/>:</td>
+     <td>
+       <#if resourceContext.currentResource.contentLength?exists>
+          <#if resourceContext.currentResource.contentLength <= 1000>
+            ${resourceContext.currentResource.contentLength} B
+          <#elseif resourceContext.currentResource.contentLength <= 1000000>
+            ${(resourceContext.currentResource.contentLength / 1000)?string("0.#")} KB
+          <#elseif resourceContext.currentResource.contentLength <= 1000000000>
+            ${(resourceContext.currentResource.contentLength / 1000000)?string("0.#")} MB
+          <#elseif resourceContext.currentResource.contentLength <= 1000000000000>
+            ${(resourceContext.currentResource.contentLength / 1000000000)?string("0.#")} GB
+          <#else>
+            ${resourceContext.currentResource.contentLength} B
+          </#if>
+       <#else>
+	 <@vrtx.msg code="resource.contentLength.unavailable" default="Not available" />
+       </#if>
+     </td>
+      <td>
+        
+      </td>
+  </tr>
+
+
   </table>
+
+</body>
+</html>

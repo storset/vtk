@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.controller.properties;
 
-
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,10 +37,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -57,12 +61,13 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
-import org.vortikal.repository.Namespace;
 
 
 
 public class PropertyEditController extends SimpleFormController
   implements ReferenceDataProvider, ReferenceDataProviding, InitializingBean {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private Repository repository;
     private PrincipalManager principalManager;
@@ -273,9 +278,14 @@ public class PropertyEditController extends SimpleFormController
                     resource.removeProperty(def.getNamespace(), def.getName());
                 } else {
                     if (property == null) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Property does not exist on resource " + resource
+                                         + ", creating from definition: " + def);
+                        }
                         property = resource.createProperty(def.getNamespace(), def.getName());
                     }
 
+                    
                     if (def.isMultiple()) {
                         String[] splitValues = stringValue.split(",");
                         Value[] values = this.valueFactory.createValues(
@@ -290,6 +300,13 @@ public class PropertyEditController extends SimpleFormController
                             stringValue, def.getType());
                         property.setValue(value);
                         }
+                    }
+                    if (logger.isDebugEnabled()) {
+                        String debugVal = def.isMultiple()
+                            ? java.util.Arrays.asList(property.getValues()).toString()
+                            : property.getValue().toString();
+                        logger.debug("Setting property '" + property + "'for resource "
+                                     + resource + " to value " + debugVal);
                     }
                 }
                 this.repository.store(token, resource);

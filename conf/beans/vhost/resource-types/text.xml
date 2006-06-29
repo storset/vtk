@@ -19,7 +19,7 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="userSetCharacterEncodingPropDef" />
+        <ref bean="userSpecifiedCharacterEncodingPropDef" />
         <ref bean="guessedCharacterEncodingPropDef" />
       </list>
     </property>
@@ -32,9 +32,9 @@
     <property name="exceptionPattern" value="text/rtf" />
   </bean>
 
-  <bean id="userSetCharacterEncodingPropDef"
+  <bean id="userSpecifiedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="userSetCharacterEncoding" />
+    <property name="name" value="userSpecifiedCharacterEncoding" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
@@ -100,7 +100,7 @@
         class="org.vortikal.repository.resourcetype.property.FirstMatchPropertyEvaluator">
     <property name="propertyDefinitions">
       <list>
-        <ref bean="userSetCharacterEncodingPropDef" />
+        <ref bean="userSpecifiedCharacterEncodingPropDef" />
         <ref bean="guessedCharacterEncodingPropDef" />
       </list>
     </property>

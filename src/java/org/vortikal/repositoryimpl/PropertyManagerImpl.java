@@ -358,10 +358,15 @@ public class PropertyManagerImpl implements PropertyManager,
                 // Deleted
                 if (prop.getDefinition() == null) {
                     // Dead - ok
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property " + prop + " deleted by user "
+                                     + "(dead property, no definition)");
+                    }
+
                 } else {
                     if (prop.getDefinition().isMandatory()) {
                         throw new ConstraintViolationException(
-                            "Property is mandatory: " + prop);
+                            "Mandatory property deleted by user: " + prop);
                     }
                     // check if allowed
                     authorize(prop.getDefinition().getProtectionLevel(), principal, uri);
@@ -372,6 +377,10 @@ public class PropertyManagerImpl implements PropertyManager,
                 // Changed value
                 if (prop.getDefinition() == null) {
                     // Dead
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property " + prop + " changed value "
+                                     + "(dead property, no definition)");
+                    }
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
@@ -400,6 +409,10 @@ public class PropertyManagerImpl implements PropertyManager,
                     if (!((PropertyImpl) userProp).isValueInitialized()) {
                         throw new ConstraintViolationException("Property " + userProp
                                                                + " is not initialized");
+                    }
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property " + prop + " added "
+                                     + "(dead property, no definition)");
                     }
                     deadProperties.add(userProp);
                 } else {
@@ -437,7 +450,7 @@ public class PropertyManagerImpl implements PropertyManager,
         for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             if (logger.isDebugEnabled()) {
-                logger.debug("Adding dead property to new resource: " + prop);
+                logger.debug("Adding dead property " + prop + "to resource: " + newResource);
             }
             
             newResource.addProperty(prop);
@@ -447,10 +460,19 @@ public class PropertyManagerImpl implements PropertyManager,
             for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
                 Property prop = (Property) iterator.next();
 
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding property " + prop + " to resource " + newResource);
+                }
+
                 newResource.addProperty(prop);
             }
         }
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("Returning evaluated resource: " + newResource
+                         + " having properties: " + newResource.getProperties());
+        }
+
         return newResource;
     }
     

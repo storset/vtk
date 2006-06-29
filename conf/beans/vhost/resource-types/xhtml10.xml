@@ -72,7 +72,7 @@
         class="org.vortikal.repository.resourcetype.property.FirstMatchPropertyEvaluator">
     <property name="propertyDefinitions">
       <list>
-        <ref bean="userSetCharacterEncodingPropDef" />
+        <ref bean="userSpecifiedCharacterEncodingPropDef" />
         <ref bean="xhtml10GuessedCharacterEncodingPropDef" />
       </list>
     </property>

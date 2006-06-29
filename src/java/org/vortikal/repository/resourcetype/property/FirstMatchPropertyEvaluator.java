@@ -32,6 +32,9 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -47,6 +50,8 @@ import org.vortikal.security.Principal;
 public class FirstMatchPropertyEvaluator
   implements CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
              ContentModificationPropertyEvaluator {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     private PropertyTypeDefinition[] propertyDefinitions;
     
@@ -91,9 +96,21 @@ public class FirstMatchPropertyEvaluator
 
             Property prop = ancestorPropertySet.getProperty(namespace, name);
             if (prop != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found match for property definition '"
+                                 + this.propertyDefinitions[i] + "', "
+                                 + "setting value: " + prop.getValue());
+                }
                 property.setValue(prop.getValue());
                 return true;
             }
+            if (logger.isDebugEnabled()) {
+                logger.debug("No match for property definition '"
+                             + this.propertyDefinitions[i] + "'");
+            }
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("No match for any property definitions");
         }
         return false;
     }

@@ -55,7 +55,7 @@
         <ref bean="descriptionPropDef" />
 
         <ref bean="contentTypePropDef" />
-        <ref bean="userSetCharacterEncodingPropDef" />
+        <ref bean="userSpecifiedCharacterEncodingPropDef" />
         <ref bean="guessedCharacterEncodingPropDef" />
         <ref bean="characterEncodingPropDef" />
 

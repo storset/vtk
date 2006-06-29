@@ -30,6 +30,21 @@
   </#if>
 </#macro>
 
+
+<#function shouldDisplayForm propertyName>
+  <#if aboutItems[propertyName]?exists && form?exists
+       && form.definition?exists
+       && form.definition = aboutItems[propertyName].definition>
+    <#return true />
+  </#if>
+  <#return false />
+</#function>
+
+<#macro displayForm propertyName>
+  <@propList.propertyForm aboutItems[propertyName] />
+</#macro>
+
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -168,19 +183,25 @@
 
     <tr>
       <!-- Character encoding -->
-     <td class="key">
-       <@vrtx.msg code="resource.characterEncoding" default="Character encoding"/>:
-     </td>
-     <td>
-       <#if !resource.userSetCharacterEncoding?exists>
-         Guessed to be ${resource.characterEncoding}
-       <#else>
-         Set to ${resource.userSetCharacterEncoding}
-       </#if>
-     </td>
-      <td>
-        <@propertyEditURLIfExists propertyName = 'userSetCharacterEncoding' />
+    <#if shouldDisplayForm('userSpecifiedCharacterEncoding')>
+      <@displayForm propertyName = 'userSpecifiedCharacterEncoding' />
+    <#else>
+      <td class="key">
+        <@vrtx.msg code="resource.characterEncoding" default="Character encoding"/>:
       </td>
+      <td>
+        <#if resource.userSpecifiedCharacterEncoding?has_content>
+          ${resource.userSpecifiedCharacterEncoding}
+        <#else>
+          <@vrtx.msg code="resource.characterEncoding.guessed"
+                     args="${resource.characterEncoding}"
+                     default="Guessed to be ${resource.characterEncoding}" />
+        </#if>
+      </td>
+      <td>
+        <@propertyEditURLIfExists propertyName = 'userSpecifiedCharacterEncoding' />
+      </td>
+    </#if>
     </tr>
 
   </table>

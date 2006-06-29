@@ -99,7 +99,7 @@ public final class PropertyType {
     public static final String DISPLAYNAME_PROP_NAME = "displayName";
     public static final String CONTENTTYPE_PROP_NAME = "contentType";
     public static final String CHARACTERENCODING_PROP_NAME = "characterEncoding";
-    public static final String CHARACTERENCODING_USER_SPECIFIED_PROP_NAME = "userSetCharacterEncoding";
+    public static final String CHARACTERENCODING_USER_SPECIFIED_PROP_NAME = "userSpecifiedCharacterEncoding";
     public static final String CHARACTERENCODING_GUESSED_PROP_NAME = "guessedCharacterEncoding";
     public static final String CONTENTLOCALE_PROP_NAME = "contentLocale";
     public static final String LASTMODIFIED_PROP_NAME = "lastModified";

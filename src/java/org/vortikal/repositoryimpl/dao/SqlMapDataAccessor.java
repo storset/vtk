@@ -356,6 +356,11 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                                SqlDaoUtils.getUriDepth(r.getURI())));
 
             sqlMap = existed ? getSqlMap("updateResource") : getSqlMap("insertResource");
+            if (logger.isDebugEnabled()) {
+                logger.debug((existed? "Updating" : "Storing") + " resource " + r
+                             + ", parameter map: " + parameters);
+            }
+
             this.sqlMapClient.update(sqlMap, parameters);
 
             if (!existed) {
@@ -1269,7 +1274,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
 
     
-
+    // XXX: get property names from PropertyType.SPECIAL_PROPERTIES
     private Map getResourceAsMap(ResourceImpl r) {
         Map map = new HashMap();
         map.put("parent", r.getParent());

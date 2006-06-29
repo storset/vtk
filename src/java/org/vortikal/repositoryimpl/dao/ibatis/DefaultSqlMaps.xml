@@ -337,8 +337,8 @@
       <isNotPropertyAvailable property="characterEncoding">character_encoding,</isNotPropertyAvailable>
       <isPropertyAvailable property="guessedCharacterEncoding">#guessedCharacterEncoding#,</isPropertyAvailable>
       <isNotPropertyAvailable property="guessedCharacterEncoding">guessed_character_encoding,</isNotPropertyAvailable>
-      <isPropertyAvailable property="userSetEncoding">#userSetCharacterEncoding#,</isPropertyAvailable>
-      <isNotPropertyAvailable property="userSetCharacterEncoding">user_character_encoding,</isNotPropertyAvailable>
+      <isPropertyAvailable property="userSpecifiedCharacterEncoding">#userSpecifiedCharacterEncoding#,</isPropertyAvailable>
+      <isNotPropertyAvailable property="userSpecifiedCharacterEncoding">user_character_encoding,</isNotPropertyAvailable>
       is_collection,
       acl_inherited_from,
       <isPropertyAvailable property="createdBy">#createdBy#,</isPropertyAvailable>

@@ -176,10 +176,8 @@
        default="Technical details"/>
   </h3>
   <table class="resourceInfo">
-    <tr>
       <!-- Content type -->
       <@propertyItemIfExists propertyName = 'contentType' />
-    </tr>
 
     <tr>
       <!-- Character encoding -->
@@ -193,9 +191,9 @@
         <#if resource.userSpecifiedCharacterEncoding?has_content>
           ${resource.userSpecifiedCharacterEncoding}
         <#else>
-          <@vrtx.msg code="resource.characterEncoding.guessed"
-                     args=[ "${resource.characterEncoding}" ]
-                     default="Guessed to be ${resource.characterEncoding}" />
+          <@vrtx.msg code = "resource.characterEncoding.guessed"
+                     args = [ "${resource.characterEncoding}" ]
+                     default = "Guessed to be ${resource.characterEncoding}" />
         </#if>
       </td>
       <td>

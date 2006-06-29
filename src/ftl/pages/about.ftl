@@ -194,7 +194,7 @@
           ${resource.userSpecifiedCharacterEncoding}
         <#else>
           <@vrtx.msg code="resource.characterEncoding.guessed"
-                     args="${resource.characterEncoding}"
+                     args=[ "${resource.characterEncoding}" ]
                      default="Guessed to be ${resource.characterEncoding}" />
         </#if>
       </td>

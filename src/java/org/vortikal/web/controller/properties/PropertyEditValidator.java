@@ -92,8 +92,7 @@ public class PropertyEditValidator implements Validator {
                                 values[i].getPrincipalValue())) {
                             throw new ValueFormatException("Invalid principal " + values[i]);
                         }
-                        
-                    }
+                    } 
                 }
 
             } else {

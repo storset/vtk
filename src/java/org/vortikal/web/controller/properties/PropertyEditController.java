@@ -37,12 +37,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import org.vortikal.repository.IllegalOperationException;
@@ -50,6 +53,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -245,7 +249,8 @@ public class PropertyEditController extends SimpleFormController
     }
     
  
-    protected void doSubmitAction(Object command) throws Exception {    
+    protected ModelAndView onSubmit (HttpServletRequest request, HttpServletResponse response,
+                                     Object command, BindException errors) throws Exception {    
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
@@ -257,7 +262,7 @@ public class PropertyEditController extends SimpleFormController
         if (propertyCommand.getCancelAction() != null) {
             propertyCommand.clear();
             propertyCommand.setDone(true);
-            return;
+            return new ModelAndView(getSuccessView());
         }
         String uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
@@ -273,7 +278,7 @@ public class PropertyEditController extends SimpleFormController
                     if (property == null) {
                         propertyCommand.setDone(true);
                         propertyCommand.clear();
-                        return;
+                        return new ModelAndView(getSuccessView());
                     }
                     resource.removeProperty(def.getNamespace(), def.getName());
                 } else {
@@ -309,22 +314,27 @@ public class PropertyEditController extends SimpleFormController
                                      + resource + " to value " + debugVal);
                     }
                 }
-                this.repository.store(token, resource);
+
+                try {
+                    this.repository.store(token, resource);
+                } catch (ConstraintViolationException e) {
+                    errors.rejectValue("value", "Illegal value");
+                    return showForm(request, response, errors);
+                }
                 break;
             }
         }
 
         propertyCommand.clear();
         propertyCommand.setDone(true);
+        return new ModelAndView(getSuccessView());
+
     }
     
 
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-//         Service service = this.service;
-//         if (service == null) service = requestContext.getService();
-
         Service service = requestContext.getService();
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                      requestContext.getResourceURI(), false);
@@ -404,9 +414,5 @@ public class PropertyEditController extends SimpleFormController
 
         return propDef.getNamespace().getUri().equals(inputNamespace);
     }
-
-//     public void setService(Service service) {
-//         this.service = service;
-//     }
 
 }

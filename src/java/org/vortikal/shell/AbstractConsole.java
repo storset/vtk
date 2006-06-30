@@ -126,6 +126,12 @@ public abstract class AbstractConsole
     }
 
 
+    public final void setInitFilesCSV(String initFilesCSV) {
+        String[] list = initFilesCSV.split(",");
+        this.initFiles = list;
+    }
+
+
     public final void setApplicationContext(ApplicationContext ctx) {
         this.context = ctx;
     }
@@ -198,14 +204,10 @@ public abstract class AbstractConsole
     }
     
 
-
     public final void destroy() {
         if (this.consoleHandler != null) {
             this.consoleHandler.interrupt();
         }
     }
-
-
-
 
 }

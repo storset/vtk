@@ -85,14 +85,15 @@
         <@vrtx.msg code="resource.lastModified" default="Last modified"/>:
       </td>
       <td>
-        ${resource.lastModified?date}
-        <@vrtx.msg code="resource.lastModified.by" default="by"/>
-        <#assign modifiedBy = resource.modifiedBy />
-        <#if modifiedBy.URL?exists>
-          <a href="${modifiedBy.URL?html}">${modifiedBy.name}</a>
-        <#else>
-          ${modifiedBy.name}
+        <#assign modifiedByStr = resource.modifiedBy.name />
+        <#if resource.modifiedBy.URL?exists>
+          <#assign modifiedByStr>
+            <a href="${resource.modifiedBy.URL?html}">${resource.modifiedBy.name}</a>
+          </#assign>
         </#if>
+        <@vrtx.msg code = "resource.lastModifiedBy"
+                   args = [ "${resource.lastModified?date}", "${modifiedByStr}" ]
+                   default = "${resource.lastModified?date} by ${modifiedByStr}" />
       </td>
       <td>
         
@@ -139,6 +140,9 @@
         
       </td>
     </tr>
+
+      <!-- Content language -->
+      <@propertyItemIfExists propertyName = 'contentLocale' />
 
     <tr>
       <!-- Size -->
@@ -201,8 +205,39 @@
       </td>
     </#if>
     </tr>
+  </table>
+
+
+
+  <h3 class="resourceInfoHeader">
+    <@vrtx.msg
+       code="resource.metadata.about.misc"
+       default="Miscellaneous information"/>
+  </h3>
+  <table class="resourceInfo">
+    <tr>
+      <!-- Last modified -->
+      <td class="key">
+        <@vrtx.msg code="resource.creattionTime" default="Created"/>:
+      </td>
+      <td>
+        <#assign createdByStr = resource.createdBy.name />
+        <#if resource.createdBy.URL?exists>
+          <#assign createdByStr>
+            <a href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
+          </#assign>
+        </#if>
+        <@vrtx.msg code = "resource.createdBy"
+                   args = [ "${resource.creationTime?date}", "${createdByStr}" ]
+                   default = "${resource.creationTime?date} by ${createdByStr}" />
+      </td>
+      <td>
+        
+      </td>
+    </tr>
 
   </table>
+
 
 </body>
 </html>

@@ -18,19 +18,10 @@
         <ref bean="contentModifiedByPropDef" />
         <ref bean="propertiesLastModifiedPropDef" />
         <ref bean="propertiesModifiedByPropDef" />
-
-        <ref bean="shortTitlePropDef" />
       </list>
     </property>
   </bean>
 
-  <bean id="shortTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="shortTitle"/>
-    <property name="type" ref="TYPE_STRING"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
-  </bean>
-  
   <!-- Resource - base resource type -->
 
   <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Content description Mixin -->
+  
+  <bean id="contentDescriptionMixinResourceTypeDef" 
+        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="contentDescription"/>
+    <property name="namespace" ref="CONTENT_NAMESPACE" /> 
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="verifiedDatePropDef" />
+        <ref bean="keywordsPropDef" />
+        <ref bean="descriptionPropDef" />
+        <ref bean="authorNamePropDef" />
+        <ref bean="authorMailPropDef" />
+        <ref bean="authorURLPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="verifiedDate" /> 
+    <property name="type" ref="TYPE_DATE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="authorNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="name" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="authorMailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="mail" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="authorURLPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="url" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="keywordsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="keywords" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="descriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="description" /> 
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="CONTENT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="content" />
+    <constructor-arg value="http://www.uio.no/content" />
+  </bean>
+
+</beans>

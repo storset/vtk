@@ -3,63 +3,35 @@
 
 <beans>
 
-  <!-- UHTML Mixin -->
-
-  
-  <bean id="uhtmlMixinResourceTypeDef" 
+  <bean id="visualProfileMixinResourceTypeDef" 
         class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
-    <property name="name" value="uhtml"/>
-    <property name="namespace" ref="UHTML_NAMESPACE" /> 
-
-    <property name="mixinTypeDefinitions">
-      <list>
-        <ref bean="uhtmlAuthorMixinResourceTypeDef" />
-      </list>
-    </property>
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="verifiedDatePropDef" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="verifiedDate" /> 
-    <property name="type" ref="TYPE_DATE" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <!-- Possibly inherited uhtml -->
-
-  <bean id="uhtmlInheritedMixinResourceTypeDef" 
-        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
-    <property name="name" value="inheritedUhtml"/>
-    <property name="namespace" ref="UHTML_NAMESPACE" /> 
-    <property name="mixinTypeDefinitions">
-      <list>
-        <ref bean="uhtmlPublisherMixinResourceTypeDef" />
-      </list>
-    </property>
+    <property name="name" value="vp"/>
+    <property name="namespace" ref="VISUAL_PROFILE_NAMESPACE" /> 
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="inheritedPropdef" />
         <ref bean="unitPropDef" />
         <ref bean="topicPropDef" />
+        <ref bean="publisherNamePropDef" />
+        <ref bean="publisherMailPropDef" />
+        <ref bean="publisherURLPropDef" />
       </list>
     </property>
   </bean>
 
-  <!-- if set: inherited
-       true: forced?
-       false: 
-    -->
   <bean id="inheritedPropdef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="inherited" /> 
     <property name="type" ref="TYPE_BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
+    <property name="allowedValues">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <property name="booleanValue" value="false" />
+        </bean>
+      </list>
+    </property>
   </bean>
 
   <bean id="unitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -177,66 +149,6 @@
     </property>
   </bean>
 
-
-
-  <bean id="UHTML_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="uhtml" />
-    <constructor-arg value="http://www.uio.no/uhtml" />
-  </bean>
-
-
-  <!-- Web 3.0 -->
-
-  <bean id="web30MixinResourceTypeDef" 
-        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
-    <property name="name" value="uhtml"/>
-    <property name="namespace" ref="WEB_3_0_NAMESPACE" /> 
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="keywordsPropDef" />
-        <ref bean="descriptionPropDef" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="keywordsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="keywords" /> 
-    <property name="type" ref="TYPE_STRING" />
-    <property name="multiple" value="true" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="descriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="description" /> 
-    <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="WEB_3_0_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="web30" />
-    <constructor-arg value="http://www.uio.no/uhtml/web30" />
-  </bean>
-
-
-  <!-- Publisher mixin -->
-
-
-  <bean id="uhtmlPublisherMixinResourceTypeDef" 
-        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
-    <property name="name" value="publisher"/>
-    <property name="namespace" ref="PUBLISHER_NAMESPACE" /> 
-
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="publisherNamePropDef" />
-        <ref bean="publisherMailPropDef" />
-        <ref bean="publisherURLPropDef" />
-      </list>
-    </property>
-  </bean>
-
   <bean id="publisherNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="name" /> 
     <property name="type" ref="TYPE_STRING" />
@@ -258,51 +170,9 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="PUBLISHER_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="uhtml" />
-    <constructor-arg value="http://www.uio.no/uhtml/publisher" />
-  </bean>
-
-  <!-- Author mixin -->
-
-  <bean id="uhtmlAuthorMixinResourceTypeDef" 
-        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
-    <property name="name" value="author"/>
-    <property name="namespace" ref="AUTHOR_NAMESPACE" /> 
-
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="authorNamePropDef" />
-        <ref bean="authorMailPropDef" />
-        <ref bean="authorURLPropDef" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="authorNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="name" /> 
-    <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="authorMailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="mail" /> 
-    <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="authorURLPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="url" /> 
-    <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="AUTHOR_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="uhtml" />
-    <constructor-arg value="http://www.uio.no/uhtml/author" />
+  <bean id="VISUAL_PROFILE_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="visual-profile" />
+    <constructor-arg value="http://www.uio.no/visual-profile" />
   </bean>
 
 </beans>

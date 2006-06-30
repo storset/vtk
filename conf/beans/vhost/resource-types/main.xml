@@ -22,8 +22,8 @@
 
   <import resource="portal-page.xml" />
 
-  <import resource="uhtml.xml" />
-  <import resource="publish.xml" />
+  <import resource="mixins/visual-profile.xml" />
+  <import resource="mixins/content-description.xml" />
 
   <!-- CONSTANTS -->
   <import resource="namespaces.xml" />

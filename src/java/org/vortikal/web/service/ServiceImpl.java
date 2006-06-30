@@ -154,6 +154,10 @@ public class ServiceImpl
             throw new BeanInitializationException(
                 "Service '" + getName() +  "' has at least two parents ('"
                 + parent.getName() + "' and '" + this.parent.getName() + "')");
+        if (parent == this) {
+            throw new BeanInitializationException(
+                "Trying to set parent of service to itself");
+        }
         this.parent = parent;
     }
 	

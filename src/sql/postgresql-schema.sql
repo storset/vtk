@@ -84,7 +84,7 @@ END;
 ' LANGUAGE plpgsql;
 
 -----------------------------------------------------------------------------
--- vortex_uri - Auxiliary temp-table used to hold lists of URIs or resource-
+-- vortex_tmp - Auxiliary temp-table used to hold lists of URIs or resource-
 --              IDs
 -----------------------------------------------------------------------------
 DROP SEQUENCE vortex_tmp_session_id_seq;

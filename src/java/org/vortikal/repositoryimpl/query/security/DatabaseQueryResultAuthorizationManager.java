@@ -31,11 +31,17 @@
 package org.vortikal.repositoryimpl.query.security;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.token.TokenManager;
 
@@ -48,9 +54,17 @@ import org.vortikal.security.token.TokenManager;
 public final class DatabaseQueryResultAuthorizationManager implements 
     QueryResultAuthorizationManager, InitializingBean {
 
+    Log logger = LogFactory.getLog(DatabaseQueryResultAuthorizationManager.class);
+    
     private PrincipalManager principalManager;
     private TokenManager tokenManager;
     private IndexDataAccessor indexDataAccessor;
+    
+    /**
+     * Set of principal names for which all hits are automatically
+     * authorized without checking database.
+     */
+    private Set noAuthorizationCheckForPrincipals;
     
     public void afterPropertiesSet() throws BeanInitializationException {
         
@@ -66,21 +80,56 @@ public final class DatabaseQueryResultAuthorizationManager implements
         
     }
 
-    public void authorizeQueryResults(String token, List resultSecurityInfo) 
+    public void authorizeQueryResults(String token, List rsiList) 
         throws QueryAuthorizationException {
-        //Principal principal = tokenManager.getPrincipal(token);
+        Principal principal = tokenManager.getPrincipal(token);
         
-        // XXX: resolve groups, etc.
-        // XXX: only filter on read-for-all, right now .. (FIXME)
+        if (noAuthorizationCheckForPrincipals != null
+            && principal != null 
+            && noAuthorizationCheckForPrincipals.contains(
+                                            principal.getQualifiedName())) {
+            logger.info("Auto-authorizing all results for principal '" + 
+                    principal + "'");
+            
+            for (Iterator i = rsiList.iterator(); i.hasNext();) {
+                ResultSecurityInfo rsi = (ResultSecurityInfo) i.next();
+                rsi.setAuthorized(true);
+            }
+            
+            return;
+        } 
+        
+        Set principalNames = new HashSet();
+        if (principal != null) {
+            principalNames.add(principal.getQualifiedName());
+        }
+        
+        // XXX: Resolve group names and add to list of principal names
         try {
-            
-            indexDataAccessor.processQueryResultsAuthorization(resultSecurityInfo);
-            
+            indexDataAccessor.processQueryResultsAuthorization(principalNames, 
+                                                            rsiList);
         } catch (IOException io) {
-            // XXX: log + proper message
+            logger.warn("IOException while authorizing query result list: " 
+                                                            + io.getMessage());
             throw new QueryAuthorizationException(io.getMessage());
         }
         
+    }
+
+    public void setIndexDataAccessor(IndexDataAccessor indexDataAccessor) {
+        this.indexDataAccessor = indexDataAccessor;
+    }
+
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }
+
+    public void setTokenManager(TokenManager tokenManager) {
+        this.tokenManager = tokenManager;
+    }
+
+    public void setNoAuthorizationCheckForPrincipals(Set noAuthorizationCheckForPrincipals) {
+        this.noAuthorizationCheckForPrincipals = noAuthorizationCheckForPrincipals;
     }
 
 

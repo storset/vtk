@@ -32,16 +32,20 @@ package org.vortikal.repositoryimpl.query.security;
 
 /**
  * Gives relevent security info to allow proper authorization 
- * processing.
+ * processing and allows to flag a result as authorized or not.
  * 
  * @author oyviste
  *
  */
 public interface ResultSecurityInfo {
 
-    public int getAclInheritedFrom();
-    
-    public int getResourceId();
+    /**
+     * Get an easily hashable Integer object representing the ID of the ACL node
+     * in question.
+     * 
+     * @return
+     */
+    public Integer getAclNodeId();
     
     public String getOwnerAsUserOrGroupName();
     

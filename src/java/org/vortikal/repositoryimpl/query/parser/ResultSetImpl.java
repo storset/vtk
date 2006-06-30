@@ -50,6 +50,7 @@ public class ResultSetImpl implements ResultSet {
     private List results;
     
     public ResultSetImpl() {
+        
         results = new ArrayList();
     }
     

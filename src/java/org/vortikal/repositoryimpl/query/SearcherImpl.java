@@ -73,7 +73,7 @@ import org.vortikal.repositoryimpl.query.security.QueryResultAuthorizationManage
  *      <li><code>indexAccessor</code>
  *      The low-level Lucene index accessor instance that this searcher should use</li>
  *      
- *      <li><code>queryAuthorizationManager</code>
+ *      <li><code>queryResultAuthorizationManager</code>
  *      Manager used to authorize results in queries based on the security token
  *      of the client performing the query. Security filtering will not be 
  *      applied to results if this bean is not configured.</li>
@@ -128,7 +128,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
     }
 
     /* (non-Javadoc)
-     * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String, org.vortikal.repositoryimpl.query.query.Query, int)
+     * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String,
+     *                                  org.vortikal.repositoryimpl.query.query.Query,
+     *                                  int)
      */
     public ResultSet execute(String token, Query query, int maxResults)
             throws QueryException {
@@ -230,74 +232,55 @@ public class SearcherImpl implements Searcher, InitializingBean {
         }
     }
 
-    private ResultSetImpl buildResultSet(ScoreDoc[] docs, IndexReader reader, 
-                                         String token, int maxResults,
-                                         int cursor) throws IOException {
-
-        ResultSetImpl rs = new ResultSetImpl();
-        
-        int length = docs.length;
-        
-        if (length == 0 || cursor >= length) {
-            return rs; // Empty result set
-        }
-        
-        if (maxResults < 0) maxResults = 0;
-        
-        int end = (cursor + maxResults) < length ? 
-                cursor + maxResults : length;
-        
-        for (int i=cursor; i < end; i++) {
-            Document doc = reader.document(docs[i].doc);
-            rs.addResult(this.documentMapper.getPropertySet(doc));
-        }
-        
-        return rs;
-    }
-    
-    private ResultSetImpl buildAuthorizedResultSet(ScoreDoc[] docs, 
+    private ResultSetImpl buildResultSet(ScoreDoc[] docs, 
             IndexReader reader, String token, int maxResults, int cursor)
             throws IOException {
 
-        ResultSetImpl rs = new ResultSetImpl();
+        ResultSetImpl rs = new ResultSetImpl(docs.length);
 
-        int length = docs.length;
-
-        if (length == 0 || cursor >= length) {
+        if (docs.length == 0 || cursor >= docs.length) {
             return rs; // Empty result set
         }
 
         if (maxResults < 0)
             maxResults = 0;
 
-        int end = (cursor + maxResults) < length ? cursor + maxResults : length;
+        int end = (cursor + maxResults) < docs.length ? 
+                                                cursor + maxResults : docs.length;
 
-        // XXX: cursor/maxresults might be confusing after filtering, define it 
-        //      properly and fix this.
-        List rsiList = new ArrayList(end-cursor+1);
-        for (int i = cursor; i < end; i++) {
-            Document doc = reader.document(docs[i].doc);
-            rsiList.add(new LuceneResultSecurityInfo(doc));
-        }
-        
         if (this.queryResultAuthorizationManager != null) {
-            this.queryResultAuthorizationManager.authorizeQueryResults(token, 
-                                                                        rsiList);
-        }
-        
-        // XXX: fix cursor crap, give client the expected number of results, even
-        // after security filtering, figure out best solution (use dummy results ?)
-        // Add only authorized docs to ResultSet
-        // XXX: logging
-        for (int i = 0; i < rsiList.size(); i++) {
-            LuceneResultSecurityInfo rsi = 
-                                        (LuceneResultSecurityInfo)rsiList.get(i);
-            
-            if (rsi.isAuthorized()) {
-                // Only create property sets for authorized hits
-                rs.addResult(documentMapper.getPropertySet(rsi.getDocument()));
+            // XXX: cursor/maxresults might be confusing after filtering, define it 
+            //      properly and fix this.
+            List rsiList = new ArrayList(end-cursor);
+            for (int i = cursor; i < end; i++) {
+                Document doc = reader.document(docs[i].doc);
+                rsiList.add(new LuceneResultSecurityInfo(doc));
             }
             
+            long start = System.currentTimeMillis();
+            this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
+            long finish = System.currentTimeMillis();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Query result authorization took " 
+                        + (finish-start) + " ms");
+            }
+            
+            // XXX: fix cursor crap, give client the expected number of results, even
+            // after security filtering, figure out best solution (use dummy results ?)
+            // Add only authorized docs to ResultSet
+            // XXX: add metadata to resultset about how many un-authorized hits, etc.
+            for (int i = 0; i < rsiList.size(); i++) {
+                LuceneResultSecurityInfo rsi = (LuceneResultSecurityInfo)rsiList.get(i);
+                
+                if (rsi.isAuthorized()) {
+                    // Only create property sets for authorized hits
+                    rs.addResult(documentMapper.getPropertySet(rsi.getDocument()));
+                } 
+            }
+        } else {
+            for (int i = cursor; i < end; i++) {
+                rs.addResult(documentMapper.getPropertySet(reader.document(docs[i].doc)));
+            }
         }
         
         return rs;
@@ -329,6 +312,10 @@ public class SearcherImpl implements Searcher, InitializingBean {
         return maxAllowedHitsPerQuery;
     }
 
+    public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager queryResultAuthorizationManager) {
+        this.queryResultAuthorizationManager = queryResultAuthorizationManager;
+    }
+    
     /**
      * Collect all document numbers that match a query, discard all scores.
      * Can only be used in a no-sorting scenario, as Lucene uses its own

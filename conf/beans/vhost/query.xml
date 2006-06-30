@@ -62,17 +62,25 @@
     <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
     <property name="maxAllowedHitsPerQuery" value="50000"/>
 
-    <!--
-    <property name="queryAuthorizationManager" ref="queryAuthorizationManager"/>
-    -->
+    <property name="queryResultAuthorizationManager" ref="queryResultAuthorizationManager"/>
   </bean>
 
-<!--   <bean id="queryResultAuthorizationManager" -->
-<!--         class="org.vortikal.repositoryimpl.query.security.DatabaseQueryResultAuthorizationManagaer"> -->
-<!--     <property name="principalManager" ref="principalManager"/> -->
-<!--     <property name="tokenManager" ref="tokenManager"/> -->
-<!--     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/> -->
-<!--   </bean> -->
+  <!-- Query result authorization (ACL checking) -->
+  <bean id="queryResultAuthorizationManager"
+        class="org.vortikal.repositoryimpl.query.security.DatabaseQueryResultAuthorizationManager">
+    <property name="principalManager" ref="principalManager"/>
+    <property name="tokenManager" ref="tokenManager"/>
+    <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
+
+    <!-- A set of principals can be excluded from database 
+         result authorization check -->
+    <!--property name="noAuthorizationCheckForPrincipals">
+      <set>
+        <value>root@localhost</value>
+      </set>
+    </property-->
+
+  </bean>
 
   <!-- Perform incremental updates on property set index from resource changes. -->
   <bean id="newSystemIndexUpdater" 

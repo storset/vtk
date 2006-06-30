@@ -631,7 +631,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 newAcl.setInherited(true);
             } else {
                 newAcl = (AclImpl)acl.clone();
-                r.setAclInheritedFrom(-1);
+                r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
             }
         
             r.setACL(newAcl);

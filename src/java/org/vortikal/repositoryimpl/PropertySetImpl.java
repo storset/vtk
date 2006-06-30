@@ -49,13 +49,23 @@ import org.vortikal.repository.PropertySet;
 
 public class PropertySetImpl implements PropertySet, Cloneable {
 
+    /**
+     * Numeric ID used to represent the NULL resource ("no resource").
+     */
+    public static final int NULL_RESOURCE_ID = -1;
+    
     protected String uri;
     protected String resourceType;
     protected Map propertyMap;
-    protected int id = -1;   // Numeric ID used by database
-    private int aclInheritedFrom = -1; // Numeric ID of resource from which this resource inherits
-                                       // its ACL definition.
-    private int[] ancestorIds; // Numeric ID of ancestors. Might be null. Used by indexing system. 
+    
+    // Numeric ID used by database 
+    protected int id = NULL_RESOURCE_ID;   
+    
+    // Numeric ID of resource from which this resource inherits its ACL definition.
+    private int aclInheritedFrom = NULL_RESOURCE_ID;
+                               
+    // Numeric ID of ancestors. Might be null. Used by indexing system.
+    private int[] ancestorIds;  
    
     public PropertySetImpl(String uri) {
         this.uri = uri;

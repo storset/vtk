@@ -193,6 +193,15 @@ public final class BinaryFieldValueMapper {
         return values;
     }
     
+    public static String getStringFromStoredBinaryField(Field f) 
+        throws FieldValueMappingException {
+        try {
+            return new String(f.binaryValue(), STRING_VALUE_ENCODING);
+        } catch (UnsupportedEncodingException uee) {
+            throw new FieldValueMappingException(uee.getMessage());
+        }
+    }
+    
     public static Field getStoredBinaryIntegerField(String name, int value) 
         throws FieldValueMappingException {
         return new Field(name, FieldValueEncoder.encodeIntegerToBinary(value), 

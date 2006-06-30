@@ -37,6 +37,7 @@
     <property name="name" value="userSpecifiedCharacterEncoding" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
+    <property name="validator" ref="characterEncodingValidator" />
   </bean>
 
 
@@ -69,6 +70,9 @@
     </property>
   </bean>
 
+
+  <bean id="characterEncodingValidator"
+        class="org.vortikal.repository.resourcetype.property.CharacterEncodingValidator" />
 
 
   <!-- Text resource -->

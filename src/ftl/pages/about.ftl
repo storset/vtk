@@ -98,6 +98,26 @@
       <td>
         
       </td>
+    <tr>
+      <!-- Created -->
+      <td class="key">
+        <@vrtx.msg code="resource.creattionTime" default="Created"/>:
+      </td>
+      <td>
+        <#assign createdByStr = resource.createdBy.name />
+        <#if resource.createdBy.URL?exists>
+          <#assign createdByStr>
+            <a href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
+          </#assign>
+        </#if>
+        <@vrtx.msg code = "resource.createdBy"
+                   args = [ "${resource.creationTime?date}", "${createdByStr}" ]
+                   default = "${resource.creationTime?date} by ${createdByStr}" />
+      </td>
+      <td>
+        
+      </td>
+    </tr>
     </tr>
       <!-- Owner -->
       <@propertyItemIfExists propertyName = 'owner' />
@@ -144,6 +164,7 @@
       <!-- Content language -->
       <@propertyItemIfExists propertyName = 'contentLocale' />
 
+    <#if !resource.collection>
     <tr>
       <!-- Size -->
      <td class="key">
@@ -170,21 +191,25 @@
         
       </td>
   </tr>
+  </#if>
   </table>
 
 
 
+  <#if !resource.collection>
   <h3 class="resourceInfoHeader">
     <@vrtx.msg
        code="resource.metadata.about.technical"
        default="Technical details"/>
   </h3>
   <table class="resourceInfo">
+
       <!-- Content type -->
       <@propertyItemIfExists propertyName = 'contentType' />
 
     <tr>
       <!-- Character encoding -->
+    <#if resource.characterEncoding?exists>
     <#if shouldDisplayForm('userSpecifiedCharacterEncoding')>
       <@displayForm propertyName = 'userSpecifiedCharacterEncoding' />
     <#else>
@@ -204,39 +229,10 @@
         <@propertyEditURLIfExists propertyName = 'userSpecifiedCharacterEncoding' />
       </td>
     </#if>
+    </#if>
     </tr>
   </table>
-
-
-
-  <h3 class="resourceInfoHeader">
-    <@vrtx.msg
-       code="resource.metadata.about.misc"
-       default="Miscellaneous information"/>
-  </h3>
-  <table class="resourceInfo">
-    <tr>
-      <!-- Last modified -->
-      <td class="key">
-        <@vrtx.msg code="resource.creattionTime" default="Created"/>:
-      </td>
-      <td>
-        <#assign createdByStr = resource.createdBy.name />
-        <#if resource.createdBy.URL?exists>
-          <#assign createdByStr>
-            <a href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
-          </#assign>
-        </#if>
-        <@vrtx.msg code = "resource.createdBy"
-                   args = [ "${resource.creationTime?date}", "${createdByStr}" ]
-                   default = "${resource.creationTime?date} by ${createdByStr}" />
-      </td>
-      <td>
-        
-      </td>
-    </tr>
-
-  </table>
+  </#if>
 
 
 </body>

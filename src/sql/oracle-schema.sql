@@ -89,18 +89,20 @@ show errors;
 
 
 -----------------------------------------------------------------------------
--- vortex_uri_tmp - Auxiliary temp-table used to hold lists of URIs
+-- vortex_tmp - Auxiliary temp-table used to hold lists of URIs or resource-
+--              IDs
 -----------------------------------------------------------------------------
-DROP SEQUENCE vortex_uri_tmp_session_id_seq;
-CREATE SEQUENCE vortex_uri_tmp_session_id_seq INCREMENT BY 1 START WITH 1000;
+DROP SEQUENCE vortex_tmp_session_id_seq;
+CREATE SEQUENCE vortex_tmp_session_id_seq INCREMENT BY 1 START WITH 1000;
 
-DROP TABLE vortex_uri_tmp;
-CREATE TABLE vortex_uri_tmp (
+DROP TABLE vortex_tmp;
+CREATE TABLE vortex_tmp (
     session_id NUMBER,
+    resource_id NUMBER,
     uri VARCHAR2(2048)
 );
 
-CREATE INDEX vortex_uri_tmp_index ON vortex_uri_tmp(uri);
+CREATE INDEX vortex_tmp_index ON vortex_tmp(uri);
 
 
 

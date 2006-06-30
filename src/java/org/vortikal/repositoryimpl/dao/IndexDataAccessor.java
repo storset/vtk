@@ -2,6 +2,7 @@ package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.vortikal.repository.PropertySet;
 
@@ -54,25 +55,14 @@ public interface IndexDataAccessor {
     
     
     /**
-     * Process list of <code>ResultSecurityInfo</code> intances with regard to
-     * pseudo:all <-> RepositoryAction.READ_PROCESSED | RepositoryAction.READ
-     *  
-     * @param principals
-     * @param resultSecurityInfo
-     * @throws IOException
-     */
-    public void processQueryResultsAuthorization(List resultSecurityInfo)
-        throws IOException;
-    
-    /**
      * Process list of <code>ResultSecurityInfo</code> instances
-     * against list of given users and/or groups (Strings)
+     * against list of given user/group names.
      * 
-     * @param principals
+     * @param principalNames
      * @param resultSecurityInfo
      * @throws IOException
      */
-    public void processQueryResultsAuthorization(List usersAndGroups, 
+    public void processQueryResultsAuthorization(Set principalNames, 
                                                  List resultSecurityInfo)
         throws IOException;
 

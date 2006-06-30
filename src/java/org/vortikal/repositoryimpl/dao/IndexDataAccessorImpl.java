@@ -36,9 +36,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -48,10 +50,15 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.PropertyManager;
+import org.vortikal.repositoryimpl.query.security.ResultSecurityInfo;
 import org.vortikal.security.PrincipalManager;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
+/**
+ * 
+ *
+ */
 public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBean {
     
     Log logger = LogFactory.getLog(IndexDataAccessorImpl.class);
@@ -69,6 +76,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
     private String sqlDialect = SQL_DIALECT_DEFAULT;
     private boolean oracle = false;
     
+    private int queryAuthorizationBatchSize = 1000;
+    
     public void afterPropertiesSet() throws BeanInitializationException {
         if (this.propertyManager == null) {
             throw new BeanInitializationException("Property 'propertyManager' not set.");
@@ -80,6 +89,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             throw new BeanInitializationException("Property 'sqlMapClient' not set.");
         } else if (this.sqlMaps == null) {
             throw new BeanInitializationException("Property 'sqlMaps' not set.");
+        } else if (this.queryAuthorizationBatchSize < 1) {
+            throw new BeanInitializationException("Query result authorization batch size must be 1 or greater");
         }
         
         if (this.sqlDialect.equals(SQL_DIALECT_ORACLE)) {
@@ -162,72 +173,19 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         }
     }
     
-    /**
-     * 
-     */
     public ResultSetIterator getPropertySetIteratorForURIs(List uris) throws IOException {
         
         if (uris.size() == 0) {
             throw new IllegalArgumentException("At least one URI must be specified for retrieval.");
         }
         
-        Connection conn;
         try {
-            conn = this.dataSource.getConnection();
+            Connection conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);
 
-            int sessionId = insertIntoTempTable(uris, conn);
-            
-            String query =
-                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* "
-              + "from vortex_uri_tmp vu, vortex_resource r "
-              + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
-              + "where r.uri = vu.uri AND vu.session_id=? "
-              + "order by p.resource_id, p.extra_prop_entry_id";            
-            
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, sessionId);
-            
-            ResultSet rs = pstmt.executeQuery();
-            
-            // Remove rows from temporary URI table
-            PreparedStatement deleteFromTempStmt = conn.prepareStatement(
-                    "DELETE FROM vortex_uri_tmp WHERE session_id=?");
-            deleteFromTempStmt.setInt(1, sessionId);
-            deleteFromTempStmt.executeUpdate();
-            
-            return new ResultSetIteratorImpl(this.propertyManager, 
-                                             this.principalManager,
-                                             rs, deleteFromTempStmt, conn);
-            
-        } catch (SQLException e) {
-            throw new IOException(e.getMessage());
-        }
-    }
-    
-    private int insertIntoTempTable(List uris, Connection conn)
-        throws SQLException {
-        
-        int sessionId = -1;
-        
-        try {
-            String nextvalQuery = this.oracle ? 
-                    "SELECT vortex_uri_tmp_session_id_seq.nextval FROM dual" :
-                    "SELECT nextval('vortex_uri_tmp_session_id_seq')";
-            
-            PreparedStatement pstmt = conn.prepareStatement(nextvalQuery);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                sessionId = rs.getInt(1);
-            } else {
-                throw new SQLException("Unable to get next value from session id sequence");
-            }
-            rs.close();
-            pstmt.close();
-            
-            pstmt = conn.prepareStatement(
-                    "INSERT INTO vortex_uri_tmp(session_id, uri) VALUES (?,?)");
+            int sessionId = getNewSessionId(conn);
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "INSERT INTO vortex_tmp(session_id, uri) VALUES (?,?)");
             
             for (Iterator i = uris.iterator(); i.hasNext();) {
                 pstmt.setInt(1, sessionId);
@@ -236,35 +194,224 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             }
             
             pstmt.executeBatch();
-            pstmt.close();
+            pstmt.close();            
+            
+            String query =
+                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* "
+              + "from vortex_tmp vu, vortex_resource r "
+              + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
+              + "where r.uri = vu.uri AND vu.session_id=? "
+              + "order by p.resource_id, p.extra_prop_entry_id";            
+            
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, sessionId);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            // Delete from vortex_tmp
+            PreparedStatement deleteStmt = 
+                conn.prepareStatement("DELETE FROM vortex_tmp WHERE session_id = ?");
+            deleteStmt.setInt(1, sessionId);
+            deleteStmt.executeUpdate();
+            deleteStmt.close();
+            
+            return new ResultSetIteratorImpl(this.propertyManager, 
+                                             this.principalManager,
+                                             rs, pstmt, conn);
+            
         } catch (SQLException e) {
-            logger.warn("SQLException while inserting into vrtx_uri_tmp: ", e);
-            logger.warn("Next exception: ", e.getNextException());
-            logger.warn("Cause: ", e.getCause());
-            throw e;
+            throw new IOException(e.getMessage());
         }
+    }
+
+    private int getNewSessionId(Connection conn) throws SQLException  {
+        
+        String nextvalQuery = this.oracle ? 
+                "SELECT vortex_tmp_session_id_seq.nextval FROM dual" :
+                "SELECT nextval('vortex_tmp_session_id_seq')";
+        
+        PreparedStatement pstmt = conn.prepareStatement(nextvalQuery);
+        ResultSet rs = pstmt.executeQuery();
+        
+        int sessionId = -1;
+        if (rs.next()) {
+            sessionId = rs.getInt(1);
+        } else {
+            throw new SQLException("Unable to get next value from session id sequence");
+        }
+        rs.close();
+        pstmt.close();
         
         return sessionId;
     }
- 
- 
-    public void processQueryResultsAuthorization(List principals, 
-                                        List resultSecurityInfo)
-        throws IOException {
+    
+    private PreparedStatement buildAuthorizationQueryPreparedStatement(
+                                                             int sessionId,
+                                                             Set principalNames,
+                                                             Connection conn) 
+        throws SQLException {
         
-        // XXX: not implemented
-        throw new UnsupportedOperationException("Not implemented yet.");
+        StringBuffer query = new StringBuffer();
+        query.append("SELECT ace.resource_id FROM acl_entry ace, vortex_tmp vtmp ");
+        query.append("WHERE ace.resource_id = vtmp.resource_id AND vtmp.session_id = ? ");
+        query.append("AND ace.user_or_group_name IN ('pseudo:all','pseudo:authenticated'");
+        if (principalNames.size() > 0) {
+            query.append(",");
+        }
+        for (int i=0; i<principalNames.size(); i++) {
+            query.append("?");
+            if (i < principalNames.size()-1) {
+                query.append(",");
+            }
+        }
+        query.append(") AND ace.action_type_id IN (1, 3, 4)");
+        PreparedStatement pstmt = conn.prepareStatement(query.toString());
         
+        int n = 1;
+        pstmt.setInt(n++,  sessionId);
+        for (Iterator i = principalNames.iterator(); i.hasNext();) {
+            String name = (String)i.next();
+            pstmt.setString(n++, name);
+        }
+        
+        return pstmt;
     }
-
-    public void processQueryResultsAuthorization(List resultSecurityInfo) 
+    
+    /*
+     *  (non-Javadoc)
+     *  TODO: Optimize if possible (use different approaches, etc.)
+     *        I think most of the time is spent hashing integers to 
+     *        avoid unnecessary database lookups (which I'm guessing are even more expensive)
+     * @see org.vortikal.repositoryimpl.dao.IndexDataAccessor#processQueryResultsAuthorization(java.util.List)
+     */
+    public void processQueryResultsAuthorization(Set principalNames,
+                                                 List rsiList) 
         throws IOException {
-        
-        // XXX: not implemented 
-        throw new UnsupportedOperationException("Not implemented yet.");
-        
-    }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Processing list of " + rsiList.size() + " elements");
+        }
+        
+        Connection conn = null;
+        try {
+            conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
+            
+            int sessionId = getNewSessionId(conn);
+
+            // Avoid looking up the same ID more than once in database by using sets
+            // of all encountered uniqe IDs and authorized IDs.
+            Set authorizedIds = new HashSet();
+            Set allIds = new HashSet();
+            
+            PreparedStatement insertTmpStmt = conn.prepareStatement(
+                "INSERT INTO vortex_tmp(session_id, resource_id) VALUES (?,?)");
+            
+            PreparedStatement authorizeStmt =
+                 buildAuthorizationQueryPreparedStatement(sessionId, 
+                                                             principalNames, conn);
+            
+            PreparedStatement deleteTmpStmt = conn.prepareStatement(
+                "DELETE FROM vortex_tmp WHERE session_id = ?");
+            deleteTmpStmt.setInt(1, sessionId);
+
+            int batchSize = this.queryAuthorizationBatchSize;
+            int batchStart = 0;
+            int batchEnd = batchSize > rsiList.size() ? rsiList.size() : batchSize;
+            for(;;) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Processing batch " + batchStart + " to " + 
+                            batchEnd);
+                }
+                
+                int n = 0;
+                for (int i = batchStart; i < batchEnd; i++) {
+                    ResultSecurityInfo rsi = (ResultSecurityInfo) rsiList.get(i);
+                    Integer id = rsi.getAclNodeId();
+                    
+                    if (! allIds.add(id)) {
+                        continue;
+                    }
+                    
+                    insertTmpStmt.setInt(1, sessionId);
+                    insertTmpStmt.setInt(2, id.intValue());
+                    insertTmpStmt.addBatch();
+                    ++n;
+                }
+
+                if (n > 0) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Need to check " + n + " entries in database");
+                    }
+                    
+                    // We need to do database lookup for some IDs
+                    insertTmpStmt.executeBatch();
+                    
+                    ResultSet rs = authorizeStmt.executeQuery();
+                    while (rs.next()) {
+                        Integer id = new Integer(rs.getInt(1));
+                        if (authorizedIds.add(id) && logger.isDebugEnabled()) {
+                            logger.debug("Adding ACL node id " +
+                                          id + " to set of authorized IDs");
+                        }
+                        
+                        logger.debug("Current ACL node id: " + id);
+                    }
+                    rs.close();
+                    
+                    deleteTmpStmt.executeUpdate();
+                }
+                
+                for (int i = batchStart; i < batchEnd; i++) {
+                    ResultSecurityInfo rsi = (ResultSecurityInfo) rsiList.get(i);
+                    
+                    rsi.setAuthorized(
+                            authorizedIds.contains(rsi.getAclNodeId())
+                            || principalNames.contains(rsi.getOwnerAsUserOrGroupName()));
+                    
+                    if (logger.isDebugEnabled()) {
+                        if (rsi.isAuthorized()) {
+                            logger.debug("Authorized resource with ACL node id: " 
+                                                                + rsi.getAclNodeId());
+                        } else {
+                            logger.debug("NOT authorized resource with ACL node id: " 
+                                    + rsi.getAclNodeId());
+                        }
+                    }
+                }
+                
+                if (batchEnd == rsiList.size()) {
+                    break;
+                } else {
+                    batchStart += batchSize;
+                    batchEnd = (batchEnd + batchSize) > rsiList.size() ? 
+                            rsiList.size() : batchEnd + batchSize;
+                }
+            } 
+            
+            insertTmpStmt.close();
+            authorizeStmt.close();
+            deleteTmpStmt.close();
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Set of authorized uniqe IDs contains " + authorizedIds.size() + " elements.");
+                logger.debug("Set of all uniqe IDs contains " + allIds.size() + " elements.");
+            }
+
+        } catch (SQLException sqle) {
+            throw new IOException(sqle.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.commit();
+                    conn.close();
+                } catch (SQLException sqle) {
+                    logger.warn("SQLException while closing connection", sqle);
+                }
+            }
+        }
+    }
+    
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -295,6 +442,10 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             return (String) this.sqlMaps.get(statementId);
         }
         return statementId;
+    }
+
+    public void setQueryAuthorizationBatchSize(int queryAuthorizationBatchSize) {
+        this.queryAuthorizationBatchSize = queryAuthorizationBatchSize;
     }
 
 }

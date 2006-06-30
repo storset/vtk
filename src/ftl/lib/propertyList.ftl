@@ -37,7 +37,9 @@
 
 
 <#macro defaultPropertyDisplay item>
-  <td class="key">${item.definition.name}</td>
+  <td class="key">
+    <@vrtx.msg code="resource.${item.definition.name}" default="${item.definition.name}" />
+  </td>
   <td>
     <#if item.property?exists>
       <#if item.definition.multiple>

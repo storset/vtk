@@ -120,6 +120,14 @@ public interface PropertyManager {
      */
     public List getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
 
+
+    /**
+     * Gets a resource type definition object by name.
+     * @param name the name of the resource type
+     * @return the resource type definition
+     */
+    public ResourceTypeDefinition getResourceTypeDefinitionByName(String name);
+
     /**
      * Determines whether a named resource type is contained in another resource type
      * @param def the resource type definition

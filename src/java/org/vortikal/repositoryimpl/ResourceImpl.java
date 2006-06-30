@@ -73,6 +73,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         this.authorizationManager = authorizationManager;
     }
 
+    public ResourceTypeDefinition getResourceTypeDefinition() {
+        return this.propertyManager.getResourceTypeDefinitionByName(this.resourceType);
+    }
+    
+
     public boolean isOfType(ResourceTypeDefinition type) {
         return this.propertyManager.isContainedType(type, this.resourceType);
     }

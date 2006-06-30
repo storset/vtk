@@ -1176,6 +1176,18 @@ public class PropertyManagerImpl implements PropertyManager,
         return childList;
     }
 
+    public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
+        ResourceTypeDefinition type = (ResourceTypeDefinition)
+            this.resourceTypeNameMap.get(name);
+        if (type == null) {
+            throw new IllegalArgumentException(
+                "No resource type of name '" + name + "' exists");
+        }
+
+        return type;
+    }
+    
+
     public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName) {
 
 

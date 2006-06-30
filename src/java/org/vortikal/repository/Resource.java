@@ -39,6 +39,8 @@ import org.vortikal.security.Principal;
 
 public interface Resource extends PropertySet {
 
+    public ResourceTypeDefinition getResourceTypeDefinition();
+
     public boolean isOfType(ResourceTypeDefinition type);
 
     public boolean isAuthorized(RepositoryAction privilege, Principal principal);

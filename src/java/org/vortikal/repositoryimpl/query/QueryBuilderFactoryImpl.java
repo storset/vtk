@@ -47,6 +47,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repositoryimpl.PropertyManager;
+import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameTermQueryBuilder;
@@ -208,7 +209,8 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
                 
             } else {
                 // URI not found, so the query should produce zero hits.
-                return new Term(DocumentMapper.ID_FIELD_NAME, "-1"); 
+                return new Term(DocumentMapper.ID_FIELD_NAME, String.valueOf(
+                        PropertySetImpl.NULL_RESOURCE_ID)); 
             }
         } catch (IOException io) {
             throw new QueryBuilderException("IOException while building query: ", io);

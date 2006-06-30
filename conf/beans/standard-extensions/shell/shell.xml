@@ -9,13 +9,8 @@
       </description>
       <!-- Shell init files: '${shellInitFileList}' -->
 
-      <!--
-      <property name="initFiles">
-        <list>
-          <value>${f}</value>
-        </list>
-      </property>
-      -->
+      <property name="initFilesCSV" value="${shellInitFiles}" />
+
       <property name="runEvalLoop" value="${shellRunEvalLoop}" />
       <property name="consoleHandler">
         <bean class="org.vortikal.shell.SocketHandlerThread" />

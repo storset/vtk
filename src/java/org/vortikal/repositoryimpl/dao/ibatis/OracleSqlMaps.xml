@@ -215,7 +215,7 @@
   </update>
   
   <select id="oracle.nextTempTableSessionId" resultClass="java.lang.Integer">
-    select vortex_uri_tmp_session_id_seq.nextval from dual
+    select vortex_tmp_session_id_seq.nextval from dual
   </select>
   
 

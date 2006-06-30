@@ -179,22 +179,22 @@
           parameterClass="java.util.Map"
           resultMap="ResourceAndExtraPropertiesWithAncestorIds">
     select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.*
-    from vortex_uri_tmp vu, vortex_resource r
+    from vortex_tmp vu, vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
     where r.uri = vu.uri AND vu.session_id=#sessionId#
     order by p.resource_id, p.extra_prop_entry_id     
   </select>
   
   <select id="nextTempTableSessionId" resultClass="java.lang.Integer">
-    select nextval('vortex_uri_tmp_session_id_seq')
+    select nextval('vortex_tmp_session_id_seq')
   </select>
   
   <insert id="insertIntoUriTempTable" parameterClass="java.util.Map">
-    insert into vortex_uri_tmp(session_id, uri) values (#sessionId#, #uri#)
+    insert into vortex_tmp(session_id, uri) values (#sessionId#, #uri#)
   </insert>
   
   <delete id="deleteFromUriTempTableBySessionId" parameterClass="java.util.Map">
-    delete from vortex_uri_tmp where session_id = #sessionId#
+    delete from vortex_tmp where session_id = #sessionId#
   </delete>
 
   <select id="loadResourceByUri" resultMap="Resource">

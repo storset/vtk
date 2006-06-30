@@ -47,15 +47,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.security.PrincipalManager;
@@ -65,7 +66,6 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
-
 
 
 public class PropertyEditController extends SimpleFormController
@@ -331,6 +331,26 @@ public class PropertyEditController extends SimpleFormController
 
     }
     
+    private boolean isApplicableProperty(PropertyTypeDefinition def,
+                                         ResourceTypeDefinition resourceType) {
+
+        PropertyTypeDefinition[] propDefs = resourceType.getPropertyTypeDefinitions();
+        for (int i = 0; i < propDefs.length; i++) {
+            if (propDefs[i].equals(def)) {
+                return true;
+            }
+        }
+        if (resourceType instanceof PrimaryResourceTypeDefinition) {
+            PrimaryResourceTypeDefinition primaryResourceType =
+                (PrimaryResourceTypeDefinition) resourceType;
+            if (primaryResourceType.getParentTypeDefinition() != null) {
+                return isApplicableProperty(def, primaryResourceType.getParentTypeDefinition());
+            }
+
+        }
+        return false;
+    }
+    
 
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -344,9 +364,15 @@ public class PropertyEditController extends SimpleFormController
         for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
 
             PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
+            if (!isApplicableProperty(def, resource.getResourceTypeDefinition())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Property type definition " + def
+                                 + " not applicable for resource " + resource + ", skipping");
+                }
+                continue;
+            }
 
             Property property = resource.getProperty(def.getNamespace(), def.getName());
-
             String editURL = null;
 
             if (resource.isAuthorized(def.getProtectionLevel(),

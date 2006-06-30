@@ -103,6 +103,10 @@
     
     <!-- Only temporary -->
     <property name="sqlDialect" value="${sqlDialect}"/>
+
+    <!-- How many results to process at a time when authorizing query result sets
+        against database -->
+    <property name="queryAuthorizationBatchSize" value="1000"/>
   </bean>
 
   <bean id="repository.contentStore" 

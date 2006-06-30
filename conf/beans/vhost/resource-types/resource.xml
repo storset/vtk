@@ -29,11 +29,6 @@
               ref="abstractResourceResourceTypeDefinition" />
     <property name="name" value="resource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="mixinTypeDefinitions">
-      <list>
-        <ref bean="web30MixinResourceTypeDef" />
-      </list>
-    </property>    
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="lastModifiedPropDef" />

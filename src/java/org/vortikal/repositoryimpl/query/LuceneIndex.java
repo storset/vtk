@@ -181,9 +181,6 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
      */
     protected IndexReader getReadOnlyIndexReader() throws IOException {
         synchronized (this.searchReaderManagementLock) {
-            logger.debug("getReadOnlyIndexReader(): this.currentSearchReaderOutdated=" + this.currentSearchReaderOutdated);
-            logger.debug("Instance: " + this);
-
             if (this.currentSearchReaderOutdated) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Current search index reader is outdated !");
@@ -329,8 +326,6 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             
             this.currentSearchReaderOutdated = ! this.currentSearchReader.isCurrent();
             
-            logger.debug("commit(): this.currentSearchReaderOutdated=" + this.currentSearchReaderOutdated);
-            logger.debug("Instance: " + this);
         }        
     }
     

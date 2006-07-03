@@ -40,6 +40,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
 
     private PropertyTypeDefinition definition;
     private String[] possibleValues;
+    private String format;
     private String value;
     
     private String namespace;
@@ -51,6 +52,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         super(submitURL);
         this.definition = definition;
         this.value = value;
+        this.format = format;
         this.namespace = definition != null ? definition.getNamespace().getUri() : null;
         this.name = definition != null ? definition.getName() : null;
     }
@@ -60,6 +62,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         super(submitURL);
         this.definition = definition;
         this.value = value;
+        this.format = format;
         this.possibleValues = possibleValues;
         this.namespace = definition != null ? definition.getNamespace().getUri() : null;
         this.name = definition != null ? definition.getName() : null;
@@ -80,6 +83,11 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
     public String getValue() {
         return this.value;
     }
+
+    public String getFormat() {
+        return this.format;
+    }
+    
 
     public void setValue(String value) {
         this.value = value;

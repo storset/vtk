@@ -103,7 +103,10 @@
               <#local value=item.property.value>
             </#if> 
           </#if>
-          <li><input type="text" name="value" value="${value?if_exists}"></li>
+          <li>
+            <input type="text" name="value" value="${value?if_exists}">
+            <#if item.format?exists>(${item.format}</#if>)
+          </li>
         </#if>
       </ul>
       <@spring.bind "form.value"/>

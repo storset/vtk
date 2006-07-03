@@ -39,12 +39,21 @@ public class PropertyItem {
     private Property property;
     private PropertyTypeDefinition definition;
     private String editURL;
+    private String format;
 
     public PropertyItem(Property property, PropertyTypeDefinition definition,
                         String editURL) {
         this.property = property;
         this.definition = definition;
         this.editURL = editURL;
+    }
+
+    public PropertyItem(Property property, PropertyTypeDefinition definition,
+                        String editURL, String format) {
+        this.property = property;
+        this.definition = definition;
+        this.editURL = editURL;
+        this.format = format;
     }
 
 
@@ -63,6 +72,11 @@ public class PropertyItem {
     public void setDefinition(PropertyTypeDefinition definition) {
         this.definition = definition;
     }
+
+    public String getFormat() {
+        return this.format;
+    }
+    
 
     public String getEditURL() {
         return this.editURL;

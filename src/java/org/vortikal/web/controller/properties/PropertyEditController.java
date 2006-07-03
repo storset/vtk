@@ -215,6 +215,7 @@ public class PropertyEditController extends SimpleFormController
                 editURL = service.constructLink(resource, securityContext.getPrincipal(),
                                                 urlParameters);
             }
+
         }
         
         PropertyEditCommand propertyEditCommand = new PropertyEditCommand(
@@ -229,7 +230,7 @@ public class PropertyEditController extends SimpleFormController
         switch (type) {
 
         case PropertyType.TYPE_DATE:
-            SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+            SimpleDateFormat format = new SimpleDateFormat(this.dateFormat);
             Date date = property.getDateValue();
             value = format.format(date);
             break;
@@ -385,7 +386,8 @@ public class PropertyEditController extends SimpleFormController
 
             Property property = resource.getProperty(def.getNamespace(), def.getName());
             String editURL = null;
-
+            String format = null;
+            
             if (resource.isAuthorized(def.getProtectionLevel(),
                                       securityContext.getPrincipal())) {
                 
@@ -399,6 +401,10 @@ public class PropertyEditController extends SimpleFormController
                     urlParameters.put("action", "toggle");
                 } else {
                 }
+                if (def.getType() == PropertyType.TYPE_DATE) {
+                    format = this.dateFormat;
+                }
+
                 try {
                     editURL = service.constructLink(resource, securityContext.getPrincipal(),
                             urlParameters);
@@ -407,7 +413,7 @@ public class PropertyEditController extends SimpleFormController
                 }
             }
 
-            PropertyItem item = new PropertyItem(property, def, editURL);
+            PropertyItem item = new PropertyItem(property, def, editURL, format);
             propsList.add(item);
             if (def.getNamespace() == Namespace.DEFAULT_NAMESPACE) {
                 propsMap.put(def.getName(), item);

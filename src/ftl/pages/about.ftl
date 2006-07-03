@@ -81,42 +81,39 @@
   <table class="resourceInfo">
     <tr>
       <!-- Last modified -->
-      <td class="key">
-        <@vrtx.msg code="resource.lastModified" default="Last modified"/>:
-      </td>
-      <td>
-        <#assign modifiedByStr = resource.modifiedBy.name />
-        <#if resource.modifiedBy.URL?exists>
-          <#assign modifiedByStr>
-            <a href="${resource.modifiedBy.URL?html}">${resource.modifiedBy.name}</a>
-          </#assign>
-        </#if>
+      <#assign modifiedByStr = resource.modifiedBy.name />
+      <#if resource.modifiedBy.URL?exists>
+        <#assign modifiedByStr>
+          <a href="${resource.modifiedBy.URL?html}">${resource.modifiedBy.name}</a>
+        </#assign>
+      </#if>
+      <#assign modifiedStr>
         <@vrtx.msg code = "resource.lastModifiedBy"
                    args = [ "${resource.lastModified?date}", "${modifiedByStr}" ]
                    default = "${resource.lastModified?date} by ${modifiedByStr}" />
-      </td>
-      <td>
-        
-      </td>
+      </#assign>
+
+      <@propList.defaultPropertyDisplay
+             key = vrtx.getMsg("resource.lastModified", "Last modified")
+             value = modifiedStr />
+    </tr>
     <tr>
       <!-- Created -->
-      <td class="key">
-        <@vrtx.msg code="resource.creationTime" default="Created"/>:
-      </td>
-      <td>
-        <#assign createdByStr = resource.createdBy.name />
-        <#if resource.createdBy.URL?exists>
-          <#assign createdByStr>
-            <a href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
-          </#assign>
-        </#if>
+      <#assign createdByStr = resource.createdBy.name />
+      <#if resource.createdBy.URL?exists>
+        <#assign createdByStr>
+          <a href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
+        </#assign>
+      </#if>
+      <#assign createdByStr>
         <@vrtx.msg code = "resource.createdBy"
                    args = [ "${resource.creationTime?date}", "${createdByStr}" ]
                    default = "${resource.creationTime?date} by ${createdByStr}" />
-      </td>
-      <td>
-        
-      </td>
+      </#assign>
+      <@propList.defaultPropertyDisplay
+             key = vrtx.getMsg("resource.creationTime", "Created")
+             value = createdByStr />
+
     </tr>
     </tr>
       <!-- Owner -->

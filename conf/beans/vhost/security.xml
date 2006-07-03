@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+b<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
           "http://www.springframework.org/dtd/spring-beans.dtd">
 
@@ -208,7 +208,7 @@
       </description>
       <props>
        <prop key="root@localhost">${password.root@localhost}</prop>
-        <prop key="vortex@localhost">${password.vortex@localhost}"</prop>
+        <prop key="vortex@localhost">${password.vortex@localhost}</prop>
         <prop key="user@localhost">${password.user@localhost}</prop>
         <!-- is not possible to authenticate as: -->
         <prop key="trustedUser@localhost">NO_REAL_VALUE</prop>

@@ -88,7 +88,7 @@
         </#assign>
       </#if>
       <#assign modifiedStr>
-        <@vrtx.msg code = "resource.lastModifiedBy"
+        <@vrtx.rawMsg code = "resource.lastModifiedBy"
                    args = [ "${resource.lastModified?date}", "${modifiedByStr}" ]
                    default = "${resource.lastModified?date} by ${modifiedByStr}" />
       </#assign>
@@ -106,7 +106,7 @@
         </#assign>
       </#if>
       <#assign createdByStr>
-        <@vrtx.msg code = "resource.createdBy"
+        <@vrtx.rawMsg code = "resource.createdBy"
                    args = [ "${resource.creationTime?date}", "${createdByStr}" ]
                    default = "${resource.creationTime?date} by ${createdByStr}" />
       </#assign>

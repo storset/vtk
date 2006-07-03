@@ -19,7 +19,7 @@
 <#--
  * msg
  *
- * Get a localized message from the spring RequestContext. 
+ * Get a localized, html-escaped message from the spring RequestContext. 
  * Example: <@vrtx.msg code="my.message.key" default="My default message" args="['my param']"
  *
  * @param code the code of the localized message
@@ -30,9 +30,31 @@
 -->
 <#macro msg code default args=[] >
   <#compress>
-    <#assign localizer =
+    <#local localizer =
     "org.vortikal.web.view.freemarker.MessageLocalizer"?new(code, default, args, springMacroRequestContext) />
   ${localizer.msg?html}
+  </#compress>
+</#macro>
+
+
+
+<#--
+ * rawMsg
+ *
+ * Get a localized, unescaped message from the spring RequestContext. 
+ * Example: <@vrtx.rawMsg code="my.message.key" default="My default message" args="['my param']"
+ *
+ * @param code the code of the localized message
+ * @param default the default message if the localized message did not
+ *        exist for the currently selected locale.
+ * @param args (optional) arguments for the message
+ *
+-->
+<#macro rawMsg code default args=[] >
+  <#compress>
+    <#local localizer =
+    "org.vortikal.web.view.freemarker.MessageLocalizer"?new(code, default, args, springMacroRequestContext) />
+  ${localizer.msg}
   </#compress>
 </#macro>
 
@@ -40,7 +62,7 @@
 <#--
  * getMsg
  *
- * Same as the macto 'msg', but returns a value instead of printing it.
+ * Same as the macro 'rawMsg', but returns a value instead of printing it.
  * Example: <#assign msg = vrtx.getMsg("my.message.key", "My default message", ['my param']) />
  *
  * @param code the code of the localized message
@@ -52,7 +74,7 @@
 <#function getMsg code default args=[] >
     <#assign localizer =
     "org.vortikal.web.view.freemarker.MessageLocalizer"?new(code, default, args, springMacroRequestContext) />
-  <#return localizer.msg?html/>
+  <#return localizer.msg/>
 </#function>
 
 

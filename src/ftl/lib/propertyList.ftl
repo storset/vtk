@@ -55,7 +55,7 @@
         </#if>
       </#if>
     <#else>
-      Not set
+      <@vrtx.msg code="resource.property.unspecified" default="Not set" />
     </#if>
   </#local>
   <#local editURL>
@@ -71,8 +71,6 @@
   </td>
   <td>
     ${value}
-  </td>
-  <td>
     ${editURL}
   </td>
 </#macro>

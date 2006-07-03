@@ -105,7 +105,7 @@
           </#if>
           <li>
             <input type="text" name="value" value="${value?if_exists}">
-            <#if item.format?exists>(${item.format}</#if>)
+            <#if item.format?exists>(${item.format})</#if>
           </li>
         </#if>
       </ul>

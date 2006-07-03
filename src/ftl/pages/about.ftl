@@ -40,8 +40,8 @@
   <#return false />
 </#function>
 
-<#macro displayForm propertyName>
-  <@propList.propertyForm aboutItems[propertyName] />
+<#macro displayForm propertyName value="" >
+  <@propList.propertyForm item=aboutItems[propertyName] formValue=value />
 </#macro>
 
 
@@ -213,7 +213,7 @@
       <!-- Character encoding -->
     <#if resource.characterEncoding?exists>
     <#if shouldDisplayForm('userSpecifiedCharacterEncoding')>
-      <@displayForm propertyName = 'userSpecifiedCharacterEncoding' />
+      <@displayForm propertyName = 'userSpecifiedCharacterEncoding' value=resource.characterEncoding />
     <#else>
       <#assign encoding>
         <#if resource.userSpecifiedCharacterEncoding?has_content>

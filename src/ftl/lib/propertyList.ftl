@@ -61,6 +61,7 @@
   <#local editURL>
     <@propertyEditURL item = item />
   </#local>
+
   <@defaultPropertyDisplay key=key value=value editURL=editURL />
 </#macro>
 
@@ -75,10 +76,11 @@
   </td>
 </#macro>
 
-<#macro propertyForm item>
+<#macro propertyForm item formValue="" >
   <td colspan="3" class="expandedForm">
     <form action="${form.submitURL?html}" method="POST">
-      <h3>${item.definition.name}:</h3>
+      <#local name = vrtx.getMsg("resource." + item.definition.name, item.definition.name) />
+      <h3>${name}:</h3>
       <ul class="property">
         <#if form.possibleValues?exists>
           <#list form.possibleValues as alternative>
@@ -93,6 +95,7 @@
             </#if>
           </#list>
         <#else>
+          <#local value="${formValue}" />
           <#if form.value?exists && item.property?exists>
             <#if item.definition.type = 5>
               <#local value=item.property.principalValue.name>

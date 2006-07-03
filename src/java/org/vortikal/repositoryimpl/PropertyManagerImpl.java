@@ -120,7 +120,9 @@ public class PropertyManagerImpl implements PropertyManager,
     // Currently maps namespaceUris to maps which map property names to defs.
     private Map propertyTypeDefinitions = new HashMap();
     
-    private Map mixinTypeDefinitions = new HashMap();
+    private Collection mixins;
+
+    private Map mixinTypeDefinitionMap = new HashMap();
 
     private Map namespaceUriMap = new HashMap();
     
@@ -196,16 +198,17 @@ public class PropertyManagerImpl implements PropertyManager,
             }
 
             this.resourceTypeDefinitions.put(parent, newChildren);
-            this.mixinTypeDefinitions.put(def, getMixinTypes(def));
+            this.mixinTypeDefinitionMap.put(def, getMixinTypes(def));
 
         }
         // Remove null-key (which is the root resource type's "parent")
         this.resourceTypeDefinitions.remove(null);
         
-        Collection mixins = 
+        this.mixins = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
                     MixinResourceTypeDefinition.class, false, false).values();
-        for (Iterator iter = mixins.iterator(); iter.hasNext();) {
+
+        for (Iterator iter = this.mixins.iterator(); iter.hasNext();) {
             ResourceTypeDefinition def = (ResourceTypeDefinition) iter.next();
             this.resourceTypeNameMap.put(def.getName(), def);
             addNamespacesAndProperties(def);
@@ -255,7 +258,7 @@ public class PropertyManagerImpl implements PropertyManager,
 
         // Evaluating mixin resource type properties
         MixinResourceTypeDefinition[] mixinTypes =
-            (MixinResourceTypeDefinition[]) this.mixinTypeDefinitions.get(rt);
+            (MixinResourceTypeDefinition[]) this.mixinTypeDefinitionMap.get(rt);
         
         for (int i = 0; i < mixinTypes.length; i++) {
 
@@ -493,7 +496,7 @@ public class PropertyManagerImpl implements PropertyManager,
         
         // Evaluating mixin resource type properties
         MixinResourceTypeDefinition[] mixinTypes =
-            (MixinResourceTypeDefinition[]) this.mixinTypeDefinitions.get(rt);
+            (MixinResourceTypeDefinition[]) this.mixinTypeDefinitionMap.get(rt);
 
         for (int i = 0; i < mixinTypes.length; i++) {
             PropertyTypeDefinition[] mixinDef = mixinTypes[i].getPropertyTypeDefinitions();
@@ -705,7 +708,7 @@ public class PropertyManagerImpl implements PropertyManager,
         
         // Evaluating mixin resource type properties
         MixinResourceTypeDefinition[] mixinTypes =
-            (MixinResourceTypeDefinition[]) this.mixinTypeDefinitions.get(rt);
+            (MixinResourceTypeDefinition[]) this.mixinTypeDefinitionMap.get(rt);
         for (int i = 0; i < mixinTypes.length; i++) {
 
             PropertyTypeDefinition[] mixinDef = mixinTypes[i].getPropertyTypeDefinitions();
@@ -943,9 +946,21 @@ public class PropertyManagerImpl implements PropertyManager,
     public String getResourceTypeTreeAsString() {
         StringBuffer sb = new StringBuffer();
         printResourceTypes(sb, 0, rootResourceTypeDefinition);
+        printMixinTypes(sb);
         return sb.toString();
     }
     
+    private void printMixinTypes(StringBuffer sb) {
+
+        sb.append("\n");
+        for (Iterator i = this.mixins.iterator(); i.hasNext();) {
+            MixinResourceTypeDefinition mixin = (MixinResourceTypeDefinition) i.next();
+            printResourceTypes(sb, 0, mixin);
+            sb.append("\n");
+        }
+    }
+    
+
     private void printResourceTypes(StringBuffer sb, int level,
                                     ResourceTypeDefinition def) {
         
@@ -956,14 +971,32 @@ public class PropertyManagerImpl implements PropertyManager,
             sb.append("+--");
         }
 
-        sb.append("[").append(def.getNamespace()).append("] ").append(def.getName()).append("\n");
+        sb.append("[").append(def.getNamespace()).append("] ").append(def.getName());
+        if (def instanceof MixinResourceTypeDefinition) {
+            sb.append(" (mixin)");
+        }
+        sb.append("\n");
+
+        MixinResourceTypeDefinition[] mixins = (MixinResourceTypeDefinition[])
+            this.mixinTypeDefinitionMap.get(def);
+        if (mixins != null) {
+            for (int i = 0; i < mixins.length; i++) {
+                for (int j = 0; j < level; j++) sb.append("  ");
+                sb.append("  mixin: [");
+                sb.append(mixins[i].getNamespace()).append("] ");
+                sb.append(mixins[i].getName()).append("\n");
+            }
+        }
 
         PropertyTypeDefinition[] definitions = def.getPropertyTypeDefinitions();
         if (definitions.length > 0) {
             for (int i = 0; i < definitions.length; i++) {
+                sb.append("  ");
                 for (int j = 0; j < level; j++) sb.append("  ");
-                sb.append("  prop: ");
-                sb.append(definitions[i].getName());
+                String type = PropertyType.PROPERTY_TYPE_NAMES[definitions[i].getType()];
+                sb.append(type);
+                if (definitions[i].isMultiple()) sb.append("[]");
+                sb.append(" ").append(definitions[i].getName());
                 sb.append("\n");
             }
         }
@@ -1078,7 +1111,7 @@ public class PropertyManagerImpl implements PropertyManager,
 
                 MixinResourceTypeDefinition[] indirectMixins =
                     directMixins[i].getMixinTypeDefinitions();
-                if (indirectMixins != null) {
+                if (indirectMixins != null && indirectMixins.length > 0) {
                     mixinTypes.addAll(Arrays.asList(getMixinTypes(indirectMixins[i])));
                 }
             }

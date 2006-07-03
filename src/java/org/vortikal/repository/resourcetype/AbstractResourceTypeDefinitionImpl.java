@@ -37,6 +37,9 @@ import org.vortikal.repository.Namespace;
 public abstract class AbstractResourceTypeDefinitionImpl
   implements ResourceTypeDefinition, InitializingBean {
 
+    private final static MixinResourceTypeDefinition[] EMPTY_MIXIN_TYPE_LIST =
+        new MixinResourceTypeDefinition[0];
+    
     private String name;
     private Namespace namespace;
     private MixinResourceTypeDefinition[] mixinTypeDefinitions;
@@ -75,6 +78,9 @@ public abstract class AbstractResourceTypeDefinitionImpl
     }
 
     public MixinResourceTypeDefinition[] getMixinTypeDefinitions() {
+        if (this.mixinTypeDefinitions == null) {
+            return EMPTY_MIXIN_TYPE_LIST;
+        }
         return this.mixinTypeDefinitions;
     }
 

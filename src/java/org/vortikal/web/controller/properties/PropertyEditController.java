@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.controller.properties;
 
+
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,10 +40,8 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
@@ -53,6 +53,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
+import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -340,6 +341,16 @@ public class PropertyEditController extends SimpleFormController
                 return true;
             }
         }
+        MixinResourceTypeDefinition[] mixins = resourceType.getMixinTypeDefinitions();
+        for (int i = 0; i < mixins.length; i++) {
+            PropertyTypeDefinition[] mixinPropDefs = mixins[i].getPropertyTypeDefinitions();
+            for (int j = 0; j < mixinPropDefs.length; j++) {
+                if (mixinPropDefs[j].equals(def)) {
+                    return true;
+                }
+            }
+        }
+
         if (resourceType instanceof PrimaryResourceTypeDefinition) {
             PrimaryResourceTypeDefinition primaryResourceType =
                 (PrimaryResourceTypeDefinition) resourceType;

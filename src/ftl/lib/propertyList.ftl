@@ -30,17 +30,15 @@
     <#if form?exists && form.definition?exists && form.definition = item.definition>
       <@propertyForm item />
     <#else>
-      <@defaultPropertyDisplay item />
+      <@propertyDisplay item />
     </#if>
   </tr>
 </#macro>
 
 
-<#macro defaultPropertyDisplay item>
-  <td class="key">
-    <@vrtx.msg code="resource.${item.definition.name}" default="${item.definition.name}" />
-  </td>
-  <td>
+<#macro propertyDisplay item>
+  <#local key = vrtx.getMsg("resource." + item.definition.name, item.definition.name) />
+  <#local value>
     <#if item.property?exists>
       <#if item.definition.multiple>
         <#list item.property.values as val>
@@ -59,12 +57,25 @@
     <#else>
       Not set
     </#if>
-  </td>
-  <td>
+  </#local>
+  <#local editURL>
     <@propertyEditURL item = item />
-  </td>
+  </#local>
+  <@defaultPropertyDisplay key=key value=value editURL=editURL />
 </#macro>
 
+
+<#macro defaultPropertyDisplay key value editURL="">
+  <td class="key">
+    ${key}:
+  </td>
+  <td>
+    ${value}
+  </td>
+  <td>
+    ${editURL}
+  </td>
+</#macro>
 
 <#macro propertyForm item>
   <td colspan="3" class="expandedForm">
@@ -86,9 +97,9 @@
         <#else>
           <#if form.value?exists && item.property?exists>
             <#if item.definition.type = 5>
-              <#assign value=item.property.principalValue.name>
+              <#local value=item.property.principalValue.name>
             <#else>
-              <#assign value=item.property.value>
+              <#local value=item.property.value>
             </#if> 
           </#if>
           <li><input type="text" name="value" value="${value?if_exists}"></li>

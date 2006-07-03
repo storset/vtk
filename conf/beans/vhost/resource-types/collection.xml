@@ -23,6 +23,7 @@
       <list>
         <ref bean="skipInPathPropDef"/>
         <ref bean="typePropDef" />
+        <ref bean="titlePropDef" />
       </list>
     </property>
     
@@ -39,13 +40,6 @@
     </property>
   </bean>
   
-  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="title"/>
-    <property name="type" ref="TYPE_STRING"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
-  </bean>
-  
   <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="skipInPath"/>
     <property name="type" ref="TYPE_BOOLEAN"/>
@@ -60,6 +54,13 @@
     </property>
   </bean>
   
+  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="title"/>
+    <property name="type" ref="TYPE_STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
   <!-- Assertion that matches all collection resources -->
   <bean id="collectionAssertion"
         class="org.vortikal.web.service.ResourceIsCollectionAssertion" />

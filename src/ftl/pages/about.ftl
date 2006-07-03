@@ -101,7 +101,7 @@
     <tr>
       <!-- Created -->
       <td class="key">
-        <@vrtx.msg code="resource.creattionTime" default="Created"/>:
+        <@vrtx.msg code="resource.creationTime" default="Created"/>:
       </td>
       <td>
         <#assign createdByStr = resource.createdBy.name />
@@ -123,42 +123,26 @@
       <@propertyItemIfExists propertyName = 'owner' />
     <tr>
       <!-- ResourceType -->
-      <td class="key">
-        <@vrtx.msg code="resource.resourceType" default="Resource type"/>:
-      </td>
-      <td>
-        <@vrtx.msg code="resource.resourceType.${resource.resourceType}" 
-                   default="${resource.resourceType}" />
-      </td>
-      <td>
-        
-      </td>
+      <@propList.defaultPropertyDisplay
+             key = vrtx.getMsg("resource.resourceType", "Resource type")
+             value = vrtx.getMsg("resource.resourceType." + resource.resourceType, 
+                                 resource.resourceType) />
     </tr>
 
     <tr>
       <!-- Web address -->
-      <td class="key">
-        <@vrtx.msg code="resource.viewURL" default="Web address"/>
-      </td>
-      <td>
-        <a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a>
-      </td>
-      <td>
-        
-      </td>
+      <#assign url><a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
+      <@propList.defaultPropertyDisplay
+             key = vrtx.getMsg("resource.viewURL", "Web address")
+             value = url />
     </tr>
 
     <tr>
       <!-- WebDAV address -->
-      <td class="key">
-        <@vrtx.msg code="resource.webdavURL" default="WebDAV URL"/>:
-      </td>
-      <td>
-        <a href="${resourceDetail.webdavURL}">${resourceDetail.webdavURL}</a>
-      </td>
-      <td>
-        
-      </td>
+      <#assign url><a href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
+      <@propList.defaultPropertyDisplay
+             key = vrtx.getMsg("resource.webdavURL", "WebDAV address")
+             value = url />
     </tr>
 
       <!-- Content language -->
@@ -167,10 +151,7 @@
     <#if !resource.collection>
     <tr>
       <!-- Size -->
-     <td class="key">
-       <@vrtx.msg code="resource.contentLength" default="Content-length"/>:
-     </td>
-     <td>
+      <#assign size>
        <#if resourceContext.currentResource.contentLength?exists>
           <#if resourceContext.currentResource.contentLength <= 1000>
             ${resourceContext.currentResource.contentLength} B
@@ -186,15 +167,39 @@
        <#else>
 	 <@vrtx.msg code="resource.contentLength.unavailable" default="Not available" />
        </#if>
-     </td>
-      <td>
-        
-      </td>
-  </tr>
-  </#if>
+      </#assign>
+      <@propList.defaultPropertyDisplay
+             key = vrtx.getMsg("resource.contentLength", "Size")
+             value = size />
+    </tr>
+    </#if>
   </table>
 
 
+  <h3 class="resourceInfoHeader">
+    <@vrtx.msg
+       code="resource.metadata.about.content"
+       default="Information describing the content"/>
+  </h3>
+  <table class="resourceInfo">
+      <!-- Title -->
+      <@propertyItemIfExists propertyName = 'collection.title' />
+      <!-- Short Title -->
+      <@propertyItemIfExists propertyName = 'shortTitle' />
+      <!-- Keywords -->
+      <@propertyItemIfExists propertyName = 'content:keywords' />
+      <!-- Description -->
+      <@propertyItemIfExists propertyName = 'content:description' />
+      <!-- Verified date -->
+      <@propertyItemIfExists propertyName = 'content:verifiedDate' />
+      <!-- Author -->
+      <@propertyItemIfExists propertyName = 'content:authorName' />
+      <!-- Author e-mail -->
+      <@propertyItemIfExists propertyName = 'content:authorEmail' />
+      <!-- Author URL -->
+      <@propertyItemIfExists propertyName = 'content:authorURL' />
+    
+  </table>
 
   <#if !resource.collection>
   <h3 class="resourceInfoHeader">
@@ -213,10 +218,7 @@
     <#if shouldDisplayForm('userSpecifiedCharacterEncoding')>
       <@displayForm propertyName = 'userSpecifiedCharacterEncoding' />
     <#else>
-      <td class="key">
-        <@vrtx.msg code="resource.characterEncoding" default="Character encoding"/>:
-      </td>
-      <td>
+      <#assign encoding>
         <#if resource.userSpecifiedCharacterEncoding?has_content>
           ${resource.userSpecifiedCharacterEncoding}
         <#else>
@@ -224,10 +226,15 @@
                      args = [ "${resource.characterEncoding}" ]
                      default = "Guessed to be ${resource.characterEncoding}" />
         </#if>
-      </td>
-      <td>
+      </#assign>
+      <#assign editURL>
         <@propertyEditURLIfExists propertyName = 'userSpecifiedCharacterEncoding' />
-      </td>
+      </#assign>
+      <@propList.defaultPropertyDisplay
+             key = vrtx.getMsg("resource.characterEncoding", "Character encoding")
+             value = encoding
+             editURL = editURL />
+
     </#if>
     </#if>
     </tr>

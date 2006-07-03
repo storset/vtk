@@ -21,6 +21,7 @@
     </property>
   </bean>
 
+
   <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="verifiedDate" /> 
     <property name="type" ref="TYPE_DATE" />
@@ -29,21 +30,21 @@
   </bean>
 
   <bean id="authorNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="name" /> 
+    <property name="name" value="authorName" /> 
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 
   <bean id="authorMailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="mail" /> 
+    <property name="name" value="authorEmail" /> 
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 
   <bean id="authorURLPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="url" /> 
+    <property name="name" value="authorURL" /> 
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />

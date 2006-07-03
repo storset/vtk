@@ -49,6 +49,7 @@
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="abstractTextResourceEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="abstractTextResourceEncodingEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="abstractTextResourceEncodingEvaluator" />
   </bean>
 
 

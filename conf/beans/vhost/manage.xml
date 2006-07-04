@@ -833,7 +833,7 @@
 
     <property name="valueFactory" ref="valueFactory" />
     <property name="formView" value="admin" />
-    <property name="successView" value="redirectToManage" />
+    <property name="successView" value="redirectToAbout" />
 
     <property name="commandName" value="form" />
     <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
@@ -1310,6 +1310,8 @@
                value-ref="manageCollectionListingView" />
         <entry key="admin"
                value-ref="aboutView" />
+        <entry key="redirectToAbout"
+               value-ref="redirectToAboutView" />
         <entry key="permissions"
                value-ref="permissionsView" />
         <entry key="previewImage"
@@ -1472,6 +1474,23 @@
       </list>
     </property>
   </bean>
+
+  <bean id="redirectToAboutView"
+    class="org.vortikal.web.view.RedirectView">
+    <description>Standard HTTP redirect view to the manage service</description>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="redirectToAboutProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redirectToAboutProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="redirectToService" ref="aboutResourceService" />
+  </bean>
+
 
   <bean id="aboutView" parent="freemarkerView">
     <property name="url" value="pages/about.ftl" />

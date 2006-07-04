@@ -105,7 +105,7 @@
                 <#if item.property.definition.multiple>
                   <#list item.property.values as val>${val}<#if val_has_next>,</#if></#list>
                 <#else>
-                  ${tem.property.value}
+                  ${item.property.value}
                 </#if>
                 </#compress>
               </#local>

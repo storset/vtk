@@ -430,7 +430,7 @@ div.resourceInfo {
 
 .resourceInfo h3 { 
         font-size:100%;
-        margin-top: 0.6em;
+        margin-top: 1em;
 }
 
 .resourceInfo p { 
@@ -450,7 +450,6 @@ div.resourceInfo {
 
 .resourceInfo table {
         margin-top: 0.5em; 
-        margin-bottom: 0.75em;
         font-size: 85%;
         border-collapse: collapse;
 }
@@ -507,6 +506,8 @@ div.resourceInfo {
 
 
 /* Permissions section: */
+
+.permissions h3 {margin-top: 0.6em}  /* See resourceInfo h3 */
 
 fieldset {
 	display: inline;

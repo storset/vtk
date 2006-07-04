@@ -417,9 +417,10 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             }
         }
 
-        authorizeCreate(destUri, principal);
+        String destParentUri = URIUtil.getParentURI(destUri);
+        authorizeCreate(destParentUri, principal);
 
-        if (deleteDestination) authorizeDelete(destUri, principal);        
+        if (deleteDestination) authorizeDelete(destUri, principal);
     }
     
 

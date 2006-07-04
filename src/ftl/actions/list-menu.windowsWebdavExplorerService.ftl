@@ -4,9 +4,7 @@
  {
  document.write('(&nbsp;<a href="${item.url?html}" target="WindowsExplorer" folder="${item.url?html}" style="behavior:url(#default#AnchorClick)">vis&nbsp;i&nbsp;filutforsker<\/a>&nbsp;)&nbsp;');
  }
- if (is_gecko) 
- {
- document.write('<span style="visibility:hidden">dummy-text</span>');
- }
  // -->
 </script>
+<!-- Need this next span to avoid a strange Firefox 1.5 CSS regression -->
+<span style="visibility:hidden">foo</span>

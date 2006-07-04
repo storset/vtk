@@ -109,7 +109,7 @@
    <#assign grouped = false />
 
   <@spring.bind formName + ".submitURL" /> 
-  <div class="expandedForm" style="clear: both;">
+  <div class="expandedForm">
   <form class="aclEdit" action="${spring.status.value?html}" method="POST">
     <ul class="everyoneOrSelectedUsers">
     <@spring.bind formName + ".grouped" /> 
@@ -120,8 +120,8 @@
              type="radio"
              name="${spring.status.expression}"
              value="true" <#if spring.status.value>checked="checked"</#if>> 
-      <label for="permissions.everyone">
-        <@vrtx.msg code="pseudoPrincipal.${groupingPrincipal.name}"
+      <label for="permissions.grouped">
+        <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}"
                    default="${groupingPrincipal.name}" /></label>
     </li>
     <li><input onclick="enableInput()"

@@ -63,22 +63,21 @@
 </pre>
  -->
 
-  <div class="resourceInfoHeader">
-    <h2>
-      <@vrtx.msg
-        code="resource.metadata.about.${resource.resourceType}"
-        default="${defaultHeader}"/>
-    </h2>
-  </div>
-  <p>Lorem ipsum dolere sit amet...</p>
+  <div class="resourceInfo">
 
+  <h2>
+    <@vrtx.msg
+       code="resource.metadata.about.${resource.resourceType}"
+       default="${defaultHeader}"/>
+  </h2>
+  <!-- p class="tab-description">Lorem ipsum dolere sit amet...</p>
 
   <h3 class="resourceInfoHeader">
     <@vrtx.msg
        code="resource.metadata.about.basic"
        default="Basic information"/>
-  </h3>
-  <table class="resourceInfo">
+  </h3 -->
+  <table>
     <tr>
       <!-- Last modified -->
       <#assign modifiedByStr = resource.modifiedBy.name />
@@ -238,6 +237,7 @@
   </table>
   </#if>
 
+  </div>
 
 </body>
 </html>

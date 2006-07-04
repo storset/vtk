@@ -224,7 +224,7 @@
   </bean>        
 
   <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <!--property name="order" value="-998" /-->
+    <property name="order" value="-998" />
     <property name="categories">
       <set>
         <value>resourceMenu</value>
@@ -1524,9 +1524,9 @@
       <map>
         <entry key="cssURLs"> 
           <list>
+            <value>${cssBaseURL}/admin.css</value>
             <value>${cssBaseURL}/basic.css</value>
             <value>${cssBaseURL}/tabs.css</value>
-            <value>${cssBaseURL}/admin.css</value>
           </list>
         </entry>
       </map>

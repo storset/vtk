@@ -117,8 +117,10 @@
     </property>
   </bean>        
 
+
+
   <bean id="aboutResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <!--property name="order"><value>9600</value></property-->
+    <!--property name="parent" ref="manageService" /-->
     <property name="categories">
       <set>
         <value>tabMenu</value>
@@ -132,12 +134,8 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>mode</value>
-          </property>
-          <property name="parameterValue">
-            <value>about</value>
-          </property>
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="about" />
         </bean>      
       </list>
     </property>
@@ -153,10 +151,9 @@
         <ref bean="deleteResourcePropertyService" />      
       </list>
     </property>
-    <property name="handler">
-      <ref bean="aboutResourceHandler" />
-    </property>
+    <property name="handler" ref="aboutResourceHandler" />
   </bean>        
+
   
   <bean id="manageCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
     <!--property name="order"><value>-10000</value></property-->
@@ -798,6 +795,55 @@
   <!-- MANAGE controllers -->
 
   
+  <bean id="aboutResourceHandler" 
+        class="org.vortikal.web.controller.properties.PropertyEditController"
+        parent="requestLocalRepositoryAware">
+    <property name="principalManager" ref="principalManager" />
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="lastModifiedPropDef" />
+        <ref bean="modifiedByPropDef" />
+        <ref bean="creationTimePropDef" />
+        <ref bean="createdByPropDef" />
+        <ref bean="ownerPropDef" />
+        <!-- resourceType -->
+        <!-- webadress -->
+        <!-- webDAVadress -->
+        <ref bean="contentLocalePropDef" />
+        <ref bean="contentLengthPropDef" />
+
+        <ref bean="titlePropDef" />
+        <!--ref bean="shortTitlePropDef" /-->
+        <ref bean="keywordsPropDef" />
+        <ref bean="descriptionPropDef" />
+        <ref bean="verifiedDatePropDef" />
+        <ref bean="authorNamePropDef" />
+        <ref bean="authorMailPropDef" />
+        <ref bean="authorURLPropDef" />
+        
+        <ref bean="contentTypePropDef" />
+        <ref bean="userSpecifiedCharacterEncodingPropDef" />
+        <ref bean="guessedCharacterEncodingPropDef" />
+        <ref bean="characterEncodingPropDef" />
+
+      </list>
+    </property>
+    <property name="propertyListModelName" value="basicPropList" />
+    <property name="propertyMapModelName" value="aboutItems" />
+
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirectToManage" />
+
+    <property name="commandName" value="form" />
+    <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
+    <!--
+    <property name="commandClass">
+      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
+    </property>
+    -->
+  </bean>
+
   <bean id="fileUploadHandler" 
     class="org.vortikal.web.controller.repository.FileUploadController"
     parent="requestLocalRepositoryAware">
@@ -1185,12 +1231,6 @@
     class="org.vortikal.web.controller.DeletePropertyController"
     parent="requestLocalRepositoryAware" /-->
 
-  <bean id="aboutResourceHandler" 
-    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
-    parent="requestLocalRepositoryAware">
-    <property name="viewName" value="admin" />
-  </bean>
-
   <bean id="manageCollectionListingHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
@@ -1434,9 +1474,10 @@
   </bean>
 
   <bean id="aboutView" parent="freemarkerView">
-    <property name="url" value="pages/about-resource.ftl" />
+    <property name="url" value="pages/about.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <ref bean="aboutResourceHandler" /> 
         <ref bean="adminCSSProvider" />
         <ref bean="resourceDetailProvider" />
         <ref bean="aboutResourcePropertiesProvider" />

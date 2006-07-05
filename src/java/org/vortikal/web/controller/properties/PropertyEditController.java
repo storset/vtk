@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.controller.properties;
 
-
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -298,15 +296,13 @@ public class PropertyEditController extends SimpleFormController
                         Value[] values = this.valueFactory.createValues(
                             splitValues, def.getType());
                         property.setValues(values);
+                    } else if (def.getType() == PropertyType.TYPE_BOOLEAN) {
+                        boolean oldValue = property.getBooleanValue();
+                        property.setBooleanValue(!oldValue);
                     } else {
-                        if (def.getType() == PropertyType.TYPE_BOOLEAN) {
-                            boolean oldValue = property.getBooleanValue();
-                            property.setBooleanValue(!oldValue);
-                        } else {
                         Value value = this.valueFactory.createValue(
                             stringValue, def.getType());
                         property.setValue(value);
-                        }
                     }
                     if (this.logger.isDebugEnabled()) {
                         String debugVal = def.isMultiple()
@@ -320,7 +316,11 @@ public class PropertyEditController extends SimpleFormController
                 try {
                     this.repository.store(token, resource);
                 } catch (ConstraintViolationException e) {
-                    errors.rejectValue("value", "Illegal value");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Error storing resource " + resource
+                                     + ": constraint violation", e);
+                    }
+                    errors.rejectValue("value", "Illegal value: " + e.getMessage());
                     return showForm(request, response, errors);
                 }
                 break;

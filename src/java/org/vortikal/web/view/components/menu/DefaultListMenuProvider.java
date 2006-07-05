@@ -82,17 +82,17 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   is looked up from message localization using the following steps:
  *     <ol>
  *       <li>A message key is constructed as follows:
- *           <code>[label].[serviceName].[contentType].[resourceType]</code> where
+ *           <code>[label].[serviceName].[resourceType].[contentType]</code> where
  *           <code>[serviceName]</code> is the name of the service and
+ *           <code>[resourceType]</code> is the name of the resource's
+ *           {@link Resource#getResourceType resource type}.
  *           <code>[contentType]</code> is the MIME type of the
- *           resource. 
- *           <code>[resourceType]</code> is the property 'resource-type'
- *           in the namespace 'http://www.uio.no/vortex/custom-properties', and it is appended
- *           only if it exists. A lookup attempt is then made using this key.
+ *           resource (not applicable to collections). 
+ *           A lookup attempt is then made using this key.
  *       </li>
  *       <li>If that lookup does not produce a message, the
- *           <code>.[contentType]</code> and
- *           <code>[resourceType]</code> suffices are removed from the
+ *           <code>.[resourceType]</code> and
+ *           <code>.[contentType]</code> suffices are removed from the
  *           key, and the lookup is peformed again, using the service
  *           name as the default value.  
  *       </li>
@@ -119,7 +119,10 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
                                    Service[] services, Repository repository) {
         this(label, modelName, true, services, repository);
     }
-        public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services, Repository repository) {
+
+    public DefaultListMenuProvider(String label, String modelName,
+                                   boolean matchAssertions, Service[] services,
+                                   Repository repository) {
         if (label == null)
             throw new IllegalArgumentException("Argument 'label' cannot be null");
         if (modelName == null)
@@ -206,18 +209,16 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             new org.springframework.web.servlet.support.RequestContext(request);
         String name = service.getName();
         
-        String messageCode = this.label +"." + name;
+        String messageCode = this.label + "." + name;
         String title = springContext.getMessage(messageCode, name);
-        
-        messageCode += "." + resource.getContentType();
-        title = springContext.getMessage(messageCode, title);
 
-        Property resourceType = resource.getProperty(Namespace.CUSTOM_NAMESPACE,
-                "resource-type");
 
-        if (resourceType != null) {
-            messageCode += "." + resourceType.getValue();
-            title = springContext.getMessage(messageCode , title);
+        messageCode += "." + resource.getResourceType();
+        title = springContext.getMessage(messageCode , title);
+
+        if (!resource.isCollection()) {
+            messageCode += "." + resource.getContentType();
+            title = springContext.getMessage(messageCode, title);
         }
 
         return title;

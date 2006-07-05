@@ -238,6 +238,14 @@ public class AclImpl implements Acl {
 
         AclImpl acl = (AclImpl) o;
 
+        if (acl == this) {
+            return true;
+        }
+
+        if (acl.isInherited() != this.inherited) {
+            return false;
+        }
+
         Set actions = actionSets.keySet();
 
         if (actions.size() != acl.actionSets.keySet().size()) {

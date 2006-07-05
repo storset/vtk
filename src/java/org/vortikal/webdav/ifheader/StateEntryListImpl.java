@@ -29,6 +29,8 @@ import org.vortikal.repository.Resource;
  */
 class StateEntryListImpl extends ArrayList implements StateEntryList {
 
+    private static final long serialVersionUID = -6952957997243117225L;
+
     /**
      * Matches a list of {@link IfList}s against the token and etag. If any of
      * the {@link IfList}s matches, the method returns <code>true</code>.

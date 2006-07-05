@@ -39,7 +39,7 @@ public class MemoryContentStoreTestCase extends AbstractContentStoreTestCase {
     protected void setUp() throws Exception {
         BasicConfigurator.configure();
         super.setUp();
-        store = new MemoryContentStore();
+        this.store = new MemoryContentStore();
     }
 
     protected void tearDown() throws Exception {
@@ -47,7 +47,7 @@ public class MemoryContentStoreTestCase extends AbstractContentStoreTestCase {
     }
 
     public ContentStore getStore() {
-        return store;
+        return this.store;
     }
 
 }

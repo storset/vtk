@@ -44,7 +44,7 @@ public class NameTermQuery implements NameQuery {
     }
 
     public TermOperator getOperator() {
-        return operator;
+        return this.operator;
     }
 
     public void setOperator(TermOperator operator) {
@@ -52,7 +52,7 @@ public class NameTermQuery implements NameQuery {
     }
 
     public String getTerm() {
-        return term;
+        return this.term;
     }
 
     public void setTerm(String term) {
@@ -63,7 +63,7 @@ public class NameTermQuery implements NameQuery {
         StringBuffer buf = new StringBuffer().append(prefix);
         buf.append(this.getClass().getName()).append("\n");
         
-        buf.append(prefix).append("Term = '").append(term).append("', operator = '").append(operator).append("'\n");
+        buf.append(prefix).append("Term = '").append(this.term).append("', operator = '").append(this.operator).append("'\n");
         return buf.toString();
     }
 

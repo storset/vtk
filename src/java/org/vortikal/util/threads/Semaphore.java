@@ -44,14 +44,14 @@ public class Semaphore {
 
 
     public synchronized void up() {
-        value++;
+        this.value++;
         notify();
     }
 
 
     public synchronized int down() {
 
-        if (value == 0) {
+        if (this.value == 0) {
 
             try {
                 wait();
@@ -60,7 +60,7 @@ public class Semaphore {
                 //e.printStackTrace();
             }
         }
-        value--;
-        return value;
+        this.value--;
+        return this.value;
     }
 }

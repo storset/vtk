@@ -47,7 +47,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.util.repository.URIUtil;
 
@@ -99,7 +98,7 @@ public class Cache implements DataAccessor, InitializingBean {
     
 
     public boolean validate() throws IOException {
-        return wrappedAccessor.validate();
+        return this.wrappedAccessor.validate();
     }
 
     public void setMaxItems(int maxItems) {
@@ -145,7 +144,7 @@ public class Cache implements DataAccessor, InitializingBean {
                 "JavaBean property 'wrappedAccessor' not set");
         }
 
-        this.removeItems = (int) (maxItems * this.evictionRatio);
+        this.removeItems = (int) (this.maxItems * this.evictionRatio);
 
         if (this.removeItems == 0) {
             this.removeItems = 1;
@@ -162,13 +161,13 @@ public class Cache implements DataAccessor, InitializingBean {
 
         for (int i = 0; i < uris.length; i++) {
 
-            ResourceImpl r = items.get(uris[i]);
+            ResourceImpl r = this.items.get(uris[i]);
             boolean lockTimedOut =
                 (r != null && r.getLock() != null
                  && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
 
-            if (logger.isInfoEnabled() && lockTimedOut) {
-                logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
+            if (this.logger.isInfoEnabled() && lockTimedOut) {
+                this.logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
             }
 
             if (r == null || lockTimedOut) {
@@ -194,8 +193,8 @@ public class Cache implements DataAccessor, InitializingBean {
         try {
             obtainedLocks = this.lockManager.lock(uris);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Loading " + uris.length + " resources");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Loading " + uris.length + " resources");
             }
 
             resources = this.wrappedAccessor.loadChildren(parent);
@@ -207,8 +206,8 @@ public class Cache implements DataAccessor, InitializingBean {
             this.lockManager.unlock(obtainedLocks);
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("cache size : " + items.size());
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("cache size : " + this.items.size());
         }
 
         return resources;
@@ -227,14 +226,14 @@ public class Cache implements DataAccessor, InitializingBean {
     public ResourceImpl load(String uri) throws IOException {
         long start = System.currentTimeMillis();
 
-        ResourceImpl r = items.get(uri);
+        ResourceImpl r = this.items.get(uri);
 
         boolean lockTimedOut =
             (r != null && r.getLock() != null
              && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
 
-        if (logger.isInfoEnabled() && lockTimedOut) {
-            logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
+        if (this.logger.isInfoEnabled() && lockTimedOut) {
+            this.logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
         }
 
 
@@ -249,7 +248,7 @@ public class Cache implements DataAccessor, InitializingBean {
             updateStatistics(0, 1);
         }
 
-        lockManager.lock(uri);
+        this.lockManager.lock(uri);
 
         try {
             r = this.items.get(uri);
@@ -262,37 +261,37 @@ public class Cache implements DataAccessor, InitializingBean {
                 return r;
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("load from wrappedAccessor: " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("load from wrappedAccessor: " + uri);
             }
 
             r = this.wrappedAccessor.load(uri);
 
             if (r == null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("not found in wrappedAccessor: " + uri);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("not found in wrappedAccessor: " + uri);
                 }
 
                 return null;
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("miss: " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("miss: " + uri);
             }
 
             enterResource(r);
 
             return r;
         } finally {
-            lockManager.unlock(uri);
+            this.lockManager.unlock(uri);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("load: took " +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("load: took " +
                     (System.currentTimeMillis() - start) + " ms");
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("cache size : " + items.size());
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("cache size : " + this.items.size());
             }
         }
     }
@@ -342,8 +341,8 @@ public class Cache implements DataAccessor, InitializingBean {
         } finally {
             this.lockManager.unlock(uris);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("cache size : " + items.size());
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("cache size : " + this.items.size());
             }
         }
     }
@@ -378,8 +377,8 @@ public class Cache implements DataAccessor, InitializingBean {
         } finally {
             this.lockManager.unlock(uris);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("cache size : " + items.size());
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("cache size : " + this.items.size());
             }
         }
 
@@ -424,8 +423,8 @@ public class Cache implements DataAccessor, InitializingBean {
         } finally {
             this.lockManager.unlock(uris);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("cache size : " + items.size());
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("cache size : " + this.items.size());
             }
         }
     }
@@ -502,8 +501,8 @@ public class Cache implements DataAccessor, InitializingBean {
                 }
 
                 long processingTime = System.currentTimeMillis() - startTime;
-                if (logger.isInfoEnabled()) {
-                    logger.info("Maximum cache size (" + this.maxItems
+                if (this.logger.isInfoEnabled()) {
+                    this.logger.info("Maximum cache size (" + this.maxItems
                                 + ") reached, removed " + this.removeItems
                                 + " oldest items in " + processingTime + " ms");
                 }
@@ -519,8 +518,8 @@ public class Cache implements DataAccessor, InitializingBean {
         if ((this.hits > (Long.MAX_VALUE - this.hits))
             || (this.misses > (Long.MAX_VALUE) - misses)) {
 
-            if (logger.isInfoEnabled()) {
-                logger.info("Number of hits/misses too big, resetting counters");
+            if (this.logger.isInfoEnabled()) {
+                this.logger.info("Number of hits/misses too big, resetting counters");
             }
 
             this.hits = 0;
@@ -566,7 +565,7 @@ public class Cache implements DataAccessor, InitializingBean {
             this.in = i;
 
             if (this.out == null) {
-                this.out = in;
+                this.out = this.in;
             }
 
             //              }
@@ -612,7 +611,7 @@ public class Cache implements DataAccessor, InitializingBean {
             //             synchronized(this) {
             //             if (logger.isDebugEnabled())
             //                logger.debug("Before hit: " + dump());
-            if ((i != null) && (i != in)) {
+            if ((i != null) && (i != this.in)) {
                 /* Remove i from list: */
                 if (i != this.out) {
                     i.older.newer = i.newer;
@@ -637,9 +636,9 @@ public class Cache implements DataAccessor, InitializingBean {
         public synchronized void removeOldest() {
             //             synchronized(this) {
             if (this.out != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Removing oldest item " +
-                        out.getResource().getURI());
+                if (Cache.this.logger.isDebugEnabled()) {
+                    Cache.this.logger.debug("Removing oldest item " +
+                        this.out.getResource().getURI());
                 }
 
                 this.map.remove(this.out.getResource().getURI());

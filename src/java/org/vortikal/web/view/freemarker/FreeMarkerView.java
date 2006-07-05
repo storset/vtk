@@ -79,8 +79,8 @@ public class FreeMarkerView
         byte[] content = wrapper.getContentBuffer();
         response.setContentLength(content.length);
         if (false && "HEAD".equals(request.getMethod())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Request is HEAD, not writing content");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Request is HEAD, not writing content");
             }
             response.flushBuffer();
             return;
@@ -90,8 +90,8 @@ public class FreeMarkerView
         outStream.flush();
         outStream.close();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Wrote " + content.length + " bytes to response");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Wrote " + content.length + " bytes to response");
         }
     }
 
@@ -100,16 +100,16 @@ public class FreeMarkerView
                                    HttpServletResponse response)
         throws IOException, TemplateException {
         
-        if (debug) {
+        if (this.debug) {
             String debugModel = model.toString();
             model.put("dumpedModel", debugModel);
         }
-        model.put("debug", new Boolean(debug));
+        model.put("debug", new Boolean(this.debug));
         super.processTemplate(template, model, response);
     }
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
-        return referenceDataProviders;
+        return this.referenceDataProviders;
     }
 
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {

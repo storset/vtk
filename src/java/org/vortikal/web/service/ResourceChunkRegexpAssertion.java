@@ -150,8 +150,8 @@ public class ResourceChunkRegexpAssertion extends AbstractRepositoryAssertion
             Matcher m = this.pattern.matcher(chunk);
             boolean match = m.matches();
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Got match: " + match + " for regular expression '"
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Got match: " + match + " for regular expression '"
                              + this.pattern.pattern() + "' on resource chunk '"
                              + chunk + "'");
             }

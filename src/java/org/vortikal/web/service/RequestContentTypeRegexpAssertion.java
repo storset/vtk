@@ -63,7 +63,7 @@ public class RequestContentTypeRegexpAssertion implements Assertion {
         
         if (contentType == null) return false;
         
-        Matcher m = pattern.matcher(contentType);
+        Matcher m = this.pattern.matcher(contentType);
         return m.matches();
     }
 
@@ -79,7 +79,7 @@ public class RequestContentTypeRegexpAssertion implements Assertion {
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; pattern = ").append(pattern.pattern());
+        sb.append("; pattern = ").append(this.pattern.pattern());
 		
         return sb.toString();
     }

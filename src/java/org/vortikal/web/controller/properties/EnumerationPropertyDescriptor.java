@@ -52,11 +52,11 @@ public class EnumerationPropertyDescriptor implements InitializingBean {
     private RepositoryAssertion[] assertions = null;
     
     public boolean isApplicableProperty(Resource resource, Principal principal) {
-        if (assertions == null)
+        if (this.assertions == null)
             return true;
 
-        for (int i = 0; i < assertions.length; i++) {
-            if (!assertions[i].matches(resource, principal)) {
+        for (int i = 0; i < this.assertions.length; i++) {
+            if (!this.assertions[i].matches(resource, principal)) {
                 return false;
             }
         }

@@ -53,8 +53,8 @@ public class NameTermQueryBuilder implements QueryBuilder {
     }
     
     public org.apache.lucene.search.Query buildQuery() {
-        String term = ntq.getTerm();
-        TermOperator op = ntq.getOperator();
+        String term = this.ntq.getTerm();
+        TermOperator op = this.ntq.getOperator();
         
         if (op == TermOperator.EQ) {
             TermQuery tq = 

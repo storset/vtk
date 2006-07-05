@@ -53,7 +53,7 @@ public class CreateCollectionCommandValidator implements Validator, Initializing
 
     
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "Property 'repository' cannot be null");
         }
@@ -99,7 +99,7 @@ public class CreateCollectionCommandValidator implements Validator, Initializing
         newURI += name;
 
         try {
-            boolean exists = repository.exists(token, newURI);
+            boolean exists = this.repository.exists(token, newURI);
             if (exists) {
                 errors.rejectValue("name",
                                    "manage.create.collection.exists",

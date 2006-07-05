@@ -34,8 +34,6 @@ package org.vortikal.xml;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
 

@@ -194,7 +194,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         TermDocs td = null;
         IndexReader reader = null;
         try {
-            reader = indexAccessor.getReadOnlyIndexReader();
+            reader = this.indexAccessor.getReadOnlyIndexReader();
 
             td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, 
                                                 URIUtil.stripTrailingSlash(uri)));
@@ -207,24 +207,23 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
                 
                 return new Term(DocumentMapper.ID_FIELD_NAME, value);
                 
-            } else {
-                // URI not found, so the query should produce zero hits.
-                return new Term(DocumentMapper.ID_FIELD_NAME, String.valueOf(
-                        PropertySetImpl.NULL_RESOURCE_ID)); 
             }
+            // URI not found, so the query should produce zero hits.
+            return new Term(DocumentMapper.ID_FIELD_NAME, String.valueOf(
+                    PropertySetImpl.NULL_RESOURCE_ID));
         } catch (IOException io) {
             throw new QueryBuilderException("IOException while building query: ", io);
         } finally {
             try {
                 if (td != null) td.close();
-                indexAccessor.releaseReadOnlyIndexReader(reader);
+                this.indexAccessor.releaseReadOnlyIndexReader(reader);
             } catch (IOException io) {}
         }
     }
 
     /* Build map of resource type names to names of all descendants */
     private Map buildResourceTypeDescendantsMap() {
-        List definitions = propertyManager.getPrimaryResourceTypeDefinitions();
+        List definitions = this.propertyManager.getPrimaryResourceTypeDefinitions();
         
         Map resourceTypeDescendantNames = new HashMap();
         
@@ -235,7 +234,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             resourceTypeDescendantNames.put(def.getName(), descendantNames);
         }
         
-        if (logger.isDebugEnabled()) {
+        if (this.logger.isDebugEnabled()) {
             for (Iterator i=resourceTypeDescendantNames.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry)i.next();
                 String name = (String)entry.getKey();
@@ -249,7 +248,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
                     }
                 }
                 buf.append("]");
-                logger.debug(buf.toString());
+                this.logger.debug(buf.toString());
             }
         }
         
@@ -258,7 +257,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     
     /* Recursively get all descendant names for a given resource type */
     private void getAllDescendantNames(List names, PrimaryResourceTypeDefinition def) {
-        List children = propertyManager.getResourceTypeDefinitionChildren(def);
+        List children = this.propertyManager.getResourceTypeDefinitionChildren(def);
         
         for (Iterator i=children.iterator();i.hasNext();) {
             PrimaryResourceTypeDefinition child = 

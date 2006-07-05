@@ -37,7 +37,7 @@ public class FreeMarkerTemplateLocationImpl implements
     private int order = Integer.MAX_VALUE;
     
     public String getLocation() {
-        return location;
+        return this.location;
     }
 
     public void setLocation(String location) {

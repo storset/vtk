@@ -58,9 +58,9 @@ public class Reindexer implements InitializingBean {
 
    public void afterPropertiesSet() {
        
-       if (indexDataAccessor == null) {
+       if (this.indexDataAccessor == null) {
            throw new BeanInitializationException("Property 'indexDataAccessor' not set.");
-       } else if (index == null) {
+       } else if (this.index == null) {
            throw new BeanInitializationException("Property 'index' not set.");
        }
 
@@ -68,25 +68,25 @@ public class Reindexer implements InitializingBean {
    
    public synchronized void run() throws IndexException {
     
-       if (!index.lock()) {
+       if (!this.index.lock()) {
            throw new IndexException("Unable to acquire lock.");
        }
        
        ResultSetIterator resultSetIterator = null;
        try {
-           index.clear();
-           resultSetIterator = indexDataAccessor.getOrderedPropertySetIterator();
+           this.index.clear();
+           resultSetIterator = this.indexDataAccessor.getOrderedPropertySetIterator();
            
            while (resultSetIterator.hasNext()) {
                PropertySet propertySet = (PropertySet)resultSetIterator.next();
-               if (logger.isDebugEnabled()) {
-                   logger.debug("Adding property set at URI '" 
+               if (this.logger.isDebugEnabled()) {
+                   this.logger.debug("Adding property set at URI '" 
                            + propertySet.getURI() + "' to index.");
                }
-               index.addPropertySet(propertySet);
+               this.index.addPropertySet(propertySet);
            }
            
-           index.commit();
+           this.index.commit();
        } catch (IOException io) {
            throw new IndexException(io);
        } finally {
@@ -95,9 +95,9 @@ public class Reindexer implements InitializingBean {
                    resultSetIterator.close();
                } 
            } catch (IOException io) {
-               logger.warn("IOException while closing result set iterator.");
+               this.logger.warn("IOException while closing result set iterator.");
            }
-           index.unlock();
+           this.index.unlock();
        }
        
    }

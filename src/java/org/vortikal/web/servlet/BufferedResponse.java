@@ -118,7 +118,7 @@ public class BufferedResponse implements HttpServletResponse {
 
     public PrintWriter getWriter() throws IOException {
         return new WrappedServletOutputStreamWriter(new WrappedServletOutputStream(
-                                            bufferStream, this.getCharacterEncoding()));
+                                            this.bufferStream, this.getCharacterEncoding()));
     }
 
     public void setBufferSize(int bufferSize) {

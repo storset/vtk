@@ -17,8 +17,8 @@ public class DomainGroupStore implements GroupStore {
     
     public boolean validateGroup(Principal group)
             throws AuthenticationProcessingException {
-        if (groupName.equals(group.getUnqualifiedName())
-                && knownDomains.contains(group.getDomain()))
+        if (this.groupName.equals(group.getUnqualifiedName())
+                && this.knownDomains.contains(group.getDomain()))
             return true;
         return false;
     }
@@ -35,7 +35,7 @@ public class DomainGroupStore implements GroupStore {
     }
 
     public int getOrder() {
-        return order;
+        return this.order;
     }
 
     public void setOrder(int order) {

@@ -61,22 +61,22 @@ public class BoundedInputStream extends InputStream {
     
 
     public int available() throws IOException {
-        return in.available();
+        return this.in.available();
     }
     
 
     public void close() throws IOException {
-        in.close();
+        this.in.close();
     }
     
 
     public void mark(int readLimit) {
-        in.mark(readLimit);
+        this.in.mark(readLimit);
     }
 
 
     public void reset() throws IOException {
-        in.reset();
+        this.in.reset();
     }
 
 
@@ -86,22 +86,22 @@ public class BoundedInputStream extends InputStream {
 
     
     public int read() throws SizeLimitException, IOException {
-        int result = in.read();
+        int result = this.in.read();
         if (result > 0) this.bytesRead++;
-        if (limit > 0 && bytesRead >= limit) {
+        if (this.limit > 0 && this.bytesRead >= this.limit) {
             throw new SizeLimitException(
-                "Maximum number of bytes reached: " + limit);
+                "Maximum number of bytes reached: " + this.limit);
         }
         return result;
     }
     
 
     public int read(byte[] b) throws SizeLimitException, IOException {
-        int chunk = in.read(b);
+        int chunk = this.in.read(b);
         if (chunk > 0) this.bytesRead += chunk;
-        if (limit > 0 && bytesRead >= limit) {
+        if (this.limit > 0 && this.bytesRead >= this.limit) {
             throw new SizeLimitException(
-                "Maximum number of bytes reached: " + limit);
+                "Maximum number of bytes reached: " + this.limit);
         }
         return chunk;
     }
@@ -110,17 +110,17 @@ public class BoundedInputStream extends InputStream {
     public int read(byte[] b, int off, int len)
         throws SizeLimitException, IOException {
 
-        int chunk = in.read(b, off, len);
+        int chunk = this.in.read(b, off, len);
         if (chunk > 0) this.bytesRead += chunk;
-        if (limit > 0 && bytesRead >= limit) {
+        if (this.limit > 0 && this.bytesRead >= this.limit) {
             throw new SizeLimitException(
-                "Maximum number of bytes reached: " + limit);
+                "Maximum number of bytes reached: " + this.limit);
         }
         return chunk;
     }
 
     public long skip(long n) throws IOException {
-        return in.skip(n);
+        return this.in.skip(n);
     }
     
 

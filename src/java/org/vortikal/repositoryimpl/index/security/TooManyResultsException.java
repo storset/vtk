@@ -36,6 +36,8 @@ package org.vortikal.repositoryimpl.index.security;
  */
 public class TooManyResultsException extends ResultSecurityFilterException {
     
+    private static final long serialVersionUID = -1977274751249367045L;
+
     public TooManyResultsException(String message, String token) {
         super(message, token);
     }

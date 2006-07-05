@@ -71,7 +71,7 @@ public class EditException extends RuntimeException {
      * @return the Url value.
      */
     public String getURL() {
-        return url;
+        return this.url;
     }
 
 }

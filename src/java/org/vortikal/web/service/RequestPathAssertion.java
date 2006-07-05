@@ -100,7 +100,7 @@ public class RequestPathAssertion implements Assertion, InitializingBean {
      * @return Returns the path.
      */
     String getPath() {
-        return path;
+        return this.path;
     }
 
 }

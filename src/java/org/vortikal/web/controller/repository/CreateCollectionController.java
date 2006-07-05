@@ -56,7 +56,7 @@ public class CreateCollectionController extends SimpleFormController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
@@ -82,7 +82,7 @@ public class CreateCollectionController extends SimpleFormController {
         String newURI = uri;
         if (!"/".equals(uri)) newURI += "/";
         newURI += createCollectionCommand.getName();
-        repository.createCollection(token, newURI);
+        this.repository.createCollection(token, newURI);
         createCollectionCommand.setDone(true);
     }
     

@@ -89,21 +89,21 @@ public class ForcedRequestHeaderValuesFilter implements RequestFilter, Initializ
         }
         
         public String getHeader(String name) {
-            if (headers.containsKey(name)) {
-                return (String) headers.get(name);
+            if (ForcedRequestHeaderValuesFilter.this.headers.containsKey(name)) {
+                return (String) ForcedRequestHeaderValuesFilter.this.headers.get(name);
             }
             return this.request.getHeader(name);
         }
 
         public String getContentType() {
-            if (headers.containsKey("Content-Type")) {
-                return (String) headers.get("Content-Type");
+            if (ForcedRequestHeaderValuesFilter.this.headers.containsKey("Content-Type")) {
+                return (String) ForcedRequestHeaderValuesFilter.this.headers.get("Content-Type");
             }
             return this.request.getContentType();
         }
 
         public String getCharacterEncoding() {
-            String contentType = (String) headers.get("Content-Type");
+            String contentType = (String) ForcedRequestHeaderValuesFilter.this.headers.get("Content-Type");
             if (contentType != null && contentType.indexOf("charset=") != -1) {
                 String characterEncoding = contentType.substring(
                     contentType.indexOf("=") + 1).trim();

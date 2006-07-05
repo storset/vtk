@@ -56,10 +56,9 @@ public class UriTermQueryBuilder implements QueryBuilder {
         if (this.query.getOperator() == UriOperator.EQ) {
             // URI equality
             return new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
-        } else {
-            // URI NOT equal
-            throw new QueryBuilderException("UriOperator 'NE' not yet implemented.");
         }
+        // URI NOT equal
+        throw new QueryBuilderException("UriOperator 'NE' not yet implemented.");
         
         
     }

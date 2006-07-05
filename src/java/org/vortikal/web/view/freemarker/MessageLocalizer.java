@@ -72,15 +72,15 @@ public class MessageLocalizer implements TemplateHashModel {
      */
     public TemplateModel get(String key) throws TemplateModelException {
         String msg = null;
-        if (args == null || args.size() == 0) {
-            msg = springRequestContext.getMessage(this.code, this.defaultMessage);
+        if (this.args == null || this.args.size() == 0) {
+            msg = this.springRequestContext.getMessage(this.code, this.defaultMessage);
         } else {
-            String[] argsInternal = new String[args.size()];
-            for (int i = 0; i < args.size(); i++) {
-                Object o = args.get(i);
+            String[] argsInternal = new String[this.args.size()];
+            for (int i = 0; i < this.args.size(); i++) {
+                Object o = this.args.get(i);
                 argsInternal[i] = o.toString();
             }
-            msg = springRequestContext.getMessage(this.code, argsInternal, this.defaultMessage);
+            msg = this.springRequestContext.getMessage(this.code, argsInternal, this.defaultMessage);
             if (msg != null) msg = msg.trim();
         }
         return new StringModel(msg, new BeansWrapper());

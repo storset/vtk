@@ -123,7 +123,7 @@ public class StaticTextContentView implements InitializingBean, View {
         OutputStream out = null;
         try {
             out = response.getOutputStream();
-                out.write(buffer);
+                out.write(this.buffer);
         } finally {
             if (out != null) {
                 out.flush();

@@ -68,8 +68,8 @@ public class ChildDelegatingMessageSource
     }
 
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        for (int i = 0; i < children.length; i++) {
-            MessageSource messageSource = children[i];
+        for (int i = 0; i < this.children.length; i++) {
+            MessageSource messageSource = this.children[i];
             try {
                 return messageSource.getMessage(code, args, locale);
             } catch (NoSuchMessageException e) {

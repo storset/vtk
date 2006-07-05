@@ -94,8 +94,8 @@ public class RepositoryReadOnlyController
         String readOnlyStr = request.getParameter(this.parameterName);
         if (null == readOnlyStr || "".equals(readOnlyStr.trim())
             || ! ("true".equals(readOnlyStr.trim()) || "false".equals(readOnlyStr.trim()))) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No action performed; value of parameter '"
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("No action performed; value of parameter '"
                              + this.parameterName + "' was '" + readOnlyStr
                              + "'. 'true' or 'false' required.");
             }
@@ -104,8 +104,8 @@ public class RepositoryReadOnlyController
 
         boolean readOnly = "true".equals(readOnlyStr.trim());
         
-        repository.setReadOnly(token, readOnly);
-        return new ModelAndView(viewName);
+        this.repository.setReadOnly(token, readOnly);
+        return new ModelAndView(this.viewName);
     }
 
 }

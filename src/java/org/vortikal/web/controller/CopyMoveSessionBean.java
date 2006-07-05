@@ -49,7 +49,7 @@ public class CopyMoveSessionBean {
 	List filesToBeCopied = new ArrayList();
 	
 	public List getFilesToBeCopied() {
-		return filesToBeCopied;
+		return this.filesToBeCopied;
 	}
    
 	public void setFilesToBeCopied(List filesToBeCopied) {
@@ -57,7 +57,7 @@ public class CopyMoveSessionBean {
 	}
 
 	public String getAction() {
-		return action;
+		return this.action;
 	}
 
 	public void setAction(String action) {

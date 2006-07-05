@@ -104,7 +104,7 @@ public class SetResourcePropertyController
                 "Both parameters 'name' and 'namespace' must be provided with the request");
         }
 
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         Namespace ns = Namespace.getNamespace(namespace);
 
@@ -135,7 +135,7 @@ public class SetResourcePropertyController
             return;
         }
 
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             token, requestContext.getResourceURI(), false);
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
 
@@ -145,7 +145,7 @@ public class SetResourcePropertyController
         }
         property.setStringValue(propertyCommand.getValue());
 
-        repository.store(token, resource);
+        this.repository.store(token, resource);
         propertyCommand.setDone(true);
     }
 }

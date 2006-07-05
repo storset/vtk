@@ -31,6 +31,8 @@
 package org.vortikal.repository.query;
 
 public class ParseException extends QueryException {
+    private static final long serialVersionUID = 1672672975738090708L;
+
     /**
      * Creates a new instance of QueryException 
      */

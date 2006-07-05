@@ -128,7 +128,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    			
 	    			try {
 	    				if (action.equals("move-resources")) {
-	    					repository.move(token, resourceUri, newResourceUri, false);			
+	    					this.repository.move(token, resourceUri, newResourceUri, false);			
 
 	    				} else if (resourceUri.equals(newResourceUri)) {
 	    					// Identical source- and destination-directory
@@ -154,15 +154,15 @@ public class CopyMoveToSelectedFolderController implements Controller {
 	    			        	}	
 	    			        
 	    			        	while (cont) {
-	    			        		cont = repository.exists(token, startOfUri + "(" + index + ")" + endOfUri);	
+	    			        		cont = this.repository.exists(token, startOfUri + "(" + index + ")" + endOfUri);	
 	    			        		if (cont) index++;
 	    			        	}
 
 	    			        	newResourceUri = startOfUri + "(" + index + ")" + endOfUri;
-	    			        	repository.copy(token, resourceUri, newResourceUri, "infinity", false, false);
+	    			        	this.repository.copy(token, resourceUri, newResourceUri, "infinity", false, false);
 
 	    				} else {
-	    	    				repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
+	    	    				this.repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
 	    	    			}
 	    	    			
 	    			} catch (Exception e) {
@@ -192,7 +192,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 			logger.debug("Milliseconds spent on this copy/move operation: " + total);    		
 	    }
 	    	
-	    	return new ModelAndView(viewName, model);
+	    	return new ModelAndView(this.viewName, model);
     }
     
 }

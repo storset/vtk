@@ -71,11 +71,11 @@ public class EditDocumentTest extends TestCase {
             Element root = d.getRootElement();
             root.detach();
             // XXX: will tests run without a resource?
-            testDocument = new EditDocument(root, d.getDocType(), null);
+            this.testDocument = new EditDocument(root, d.getDocType(), null);
 
             URL testXSD = 
                 this.getClass().getClassLoader().getResource(TEST_XSD);
-            definition = new SchemaDocumentDefinition("test", testXSD);
+            this.definition = new SchemaDocumentDefinition("test", testXSD);
 
         } catch (Exception e) {
             System.out.println("Caught exception:");
@@ -93,8 +93,8 @@ public class EditDocumentTest extends TestCase {
         Element e = new Element("attributeTest1");
         e.setAttribute("type", "");
 
-        testDocument.getRootElement().addContent(0, e);
-        testDocument.addContentsToElement(e, map, definition);
+        this.testDocument.getRootElement().addContent(0, e);
+        this.testDocument.addContentsToElement(e, map, this.definition);
 
         assertEquals("1", e.getAttributeValue("type"));
         assertEquals("Lala", e.getText());
@@ -103,8 +103,8 @@ public class EditDocumentTest extends TestCase {
         e = new Element("attributeTest3");
         e.setAttribute("type", "2");
 
-        testDocument.getRootElement().addContent(0, e);
-        testDocument.addContentsToElement(e, map, definition);
+        this.testDocument.getRootElement().addContent(0, e);
+        this.testDocument.addContentsToElement(e, map, this.definition);
 
         assertEquals("1", e.getAttributeValue("type"));
         assertEquals("Lala", e.getChild("tekstblokk").getText());

@@ -30,7 +30,7 @@ package org.vortikal.webdav.ifheader;
      */
     IfListEntryToken(String token, boolean positive) {
         super(token, positive);
-        isEtag = false;
+        this.isEtag = false;
     }
 
     /**

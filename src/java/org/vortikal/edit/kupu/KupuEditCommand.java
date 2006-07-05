@@ -54,7 +54,7 @@ public class KupuEditCommand extends AbstractSaveCancelCommand {
 
 
     public boolean isHtml() {
-        return html;
+        return this.html;
     }
     
 

@@ -87,7 +87,7 @@ public class RedirectController implements Controller {
         Map model = new HashMap();
         // TODO: make redirecting work with non-iso-8859-1 URIs
         model.put("redirectURL", redirectURL.toString());
-        return new ModelAndView(viewName, model);
+        return new ModelAndView(this.viewName, model);
     }
 
 }

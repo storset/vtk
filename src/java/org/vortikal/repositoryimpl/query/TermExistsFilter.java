@@ -50,6 +50,7 @@ import org.apache.lucene.search.Filter;
  */
 public class TermExistsFilter extends Filter {
     
+    private static final long serialVersionUID = 6676434194690479831L;
     private String fieldName;
     private BitSet bits;
     

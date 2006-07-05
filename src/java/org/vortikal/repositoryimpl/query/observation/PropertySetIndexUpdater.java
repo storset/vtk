@@ -68,9 +68,9 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     private boolean enabled;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (index == null) {
+        if (this.index == null) {
             throw new BeanInitializationException("Property 'index' not set.");
-        } else if (indexDataAccessor == null) {
+        } else if (this.indexDataAccessor == null) {
             throw new BeanInitializationException("Property 'indexDataAccessor' not set.");
         }
         
@@ -82,26 +82,26 @@ public class PropertySetIndexUpdater implements BeanNameAware,
      * @see org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver#disable()
      */
     public synchronized void disable() {
-        if (notifier != null) {
-            if (notifier.unregisterObserver(this)) {
-                logger.info("Un-registered from resource change notifier.");
+        if (this.notifier != null) {
+            if (this.notifier.unregisterObserver(this)) {
+                this.logger.info("Un-registered from resource change notifier.");
             }
         }
         this.enabled = false;
-        logger.info("Disabled.");
+        this.logger.info("Disabled.");
     }
     
     /**
      * @see org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver#enable()
      */
     public synchronized void enable() {
-        if (notifier != null) {
-            if (notifier.registerObserver(this)) {
-                logger.info("Registered with resource change notifier.");
+        if (this.notifier != null) {
+            if (this.notifier.registerObserver(this)) {
+                this.logger.info("Registered with resource change notifier.");
             }
         }
         this.enabled = true;
-        logger.info("Enabled.");
+        this.logger.info("Enabled.");
     }
     
     /**
@@ -123,7 +123,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         
         synchronized (this) {
             if (! this.enabled) {
-                logger.info("Ignoring resource changes, disabled.");
+                this.logger.info("Ignoring resource changes, disabled.");
                 return;
             }
         }
@@ -131,8 +131,8 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         ResultSetIterator rsi = null;
         try {
             // Take lock immediately, we'll be doing some writing.
-            if (! index.lock()) {
-                logger.error("Unable to acquire lock on index, will not attempt to " +
+            if (! this.index.lock()) {
+                this.logger.error("Unable to acquire lock on index, will not attempt to " +
                              "apply modifications, changes are lost !");
                 return;
             }
@@ -155,40 +155,40 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             // Deletes
             for (Iterator i = deletes.iterator(); i.hasNext();) {
                 String uri = (String)i.next();
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Deleting property set at URI '" + uri + "'");                    
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Deleting property set at URI '" + uri + "'");                    
                 }
-                index.deletePropertySet(uri);
+                this.index.deletePropertySet(uri);
             }
             
             // Updates/additions
             if (updates.size() > 0) {
                 // Get iterator over property sets that need updating
-                rsi = indexDataAccessor.getPropertySetIteratorForURIs(updates);
+                rsi = this.indexDataAccessor.getPropertySetIteratorForURIs(updates);
                 
                 while (rsi.hasNext()) {
                     PropertySet propSet = (PropertySet)rsi.next();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Adding property set at URI '" + propSet.getURI() + "' to index");
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Adding property set at URI '" + propSet.getURI() + "' to index");
                     }
                     
-                    index.addPropertySet(propSet);
+                    this.index.addPropertySet(propSet);
                 }
             }
             
-            index.commit();
+            this.index.commit();
         // XXX: only temporary. We don't want to halt other (old) indexes because of bugs in new
         //      system index. Log must be watched for errors.
         } catch (Exception e) {
-            logger.error("Something went wrong while updating new index with changes", e);
+            this.logger.error("Something went wrong while updating new index with changes", e);
         } finally {
-            index.unlock();
+            this.index.unlock();
             
             if (rsi != null) {
                 try {
                     rsi.close();
                 } catch (IOException io) {
-                    logger.warn("Exception while closing ResultSetIterator");
+                    this.logger.warn("Exception while closing ResultSetIterator");
                 }
             }
         }

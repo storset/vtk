@@ -159,8 +159,8 @@ public class URL {
     
 
     public String getParameter(String parameterName) {
-        if (parameterNames.contains(parameterName))
-            return (String)this.parameterValues.get(parameterNames.indexOf(parameterName));
+        if (this.parameterNames.contains(parameterName))
+            return (String)this.parameterValues.get(this.parameterNames.indexOf(parameterName));
         return null;
     }
     
@@ -207,8 +207,8 @@ public class URL {
         if (!this.parameterNames.isEmpty()) {
             Map parameters = new LinkedHashMap();
             
-            for (int i = 0; i < parameterNames.size(); i++) {
-                parameters.put(parameterNames.get(i), parameterValues.get(i));
+            for (int i = 0; i < this.parameterNames.size(); i++) {
+                parameters.put(this.parameterNames.get(i), this.parameterValues.get(i));
             }
 
             url.append("?");

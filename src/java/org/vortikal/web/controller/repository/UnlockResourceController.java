@@ -72,13 +72,13 @@ public class UnlockResourceController extends AbstractController {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
 
         if (resource.getLock() != null) {
-            repository.unlock(token, uri, null);
+            this.repository.unlock(token, uri, null);
         }
         
-        return new ModelAndView(viewName);
+        return new ModelAndView(this.viewName);
     }
 
 }

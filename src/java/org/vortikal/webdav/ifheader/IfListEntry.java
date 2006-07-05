@@ -53,7 +53,7 @@ abstract class IfListEntry {
     }
 
     public boolean isEtag() {
-        return isEtag;
+        return this.isEtag;
     }
     
     
@@ -76,7 +76,7 @@ abstract class IfListEntry {
      *      {@link #positive} field is <code>false</code>.
      */
     protected boolean match(String value) {
-        return positive == this.value.equals(value);
+        return this.positive == this.value.equals(value);
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class IfListEntry {
  * @return the value
  */
 protected String getValue() {
-    return value;
+    return this.value;
 }
 
     /**
@@ -121,9 +121,9 @@ protected String getValue() {
      * @return the String represenation of this entry.
      */
     public String toString() {
-        if (stringValue == null) {
-            stringValue = getType() + ": " + (positive?"":"!") + value;
+        if (this.stringValue == null) {
+            this.stringValue = getType() + ": " + (this.positive?"":"!") + this.value;
         }
-        return stringValue;
+        return this.stringValue;
     }
 }

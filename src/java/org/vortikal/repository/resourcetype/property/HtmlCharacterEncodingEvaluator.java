@@ -41,7 +41,6 @@ import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.security.Principal;
-import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.util.text.TextUtils;
 
 import org.w3c.dom.Document;
@@ -62,7 +61,7 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
     public boolean create(Principal principal, Property property, 
             PropertySet ancestorPropertySet, boolean isCollection, Date time)
     throws PropertyEvaluationException {
-        property.setStringValue(defaultEncoding);
+        property.setStringValue(this.defaultEncoding);
         return true;
     }
     

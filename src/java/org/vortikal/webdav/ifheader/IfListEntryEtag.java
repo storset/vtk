@@ -30,7 +30,7 @@ class IfListEntryEtag extends IfListEntry {
      */
     IfListEntryEtag(String etag, boolean positive) {
         super(etag, positive);
-        isEtag = true;
+        this.isEtag = true;
     }
 
     /**

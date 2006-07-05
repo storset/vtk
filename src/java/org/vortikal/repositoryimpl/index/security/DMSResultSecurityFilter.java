@@ -69,7 +69,7 @@ public class DMSResultSecurityFilter extends
         }
 
         if (p != null) {
-            if (noFilterPrincipals.contains(p.getQualifiedName())) {
+            if (this.noFilterPrincipals.contains(p.getQualifiedName())) {
                 // Don't filter results for this principal.
                 if (logger.isDebugEnabled()) {
                     logger.debug("Not filtering results for principal '" + 
@@ -82,9 +82,9 @@ public class DMSResultSecurityFilter extends
         // Results should be filtered according to given security token
         // Make sure we don't run the [slow] security filter on more than 
         // 'maxFilteredPrincipalResults ' results.
-        if (results.getSize() > maxFilteredPrincipalsResults) {
+        if (results.getSize() > this.maxFilteredPrincipalsResults) {
             throw new TooManyResultsException(
-                    "Result size exceeded maximum of " + maxFilteredPrincipalsResults, 
+                    "Result size exceeded maximum of " + this.maxFilteredPrincipalsResults, 
                     token);
         }
         

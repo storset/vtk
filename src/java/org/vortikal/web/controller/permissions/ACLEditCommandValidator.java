@@ -77,9 +77,9 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                                    "You must type a value");
             } else {
                 try { 
-                    Principal principal = principalManager.getUserPrincipal(userName);	
+                    Principal principal = this.principalManager.getUserPrincipal(userName);	
 
-                    if (!principalManager.validatePrincipal(principal))
+                    if (!this.principalManager.validatePrincipal(principal))
                         errors.rejectValue("userNames", "permissions.user.wrong.value", 
                                 new Object[] {userName}, "User '" + userName
                                 + "' does not exist");
@@ -109,7 +109,7 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                                    + "' is an illegal group name");
             }
             
-            if (group != null && !principalManager.validateGroup(group))
+            if (group != null && !this.principalManager.validateGroup(group))
                 errors.rejectValue("groupNames", "permissions.group.wrong.value",
                         new Object[] {groupName}, "Group '" + groupName
                                    + "' does not exist");
@@ -121,7 +121,7 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() throws Exception {
-        if (principalManager == null) {
+        if (this.principalManager == null) {
             throw new BeanInitializationException(
                 "Property 'principalManager' cannot be null");
         }

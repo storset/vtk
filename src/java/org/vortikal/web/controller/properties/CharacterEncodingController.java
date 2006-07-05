@@ -64,7 +64,7 @@ public class CharacterEncodingController extends SimpleFormController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
@@ -89,7 +89,7 @@ public class CharacterEncodingController extends SimpleFormController {
             return;
         }
         
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
 
         if (!ContentTypeHelper.isTextContentType(resource.getContentType())) {
             encodingCommand.setDone(true);
@@ -110,7 +110,7 @@ public class CharacterEncodingController extends SimpleFormController {
                          resource.getCharacterEncoding() + 
                          "' for resource " + uri);
         }
-        repository.store(token, resource);
+        this.repository.store(token, resource);
 
         encodingCommand.setDone(true);
     }

@@ -78,10 +78,10 @@ public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBea
     }
 
     public final void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException("Property 'repository' not set");
         }
-        if (viewService == null) {
+        if (this.viewService == null) {
             throw new BeanInitializationException("Property 'viewService' not set");
         }
     }
@@ -94,11 +94,11 @@ public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBea
         RequestContext requestContext = RequestContext.getRequestContext();
 
         String uri = requestContext.getResourceURI();
-	Resource resource = repository.retrieve(token, uri, false);
+	Resource resource = this.repository.retrieve(token, uri, false);
 
 	// This is the url to the parent of the document that's being edited
 
-	String viewUrl = viewService.constructLink(resource, principal);
+	String viewUrl = this.viewService.constructLink(resource, principal);
 
         BrowseSessionBean sessionBean = (BrowseSessionBean)
             request.getSession(true).getAttribute(BROWSE_SESSION_ATTRIBUTE);

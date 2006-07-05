@@ -69,7 +69,7 @@ public class CommandExecutorController extends SimpleFormController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
@@ -88,7 +88,7 @@ public class CommandExecutorController extends SimpleFormController {
 
         ExecutorCommand command = (ExecutorCommand) commandObject;
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         String name = resource.getName();
         ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
         PrintStream resultStream = new PrintStream(bufferStream);

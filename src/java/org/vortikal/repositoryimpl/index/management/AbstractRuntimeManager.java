@@ -64,19 +64,19 @@ public abstract class AbstractRuntimeManager implements RuntimeManager,
     public void afterPropertiesSet() {
         // Get all known indexes, observers and reindexers from application context.
         // Alternatively, this can be made configurable.
-        this.indexes = new ArrayList(context.getBeansOfType(Index.class,
+        this.indexes = new ArrayList(this.context.getBeansOfType(Index.class,
                                                     false, false).values());
         
-        this.observers = new ArrayList(context.getBeansOfType(
+        this.observers = new ArrayList(this.context.getBeansOfType(
                              ResourceChangeObserver.class, false, false).values());
         
-        this.reindexers = new ArrayList(context.getBeansOfType(
+        this.reindexers = new ArrayList(this.context.getBeansOfType(
                                     Reindexer.class, false, false).values());
         
-        if (logger.isInfoEnabled()) {
-            logger.info("Found " + indexes.size() + " index(es) in application context.");
-            logger.info("Found " + observers.size() + " observer(s) in application context.");
-            logger.info("Found " + reindexers.size() + " reindexer(s) in application context.");
+        if (this.logger.isInfoEnabled()) {
+            this.logger.info("Found " + this.indexes.size() + " index(es) in application context.");
+            this.logger.info("Found " + this.observers.size() + " observer(s) in application context.");
+            this.logger.info("Found " + this.reindexers.size() + " reindexer(s) in application context.");
         }
     }
     
@@ -96,7 +96,7 @@ public abstract class AbstractRuntimeManager implements RuntimeManager,
         
         Object bean = null;
         try {
-            bean = context.getBean(observerId, ResourceChangeObserver.class);
+            bean = this.context.getBean(observerId, ResourceChangeObserver.class);
         } catch (BeansException be) {
             throw new ManagementException("No observer with id '" + observerId + "' found.", be);
         }
@@ -105,26 +105,26 @@ public abstract class AbstractRuntimeManager implements RuntimeManager,
     }
     
     public void disableAllObservers() {
-        for (Iterator iter = observers.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.observers.iterator(); iter.hasNext();) {
             ResourceChangeObserver o = (ResourceChangeObserver)iter.next();
             o.disable();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Disabled observer '" + o.getObserverId() + "'.");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Disabled observer '" + o.getObserverId() + "'.");
             }
         }
-        logger.info("Disabled all resource change observers.");
+        this.logger.info("Disabled all resource change observers.");
     }
     
     public void enableAllObservers()  {
-        for (Iterator iter = observers.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.observers.iterator(); iter.hasNext();) {
             ResourceChangeObserver o = (ResourceChangeObserver)iter.next();
             o.enable();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Enabled observer '" + o.getObserverId() + "'.");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Enabled observer '" + o.getObserverId() + "'.");
             }
         }
         
-        logger.info("Enabled all resource change observers.");
+        this.logger.info("Enabled all resource change observers.");
     }
    
     /**
@@ -137,7 +137,7 @@ public abstract class AbstractRuntimeManager implements RuntimeManager,
         
         Object bean = null;
         try {
-            bean = context.getBean(indexId, Index.class);
+            bean = this.context.getBean(indexId, Index.class);
         } catch (BeansException be) {
             throw new ManagementException("No index with id '" + indexId + "' found.", be);
         }

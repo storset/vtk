@@ -128,7 +128,7 @@ public class PropfindController extends AbstractWebdavController {
         String uri = requestContext.getResourceURI();
         Map model = new HashMap();
         try {
-            Resource resource = repository.retrieve(token, uri, false);
+            Resource resource = this.repository.retrieve(token, uri, false);
 
             /* Parse the request body XML: */
             Document requestBody = parseRequestBody(request);
@@ -151,15 +151,15 @@ public class PropfindController extends AbstractWebdavController {
             return new ModelAndView("PROPFIND", model);
 
         } catch (InvalidRequestException e) {
-            logger.warn("Caught InvalidRequestException for URI "
+            this.logger.warn("Caught InvalidRequestException for URI "
                         + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (ResourceNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceNotFoundException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceNotFoundException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -167,8 +167,8 @@ public class PropfindController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -176,7 +176,7 @@ public class PropfindController extends AbstractWebdavController {
                       new Integer(HttpUtil.SC_LOCKED));
 
         } catch (IOException e) {
-            logger.debug("Caught IOException for URI " + uri, e);
+            this.logger.debug("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
@@ -215,7 +215,7 @@ public class PropfindController extends AbstractWebdavController {
         List resourceList = new ArrayList();
         if (resource.isCollection()) {
             resourceList = getResourceDescendants(
-                resource.getURI(), depth, repository, token);
+                resource.getURI(), depth, this.repository, token);
         }
         if (depth.equals("0") || depth.equals("1")) {
             resourceList.add(resource);
@@ -363,13 +363,13 @@ public class PropfindController extends AbstractWebdavController {
             /* List immediate children: */
 
             resourceArray = repository.listChildren(token, uri, false);
-            logger.debug("Number of children: " + resourceArray.length);
+            this.logger.debug("Number of children: " + resourceArray.length);
 
         } else if (depth.equals("infinity")) {
 
             /* List all descendants: */
 
-            logger.warn("NOT IMPLEMENTED: listChildrenRecursively()");
+            this.logger.warn("NOT IMPLEMENTED: listChildrenRecursively()");
             resourceArray = repository.listChildren(token, uri, false);
         }
         
@@ -414,7 +414,7 @@ public class PropfindController extends AbstractWebdavController {
 
         } catch (SizeLimitException e) {
             throw new InvalidRequestException(
-                "PROPFIND request too large for size limit: " + maxRequestSize);
+                "PROPFIND request too large for size limit: " + this.maxRequestSize);
         }
     }
    

@@ -100,9 +100,9 @@ public class DocumentMapper implements InitializingBean {
     private ValueFactory valueFactory;
     
     public void afterPropertiesSet() {
-        if (valueFactory == null) {
+        if (this.valueFactory == null) {
             throw new BeanInitializationException("Property 'valueFactory' not set.");
-        } else if (propertyManager == null) {
+        } else if (this.propertyManager == null) {
             throw new BeanInitializationException("Proeprty 'propertyManager' not set.");
         }
     }
@@ -257,16 +257,16 @@ public class DocumentMapper implements InitializingBean {
             name = fieldName.substring(pos+1, fieldName.length());
         } 
         
-        PropertyTypeDefinition def = propertyManager.getPropertyDefinitionByPrefix(nsPrefix, name);
+        PropertyTypeDefinition def = this.propertyManager.getPropertyDefinitionByPrefix(nsPrefix, name);
         Namespace ns = def == null ? Namespace.getNamespaceFromPrefix(nsPrefix) : def.getNamespace();
-        Property property = propertyManager.createProperty(ns, name);
+        Property property = this.propertyManager.createProperty(ns, name);
         
         if (def != null) {          // Def should really not be null here, unless the config has changed
             if (def.isMultiple()) { // and indexes haven't been updated to reflect this.
                 
                 Value[] values = 
                     BinaryFieldValueMapper.getValuesFromBinaryFields(
-                            storedValueFields, valueFactory, def.getType());
+                            storedValueFields, this.valueFactory, def.getType());
                 
                 property.setValues(values);
             } else {
@@ -278,7 +278,7 @@ public class DocumentMapper implements InitializingBean {
                 }
                 
                 Value value = BinaryFieldValueMapper.getValueFromBinaryField(
-                        (Field)storedValueFields.get(0), valueFactory, def.getType());
+                        (Field)storedValueFields.get(0), this.valueFactory, def.getType());
                 
                 property.setValue(value);
             }
@@ -289,7 +289,7 @@ public class DocumentMapper implements InitializingBean {
                     + " updating index(es)");
             
             Value value = BinaryFieldValueMapper.getValueFromBinaryField(
-                    (Field)storedValueFields.get(0), valueFactory, PropertyType.TYPE_STRING);
+                    (Field)storedValueFields.get(0), this.valueFactory, PropertyType.TYPE_STRING);
             
             property.setValue(value);
         }
@@ -325,9 +325,8 @@ public class DocumentMapper implements InitializingBean {
         if (def.isMultiple()) {
                 Value[] values = property.getValues();
                 return FieldValueMapper.getFieldFromValues(fieldName, values);
-        } else {
-            return FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
         }
+        return FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
     }
 
     private Field[] getStoredFieldsFromProperty(Property property)
@@ -352,12 +351,11 @@ public class DocumentMapper implements InitializingBean {
         if (def.isMultiple()) {
                 Value[] values = property.getValues();
                 return BinaryFieldValueMapper.getBinaryFieldsFromValues(fieldName, values);
-        } else {
-            Field[] singleField = new Field[1];
-            singleField[0] = BinaryFieldValueMapper.getBinaryFieldFromValue(fieldName, 
-                    property.getValue());
-            return singleField;
         }
+        Field[] singleField = new Field[1];
+        singleField[0] = BinaryFieldValueMapper.getBinaryFieldFromValue(fieldName, 
+                property.getValue());
+        return singleField;
     }
 
     public static String getFieldName(Property prop) {
@@ -375,9 +373,8 @@ public class DocumentMapper implements InitializingBean {
     private static String getFieldName(String propName, String propPrefix) {
         if (propPrefix == null) {
             return propName;
-        } else {
-            return propPrefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + propName;
         }
+        return propPrefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + propName;
     }
     
     public void setPropertyManager(PropertyManager propertyManager) {

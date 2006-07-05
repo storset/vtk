@@ -144,16 +144,16 @@ public class ResourcePropertyAssertion
 
         if (resource != null) {
 
-            Property property = resource.getProperty(namespace, name);
+            Property property = resource.getProperty(this.namespace, this.name);
 
             if (this.checkExistenceOnly) {
-                if (property != null) return !invert;
+                if (property != null) return !this.invert;
             } else {
-                if (property != null && value.equals(property.getStringValue())) return !invert;
+                if (property != null && this.value.equals(property.getStringValue())) return !this.invert;
             }
         }
         
-        return invert;
+        return this.invert;
     }
     
 

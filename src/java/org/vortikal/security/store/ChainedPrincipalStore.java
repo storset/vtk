@@ -73,15 +73,15 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
         for (Iterator i = this.managers.iterator(); i.hasNext();) {
             PrincipalStore manager = (PrincipalStore) i.next();
             if (manager.validatePrincipal(principal)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validated principal '" + principal.getQualifiedName()
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Validated principal '" + principal.getQualifiedName()
                                  + "' using manager " + manager);
                 }
                 return true;
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Principal '" + principal.getQualifiedName() + "' doesn't exist");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Principal '" + principal.getQualifiedName() + "' doesn't exist");
         }
         return false;
     }

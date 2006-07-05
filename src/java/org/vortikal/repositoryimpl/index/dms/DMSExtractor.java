@@ -82,8 +82,8 @@ public class DMSExtractor extends AbstractRepositoryExtractor {
         Principal lastModifiedBy = resource.getModifiedBy();
         String encoding = resource.getCharacterEncoding();
 
-        bean.setCreationDate(dateFormatter.format(resource.getCreationTime()));
-        bean.setLastModified(dateFormatter.format(resource.getLastModified()));
+        bean.setCreationDate(this.dateFormatter.format(resource.getCreationTime()));
+        bean.setLastModified(this.dateFormatter.format(resource.getLastModified()));
         bean.setContentLength(Long.toString(resource.getContentLength()));
         bean.setContentType(resource.getContentType());
         bean.setEncoding(encoding != null ? encoding : "");
@@ -129,7 +129,7 @@ public class DMSExtractor extends AbstractRepositoryExtractor {
         try {
             org.jdom.Document document = builder.build(inputStream);
             schemaId = document.getRootElement().getAttributeValue(
-            "noNamespaceSchemaLocation", XSI_NAMESPACE);
+            "noNamespaceSchemaLocation", this.XSI_NAMESPACE);
 
         } catch (JDOMException je) {
             logger.warn("Got JDOMException when trying to extract schema location " +

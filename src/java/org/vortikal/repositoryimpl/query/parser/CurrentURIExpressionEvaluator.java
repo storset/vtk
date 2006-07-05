@@ -85,8 +85,8 @@ public class CurrentURIExpressionEvaluator implements ExpressionEvaluator {
                 return resource.getURI();
                 
             } catch (Throwable t) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Unable to resolve current URI", t);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Unable to resolve current URI", t);
                 }
             }
         }

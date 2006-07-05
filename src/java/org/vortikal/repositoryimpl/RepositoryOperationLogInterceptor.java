@@ -72,8 +72,8 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         
         Object repo = invocation.getThis();
         if (!(repo instanceof RepositoryImpl)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Not an org.vortikal.repositoryimpl.RepositoryImpl instance: "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Not an org.vortikal.repositoryimpl.RepositoryImpl instance: "
                              + repo + ", proceeding with invocation.");
             }
 

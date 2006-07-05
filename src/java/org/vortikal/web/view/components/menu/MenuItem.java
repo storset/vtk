@@ -49,7 +49,7 @@ public class MenuItem {
     private boolean active;
     
     public boolean isActive() {
-        return active;
+        return this.active;
     }
    
     public void setActive(boolean active) {
@@ -57,7 +57,7 @@ public class MenuItem {
     }
     
     public String getLabel() {
-        return label;
+        return this.label;
     }
     
     public void setLabel(String label) {
@@ -65,7 +65,7 @@ public class MenuItem {
     }
     
     public String getTitle() {
-        return title;
+        return this.title;
     }
     
     public void setTitle(String title) {
@@ -73,7 +73,7 @@ public class MenuItem {
     }
     
     public String getUrl() {
-        return url;
+        return this.url;
     }
     
     public void setUrl(String url) {

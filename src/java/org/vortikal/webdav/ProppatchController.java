@@ -86,8 +86,8 @@ public class ProppatchController extends AbstractWebdavController  {
         Map model = new HashMap();
 
         try {
-            Resource resource = repository.retrieve(token, uri, false);
-            ifHeader = new IfHeaderImpl(request);
+            Resource resource = this.repository.retrieve(token, uri, false);
+            this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
             /* Parse the request body XML: */
@@ -101,10 +101,10 @@ public class ProppatchController extends AbstractWebdavController  {
             doPropertyUpdate(resource, requestBody, token);
             
             /* Store the altered resource: */
-            if (logger.isDebugEnabled()) {
-                logger.debug("storing modified Resource");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("storing modified Resource");
             }
-            resource = repository.store(token, resource);
+            resource = this.repository.store(token, resource);
 
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_OK));
@@ -113,8 +113,8 @@ public class ProppatchController extends AbstractWebdavController  {
             model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (InvalidRequestException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught InvalidRequestException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught InvalidRequestException for URI "
                              + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -122,8 +122,8 @@ public class ProppatchController extends AbstractWebdavController  {
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (ResourceNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceNotFoundException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceNotFoundException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -131,8 +131,8 @@ public class ProppatchController extends AbstractWebdavController  {
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (IllegalOperationException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught IllegalOperationException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught IllegalOperationException for URI "
                              + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -140,8 +140,8 @@ public class ProppatchController extends AbstractWebdavController  {
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ReadOnlyException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ReadOnlyException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ReadOnlyException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -149,8 +149,8 @@ public class ProppatchController extends AbstractWebdavController  {
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -165,7 +165,7 @@ public class ProppatchController extends AbstractWebdavController  {
 //                      new Integer(HttpServletResponse.SC_FORBIDDEN));
 //
         } catch (IOException e) {
-            logger.info("Caught IOException for URI " + uri, e);
+            this.logger.info("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
@@ -197,7 +197,7 @@ public class ProppatchController extends AbstractWebdavController  {
             return requestBody;
 
         } catch (JDOMException e) {
-            logger.info("Invalid XML in request body", e);
+            this.logger.info("Invalid XML in request body", e);
             throw new InvalidRequestException("Invalid XML in request body");
         }
     }
@@ -333,23 +333,23 @@ public class ProppatchController extends AbstractWebdavController  {
         String propertyName = propertyElement.getName();
         String nameSpace = propertyElement.getNamespace().getURI();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Setting property with namespace: " + nameSpace);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Setting property with namespace: " + nameSpace);
         }
 
         
         if (nameSpace.toUpperCase().equals(WebdavConstants.DAV_NAMESPACE.getURI())) {
 
             if (propertyName.equals("displayname")) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("setting property 'displayname' to '"
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("setting property 'displayname' to '"
                                  + propertyElement.getText() + "'");
                 }
                 resource.setDisplayName(propertyElement.getText());
                 
             } else if (propertyName.equals("getcontentlanguage")) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("setting property 'getcontentlanguage' to '"
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("setting property 'getcontentlanguage' to '"
                                  + propertyElement.getText() + "'");
                 }
                 // XXX: Locale needs to be better handled
@@ -357,15 +357,15 @@ public class ProppatchController extends AbstractWebdavController  {
                 resource.setContentLocale(propertyElement.getText());
                 
             } else if (propertyName.equals("getcontenttype")) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("setting property 'getcontenttype' to '"
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("setting property 'getcontenttype' to '"
                                  + propertyElement.getText() + "'");
                 }
                 resource.setContentType(propertyElement.getText());
                 
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Unsupported property: " + propertyName);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Unsupported property: " + propertyName);
                 }
                 //throw new AuthorizationException();
             }
@@ -380,8 +380,8 @@ public class ProppatchController extends AbstractWebdavController  {
                 property = resource.createProperty(ns, propertyName);
             }
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting property " + property + 
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Setting property " + property + 
                              " on resource " + resource.getURI());
             }
             
@@ -396,7 +396,7 @@ public class ProppatchController extends AbstractWebdavController  {
                         property.setValue(elementToValue(propertyElement, def.getType()));
                     }
                 } catch (ValueFormatException e) {
-                    logger.warn("Could not convert given value(s) for property " 
+                    this.logger.warn("Could not convert given value(s) for property " 
                             + property + " to the correct type: " + e.getMessage());
                     throw new IllegalOperationException("Could not convert given value(s) for property " 
                             + property + " to the correct type: " + e.getMessage());
@@ -460,7 +460,7 @@ public class ProppatchController extends AbstractWebdavController  {
             
             return xmlOutputter.outputString(element.getChildren());
         } catch (Exception e) {
-            logger.warn("Error reading property value", e);
+            this.logger.warn("Error reading property value", e);
             return null;
         }
     }
@@ -477,7 +477,7 @@ public class ProppatchController extends AbstractWebdavController  {
                 throw new ValueFormatException(e.getMessage());
             }
         } else {
-            value = valueFactory.createValue(stringValue, type);
+            value = this.valueFactory.createValue(stringValue, type);
         }
 
         return value;
@@ -520,7 +520,7 @@ public class ProppatchController extends AbstractWebdavController  {
                 throw new ValueFormatException(e.getMessage());
             }
         } else {
-            values = valueFactory.createValues(stringValues, type);
+            values = this.valueFactory.createValues(stringValues, type);
         }
         
         return values;

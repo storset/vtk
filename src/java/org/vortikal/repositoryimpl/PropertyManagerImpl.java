@@ -69,7 +69,6 @@ import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvalua
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyValidator;
-import org.vortikal.repository.resourcetype.ResourceType;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -134,7 +133,7 @@ public class PropertyManagerImpl implements PropertyManager,
         PrimaryResourceTypeDefinition rt) {
 
         PrimaryResourceTypeDefinition[] children =
-            (PrimaryResourceTypeDefinition[])resourceTypeDefinitions.get(rt);
+            (PrimaryResourceTypeDefinition[])this.resourceTypeDefinitions.get(rt);
         if (children == null)
             return new PrimaryResourceTypeDefinition[0];
         return children;
@@ -167,7 +166,7 @@ public class PropertyManagerImpl implements PropertyManager,
     }
 
     private synchronized void init() {
-        if (init) return;
+        if (this.init) return;
 
         Collection resourceTypeDefinitionBeans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
@@ -205,7 +204,7 @@ public class PropertyManagerImpl implements PropertyManager,
         this.resourceTypeDefinitions.remove(null);
         
         this.mixins = 
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     MixinResourceTypeDefinition.class, false, false).values();
 
         for (Iterator iter = this.mixins.iterator(); iter.hasNext();) {
@@ -214,19 +213,19 @@ public class PropertyManagerImpl implements PropertyManager,
             addNamespacesAndProperties(def);
         }
 
-        logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
+        this.logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
 
-        init = true;
+        this.init = true;
     }
     
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
 
         ResourceImpl newResource = new ResourceImpl(uri, this, this.authorizationManager);
         PrimaryResourceTypeDefinition rt = create(principal, newResource, new Date(), 
-                collection, rootResourceTypeDefinition);
+                collection, this.rootResourceTypeDefinition);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Found resource type definition: " 
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Found resource type definition: " 
                     + rt + " for resource created at '" + uri + "'");
         }
         
@@ -301,8 +300,8 @@ public class PropertyManagerImpl implements PropertyManager,
             Property prop = createProperty(rt.getNamespace(), propertyDef.getName());
             if (evaluator != null &&  evaluator.create(principal, prop, newResource,
                                                       isCollection, time)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
                 }
             }
 
@@ -361,8 +360,8 @@ public class PropertyManagerImpl implements PropertyManager,
                 // Deleted
                 if (prop.getDefinition() == null) {
                     // Dead - ok
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Property " + prop + " deleted by user "
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Property " + prop + " deleted by user "
                                      + "(dead property, no definition)");
                     }
 
@@ -380,8 +379,8 @@ public class PropertyManagerImpl implements PropertyManager,
                 // Changed value
                 if (prop.getDefinition() == null) {
                     // Dead
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Property " + prop + " changed value "
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Property " + prop + " changed value "
                                      + "(dead property, no definition)");
                     }
                     deadProperties.add(userProp);
@@ -413,8 +412,8 @@ public class PropertyManagerImpl implements PropertyManager,
                         throw new ConstraintViolationException("Property " + userProp
                                                                + " is not initialized");
                     }
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Property " + prop + " added "
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Property " + prop + " added "
                                      + "(dead property, no definition)");
                     }
                     deadProperties.add(userProp);
@@ -434,8 +433,8 @@ public class PropertyManagerImpl implements PropertyManager,
         if (resource.getLock() != null)
             newResource.setLock((Lock)resource.getLock().clone());
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("About to evaluate resource type for resource " + dto
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("About to evaluate resource type for resource " + dto
                          + ", alreadySetProps = " + alreadySetProperties
                          + ", deletedProps = " + deletedProps
                          + ", deadProps = " + deadProperties
@@ -446,14 +445,14 @@ public class PropertyManagerImpl implements PropertyManager,
         // Evaluate resource tree, for all live props not overridden, evaluate
         ResourceTypeDefinition rt = propertiesModification(
             principal, newResource, dto, new Date(), alreadySetProperties,
-            deletedProps, rootResourceTypeDefinition);
+            deletedProps, this.rootResourceTypeDefinition);
 
         newResource.setResourceType(rt.getName());
         
         for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Adding dead property " + prop + "to resource: " + newResource);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Adding dead property " + prop + "to resource: " + newResource);
             }
             
             newResource.addProperty(prop);
@@ -463,16 +462,16 @@ public class PropertyManagerImpl implements PropertyManager,
             for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
                 Property prop = (Property) iterator.next();
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Adding property " + prop + " to resource " + newResource);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Adding property " + prop + " to resource " + newResource);
                 }
 
                 newResource.addProperty(prop);
             }
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning evaluated resource: " + newResource
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Returning evaluated resource: " + newResource
                          + " having properties: " + newResource.getProperties());
         }
 
@@ -538,15 +537,15 @@ public class PropertyManagerImpl implements PropertyManager,
         Date time, Map alreadySetProperties, Map deletedProps, ResourceTypeDefinition rt,
         PropertyTypeDefinition[] propertyDefs, List newProps) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Evaluating properties modification for resource "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Evaluating properties modification for resource "
                          + newResource + ", resource type " + rt);
         }
 
 
         for (int i = 0; i < propertyDefs.length; i++) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Evaluating properties modification for resource "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Evaluating properties modification for resource "
                              + newResource + ", resource type " + rt
                              + ", property " + propertyDefs[i]);
             }
@@ -559,8 +558,8 @@ public class PropertyManagerImpl implements PropertyManager,
             if (propsMap != null) {
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Property " + p + " already set, will not evaluate");
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Property " + p + " already set, will not evaluate");
                     }
                     newProps.add(p);
                     propsMap.remove(propertyDef.getName());
@@ -572,16 +571,16 @@ public class PropertyManagerImpl implements PropertyManager,
             if (propsMap != null) {
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Property " + p + " was deleted, will not evaluate");
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Property " + p + " was deleted, will not evaluate");
                     }
                     continue;
                 }
             }
 
             // Not user edited, evaluate
-            if (logger.isDebugEnabled()) {
-                logger.debug("Property " + propertyDef + " not user edited, evaluating");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Property " + propertyDef + " not user edited, evaluating");
             }
 
             Property prop = dto.getProperty(rt.getNamespace(), propertyDef.getName());
@@ -594,14 +593,14 @@ public class PropertyManagerImpl implements PropertyManager,
                 if (prop == null) 
                     prop = createProperty(rt.getNamespace(), propertyDef.getName());
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Created property " + prop + ", will evaluate using "
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Created property " + prop + ", will evaluate using "
                                  + evaluator);
                 }
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
                     addProperty = true;
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
                     }
                 } else if (propertyDef.isMandatory()) {
                     Value defaultValue = propertyDef.getDefaultValue();
@@ -615,14 +614,14 @@ public class PropertyManagerImpl implements PropertyManager,
                     }
                 }
             } else if (prop != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("No properties modification evaluator for property " + prop
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("No properties modification evaluator for property " + prop
                                  + ", but it already existed on resource");
                 }
                 addProperty = true;
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("No properties modification evaluator for property "
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("No properties modification evaluator for property "
                                  + propertyDef + ", and it did not already exist, not adding");
                 }
             }
@@ -650,7 +649,7 @@ public class PropertyManagerImpl implements PropertyManager,
         newResource.setACL(resource.getAcl());
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(principal, newResource, 
-                resource, null, new Date(), rootResourceTypeDefinition);
+                resource, null, new Date(), this.rootResourceTypeDefinition);
         
         newResource.setResourceType(rt.getName());
         
@@ -666,12 +665,12 @@ public class PropertyManagerImpl implements PropertyManager,
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(
             principal, newResource, resource,
-            new ContentImpl(resource.getURI(), contentStore,
+            new ContentImpl(resource.getURI(), this.contentStore,
                             this.contentRepresentationRegistry),
-            new Date(), rootResourceTypeDefinition);
+            new Date(), this.rootResourceTypeDefinition);
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Setting new resource type: '" + rt.getName()
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Setting new resource type: '" + rt.getName()
                          + "' on resource " + resource);
         }
 
@@ -755,8 +754,8 @@ public class PropertyManagerImpl implements PropertyManager,
                     prop = createProperty(rt.getNamespace(), propertyDef.getName());
                 if (evaluator.contentModification(principal, prop, newResource, content, time)) {
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
                     }
                     newProps.add(prop);
                 } 
@@ -778,8 +777,8 @@ public class PropertyManagerImpl implements PropertyManager,
         prop.setDefinition(def);
         
         if (def != null && def.getDefaultValue() != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting default value of prop " + prop + " to "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Setting default value of prop " + prop + " to "
                              + def.getDefaultValue());
             }
 
@@ -847,17 +846,17 @@ public class PropertyManagerImpl implements PropertyManager,
         prop.setDefinition(def);
         
         if (def != null && def.isMultiple()) {
-            Value[] values = valueFactory.createValues(stringValues, type);
+            Value[] values = this.valueFactory.createValues(stringValues, type);
             prop.setValues(values);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Created multi-value property: " + prop);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Created multi-value property: " + prop);
             }
         } else {
             // Not multi-value, stringValues must be of length 1, otherwise there are
             // inconsistency problems between data store and config.
             if (stringValues.length > 1) {
-                logger.error("Cannot convert multiple values to a single-value prop"
+                this.logger.error("Cannot convert multiple values to a single-value prop"
                              + " for property " + prop);
                 throw new ValueFormatException(
                     "Cannot convert multiple values: " + Arrays.asList(stringValues)
@@ -869,7 +868,7 @@ public class PropertyManagerImpl implements PropertyManager,
                 type = PropertyType.TYPE_STRING;
             }
             
-            Value value = valueFactory.createValue(stringValues[0], type);
+            Value value = this.valueFactory.createValue(stringValues[0], type);
             prop.setValue(value);
         }
         
@@ -933,8 +932,8 @@ public class PropertyManagerImpl implements PropertyManager,
             propDef = (PropertyTypeDefinition) map.get(name);
         }
         
-        if (logger.isDebugEnabled() && propDef == null) {
-            logger.debug("No definition found for property " +
+        if (this.logger.isDebugEnabled() && propDef == null) {
+            this.logger.debug("No definition found for property " +
                          namespace.getPrefix() + ":" + name);
         }
         
@@ -945,7 +944,7 @@ public class PropertyManagerImpl implements PropertyManager,
     // TODO: print mixin types as well
     public String getResourceTypeTreeAsString() {
         StringBuffer sb = new StringBuffer();
-        printResourceTypes(sb, 0, rootResourceTypeDefinition);
+        printResourceTypes(sb, 0, this.rootResourceTypeDefinition);
         printMixinTypes(sb);
         return sb.toString();
     }
@@ -1016,13 +1015,13 @@ public class PropertyManagerImpl implements PropertyManager,
         Namespace namespace = def.getNamespace();
 
         if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri())) {
-            logger.info("Adding namespace URI mapping: " + def.getNamespace().getUri()
+            this.logger.info("Adding namespace URI mapping: " + def.getNamespace().getUri()
                         + " -> " + def.getNamespace());
             this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
         }        
 
         if (!this.namespacePrefixMap.containsKey(def.getNamespace().getPrefix())) {            
-            logger.info("Adding namespace prefix mapping: " + def.getNamespace().getPrefix()
+            this.logger.info("Adding namespace prefix mapping: " + def.getNamespace().getPrefix()
                         + " -> " + def.getNamespace());
             this.namespacePrefixMap.put(def.getNamespace().getPrefix(), def.getNamespace());
         }
@@ -1035,8 +1034,8 @@ public class PropertyManagerImpl implements PropertyManager,
             this.propertyTypeDefinitions.put(namespace, propDefMap);
         }
         for (int u = 0; u < definitions.length; u++) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Registering property type definition "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Registering property type definition "
                              + definitions[u].getName());
             }
 
@@ -1051,15 +1050,15 @@ public class PropertyManagerImpl implements PropertyManager,
 
         if (assertions != null) {
             for (int i = 0; i < assertions.length; i++) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Checking assertion "
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Checking assertion "
                                  + assertions[i] + " for resource " + resource);
                 }
 
                 if (!assertions[i].matches(resource, principal)) {
                     
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug(
                             "Checking for type '" + rt.getName() + "', resource " + resource
                             + " failed, unmatched assertion: " + assertions[i]);
                     }
@@ -1068,8 +1067,8 @@ public class PropertyManagerImpl implements PropertyManager,
                 
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Checking for type '" + rt.getName() + "', resource "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Checking for type '" + rt.getName() + "', resource "
                          + resource + " succeeded, assertions matched: "
                          + (assertions != null ? Arrays.asList(assertions) : null));
         }
@@ -1186,7 +1185,7 @@ public class PropertyManagerImpl implements PropertyManager,
      */
     public List getPrimaryResourceTypeDefinitions() {
         return new ArrayList(
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, 
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     PrimaryResourceTypeDefinition.class, false, false).values());
     }
     

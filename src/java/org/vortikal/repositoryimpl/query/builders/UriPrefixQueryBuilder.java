@@ -32,24 +32,23 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
         // Use ancestor ids field from index to get all descendants
         TermQuery uriDescendants = 
             new TermQuery(
-                    new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, idTerm.text()));
+                    new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, this.idTerm.text()));
 
-        if (uri.endsWith("/")) {
+        if (this.uri.endsWith("/")) {
             // Don't include parent
             // XXX: Note that the root URI '/' is a special case, it will not be included
             //      as part of URI prefix query results (only the children).
             //      If we need to differentiate between the "include-self or not"-case
             //      for the root resource, this info has to be explicitly available in query class.
             return uriDescendants;
-        } else {
-            // Include the parent URI as well
-            BooleanQuery bq = new BooleanQuery();
-            TermQuery uriTermq = new TermQuery(idTerm);
-            bq.add(uriTermq, BooleanClause.Occur.SHOULD);
-            bq.add(uriDescendants, BooleanClause.Occur.SHOULD);
-            
-            return bq;
         }
+        // Include the parent URI as well
+        BooleanQuery bq = new BooleanQuery();
+        TermQuery uriTermq = new TermQuery(this.idTerm);
+        bq.add(uriTermq, BooleanClause.Occur.SHOULD);
+        bq.add(uriDescendants, BooleanClause.Occur.SHOULD);
+        
+        return bq;
     }
 
 }

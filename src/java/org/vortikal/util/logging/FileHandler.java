@@ -123,14 +123,14 @@ public class FileHandler extends Handler {
 
     public synchronized void publish(LogRecord record) {
 
-        String fileName = expandPattern(pattern);
+        String fileName = expandPattern(this.pattern);
 
-        StreamHandler handler = (StreamHandler) streamHandlers.get(fileName);
+        StreamHandler handler = (StreamHandler) this.streamHandlers.get(fileName);
         if (handler == null) {
 
             try {
                 openStreamHandler();
-                handler = (StreamHandler) streamHandlers.get(fileName);
+                handler = (StreamHandler) this.streamHandlers.get(fileName);
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
@@ -138,9 +138,9 @@ public class FileHandler extends Handler {
         }
         
         File file = new File(fileName);
-        if (limit > 0 && file.length() > limit) {
+        if (this.limit > 0 && file.length() > this.limit) {
             rotateLogFiles();
-            handler = (StreamHandler) streamHandlers.get(fileName);
+            handler = (StreamHandler) this.streamHandlers.get(fileName);
         }
 
 	if (!isLoggable(record, fileName)) {
@@ -161,21 +161,21 @@ public class FileHandler extends Handler {
      * @exception IOException if an error occurs
      */
     private synchronized void openStreamHandler() throws IOException {
-        String fileName = expandPattern(pattern);
+        String fileName = expandPattern(this.pattern);
         File file = new File(fileName);
         FileOutputStream out = new FileOutputStream(file, this.append);
-        StreamHandler handler = new StreamHandler(new BufferedOutputStream (out), formatter);
-        handler.setLevel(level);
-        streamHandlers.put(expandPattern(pattern), handler);
+        StreamHandler handler = new StreamHandler(new BufferedOutputStream (out), this.formatter);
+        handler.setLevel(this.level);
+        this.streamHandlers.put(expandPattern(this.pattern), handler);
     }
     
 
 
     private synchronized void rotateLogFiles() {
-        String currentFileName = expandPattern(pattern);
+        String currentFileName = expandPattern(this.pattern);
 
         /* Rotate the old files */
-        for (int i = count; i > 1; i--) {
+        for (int i = this.count; i > 1; i--) {
             File file = new File(currentFileName + "." + (i - 1));
             if (file.exists()) {
                 boolean ok = file.renameTo(new File(currentFileName + "." + i));
@@ -185,10 +185,10 @@ public class FileHandler extends Handler {
                 }
             }
         }
-        StreamHandler handler = (StreamHandler) streamHandlers.get(currentFileName);
+        StreamHandler handler = (StreamHandler) this.streamHandlers.get(currentFileName);
         handler.flush();
         handler.close();
-        streamHandlers.remove(currentFileName);
+        this.streamHandlers.remove(currentFileName);
 
         File currentFile = new File(currentFileName);
         if (!currentFile.renameTo(new File(currentFileName + ".1"))) {
@@ -254,8 +254,8 @@ public class FileHandler extends Handler {
     public void setFormatter(Formatter newFormatter) throws SecurityException {
         this.formatter = newFormatter;
         super.setFormatter(newFormatter);
-        for (Iterator i = streamHandlers.keySet().iterator(); i.hasNext();) {
-            StreamHandler handler = (StreamHandler) streamHandlers.get(i.next());
+        for (Iterator i = this.streamHandlers.keySet().iterator(); i.hasNext();) {
+            StreamHandler handler = (StreamHandler) this.streamHandlers.get(i.next());
             handler.setFormatter(newFormatter);
         }
     }
@@ -263,43 +263,43 @@ public class FileHandler extends Handler {
     public void setLevel(Level newLevel) throws SecurityException {
         this.level = newLevel;
         super.setLevel(newLevel);
-        for (Iterator i = streamHandlers.keySet().iterator(); i.hasNext();) {
-            StreamHandler handler = (StreamHandler) streamHandlers.get(i.next());
+        for (Iterator i = this.streamHandlers.keySet().iterator(); i.hasNext();) {
+            StreamHandler handler = (StreamHandler) this.streamHandlers.get(i.next());
             handler.setLevel(newLevel);
         }
         
     }
     
     public void close() {
-        for (Iterator i = streamHandlers.keySet().iterator(); i.hasNext();) {
-            StreamHandler handler = (StreamHandler) streamHandlers.get(i.next());
+        for (Iterator i = this.streamHandlers.keySet().iterator(); i.hasNext();) {
+            StreamHandler handler = (StreamHandler) this.streamHandlers.get(i.next());
             handler.close();
         }
         
     }
 
     public void flush() {
-        for (Iterator i = streamHandlers.keySet().iterator(); i.hasNext();) {
-            StreamHandler handler = (StreamHandler) streamHandlers.get(i.next());
+        for (Iterator i = this.streamHandlers.keySet().iterator(); i.hasNext();) {
+            StreamHandler handler = (StreamHandler) this.streamHandlers.get(i.next());
             handler.flush();
         }
         
     }
 
     public boolean isLoggable(LogRecord record) {
-        String fileName = expandPattern(pattern);
+        String fileName = expandPattern(this.pattern);
 
         return isLoggable(record, fileName);
     }
 
     public boolean isLoggable(LogRecord record, String fileName) {
 
-        StreamHandler handler = (StreamHandler) streamHandlers.get(fileName);
+        StreamHandler handler = (StreamHandler) this.streamHandlers.get(fileName);
         if (handler == null) {
 
             try {
                 openStreamHandler();
-                handler = (StreamHandler) streamHandlers.get(fileName);
+                handler = (StreamHandler) this.streamHandlers.get(fileName);
             } catch (IOException e) {
                 System.err.println(
                     "FileHandler: Error: unable to open log stream: " +

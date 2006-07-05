@@ -74,16 +74,16 @@ public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
     public String getStylesheetIdentifier(PropertySet resource, Document document) {
 
         String docType = document.getRootElement().getAttributeValue(
-            "noNamespaceSchemaLocation", XSI_NAMESPACE);
+            "noNamespaceSchemaLocation", this.XSI_NAMESPACE);
 
         if (docType == null) {
             return null;
         }
 
         try {
-            Document schemaDoc = schemaRegistry.getXMLSchema(docType);
-            XPath xPath = XPath.newInstance(elementXPath);
-            xPath.addNamespace(XSD_NAMESPACE);
+            Document schemaDoc = this.schemaRegistry.getXMLSchema(docType);
+            XPath xPath = XPath.newInstance(this.elementXPath);
+            xPath.addNamespace(this.XSD_NAMESPACE);
             Element e = (Element) xPath.selectSingleNode(schemaDoc);
             if (e == null) {
                 if (logger.isDebugEnabled()) {

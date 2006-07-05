@@ -46,11 +46,11 @@ public class NameRangeQueryBuilder implements QueryBuilder {
 
     public Query buildQuery() {
         
-        String from = nrq.getFromTerm();
-        String to = nrq.getToTerm();
+        String from = this.nrq.getFromTerm();
+        String to = this.nrq.getToTerm();
         
         ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(
-                DocumentMapper.NAME_FIELD_NAME, from, to, nrq.isInclusive(), nrq.isInclusive());
+                DocumentMapper.NAME_FIELD_NAME, from, to, this.nrq.isInclusive(), this.nrq.isInclusive());
         
         return csrq;
     }

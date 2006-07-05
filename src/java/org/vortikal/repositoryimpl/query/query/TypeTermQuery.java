@@ -43,7 +43,7 @@ public class TypeTermQuery implements Query {
     }
 
     public TypeOperator getOperator() {
-        return operator;
+        return this.operator;
     }
 
     public void setOperator(TypeOperator operator) {
@@ -51,7 +51,7 @@ public class TypeTermQuery implements Query {
     }
 
     public String getTerm() {
-        return term;
+        return this.term;
     }
 
     public void setTerm(String term) {
@@ -62,8 +62,8 @@ public class TypeTermQuery implements Query {
         StringBuffer buf = new StringBuffer().append(prefix);
         buf.append(this.getClass().getName()).append("\n");
         
-        buf.append(prefix).append("Operator = ").append(operator);
-        buf.append(", term = ").append(term).append("\n");
+        buf.append(prefix).append("Operator = ").append(this.operator);
+        buf.append(", term = ").append(this.term).append("\n");
         return buf.toString();
     }
 

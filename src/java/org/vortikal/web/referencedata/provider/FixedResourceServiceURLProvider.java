@@ -149,7 +149,7 @@ public class FixedResourceServiceURLProvider
         Resource resource = null;
 
         try {
-            resource = repository.retrieve(securityContext.getToken(), this.uri, true);
+            resource = this.repository.retrieve(securityContext.getToken(), this.uri, true);
         } catch (Throwable t) { }
 
         Map urlMap = (Map) model.get(this.modelName);

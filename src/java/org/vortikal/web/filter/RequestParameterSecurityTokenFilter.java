@@ -89,7 +89,7 @@ public class RequestParameterSecurityTokenFilter implements RequestFilter, Initi
             if (this.token != null && session != null) {
                 session.setAttribute(
                     SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
-                    token);
+                    this.token);
                 
             }
             return session;
@@ -100,7 +100,7 @@ public class RequestParameterSecurityTokenFilter implements RequestFilter, Initi
             if (this.token != null && session != null) {
                 session.setAttribute(
                     SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
-                    token);
+                    this.token);
                 
             }
             return session;

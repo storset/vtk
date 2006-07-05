@@ -56,8 +56,8 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
 
     public Query buildQuery() throws QueryBuilderException {
         
-        PropertyTypeDefinition def = ppq.getPropertyDefinition();
-        String term = ppq.getTerm();
+        PropertyTypeDefinition def = this.ppq.getPropertyDefinition();
+        String term = this.ppq.getTerm();
         
         if (! (def.getType() == PropertyType.TYPE_PRINCIPAL ||
                def.getType() == PropertyType.TYPE_STRING)) {

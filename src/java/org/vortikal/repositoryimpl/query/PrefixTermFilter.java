@@ -58,6 +58,7 @@ import org.apache.lucene.search.Filter;
  */
 public class PrefixTermFilter extends Filter {
 
+    private static final long serialVersionUID = -235069735083288662L;
     private Term prefixTerm;
     private BitSet bits = null;
     
@@ -81,9 +82,9 @@ public class PrefixTermFilter extends Filter {
 
     private BitSet getBits(IndexReader reader) throws IOException {
         BitSet bits = new BitSet(reader.maxDoc());
-        String fieldName = prefixTerm.field();
-        String prefix = prefixTerm.text();
-        TermEnum tenum = reader.terms(prefixTerm);
+        String fieldName = this.prefixTerm.field();
+        String prefix = this.prefixTerm.text();
+        TermEnum tenum = reader.terms(this.prefixTerm);
         TermDocs tdocs = reader.termDocs();
         try {
             do {

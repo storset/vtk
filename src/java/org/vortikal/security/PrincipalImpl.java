@@ -67,12 +67,12 @@ class PrincipalImpl implements Principal {
     
 
     public int hashCode() {
-        return qualifiedName.hashCode();
+        return this.qualifiedName.hashCode();
     }
     
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getQualifiedName() {
@@ -110,19 +110,19 @@ class PrincipalImpl implements Principal {
      * @see org.vortikal.security.Principal#getUnqualifiedName()
      */
     public String getUnqualifiedName() {
-        if (domain == null) return name;
+        if (this.domain == null) return this.name;
         //FIXME: principalmanager's delimiter shouldn't be here!
-        return qualifiedName.substring(0, qualifiedName.indexOf("@"));
+        return this.qualifiedName.substring(0, this.qualifiedName.indexOf("@"));
     }
 
 
     public boolean isUser() {
-        return type == Principal.TYPE_USER;
+        return this.type == Principal.TYPE_USER;
     }
 
 
     public int getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(int type) {

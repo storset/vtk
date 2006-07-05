@@ -49,8 +49,8 @@ public class IfNoneMatchHeader {
     
     public IfNoneMatchHeader(final HttpServletRequest request) {
         super();
-        headerValue = request.getHeader("If-None-Match");
-        logger.debug("if-none-match-header: " + headerValue);
+        this.headerValue = request.getHeader("If-None-Match");
+        logger.debug("if-none-match-header: " + this.headerValue);
         //stateEntryList = parse();
     }
     
@@ -64,13 +64,13 @@ public class IfNoneMatchHeader {
      */
     public boolean matches(final Resource resource) {
 		boolean match;
-		if (headerValue == null) {
+		if (this.headerValue == null) {
 			match = true;
-		} else if (headerValue.equals("*")) {
+		} else if (this.headerValue.equals("*")) {
 			match = false; //TODO: not sure about this one. Must check spec!
 		} else {
 			// TODO: Implement support for multiple etags in the header
-			match = !headerValue.equals(resource.getEtag());
+			match = !this.headerValue.equals(resource.getEtag());
 		}
 		logger.debug("match: " + match);
 		return match;

@@ -81,27 +81,27 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     
     public void afterPropertiesSet() throws Exception {
 
-        if (defaultPrincipals != null) {
-            for (Iterator iter = defaultPrincipals.iterator(); iter.hasNext();) {
+        if (this.defaultPrincipals != null) {
+            for (Iterator iter = this.defaultPrincipals.iterator(); iter.hasNext();) {
                 Principal principal = (Principal) iter.next();
                 String token = generateID();
-                registeredPrincipals.put(token,principal);
+                this.registeredPrincipals.put(token,principal);
             }
         }
         
-        if (cache == null) {
+        if (this.cache == null) {
             logger.info("No SimpleCache supplied, instantiating default");
-            cache = new SimpleCacheImpl();    
+            this.cache = new SimpleCacheImpl();    
         }
     }
 
 
     public Principal getPrincipal(String token) {
 
-        if (registeredPrincipals.containsKey(token))
-            return (Principal)registeredPrincipals.get(token);
+        if (this.registeredPrincipals.containsKey(token))
+            return (Principal)this.registeredPrincipals.get(token);
         
-        PrincipalItem item = (PrincipalItem) cache.get(token);
+        PrincipalItem item = (PrincipalItem) this.cache.get(token);
         if (item == null) {
             return null;
         }
@@ -110,10 +110,10 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
 
     public AuthenticationHandler getAuthenticationHandler(String token) {
-        if (registeredPrincipals.containsKey(token))
+        if (this.registeredPrincipals.containsKey(token))
             return null;
         
-        PrincipalItem item = (PrincipalItem) cache.get(token);
+        PrincipalItem item = (PrincipalItem) this.cache.get(token);
         if (item == null) {
             return null;
         }
@@ -126,25 +126,25 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
                            AuthenticationHandler authenticationHandler) {
         String token = generateID();
         PrincipalItem item = new PrincipalItem(principal, authenticationHandler);
-        cache.put(token, item);
+        this.cache.put(token, item);
         return token;
     }
 
     public void removeToken(String token) {
 
-        PrincipalItem item = (PrincipalItem) cache.get(token);
+        PrincipalItem item = (PrincipalItem) this.cache.get(token);
         if (item == null) {
             throw new IllegalArgumentException(
                     "Tried to remove unexisting token: " + token);
         }
-        cache.remove(token);
+        this.cache.remove(token);
     }
 
     public String getRegisteredToken(Principal principal) {
-        if (registeredPrincipals.containsValue(principal)) {
-            for (Iterator iter = registeredPrincipals.keySet().iterator(); iter.hasNext();) {
+        if (this.registeredPrincipals.containsValue(principal)) {
+            for (Iterator iter = this.registeredPrincipals.keySet().iterator(); iter.hasNext();) {
                 String token = (String) iter.next();
-                if (registeredPrincipals.get(token).equals(principal))
+                if (this.registeredPrincipals.get(token).equals(principal))
                         return token;
             }
         }

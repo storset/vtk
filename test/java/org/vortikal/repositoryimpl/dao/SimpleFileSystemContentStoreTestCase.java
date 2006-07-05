@@ -54,11 +54,11 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
         BasicConfigurator.configure();
         super.setUp();
         SimpleFileSystemContentStore store = new SimpleFileSystemContentStore();
-        tmpDir = System.getProperty("java.io.tmpdir") + "/contentStore" + getRandomIntAsString();
+        this.tmpDir = System.getProperty("java.io.tmpdir") + "/contentStore" + getRandomIntAsString();
         
-        File tmpDirFile = new File(tmpDir);
+        File tmpDirFile = new File(this.tmpDir);
         tmpDirFile.mkdir();
-        store.setRepositoryDataDirectory(tmpDir);
+        store.setRepositoryDataDirectory(this.tmpDir);
         setStore(store);
     }
 
@@ -73,7 +73,7 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
     }
 
     public ContentStore getStore() {
-        return store;
+        return this.store;
     }
 
     public void setStore(ContentStore store) {

@@ -103,7 +103,7 @@ public class TextResourceContentHelper {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int n = 0;
         byte[] buf = new byte[1024];
-        InputStream in = repository.getInputStream(token, resource.getURI(), false);
+        InputStream in = this.repository.getInputStream(token, resource.getURI(), false);
         while ((n = in.read(buf)) > 0) {
             out.write(buf, 0, n);
         }
@@ -147,7 +147,7 @@ public class TextResourceContentHelper {
 
     public String getHTMLContent(Resource resource, String token)
         throws IOException {
-        InputStream is = repository.getInputStream(
+        InputStream is = this.repository.getInputStream(
             token, resource.getURI(), false);
         byte[] bytes = StreamUtil.readInputStream(is);
         String encoding = resource.getCharacterEncoding();
@@ -162,7 +162,7 @@ public class TextResourceContentHelper {
     public String getPlainTextContent(Resource resource, String token)
         throws IOException {
 
-        InputStream is = repository.getInputStream(token, resource.getURI(),
+        InputStream is = this.repository.getInputStream(token, resource.getURI(),
                                                    false);
         byte[] bytes = StreamUtil.readInputStream(is);
         String encoding = resource.getCharacterEncoding();
@@ -221,7 +221,7 @@ public class TextResourceContentHelper {
         try {
             if (logger.isDebugEnabled())
                 logger.debug("Opening document " + resource.getURI());
-            inStream = repository.getInputStream(
+            inStream = this.repository.getInputStream(
                 token, resource.getURI(), false);
             
             reader = new BufferedReader(new InputStreamReader(
@@ -257,7 +257,7 @@ public class TextResourceContentHelper {
         try {
             if (logger.isDebugEnabled())
                 logger.debug("Opening document " + resource.getURI());
-            inStream = repository.getInputStream(
+            inStream = this.repository.getInputStream(
                 token, resource.getURI(), false);
             
             ByteArrayOutputStream out = new ByteArrayOutputStream();

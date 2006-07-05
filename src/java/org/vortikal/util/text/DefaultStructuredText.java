@@ -57,11 +57,11 @@ public final class DefaultStructuredText implements StructuredText {
 
     private String LINE_SEPARATOR = "\n";
 
-    protected String LIST_START = LINE_SEPARATOR + "- ";
+    protected String LIST_START = this.LINE_SEPARATOR + "- ";
 
-    protected String LIST_CLOSE = LINE_SEPARATOR;
+    protected String LIST_CLOSE = this.LINE_SEPARATOR;
 
-    protected String PARAGRAPH_START = LINE_SEPARATOR + LINE_SEPARATOR;
+    protected String PARAGRAPH_START = this.LINE_SEPARATOR + this.LINE_SEPARATOR;
 
     protected String EMPHASIZE_START = "*";
 
@@ -76,21 +76,21 @@ public final class DefaultStructuredText implements StructuredText {
     private boolean includeNewlines = false;
 
     private void initTagNames() {
-        tagNames.put("root", "structuredtext");
-        tagNames.put("plaintext", "text");
-        tagNames.put("emphasize", "emphasize");
-        tagNames.put("weight", "weight");
-        tagNames.put("link", "link");
-        tagNames.put("url", "url");
-        tagNames.put("url-description", "description");
-        tagNames.put("list", "list");
-        tagNames.put("listitem", "listitem");
-        tagNames.put("paragraph", "paragraph");
-        tagNames.put("newline", "br");
+        this.tagNames.put("root", "structuredtext");
+        this.tagNames.put("plaintext", "text");
+        this.tagNames.put("emphasize", "emphasize");
+        this.tagNames.put("weight", "weight");
+        this.tagNames.put("link", "link");
+        this.tagNames.put("url", "url");
+        this.tagNames.put("url-description", "description");
+        this.tagNames.put("list", "list");
+        this.tagNames.put("listitem", "listitem");
+        this.tagNames.put("paragraph", "paragraph");
+        this.tagNames.put("newline", "br");
     }
 
     public Set getTagNames() {
-        return tagNames.keySet();
+        return this.tagNames.keySet();
     }
 
     public DefaultStructuredText() {
@@ -98,11 +98,11 @@ public final class DefaultStructuredText implements StructuredText {
     }
 
     public void setTextMappings(Map customMappings) {
-        tagNames = customMappings;
+        this.tagNames = customMappings;
     }
 
     private String lookupTag(String tagName) {
-        String tag = (String) tagNames.get(tagName);
+        String tag = (String) this.tagNames.get(tagName);
         if (tag == null) {
             tag = tagName;
         }
@@ -110,9 +110,9 @@ public final class DefaultStructuredText implements StructuredText {
     }
 
     private String reverseLookupTag(String mappedTag) {
-        for (Iterator i = tagNames.keySet().iterator(); i.hasNext();) {
+        for (Iterator i = this.tagNames.keySet().iterator(); i.hasNext();) {
             String tagName = (String) i.next();
-            if (((String) tagNames.get(tagName)).equals(mappedTag)) { return tagName; }
+            if (((String) this.tagNames.get(tagName)).equals(mappedTag)) { return tagName; }
         }
         return mappedTag;
     }
@@ -216,12 +216,12 @@ public final class DefaultStructuredText implements StructuredText {
 
             } else if (tagName.equals("emphasize")) {
 
-                buffer.append(EMPHASIZE_START + child.getText()
-                        + EMPHASIZE_CLOSE);
+                buffer.append(this.EMPHASIZE_START + child.getText()
+                        + this.EMPHASIZE_CLOSE);
 
             } else if (tagName.equals("weight")) {
 
-                buffer.append(WEIGHT_START + child.getText() + WEIGHT_CLOSE);
+                buffer.append(this.WEIGHT_START + child.getText() + this.WEIGHT_CLOSE);
 
             } else if (tagName.equals("link")) {
 
@@ -295,9 +295,9 @@ public final class DefaultStructuredText implements StructuredText {
             Element rootElement) {
 
         int startPos = (pos == 0) ? pos + "- ".length() : pos
-                + LIST_START.length();
+                + this.LIST_START.length();
 
-        int nextPos = structuredText.indexOf(LIST_CLOSE, startPos);
+        int nextPos = structuredText.indexOf(this.LIST_CLOSE, startPos);
         String itemText;
         if (nextPos < 0) {
             nextPos = structuredText.length();
@@ -306,8 +306,8 @@ public final class DefaultStructuredText implements StructuredText {
             itemText = structuredText.substring(startPos, nextPos);
         }
 
-        if (paragraphAtPos(structuredText, pos - PARAGRAPH_START.length())
-                && includeNewlines) {
+        if (paragraphAtPos(structuredText, pos - this.PARAGRAPH_START.length())
+                && this.includeNewlines) {
 
             // add a newline element before the list
             rootElement.addContent(new Element(lookupTag("newline")));
@@ -323,7 +323,7 @@ public final class DefaultStructuredText implements StructuredText {
 
         rootElement.addContent(new Element(lookupTag("paragraph")));
         // Fix this in case of LINE_SEPARATOR.length() > 1 (e.g. '\r\n').
-        int nextPos = pos + PARAGRAPH_START.length() - 1;
+        int nextPos = pos + this.PARAGRAPH_START.length() - 1;
         if (paragraphAtPos(structuredText, nextPos + 1)) { return nextPos + 1; }
         if (!listAtPos(structuredText, nextPos)) {
             nextPos++;
@@ -335,9 +335,9 @@ public final class DefaultStructuredText implements StructuredText {
             Element rootElement) {
 
         rootElement.addContent(new Element(lookupTag("newline")));
-        int nextPos = pos + LINE_SEPARATOR.length();
+        int nextPos = pos + this.LINE_SEPARATOR.length();
         if (listAtPos(structuredText, pos)) {
-            nextPos = nextPos - LINE_SEPARATOR.length();
+            nextPos = nextPos - this.LINE_SEPARATOR.length();
         }
         return nextPos;
     }
@@ -345,10 +345,10 @@ public final class DefaultStructuredText implements StructuredText {
     protected int parseEmphasize(String structuredText, int pos,
             Element rootElement) {
 
-        int nextPos = structuredText.indexOf(EMPHASIZE_CLOSE, pos
-                + EMPHASIZE_START.length()) + 1;
+        int nextPos = structuredText.indexOf(this.EMPHASIZE_CLOSE, pos
+                + this.EMPHASIZE_START.length()) + 1;
         String emphasizedText = structuredText.substring(pos
-                + EMPHASIZE_START.length(), nextPos - 1);
+                + this.EMPHASIZE_START.length(), nextPos - 1);
 
         Element element = new Element(lookupTag("emphasize"));
         element.addContent(emphasizedText);
@@ -359,10 +359,10 @@ public final class DefaultStructuredText implements StructuredText {
     protected int parseWeighted(String structuredText, int pos,
             Element rootElement) {
 
-        int nextPos = structuredText.indexOf(WEIGHT_CLOSE, pos
-                + WEIGHT_START.length()) + 1;
+        int nextPos = structuredText.indexOf(this.WEIGHT_CLOSE, pos
+                + this.WEIGHT_START.length()) + 1;
         String weightedText = structuredText.substring(pos
-                + WEIGHT_START.length(), nextPos - 1);
+                + this.WEIGHT_START.length(), nextPos - 1);
 
         Element element = new Element(lookupTag("weight"));
         element.addContent(weightedText);
@@ -377,7 +377,7 @@ public final class DefaultStructuredText implements StructuredText {
         int urlEnd = pos + description.length() + 2;
         while (urlEnd < structuredText.length()
                 && structuredText.indexOf(" ", urlEnd) != urlEnd
-                && structuredText.indexOf(LINE_SEPARATOR, urlEnd) != urlEnd
+                && structuredText.indexOf(this.LINE_SEPARATOR, urlEnd) != urlEnd
                 && structuredText.indexOf(". ", urlEnd) != urlEnd
                 && structuredText.indexOf(", ", urlEnd) != urlEnd
                 && structuredText.indexOf("; ", urlEnd) != urlEnd) {
@@ -403,7 +403,7 @@ public final class DefaultStructuredText implements StructuredText {
         if (nextPos > pos) {
             String text = structuredText.substring(pos, nextPos);
 
-            if (!includeNewlines) {
+            if (!this.includeNewlines) {
                 text = stripNewlines(text);
             }
             Element textElement = new Element(lookupTag("plaintext"));
@@ -453,23 +453,23 @@ public final class DefaultStructuredText implements StructuredText {
 
     protected boolean listAtPos(String text, int pos) {
         if (pos == 0) { return text.indexOf("- ", pos) == pos; }
-        return (text.indexOf(LIST_START, pos) == pos);
+        return (text.indexOf(this.LIST_START, pos) == pos);
     }
 
     protected boolean paragraphAtPos(String text, int pos) {
-        return (text.indexOf(PARAGRAPH_START, pos) == pos);
+        return (text.indexOf(this.PARAGRAPH_START, pos) == pos);
     }
 
     protected boolean newlineAtPos(String text, int pos) {
-        if (!includeNewlines) { return false; }
+        if (!this.includeNewlines) { return false; }
         if (paragraphAtPos(text, pos)) { return false; }
-        return text.indexOf(LINE_SEPARATOR, pos) == pos;
+        return text.indexOf(this.LINE_SEPARATOR, pos) == pos;
     }
 
     protected boolean emphasizeAtPos(String text, int pos) {
-        if (text.indexOf(EMPHASIZE_START, pos) != pos) return false;
-        int termPos = text.indexOf(EMPHASIZE_CLOSE, pos
-                + EMPHASIZE_CLOSE.length());
+        if (text.indexOf(this.EMPHASIZE_START, pos) != pos) return false;
+        int termPos = text.indexOf(this.EMPHASIZE_CLOSE, pos
+                + this.EMPHASIZE_CLOSE.length());
         if (termPos > 0) {
             for (int i = pos; i < termPos; i++) {
                 if (listAtPos(text, i) || paragraphAtPos(text, i)
@@ -482,9 +482,9 @@ public final class DefaultStructuredText implements StructuredText {
     }
 
     protected boolean weightAtPos(String text, int pos) {
-        if (text.indexOf(WEIGHT_START, pos) != pos) return false;
+        if (text.indexOf(this.WEIGHT_START, pos) != pos) return false;
         int termPos = text
-                .indexOf(WEIGHT_CLOSE, pos + EMPHASIZE_CLOSE.length());
+                .indexOf(this.WEIGHT_CLOSE, pos + this.EMPHASIZE_CLOSE.length());
         if (termPos > 0) {
             for (int i = pos + 1; i < termPos; i++) {
                 if (listAtPos(text, i) || paragraphAtPos(text, i)
@@ -512,7 +512,7 @@ public final class DefaultStructuredText implements StructuredText {
             }
             if (testPos == text.length() - 1) return false;
             if (text.charAt(testPos + "\":".length()) == ' '
-                    || text.indexOf(LINE_SEPARATOR, pos + "\":".length()) == pos
+                    || text.indexOf(this.LINE_SEPARATOR, pos + "\":".length()) == pos
                             + "\":".length()) { return false; }
             return true;
         }

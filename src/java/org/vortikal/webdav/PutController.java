@@ -127,14 +127,14 @@ public class PutController extends AbstractWebdavController {
             /* Get the document or collection: */
 
             Resource resource = null;
-            boolean exists = repository.exists(token, uri);
+            boolean exists = this.repository.exists(token, uri);
 
             if (exists) {
-                logger.debug("Resource already exists");
-                resource = repository.retrieve(token, uri, false);
-                ifHeader = new IfHeaderImpl(request);
+                this.logger.debug("Resource already exists");
+                resource = this.repository.retrieve(token, uri, false);
+                this.ifHeader = new IfHeaderImpl(request);
 
-                if (supportIfHeaders) {
+                if (this.supportIfHeaders) {
                 	verifyIfHeader(resource, true);
                 }
                 
@@ -146,8 +146,8 @@ public class PutController extends AbstractWebdavController {
                 
 
                 if (resource.isCollection()) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("PUT to collection: CONFLICT");
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("PUT to collection: CONFLICT");
                     }
                     throw new WebdavConflictException(
                         "Trying to PUT to collection resource `" + uri + "'");
@@ -168,9 +168,9 @@ public class PutController extends AbstractWebdavController {
                     parentURI = "/";
                 }
                 
-                if (!repository.exists(token, parentURI)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Parent " + parentURI +
+                if (!this.repository.exists(token, parentURI)) {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Parent " + parentURI +
                                      " does not exist. CONFLICT.");
                     }
                     throw new WebdavConflictException(
@@ -178,26 +178,26 @@ public class PutController extends AbstractWebdavController {
                         uri + "', parent resource `" + parentURI + "' does not exist.");
                 }
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Resource does not exist (creating)");
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Resource does not exist (creating)");
                 }
-                resource = repository.createDocument(token, uri);
+                resource = this.repository.createDocument(token, uri);
                 // XXX: wrong resource?
                 model.put(WebdavConstants.WEBDAVMODEL_CREATED_RESOURCE, resource);
             }
 
             InputStream inStream = request.getInputStream();
 //                 new BoundedInputStream(request.getInputStream(), this.maxUploadSize);
-            repository.storeContent(token, resource.getURI(), inStream);
+            this.repository.storeContent(token, resource.getURI(), inStream);
 
             // FIXME: Properties may change while storing content?
-            resource = repository.retrieve(token, resource.getURI(), false);
+            resource = this.repository.retrieve(token, resource.getURI(), false);
             boolean store = false;
             
             String contentType = getContentType(request, resource);
             if (contentType != null && !contentType.equals(resource.getContentType())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting content-type: " + contentType);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Setting content-type: " + contentType);
                 }
                 resource.setContentType(contentType);
                 store = true;
@@ -205,15 +205,15 @@ public class PutController extends AbstractWebdavController {
 
             String characterEncoding = request.getCharacterEncoding();
             if (characterEncoding != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting character encoding: " + characterEncoding);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Setting character encoding: " + characterEncoding);
                 }
                 resource.setUserSpecifiedCharacterEncoding(characterEncoding);
                 store = true;
             }
 
             if (store) {
-                repository.store(token, resource);
+                this.repository.store(token, resource);
             }
 
             if (exists) {
@@ -228,47 +228,47 @@ public class PutController extends AbstractWebdavController {
             return new ModelAndView(this.viewName, model);
 
         } catch (ResourceNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceNotFoundException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceNotFoundException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
             
         } catch (IllegalOperationException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught IllegalOperationException for URI " + uri, e);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught IllegalOperationException for URI " + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (WebdavConflictException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught WebdavConflictException for URI " + uri, e);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught WebdavConflictException for URI " + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_CONFLICT));
 
         } catch (ReadOnlyException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ReadOnlyException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ReadOnlyException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (IOException e) {
-            logger.info("Caught IOException for URI " + uri, e);
+            this.logger.info("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));

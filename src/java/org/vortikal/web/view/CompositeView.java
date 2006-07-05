@@ -104,9 +104,9 @@ public class CompositeView extends AbstractView
         int sc = HttpServletResponse.SC_OK;
         String contentType = null;
 
-        for (int i = 0; i < views.length; i++) {
+        for (int i = 0; i < this.views.length; i++) {
             BufferedResponse bufferedResponse = new BufferedResponse();
-            views[i].render(model, request, bufferedResponse);
+            this.views[i].render(model, request, bufferedResponse);
             bufferStream.write(bufferedResponse.getContentBuffer());
             sc = bufferedResponse.getStatus();
             contentType = bufferedResponse.getContentType();

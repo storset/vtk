@@ -88,13 +88,13 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     }
 
     public Property createProperty(Namespace namespace, String name) {
-        Property prop = propertyManager.createProperty(namespace, name);
+        Property prop = this.propertyManager.createProperty(namespace, name);
         addProperty(prop);
         return prop;
     }
 
     public void removeProperty(Namespace namespace, String name) {
-        Map props = (Map)propertyMap.get(namespace);
+        Map props = (Map)this.propertyMap.get(namespace);
         
         if (props == null) return;
         
@@ -148,10 +148,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     }
 
     public String getName() {
-        if (uri.equals("/")) {
-            return uri;
+        if (this.uri.equals("/")) {
+            return this.uri;
         } 
-        return uri.substring(uri.lastIndexOf("/") + 1);
+        return this.uri.substring(this.uri.lastIndexOf("/") + 1);
     }
     
 
@@ -183,7 +183,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         serial = MD5.md5sum(serial);
         serial = "vortex-" + serial;
 
-        logger.debug("etag: " + serial);
+        this.logger.debug("etag: " + serial);
 
         return serial;
     }
@@ -310,7 +310,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
 
-        ResourceImpl clone = new ResourceImpl(uri, propertyManager, this.authorizationManager);
+        ResourceImpl clone = new ResourceImpl(this.uri, this.propertyManager, this.authorizationManager);
         clone.setID(this.id);
         clone.setACL(acl);
         clone.setLock(lock);
@@ -325,30 +325,30 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     }
 
     private String getPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         if (prop == null) return null;
         return prop.getStringValue();
     }
 
     private Date getDatePropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         if (prop == null) return null;
         return prop.getDateValue();
     }
 
     private long getLongPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         if (prop == null) return -1;
         return prop.getLongValue();
     }
 
     private boolean getBooleanPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         return prop.getBooleanValue();
     }
 
     private Principal getPrincipalPropValue(String name) {
-        Property prop = (Property)((Map)propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         return prop.getPrincipalValue();
     }
 
@@ -373,10 +373,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     public synchronized void addChildURI(String childURI) {
             String[] newChildren = new String[this.childURIs.length + 1];
             for (int i = 0; i < this.childURIs.length; i++) {
-                newChildren[i] = childURIs[i];
+                newChildren[i] = this.childURIs[i];
             }
 
-            newChildren[childURIs.length] = childURI;
+            newChildren[this.childURIs.length] = childURI;
             
             this.childURIs = newChildren;
     }

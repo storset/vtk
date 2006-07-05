@@ -131,7 +131,7 @@ public class PropertiesResource extends Properties implements InitializingBean,
             try {
                 this.load();
             } catch (Exception e) {
-                logger.warn(e);
+                this.logger.warn(e);
             }
         }
     }
@@ -165,7 +165,7 @@ public class PropertiesResource extends Properties implements InitializingBean,
             try {
                 this.loadInternal(repository, uri, token);
             } catch (Exception e) {
-                logger.warn("Unable to load properties from uri '"
+                this.logger.warn("Unable to load properties from uri '"
                             + uri + "', repository '" + repository
                             + "', token '" + token + "'", e);
             }

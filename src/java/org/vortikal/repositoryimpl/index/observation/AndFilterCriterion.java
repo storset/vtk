@@ -47,13 +47,13 @@ public class AndFilterCriterion implements FilterCriterion,
     private List criteria;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (criteria == null) {
+        if (this.criteria == null) {
             throw new BeanInitializationException("List of filter criteria not set.");
         }
     }
     
     public boolean isFiltered(String uri) {
-        for (Iterator iter = criteria.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.criteria.iterator(); iter.hasNext();) {
             if (! ((FilterCriterion)iter.next()).isFiltered(uri)) {
                 return false;
             }
@@ -69,7 +69,7 @@ public class AndFilterCriterion implements FilterCriterion,
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("AND(");
-        for (Iterator iter = criteria.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.criteria.iterator(); iter.hasNext();) {
             buffer.append(iter.next());
             if (iter.hasNext()) buffer.append(", ");
         }

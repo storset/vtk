@@ -77,7 +77,7 @@ public class DMSXslQuery {
             return null;
         }
         String securityToken = SecurityContext.getSecurityContext().getToken();
-        Document doc = dmsQueryHelper.executeQuery(input, securityToken, maxResults.intValue(),
+        Document doc = this.dmsQueryHelper.executeQuery(input, securityToken, maxResults.intValue(),
                                                    sort);
         
         return getW3CNodeList(doc);

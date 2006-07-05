@@ -62,24 +62,24 @@ public class ConsoleHandlerThread extends ShellHandlerThread {
     }
     
     public void interrupt() {
-        logger.info("Shutting down thread " + this.getName());
-        alive = false;
+        this.logger.info("Shutting down thread " + this.getName());
+        this.alive = false;
         super.interrupt();
     }
         
     public void run() {
             
-        while (alive) {
+        while (this.alive) {
             try {
-                String line = reader.readLine(outputter);
-                if (alive) {
-                    getShell().eval(line, outputter);
+                String line = this.reader.readLine(this.outputter);
+                if (this.alive) {
+                    getShell().eval(line, this.outputter);
                 }
             } catch (Throwable t) {
-                outputter.println("Error: " + t.getMessage());
-                t.printStackTrace(outputter);
+                this.outputter.println("Error: " + t.getMessage());
+                t.printStackTrace(this.outputter);
             }
         }
-        outputter.println("Exiting");
+        this.outputter.println("Exiting");
     }
 }

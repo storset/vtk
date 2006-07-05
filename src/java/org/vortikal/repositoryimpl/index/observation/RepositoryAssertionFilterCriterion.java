@@ -79,7 +79,7 @@ public class RepositoryAssertionFilterCriterion implements FilterCriterion,
     
     public boolean isFiltered(String uri) {
         try {
-            Resource resource = repository.retrieve(token, uri, false);
+            Resource resource = this.repository.retrieve(this.token, uri, false);
             Principal principal = this.tokenManager.getPrincipal(this.token);
             for (int i = 0; i < this.assertions.length; i++) {
                 if (!this.assertions[i].matches(resource, principal)) {

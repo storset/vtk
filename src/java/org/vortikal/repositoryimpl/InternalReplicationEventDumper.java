@@ -64,27 +64,27 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
-        if (dataAccessor == null) {
+        if (this.dataAccessor == null) {
             throw new BeanInitializationException("Bean property 'dataAccessor' not set.");
         }
     }
     
     public void created(Resource resource) {
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
                                            CREATED, -1, resource.isCollection(), false);
 
             if (resource.isCollection()) {
                 org.vortikal.repositoryimpl.ResourceImpl[] childResources =
-                    dataAccessor.loadChildren(dataAccessor.load(resource.getURI()));
+                    this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
                 for (int i = 0; i < childResources.length; i++) {
-                    dataAccessor.addChangeLogEntry(id, loggerType, childResources[i].getURI(),
+                    this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, childResources[i].getURI(),
                                                    CREATED, -1, childResources[i].isCollection(),
                                                    false);
                 }
             }
         } catch (IOException e) {
-            logger.warn(
+            this.logger.warn(
                 "Caught IOException while reporting resource creation " +
                 "for uri " + resource.getURI(), e);
         }
@@ -96,10 +96,10 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void deleted(String uri, int resourceId, boolean collection) {
         
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, uri, DELETED, resourceId,
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, uri, DELETED, resourceId,
                                            collection, false);
         } catch (IOException e) {
-            logger.warn(
+            this.logger.warn(
                 "Caught IOException while reporting resource deletion " +
                 "for uri " + uri, e);
         }
@@ -110,10 +110,10 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void modified(Resource resource, Resource originalResource) {
 
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(), MODIFIED_PROPS,
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_PROPS,
                                            -1, resource.isCollection(), false);
         } catch (IOException e) {
-            logger.warn(
+            this.logger.warn(
                 "Caught IOException while reporting property modification " +
                 "for uri " + resource.getURI(), e);
         }
@@ -122,10 +122,10 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
     public void contentModified(Resource resource) {
         try {
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
                                            MODIFIED_CONTENT, -1, resource.isCollection(), false);
         } catch (IOException e) {
-            logger.warn(
+            this.logger.warn(
                 "Caught IOException while reporting content modification " +
                 "for uri " + resource.getURI(), e);
         }
@@ -141,11 +141,11 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 //                return;
 //            }
         
-            dataAccessor.addChangeLogEntry(id, loggerType, resource.getURI(),
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
                                            MODIFIED_ACL, -1, resource.isCollection(), false);
             
         } catch (IOException e) {
-            logger.warn(
+            this.logger.warn(
                 "Caught IOException while reporting ACL modification " +
                 "for uri " + resource.getURI(), e);
         }

@@ -69,7 +69,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
    
     public PropertySetImpl(String uri) {
         this.uri = uri;
-        propertyMap = new HashMap();
+        this.propertyMap = new HashMap();
     }
  
     public int getID() {
@@ -85,10 +85,10 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     }
 
     public String getName() {
-        if (uri.equals("/")) {
-            return uri;
+        if (this.uri.equals("/")) {
+            return this.uri;
         } 
-        return uri.substring(uri.lastIndexOf("/") + 1);
+        return this.uri.substring(this.uri.lastIndexOf("/") + 1);
     }
 
     public String getResourceType() {
@@ -117,7 +117,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         Map map = (Map) this.propertyMap.get(property.getNamespace());
         if (map == null) {
             map = new HashMap();
-            propertyMap.put(property.getNamespace(), map);
+            this.propertyMap.put(property.getNamespace(), map);
         }
         map.put(property.getName(), property);
     }
@@ -172,7 +172,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     }
     
     public int[] getAncestorIds() {
-        return ancestorIds;
+        return this.ancestorIds;
     }
 
     public void setAncestorIds(int[] ancestorIds) {

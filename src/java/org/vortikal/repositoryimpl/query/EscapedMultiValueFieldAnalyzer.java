@@ -49,7 +49,7 @@ public class EscapedMultiValueFieldAnalyzer extends Analyzer {
     }
     
     public TokenStream tokenStream(String fieldName, Reader reader) {
-        return new EscapedMultiValueFieldTokenizer(reader, splitChar);
+        return new EscapedMultiValueFieldTokenizer(reader, this.splitChar);
       }
 
 }

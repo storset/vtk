@@ -72,7 +72,7 @@ public class CookieLocaleResolver
      * Return the default locale. 
      */
     public Locale getDefaultLocale() {
-        return defaultLocale;
+        return this.defaultLocale;
     }
 
 

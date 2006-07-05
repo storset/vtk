@@ -190,7 +190,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
                     // Still in use, put it into outdated readers storage
                     // (schedule for closing either when too old, or when ref-count
                     // eventually reaches 0)
-                    outdatedSearchReaders.put(this.currentSearchReader, 
+                    this.outdatedSearchReaders.put(this.currentSearchReader, 
                             new Integer(this.currentSearchReaderRefCount));
                     if (logger.isDebugEnabled()) {
                         logger.debug("Added outdated but still in-use search index reader to map of outdated readers.");
@@ -204,7 +204,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
                     }
                 }
                 
-                this.currentSearchReader = primaryFSIndex.getNewReadOnlyIndexReader();
+                this.currentSearchReader = this.primaryFSIndex.getNewReadOnlyIndexReader();
                 this.currentSearchReaderRefCount = 0;
 
                 // No longer out-dated
@@ -306,14 +306,14 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     protected void commit() throws IOException {
         // Optimize index, if we've reached 'optimizeInterval' number of commits.
-        if (++commitCounter % optimizeInterval == 0) {
-            logger.info("Reached " + commitCounter 
+        if (++this.commitCounter % this.optimizeInterval == 0) {
+            logger.info("Reached " + this.commitCounter 
                                         + " commits, auto-optimizing index ..");
-            primaryFSIndex.optimize();
+            this.primaryFSIndex.optimize();
             logger.info("Auto-optimization completed.");
         }
         
-        primaryFSIndex.commit();
+        this.primaryFSIndex.commit();
 
         synchronized (this.searchReaderManagementLock) {
             if (logger.isDebugEnabled()) {
@@ -389,6 +389,8 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
      */
     private static class IndexReaderRefCountMap extends LinkedHashMap {
         
+        private static final long serialVersionUID = -8554031873156146523L;
+
         public IndexReaderRefCountMap(int initialCapacity) {
             super(initialCapacity);
         }
@@ -419,7 +421,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public boolean isEraseExistingIndex() {
-        return eraseExistingIndex;
+        return this.eraseExistingIndex;
     }
 
     public void setEraseExistingIndex(boolean eraseExistingIndex) {
@@ -427,7 +429,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public boolean isForceUnlock() {
-        return forceUnlock;
+        return this.forceUnlock;
     }
 
     public void setForceUnlock(boolean forceUnlock) {
@@ -435,7 +437,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public int getMaxMergeDocs() {
-        return maxMergeDocs;
+        return this.maxMergeDocs;
     }
 
     public void setMaxMergeDocs(int maxMergeDocs) {
@@ -443,7 +445,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public int getMergeFactor() {
-        return mergeFactor;
+        return this.mergeFactor;
     }
 
     public void setMergeFactor(int mergeFactor) {
@@ -451,7 +453,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public int getMinMergeDocs() {
-        return minMergeDocs;
+        return this.minMergeDocs;
     }
 
     public void setMinMergeDocs(int minMergeDocs) {
@@ -459,7 +461,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public int getOptimizeInterval() {
-        return optimizeInterval;
+        return this.optimizeInterval;
     }
 
     public void setOptimizeInterval(int optimizeInterval) {
@@ -467,7 +469,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public String getPrimaryIndexPath() {
-        return primaryIndexPath;
+        return this.primaryIndexPath;
     }
 
     public void setPrimaryIndexPath(String primaryIndexPath) {
@@ -475,7 +477,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public String getSecondaryIndexPath() {
-        return secondaryIndexPath;
+        return this.secondaryIndexPath;
     }
 
     public void setSecondaryIndexPath(String secondaryIndexPath) {

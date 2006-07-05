@@ -193,11 +193,11 @@ public abstract class AbstractXmlEditController implements Controller {
         if (sessionMap != null) {
             String token = SecurityContext.getSecurityContext().getToken();
             Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-            Resource resource = repository.retrieve(token, uri, false);
+            Resource resource = this.repository.retrieve(token, uri, false);
             Lock lock = resource.getLock();
             if (lock == null || (!lock.getPrincipal().equals(principal))) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Stored xml edit session data is out of date.");
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Stored xml edit session data is out of date.");
                 }
                 request.getSession(true).removeAttribute(sessionID);
                 sessionMap = null;
@@ -251,11 +251,11 @@ public abstract class AbstractXmlEditController implements Controller {
             setXsltParameter(model, "USERNAME", principal.getName());
 
         // The Browse service is optional, must javadoc this
-        if (browseService != null) {
+        if (this.browseService != null) {
             try {
-                Resource parentResource = repository.retrieve(token, resource
+                Resource parentResource = this.repository.retrieve(token, resource
                         .getParent(), false);
-                setXsltParameter(model, "BROWSEURL", browseService
+                setXsltParameter(model, "BROWSEURL", this.browseService
                         .constructLink(parentResource, principal));
             } catch (AuthorizationException e) {
                 // No browse available for this resource
@@ -267,27 +267,27 @@ public abstract class AbstractXmlEditController implements Controller {
         }
 
         setXsltParameter(model, "editServiceURL", 
-                editService.constructLink(resource, principal));
-        setXsltParameter(model, "editElementServiceURL", editElementService
+                this.editService.constructLink(resource, principal));
+        setXsltParameter(model, "editElementServiceURL", this.editElementService
                 .constructLink(resource, principal));
-        setXsltParameter(model, "editElementDoneServiceURL", editElementDoneService
+        setXsltParameter(model, "editElementDoneServiceURL", this.editElementDoneService
                 .constructLink(resource, principal));
-        setXsltParameter(model, "moveElementServiceURL", moveElementService
+        setXsltParameter(model, "moveElementServiceURL", this.moveElementService
                 .constructLink(resource, principal));
-        setXsltParameter(model, "moveElementDoneServiceURL", moveElementDoneService
+        setXsltParameter(model, "moveElementDoneServiceURL", this.moveElementDoneService
                 .constructLink(resource, principal));
-        setXsltParameter(model, "deleteElementServiceURL", deleteElementService
+        setXsltParameter(model, "deleteElementServiceURL", this.deleteElementService
                 .constructLink(resource, principal));
-        setXsltParameter(model, "newElementAtServiceURL", newElementAtService
+        setXsltParameter(model, "newElementAtServiceURL", this.newElementAtService
                 .constructLink(resource, principal));
-        setXsltParameter(model, "newElementServiceURL", newElementService
+        setXsltParameter(model, "newElementServiceURL", this.newElementService
                 .constructLink(resource, principal));
         setXsltParameter(model, "newSubElementAtServiceURL",
-                newSubElementAtService.constructLink(resource, principal));
+                this.newSubElementAtService.constructLink(resource, principal));
         setXsltParameter(model, "deleteSubElementAtServiceURL",
-                deleteSubElementAtService.constructLink(resource, principal));
+                this.deleteSubElementAtService.constructLink(resource, principal));
         setXsltParameter(model, "finishEditingServiceURL",
-                finishEditingService.constructLink(resource, principal));
+                this.finishEditingService.constructLink(resource, principal));
 
     }
 
@@ -314,7 +314,7 @@ public abstract class AbstractXmlEditController implements Controller {
         sb.append("remote host: [").append(request.getRemoteHost()).append("]");
         sb.append("Current document state:\n").append(document.toStringDetail());
 
-        logger.warn(sb.toString());
+        this.logger.warn(sb.toString());
         
         setXsltParameter(model, "ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
         return new ModelAndView("edit", model);
@@ -348,7 +348,7 @@ public abstract class AbstractXmlEditController implements Controller {
         // FIXME: possible multiple repositories at once!
         String sessionID = AbstractXmlEditController.class.getName() + ":" + uri; 
         
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         
         Map sessionMap = new HashMap();
 
@@ -363,7 +363,7 @@ public abstract class AbstractXmlEditController implements Controller {
 
         /* The property web-edit should be 'true' or 'yes' */
         String webEdit = 
-            resource.getProperty(Namespace.CUSTOM_NAMESPACE, EDIT_PROPERTY).getStringValue();
+            resource.getProperty(Namespace.CUSTOM_NAMESPACE, this.EDIT_PROPERTY).getStringValue();
 
         if (webEdit == null || !(webEdit.equals("true") || webEdit.equals("yes"))) {
             throw new XMLEditException("Xml resource is not set to web editable");
@@ -371,7 +371,7 @@ public abstract class AbstractXmlEditController implements Controller {
         
         /* Try to build document */
         try {
-            document = EditDocument.createEditDocument(repository, this.lockTimeoutSeconds);
+            document = EditDocument.createEditDocument(this.repository, this.lockTimeoutSeconds);
         } catch (JDOMException e) {
             // FIXME: error handling?
             throw new XMLEditException("Document build failure", e);
@@ -417,7 +417,7 @@ public abstract class AbstractXmlEditController implements Controller {
         
         
         try {
-            transformerManager.getTransformer(resource, document);
+            this.transformerManager.getTransformer(resource, document);
         } catch (IOException e) {
             // FIXME: error handling
             throw new XMLEditException("Unable to compile edit stylesheets for document '" + uri + "'", e);
@@ -448,7 +448,7 @@ public abstract class AbstractXmlEditController implements Controller {
      */
     public URL getSchemaReference(Document document) throws MalformedURLException {
         String xsdURL = document.getRootElement().getAttributeValue(
-            "noNamespaceSchemaLocation", XSI_NAMESPACE);
+            "noNamespaceSchemaLocation", this.XSI_NAMESPACE);
         
         if (xsdURL != null) {
         

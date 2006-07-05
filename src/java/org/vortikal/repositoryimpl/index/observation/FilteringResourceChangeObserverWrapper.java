@@ -63,19 +63,19 @@ public class FilteringResourceChangeObserverWrapper
     }
 
     public void afterPropertiesSet() {
-        if (wrappedObservers != null) {
-            for (Iterator iter=wrappedObservers.iterator(); iter.hasNext();) {
-                logger.info("Wrapped observer: '" + 
+        if (this.wrappedObservers != null) {
+            for (Iterator iter=this.wrappedObservers.iterator(); iter.hasNext();) {
+                this.logger.info("Wrapped observer: '" + 
                             ((ResourceChangeObserver)iter.next()).getObserverId()+ "'");
             }
         } else {
-            logger.warn("No wrapped observers set.");
+            this.logger.warn("No wrapped observers set.");
         }
 
-        if (filterCriterion != null) {
-            logger.info("Filter criterion: " + this.filterCriterion);
+        if (this.filterCriterion != null) {
+            this.logger.info("Filter criterion: " + this.filterCriterion);
         } else {
-            logger.warn("No filter criterion set.");
+            this.logger.warn("No filter criterion set.");
         }
         
         enable(); // Enable, and register with notifier, if any.
@@ -86,12 +86,12 @@ public class FilteringResourceChangeObserverWrapper
      */
     public synchronized void disable() {
         if (this.notifier != null) {
-            if (notifier.unregisterObserver(this)) {
-                logger.info("Un-registered from resource change notifier.");
+            if (this.notifier.unregisterObserver(this)) {
+                this.logger.info("Un-registered from resource change notifier.");
             }
         }
-        enabled = false;
-        logger.info("Disabled.");
+        this.enabled = false;
+        this.logger.info("Disabled.");
     }
     
     /**
@@ -99,12 +99,12 @@ public class FilteringResourceChangeObserverWrapper
      */
     public synchronized void enable() {
         if (this.notifier != null) {
-            if (notifier.registerObserver(this)) {
-                logger.info("Registered with resource change notifier.");
+            if (this.notifier.registerObserver(this)) {
+                this.logger.info("Registered with resource change notifier.");
             }
         }
-        enabled = true;
-        logger.info("Enabled.");
+        this.enabled = true;
+        this.logger.info("Enabled.");
     }
     
     /**
@@ -119,12 +119,12 @@ public class FilteringResourceChangeObserverWrapper
      */
     public synchronized void notifyResourceChanges(List changes) {
         if (! isEnabled()) {
-            logger.warn("Received changes discarded. Reason: disabled.");
+            this.logger.warn("Received changes discarded. Reason: disabled.");
             return;
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Received list of " + changes.size() + " resource change(s).");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Received list of " + changes.size() + " resource change(s).");
         }
         
         // TODO: filter on change type (implement only if needed)
@@ -132,7 +132,7 @@ public class FilteringResourceChangeObserverWrapper
         List filtered = new ArrayList(changes); // Make copy of received list
         
         // Process list of changes using the standard filter criterion
-        if (filterCriterion != null) {
+        if (this.filterCriterion != null) {
             for (Iterator iter = filtered.iterator(); iter.hasNext();) {
                 ResourceChange change = (ResourceChange) iter.next();
                 String uri = change.getUri();
@@ -144,19 +144,19 @@ public class FilteringResourceChangeObserverWrapper
                     continue;
                 }
                 
-                if (filterCriterion.isFiltered(uri)) {
+                if (this.filterCriterion.isFiltered(uri)) {
                     iter.remove();
                 }
             }
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("List contains " + filtered.size() + " change(s) after filtering.");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("List contains " + filtered.size() + " change(s) after filtering.");
         }
         
         // Send the filtered list on to the wrapped observers.
-        if (wrappedObservers != null && filtered.size() > 0) {
-            for (Iterator iter = wrappedObservers.iterator(); iter.hasNext();) {
+        if (this.wrappedObservers != null && filtered.size() > 0) {
+            for (Iterator iter = this.wrappedObservers.iterator(); iter.hasNext();) {
                 ((ResourceChangeObserver)iter.next()).notifyResourceChanges(filtered);
             }
         }
@@ -191,7 +191,7 @@ public class FilteringResourceChangeObserverWrapper
         buf.append(this.filterCriterion);
         buf.append("), wrapped observers=(");
         if (this.wrappedObservers != null) {
-            for (Iterator iter = wrappedObservers.iterator(); iter.hasNext();) {
+            for (Iterator iter = this.wrappedObservers.iterator(); iter.hasNext();) {
                 buf.append("'");
                 buf.append(((ResourceChangeObserver)iter.next()).getObserverId());
                 buf.append("'");

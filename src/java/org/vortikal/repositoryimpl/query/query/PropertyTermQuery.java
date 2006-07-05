@@ -44,7 +44,7 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
     }
 
     public TermOperator getOperator() {
-        return operator;
+        return this.operator;
     }
 
     public void setOperator(TermOperator operator) {
@@ -52,7 +52,7 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
     }
 
     public String getTerm() {
-        return term;
+        return this.term;
     }
 
     public void setTerm(String term) {
@@ -66,7 +66,7 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
         PropertyTypeDefinition def = getPropertyDefinition();
         
         buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
-        buf.append("', name = '").append(def.getName()).append("', term = '").append(term).append("'\n");
+        buf.append("', name = '").append(def.getName()).append("', term = '").append(this.term).append("'\n");
         
         return buf.toString();
     }

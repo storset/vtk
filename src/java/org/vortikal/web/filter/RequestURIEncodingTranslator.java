@@ -84,8 +84,8 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
             throw new BeanInitializationException(
                 "JavaBean property 'toEncoding' not specified");
         }
-        Charset.forName(fromEncoding);
-        Charset.forName(toEncoding);
+        Charset.forName(this.fromEncoding);
+        Charset.forName(this.toEncoding);
     }
     
     public HttpServletRequest filterRequest(HttpServletRequest request) {

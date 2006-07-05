@@ -76,11 +76,11 @@ public class ResourceContentTypeRegexpAssertion
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourceContentTypeAssertion) {
             String contentType = ((ResourceContentTypeAssertion) assertion).getContentType();
-            Matcher m = pattern.matcher(contentType);
+            Matcher m = this.pattern.matcher(contentType);
             boolean match = m.matches();
 
             if (this.exceptionPattern != null) {
-                m = exceptionPattern.matcher(contentType);
+                m = this.exceptionPattern.matcher(contentType);
                 if (m.matches()) {
                     match = false;
                 }

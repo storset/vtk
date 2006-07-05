@@ -78,7 +78,7 @@ public class OwnershipController extends SimpleFormController implements Initial
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
@@ -103,7 +103,7 @@ public class OwnershipController extends SimpleFormController implements Initial
             return;
         }
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         String owner = resource.getOwner().getQualifiedName();
         
         if (!owner.equals(ownershipCommand.getOwner())) {
@@ -111,8 +111,8 @@ public class OwnershipController extends SimpleFormController implements Initial
                 logger.debug("Setting new owner '" + ownershipCommand.getOwner() + 
                              "' for resource " + uri);
             }
-            resource.setOwner(principalManager.getUserPrincipal(ownershipCommand.getOwner()));
-            repository.store(token, resource);
+            resource.setOwner(this.principalManager.getUserPrincipal(ownershipCommand.getOwner()));
+            this.repository.store(token, resource);
         }
         ownershipCommand.setDone(true);
     }

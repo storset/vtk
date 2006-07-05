@@ -30,9 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.vortikal.repository.Namespace;
-import org.vortikal.web.service.RepositoryAssertion;
-
 
 public interface MixinResourceTypeDefinition extends ResourceTypeDefinition {
 

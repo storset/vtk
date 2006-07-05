@@ -120,7 +120,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             // Try to look up principal stores from the context
 
             Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                applicationContext, PrincipalStore.class, true, false);
+                this.applicationContext, PrincipalStore.class, true, false);
     
             List stores = new ArrayList(matchingBeans.values());
             Collections.sort(stores, new OrderComparator());
@@ -135,8 +135,8 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
                 "JavaBean Property 'principalStore' must be specified");
         }
 
-        if (logger.isInfoEnabled()) {
-            logger.info("Using principal store " + this.principalStore);
+        if (this.logger.isInfoEnabled()) {
+            this.logger.info("Using principal store " + this.principalStore);
         }
 
         if (this.groupStore == null) {
@@ -144,7 +144,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             // Try to look up principal stores from the context
 
             Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                applicationContext, GroupStore.class, true, false);
+                this.applicationContext, GroupStore.class, true, false);
     
             List stores = new ArrayList(matchingBeans.values());
             Collections.sort(stores, new OrderComparator());
@@ -159,8 +159,8 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
                 "JavaBean Property 'groupStore' must be specified");
         }
 
-        if (logger.isInfoEnabled()) {
-            logger.info("Using group store " + this.groupStore);
+        if (this.logger.isInfoEnabled()) {
+            this.logger.info("Using group store " + this.groupStore);
         }
 
     }

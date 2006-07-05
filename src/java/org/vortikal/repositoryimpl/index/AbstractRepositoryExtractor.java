@@ -60,9 +60,9 @@ public abstract class AbstractRepositoryExtractor implements Extractor, Initiali
     private Repository repository;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (token == null) {
+        if (this.token == null) {
             throw new BeanInitializationException("Property 'token' not set.");
-        } else if (repository == null) {
+        } else if (this.repository == null) {
             throw new BeanInitializationException("Property 'repository' not set.");
         }
     }
@@ -101,7 +101,7 @@ public abstract class AbstractRepositoryExtractor implements Extractor, Initiali
 
         try {
             // Try to get Resource object
-            resource = repository.retrieve(this.token, uri, false);
+            resource = this.repository.retrieve(this.token, uri, false);
         } catch (IOException io) {
             logger.warn("Got IOException when attempting to get resource from repository: " 
                     + io.getMessage());
@@ -125,7 +125,7 @@ public abstract class AbstractRepositoryExtractor implements Extractor, Initiali
         InputStream inputStream = null;
 
         try {
-            inputStream = repository.getInputStream(this.token, uri, false);
+            inputStream = this.repository.getInputStream(this.token, uri, false);
         } catch (IOException io) {
             logger.warn("Got IOException when attempting to get resource input stream: " +
                         io.getMessage());
@@ -141,10 +141,10 @@ public abstract class AbstractRepositoryExtractor implements Extractor, Initiali
     }
 
     protected Repository getRepository() {
-        return repository;
+        return this.repository;
     }
 
     protected String getToken() {
-        return token;
+        return this.token;
     }
 }

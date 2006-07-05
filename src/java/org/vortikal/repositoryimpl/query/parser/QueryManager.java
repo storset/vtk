@@ -86,7 +86,7 @@ public class QueryManager implements InitializingBean {
     }
 
     public ResultSet execute(String token, String queryString) throws QueryException {
-        Query q = parser.parse(queryString);
+        Query q = this.parser.parse(queryString);
         return execute(token, q); 
     }
     
@@ -94,17 +94,17 @@ public class QueryManager implements InitializingBean {
                              Sorting sorting, int maxResults)
         throws QueryException {
         queryString = this.queryStringProcessor.processQueryString(queryString);
-        Query q = parser.parse(queryString);
+        Query q = this.parser.parse(queryString);
         return execute(token, q, sorting, maxResults); 
     }
     
     public ResultSet execute(String token, Query query) throws QueryException {
         validateQuery(query);
         long start = System.currentTimeMillis();
-        ResultSet result = searcher.execute(token, query);
-        if (logger.isDebugEnabled()) {
+        ResultSet result = this.searcher.execute(token, query);
+        if (this.logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
-            logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
+            this.logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
                          + " hits) took " + (now - start) + " ms");
         }
         return result;
@@ -114,10 +114,10 @@ public class QueryManager implements InitializingBean {
         throws QueryException {
         validateQuery(query);
         long start = System.currentTimeMillis();
-        ResultSet result = searcher.execute(token, query, sorting, maxResults);
-        if (logger.isDebugEnabled()) {
+        ResultSet result = this.searcher.execute(token, query, sorting, maxResults);
+        if (this.logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
-            logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
+            this.logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
                          + " hits) took " + (now - start) + " ms");
         }
         return result;

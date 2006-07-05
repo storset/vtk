@@ -107,7 +107,7 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
        }
 
        try {
-           authorizationManager.authorizeRootRoleAction(principal);
+           this.authorizationManager.authorizeRootRoleAction(principal);
            // Principal is root, allow any value:
            return;
        } catch (AuthorizationException e) { }

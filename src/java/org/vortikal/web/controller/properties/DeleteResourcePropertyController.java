@@ -93,7 +93,7 @@ public class DeleteResourcePropertyController
                 "Both parameters 'name' and 'namespace' must be provided with the request");
         }
 
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
 
         String url = service.constructLink(resource, securityContext.getPrincipal());
@@ -122,7 +122,7 @@ public class DeleteResourcePropertyController
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
         String name = propertyCommand.getName();
         
-        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
+        Resource resource = this.repository.retrieve(token, requestContext.getResourceURI(), false);
         Property property = resource.getProperty(ns, name);
         if (property == null) {
             if (logger.isDebugEnabled())
@@ -134,7 +134,7 @@ public class DeleteResourcePropertyController
             return;
         }
         resource.removeProperty(ns, name);
-        repository.store(token, resource);
+        this.repository.store(token, resource);
         propertyCommand.setDone(true);
     }
 }

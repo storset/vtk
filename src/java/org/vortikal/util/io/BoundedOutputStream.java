@@ -60,17 +60,17 @@ public class BoundedOutputStream extends OutputStream {
     
 
     public void close() throws IOException {
-        out.close();
+        this.out.close();
     }
     
 
     public void write(byte[] b) throws SizeLimitException, IOException {
 
-        if (limit > 0 && bytesWritten + b.length >= limit) {
+        if (this.limit > 0 && this.bytesWritten + b.length >= this.limit) {
             throw new SizeLimitException(
-                "Maximum number of bytes reached: " + limit);
+                "Maximum number of bytes reached: " + this.limit);
         }
-        out.write(b);
+        this.out.write(b);
         this.bytesWritten += b.length;
     }
     
@@ -78,29 +78,29 @@ public class BoundedOutputStream extends OutputStream {
     public void write(byte[] b, int off, int len)
         throws SizeLimitException, IOException {
 
-        if (limit > 0 && bytesWritten + len >= limit) {
+        if (this.limit > 0 && this.bytesWritten + len >= this.limit) {
             throw new SizeLimitException(
-                "Maximum number of bytes reached: " + limit);
+                "Maximum number of bytes reached: " + this.limit);
         }
-        out.write(b, off, len);
+        this.out.write(b, off, len);
         this.bytesWritten += len;
     }
 
 
     public void write(int b) throws SizeLimitException, IOException {
 
-        if (limit > 0 && bytesWritten + 4 >= limit) {
+        if (this.limit > 0 && this.bytesWritten + 4 >= this.limit) {
             throw new SizeLimitException(
-                "Maximum number of bytes reached: " + limit);
+                "Maximum number of bytes reached: " + this.limit);
         }
-        out.write(b);
+        this.out.write(b);
         this.bytesWritten += 4;
     }
 
 
 
     public void flush() throws IOException {
-        out.flush();
+        this.out.flush();
     }
     
 

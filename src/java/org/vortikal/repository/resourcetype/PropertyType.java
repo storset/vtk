@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.RepositoryAction;
 
 

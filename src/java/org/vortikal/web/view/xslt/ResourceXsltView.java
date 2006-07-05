@@ -149,7 +149,7 @@ public class ResourceXsltView extends AbstractView
     
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
-        return referenceDataProviders;
+        return this.referenceDataProviders;
     }
 
     public void setReferenceDataProviders(
@@ -189,7 +189,7 @@ public class ResourceXsltView extends AbstractView
     
 
     public final void afterPropertiesSet() throws Exception {
-        if (transformerManager == null) {
+        if (this.transformerManager == null) {
             throw new BeanInitializationException(
                 "Property 'transformerManager' must be set");
         }
@@ -247,10 +247,10 @@ public class ResourceXsltView extends AbstractView
             PARAMETER_NAMESPACE + "RequestContext",
             new RequestContext(request));
 
-        if (linkConstructor != null)
+        if (this.linkConstructor != null)
             transformer.setParameter(
                     PARAMETER_NAMESPACE + "LinkConstructor",
-                    linkConstructor);
+                    this.linkConstructor);
 
         
         // do the transformation
@@ -385,7 +385,7 @@ public class ResourceXsltView extends AbstractView
     protected Transformer getTransformer(Resource resource, Document document)
         throws TransformerConfigurationException, TransformerException,
             StylesheetCompilationException, IOException {
-        return transformerManager.getTransformer(resource, document);
+        return this.transformerManager.getTransformer(resource, document);
     }
 
     protected void setParameters(Map model, Transformer transformer) {
@@ -464,18 +464,18 @@ public class ResourceXsltView extends AbstractView
         
         
         public void error(TransformerException e) {
-            error = e;
+            this.error = e;
         }
         
         public void fatalError(TransformerException e) {
-            error = e;
+            this.error = e;
         }
 
         public void warning(TransformerException e) {
         }
 
         public TransformerException getError() {
-            return error;
+            return this.error;
         }
     }
 

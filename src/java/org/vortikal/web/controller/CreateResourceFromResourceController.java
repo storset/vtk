@@ -55,7 +55,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 
 
@@ -101,30 +100,30 @@ public class CreateResourceFromResourceController implements Controller,
         String uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         String newResourceUri = uri.substring(0, uri.lastIndexOf("/") + 1)
-                + resourceName;
+                + this.resourceName;
 
-        boolean exists = repository.exists(token, newResourceUri);
+        boolean exists = this.repository.exists(token, newResourceUri);
         if (exists) {
             model.put("createErrorMessage", "minutes.exists");
-            return new ModelAndView(errorView, model);
+            return new ModelAndView(this.errorView, model);
         }
 
         // repository.lock(token,newResourceUri,Lock.LOCKTYPE_EXCLUSIVE_WRITE,"ownerInfo","0",5);
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        InputStream inStream = repository.getInputStream(token, uri, true);
+        InputStream inStream = this.repository.getInputStream(token, uri, true);
 
         Transformer transformer = 
-            transformerManager.getTransformer(stylesheetIdentifier);
+            this.transformerManager.getTransformer(this.stylesheetIdentifier);
 
         transformer.transform(new StreamSource(inStream), 
                 new StreamResult(outStream));
 
         InputStream in = new ByteArrayInputStream(outStream.toByteArray());
 
-        Resource newResource = repository.createDocument(token, newResourceUri);
+        Resource newResource = this.repository.createDocument(token, newResourceUri);
 
         Namespace namespace = Namespace.CUSTOM_NAMESPACE;
 
@@ -138,39 +137,39 @@ public class CreateResourceFromResourceController implements Controller,
         p = newResource.createProperty(namespace, "visual-profile");
         p.setStringValue("yes");
 
-        repository.store(token, newResource);
-        repository.storeContent(token, newResourceUri, in);
+        this.repository.store(token, newResource);
+        this.repository.storeContent(token, newResourceUri, in);
 
         Resource parent = null;
-        parent = repository.retrieve(token, resource.getParent(), false);
+        parent = this.repository.retrieve(token, resource.getParent(), false);
         model.put("resource", parent);
 
-        return new ModelAndView(successView, model);
+        return new ModelAndView(this.successView, model);
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) 
+        if (this.repository == null) 
             throw new BeanInitializationException("Property 'repository' required");
         
-        if (resourceName == null)
+        if (this.resourceName == null)
             throw new BeanInitializationException("Property 'resourceName' required");
     
-        if (transformerManager == null)
+        if (this.transformerManager == null)
             throw new BeanInitializationException("Property 'transformerManager' required");
         
-        if (stylesheetIdentifier == null)
+        if (this.stylesheetIdentifier == null)
             throw new BeanInitializationException("Property 'stylesheetIdentifier' required");
 
-        if (successView == null)
+        if (this.successView == null)
             throw new BeanInitializationException("Property 'successView' required");
 
-        if (errorView == null)
+        if (this.errorView == null)
             throw new BeanInitializationException("Property 'errorView' required");
 
         try {
-            transformerManager.getTransformer(stylesheetIdentifier);
+            this.transformerManager.getTransformer(this.stylesheetIdentifier);
         } catch (Exception e) {
-            logger.warn("Error trying to compile stylesheet '" + stylesheetIdentifier + "'", e);
+            this.logger.warn("Error trying to compile stylesheet '" + this.stylesheetIdentifier + "'", e);
         }
     }
 

@@ -32,6 +32,7 @@ package org.vortikal.security;
 
 public class PseudoPrincipal implements Principal {
 
+    private static final long serialVersionUID = -5049099518204674971L;
     public static final String NAME_AUTHENTICATED = "pseudo:authenticated";
     public static final String NAME_ALL = "pseudo:all";
     public static final String NAME_OWNER = "pseudo:owner";

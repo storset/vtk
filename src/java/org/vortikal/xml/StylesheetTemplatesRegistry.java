@@ -74,7 +74,7 @@ public class StylesheetTemplatesRegistry {
         if (compilationTime == null) {
             return t;
         }
-        cachedItems.put(stylesheetPath, new Item(t, compilationTime));
+        this.cachedItems.put(stylesheetPath, new Item(t, compilationTime));
         
         return t; 
     }
@@ -82,7 +82,7 @@ public class StylesheetTemplatesRegistry {
 
 
     public Templates getTemplates(String stylesheetPath) {
-        Item item = (Item) cachedItems.get(stylesheetPath);
+        Item item = (Item) this.cachedItems.get(stylesheetPath);
         if (item == null) return null;
         return item.getTemplates();
     }
@@ -90,7 +90,7 @@ public class StylesheetTemplatesRegistry {
 
 
     public Date getLastModified(String stylesheetPath) {
-        Item item = (Item) cachedItems.get(stylesheetPath);
+        Item item = (Item) this.cachedItems.get(stylesheetPath);
         if (item == null) return null;
         return item.getLastModified();
     }
@@ -98,7 +98,7 @@ public class StylesheetTemplatesRegistry {
 
 
     public void flush() {
-        cachedItems.clear();
+        this.cachedItems.clear();
     }
     
 

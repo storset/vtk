@@ -71,13 +71,13 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
         
         for (int i = 0; i < childURIs.length; i++) {
             String childURI = childURIs[i];
-            if (childURI.substring(childURI.lastIndexOf("/") + 1).equals(childName)) {
-                if (childResourceAssertions == null) return true;
+            if (childURI.substring(childURI.lastIndexOf("/") + 1).equals(this.childName)) {
+                if (this.childResourceAssertions == null) return true;
                 
                 try {
-                    Resource child = repository.retrieve(trustedToken, childURI, true);
-                    for (int j = 0; j < childResourceAssertions.length; j++) {
-                        if (childResourceAssertions[j].matches(null, child, null)) {
+                    Resource child = this.repository.retrieve(this.trustedToken, childURI, true);
+                    for (int j = 0; j < this.childResourceAssertions.length; j++) {
+                        if (this.childResourceAssertions[j].matches(null, child, null)) {
                             return true;
                         }
                     }
@@ -124,13 +124,13 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (childName == null) 
+        if (this.childName == null) 
             throw new BeanInitializationException(
                 "Required property 'childName' not set");
-        if (childResourceAssertions != null && repository == null) 
+        if (this.childResourceAssertions != null && this.repository == null) 
             throw new BeanInitializationException(
                 "Property 'repository' required when property 'childResourceAssertions' is set");
-        if (childResourceAssertions != null && trustedToken == null) 
+        if (this.childResourceAssertions != null && this.trustedToken == null) 
             throw new BeanInitializationException(
                 "Property 'trustedToken' required when property 'childResourceAssertions' is set");
     }

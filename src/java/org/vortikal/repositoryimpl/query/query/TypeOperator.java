@@ -44,7 +44,7 @@ public class TypeOperator {
     }
 
     public String toString() {
-        return id;
+        return this.id;
     }
     
     

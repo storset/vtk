@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.shell.AbstractConsole;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**

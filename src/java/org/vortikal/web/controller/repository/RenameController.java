@@ -69,7 +69,7 @@ public class RenameController extends SimpleFormController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
@@ -100,7 +100,7 @@ public class RenameController extends SimpleFormController {
             return new ModelAndView(getSuccessView());
         }
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         String name = resource.getName();
 
         Map model = null;
@@ -112,8 +112,8 @@ public class RenameController extends SimpleFormController {
                                  + "' for resource " + uri);
                 }
                 String newUri = uri.substring(0, uri.lastIndexOf("/") + 1 ) + rename.getName();
-                repository.move(token, uri, newUri, false);
-                Resource newResource = repository.retrieve(token, newUri, false);
+                this.repository.move(token, uri, newUri, false);
+                Resource newResource = this.repository.retrieve(token, newUri, false);
                 model = new HashMap();
                 model.put("resource", newResource);
             }

@@ -79,22 +79,22 @@ public class ResourcePropertyRegexpAssertion
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; pattern = ").append(pattern.pattern());
+        sb.append("; pattern = ").append(this.pattern.pattern());
         sb.append("; invert = ").append(this.invert);
         return sb.toString();
     }
 
     public boolean matches(Resource resource, Principal principal) {
         if (resource != null) {
-            Property property = resource.getProperty(namespace, name);
+            Property property = resource.getProperty(this.namespace, this.name);
 
             if (property != null) {
-                Matcher m = pattern.matcher(property.getStringValue());
-                return invert != m.matches();
+                Matcher m = this.pattern.matcher(property.getStringValue());
+                return this.invert != m.matches();
             }
         }
         
-        return invert;
+        return this.invert;
     }
 
 }

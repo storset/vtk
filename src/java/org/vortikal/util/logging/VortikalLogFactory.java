@@ -187,17 +187,17 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
      */
     public Log getInstance(String name) throws LogConfigurationException {
 
-        synchronized(loggers) {
-            VortikalLogger logger = (VortikalLogger) loggers.get(name);
+        synchronized(this.loggers) {
+            VortikalLogger logger = (VortikalLogger) this.loggers.get(name);
             if (logger != null) {
                 return logger;
             }
         }
         
-        synchronized(loggers) {
+        synchronized(this.loggers) {
             VortikalLogger logger = new VortikalLogger(name);
             initLogger(logger);
-            loggers.put(name, logger);
+            this.loggers.put(name, logger);
             return logger;
         }
     }
@@ -418,9 +418,9 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
                                               handlerParams);
         }
         
-        synchronized(loggerDescriptors) {
+        synchronized(this.loggerDescriptors) {
 
-            loggerDescriptors.put(this.properties.getProperty(alias), descriptor);
+            this.loggerDescriptors.put(this.properties.getProperty(alias), descriptor);
         }
     }
     
@@ -432,8 +432,8 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
 
         while (true) {
 
-            if (loggerDescriptors.containsKey(key)) {
-                return (LoggerDescriptor) loggerDescriptors.get(key);
+            if (this.loggerDescriptors.containsKey(key)) {
+                return (LoggerDescriptor) this.loggerDescriptors.get(key);
             }
             if (key.indexOf(".") < 0) {
                 break;
@@ -443,7 +443,7 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
         }
 
         // An empty package name means 'match all' (if configured).
-        return (LoggerDescriptor) loggerDescriptors.get("");
+        return (LoggerDescriptor) this.loggerDescriptors.get("");
     }
 
 
@@ -594,19 +594,19 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
         }
 
         public Level getLevel() {
-            return level;
+            return this.level;
         }
 
         public String getHandler() {
-            return handler;
+            return this.handler;
         }
         
         public String getHandlerParams() {
-            return handlerParams;
+            return this.handlerParams;
         }
         
         public Formatter getFormatter() {
-            return formatter;
+            return this.formatter;
         }
     }
     

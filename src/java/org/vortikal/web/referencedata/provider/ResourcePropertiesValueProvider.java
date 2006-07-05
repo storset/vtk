@@ -198,7 +198,7 @@ public class ResourcePropertiesValueProvider
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(),
                                                 true);
 

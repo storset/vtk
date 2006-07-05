@@ -52,12 +52,12 @@ public class PropertyExistsQuery extends AbstractPropertyQuery {
         
         buf.append(prefix).append("Property namespace = ").append(def.getNamespace());
         buf.append(", name = ").append(def.getName()).append("\n");
-        buf.append("Inverted: " + inverted);
+        buf.append("Inverted: " + this.inverted);
         return buf.toString();
     }
 
     public boolean isInverted() {
-        return inverted;
+        return this.inverted;
     }
 
 }

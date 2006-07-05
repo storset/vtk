@@ -108,12 +108,12 @@ public class RedirectToServiceView extends AbstractView implements InitializingB
 
         String url = this.service.constructLink(resource, principal);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Constructed redirect URL '" + url
-                         + "' using service " + service);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Constructed redirect URL '" + url
+                         + "' using service " + this.service);
         }
             
-        if (http10) {
+        if (this.http10) {
             // send status code 302
             response.sendRedirect(url);
         } else {

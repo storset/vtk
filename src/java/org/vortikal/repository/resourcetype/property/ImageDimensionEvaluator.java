@@ -32,8 +32,6 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.awt.image.BufferedImage;
 import java.util.Date;
-import javax.imageio.ImageIO;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -71,7 +69,7 @@ public class ImageDimensionEvaluator implements ContentModificationPropertyEvalu
 
 
         } catch (Exception e) {
-            logger.warn("Unable to get BufferedImage representation of content", e);
+            this.logger.warn("Unable to get BufferedImage representation of content", e);
             return false;
         }
     }

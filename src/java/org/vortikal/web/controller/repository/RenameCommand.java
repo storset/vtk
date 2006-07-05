@@ -105,7 +105,7 @@ public class RenameCommand {
      * @return Returns the done.
      */
     public boolean isDone() {
-        return done;
+        return this.done;
     }
     
     /**

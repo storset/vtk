@@ -68,7 +68,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     private boolean readOnly = false;
 
     public boolean isReadOnly() {
-        return readOnly;
+        return this.readOnly;
     }
     
     public void setReadOnly(boolean readOnly) {
@@ -76,7 +76,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
 
     public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
-        if (!roleManager.hasRole(principal, RoleManager.ROOT)) {
+        if (!this.roleManager.hasRole(principal, RoleManager.ROOT)) {
             throw new AuthorizationException(
                 "Principal '" + principal
                 + "' not authorized to perform repository administration");
@@ -113,22 +113,22 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 authorizePropertyEditRootRole(uri, principal);
             } else {
                 // XXX: copy/move shouldn't be allowed, currently ends up here
-                if (logger.isDebugEnabled()) {
-                    logger.debug("authorization: false for uri = " + uri + ", action = "
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("authorization: false for uri = " + uri + ", action = "
                                  + action + ", principal = " + principal);
                 }
                 return false;
             }
         
-            if (logger.isDebugEnabled()) {
-                logger.debug("authorization: true for uri = " + uri + ", action = "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("authorization: true for uri = " + uri + ", action = "
                              + action + ", principal = " + principal);
             }
             return true;
         } catch (Exception e) { }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("authorization: false for uri = " + uri + ", action = "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("authorization: false for uri = " + uri + ", action = "
                          + action + ", principal = " + principal);
         }
         return false;
@@ -533,7 +533,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             Principal p = (Principal) i.next();
 
             if (p.getType() == Principal.TYPE_GROUP) {
-                if (principalManager.isMember(principal, p)) {
+                if (this.principalManager.isMember(principal, p)) {
                     return true;
                 }
             }

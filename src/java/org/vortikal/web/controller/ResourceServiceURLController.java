@@ -125,12 +125,12 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
         if (this.childName != null) 
             uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
 
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), uri, false);
 
         Map model = new HashMap();
 
-        String url = service.constructLink(resource, principal, false);
+        String url = this.service.constructLink(resource, principal, false);
         model.put("resource", resource);
         model.put("resourceReference", url);
 

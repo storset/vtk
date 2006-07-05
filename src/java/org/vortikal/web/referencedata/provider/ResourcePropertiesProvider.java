@@ -142,7 +142,7 @@ public class ResourcePropertiesProvider implements ReferenceDataProvider, Initia
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
         List propertyValues = new ArrayList();
@@ -151,23 +151,23 @@ public class ResourcePropertiesProvider implements ReferenceDataProvider, Initia
 
         List applicablePropertyDescriptors = new ArrayList();
         
-        for (int i = 0; i < propertyDescriptors.length; i++) {
-            if (!propertyDescriptors[i].isApplicableProperty(resource, securityContext.getPrincipal())) {
+        for (int i = 0; i < this.propertyDescriptors.length; i++) {
+            if (!this.propertyDescriptors[i].isApplicableProperty(resource, securityContext.getPrincipal())) {
                 continue;
             }
-            applicablePropertyDescriptors.add(propertyDescriptors[i]);
-            Namespace ns = Namespace.getNamespace(propertyDescriptors[i].getNamespace());
+            applicablePropertyDescriptors.add(this.propertyDescriptors[i]);
+            Namespace ns = Namespace.getNamespace(this.propertyDescriptors[i].getNamespace());
             Property prop = resource.getProperty(ns,
-                                                 propertyDescriptors[i].getName());
+                                                 this.propertyDescriptors[i].getName());
 
             propertyValues.add((prop != null) ? prop.getValue() : null);
 
-            if (editPropertyService != null) {
+            if (this.editPropertyService != null) {
                 Map parameters = new HashMap();
-                parameters.put("namespace", propertyDescriptors[i].getNamespace());
-                parameters.put("name", propertyDescriptors[i].getName());
+                parameters.put("namespace", this.propertyDescriptors[i].getNamespace());
+                parameters.put("name", this.propertyDescriptors[i].getName());
                 try {
-                    String url = editPropertyService.constructLink(
+                    String url = this.editPropertyService.constructLink(
                         resource, securityContext.getPrincipal(), parameters);
                     editPropertiesServiceURLs.add(url);
                 } catch (Exception e) { 

@@ -42,18 +42,18 @@ public class FailedDependencyException extends RepositoryException {
     private Map map;
 
     public FailedDependencyException() {
-        map = new HashMap();
+        this.map = new HashMap();
     }
 
     public void addException(String uri, Exception e) {
-        map.put(uri, e);
+        this.map.put(uri, e);
     }
 
     public Exception getException(String uri) {
-        return (Exception) map.get(uri);
+        return (Exception) this.map.get(uri);
     }
 
     public Iterator uriIterator() {
-        return map.keySet().iterator();
+        return this.map.keySet().iterator();
     }
 }

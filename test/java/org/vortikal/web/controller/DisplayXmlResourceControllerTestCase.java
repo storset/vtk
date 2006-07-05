@@ -72,12 +72,12 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         BasicConfigurator.configure();
-        request = new MockHttpServletRequest();
-        controller = new DisplayXmlResourceController();
-        RequestContext requestContext = new RequestContext(request, null, uri);
+        this.request = new MockHttpServletRequest();
+        this.controller = new DisplayXmlResourceController();
+        RequestContext requestContext = new RequestContext(this.request, null, this.uri);
         RequestContext.setRequestContext(requestContext);
-        token = "";
-        SecurityContext securityContext = new SecurityContext(token, null);
+        this.token = "";
+        SecurityContext securityContext = new SecurityContext(this.token, null);
         SecurityContext.setSecurityContext(securityContext);
     }
 
@@ -90,9 +90,9 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         long lastModified;
 
         PropertyImpl schemaProperty = new PropertyImpl();
-        schemaProperty.setNamespace(schemaNamespace);
-        schemaProperty.setName(schemaPropertyName);
-        schemaProperty.setStringValue(faqSchema);
+        schemaProperty.setNamespace(this.schemaNamespace);
+        schemaProperty.setName(this.schemaPropertyName);
+        schemaProperty.setStringValue(this.faqSchema);
 
         Date lastModifiedExpected = new Date();
         Mock mockResource = mock(Resource.class);
@@ -100,34 +100,34 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
                 returnValue(false));
         mockResource.expects(atLeastOnce()).method("getLastModified").withNoArguments().will(
                 returnValue(lastModifiedExpected));
-        mockResource.expects(atLeastOnce()).method("getProperty").with(eq(schemaNamespace),
-                eq(schemaPropertyName)).will(returnValue(schemaProperty));
+        mockResource.expects(atLeastOnce()).method("getProperty").with(eq(this.schemaNamespace),
+                eq(this.schemaPropertyName)).will(returnValue(schemaProperty));
         Resource resource = (Resource) mockResource.proxy();
 
-        mockRepository = mock(Repository.class);
-        mockRepository.expects(atLeastOnce()).method("retrieve").with(eq(token), eq(uri), eq(true))
+        this.mockRepository = mock(Repository.class);
+        this.mockRepository.expects(atLeastOnce()).method("retrieve").with(eq(this.token), eq(this.uri), eq(true))
                 .will(returnValue(resource));
 
-        assertNotNull(mockRepository);
-        controller.setRepository((Repository) mockRepository.proxy());
+        assertNotNull(this.mockRepository);
+        this.controller.setRepository((Repository) this.mockRepository.proxy());
 
-        lastModified = controller.getLastModified(request);
+        lastModified = this.controller.getLastModified(this.request);
         assertEquals(-1, lastModified);
 
-        controller.setHandleLastModified(true);
-        lastModified = controller.getLastModified(request);
+        this.controller.setHandleLastModified(true);
+        lastModified = this.controller.getLastModified(this.request);
         assertEquals(lastModifiedExpected.getTime(), lastModified);
 
         List schemaList = new ArrayList();
-        schemaList.add(faqSchema);
-        controller.setSchemasForHandleLastModified(schemaList);
-        controller.setHandleLastModifiedForSchemasInList(true);
-        lastModified = controller.getLastModified(request);
+        schemaList.add(this.faqSchema);
+        this.controller.setSchemasForHandleLastModified(schemaList);
+        this.controller.setHandleLastModifiedForSchemasInList(true);
+        lastModified = this.controller.getLastModified(this.request);
         assertEquals(lastModifiedExpected.getTime(), lastModified);
         
-        controller.setSchemasForHandleLastModified(schemaList);
-        controller.setHandleLastModifiedForSchemasInList(false);
-        lastModified = controller.getLastModified(request);
+        this.controller.setSchemasForHandleLastModified(schemaList);
+        this.controller.setHandleLastModifiedForSchemasInList(false);
+        lastModified = this.controller.getLastModified(this.request);
         assertEquals(-1, lastModified);
 
     }

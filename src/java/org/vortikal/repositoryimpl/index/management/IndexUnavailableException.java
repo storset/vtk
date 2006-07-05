@@ -41,6 +41,8 @@ package org.vortikal.repositoryimpl.index.management;
  */
 public class IndexUnavailableException extends ManagementException {
 
+    private static final long serialVersionUID = 2142951476962207941L;
+
     public IndexUnavailableException(String msg) {
         super(msg);
     }

@@ -43,14 +43,14 @@ public class PrincipalQualifiedNameAssertion extends AbstractRepositoryAssertion
     }
     
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     
     public boolean matches(Resource resource, Principal principal) {
         if (principal != null) {
            
-            boolean match = username.equals(principal.getQualifiedName());
+            boolean match = this.username.equals(principal.getQualifiedName());
             
             return (isEquals()) ? match : !match;
         }
@@ -75,7 +75,7 @@ public class PrincipalQualifiedNameAssertion extends AbstractRepositoryAssertion
     }
     
     public boolean isEquals() {
-        return equals;
+        return this.equals;
     }
     
 

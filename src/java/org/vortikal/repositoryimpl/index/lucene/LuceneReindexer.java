@@ -121,15 +121,15 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
     private Worker worker = null;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException("Property 'repository' not set.");
         }
         
-        if (token == null) {
+        if (this.token == null) {
             throw new BeanInitializationException("Property 'token' not set.");
         }
         
-        if (index == null) {
+        if (this.index == null) {
             throw new BeanInitializationException("Property 'index' not set.");
         }
         
@@ -152,44 +152,44 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
         public void run() {
             long start = System.currentTimeMillis();
             try {
-                if (!index.lockAcquire()) {
-                    logger.warn("Unable to lock index: '" + index.getIndexId() + "'");
+                if (!LuceneReindexer.this.index.lockAcquire()) {
+                    logger.warn("Unable to lock index: '" + LuceneReindexer.this.index.getIndexId() + "'");
                     this.alive = false;
                     return;
                 }
                 
-                if (subtree.equals("/")) {
+                if (this.subtree.equals("/")) {
                     if (logger.isInfoEnabled()) {
-                        logger.info("Clearing all contents of index '" + index.getIndexId() + "'");
+                        logger.info("Clearing all contents of index '" + LuceneReindexer.this.index.getIndexId() + "'");
                     }
-                    index.createNewIndex();
+                    LuceneReindexer.this.index.createNewIndex();
                 } else {
                     if (logger.isInfoEnabled()) {
                         logger.info("Deleting subtree '" + this.subtree + "'" +
-                                     " from index '" + index.getIndexId() + "'");
+                                     " from index '" + LuceneReindexer.this.index.getIndexId() + "'");
                     }
-                    index.deleteSubtree(subtree);
+                    LuceneReindexer.this.index.deleteSubtree(this.subtree);
                 }
                 
                 if (logger.isInfoEnabled()) {
-                    logger.info("Starting reindexing from '" + subtree + "' " +
-                                "for index '" + index.getIndexId() + "'");
+                    logger.info("Starting reindexing from '" + this.subtree + "' " +
+                                "for index '" + LuceneReindexer.this.index.getIndexId() + "'");
                 }
                 
                 // Start recursive re-indexing.
-                indexResources(subtree);
+                indexResources(this.subtree);
                 
                 // Optimize and commit.
-                index.optimize();
-                index.commit();
+                LuceneReindexer.this.index.optimize();
+                LuceneReindexer.this.index.commit();
             } catch (IOException io) {
                 logger.warn("Got IOException while reindexing", io);
             } finally {
-                index.lockRelease();
+                LuceneReindexer.this.index.lockRelease();
             }
             long end = System.currentTimeMillis();
             if (logger.isDebugEnabled()) {
-                logger.debug("Reindexing finished (or stopped) on index '" + index.getIndexId() +
+                logger.debug("Reindexing finished (or stopped) on index '" + LuceneReindexer.this.index.getIndexId() +
                         "', operation took " + (end-start) + " milliseconds.");
             }
         }
@@ -208,7 +208,7 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
             
             Resource resource = null;
             try {
-                resource = repository.retrieve(token, uri, false);
+                resource = LuceneReindexer.this.repository.retrieve(LuceneReindexer.this.token, uri, false);
             } catch (Exception e) {
                 logger.warn("Exception when retrieving resource at '" + uri + "', " + 
                             "message: " + e.getMessage());
@@ -217,8 +217,8 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
             
             if (resource.isCollection()) {
                 this.currentWorkingTree = uri;
-                if (filter != null && filter.isFiltered(uri)) {
-                    if (skipFilteredSubtrees) {
+                if (LuceneReindexer.this.filter != null && LuceneReindexer.this.filter.isFiltered(uri)) {
+                    if (LuceneReindexer.this.skipFilteredSubtrees) {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Skipping filtered subtree '" + uri + "'");
                         }
@@ -228,7 +228,7 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Requesting indexing of resource '" + uri + "'");
                     }
-                    index.addDocument(uri);
+                    LuceneReindexer.this.index.addDocument(uri);
                 }
                 
                 String[] children = resource.getChildURIs();
@@ -236,13 +236,13 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
                     indexResources(children[i]);
                 }
             } else {
-                if (filter != null && filter.isFiltered(uri)) 
+                if (LuceneReindexer.this.filter != null && LuceneReindexer.this.filter.isFiltered(uri)) 
                     return;
                 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Requesting indexing of resource '" + uri + "'");
                 }
-                index.addDocument(uri);
+                LuceneReindexer.this.index.addDocument(uri);
             }
         }
     }
@@ -260,29 +260,29 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
      */
     public synchronized void start(String subtreeURI) 
         throws ManagementException {
-        if (workerThread != null && workerThread.isAlive()) {
+        if (this.workerThread != null && this.workerThread.isAlive()) {
             logger.warn("Worker is already running !");
             throw new ManagementException("Re-indexing is already running !");
         }
         
-        worker = new Worker(subtreeURI);
-        if (asynchronous) {
+        this.worker = new Worker(subtreeURI);
+        if (this.asynchronous) {
             if (logger.isInfoEnabled()) {
             logger.info("Starting asynchronous reindexing operation on index '" +
-                        index.getIndexId() + "' from URI '" + subtreeURI + "'");
+                        this.index.getIndexId() + "' from URI '" + subtreeURI + "'");
             }
             
             // Spawn thread for worker
-            workerThread = new Thread(this.worker);
-            workerThread.start();
+            this.workerThread = new Thread(this.worker);
+            this.workerThread.start();
         } else {
             if (logger.isInfoEnabled()) {
                 logger.info("Reindexing on index '" +
-                            index.getIndexId() + "' from URI '" + subtreeURI + "'");
+                            this.index.getIndexId() + "' from URI '" + subtreeURI + "'");
             }
             
             // Start re-indexing in current thread.
-            worker.run();
+            this.worker.run();
         }
     }
     
@@ -290,21 +290,21 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
      * @see org.vortikal.index.management.Reindexer#stop()
      */
     public synchronized void stop() throws ManagementException {
-        if (workerThread != null && workerThread.isAlive()) {
+        if (this.workerThread != null && this.workerThread.isAlive()) {
             logger.debug("Signalling worker to stop ..");
-            worker.alive = false;
+            this.worker.alive = false;
 
             try {
                 logger.debug("Waiting for worker thread to stop ..");
-                workerThread.join();
+                this.workerThread.join();
             } catch (InterruptedException ie) {
                 logger.warn("Interrupted while waiting for worker thread to stop !");
                 throw new 
                     ManagementException("Interrupted while waiting for worker thread to stop !");
             }
 
-            workerThread = null;
-            worker = null;
+            this.workerThread = null;
+            this.worker = null;
         }
     }
     
@@ -312,7 +312,7 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
      * @see org.vortikal.index.management.Reindexer#isRunning()
      */
     public synchronized boolean isRunning() {
-        return (workerThread != null && workerThread.isAlive()); 
+        return (this.workerThread != null && this.workerThread.isAlive()); 
     }
     
     /* (non-Javadoc)
@@ -320,10 +320,9 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
      */
     public synchronized String getWorkerThreadName() {
         if (isRunning()) {
-            return workerThread.getName();
-        } else {
-            return "";
+            return this.workerThread.getName();
         }
+        return "";
     }
     
     /* (non-Javadoc)
@@ -332,7 +331,8 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
     public synchronized String getCurrentWorkingTree() {
         if (isRunning()) {
             return this.worker.currentWorkingTree;
-        } else return "";
+        }
+        return "";
     }
     
     // Setters
@@ -364,14 +364,14 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
      * @see org.vortikal.index.management.Reindexer#isAsynchronous()
      */
     public boolean isAsynchronous() {
-        return asynchronous;
+        return this.asynchronous;
     }
 
     /* (non-Javadoc)
      * @see org.vortikal.index.management.Reindexer#getFilter()
      */
     public FilterCriterion getFilter() {
-        return filter;
+        return this.filter;
     }
 
     /* (non-Javadoc)
@@ -385,6 +385,6 @@ public class LuceneReindexer implements InitializingBean, Reindexer  {
      * @see org.vortikal.index.management.Reindexer#isSkipFilteredSubtrees()
      */
     public boolean isSkipFilteredSubtrees() {
-        return skipFilteredSubtrees;
+        return this.skipFilteredSubtrees;
     }
 }

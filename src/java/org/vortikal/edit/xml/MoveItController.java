@@ -73,11 +73,11 @@ public class MoveItController extends AbstractXmlEditController {
                 /* find out where the elements should go: */
                 String path = request.getParameter("to");
 
-                logger.debug("Moving element(s) to " + path);
+                this.logger.debug("Moving element(s) to " + path);
 
                 if (path == null) {
                     setXsltParameter(model,"ERRORMESSAGE", "MOVE_IT_MISSING_PATH_PARAMETER");
-                    return new ModelAndView(viewName, model);
+                    return new ModelAndView(this.viewName, model);
                 }
 
                 /* prepare insertion in the new location: */
@@ -133,7 +133,7 @@ public class MoveItController extends AbstractXmlEditController {
                 ArrayList newChildren = new ArrayList();
                 for (Iterator i = l.iterator(); i.hasNext();) {
                     Element e = (Element)i.next();
-                    logger.debug("Inserting element " + e.getName() +
+                    this.logger.debug("Inserting element " + e.getName() +
                                  " at " + path);
                     newChildren.add(e.clone());
                 }
@@ -142,12 +142,12 @@ public class MoveItController extends AbstractXmlEditController {
                 document.setDocumentMode("default");
                 document.resetElements();
                 
-                document.save(repository);
+                document.save(this.repository);
             } else  {
                 document.setDocumentMode("default");
                 document.resetElements();
             } 
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         }
         return null;
     }

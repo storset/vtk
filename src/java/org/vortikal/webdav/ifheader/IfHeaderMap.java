@@ -29,6 +29,8 @@ import org.vortikal.repository.Resource;
  */
 class IfHeaderMap extends HashMap implements StateEntryList {
 
+    private static final long serialVersionUID = 8227690761189581870L;
+
     /**
      * Matches the token and etag for the given resource. If the resource is
      * not mentioned in the header, a match is assumed and <code>true</code>
@@ -54,9 +56,8 @@ class IfHeaderMap extends HashMap implements StateEntryList {
         if (list == null) {
             IfHeaderImpl.logger.debug("matches: No entry for tag "+resource+", assuming match");
             return true;
-        } else {
-            return list.matches(resource);
         }
+        return list.matches(resource);
     }
 
     public boolean matchesEtags(Resource resource) {
@@ -71,8 +72,7 @@ class IfHeaderMap extends HashMap implements StateEntryList {
         if (list == null) {
             IfHeaderImpl.logger.debug("matchesEtags: No entry for tag "+resource+", assuming match");
             return true;
-        } else {
-            return list.matches(resource);
         }
+        return list.matches(resource);
     }
 }

@@ -76,15 +76,15 @@ public final class Value implements Cloneable {
     }
 
     public int getType() {
-        return type;
+        return this.type;
     }
     
     public boolean getBooleanValue() {
-        return booleanValue;
+        return this.booleanValue;
     }
 
     public Date getDateValue() {
-        return dateValue;
+        return this.dateValue;
     }
     
     public long getLongValue() {
@@ -127,7 +127,7 @@ public final class Value implements Cloneable {
         }
         
         throw new IllegalStateException(
-            "Unable to return value: Illeal type: " + type);
+            "Unable to return value: Illeal type: " + this.type);
     }
     
 
@@ -247,19 +247,19 @@ public final class Value implements Cloneable {
             break;
             
         case PropertyType.TYPE_INT:
-            representation = Integer.toString(intValue);
+            representation = Integer.toString(this.intValue);
             break;
             
         case PropertyType.TYPE_LONG:
-            representation = Long.toString(longValue);
+            representation = Long.toString(this.longValue);
             break;
             
         case PropertyType.TYPE_STRING:
-            representation = value;
+            representation = this.value;
             break;
             
         case PropertyType.TYPE_PRINCIPAL:
-            Principal principal = principalValue;
+            Principal principal = this.principalValue;
             if (principal == null) {
                 throw new ValueFormatException("Cannot convert principal value to string, field was null");
             }

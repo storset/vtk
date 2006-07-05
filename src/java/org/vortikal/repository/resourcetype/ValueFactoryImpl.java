@@ -62,10 +62,10 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
 
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (principalManager == null) {
+        if (this.principalManager == null) {
             throw new BeanInitializationException("Property 'principalManager' not set.");
         }
-        if (dateFormats == null || dateFormats.size() == 0) {
+        if (this.dateFormats == null || this.dateFormats.size() == 0) {
             throw new BeanInitializationException(
                     "Property 'dateformats' not set or empty list.");
         }
@@ -134,7 +134,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
             
         case PropertyType.TYPE_PRINCIPAL:
             try {
-                Principal principal = principalManager.getUserPrincipal(stringValue);
+                Principal principal = this.principalManager.getUserPrincipal(stringValue);
                 
 //                 if (!principalManager.validatePrincipal(principal)) {
 //                     logger.debug("Validation failed for principal with stringValue '" + stringValue);
@@ -144,10 +144,10 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
 //                 }
                 value.setPrincipalValue(principal);
             } catch (InvalidPrincipalException e) {
-                logger.debug("Exception for stringValue '" + stringValue + "': " + e);
+                this.logger.debug("Exception for stringValue '" + stringValue + "': " + e);
                 throw new ValueFormatException(e.getMessage());
             } catch (AuthenticationProcessingException e) {
-                logger.debug("Exception for stringValue '" + stringValue + "': " + e);
+                this.logger.debug("Exception for stringValue '" + stringValue + "': " + e);
                 throw new ValueFormatException(
                         "Unable to convert string to valid principal. Principal does not exists");
             }
@@ -169,7 +169,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         
         SimpleDateFormat format;
         Date date;
-        for (Iterator iter = dateFormats.iterator(); iter.hasNext(); ) {
+        for (Iterator iter = this.dateFormats.iterator(); iter.hasNext(); ) {
             String dateFormat = (String) iter.next();
             format = new SimpleDateFormat(dateFormat);
             format.setLenient(false);
@@ -177,15 +177,14 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
                 date = format.parse(stringValue);
                 return date;
             } catch (ParseException e) {
-                logger.debug("Dateformat not ok for dateformat '" + dateFormat
+                this.logger.debug("Dateformat not ok for dateformat '" + dateFormat
                         + "' and stringValue '" + stringValue + "': " + e.getMessage());
             }
         }
         if (stringValue.equals("")) {
             return null; // XXX: allow this to happen ? Seems like a ValueFormatException-case...
-        } else {
-            throw new ValueFormatException("Illegal date format");
         }
+        throw new ValueFormatException("Illegal date format");
     }
 
     public void setPrincipalManager(PrincipalManager principalManager) {

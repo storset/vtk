@@ -105,8 +105,8 @@ public class SchemaDocumentDefinition {
 
         this.docType = docType;
         this.schemaURL = schemaURL;
-        schema = new SAXBuilder().build(schemaURL).getRootElement();
-        include(schema, this.schemaURL);
+        this.schema = new SAXBuilder().build(schemaURL).getRootElement();
+        include(this.schema, this.schemaURL);
     }
 
 
@@ -131,7 +131,7 @@ public class SchemaDocumentDefinition {
     private void include(Element currentSchema, URL currentURL)
             throws JDOMException, MalformedURLException, IOException {
 
-        List l = currentSchema.getChildren("include", XSD_NAMESPACE);
+        List l = currentSchema.getChildren("include", this.XSD_NAMESPACE);
         List al = new ArrayList();
         for (Iterator iter = l.iterator(); iter.hasNext();) {
             al.add(((Element) iter.next()).clone());
@@ -166,8 +166,8 @@ public class SchemaDocumentDefinition {
                 includeURL = new URL(base + "/" + location);
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Including schema " + includeURL + " from "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Including schema " + includeURL + " from "
                              + currentURL);
             }
 
@@ -181,14 +181,14 @@ public class SchemaDocumentDefinition {
 
             for (int i = 0; i < includedElements.length; i++) {
                 List li = included.getRootElement().getChildren(
-                        includedElements[i], XSD_NAMESPACE);
+                        includedElements[i], this.XSD_NAMESPACE);
                 for (Iterator lIter = li.iterator(); lIter.hasNext();) {
                     Element e = (Element) lIter.next();
 
                     String schemaElementType = includedElements[i];
                     String schemaElementName = e.getAttributeValue("name");
                     List currentSchemaExistingChildren = currentSchema
-                            .getChildren(schemaElementType, XSD_NAMESPACE);
+                            .getChildren(schemaElementType, this.XSD_NAMESPACE);
 
                     if (findInElementList(schemaElementName, currentSchemaExistingChildren) != null) { 
                         throw new XMLEditException("The included schema " + includeURL + 
@@ -207,9 +207,9 @@ public class SchemaDocumentDefinition {
 
 
     public String getStructuredTextClassName(Element e) {
-        e = e.getChild("annotation", XSD_NAMESPACE);
+        e = e.getChild("annotation", this.XSD_NAMESPACE);
         if (e == null) return null;
-        e = e.getChild("appinfo", XSD_NAMESPACE);
+        e = e.getChild("appinfo", this.XSD_NAMESPACE);
         if (e == null) return null;
         e = e.getChild("structuredText");
 
@@ -221,9 +221,9 @@ public class SchemaDocumentDefinition {
 
 
     public String getXSLPath() {
-        Element e = schema;
-        e = e.getChild("annotation", XSD_NAMESPACE);
-        e = e.getChild("appinfo", XSD_NAMESPACE);
+        Element e = this.schema;
+        e = e.getChild("annotation", this.XSD_NAMESPACE);
+        e = e.getChild("appinfo", this.XSD_NAMESPACE);
         e = e.getChild("edit");
         e = e.getChild("xsl");
         return e.getTextNormalize();
@@ -232,9 +232,9 @@ public class SchemaDocumentDefinition {
 
 
     public String getButtonFrameURI() {
-        Element e = schema;
-        e = e.getChild("annotation", XSD_NAMESPACE);
-        e = e.getChild("appinfo", XSD_NAMESPACE);
+        Element e = this.schema;
+        e = e.getChild("annotation", this.XSD_NAMESPACE);
+        e = e.getChild("appinfo", this.XSD_NAMESPACE);
         e = e.getChild("edit");
         Element f = e.getChild("buttonframe");
         String buttonFrame = f.getTextNormalize().toString();
@@ -252,8 +252,8 @@ public class SchemaDocumentDefinition {
         Map textMap = new HashMap();
         Element e = findElementDefinition(element);
         /* Get the type definition of the element in question */
-        e = findInElementList(e.getAttributeValue("type"), schema.getChildren(
-                "complexType", XSD_NAMESPACE));
+        e = findInElementList(e.getAttributeValue("type"), this.schema.getChildren(
+                "complexType", this.XSD_NAMESPACE));
         /* Get the texthackmappings from the sub elements */
         /* Go through the list of children */
         getTextMappings(textMap, e);
@@ -278,7 +278,7 @@ public class SchemaDocumentDefinition {
         if (element.getDocument() == null) {
             throw new IllegalArgumentException(
                     "element doesn't have a document");
-        } else if (!docType.equals(element.getDocument().getRootElement()
+        } else if (!this.docType.equals(element.getDocument().getRootElement()
                 .getName())) { throw new IllegalArgumentException(
                 "element doesn't have a document of correct type"); }
         Element elementDef = findElementDefinition(element);
@@ -290,9 +290,9 @@ public class SchemaDocumentDefinition {
                 return REQUIRED_STRING_ELEMENT;
 
         /* Check if element is an UNBOUNDED_ELEMENT sub type */
-        Element e = elementDef.getChild("annotation", XSD_NAMESPACE);
+        Element e = elementDef.getChild("annotation", this.XSD_NAMESPACE);
         if (e != null) {
-            e = e.getChild("appinfo", XSD_NAMESPACE);
+            e = e.getChild("appinfo", this.XSD_NAMESPACE);
             if (e != null) {
                 String appinfo = e.getTextTrim();
                 StructuredText structuredText = null;
@@ -307,8 +307,8 @@ public class SchemaDocumentDefinition {
         String typeName = elementDef.getAttributeValue("type");
 
         /* Check for enumeration simpleType */
-        Element simpleType = findInElementList(typeName, schema.getChildren(
-                "simpleType", XSD_NAMESPACE));
+        Element simpleType = findInElementList(typeName, this.schema.getChildren(
+                "simpleType", this.XSD_NAMESPACE));
         if (simpleType != null) {
             /* Start tests */
             if ("0".equals(elementDef.getAttributeValue("minOccurs")))
@@ -317,14 +317,14 @@ public class SchemaDocumentDefinition {
             return REQUIRED_STRING_ELEMENT;
         }
 
-        Element complexType = findInElementList(typeName, schema.getChildren(
-                "complexType", XSD_NAMESPACE));
+        Element complexType = findInElementList(typeName, this.schema.getChildren(
+                "complexType", this.XSD_NAMESPACE));
 
         /* Check if element is UNBOUNDED_ELEMENT */
 
-        e = complexType.getChild("annotation", XSD_NAMESPACE);
+        e = complexType.getChild("annotation", this.XSD_NAMESPACE);
         if (e != null) {
-            e = e.getChild("appinfo", XSD_NAMESPACE);
+            e = e.getChild("appinfo", this.XSD_NAMESPACE);
             if (e != null) {
                 e = e.getChild("elementType");
                 if (e != null) {
@@ -361,20 +361,20 @@ public class SchemaDocumentDefinition {
      */
     private Element findElementDefinition(Element element) {
         if (element.isRootElement()) {
-            List elements = schema.getChildren("element", XSD_NAMESPACE);
+            List elements = this.schema.getChildren("element", this.XSD_NAMESPACE);
             for (Iterator iter = elements.iterator(); iter.hasNext();) {
                 Element e = (Element) iter.next();
-                if (docType.equals(e.getAttributeValue("name"))) { return e; }
+                if (this.docType.equals(e.getAttributeValue("name"))) { return e; }
             }
             throw new XMLEditException(
                     "The schema does not contain an element definition of docType "
-                            + docType);
+                            + this.docType);
         }
         Element parentDefinition = findElementDefinition((Element) element
                 .getParent());
         Element parentType = findInElementList(parentDefinition
-                .getAttributeValue("type"), schema.getChildren("complexType",
-                XSD_NAMESPACE));
+                .getAttributeValue("type"), this.schema.getChildren("complexType",
+                this.XSD_NAMESPACE));
         for (Iterator iter = parentType.getDescendants(); iter.hasNext();) {
             Object o = iter.next();
             if (o instanceof Element) {
@@ -391,8 +391,8 @@ public class SchemaDocumentDefinition {
 
     private Element findElementTypeDefinition(Element e) {
         Element element = findElementDefinition(e);
-        element = findInElementList(element.getAttributeValue("type"), schema.getChildren(
-                "complexType", XSD_NAMESPACE));
+        element = findInElementList(element.getAttributeValue("type"), this.schema.getChildren(
+                "complexType", this.XSD_NAMESPACE));
         return element;
     }
 
@@ -412,7 +412,7 @@ public class SchemaDocumentDefinition {
         if (element.getDocument() == null) {
             throw new IllegalArgumentException(
                     "element doesn't have a document");
-        } else if (!docType.equals(element.getDocument().getRootElement()
+        } else if (!this.docType.equals(element.getDocument().getRootElement()
                 .getName())) { throw new IllegalArgumentException(
                 "element doesn't have a document of correct type"); }
 
@@ -448,7 +448,7 @@ public class SchemaDocumentDefinition {
             Class structuredTextClass = Class.forName(className);
             structuredText = (StructuredText) structuredTextClass.newInstance();
         } catch (Exception e) {
-            logger.error("Unable to instantiate StructuredText for element: " 
+            this.logger.error("Unable to instantiate StructuredText for element: " 
                     + element.getName(), e);
 
             throw new XMLEditException(
@@ -551,10 +551,10 @@ public class SchemaDocumentDefinition {
                             + elementDef.getAttributeValue("name")
                             + " is missing required type attribute"); }
 
-            e = findInElementList(typeName, schema.getChildren("complexType",
-                    XSD_NAMESPACE));
+            e = findInElementList(typeName, this.schema.getChildren("complexType",
+                    this.XSD_NAMESPACE));
 
-            e = e.getChild("sequence", XSD_NAMESPACE);
+            e = e.getChild("sequence", this.XSD_NAMESPACE);
             for (Iterator i = e.getChildren().iterator(); i.hasNext();) {
                 Element childDef = (Element) i.next();
                 Element child = new Element(childDef.getAttributeValue("name"));
@@ -596,8 +596,8 @@ public class SchemaDocumentDefinition {
                         + elementDef.getAttributeValue("name")
                         + " is missing required type attribute"); }
 
-        e = findInElementList(typeName, schema.getChildren("complexType",
-                XSD_NAMESPACE));
+        e = findInElementList(typeName, this.schema.getChildren("complexType",
+                this.XSD_NAMESPACE));
         if (e == null) return;
 
         Iterator i = e.getDescendants(new XSDAttributeElementFilter());
@@ -703,9 +703,9 @@ public class SchemaDocumentDefinition {
          * Type definition elements for texthack elements must be defined with
          * choice or sequence elements
          */
-    	Element element = elementDefinition.getChild("choice", XSD_NAMESPACE);
+    	Element element = elementDefinition.getChild("choice", this.XSD_NAMESPACE);
         if (element == null) {
-            element = elementDefinition.getChild("sequence", XSD_NAMESPACE);
+            element = elementDefinition.getChild("sequence", this.XSD_NAMESPACE);
             /*
              * To make it possible to add xml:space
              * attribute we must check for simpleContent
@@ -714,15 +714,14 @@ public class SchemaDocumentDefinition {
              */
             if (element == null) {
                 Element simpleContent = elementDefinition.getChild("simpleContent", 
-                        XSD_NAMESPACE);
+                        this.XSD_NAMESPACE);
                 if (simpleContent == null) {
-                    logger.debug("Element '"
+                    this.logger.debug("Element '"
                             + elementDefinition.getAttributeValue("name")
                             + "' is defined in Schema to have null content");
                     return;
-                } else {
-                    element = simpleContent.getChild("extension", XSD_NAMESPACE);
                 }
+                element = simpleContent.getChild("extension", this.XSD_NAMESPACE);
             }
             if (element == null) return;
         }
@@ -731,16 +730,16 @@ public class SchemaDocumentDefinition {
             element = (Element) it.next();
             String name = element.getAttributeValue("name");
             String type = element.getAttributeValue("type"); 
-            Element appInfo = element.getChild("annotation", XSD_NAMESPACE);
+            Element appInfo = element.getChild("annotation", this.XSD_NAMESPACE);
             
             if (appInfo == null) continue;	
             
-            appInfo = appInfo.getChild("appinfo", XSD_NAMESPACE);            	
+            appInfo = appInfo.getChild("appinfo", this.XSD_NAMESPACE);            	
             map.put(appInfo.getText(), name);    
             
             // 'type' returns NULL for elements (in Schema) withtout type definition
             if (type == null) {
-                logger.warn("XML element '" + name + "' has no type, probably " +
+                this.logger.warn("XML element '" + name + "' has no type, probably " +
                             "incorrect XML Schema definition syntax for the element");
                 continue;
             }
@@ -748,7 +747,7 @@ public class SchemaDocumentDefinition {
             /* Check if the child is a SEQUENCE_ELEMENT */
             if (!"xsd:string".equals(type)) {
                 element = findInElementList(type,
-                        schema.getChildren("complexType", XSD_NAMESPACE));
+                        this.schema.getChildren("complexType", this.XSD_NAMESPACE));
                 getTextMappings(map, element);
             }
         }
@@ -770,7 +769,7 @@ public class SchemaDocumentDefinition {
                  * recursivly
                  */
                 e = findInElementList(e.getAttributeValue("type"), rootElement
-                        .getChildren("complexType", XSD_NAMESPACE));
+                        .getChildren("complexType", this.XSD_NAMESPACE));
                 e = findElementRecursivly(elementName, e, rootElement);
                 if (e != null) {
                     /* We found the element */
@@ -804,7 +803,7 @@ public class SchemaDocumentDefinition {
      * @return Returns the docType.
      */
     public String getDocType() {
-        return docType;
+        return this.docType;
     }
 
     /**

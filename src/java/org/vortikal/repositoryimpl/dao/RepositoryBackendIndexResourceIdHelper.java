@@ -63,7 +63,7 @@ public class RepositoryBackendIndexResourceIdHelper implements IndexResourceIdHe
     private DataAccessor dao;
     
     public void afterPropertiesSet() {
-        if (dao == null) {
+        if (this.dao == null) {
             throw new BeanInitializationException("DataAccessor not set.");
         }
     }
@@ -86,18 +86,18 @@ public class RepositoryBackendIndexResourceIdHelper implements IndexResourceIdHe
         // Generate String with parent IDs
         StringBuffer idString = new StringBuffer();
         try {
-            ResourceImpl r = dao.load(uri);
+            ResourceImpl r = this.dao.load(uri);
             
             if (r == null) return null;
             
             String parent;
             while ((parent = URIUtil.getParentURI(r.getURI())) != null) {
-                r = dao.load(parent);
+                r = this.dao.load(parent);
                 idString.append(r.getID());
                 idString.append(" ");
             }
         } catch (IOException io) {
-            logger.warn("IOException while fetching parent collection IDs for resource " + uri, io);
+            this.logger.warn("IOException while fetching parent collection IDs for resource " + uri, io);
             return null;
         }
 
@@ -118,10 +118,10 @@ public class RepositoryBackendIndexResourceIdHelper implements IndexResourceIdHe
         }
 
         try {
-            ResourceImpl r = dao.load(uri);
+            ResourceImpl r = this.dao.load(uri);
             return Integer.toString(r.getID());
         } catch (IOException io) {
-            logger.warn("IOException while fetching ID for resource " + uri, io);
+            this.logger.warn("IOException while fetching ID for resource " + uri, io);
             return null;
         }
     }

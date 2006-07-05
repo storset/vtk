@@ -288,8 +288,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                                                  List rsiList) 
         throws IOException {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Processing list of " + rsiList.size() + " elements");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Processing list of " + rsiList.size() + " elements");
         }
         
         Connection conn = null;
@@ -319,8 +319,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             int batchStart = 0;
             int batchEnd = batchSize > rsiList.size() ? rsiList.size() : batchSize;
             for(;;) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Processing batch " + batchStart + " to " + 
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Processing batch " + batchStart + " to " + 
                             batchEnd);
                 }
                 
@@ -340,8 +340,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                 }
 
                 if (n > 0) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Need to check " + n + " entries in database");
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Need to check " + n + " entries in database");
                     }
                     
                     // We need to do database lookup for some IDs
@@ -350,12 +350,12 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                     ResultSet rs = authorizeStmt.executeQuery();
                     while (rs.next()) {
                         Integer id = new Integer(rs.getInt(1));
-                        if (authorizedIds.add(id) && logger.isDebugEnabled()) {
-                            logger.debug("Adding ACL node id " +
+                        if (authorizedIds.add(id) && this.logger.isDebugEnabled()) {
+                            this.logger.debug("Adding ACL node id " +
                                           id + " to set of authorized IDs");
                         }
                         
-                        logger.debug("Current ACL node id: " + id);
+                        this.logger.debug("Current ACL node id: " + id);
                     }
                     rs.close();
                     
@@ -369,12 +369,12 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                             authorizedIds.contains(rsi.getAclNodeId())
                             || principalNames.contains(rsi.getOwnerAsUserOrGroupName()));
                     
-                    if (logger.isDebugEnabled()) {
+                    if (this.logger.isDebugEnabled()) {
                         if (rsi.isAuthorized()) {
-                            logger.debug("Authorized resource with ACL node id: " 
+                            this.logger.debug("Authorized resource with ACL node id: " 
                                                                 + rsi.getAclNodeId());
                         } else {
-                            logger.debug("NOT authorized resource with ACL node id: " 
+                            this.logger.debug("NOT authorized resource with ACL node id: " 
                                     + rsi.getAclNodeId());
                         }
                     }
@@ -382,20 +382,19 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                 
                 if (batchEnd == rsiList.size()) {
                     break;
-                } else {
-                    batchStart += batchSize;
-                    batchEnd = (batchEnd + batchSize) > rsiList.size() ? 
-                            rsiList.size() : batchEnd + batchSize;
                 }
+                batchStart += batchSize;
+                batchEnd = (batchEnd + batchSize) > rsiList.size() ? 
+                        rsiList.size() : batchEnd + batchSize;
             } 
             
-            insertTmpStmt.close();
+            insertTmpStmt.close();  
             authorizeStmt.close();
             deleteTmpStmt.close();
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Set of authorized uniqe IDs contains " + authorizedIds.size() + " elements.");
-                logger.debug("Set of all uniqe IDs contains " + allIds.size() + " elements.");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Set of authorized uniqe IDs contains " + authorizedIds.size() + " elements.");
+                this.logger.debug("Set of all uniqe IDs contains " + allIds.size() + " elements.");
             }
 
         } catch (SQLException sqle) {
@@ -406,7 +405,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                     conn.commit();
                     conn.close();
                 } catch (SQLException sqle) {
-                    logger.warn("SQLException while closing connection", sqle);
+                    this.logger.warn("SQLException while closing connection", sqle);
                 }
             }
         }

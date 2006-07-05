@@ -31,17 +31,12 @@
 package org.vortikal.web.service;
 
 
-import java.io.IOException;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Acl;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
-import org.vortikal.repository.Lock;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -49,7 +44,6 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
-import org.vortikal.util.repository.URIUtil;
 
 
 /**
@@ -164,8 +158,8 @@ public class ResourcePrincipalPermissionAssertion
         }
         
         
-        rootPrincipals = roleManager.getPrincipals(RoleManager.ROOT);
-        readPrincipals = roleManager.getPrincipals(RoleManager.READ_EVERYTHING);
+        this.rootPrincipals = this.roleManager.getPrincipals(RoleManager.ROOT);
+        this.readPrincipals = this.roleManager.getPrincipals(RoleManager.READ_EVERYTHING);
 
     }
 

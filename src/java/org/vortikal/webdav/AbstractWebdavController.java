@@ -163,42 +163,41 @@ public abstract class AbstractWebdavController implements Controller {
 
         
     protected void verifyIfHeader(Resource resource, boolean ifHeaderRequiredIfLocked) {
-        if (!supportIfHeaders) {
+        if (!this.supportIfHeaders) {
             return;
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("resource.getLock(): " + resource.getLock());
-            logger.debug("ifHeader.hasTokens(): " + ifHeader.hasTokens());
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("resource.getLock(): " + resource.getLock());
+            this.logger.debug("ifHeader.hasTokens(): " + this.ifHeader.hasTokens());
         }
 
         if (ifHeaderRequiredIfLocked) {
-            if (resource.getLock() != null && !ifHeader.hasTokens()) {
+            if (resource.getLock() != null && !this.ifHeader.hasTokens()) {
                 String msg = "Resource " + resource + " is locked and "
                     + "If-header does not have any lock tokens";
-                if (logger.isDebugEnabled()) {
-                    logger.debug(msg);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug(msg);
                 }
                 throw new ResourceLockedException(msg);
             }
         }
         if (!matchesIfHeader(resource, true)) {
             String msg = "If-header did not match resource " + resource;
-            if (logger.isDebugEnabled()) {
-                logger.debug(msg);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug(msg);
             }
             throw new ResourceLockedException(msg);
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("verifyIfHeader: matchesIfHeader true");
-            }
+        }
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("verifyIfHeader: matchesIfHeader true");
         }
     }
   
     protected boolean matchesIfHeader(Resource resource, boolean shouldMatchOnNoIfHeader) {
-        if (ifHeader == null) {
+        if (this.ifHeader == null) {
             return shouldMatchOnNoIfHeader;
         }
-        return ifHeader.matches(resource, shouldMatchOnNoIfHeader);
+        return this.ifHeader.matches(resource, shouldMatchOnNoIfHeader);
     }
     
 //    protected boolean matchesIfHeaderEtags(Resource resource, boolean shouldMatchOnNoIfHeader) {

@@ -38,6 +38,8 @@ import org.vortikal.repositoryimpl.query.parser.QueryException;
  */
 public class QueryAuthorizationException extends QueryException {
 
+    private static final long serialVersionUID = -7128162457480773200L;
+
     /**
      * 
      */

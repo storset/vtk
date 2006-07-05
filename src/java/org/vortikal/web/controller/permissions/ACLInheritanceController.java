@@ -62,8 +62,8 @@ public class ACLInheritanceController extends SimpleFormController {
         
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-        Resource resource = repository.retrieve(token, uri, false);
-        Acl acl = repository.getACL(token, uri);
+        Resource resource = this.repository.retrieve(token, uri, false);
+        Acl acl = this.repository.getACL(token, uri);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
         UpdateACLInheritanceCommand command =
@@ -94,7 +94,7 @@ public class ACLInheritanceController extends SimpleFormController {
         
         String token = securityContext.getToken();
 
-        Acl acl = repository.getACL(token, uri);
+        Acl acl = this.repository.getACL(token, uri);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Update inheritance: input = "
@@ -107,7 +107,7 @@ public class ACLInheritanceController extends SimpleFormController {
             logger.debug("Storing new acl for resource " + uri + ": " + acl);
         }
         
-        repository.storeACL(token, uri, acl);
+        this.repository.storeACL(token, uri, acl);
         updateCommand.setDone(true);
     }
     

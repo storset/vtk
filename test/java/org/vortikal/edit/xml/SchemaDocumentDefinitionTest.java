@@ -31,9 +31,6 @@
 package org.vortikal.edit.xml;
 
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-
 import junit.framework.TestCase;
 
 import org.jdom.Document;
@@ -84,31 +81,31 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
             URL testXML = this.getClass().getClassLoader().getResource(
                 TEST_XML);
-            testDocument = builder.build(testXML);
+            this.testDocument = builder.build(testXML);
 
             URL testIncludeXML = this.getClass().getClassLoader().getResource(
             TEST_INCLUDE_XML);
-            testIncludeDocument = builder.build(testIncludeXML);
+            this.testIncludeDocument = builder.build(testIncludeXML);
 
             URL fritekstOnTopLevelXML = this.getClass().getClassLoader().getResource(
             FRITEKST_XML);
-            fritekstOnTopLevelDocument = builder.build(fritekstOnTopLevelXML);
+            this.fritekstOnTopLevelDocument = builder.build(fritekstOnTopLevelXML);
 
             URL fritekst2OnTopLevelXML = this.getClass().getClassLoader().getResource(
                     FRITEKST2_XML);
-                    fritekst2OnTopLevelDocument = builder.build(fritekst2OnTopLevelXML);
+                    this.fritekst2OnTopLevelDocument = builder.build(fritekst2OnTopLevelXML);
                     
             URL testXSD = this.getClass().getClassLoader().getResource(
                TEST_XSD);
-            definition = new SchemaDocumentDefinition("test", testXSD);
+            this.definition = new SchemaDocumentDefinition("test", testXSD);
 
-            fritekstDefinition = new SchemaDocumentDefinition("onlyFritekst", testXSD);
+            this.fritekstDefinition = new SchemaDocumentDefinition("onlyFritekst", testXSD);
             
-            fritekst2Definition = new SchemaDocumentDefinition("onlyFritekst2", testXSD);
+            this.fritekst2Definition = new SchemaDocumentDefinition("onlyFritekst2", testXSD);
             
             URL fritekst2newOnTopLevelXML = this.getClass().getClassLoader().getResource(
                     FRITEKST2NEW_XML);
-            fritekst2newOnTopLevelDocument = builder.build(fritekst2newOnTopLevelXML); 
+            this.fritekst2newOnTopLevelDocument = builder.build(fritekst2newOnTopLevelXML); 
 
         } catch (Exception e) {
             fail("Couldn't instantiate test schema" + e.getMessage());
@@ -117,8 +114,8 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
     public void testConstructor() {
         /* Test that the schema has included the 'fritekst' toplevel element from subschema */
-        Element e = testIncludeDocument.getRootElement().getChild("fritekst");
-        assertEquals("UNBOUNDED_ELEMENT", fritekstDefinition.elementType(e));
+        Element e = this.testIncludeDocument.getRootElement().getChild("fritekst");
+        assertEquals("UNBOUNDED_ELEMENT", this.fritekstDefinition.elementType(e));
 
         
         try {
@@ -134,26 +131,26 @@ public class SchemaDocumentDefinitionTest extends TestCase {
     }
 
     public void testOnlyFritekst() {
-	Element ingress = fritekstOnTopLevelDocument.getRootElement()
+	Element ingress = this.fritekstOnTopLevelDocument.getRootElement()
 	    .getChild("ingress");
-        fritekstDefinition.translateToEditingElement(ingress);
+        this.fritekstDefinition.translateToEditingElement(ingress);
 
         assertEquals("Even",
-                fritekstOnTopLevelDocument.getRootElement().getChild("ingress").getText());
+                this.fritekstOnTopLevelDocument.getRootElement().getChild("ingress").getText());
 
-	fritekstDefinition.setElementContents(ingress, "*Eva*");
+	this.fritekstDefinition.setElementContents(ingress, "*Eva*");
 	assertNotNull(ingress.getChild("utheving"));
 	assertEquals("Eva", ingress.getChild("utheving").getText());
     }
 
     public void testOnlyFritekst2() {
-    	Element ingress = fritekst2OnTopLevelDocument.getRootElement().getChild("ingress");
-            fritekst2Definition.translateToEditingElement(ingress);
+    	Element ingress = this.fritekst2OnTopLevelDocument.getRootElement().getChild("ingress");
+            this.fritekst2Definition.translateToEditingElement(ingress);
 
             assertEquals("Even er veldig *kul*",
-                    fritekst2OnTopLevelDocument.getRootElement().getChild("ingress").getText());
+                    this.fritekst2OnTopLevelDocument.getRootElement().getChild("ingress").getText());
 
-    	fritekst2Definition.setElementContents(ingress, "*Eva*");
+    	this.fritekst2Definition.setElementContents(ingress, "*Eva*");
     	assertNotNull(ingress.getChild("avsnitt"));
     	assertEquals("Eva", ingress.getChild("avsnitt").getChild("fet").getText());
         }
@@ -161,36 +158,36 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
     public void testElementType() {
 
-        assertTrue(testDocument.getRootElement().getName().equals("test"));
-        assertTrue(definition.getDocType().equals("test"));
+        assertTrue(this.testDocument.getRootElement().getName().equals("test"));
+        assertTrue(this.definition.getDocType().equals("test"));
 
         assertEquals(
             "UNBOUNDED_CHOICE_ELEMENT",
-            definition.elementType(testDocument.getRootElement().getChild("grupper")));
+            this.definition.elementType(this.testDocument.getRootElement().getChild("grupper")));
         
 
-        assertEquals("SEQUENCE_ELEMENT", definition.elementType(testDocument
+        assertEquals("SEQUENCE_ELEMENT", this.definition.elementType(this.testDocument
                 .getRootElement().getChild("pensumpunkt")));
-        assertEquals("UNBOUNDED_CHOICE_ELEMENT", definition
-                .elementType(testDocument.getRootElement().getChild(
+        assertEquals("UNBOUNDED_CHOICE_ELEMENT", this.definition
+                .elementType(this.testDocument.getRootElement().getChild(
                         "unboundedChoiceTest")));
-        assertEquals("UNBOUNDED_ELEMENT", definition.elementType(testDocument
+        assertEquals("UNBOUNDED_ELEMENT", this.definition.elementType(this.testDocument
                 .getRootElement().getChild("fritekst")));
-        assertEquals("REQUIRED_STRING_ELEMENT", definition
-                .elementType(testDocument.getRootElement().getChild(
+        assertEquals("REQUIRED_STRING_ELEMENT", this.definition
+                .elementType(this.testDocument.getRootElement().getChild(
                         "overskrift").getChild("overskrifttekst")));
-        assertEquals("OPTIONAL_STRING_ELEMENT", definition
-                .elementType(testDocument.getRootElement().getChild(
+        assertEquals("OPTIONAL_STRING_ELEMENT", this.definition
+                .elementType(this.testDocument.getRootElement().getChild(
                         "pensumpunkt").getChild("forfattere")));
 
-        assertEquals("plaintext", definition.elementType(testDocument
+        assertEquals("plaintext", this.definition.elementType(this.testDocument
                 .getRootElement().getChild("fritekst").getChild("tekstblokk")));
 
-        Element tjall = testDocument.getRootElement().getChild("testEnumeration").getChild("tjall");
-        assertEquals("REQUIRED_STRING_ELEMENT", definition.elementType(tjall));
+        Element tjall = this.testDocument.getRootElement().getChild("testEnumeration").getChild("tjall");
+        assertEquals("REQUIRED_STRING_ELEMENT", this.definition.elementType(tjall));
 
         try {
-            definition.elementType(new Element("tekstblokk"));
+            this.definition.elementType(new Element("tekstblokk"));
             fail("Should throw exception");
         } catch (RuntimeException e) {
             // Ok
@@ -200,28 +197,28 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
 
     public void testTranslateToEditingElement() {
-        definition.translateToEditingElement(testDocument.getRootElement()
+        this.definition.translateToEditingElement(this.testDocument.getRootElement()
                 .getChild("fritekst"));
 
         assertEquals("* Masterkopi tilgjengelig i instituttets ekspedisjon",
-                testDocument.getRootElement().getChild("fritekst").getText());
+                this.testDocument.getRootElement().getChild("fritekst").getText());
 
-        definition.translateToEditingElement(testDocument.getRootElement()
+        this.definition.translateToEditingElement(this.testDocument.getRootElement()
                 .getChild("attributeTest3"));
 
-        assertNotNull(testDocument.getRootElement().getChild("attributeTest3").getAttributeValue("type"));
+        assertNotNull(this.testDocument.getRootElement().getChild("attributeTest3").getAttributeValue("type"));
         
         
-        Element overskrift = testDocument.getRootElement().getChild(
+        Element overskrift = this.testDocument.getRootElement().getChild(
                 "overskrift");
         overskrift.addContent(0, new ProcessingInstruction("expanded", "true"));
-        definition.translateToEditingElement(overskrift);
+        this.definition.translateToEditingElement(overskrift);
         assertEquals("Lala", overskrift.getChild("overskrifttekst").getText());
         assertNotNull(overskrift.getContent(0));
 
-        Element element = testDocument.getRootElement().getChild(
+        Element element = this.testDocument.getRootElement().getChild(
                 "attributeTest2");
-        definition.translateToEditingElement(element);
+        this.definition.translateToEditingElement(element);
 
         assertNotNull(element.getAttribute("id"));
 
@@ -235,13 +232,13 @@ public class SchemaDocumentDefinitionTest extends TestCase {
         Element attributeTest2 = new Element("attributeTest2");
 
         try {
-            testDocument.getRootElement().addContent(element);
-            definition.buildElement(element);
+            this.testDocument.getRootElement().addContent(element);
+            this.definition.buildElement(element);
 
-            testDocument.getRootElement().addContent(attributeTest1);
-            definition.buildElement(attributeTest1);
-            testDocument.getRootElement().addContent(attributeTest2);
-            definition.buildElement(attributeTest2);
+            this.testDocument.getRootElement().addContent(attributeTest1);
+            this.definition.buildElement(attributeTest1);
+            this.testDocument.getRootElement().addContent(attributeTest2);
+            this.definition.buildElement(attributeTest2);
 
             assertNotNull(attributeTest1.getAttribute("type"));
             assertNotNull(attributeTest2.getAttribute("id"));
@@ -257,25 +254,25 @@ public class SchemaDocumentDefinitionTest extends TestCase {
     
     public void testOnlyFritekst2new() {
         // <fritekst> as top level element
-        Element ingress = fritekst2newOnTopLevelDocument.getRootElement().getChild("ingress");
-        fritekst2Definition.translateToEditingElement(ingress);
+        Element ingress = this.fritekst2newOnTopLevelDocument.getRootElement().getChild("ingress");
+        this.fritekst2Definition.translateToEditingElement(ingress);
             
         assertEquals("Er Even like *kul* som tidligere?",
-                fritekst2newOnTopLevelDocument.getRootElement().getChild("ingress").getText());
+                this.fritekst2newOnTopLevelDocument.getRootElement().getChild("ingress").getText());
 
-        fritekst2Definition.setElementContents(ingress, "*Eva*");
+        this.fritekst2Definition.setElementContents(ingress, "*Eva*");
         assertNotNull(ingress.getChild("avsnitt"));
         assertEquals("Eva", ingress.getChild("avsnitt").getChild("fet").getText());
         
         // <fritekst> as element, containing <sub>, <sup>, <linjeskift> and escape characters
-        Element fritekst = fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst");
-        fritekst2Definition.translateToEditingElement(fritekst);
+        Element fritekst = this.fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst");
+        this.fritekst2Definition.translateToEditingElement(fritekst);
         
         assertEquals("sub:\"subscript\" og super:\"superscript\"\\\nescaped newline\n*fet \\* stjerne* " +
                         "og _kursiv \\_ underscore_\n# escaped ol\n- escaped ul",
-                fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst").getText());
+                this.fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst").getText());
         
-        fritekst2Definition.setElementContents(fritekst, "*escaped \\* bold* _escaped \\_ underscore_" +
+        this.fritekst2Definition.setElementContents(fritekst, "*escaped \\* bold* _escaped \\_ underscore_" +
                         "super:\"superscript\" sub:\"subscript\"");
         assertNotNull(fritekst.getChild("avsnitt"));
         

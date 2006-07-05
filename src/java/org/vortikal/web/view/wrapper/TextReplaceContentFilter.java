@@ -79,7 +79,7 @@ public class TextReplaceContentFilter implements TextContentFilter, Initializing
     public String process(Map model, HttpServletRequest request,
                           String content) throws Exception {
         
-        Matcher matcher = pattern.matcher(content);
+        Matcher matcher = this.pattern.matcher(content);
         StringBuffer sb = new StringBuffer();
             
         if (matcher.find()) {

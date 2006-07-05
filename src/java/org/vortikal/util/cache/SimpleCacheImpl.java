@@ -82,8 +82,8 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
 
 
     public void put(Object key, Object value) {
-        synchronized (cache) {
-            cache.put(key, new Item(value));
+        synchronized (this.cache) {
+            this.cache.put(key, new Item(value));
         }
     }
 
@@ -114,18 +114,18 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
     
 
     public Object get(Object key) {
-        Item item = (Item) cache.get(key);
+        Item item = (Item) this.cache.get(key);
         if (item == null)
             return null;
-        else if (item.getTimestamp().getTime() + timeoutSeconds * 1000 > new Date().getTime()) {
+        else if (item.getTimestamp().getTime() + this.timeoutSeconds * 1000 > new Date().getTime()) {
             return item.getValue();
         } 
             
         if (logger.isDebugEnabled())
-            logger.debug("Cache " + name + " expiring item with key='" + key + "'");
+            logger.debug("Cache " + this.name + " expiring item with key='" + key + "'");
 
-        synchronized (cache) {
-            cache.remove(key);
+        synchronized (this.cache) {
+            this.cache.remove(key);
         }
 
         return null;
@@ -133,9 +133,9 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
 
 
     public Object remove(Object key) {
-        if (cache.containsKey(key)) {
-            synchronized (cache) {
-                return ((Item) cache.remove(key)).getValue();
+        if (this.cache.containsKey(key)) {
+            synchronized (this.cache) {
+                return ((Item) this.cache.remove(key)).getValue();
             }
         }
         return null;
@@ -160,29 +160,29 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
         /* FIXME: Is this a good idea?
          * Trying to avoid concurrentmodificationexception 
          * without syncronization */
-        Set set = new HashSet(cache.keySet());
+        Set set = new HashSet(this.cache.keySet());
         
         for (Iterator i = set.iterator(); i.hasNext();) {
             String key = (String) i.next();
 
-            Item item = (Item) cache.get(key);
+            Item item = (Item) this.cache.get(key);
 
             if (item != null &&
-                item.getTimestamp().getTime() + timeoutSeconds * 1000
+                item.getTimestamp().getTime() + this.timeoutSeconds * 1000
                 < System.currentTimeMillis()) {
                 removeableItems.add(key);
             }
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Cache " + name + " removing " + removeableItems.size()
+            logger.debug("Cache " + this.name + " removing " + removeableItems.size()
                          + " expired items");
         }
 
-        synchronized (cache) {
+        synchronized (this.cache) {
             for (Iterator iterator = removeableItems.iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
-                cache.remove(key);
+                this.cache.remove(key);
 
             }
         }
@@ -199,13 +199,13 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
         }
 
         public Date getTimestamp() {
-            return date;
+            return this.date;
         }
         
         
         public Object getValue() {
-            if (refreshTimestampOnGet) this.date = new Date();
-            return value;
+            if (SimpleCacheImpl.this.refreshTimestampOnGet) this.date = new Date();
+            return this.value;
         }
     }
 
@@ -224,11 +224,11 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
 
         public void run() {
 
-            while (alive) {
+            while (this.alive) {
 
                 try {
 
-                    sleep(1000 * sleepSeconds);
+                    sleep(1000 * this.sleepSeconds);
                     cleanupExpiredItems();
                     
                 } catch (InterruptedException e) {

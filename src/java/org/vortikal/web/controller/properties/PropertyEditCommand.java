@@ -52,7 +52,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         super(submitURL);
         this.definition = definition;
         this.value = value;
-        this.format = format;
+        this.format = this.format;
         this.namespace = definition != null ? definition.getNamespace().getUri() : null;
         this.name = definition != null ? definition.getName() : null;
     }
@@ -62,7 +62,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         super(submitURL);
         this.definition = definition;
         this.value = value;
-        this.format = format;
+        this.format = this.format;
         this.possibleValues = possibleValues;
         this.namespace = definition != null ? definition.getNamespace().getUri() : null;
         this.name = definition != null ? definition.getName() : null;
@@ -112,16 +112,16 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         public String toString() {
             StringBuffer buffer = new StringBuffer();
             buffer.append("PropertyEditCommand[");
-            buffer.append("definition = ").append(definition);
-            if (possibleValues == null) {
+            buffer.append("definition = ").append(this.definition);
+            if (this.possibleValues == null) {
                 buffer.append(", possibleValues = ").append("null");
             } else {
                 buffer.append(", possibleValues = ").append(
-                    Arrays.asList(possibleValues).toString());
+                    Arrays.asList(this.possibleValues).toString());
             }
-            buffer.append(", value = ").append(value);
-            buffer.append(", namespace = ").append(namespace);
-            buffer.append(", name = ").append(name);
+            buffer.append(", value = ").append(this.value);
+            buffer.append(", namespace = ").append(this.namespace);
+            buffer.append(", name = ").append(this.name);
             buffer.append("]");
             return buffer.toString();
         }

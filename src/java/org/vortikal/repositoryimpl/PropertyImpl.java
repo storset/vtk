@@ -70,8 +70,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     private boolean valueInitialized = false;
 
     public PropertyImpl() {
-        value = new Value();
-        values = new Value[0];
+        this.value = new Value();
+        this.values = new Value[0];
     }
     
     public Namespace getNamespace() {
@@ -131,11 +131,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Date getDateValue() throws IllegalOperationException {
-        if (value == null || getType() != PropertyType.TYPE_DATE) {
+        if (this.value == null || getType() != PropertyType.TYPE_DATE) {
             throw new IllegalOperationException("Property " + this + " not of type Date");
         }
         
-        return value.getDateValue();
+        return this.value.getDateValue();
     }
 
     public void setDateValue(Date dateValue) throws ValueFormatException {
@@ -147,10 +147,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public String getStringValue() throws IllegalOperationException {
-        if (value == null || getType() != PropertyType.TYPE_STRING) {
+        if (this.value == null || getType() != PropertyType.TYPE_STRING) {
             throw new IllegalOperationException("Property " + this + " not of type String");
         }
-        return value.getValue();
+        return this.value.getValue();
     }
 
     public void setStringValue(String stringValue) throws ValueFormatException {
@@ -170,10 +170,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public long getLongValue() throws IllegalOperationException {
-        if (value == null || getType() != PropertyType.TYPE_LONG) {
+        if (this.value == null || getType() != PropertyType.TYPE_LONG) {
             throw new IllegalOperationException("Property " + this + " not of type Long");
         }
-        return value.getLongValue();
+        return this.value.getLongValue();
     }
 
     public void setIntValue(int intValue) throws ValueFormatException {
@@ -185,17 +185,17 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public int getIntValue() throws IllegalOperationException {
-        if (value == null || getType() != PropertyType.TYPE_INT) {
+        if (this.value == null || getType() != PropertyType.TYPE_INT) {
             throw new IllegalOperationException("Property " + this + " not of type Integer");
         }
-        return value.getIntValue();
+        return this.value.getIntValue();
     }
         
     public boolean getBooleanValue() throws IllegalOperationException {
-        if (value == null || getType() != PropertyType.TYPE_BOOLEAN) {
+        if (this.value == null || getType() != PropertyType.TYPE_BOOLEAN) {
             throw new IllegalOperationException("Property " + this + " not of type Boolean");
         }
-        return value.getBooleanValue();
+        return this.value.getBooleanValue();
     }
 
     public void setBooleanValue(boolean booleanValue) throws ValueFormatException {
@@ -207,10 +207,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Principal getPrincipalValue() throws IllegalOperationException {
-        if (value == null || getType() != PropertyType.TYPE_PRINCIPAL) {
+        if (this.value == null || getType() != PropertyType.TYPE_PRINCIPAL) {
             throw new IllegalOperationException("Property " + this + " not of type Principal");
         }
-        return value.getPrincipalValue();
+        return this.value.getPrincipalValue();
     }
     
     public void setPrincipalValue(Principal principalValue) throws ValueFormatException {
@@ -270,14 +270,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
             
             return true;
-        } else {
-            // This property is not multiple (or lacks def), other prop cannot be multiple
-            if (otherProp.getDefinition() != null && otherProp.getDefinition().isMultiple()) {
-                return false;
-            }
-            
-            return this.value.equals(otherProp.getValue());
         }
+        // This property is not multiple (or lacks def), other prop cannot be multiple
+        if (otherProp.getDefinition() != null && otherProp.getDefinition().isMultiple()) {
+            return false;
+        }
+        
+        return this.value.equals(otherProp.getValue());
     }
     
     public String toString() {
@@ -344,17 +343,17 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         }
         
         // XXX: Do we want this, or should the client check by itself ?
-        if (propertyTypeDefinition == null) {
+        if (this.propertyTypeDefinition == null) {
             return;
         }
         
-        if (propertyTypeDefinition.getConstraint() != null) {
-            Constraint constraint = propertyTypeDefinition.getConstraint();
+        if (this.propertyTypeDefinition.getConstraint() != null) {
+            Constraint constraint = this.propertyTypeDefinition.getConstraint();
             constraint.validate(value);
         }
 
-        if (propertyTypeDefinition.getAllowedValues() != null) {
-            List valuesList = Arrays.asList(propertyTypeDefinition.getAllowedValues());
+        if (this.propertyTypeDefinition.getAllowedValues() != null) {
+            List valuesList = Arrays.asList(this.propertyTypeDefinition.getAllowedValues());
             if (!valuesList.contains(value)) {
                 ConstraintViolationException e = 
                     new ConstraintViolationException(
@@ -374,7 +373,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public PropertyTypeDefinition getDefinition() {
-        return propertyTypeDefinition;
+        return this.propertyTypeDefinition;
     }
 
     public void setDefinition(PropertyTypeDefinition propertyTypeDefinition) {

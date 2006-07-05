@@ -48,16 +48,16 @@ public class QueryStringProcessor {
         int start = 0;
         int pos = 0;
         while (true) {
-            pos = queryString.indexOf(expressionStart, start);
+            pos = queryString.indexOf(this.expressionStart, start);
             if (pos != -1) {
                 result.append(queryString.substring(start, pos));
                 start = pos;
-                pos = queryString.indexOf(expressionEnd, start);
+                pos = queryString.indexOf(this.expressionEnd, start);
                 if (pos != -1) {
                     String fullToken = queryString.substring(
-                        start, pos + expressionEnd.length());
+                        start, pos + this.expressionEnd.length());
                     String token = queryString.substring(
-                        start + expressionStart.length(), pos);
+                        start + this.expressionStart.length(), pos);
                     ExpressionEvaluator evaluator =
                         resolveExpressionEvaluator(token);
                     if (evaluator != null) {
@@ -65,7 +65,7 @@ public class QueryStringProcessor {
                     } else {
                         result.append(fullToken);
                     }
-                    start = pos + expressionEnd.length();
+                    start = pos + this.expressionEnd.length();
                 }
             }
             if (pos == -1) {

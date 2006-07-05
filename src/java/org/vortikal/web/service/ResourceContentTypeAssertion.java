@@ -58,7 +58,7 @@ public class ResourceContentTypeAssertion
     }
     
     public String getContentType() {
-        return contentType;
+        return this.contentType;
     }
     
 
@@ -82,7 +82,7 @@ public class ResourceContentTypeAssertion
 
     public boolean matches(Resource resource, Principal principal) {
         return resource != null &&
-        contentType.equals(resource.getContentType());
+        this.contentType.equals(resource.getContentType());
     }
 
 }

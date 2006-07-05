@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;

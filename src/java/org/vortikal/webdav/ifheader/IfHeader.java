@@ -17,8 +17,6 @@ package org.vortikal.webdav.ifheader;
 
 import java.util.Iterator;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.vortikal.repository.Resource;
 
 public interface IfHeader {

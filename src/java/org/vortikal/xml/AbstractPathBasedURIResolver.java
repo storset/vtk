@@ -102,7 +102,7 @@ public abstract class AbstractPathBasedURIResolver
 
 
     public void afterPropertiesSet() throws Exception {
-        if (simpleCache != null && cacheIdentifiers == null) 
+        if (this.simpleCache != null && this.cacheIdentifiers == null) 
             throw new BeanInitializationException(
                 "Java Bean property 'cacheIdentifiers' required when "
                 + "'simpleCahce' is specified");
@@ -159,51 +159,51 @@ public abstract class AbstractPathBasedURIResolver
 
     public final Source resolve(String href, String base) 
         throws TransformerException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Resolving: [href = " + href + ", base: " + base + "]");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Resolving: [href = " + href + ", base: " + base + "]");
         }
 
         String path = getAbsolutePath(href, base);
         if (path == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to obtain absolute path for [href = '" + href +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unable to obtain absolute path for [href = '" + href +
                              "', base = '" + base+ "']");
             }
             return null;
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Path after expansion: '" + path + "'");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Path after expansion: '" + path + "'");
         }
 
         if (base == null) {
             path = addPrefix(path);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Path after prefix prepended: '" + path + "'");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Path after prefix prepended: '" + path + "'");
             }
         }
 
         try {
             Source source = null;
 
-            if (simpleCache != null) {
-                source = (Source) simpleCache.get(path);
+            if (this.simpleCache != null) {
+                source = (Source) this.simpleCache.get(path);
 
                 if (source != null) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Using cached source for resource: " + path);
+                    if (this.logger.isDebugEnabled())
+                        this.logger.debug("Using cached source for resource: " + path);
                     return source;
                 }
             }
 
             InputStream inStream = getInputStream(path);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Resolved URI '" + path + "' from [href = '" +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Resolved URI '" + path + "' from [href = '" +
                              href + "', base = '" + base + "']");
             }
             
             if (inStream != null) {
-                if (simpleCache != null && cacheIdentifiers.contains(path)) {
+                if (this.simpleCache != null && this.cacheIdentifiers.contains(path)) {
                     try {
                         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                         Document doc = builder.parse(inStream);
@@ -216,7 +216,7 @@ public abstract class AbstractPathBasedURIResolver
                                 + path + "'", e);
                     }
                     
-                    simpleCache.put(path, source);
+                    this.simpleCache.put(path, source);
 
                 } else {
                     source = new StreamSource(inStream);

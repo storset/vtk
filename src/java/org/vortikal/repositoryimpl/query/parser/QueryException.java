@@ -34,6 +34,8 @@ import org.vortikal.repository.RepositoryException;
 
 public class QueryException extends RepositoryException {
 
+    private static final long serialVersionUID = -3553997097236594602L;
+
     public QueryException() {
         super();
     }

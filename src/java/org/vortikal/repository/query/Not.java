@@ -49,7 +49,7 @@ public class Not implements Condition {
     }
     
     public String toString() {
-        return "Not(" + condition + ")";
+        return "Not(" + this.condition + ")";
     }
     
 }

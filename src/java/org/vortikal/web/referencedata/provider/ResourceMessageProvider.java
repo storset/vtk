@@ -147,8 +147,8 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
             if (this.assertions != null) {
                 for (int i = 0; i < this.assertions.length; i++) {
                     if (!this.assertions[i].matches(request, resource, principal)) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Assertion " + this.assertions[i]
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.debug("Assertion " + this.assertions[i]
                                          + " did not match for resource " + resource);
                         }
                         proceed = false;
@@ -177,8 +177,8 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
         // Try to locate the resource in the model:
         if (this.resourceInModelKey != null) {
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Trying to locate resource in model with key '"
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Trying to locate resource in model with key '"
                              + this.resourceInModelKey+ "'");
             }
 
@@ -188,8 +188,8 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
             for (int i = 0; i < accessors.length; i++) {
                 Object o = m.get(accessors[i]);
                 if (o == null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Key '" + accessors[i] + "' not present in model");
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Key '" + accessors[i] + "' not present in model");
                     }
                     return null;
                 }

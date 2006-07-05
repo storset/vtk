@@ -53,12 +53,12 @@ public class URIPrefixFilterCriterion implements FilterCriterion, InitializingBe
     private String[] exclusions;
     
     public void afterPropertiesSet() {
-        if (inclusions == null) {
-            inclusions = new String[]{};
+        if (this.inclusions == null) {
+            this.inclusions = new String[]{};
         } 
         
-        if (exclusions == null) {
-            exclusions = new String[]{};
+        if (this.exclusions == null) {
+            this.exclusions = new String[]{};
         }
     }
     
@@ -70,19 +70,19 @@ public class URIPrefixFilterCriterion implements FilterCriterion, InitializingBe
         boolean include;
 
         // Initialize default include policy.
-        include = inclusions.length == 0 ? true: false;
+        include = this.inclusions.length == 0 ? true: false;
         
         // Test against include list.
-        for (int i=0; i<inclusions.length; i++) {
-            if (uri.startsWith(inclusions[i])) {
+        for (int i=0; i<this.inclusions.length; i++) {
+            if (uri.startsWith(this.inclusions[i])) {
                 include = true;
                 break;
             }
         }
         
         // Test against exclude list.
-        for (int i=0; i<exclusions.length; i++) {
-            if (uri.startsWith(exclusions[i])) {
+        for (int i=0; i<this.exclusions.length; i++) {
+            if (uri.startsWith(this.exclusions[i])) {
                 include = false;
                 break;
             }
@@ -102,19 +102,19 @@ public class URIPrefixFilterCriterion implements FilterCriterion, InitializingBe
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("URIPrefix[");
-        for (int i=0; i<inclusions.length; i++) {
+        for (int i=0; i<this.inclusions.length; i++) {
             buffer.append("inc=");
-            buffer.append(inclusions[i]);
-            if (i < inclusions.length-1) buffer.append(", ");
+            buffer.append(this.inclusions[i]);
+            if (i < this.inclusions.length-1) buffer.append(", ");
         }
         
-        if (exclusions.length > 0 && inclusions.length > 0) 
+        if (this.exclusions.length > 0 && this.inclusions.length > 0) 
             buffer.append(", ");
         
-        for (int i=0; i<exclusions.length; i++) {
+        for (int i=0; i<this.exclusions.length; i++) {
             buffer.append("ex=");
-            buffer.append(exclusions[i]);
-            if (i < exclusions.length-1) buffer.append(", ");
+            buffer.append(this.exclusions[i]);
+            if (i < this.exclusions.length-1) buffer.append(", ");
         }
         
         buffer.append("]");

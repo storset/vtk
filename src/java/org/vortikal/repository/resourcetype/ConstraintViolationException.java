@@ -58,7 +58,7 @@ public class ConstraintViolationException extends RepositoryException {
     }
 
     public String getStatusCode() {
-        return statusCode;
+        return this.statusCode;
     }
 
     public void setStatusCode(String statusCode) {

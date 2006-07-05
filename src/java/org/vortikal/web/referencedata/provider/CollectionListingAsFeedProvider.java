@@ -118,12 +118,12 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
     }
     
     public void afterPropertiesSet() {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "JavaBean Property 'repository' must be set");
         }
 
-        if (browsingService == null) {
+        if (this.browsingService == null) {
             throw new BeanInitializationException(
                     "JavaBean Property 'browsingService' must be set");    
         }
@@ -146,13 +146,13 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
         String token = securityContext.getToken();
         Resource[] children = null;
 
-        Resource resource = repository.retrieve(token, uri, true);
+        Resource resource = this.repository.retrieve(token, uri, true);
         if (!resource.isCollection()) {
             // Can't do anything unless resource is a collection
             return;
         }
 
-        children = repository.listChildren(token, uri, true);
+        children = this.repository.listChildren(token, uri, true);
         children = filterChildren(children);
         feedModel.put("resources", children);
    
@@ -179,7 +179,7 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
         feedModel.put("description", description);
         
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        String resourceUrl = browsingService.constructLink(resource, principal);
+        String resourceUrl = this.browsingService.constructLink(resource, principal);
         feedModel.put("url", resourceUrl);
         
         model.put("feedModel", feedModel);

@@ -77,10 +77,10 @@ public abstract class AbstractRepositoryEventDumper
     
 
     public void afterPropertiesSet() {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException("Bean property 'repository' not set.");
         }
-        if (id == null) {
+        if (this.id == null) {
             throw new BeanInitializationException("Bean property 'id' not set.");
         }
     }

@@ -46,7 +46,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -153,8 +152,8 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         
-        Acl acl = repository.getACL(token, uri);
-        Resource resource = repository.retrieve(token, uri, false);
+        Acl acl = this.repository.getACL(token, uri);
+        Resource resource = this.repository.retrieve(token, uri, false);
         Map editURLs = new HashMap();
 
         if (!acl.isInherited()) {
@@ -171,8 +170,8 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         }
 
         try {
-            if (aclInheritanceService != null) {
-                String url = aclInheritanceService.constructLink(
+            if (this.aclInheritanceService != null) {
+                String url = this.aclInheritanceService.constructLink(
                     resource, securityContext.getPrincipal());
                 editURLs.put("inheritance", url);
             }

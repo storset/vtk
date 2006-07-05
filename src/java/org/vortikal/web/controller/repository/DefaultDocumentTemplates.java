@@ -114,7 +114,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
 
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "Required bean property 'repository' not set.");
         }
@@ -145,7 +145,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
     private void loadTemplates() throws IOException {
 
-        if (!parseCategoryTemplates && !parseTopTemplates) return;
+        if (!this.parseCategoryTemplates && !this.parseTopTemplates) return;
         
         try {
             Resource templatesCollectionResource = this.repository.retrieve(
@@ -224,7 +224,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
 
     private Map findCategoryTemplates() throws IOException {
-        Resource[] templates = repository.listChildren(trustedToken, templatesCollection, true);
+        Resource[] templates = this.repository.listChildren(this.trustedToken, this.templatesCollection, true);
 
         Map categories = new HashMap();
         
@@ -266,7 +266,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     private void findTemplatesRecursively(Resource parent, Map templates) 
         throws IOException {
 
-        Resource[] children = repository.listChildren(trustedToken, parent.getURI(), true);
+        Resource[] children = this.repository.listChildren(this.trustedToken, parent.getURI(), true);
         for (int i = 0; i < children.length; i++) {
             Resource child = children[i];
             if (!child.isCollection()) {

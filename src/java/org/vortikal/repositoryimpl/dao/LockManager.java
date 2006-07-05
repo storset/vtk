@@ -90,7 +90,7 @@ public class LockManager {
      * @param uris the list of URIs to lock
      */
     public String[] lock(String[] uris) {
-        Arrays.sort(uris, comparator);
+        Arrays.sort(uris, this.comparator);
         List claimedLocks = new ArrayList();
         for (int i = 0; i < uris.length; i++) {
             Lock lock = null;
@@ -101,8 +101,8 @@ public class LockManager {
                 iterations++;
                 lock = getLock(uris[i]);
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("claiming " + uris[i]);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("claiming " + uris[i]);
                 }
 
                 lock.claim(this.iterationWaitTimeout);
@@ -117,21 +117,21 @@ public class LockManager {
                  * this.lmaxIterations times.  */
 
                 if (lock.isValid()) {                    
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("suceeded: locking " + uris[i]
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("suceeded: locking " + uris[i]
                                      + ", iterations = " + iterations);
                     }
                     haveLock = true;
                     claimedLocks.add(uris[i]);
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("failed: locking " + uris[i]
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("failed: locking " + uris[i]
                                      + ", iterations = " + iterations);
                     }
-                    if (iterations > maxIterations) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("giving up after " +
-                                         maxIterations + " iterations");
+                    if (iterations > this.maxIterations) {
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.debug("giving up after " +
+                                         this.maxIterations + " iterations");
                         }
                         throw new RuntimeException(
                             "Thread " + Thread.currentThread().getName() +
@@ -184,7 +184,7 @@ public class LockManager {
      * @param uris the URIs to unlock.
      */
     public void unlock(String[] uris) {
-        Arrays.sort(uris, comparator);
+        Arrays.sort(uris, this.comparator);
 
         for (int i = 0; i < uris.length; i++) {
             Lock lock = getLock(uris[i]);
@@ -203,13 +203,13 @@ public class LockManager {
     private synchronized Lock getLock(String uri) {
         Integer hashCode = new Integer(uri.hashCode());
 
-        if (!locks.containsKey(hashCode)) {
+        if (!this.locks.containsKey(hashCode)) {
             Lock lock = new Lock(uri);
 
-            locks.put(hashCode, lock);
+            this.locks.put(hashCode, lock);
         }
 
-        return (Lock) locks.get(hashCode);
+        return (Lock) this.locks.get(hashCode);
     }
 
     /**
@@ -220,8 +220,8 @@ public class LockManager {
     private synchronized void disposeLock(String uri) {
         Integer hashCode = new Integer(uri.hashCode());
 
-        if (locks.containsKey(hashCode)) {
-            locks.remove(hashCode);
+        if (this.locks.containsKey(hashCode)) {
+            this.locks.remove(hashCode);
         }
     }
 
@@ -247,7 +247,7 @@ public class LockManager {
          * @return a <code>boolean</code>
          */
         public boolean isValid() {
-            return Thread.currentThread() == owner;
+            return Thread.currentThread() == this.owner;
         }
 
 
@@ -260,28 +260,28 @@ public class LockManager {
          */
         public synchronized void release() {
  
-            if (logger.isDebugEnabled()) {
-                logger.debug("releasing " + uri);
+            if (LockManager.this.logger.isDebugEnabled()) {
+                LockManager.this.logger.debug("releasing " + this.uri);
             }
 
-            if (owner == null) {
+            if (this.owner == null) {
 
                 throw new RuntimeException(
                     "Thread " + Thread.currentThread().getName() +
-                    " tried to release a lock on " + uri +
+                    " tried to release a lock on " + this.uri +
                     " without an owner");
 
             }
 
-            if (Thread.currentThread() != owner) {
+            if (Thread.currentThread() != this.owner) {
 
                 throw new RuntimeException(
                     "Thread " + Thread.currentThread().getName() +
-                    " trying to release a lock on " + uri +
-                    " owned by thread " + owner.getName());
+                    " trying to release a lock on " + this.uri +
+                    " owned by thread " + this.owner.getName());
             }
 
-            disposeLock(uri);
+            disposeLock(this.uri);
             notifyAll();
         }
 
@@ -303,11 +303,11 @@ public class LockManager {
          */
         public synchronized void claim(long timeout) {
 
-            if (owner == null) {
+            if (this.owner == null) {
 
                 // We successfully claimed the lock. This lock is only
                 // valid for this thread.
-                owner = Thread.currentThread();
+                this.owner = Thread.currentThread();
 
             } else {
 
@@ -319,7 +319,7 @@ public class LockManager {
                     wait(timeout);
 
                 } catch (InterruptedException e) {
-                    logger.warn(e);
+                    LockManager.this.logger.warn(e);
                 }
             }
         }

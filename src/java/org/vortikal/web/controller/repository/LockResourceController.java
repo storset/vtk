@@ -81,16 +81,16 @@ public class LockResourceController extends AbstractController {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
         if (resource.getLock() == null) {
-            repository.lock(token, uri,
+            this.repository.lock(token, uri,
                             securityContext.getPrincipal().getQualifiedName(), "0",
                             this.requestedTimeoutSeconds, null);
         }
         
-        return new ModelAndView(viewName);
+        return new ModelAndView(this.viewName);
     }
 
 }

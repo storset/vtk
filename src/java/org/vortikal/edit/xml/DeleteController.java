@@ -72,8 +72,8 @@ public class DeleteController extends AbstractXmlEditController {
             while (enumeration.hasMoreElements()) {
                 String param = (String) enumeration.nextElement();
                 if (param.matches("\\d+(\\.\\d+)*")) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Marking element " + param
+                    if (this.logger.isDebugEnabled())
+                        this.logger.debug("Marking element " + param
                                 + " for deletion");
                     Element e = document.findElementByPath(param);
                     e.addContent(new ProcessingInstruction("marked", "true"));
@@ -83,11 +83,11 @@ public class DeleteController extends AbstractXmlEditController {
             if (v.size() > 0) {
                 document.setDocumentMode("delete");
                 document.setElements(v);
-                return new ModelAndView(viewName, model);
+                return new ModelAndView(this.viewName, model);
             }
             
             setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_FOR_DELETION");
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         
         } else if (mode.equals("delete")) {
             String con = request.getParameter("cont");
@@ -102,12 +102,12 @@ public class DeleteController extends AbstractXmlEditController {
 
                 document.setDocumentMode("default");
                 document.resetElements();
-                document.save(repository);
+                document.save(this.repository);
             } else {
                 document.setDocumentMode("default");
                 document.resetElements();
             }
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         }
         return null;
     }

@@ -367,27 +367,27 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
                 } catch (InterruptedException ie) {}
                 
                 try {
-                    store.createResource(workdir, true);
-                    store.createResource(workdir + "/a", true);
-                    store.createResource(workdir + "/a/AN_EMPTY_FILE.dat", false);
-                    store.createResource(workdir + "/a/AN_EMPTY_FILE2.dat", false);
+                    this.store.createResource(this.workdir, true);
+                    this.store.createResource(this.workdir + "/a", true);
+                    this.store.createResource(this.workdir + "/a/AN_EMPTY_FILE.dat", false);
+                    this.store.createResource(this.workdir + "/a/AN_EMPTY_FILE2.dat", false);
                     
-                    store.createResource(workdir + "/worker_name.txt", false);
-                    store.storeContent(workdir + "/worker_name.txt", new ByteArrayInputStream(name.getBytes()));
+                    this.store.createResource(this.workdir + "/worker_name.txt", false);
+                    this.store.storeContent(this.workdir + "/worker_name.txt", new ByteArrayInputStream(this.name.getBytes()));
                     
-                    store.copy(workdir + "/a", workdir + "/Copy of a (1)");
-                    store.copy(workdir + "/a", workdir + "/Copy of a (2)");
+                    this.store.copy(this.workdir + "/a", this.workdir + "/Copy of a (1)");
+                    this.store.copy(this.workdir + "/a", this.workdir + "/Copy of a (2)");
                     
-                    store.copy(workdir + "/a", workdir + "/x");
-                    store.deleteResource(workdir + "/a");
-                    store.deleteResource(workdir + "/Copy of a (1)");
-                    store.deleteResource(workdir + "/Copy of a (2)");
+                    this.store.copy(this.workdir + "/a", this.workdir + "/x");
+                    this.store.deleteResource(this.workdir + "/a");
+                    this.store.deleteResource(this.workdir + "/Copy of a (1)");
+                    this.store.deleteResource(this.workdir + "/Copy of a (2)");
                     
-                    store.copy(workdir + "/worker_name.txt", workdir + "/name.txt");
-                    store.deleteResource(workdir + "/worker_name.txt");
+                    this.store.copy(this.workdir + "/worker_name.txt", this.workdir + "/name.txt");
+                    this.store.deleteResource(this.workdir + "/worker_name.txt");
                     
                 } catch (IOException io) {
-                    fail("Un-expected IOException while working in '" + workdir + "': " + io.getMessage());
+                    fail("Un-expected IOException while working in '" + this.workdir + "': " + io.getMessage());
                 }
             }
         }

@@ -102,26 +102,26 @@ public class FileURIResolver implements StylesheetURIResolver, InitializingBean 
     
 
     public final Source resolve(String href, String base) throws TransformerException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Resolving: [href = " + href + ", base: " + base + "]");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Resolving: [href = " + href + ", base: " + base + "]");
         }
 
         String path = getAbsolutePath(href, base);
         if (path == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to obtain absolute path for [href = '" + href +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unable to obtain absolute path for [href = '" + href +
                              "', base = '" + base+ "']");
             }
             return null;
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Path after expansion: '" + path + "'");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Path after expansion: '" + path + "'");
         }
 
         try {
             InputStream inStream = getInputStream(path);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Resolved URI '" + path + "' from [href = '" +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Resolved URI '" + path + "' from [href = '" +
                              href + "', base = '" + base + "']");
             }
             StreamSource streamSource = new StreamSource(inStream);

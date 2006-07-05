@@ -123,10 +123,10 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
         try {
             Map templateLocations = 
                     BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                            applicationContext, FreeMarkerTemplateLocation.class, true, false);
+                            this.applicationContext, FreeMarkerTemplateLocation.class, true, false);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Found template locations: " + templateLocations);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Found template locations: " + templateLocations);
             }
 
             if (templateLocations.isEmpty()) 

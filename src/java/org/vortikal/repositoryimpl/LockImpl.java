@@ -58,19 +58,19 @@ public class LockImpl implements Lock {
     }
 
     public String getOwnerInfo() {
-        return ownerInfo;
+        return this.ownerInfo;
     }
 
     public String getDepth() {
-        return depth;
+        return this.depth;
     }
 
     public String getLockToken() {
-        return lockToken;
+        return this.lockToken;
     }
 
     public Date getTimeout() {
-        return timeout;
+        return this.timeout;
     }
 
     public Principal getPrincipal() {

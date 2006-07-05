@@ -73,15 +73,15 @@ public class HeadController extends AbstractWebdavController {
         try {
             
             Resource resource =
-                repository.retrieve(token, uri, false);
+                this.repository.retrieve(token, uri, false);
 
             if (resource.isCollection()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("HEAD on collection: setting status 404");
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("HEAD on collection: setting status 404");
                 }
                 throw new ResourceNotFoundException(uri);
             }
-            if (supportIfHeaders) {
+            if (this.supportIfHeaders) {
                 IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
                 if (!ifMatchHeader.matches(resource)) {
                     throw new PreconditionFailedException();
@@ -97,8 +97,8 @@ public class HeadController extends AbstractWebdavController {
             return new ModelAndView("HEAD", model);
             
         } catch (ResourceNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceNotFoundException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceNotFoundException for URI "
                              + uri);
             }
 
@@ -108,8 +108,8 @@ public class HeadController extends AbstractWebdavController {
             return new ModelAndView("HTTP_STATUS_VIEW", model);
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -118,8 +118,8 @@ public class HeadController extends AbstractWebdavController {
             return new ModelAndView("HTTP_STATUS_VIEW", model);
 
         } catch (PreconditionFailedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught PreconditionFailedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught PreconditionFailedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -127,8 +127,8 @@ public class HeadController extends AbstractWebdavController {
             return new ModelAndView("HTTP_STATUS_VIEW", model);
 
         } catch (ResourceNotModifiedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceNotModifiedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceNotModifiedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -136,7 +136,7 @@ public class HeadController extends AbstractWebdavController {
             return new ModelAndView("HTTP_STATUS_VIEW", model);
             
         } catch (IOException e) {
-            logger.info("Caught IOException for URI " + uri);
+            this.logger.info("Caught IOException for URI " + uri);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));

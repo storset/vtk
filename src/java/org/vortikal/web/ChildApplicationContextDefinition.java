@@ -110,8 +110,8 @@ public class ChildApplicationContextDefinition
             this.configLocation = configLocation;
 
             findParentWebApplicationContext(parent);
-            if (parentWebApplicationContext != null) {
-                setServletContext(parentWebApplicationContext.getServletContext());
+            if (this.parentWebApplicationContext != null) {
+                setServletContext(this.parentWebApplicationContext.getServletContext());
             }
 
             setParent(parent);
@@ -126,7 +126,7 @@ public class ChildApplicationContextDefinition
 
         public Resource getResourceByPath(String path) {
 
-            boolean inWebApplicationContext = (parentWebApplicationContext != null);
+            boolean inWebApplicationContext = (this.parentWebApplicationContext != null);
             
             if (inWebApplicationContext && path.startsWith("/")) {
                 ServletContext servletContext =
@@ -174,7 +174,7 @@ public class ChildApplicationContextDefinition
             }
             
             if (parent instanceof WebApplicationContext) {
-                parentWebApplicationContext = (WebApplicationContext) parent;
+                this.parentWebApplicationContext = (WebApplicationContext) parent;
                 return;
             }
 

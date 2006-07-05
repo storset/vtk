@@ -70,7 +70,7 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
 
     public void setPattern(String pattern) {
         if (pattern != null) {
-            patternsList.add(Pattern.compile(pattern));
+            this.patternsList.add(Pattern.compile(pattern));
         }
     }
     
@@ -115,7 +115,7 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
         sb.append(super.toString());
         sb.append("; header = ").append(this.header);
         sb.append("; patterns = ").append(this.patternsList);
-        sb.append("; invert = ").append(invert);
+        sb.append("; invert = ").append(this.invert);
 		
         return sb.toString();
     }
@@ -125,7 +125,7 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
                            Principal principal) {
         boolean matched = match(request, resource, principal); 
         
-        if (invert) return !matched;
+        if (this.invert) return !matched;
         
         return matched;
 
@@ -139,7 +139,7 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
         }
         
         
-        for (Iterator iter = patternsList.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.patternsList.iterator(); iter.hasNext();) {
             Pattern pattern = (Pattern) iter.next();
             if (pattern.matcher(headerValue).matches()) {
                 return true;

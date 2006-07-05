@@ -26,8 +26,8 @@ public class IfMatchTestCase extends MockObjectTestCase {
         super.setUp();
                 
         Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(etag));
-        resource = (Resource) mockResource.proxy();
+        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(this.etag));
+        this.resource = (Resource) mockResource.proxy();
     }
 
     protected void tearDown() throws Exception {
@@ -36,31 +36,31 @@ public class IfMatchTestCase extends MockObjectTestCase {
     
     public void testCorrectEtag() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("If-Match", etag);
+        request.addHeader("If-Match", this.etag);
         IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
-        assertTrue(ifMatchHeader.matches(resource));
+        assertTrue(ifMatchHeader.matches(this.resource));
     }
     
     public void testWrongEtag() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("If-Match", anotherEtag);
+        request.addHeader("If-Match", this.anotherEtag);
         IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
-        assertFalse(ifMatchHeader.matches(resource));
+        assertFalse(ifMatchHeader.matches(this.resource));
     }
     
     public void testAllEtag() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("If-Match", "*");
         IfNoneMatchHeader ifNoneMatchHeader = new IfNoneMatchHeader(request);
-        assertTrue(ifNoneMatchHeader.matches(resource));
-        resource.getEtag(); //to make to mock object happy
+        assertTrue(ifNoneMatchHeader.matches(this.resource));
+        this.resource.getEtag(); //to make to mock object happy
     }
     
     public void testNoEtag() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
-        assertTrue(ifMatchHeader.matches(resource));
-        resource.getEtag(); //to make to mock object happy
+        assertTrue(ifMatchHeader.matches(this.resource));
+        this.resource.getEtag(); //to make to mock object happy
     }
 
 

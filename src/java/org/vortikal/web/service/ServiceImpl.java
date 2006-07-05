@@ -124,12 +124,12 @@ public class ServiceImpl
     
 
     public List getChildren() {
-        return services;
+        return this.services;
     }
 
 
     public Object getHandler() {
-        return handler;
+        return this.handler;
     }
 	
 
@@ -163,7 +163,7 @@ public class ServiceImpl
 	
 
     public List getAssertions() {
-        return assertions;
+        return this.assertions;
     }
 	
 
@@ -177,7 +177,7 @@ public class ServiceImpl
 
     
     public String getName() {
-        return name;
+        return this.name;
     }
 
 	
@@ -188,7 +188,7 @@ public class ServiceImpl
 
 
     public Service getParent() {
-        return parent;
+        return this.parent;
     }
 	
 
@@ -223,14 +223,14 @@ public class ServiceImpl
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters) {
         List assertions = getAllAssertions(this);
-        return linkConstructor.construct(resource, principal, parameters, assertions,
+        return this.linkConstructor.construct(resource, principal, parameters, assertions,
                                          this, true);
     }
 
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters, boolean matchAssertions) {
         List assertions = getAllAssertions(this);
-        return linkConstructor.construct(resource, principal, parameters, assertions, this,
+        return this.linkConstructor.construct(resource, principal, parameters, assertions, this,
                                          matchAssertions);
     }
 	
@@ -302,7 +302,7 @@ public class ServiceImpl
     
 
     public List getHandlerInterceptors() {
-        return handlerInterceptors;
+        return this.handlerInterceptors;
     }
 
     
@@ -315,7 +315,7 @@ public class ServiceImpl
 
 
     public AuthenticationChallenge getAuthenticationChallenge() {
-        return authenticationChallenge;
+        return this.authenticationChallenge;
     }
 
 
@@ -326,7 +326,7 @@ public class ServiceImpl
     
 
     public int getOrder() {
-        return order;
+        return this.order;
     }
     
 
@@ -348,7 +348,7 @@ public class ServiceImpl
     private List getUnknownServiceChildren() {
         // find all services, and sort out those of category 'category';
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-            applicationContext, Service.class, true, false);
+            this.applicationContext, Service.class, true, false);
     
         List allServices = new ArrayList(matchingBeans.values());
         List list = new ArrayList(allServices);

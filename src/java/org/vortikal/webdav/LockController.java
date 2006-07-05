@@ -99,11 +99,11 @@ public class LockController extends AbstractWebdavController {
             depth = depth.toLowerCase();
             int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));
            
-            boolean exists = repository.exists(token, uri);
+            boolean exists = this.repository.exists(token, uri);
 
             if (exists) {
-                resource = repository.retrieve(token, uri, false);
-                ifHeader = new IfHeaderImpl(request);
+                resource = this.repository.retrieve(token, uri, false);
+                this.ifHeader = new IfHeaderImpl(request);
                 verifyIfHeader(resource, true);           
 
                 if (request.getContentLength() <= 0) { // -1 if not known
@@ -123,26 +123,26 @@ public class LockController extends AbstractWebdavController {
 
 
             if (!exists) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Creating null resource");
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Creating null resource");
                 }
-                repository.createDocument(token, uri);
+                this.repository.createDocument(token, uri);
             }
             
 
 
-            if (logger.isDebugEnabled()) {
+            if (this.logger.isDebugEnabled()) {
                 String msg = "Atttempting to lock " + uri + " with timeout: " + timeout
                         + " seconds, " + "depth: " + depth;
                 if (lockToken != null)
                     msg += " (refreshing with token: " + lockToken + ")";
-                logger.debug(msg);
+                this.logger.debug(msg);
             }
 
-            resource = repository.lock(token, uri, ownerInfo, depth, timeout, lockToken);
+            resource = this.repository.lock(token, uri, ownerInfo, depth, timeout, lockToken);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Locking " + uri + " succeeded");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Locking " + uri + " succeeded");
             }
 
             //Resource lockedResource = repository.retrieve(token, uri, false);
@@ -152,30 +152,30 @@ public class LockController extends AbstractWebdavController {
             return new ModelAndView("LOCK", model);
 
         } catch (InvalidRequestException e) {
-            logger.info("Got InvalidRequestException for URI " + uri, e);
+            this.logger.info("Got InvalidRequestException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
                     HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (ResourceNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Got ResourceNotFoundException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Got ResourceNotFoundException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
                     HttpServletResponse.SC_NOT_FOUND));
 
         } catch (FailedDependencyException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Got FailedDependencyException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Got FailedDependencyException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
                     HttpServletResponse.SC_PRECONDITION_FAILED));
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Got ResourceLockedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Got ResourceLockedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model
@@ -183,23 +183,23 @@ public class LockController extends AbstractWebdavController {
                             HttpUtil.SC_LOCKED));
 
         } catch (IllegalOperationException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Got IllegalOperationException for URI " + uri, e);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Got IllegalOperationException for URI " + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
                     HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ReadOnlyException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Got ReadOnlyException for URI " + uri, e);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Got ReadOnlyException for URI " + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
                     HttpServletResponse.SC_FORBIDDEN));
 
         } catch (IOException e) {
-            logger.info("Got IOException for URI " + uri, e);
+            this.logger.info("Got IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
@@ -324,7 +324,7 @@ public class LockController extends AbstractWebdavController {
                 timeout = Integer.parseInt(timeoutStr);
 
             } catch (NumberFormatException e) {
-                logger.warn("Invalid timeout header: " + timeoutHeader);
+                this.logger.warn("Invalid timeout header: " + timeoutHeader);
             }
         }
 

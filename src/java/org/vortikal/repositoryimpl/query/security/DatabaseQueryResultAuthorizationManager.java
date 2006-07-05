@@ -82,13 +82,13 @@ public final class DatabaseQueryResultAuthorizationManager implements
 
     public void authorizeQueryResults(String token, List rsiList) 
         throws QueryAuthorizationException {
-        Principal principal = tokenManager.getPrincipal(token);
+        Principal principal = this.tokenManager.getPrincipal(token);
         
-        if (noAuthorizationCheckForPrincipals != null
+        if (this.noAuthorizationCheckForPrincipals != null
             && principal != null 
-            && noAuthorizationCheckForPrincipals.contains(
+            && this.noAuthorizationCheckForPrincipals.contains(
                                             principal.getQualifiedName())) {
-            logger.info("Auto-authorizing all results for principal '" + 
+            this.logger.info("Auto-authorizing all results for principal '" + 
                     principal + "'");
             
             for (Iterator i = rsiList.iterator(); i.hasNext();) {
@@ -106,10 +106,10 @@ public final class DatabaseQueryResultAuthorizationManager implements
         
         // XXX: Resolve group names and add to list of principal names
         try {
-            indexDataAccessor.processQueryResultsAuthorization(principalNames, 
+            this.indexDataAccessor.processQueryResultsAuthorization(principalNames, 
                                                             rsiList);
         } catch (IOException io) {
-            logger.warn("IOException while authorizing query result list: " 
+            this.logger.warn("IOException while authorizing query result list: " 
                                                             + io.getMessage());
             throw new QueryAuthorizationException(io.getMessage());
         }

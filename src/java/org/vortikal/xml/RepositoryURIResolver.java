@@ -87,7 +87,7 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
     
 
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "Property 'repository' must be set");
         }
@@ -105,7 +105,7 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
         }
 
         try {
-            Resource r = repository.retrieve(token, path,
+            Resource r = this.repository.retrieve(token, path,
                                              this.retrieveForProcessing);
             return r.getLastModified();
 
@@ -124,7 +124,7 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
                     token = SecurityContext.getSecurityContext().getToken();
                 }
             }
-            InputStream inputStream = repository.getInputStream(
+            InputStream inputStream = this.repository.getInputStream(
                 token, path, this.retrieveForProcessing);
             return inputStream;
         } catch (RepositoryException e) {

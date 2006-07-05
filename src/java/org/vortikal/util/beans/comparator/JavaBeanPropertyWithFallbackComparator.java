@@ -61,13 +61,13 @@ public class JavaBeanPropertyWithFallbackComparator implements Comparator {
 //        if (propertyValue1 == null)
 //            propertyValue1 = wrapper1.getPropertyValue(fallbackPropertyName);
         if (propertyValue1.toString().equals(""))
-            propertyValue1 = wrapper1.getPropertyValue(fallbackPropertyName);
+            propertyValue1 = wrapper1.getPropertyValue(this.fallbackPropertyName);
 
         Object propertyValue2 = wrapper2.getPropertyValue(this.propertyName);
 //        if (propertyValue2 == null)
 //            propertyValue2 = wrapper2.getPropertyValue(fallbackPropertyName);
         if (propertyValue2.toString().equals(""))
-            propertyValue2 = wrapper2.getPropertyValue(fallbackPropertyName);
+            propertyValue2 = wrapper2.getPropertyValue(this.fallbackPropertyName);
 
         if (!(propertyValue1 instanceof Comparable)) {
             throw new IllegalArgumentException(

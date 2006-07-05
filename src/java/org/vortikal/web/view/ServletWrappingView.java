@@ -176,8 +176,8 @@ public class ServletWrappingView
         this.servlet.service(request, wrappedResponse);
         String contentType = wrappedResponse.getContentType();
         if (contentType == null || "".equals(contentType.trim())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Wrapped servlet did not set Content-Type. Using default: "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Wrapped servlet did not set Content-Type. Using default: "
                              + this.defaultContentType);
             }
 
@@ -201,15 +201,15 @@ public class ServletWrappingView
         ServletResponse response = wrappedResponse.getResponse();
         ServletOutputStream outStream = response.getOutputStream();
         byte[] content = wrappedResponse.getContentBuffer();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Write response: Content-Length: " + content.length
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Write response: Content-Length: " + content.length
                          + ", Content-Type: " + contentType);
         }
         response.setContentType(contentType);
         response.setContentLength(content.length);
         outStream.write(content);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Wrote " + content.length + " bytes");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Wrote " + content.length + " bytes");
         }
         outStream.flush();
         outStream.close();

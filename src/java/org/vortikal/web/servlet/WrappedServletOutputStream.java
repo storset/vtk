@@ -55,35 +55,35 @@ public class WrappedServletOutputStream extends ServletOutputStream {
     }
 
     public void print(boolean b) throws IOException {
-        this.out.write(String.valueOf(b).getBytes(characterEncoding));
+        this.out.write(String.valueOf(b).getBytes(this.characterEncoding));
     }
         
     public void print(char c) throws IOException {
-        this.out.write(String.valueOf(c).getBytes(characterEncoding));
+        this.out.write(String.valueOf(c).getBytes(this.characterEncoding));
     }
         
     public void print(int n) throws IOException {
-        this.out.write(String.valueOf(n).getBytes(characterEncoding));
+        this.out.write(String.valueOf(n).getBytes(this.characterEncoding));
     }
 
     public void print(long l) throws IOException {
-        this.out.write(String.valueOf(l).getBytes(characterEncoding));
+        this.out.write(String.valueOf(l).getBytes(this.characterEncoding));
     }
 
     public void print(String s) throws IOException {
-        this.out.write(s.getBytes(characterEncoding));
+        this.out.write(s.getBytes(this.characterEncoding));
     }
 
     public void print(float f) throws IOException {
-        this.out.write(String.valueOf(f).getBytes(characterEncoding));
+        this.out.write(String.valueOf(f).getBytes(this.characterEncoding));
     }
 
     public void print(double d) throws IOException {
-        this.out.write(String.valueOf(d).getBytes(characterEncoding));
+        this.out.write(String.valueOf(d).getBytes(this.characterEncoding));
     }
 
     public void println() throws IOException {
-        this.out.write("\r\n".getBytes(characterEncoding));
+        this.out.write("\r\n".getBytes(this.characterEncoding));
     }
 
     public void println(String s) throws IOException {

@@ -32,8 +32,6 @@ package org.vortikal.xml;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -139,15 +137,15 @@ public class TransformerManager implements InitializingBean {
     
 
     public void afterPropertiesSet() throws Exception {
-        if (stylesheetReferenceResolvers == null) {
+        if (this.stylesheetReferenceResolvers == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'stylesheetReferenceResolvers' must be set");
         }
-        if (compilationURIResolver == null) {
+        if (this.compilationURIResolver == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'compilationURIResolvers' must be set");
         }
-        if (transformationURIResolver == null) {
+        if (this.transformationURIResolver == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'transformationURIResolvers' must be set");
         }
@@ -185,7 +183,7 @@ public class TransformerManager implements InitializingBean {
         }
 
 
-        Date lastCompile = stylesheetRegistry.getLastModified(stylesheetIdentifier);
+        Date lastCompile = this.stylesheetRegistry.getLastModified(stylesheetIdentifier);
         Date lastModified = resolver.getLastModified(stylesheetIdentifier);
         if (logger.isDebugEnabled()) {
             logger.debug("Stylesheet '" + stylesheetIdentifier
@@ -195,17 +193,17 @@ public class TransformerManager implements InitializingBean {
 
         Templates templates = null;
 
-        if (alwaysCompile || lastCompile == null || lastModified == null ||
+        if (this.alwaysCompile || lastCompile == null || lastModified == null ||
             (lastModified.getTime() > lastCompile.getTime())) {
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Compiling stylesheet '" + stylesheetIdentifier);
             }
-            templates = stylesheetRegistry.compile(
+            templates = this.stylesheetRegistry.compile(
                 stylesheetIdentifier, this.compilationURIResolver, lastModified);
         }
         
-        templates = stylesheetRegistry.getTemplates(stylesheetIdentifier);
+        templates = this.stylesheetRegistry.getTemplates(stylesheetIdentifier);
 
         if (templates == null) {
             throw new StylesheetCompilationException(

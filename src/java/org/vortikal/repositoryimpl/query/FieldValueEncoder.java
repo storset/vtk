@@ -83,7 +83,7 @@ public final class FieldValueEncoder {
      * @return
      */
     public static String encodeIntegerToString(int i) {
-        long uint = (long)i + 0x80000000L;
+        long uint = i + 0x80000000L;
         char[] hex = Long.toHexString(uint).toCharArray();
         char[] output = {'0','0','0','0','0','0','0','0'};
         System.arraycopy(hex, 0, output, 8-hex.length, hex.length);
@@ -251,7 +251,7 @@ public final class FieldValueEncoder {
         
         int n = 0;
         for (int i=3; i != -1; i--) {
-            n |= ((int)value[i] & BYTE_MASK) << i*8;
+            n |= (value[i] & BYTE_MASK) << i*8;
         }
         
         return n;
@@ -275,9 +275,9 @@ public final class FieldValueEncoder {
         byte ch = 0x00;
         for (int i=0; i<8; i++) {
             ch = (byte)((ulong[i] >>> 4) & 0x0F);
-            output[2*i] = HEX_CHARS[(int)ch];
+            output[2*i] = HEX_CHARS[ch];
             ch = (byte)(ulong[i] & 0x0F);
-            output[2*i+1] = HEX_CHARS[(int)ch];
+            output[2*i+1] = HEX_CHARS[ch];
         }
 
         return String.valueOf(output);

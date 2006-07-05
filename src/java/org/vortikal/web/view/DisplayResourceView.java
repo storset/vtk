@@ -128,7 +128,7 @@ public class DisplayResourceView extends AbstractView
     private ReferenceDataProvider[] referenceDataProviders;
     
     public ReferenceDataProvider[] getReferenceDataProviders() {
-        return referenceDataProviders;
+        return this.referenceDataProviders;
     }
 
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
@@ -326,7 +326,7 @@ public class DisplayResourceView extends AbstractView
     
     protected void setEtagHeader(Resource resource, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        if (includeEtagHeader) {
+        if (this.includeEtagHeader) {
             String etag = resource.getEtag();
             if (logger.isDebugEnabled()) {
                 logger.debug("Setting header Etag: " + etag);
@@ -337,7 +337,7 @@ public class DisplayResourceView extends AbstractView
     
     protected void setCacheControlHeader(Resource resource, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        if (includeNoCacheHeader) {
+        if (this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
             if (logger.isDebugEnabled()) {
                 logger.debug("Setting header Cache-Control: no-cache");

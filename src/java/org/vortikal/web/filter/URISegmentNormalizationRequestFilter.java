@@ -77,12 +77,12 @@ public class URISegmentNormalizationRequestFilter implements RequestFilter {
             
             this.normalizedURI = removeDotSegments(request.getRequestURI());
 
-            if (normalizeSlashes) {
+            if (URISegmentNormalizationRequestFilter.this.normalizeSlashes) {
                 this.normalizedURI = this.normalizedURI.replaceAll("[/]+", "/");
             }
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Request URI: '" + request.getRequestURI() + 
+            if (URISegmentNormalizationRequestFilter.this.logger.isDebugEnabled()) {
+                URISegmentNormalizationRequestFilter.this.logger.debug("Request URI: '" + request.getRequestURI() + 
                         "', normalized URI: '" + this.normalizedURI + "'");
             }
         }
@@ -159,7 +159,7 @@ public class URISegmentNormalizationRequestFilter implements RequestFilter {
     }
 
     public boolean isNormalizeSlashes() {
-        return normalizeSlashes;
+        return this.normalizeSlashes;
     }
 
     public void setNormalizeSlashes(boolean normalizeSlashes) {

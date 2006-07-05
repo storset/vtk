@@ -59,7 +59,7 @@ public final class FieldInfo {
     }
 
     public String getFieldName() {
-        return fieldName;
+        return this.fieldName;
     }
 
     public int getFieldType() {

@@ -53,11 +53,11 @@ public class RequestParameterAssertion implements Assertion {
     }
 	
     public String getParameterName() {
-        return parameterName;
+        return this.parameterName;
     }
 
     public String getParameterValue() {
-        return parameterValue;
+        return this.parameterValue;
     }
 
     public boolean conflicts(Assertion assertion) {
@@ -90,6 +90,6 @@ public class RequestParameterAssertion implements Assertion {
     }
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        return parameterValue.equals(request.getParameter(parameterName)); 
+        return this.parameterValue.equals(request.getParameter(this.parameterName)); 
     }
 }

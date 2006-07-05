@@ -98,7 +98,7 @@ public class CategoryResolvingFactoryBean
                 objects.remove(categorizable);
         }
         
-        if (comparator != null) {
+        if (this.comparator != null) {
             Collections.sort(objects, this.comparator);
         } else if (this.ordered) {
             Collections.sort(objects, new OrderComparator());
@@ -112,7 +112,7 @@ public class CategoryResolvingFactoryBean
     }
 
     public Object getObject() throws Exception {
-        return getObjectsOfCategory(category).toArray(new Object[0]);
+        return getObjectsOfCategory(this.category).toArray(new Object[0]);
     }
 
     public Class getObjectType() {

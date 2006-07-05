@@ -56,7 +56,7 @@ public class CopyMoveSessionVariableExistsAssertion implements Assertion {
 	
     
     public String getAction() {
-		return action;
+		return this.action;
 	}
 
 
@@ -66,7 +66,7 @@ public class CopyMoveSessionVariableExistsAssertion implements Assertion {
 
 
 	public String getVariableName() {
-		return variableName;
+		return this.variableName;
 	}
 
 

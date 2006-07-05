@@ -86,8 +86,8 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver, Orde
 
             view = new ProxyView(view, this.referenceDataProviders, this.viewWrapper);
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning view '" + view + "' for view name '"
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Returning view '" + view + "' for view name '"
                          + viewName + "', locale '" + locale + "'");
         }
 
@@ -157,8 +157,8 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver, Orde
             }
 
             if (providerList.size() > 0) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found reference data providers for view "
+                if (AbstractWrappingViewResolver.this.logger.isDebugEnabled()) {
+                    AbstractWrappingViewResolver.this.logger.debug("Found reference data providers for view "
                             + this.view + ": " + providerList);
                 }
 
@@ -179,15 +179,15 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver, Orde
                 
                 for (int i = 0; i < this.referenceDataProviders.length; i++) {
                     ReferenceDataProvider provider = this.referenceDataProviders[i];
-                    if (logger.isDebugEnabled())
-                        logger.debug("Invoking reference data provider '"
+                    if (AbstractWrappingViewResolver.this.logger.isDebugEnabled())
+                        AbstractWrappingViewResolver.this.logger.debug("Invoking reference data provider '"
                                 + provider + "'");
                     provider.referenceData(model, request);
                 }
             }
             RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
             
-            if (viewWrapper != null) {
+            if (this.viewWrapper != null) {
                 this.viewWrapper.renderView(this.view, model, requestWrapper, response);
             } else {
                 this.view.render(model, requestWrapper, response);

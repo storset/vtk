@@ -73,20 +73,20 @@ public class DeleteController extends AbstractWebdavController {
         String uri = requestContext.getResourceURI();
         Map model = new HashMap();
         try {
-            ifHeader = new IfHeaderImpl(request);
-            Resource resource = repository.retrieve(token, uri, false);
+            this.ifHeader = new IfHeaderImpl(request);
+            Resource resource = this.repository.retrieve(token, uri, false);
             
             verifyIfHeader(resource, true);
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Attempting to delete resource " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Attempting to delete resource " + uri);
             }
 
             // Delete the document or collection:
-            repository.delete(token, uri);
+            this.repository.delete(token, uri);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Resource " + uri + " deleted");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Resource " + uri + " deleted");
             }
 
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -99,8 +99,8 @@ public class DeleteController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);

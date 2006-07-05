@@ -57,7 +57,7 @@ public class ResourcePropertyFilterCriterion implements FilterCriterion,
     private String requiredValue = "";
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException("Property 'repository' not set.");
         }
     }
@@ -68,9 +68,9 @@ public class ResourcePropertyFilterCriterion implements FilterCriterion,
     
     public boolean isFiltered(String uri) {
         try {
-            Resource resource = repository.retrieve(token, uri, false);
+            Resource resource = this.repository.retrieve(this.token, uri, false);
             Property prop = resource.getProperty(this.propertyNamespace, this.propertyName);
-            if (prop != null && !prop.getValue().equals(requiredValue)) {
+            if (prop != null && !prop.getValue().equals(this.requiredValue)) {
                 return true;
             } 
         } catch (IOException io) {}

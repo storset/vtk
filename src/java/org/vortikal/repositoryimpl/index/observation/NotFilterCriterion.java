@@ -44,7 +44,7 @@ public class NotFilterCriterion implements FilterCriterion,
     private FilterCriterion criterion;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (criterion == null) {
+        if (this.criterion == null) {
             throw new BeanInitializationException("No criterion set.");
         }
     }
@@ -60,7 +60,7 @@ public class NotFilterCriterion implements FilterCriterion,
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("NOT(");
-        buffer.append(criterion.toString());
+        buffer.append(this.criterion.toString());
         buffer.append(")");
         
         return buffer.toString();

@@ -54,7 +54,7 @@ public class RenameCommandValidator implements Validator, InitializingBean {
 
     
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "Property 'repository' cannot be null");
         }
@@ -89,7 +89,7 @@ public class RenameCommandValidator implements Validator, InitializingBean {
             : uri.substring(0, uri.lastIndexOf("/") + 1) + name;
 
         try {
-            boolean exists = repository.exists(token, newURI);
+            boolean exists = this.repository.exists(token, newURI);
             if (exists) {
                 errors.rejectValue("name",
                                    "manage.rename.resource.exists",

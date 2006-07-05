@@ -164,15 +164,15 @@ public class XmlSchemaRegistry {
 
         public SchemaItem(Document doc) {
             this.doc = doc;
-            timestamp = new Date();
+            this.timestamp = new Date();
         }
 
         public Document getDocument() {
-            return doc;
+            return this.doc;
         }
 
         public Date getTimestamp() {
-            return timestamp;
+            return this.timestamp;
         }
     }
 

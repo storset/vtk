@@ -57,8 +57,8 @@ public class ConsoleReader implements CommandReader {
     
 
     public String readLine(PrintStream out) throws IOException {
-        out.print(prompt);
-        return reader.readLine();
+        out.print(this.prompt);
+        return this.reader.readLine();
     }
     
 

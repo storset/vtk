@@ -144,8 +144,8 @@ public class XPathExtractor extends DMSExtractor {
 
             processXPathSelections(bean, resource);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Extracted object '" + bean + "' from URI '" + uri + "'");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Extracted object '" + bean + "' from URI '" + uri + "'");
             }
 
             return bean;
@@ -171,7 +171,7 @@ public class XPathExtractor extends DMSExtractor {
             XPath expr = (XPath) this.compiledExpressions.get(fieldName);
 
             if (!beanWrapper.isWritableProperty(fieldName)) {
-                logger.warn("Not a writable JavaBean property for class "
+                this.logger.warn("Not a writable JavaBean property for class "
                             + this.extractedClass.getName() + ": '" + fieldName + "'");
                 continue;
             }
@@ -180,20 +180,20 @@ public class XPathExtractor extends DMSExtractor {
             try {
                 value = expr.valueOf(document);                
             } catch (Exception e) {
-                logger.warn("Unable extract XPath expression '" + expr 
+                this.logger.warn("Unable extract XPath expression '" + expr 
                             + "' from document " + resource.getURI(), e);
                 continue;
             }
 
             try {
                 beanWrapper.setPropertyValue(fieldName, value);
-                if (logger.isDebugEnabled()) {
-                    logger.debug(
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug(
                         "Set property '" + fieldName + "' to  value '" + value
                         + "' on object '" + object + "' (from XPath '" + expr + "' )");
                 }
             } catch (Exception e) {
-                logger.warn("Unable to set JavaBean property '" + fieldName
+                this.logger.warn("Unable to set JavaBean property '" + fieldName
                             + "' of class " + this.extractedClass.getName()
                             + " to value " + value);
             }

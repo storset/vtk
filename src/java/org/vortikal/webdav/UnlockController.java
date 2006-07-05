@@ -65,26 +65,26 @@ public class UnlockController extends AbstractWebdavController {
         String uri = requestContext.getResourceURI();
         Map model = new HashMap();
         try {
-            ifHeader = new IfHeaderImpl(request);
-            Resource resource = repository.retrieve(token, uri, false);
+            this.ifHeader = new IfHeaderImpl(request);
+            Resource resource = this.repository.retrieve(token, uri, false);
 
             verifyIfHeader(resource, false);
             
             String lockToken = getLockToken(request);
-            logger.debug("lockToken:" + lockToken);
-            logger.debug("resource.getLock():" + resource.getLock());
+            this.logger.debug("lockToken:" + lockToken);
+            this.logger.debug("resource.getLock():" + resource.getLock());
             
             if (resource.getLock() != null && !resource.getLock().getLockToken().equals(lockToken)) {
                 throw new PreconditionFailedException();
             }
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Attempting to unlock " + uri + ", lock token: "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Attempting to unlock " + uri + ", lock token: "
                              + lockToken);
             }
-            repository.unlock(token, uri, lockToken);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unlocking " + uri + " succeeded");
+            this.repository.unlock(token, uri, lockToken);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unlocking " + uri + " succeeded");
             }
 
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -92,39 +92,39 @@ public class UnlockController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (InvalidRequestException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught InvalidRequestException for URI " + uri, e);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught InvalidRequestException for URI " + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (ResourceNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceNotFoundException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceNotFoundException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (PreconditionFailedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught PreconditionFailedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught PreconditionFailedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
             
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
 
         } catch (IOException e) {
-            logger.info("Caught IOException for URI " + uri, e);
+            this.logger.info("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));

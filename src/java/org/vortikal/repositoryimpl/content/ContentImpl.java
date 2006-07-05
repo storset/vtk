@@ -78,7 +78,7 @@ public class ContentImpl implements Content {
             
         }
         
-        Object representation = representations.get(clazz);
+        Object representation = this.representations.get(clazz);
         if (representation == null) {
             // Lazy load representation
             

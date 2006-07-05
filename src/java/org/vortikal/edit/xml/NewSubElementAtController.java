@@ -74,7 +74,7 @@ public class NewSubElementAtController extends AbstractXmlEditController {
             Element element = new Element(elementName);
             document.putElementByPath(path, element);
             documentDefinition.buildElement(element);
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
 
         }
         return null;

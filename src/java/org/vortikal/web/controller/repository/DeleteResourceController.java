@@ -75,17 +75,17 @@ public class DeleteResourceController extends AbstractController implements Init
             HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
 
-        String token = trustedToken;
+        String token = this.trustedToken;
         if (token == null) {
             SecurityContext securityContext = SecurityContext.getSecurityContext();
             token = securityContext.getToken();
         }
         
         String uri = requestContext.getResourceURI();
-        Resource resource = repository.retrieve(token, uri, false);
-        repository.delete(token, uri);
+        Resource resource = this.repository.retrieve(token, uri, false);
+        this.repository.delete(token, uri);
     
-        Resource modelResource = repository.retrieve(token, resource.getParent(), false);
+        Resource modelResource = this.repository.retrieve(token, resource.getParent(), false);
 
         if (this.resourcePath != null) {
             String newUri = URIUtil.getAbsolutePath(this.resourcePath, uri);
@@ -93,7 +93,7 @@ public class DeleteResourceController extends AbstractController implements Init
                 try {
                     modelResource = this.repository.retrieve(token, newUri, false);
                 } catch (Exception e) {
-                    logger.info("Unable to retireve requested resource to view '" + newUri + "'", e);
+                    this.logger.info("Unable to retireve requested resource to view '" + newUri + "'", e);
                     // Do nothing
                 }
             }
@@ -101,11 +101,11 @@ public class DeleteResourceController extends AbstractController implements Init
         
         Map model = new HashMap();
         model.put("resource", modelResource);
-        return new ModelAndView(viewName, model);
+        return new ModelAndView(this.viewName, model);
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (viewName == null)
+        if (this.viewName == null)
             throw new BeanInitializationException("Property 'viewName' must be set");
     }
 
@@ -121,15 +121,15 @@ public class DeleteResourceController extends AbstractController implements Init
     }
     
     protected Repository getRepository() {
-        return repository;
+        return this.repository;
     }
     
     protected String getTrustedToken() {
-        return trustedToken;
+        return this.trustedToken;
     }
 
     protected String getViewName() {
-        return viewName;
+        return this.viewName;
     }
     
 }

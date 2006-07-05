@@ -51,25 +51,25 @@ public class ResultSetImpl implements ResultSet {
     
     public ResultSetImpl() {
         
-        results = new ArrayList();
+        this.results = new ArrayList();
     }
     
     public ResultSetImpl(int initialCapacity) {
-        results = new ArrayList(initialCapacity);
+        this.results = new ArrayList(initialCapacity);
     }
     
     public Object getResult(int index) {
-        return results.get(index);
+        return this.results.get(index);
     }
 
     public List getResults(int maxIndex) {
         int max = Math.min(maxIndex, this.results.size());
         
-        return results.subList(0, max);
+        return this.results.subList(0, max);
     }
    
     public List getResults(int fromIndex, int toIndex) {
-        return results.subList(fromIndex, toIndex);
+        return this.results.subList(fromIndex, toIndex);
     }
 
     public List getAllResults() {
@@ -77,7 +77,7 @@ public class ResultSetImpl implements ResultSet {
     }
 
     public int getSize() {
-        return results.size();
+        return this.results.size();
     }
     
     public void addResult(PropertySet propSet) {

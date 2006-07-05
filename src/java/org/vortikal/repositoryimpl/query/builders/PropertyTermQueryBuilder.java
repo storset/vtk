@@ -56,12 +56,12 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
 
     public Query buildQuery() throws QueryBuilderException {
         
-        TermOperator op = ptq.getOperator();
-        PropertyTypeDefinition propDef = ptq.getPropertyDefinition();
+        TermOperator op = this.ptq.getOperator();
+        PropertyTypeDefinition propDef = this.ptq.getPropertyDefinition();
         
         String fieldName = DocumentMapper.getFieldName(propDef);
 
-        String fieldValue = FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), 
+        String fieldValue = FieldValueMapper.encodeIndexFieldValue(this.ptq.getTerm(), 
                                                             propDef.getType());
         
         if (op == TermOperator.EQ) {

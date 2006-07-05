@@ -134,14 +134,14 @@ public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, Initial
             return parentIds.toString();
  
         } catch (SQLException sqle) {
-            logger.warn("SQLException while fetching parent collection IDs of URI " + uri, sqle);
+            this.logger.warn("SQLException while fetching parent collection IDs of URI " + uri, sqle);
         } finally {
             try {
                 if (conn != null) {
                     conn.close();
                 }
             } catch (SQLException sqle) {
-                logger.warn("SQLException while closing connection.", sqle);
+                this.logger.warn("SQLException while closing connection.", sqle);
             }
         }
         
@@ -174,14 +174,14 @@ public class JDBCIndexResourceIdHelper implements IndexResourceIdHelper, Initial
             stmt.close();
             rs.close();
         } catch (SQLException sqle) {
-            logger.warn("SQLException while fetch resource ID of URI " + uri, sqle);
+            this.logger.warn("SQLException while fetch resource ID of URI " + uri, sqle);
         } finally {
             try {
                 if (conn != null) {
                     conn.close();
                 }
             } catch (SQLException sqle) {
-                logger.warn("SQLException while closing connection.", sqle);
+                this.logger.warn("SQLException while closing connection.", sqle);
             }
         }
         

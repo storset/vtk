@@ -120,8 +120,8 @@ public final class IndexManagementController implements Controller {
             } 
             
             if (ACTION_REINDEX_CURRENT.equals(action) || ACTION_REINDEX_ALL.equals(action)) {
-                Index index = runtimeManager.getIndex(id);
-                Reindexer reindexer = runtimeManager.getReindexerForIndex(index);
+                Index index = this.runtimeManager.getIndex(id);
+                Reindexer reindexer = this.runtimeManager.getReindexerForIndex(index);
                 if (reindexer == null) {
                     writer.println("* No re-indexer configured for index '" + id + "'");
                     printStatus(writer);
@@ -138,8 +138,8 @@ public final class IndexManagementController implements Controller {
                     reindexer.start();
                 }
             } else if (ACTION_STOP.equals(action)) {
-                Index index = runtimeManager.getIndex(id);
-                Reindexer reindexer = runtimeManager.getReindexerForIndex(index);
+                Index index = this.runtimeManager.getIndex(id);
+                Reindexer reindexer = this.runtimeManager.getReindexerForIndex(index);
                 if (reindexer == null) {
                     writer.println("* No re-indexer configured for index '" + id + "'");
                     printStatus(writer);
@@ -149,19 +149,19 @@ public final class IndexManagementController implements Controller {
                 writer.flush();
                 reindexer.stop();
             } else if (ACTION_DISABLE_OBSERVER.equals(action)) {
-                ResourceChangeObserver observer = runtimeManager.getObserver(id);
+                ResourceChangeObserver observer = this.runtimeManager.getObserver(id);
                 writer.println("* Disabling observer '" + id + "' ..");
                 writer.flush();
                 observer.disable();
             } else if (ACTION_ENABLE_OBSERVER.equals(action)) {
-                ResourceChangeObserver observer = runtimeManager.getObserver(id);
+                ResourceChangeObserver observer = this.runtimeManager.getObserver(id);
                 writer.println("* Enabling observer '" + id + "' ..");
                 writer.flush();
                 observer.enable();
             } else if (ACTION_OPTIMIZE.equals(action)) {
                 writer.println("* Optimizing index '" + id + "' ..");
                 writer.flush();
-                runtimeManager.optimizeIndex(runtimeManager.getIndex(id));
+                this.runtimeManager.optimizeIndex(this.runtimeManager.getIndex(id));
             } else {
                 writer.println("* Unknown action '" + action + "'");
                 printUsage(writer, uri);
@@ -179,8 +179,8 @@ public final class IndexManagementController implements Controller {
     private void printStatus(PrintWriter writer) {
         writer.println();
         writer.println("* STATUS");
-        List indexes = runtimeManager.getIndexes();
-        List observers = runtimeManager.getObservers();
+        List indexes = this.runtimeManager.getIndexes();
+        List observers = this.runtimeManager.getObservers();
         printIndexList(writer, indexes);
         writer.println();
         printObserverList(writer, observers);
@@ -191,7 +191,7 @@ public final class IndexManagementController implements Controller {
         for (Iterator iter = list.iterator(); iter.hasNext();) {
             try {
                 Index index = (Index)iter.next();
-                IndexStatus status = runtimeManager.getStatusForIndex(index);
+                IndexStatus status = this.runtimeManager.getStatusForIndex(index);
                 writer.println("  + ID: '" + index.getIndexId() + "'");
                 writer.println("    - Index system path: '" + status.getSystemPath() + "'");
                 writer.println("    - Locked: " + status.isLocked());
@@ -199,8 +199,8 @@ public final class IndexManagementController implements Controller {
                 writer.println("    - Number of docs: " + status.getNumberOfDocuments());
                 writer.println("    - Total size in bytes: " + status.getPhysicalSize());
                 
-                if (runtimeManager.getReindexerForIndex(index) != null) {
-                    Reindexer r = runtimeManager.getReindexerForIndex(index);
+                if (this.runtimeManager.getReindexerForIndex(index) != null) {
+                    Reindexer r = this.runtimeManager.getReindexerForIndex(index);
                     writer.println("    + Configured re-indexer:");
                     writer.println("      - Running: " + r.isRunning());
                     writer.println("      - Current working tree: " + r.getCurrentWorkingTree());

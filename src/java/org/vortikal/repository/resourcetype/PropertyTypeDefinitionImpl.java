@@ -56,7 +56,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void afterPropertiesSet() {}
     
     public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
-        return contentModificationEvaluator;
+        return this.contentModificationEvaluator;
     }
 
     public void setContentModificationEvaluator(
@@ -65,7 +65,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public CreatePropertyEvaluator getCreateEvaluator() {
-        return createEvaluator;
+        return this.createEvaluator;
     }
 
     public void setCreateEvaluator(CreatePropertyEvaluator createEvaluator) {
@@ -73,7 +73,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator() {
-        return propertiesModificationEvaluator;
+        return this.propertiesModificationEvaluator;
     }
 
     public void setPropertiesModificationEvaluator(
@@ -82,7 +82,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public Constraint getConstraint() {
-        return constraint;
+        return this.constraint;
     }
 
     public void setConstraint(Constraint constraint) {
@@ -98,7 +98,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public boolean isMultiple() {
-        return multiple;
+        return this.multiple;
     }
 
     public void setDefaultValue(Value defaultValue) {
@@ -114,7 +114,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -122,7 +122,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public RepositoryAction getProtectionLevel() {
-        return protectionLevel;
+        return this.protectionLevel;
     }
 
     public void setProtectionLevel(RepositoryAction protectionLevel) {
@@ -130,7 +130,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public int getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(int type) {
@@ -138,7 +138,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public PropertyValidator getValidator() {
-        return validator;
+        return this.validator;
     }
 
     public void setValidator(PropertyValidator validator) {
@@ -161,7 +161,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     
 
     public Namespace getNamespace() {
-        return namespace;
+        return this.namespace;
     }
 
     public void setNamespace(Namespace namespace) {

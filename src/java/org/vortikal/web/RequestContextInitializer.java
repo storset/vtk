@@ -111,7 +111,7 @@ public class RequestContextInitializer
         }
 
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                context, Service.class, true, false);
+                this.context, Service.class, true, false);
         
         List rootServices = new ArrayList(matchingBeans.values());
         List list = new ArrayList(rootServices);

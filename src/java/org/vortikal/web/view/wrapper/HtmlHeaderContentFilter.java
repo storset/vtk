@@ -59,15 +59,15 @@ public class HtmlHeaderContentFilter
         Matcher headerMatcher = HEADER_REGEXP.matcher(content);
 
         if (headerMatcher.find()) {
-            if (debug && logger.isDebugEnabled()) {
-                logger.debug("Found <body> or similar, will add header");
+            if (this.debug && this.logger.isDebugEnabled()) {
+                this.logger.debug("Found <body> or similar, will add header");
             }
             int index = headerMatcher.start(1);
             return content.substring(0, index) + header + content.substring(index);
         } 
 
-        if (debug && logger.isDebugEnabled()) {
-            logger.debug("Did not find <body> or similar, returning original content");
+        if (this.debug && this.logger.isDebugEnabled()) {
+            this.logger.debug("Did not find <body> or similar, returning original content");
         }
         return content;
     }

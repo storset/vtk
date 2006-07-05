@@ -25,7 +25,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
             ";;value1;value2;value3;;;;value4;;two escaped semicolons: \\;\\;;lastValue";
         
         EscapedMultiValueFieldTokenizer tokenizer = 
-            new EscapedMultiValueFieldTokenizer(new StringReader(testString), splitChar);
+            new EscapedMultiValueFieldTokenizer(new StringReader(testString), this.splitChar);
         
         Token t = tokenizer.next();
         assertEquals("value1", t.termText());
@@ -65,7 +65,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
     public void testEmptyInput() throws IOException {
 
         EscapedMultiValueFieldTokenizer tokenizer = 
-            new EscapedMultiValueFieldTokenizer(new StringReader(""), splitChar);        
+            new EscapedMultiValueFieldTokenizer(new StringReader(""), this.splitChar);        
         
         Token t = tokenizer.next();
         assertNull(t);
@@ -74,7 +74,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
     public void testOnlySplitCharsInput() throws IOException {
         
         EscapedMultiValueFieldTokenizer tokenizer = 
-            new EscapedMultiValueFieldTokenizer(new StringReader(";;;;;;;;;;;"), splitChar);        
+            new EscapedMultiValueFieldTokenizer(new StringReader(";;;;;;;;;;;"), this.splitChar);        
         
         Token t = tokenizer.next();
         assertNull(t);

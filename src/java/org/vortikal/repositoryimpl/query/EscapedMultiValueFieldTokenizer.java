@@ -67,20 +67,21 @@ public class EscapedMultiValueFieldTokenizer extends Tokenizer {
     }
     
     public final Token next() throws IOException {
-        int c, tOff = 0, start = streamOffset;
+        int c, tOff = 0, start = this.streamOffset;
         boolean esc = false;
-        while ((c = input.read()) != -1) {
-            ++streamOffset;
+        while ((c = this.input.read()) != -1) {
+            ++this.streamOffset;
 
-            if (c == splitChar) {
+            if (c == this.splitChar) {
                 if (esc) {
                     --tOff;
                 } else {
                     if (tOff == 0) { // Drop empty tokens
                         esc = false;
-                        start = streamOffset;
+                        start = this.streamOffset;
                         continue;
-                    } else break; 
+                    }
+                    break; 
                 }
             }
             
@@ -89,16 +90,16 @@ public class EscapedMultiValueFieldTokenizer extends Tokenizer {
                 break;
             }
             
-            tokenBuffer[tOff++] = (char)c; // Add character to token
+            this.tokenBuffer[tOff++] = (char)c; // Add character to token
             esc = c == ESCAPE_CHAR ? true : false;
         }
         
         if (c == -1) {
             if (tOff == 0) return null; // No more tokens left.
-            ++streamOffset;
+            ++this.streamOffset;
         }
         
-        return new Token(new String(tokenBuffer, 0, tOff), start, streamOffset-1);
+        return new Token(new String(this.tokenBuffer, 0, tOff), start, this.streamOffset-1);
     }
 
 }

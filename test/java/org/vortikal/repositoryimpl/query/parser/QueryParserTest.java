@@ -1,15 +1,10 @@
 package org.vortikal.repositoryimpl.query.parser;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
-import org.jmock.Mock;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
-import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.parser.Parser;
-import org.vortikal.repositoryimpl.query.query.Query;
 
 public class QueryParserTest extends AbstractDependencyInjectionSpringContextTests {
 

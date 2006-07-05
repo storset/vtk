@@ -48,7 +48,7 @@ public class TermOperator {
     }
 
     public String toString() {
-        return id;
+        return this.id;
     }
 
 }

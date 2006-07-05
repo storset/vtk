@@ -148,10 +148,10 @@ public class KupuEditController extends SimpleFormController
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         
-        repository.lock(token, uri, principal.getQualifiedName(), "0",
+        this.repository.lock(token, uri, principal.getQualifiedName(), "0",
                         this.lockTimeoutSeconds, null);
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
 
         String url = service.constructLink(resource, principal);
         String content = getResourceContent(resource, token);
@@ -185,7 +185,7 @@ public class KupuEditController extends SimpleFormController
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        repository.unlock(token, uri, null);
+        this.repository.unlock(token, uri, null);
         
         return new ModelAndView(this.cancelView);    
     }
@@ -200,7 +200,7 @@ public class KupuEditController extends SimpleFormController
         KupuEditCommand plaintextEditCommand =
             (KupuEditCommand) command;
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
 
         String characterEncoding = resource.getCharacterEncoding();
 
@@ -226,7 +226,7 @@ public class KupuEditController extends SimpleFormController
 
         String content = plaintextEditCommand.getContent();
 
-        repository.storeContent(token, uri, 
+        this.repository.storeContent(token, uri, 
                 new ByteArrayInputStream(content.getBytes(characterEncoding)));
     }
     
@@ -256,7 +256,7 @@ public class KupuEditController extends SimpleFormController
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int n = 0;
         byte[] buf = new byte[1024];
-        InputStream in = repository.getInputStream(token, resource.getURI(), false);
+        InputStream in = this.repository.getInputStream(token, resource.getURI(), false);
         while ((n = in.read(buf)) > 0) {
             out.write(buf, 0, n);
         }
@@ -296,7 +296,7 @@ public class KupuEditController extends SimpleFormController
 
     private String getHTMLContent(Resource resource, String token)
         throws IOException {
-        InputStream is = repository.getInputStream(
+        InputStream is = this.repository.getInputStream(
             token, resource.getURI(), false);
         byte[] bytes = StreamUtil.readInputStream(is);
         String encoding = resource.getCharacterEncoding();
@@ -311,7 +311,7 @@ public class KupuEditController extends SimpleFormController
     private String getPlainTextContent(Resource resource, String token)
         throws IOException {
 
-        InputStream is = repository.getInputStream(token, resource.getURI(),
+        InputStream is = this.repository.getInputStream(token, resource.getURI(),
                                                    false);
         byte[] bytes = StreamUtil.readInputStream(is);
         String encoding = resource.getCharacterEncoding();
@@ -339,7 +339,7 @@ public class KupuEditController extends SimpleFormController
         try {
             if (logger.isDebugEnabled())
                 logger.debug("Opening document " + resource.getURI());
-            inStream = repository.getInputStream(
+            inStream = this.repository.getInputStream(
                 token, resource.getURI(), false);
             
             reader = new BufferedReader(new InputStreamReader(

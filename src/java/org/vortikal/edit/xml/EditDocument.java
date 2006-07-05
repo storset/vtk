@@ -173,15 +173,15 @@ public class EditDocument extends Document {
         repository.storeContent(token, uri, stream);
 
         // Fix character encoding if it is something other than UTF-8:
-        if (resource.getCharacterEncoding() != null) {
-            String encoding = resource.getCharacterEncoding().toLowerCase();
+        if (this.resource.getCharacterEncoding() != null) {
+            String encoding = this.resource.getCharacterEncoding().toLowerCase();
             if (!"utf-8".equals(encoding)) {
-                resource.setUserSpecifiedCharacterEncoding("utf-8");
-                repository.store(token, resource);
+                this.resource.setUserSpecifiedCharacterEncoding("utf-8");
+                repository.store(token, this.resource);
             }
         }
 
-        resource = repository.retrieve(token, uri, false);
+        this.resource = repository.retrieve(token, uri, false);
         if (logger.isDebugEnabled())
             logger.debug("saved document '" + uri + "'");
     }
@@ -218,38 +218,38 @@ public class EditDocument extends Document {
     }
 
     public boolean hasDocumentPI() {
-        return pi != null;
+        return this.pi != null;
     }
 
 
 
     public void setDocumentPI(ProcessingInstruction newPI) {
-        pi = newPI;
+        this.pi = newPI;
         addContent(newPI);
     }
 
 
 
     public void removeDocumentPI() {
-        removeContent(pi);
-        pi = null;
+        removeContent(this.pi);
+        this.pi = null;
     }
 
     public Element getEditingElement() {
-        return element;
+        return this.element;
     }
 
 
 
     public void setEditingElement(Element e) {
-        element = e;
+        this.element = e;
     }
 
 
 
     public void resetEditingElement() {
         ProcessingInstruction pi = null;
-        for (Iterator i = element.getContent().iterator(); i.hasNext();) {
+        for (Iterator i = this.element.getContent().iterator(); i.hasNext();) {
             Object o = i.next();
             if ((o instanceof ProcessingInstruction)
                     && "expanded".equals((((ProcessingInstruction) o)
@@ -257,20 +257,20 @@ public class EditDocument extends Document {
                 pi = (ProcessingInstruction) o;
             }
         }
-        element.removeContent(pi);
-        element = null;
+        this.element.removeContent(pi);
+        this.element = null;
     }
 
 
 
     public Vector getElements() {
-        return elements;
+        return this.elements;
     }
 
 
 
     public void setElements(Vector e) {
-        elements = e;
+        this.elements = e;
     }
 
 
@@ -304,8 +304,8 @@ public class EditDocument extends Document {
 
 
     public void resetElements() {
-        resetElements(elements);
-        elements = null;
+        resetElements(this.elements);
+        this.elements = null;
     }
 
 
@@ -387,7 +387,7 @@ public class EditDocument extends Document {
                 if (e == null)
                     throw new EditException(
                         "The document does not contain an element with path "
-                        + elementPath, uri);
+                        + elementPath, this.uri);
                 e.setAttribute(attributeName, (String) parameters.get(key));
             }
         }
@@ -461,7 +461,7 @@ public class EditDocument extends Document {
      * @return Returns the clone.
      */
     public Element getClone() {
-        return clone;
+        return this.clone;
     }
 
 
@@ -477,7 +477,7 @@ public class EditDocument extends Document {
      * @return Returns the newElementName.
      */
     public String getNewElementName() {
-        return newElementName;
+        return this.newElementName;
     }
 
 
@@ -492,7 +492,7 @@ public class EditDocument extends Document {
      * @return Returns the resource.
      */
     public Resource getResource() {
-        return resource;
+        return this.resource;
     }
     
     public String toStringDetail() {

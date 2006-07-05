@@ -117,7 +117,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     
     
     public final Repository getRepository() {
-        return repository;
+        return this.repository;
     }
 
 
@@ -157,15 +157,15 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     
 
     public final void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "Property 'repository' not set");
         }
-        if (service == null) {
+        if (this.service == null) {
             throw new BeanInitializationException(
                 "Property 'service' not set");
         }
-        if (breadcrumbName == null) {
+        if (this.breadcrumbName == null) {
             throw new BeanInitializationException(
                 "Property 'breadcrumbName' cannot be null");
         }
@@ -215,7 +215,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
         for (int i = 0; i < path.length - 1; i++) {
             try {
-                Resource r = repository.retrieve(token, incrementalPath[i], true);
+                Resource r = this.repository.retrieve(token, incrementalPath[i], true);
 
                 if (checkIgnore(r)) {
                     continue;
@@ -224,7 +224,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 String url = null;
                 if (this.skippedURLSet == null
                     || !this.skippedURLSet.contains(incrementalPath[i])) {
-                    url = service.constructLink(r, principal, false);
+                    url = this.service.constructLink(r, principal, false);
                 }
                 breadCrumb.add(new BreadcrumbElement(url, title));
             } catch (Exception e) {

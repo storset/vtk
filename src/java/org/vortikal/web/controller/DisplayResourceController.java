@@ -180,8 +180,8 @@ public class DisplayResourceController
 
 
     public void afterPropertiesSet() throws Exception {
-        if (unsupportedResourceTypes == null) {
-            unsupportedResourceTypes = new HashSet();
+        if (this.unsupportedResourceTypes == null) {
+            this.unsupportedResourceTypes = new HashSet();
         }
 
         if (this.viewName == null && this.view == null) {
@@ -200,18 +200,18 @@ public class DisplayResourceController
 
         String uri = requestContext.getResourceURI();
 
-        if (childName != null)
-                uri += (uri.equals("/")) ? childName : "/" + childName;
+        if (this.childName != null)
+                uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
 
         String token = securityContext.getToken();
 
         Map model = new HashMap();
-        Resource resource = repository.retrieve(token, uri, displayProcessed);
-        if (unsupportedResourceTypes.contains(resource.getContentType())) {
-            return new ModelAndView(unsupportedResourceView);
+        Resource resource = this.repository.retrieve(token, uri, this.displayProcessed);
+        if (this.unsupportedResourceTypes.contains(resource.getContentType())) {
+            return new ModelAndView(this.unsupportedResourceView);
         }
 
-        if (supportIfHeaders) {
+        if (this.supportIfHeaders) {
             IfMatchHeader ifMatchHeader = new IfMatchHeader(request);
             if (!ifMatchHeader.matches(resource)) {
                 throw new PreconditionFailedException();
@@ -228,9 +228,9 @@ public class DisplayResourceController
 
         if (!resource.isCollection()) {
 
-            InputStream stream = repository.getInputStream(token, uri, true);
+            InputStream stream = this.repository.getInputStream(token, uri, true);
 
-            if (!streamToString || !resource.getContentType().startsWith("text/")) {
+            if (!this.streamToString || !resource.getContentType().startsWith("text/")) {
                 model.put("resourceStream", stream);
                 if (this.view != null) {
                     return new ModelAndView(this.view, model);
@@ -286,9 +286,9 @@ public class DisplayResourceController
         
         String uri = requestContext.getResourceURI();
         
-        if (childName != null) {
+        if (this.childName != null) {
             uri = requestContext.getResourceURI();
-            uri += (uri.equals("/")) ? childName : "/" + childName;
+            uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
         }
 
         if (logger.isDebugEnabled()) {
@@ -297,7 +297,7 @@ public class DisplayResourceController
         }
 
         try {
-            resource = repository.retrieve(
+            resource = this.repository.retrieve(
                 securityContext.getToken(), uri, true);
 
         } catch (RepositoryException e) {

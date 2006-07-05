@@ -33,7 +33,6 @@ package org.vortikal.edit.plaintext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,8 +41,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -155,10 +152,10 @@ public class PlaintextEditController extends SimpleFormController
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         
-        repository.lock(token, uri, principal.getQualifiedName(), "0",
+        this.repository.lock(token, uri, principal.getQualifiedName(), "0",
                         this.lockTimeoutSeconds, null);
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         String url = service.constructLink(resource, principal);
         String characterEncoding = resource.getCharacterEncoding();
         String content = getTextualContent(resource, token);
@@ -185,7 +182,7 @@ public class PlaintextEditController extends SimpleFormController
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        repository.unlock(token, uri, null);
+        this.repository.unlock(token, uri, null);
         
         return new ModelAndView(this.cancelView);    
     }
@@ -200,7 +197,7 @@ public class PlaintextEditController extends SimpleFormController
 
         PlaintextEditCommand plaintextEditCommand = (PlaintextEditCommand) command;
 
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         String storedEncoding = resource.getCharacterEncoding();
         String postedEncoding = getPostedEncoding(resource, plaintextEditCommand);
 
@@ -232,20 +229,20 @@ public class PlaintextEditController extends SimpleFormController
             maybeSetEncoding = false;
         }
         if (maybeSetEncoding) {
-            if (logger.isDebugEnabled())
-                logger.debug("New character encoding for document "
+            if (this.logger.isDebugEnabled())
+                this.logger.debug("New character encoding for document "
                              + resource + " resolved to: " + characterEncoding);
 
             resource.setUserSpecifiedCharacterEncoding(characterEncoding);
-            repository.store(token, resource);
+            this.repository.store(token, resource);
         }
 
         String content = plaintextEditCommand.getContent();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Decoding posted string using encoding: " + characterEncoding);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Decoding posted string using encoding: " + characterEncoding);
         }
-        repository.storeContent(token, uri, 
+        this.repository.storeContent(token, uri, 
                 new ByteArrayInputStream(content.getBytes(characterEncoding)));
 
     }
@@ -256,7 +253,7 @@ public class PlaintextEditController extends SimpleFormController
         throws IOException {
 
         String encoding = resource.getCharacterEncoding();
-        InputStream is = repository.getInputStream(token, resource.getURI(),
+        InputStream is = this.repository.getInputStream(token, resource.getURI(),
                                                    false);
         byte[] bytes = StreamUtil.readInputStream(is);
         String content = new String(bytes, encoding);

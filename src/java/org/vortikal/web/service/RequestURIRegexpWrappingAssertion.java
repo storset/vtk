@@ -132,7 +132,7 @@ public class RequestURIRegexpWrappingAssertion
             }
         }
 
-        return wrappedAssertion.matches(request, resource, principal);
+        return this.wrappedAssertion.matches(request, resource, principal);
     }
 
 }

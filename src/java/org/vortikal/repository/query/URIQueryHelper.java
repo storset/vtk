@@ -63,7 +63,7 @@ public class URIQueryHelper implements InitializingBean {
     }
 
     public void afterPropertiesSet() {
-        if (indexResourceIdHelper == null) {
+        if (this.indexResourceIdHelper == null) {
             throw new BeanInitializationException("Property 'indexResourceIdHelper' not set.");
         }
     }
@@ -98,13 +98,13 @@ public class URIQueryHelper implements InitializingBean {
         
         CachedLuceneResults results = new CachedLuceneResults(resultClass);
         
-        String resourceId = indexResourceIdHelper.getResourceId(uri);
+        String resourceId = this.indexResourceIdHelper.getResourceId(uri);
         if (resourceId == null) {
             return results; // Resource (id) not found in repository.
         }
         
         TermQuery contentsTermq = new TermQuery(new Term(IndexConstants.PARENT_IDS_FIELD, resourceId));
-        Hits hits = searcher.search(contentsTermq, uriSorter);
+        Hits hits = searcher.search(contentsTermq, this.uriSorter);
         results.appendHits(hits);
         
         return results;

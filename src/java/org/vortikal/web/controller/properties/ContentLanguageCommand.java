@@ -66,7 +66,7 @@ public class ContentLanguageCommand extends AbstractSaveCancelCommand {
     }
 
 	public String[] getPossibleLanguages() {
-		return possibleLanguages;
+		return this.possibleLanguages;
 	}
 	
 	public void setPossibleLanguages(String[] possibleLanguages) {

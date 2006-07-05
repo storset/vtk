@@ -133,7 +133,7 @@ public class ViewXslProvider implements ReferenceDataProvider {
         }
 
         if (resource == null) {
-        		resource = repository.retrieve(token, uri, true);
+        		resource = this.repository.retrieve(token, uri, true);
         }
         
         try {
@@ -143,10 +143,10 @@ public class ViewXslProvider implements ReferenceDataProvider {
             setXsltParameter(model, "PARENT-COLLECTION", resource.getParent());
             setXsltParameter(model, "CURRENT-URL", request.getRequestURL());
             setXsltParameter(model, "ADMIN-URL", 
-                             adminService.constructLink(resource,principal, matchAdminServiceAssertions));
+                             this.adminService.constructLink(resource,principal, this.matchAdminServiceAssertions));
 
 
-            if (supplyRequestParameters) {
+            if (this.supplyRequestParameters) {
 
                 /* creating a nodeList with all request parameters */
                 Document doc = new Document(new Element("root"));
@@ -172,7 +172,7 @@ public class ViewXslProvider implements ReferenceDataProvider {
             }
 
         } catch (Throwable t) {
-            logger.warn("Unable to provide complete XSLT reference data", t);
+            this.logger.warn("Unable to provide complete XSLT reference data", t);
         }
     }
 

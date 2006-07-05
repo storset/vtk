@@ -41,14 +41,14 @@ public class NamePrefixQuery implements NameQuery {
     }
 
     public String getTerm() {
-        return term;
+        return this.term;
     }
 
     public String dump(String prefix) {
         StringBuffer buf = new StringBuffer().append(prefix);
         buf.append(this.getClass().getName()).append("\n");
         
-        buf.append(prefix).append("Term = ").append(term).append("\n");
+        buf.append(prefix).append("Term = ").append(this.term).append("\n");
 
         return buf.toString();
     }

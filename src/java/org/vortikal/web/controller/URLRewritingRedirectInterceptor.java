@@ -105,8 +105,8 @@ public class URLRewritingRedirectInterceptor
 
         Matcher m = this.urlPattern.matcher(requestURL);
         if (!m.matches()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Pattern does not match request URL '" + requestURL
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Pattern does not match request URL '" + requestURL
                              + "', returning");
             }
             return true;
@@ -118,8 +118,8 @@ public class URLRewritingRedirectInterceptor
             for (int i = 0; i < m.groupCount(); i++) {
 
                 String substitutionVar = "$" + (i + 1);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Checking for substitution variable " + substitutionVar);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Checking for substitution variable " + substitutionVar);
                 }
 
                 int pos = -1;
@@ -130,8 +130,8 @@ public class URLRewritingRedirectInterceptor
             }
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Constructed rewritten redirect URL '" + redirectURL + "'");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Constructed rewritten redirect URL '" + redirectURL + "'");
         }
 
         response.sendRedirect(redirectURL.toString());

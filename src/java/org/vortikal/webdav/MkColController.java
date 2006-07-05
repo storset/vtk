@@ -80,7 +80,7 @@ public class MkColController extends AbstractWebdavController {
                 return new ModelAndView("MKCOL", model);
             }
 
-            if (repository.exists(token, uri)) {
+            if (this.repository.exists(token, uri)) {
                 model.put(WebdavConstants.WEBDAVMODEL_ERROR,
                           new WebdavMethodNotAllowedException());
                 model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -88,17 +88,17 @@ public class MkColController extends AbstractWebdavController {
                 return new ModelAndView("MKCOL", model);
             }
          
-            repository.createCollection(token, uri);
+            this.repository.createCollection(token, uri);
 
-            Resource resource = repository.retrieve(token, uri, false);
+            Resource resource = this.repository.retrieve(token, uri, false);
             model.put(WebdavConstants.WEBDAVMODEL_CREATED_RESOURCE, resource);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_CREATED));
             model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (IllegalOperationException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught IllegalOperationException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught IllegalOperationException for URI "
                              + uri + ": " + e.getMessage());
             }            
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -106,23 +106,23 @@ public class MkColController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (ReadOnlyException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ReadOnlyException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ReadOnlyException for URI " + uri);
             }            
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI " + uri);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI " + uri);
             }            
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
 
         } catch (IOException e) {
-            logger.info("Caught IOException for URI " + uri);
+            this.logger.info("Caught IOException for URI " + uri);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));

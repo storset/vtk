@@ -144,7 +144,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
             try {
                 this.load();
             } catch (Exception e) {
-                logger.warn(e);
+                this.logger.warn(e);
             }
         }
     }
@@ -179,7 +179,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
             try {
                 this.loadInternal(repository, uri, token);
             } catch (Exception e) {
-                logger.warn("Unable to load properties from uri '"
+                this.logger.warn("Unable to load properties from uri '"
                             + uri + "', repository '" + repository
                             + "', token '" + token + "'", e);
             }
@@ -202,8 +202,8 @@ public class HashMapResource extends HashMap implements InitializingBean,
         InputStream inputStream = repository.getInputStream(token, uri, false);
         Properties p = new Properties();
         p.load(inputStream);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loaded raw mappings from resource " + uri + ": " + p);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Loaded raw mappings from resource " + uri + ": " + p);
         }
         
         Enumeration e = p.propertyNames();
@@ -213,8 +213,8 @@ public class HashMapResource extends HashMap implements InitializingBean,
 
             if (value != null) {
                 if (!this.storeValuesAsLists) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Adding regular mapping " + name + ": " + value);
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Adding regular mapping " + name + ": " + value);
                     }
 
                     this.put(name, value);
@@ -222,8 +222,8 @@ public class HashMapResource extends HashMap implements InitializingBean,
                     List list = new ArrayList();
                     String[] components = value.split(",");
                     list.addAll(Arrays.asList(components));
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Adding list mapping " + name + ": " + list);
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Adding list mapping " + name + ": " + list);
                     }
                     this.put(name, list);
                 }

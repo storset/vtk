@@ -58,8 +58,8 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
 
     public Query buildQuery() throws QueryBuilderException {
         
-        PropertyTypeDefinition def = query.getPropertyDefinition();
-        String wildcard = query.getTerm();
+        PropertyTypeDefinition def = this.query.getPropertyDefinition();
+        String wildcard = this.query.getTerm();
 
         if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
                 && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {

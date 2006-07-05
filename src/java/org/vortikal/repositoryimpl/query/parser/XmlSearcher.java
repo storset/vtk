@@ -151,7 +151,7 @@ public class XmlSearcher implements InitializingBean {
             
             addResultSetToDocument(rs, doc);
         } catch (Exception e) {
-            logger.warn("Error occurred while performing query: '" + query + "'", e);
+            this.logger.warn("Error occurred while performing query: '" + query + "'", e);
             
             Element errorElement = doc.createElement("error");
             doc.appendChild(errorElement);
@@ -178,9 +178,9 @@ public class XmlSearcher implements InitializingBean {
             addPropertySetToResults(doc, resultElement, propSet);
         }
         
-        if (logger.isDebugEnabled()) {
+        if (this.logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
-            logger.debug("Building XML result set took " + (now - start) + " ms");
+            this.logger.debug("Building XML result set took " + (now - start) + " ms");
         }
     }
     
@@ -331,7 +331,7 @@ public class XmlSearcher implements InitializingBean {
                         throw new QueryException("Unknown sort field: '" + field + "'");
                     }
                     PropertyTypeDefinition def =
-                        propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+                        XmlSearcher.this.propertyManager.getPropertyDefinitionByPrefix(prefix, name);
                     sortField = new PropertySortField(def, direction);
                 }
                 if (referencedFields.contains(field)) {

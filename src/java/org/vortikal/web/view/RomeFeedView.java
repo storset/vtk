@@ -160,7 +160,7 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
         }
        
         feed.setFeedType(getFormatFromRequest(request, feed));
-        feed.setEncoding(charset);
+        feed.setEncoding(this.charset);
 
         // Maybe a better implemantation is to set publishedDate for the feed to the lastest of the
         // updated
@@ -187,9 +187,9 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
     } // end of render()
 
     private String getFormatFromRequest(HttpServletRequest request, SyndFeed feed) {
-        String feedType = request.getParameter(FORMAT_PARAMETER_NAME);
+        String feedType = request.getParameter(this.FORMAT_PARAMETER_NAME);
         if (feedType == null || !isSuuportedFeedType(feedType, feed)) {
-            feedType = defaultFeedType;
+            feedType = this.defaultFeedType;
         }
         return feedType;
     }
@@ -228,10 +228,10 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
         
         entry.setAuthor(resource.getOwner().getName());
      
-        String link = browsingService.constructLink(resource, principal);
+        String link = this.browsingService.constructLink(resource, principal);
         entry.setLink(link);
 
-        if (useTimestampInIdentifier) {
+        if (this.useTimestampInIdentifier) {
             long lastModified = resource.getLastModified().getTime();
             entry.setUri(link + "#" + lastModified); 
         } else {
@@ -285,7 +285,7 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
     }
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
-        return referenceDataProviders;
+        return this.referenceDataProviders;
     }
 
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {

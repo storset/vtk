@@ -40,6 +40,8 @@ import org.vortikal.repositoryimpl.index.IndexException;
  */
 public class QueryException extends IndexException {
     
+    private static final long serialVersionUID = 741215292237620741L;
+
     /**
      * Creates a new instance of QueryException 
      */

@@ -42,7 +42,7 @@ public class UriOperator {
     }
 
     public String toString() {
-        return id;
+        return this.id;
     }
 
 }

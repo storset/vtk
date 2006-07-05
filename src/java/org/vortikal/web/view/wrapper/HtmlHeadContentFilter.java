@@ -102,14 +102,14 @@ public class HtmlHeadContentFilter
         Matcher charsetMatcher = CHARACTER_ENCODING__REGEXP.matcher(headContent);
 	
         if (this.removeCharsets && charsetMatcher.find(0)) {
-            if (debug && logger.isDebugEnabled()) {
-                logger.debug("found charset content, will remove");
+            if (this.debug && this.logger.isDebugEnabled()) {
+                this.logger.debug("found charset content, will remove");
             }
             headContent = charsetMatcher.replaceAll("");
         }
             
-        if (debug && logger.isDebugEnabled()) {
-            logger.debug("New head content:\n" + headContent);
+        if (this.debug && this.logger.isDebugEnabled()) {
+            this.logger.debug("New head content:\n" + headContent);
         }
         
         return content.substring(0, headStartMatcher.end())

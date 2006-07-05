@@ -37,6 +37,7 @@ package org.vortikal.repository.query;
  */
 public class UnsupportedConditionException extends QueryException {
 
+    private static final long serialVersionUID = -6739015510137572000L;
     private Condition condition;
 
     public UnsupportedConditionException(String message, Condition condition) {

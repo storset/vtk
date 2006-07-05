@@ -59,7 +59,7 @@ public class LinkConstructorImpl implements LinkConstructor,
 	// FIXME: Expand '../'
     public String construct(String resourceURI, String parametersCSV, String serviceName) {
 
-        logger.debug("About to construct link to service '" + serviceName + "' for resource '"
+        this.logger.debug("About to construct link to service '" + serviceName + "' for resource '"
                 + resourceURI + "' with parameters '" + parametersCSV + "'");
         
         String token = SecurityContext.getSecurityContext().getToken();
@@ -85,25 +85,25 @@ public class LinkConstructorImpl implements LinkConstructor,
             }
             
             if (parametersCSV != null && !parametersCSV.trim().equals("")) {
-                logger.debug("Trying to get parameters");
+                this.logger.debug("Trying to get parameters");
                 parameters = getParametersMap(parametersCSV);
             }
             
-            resource = repository.retrieve(token, resourceURI, true);
+            resource = this.repository.retrieve(token, resourceURI, true);
             
-            logger.debug("Trying to construct link to service '" + service.getName()
+            this.logger.debug("Trying to construct link to service '" + service.getName()
                     + "' for resource '" + resource.getURI() + "'");
             
             return service.constructLink(resource, principal, parameters, false);
 		
 		} catch (Exception e) {
-            logger.warn("Caught exception on link construction", e);
+            this.logger.warn("Caught exception on link construction", e);
 		}
         return "";
 	}
 
 	private Service getService(String serviceName) {
-        return (Service) context.getBean(serviceName, Service.class);
+        return (Service) this.context.getBean(serviceName, Service.class);
     }
 
 	private Map getParametersMap(String parametersCSV) {
@@ -125,9 +125,9 @@ public class LinkConstructorImpl implements LinkConstructor,
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		if (context == null) throw new BeanInitializationException(
+		if (this.context == null) throw new BeanInitializationException(
 				"Property 'applicationContext' must be set");
-		if (repository == null) throw new BeanInitializationException(
+		if (this.repository == null) throw new BeanInitializationException(
 		"Property 'repository' must be set");
 	}
 

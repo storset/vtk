@@ -79,8 +79,8 @@ public class MoveController extends AbstractWebdavController {
         Map model = new HashMap();
 
         try {
-            Resource resource = repository.retrieve(token, uri, false);
-            ifHeader = new IfHeaderImpl(request);
+            Resource resource = this.repository.retrieve(token, uri, false);
+            this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
             if (destURI == null || destURI.trim().equals("")) {
@@ -112,21 +112,21 @@ public class MoveController extends AbstractWebdavController {
                 overwrite = true;
             }
 
-            boolean existed = repository.exists(token, destURI);
+            boolean existed = this.repository.exists(token, destURI);
             
             if (existed) {
-                Resource destination = repository.retrieve(token, destURI, false);
+                Resource destination = this.repository.retrieve(token, destURI, false);
                 verifyIfHeader(destination, true);
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Moving " + uri + " to " + destURI + ", depth = "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Moving " + uri + " to " + destURI + ", depth = "
                              + depth + ", overwrite = " + overwrite
                              + ", existed = " + existed);
             }
-            repository.move(token, uri, destURI, overwrite);
+            this.repository.move(token, uri, destURI, overwrite);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Moving " + uri + " to " + destURI + " succeeded");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Moving " + uri + " to " + destURI + " succeeded");
             }
 
             if (existed) {
@@ -140,8 +140,8 @@ public class MoveController extends AbstractWebdavController {
             return new ModelAndView("MOVE", model);
 
         } catch (InvalidRequestException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught InvalidRequestException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught InvalidRequestException for URI "
                              + uri);
             }            
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -149,8 +149,8 @@ public class MoveController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));
 
         } catch (IllegalOperationException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught IllegalOperationException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught IllegalOperationException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -158,8 +158,8 @@ public class MoveController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (ReadOnlyException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ReadOnlyException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ReadOnlyException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -167,8 +167,8 @@ public class MoveController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (FailedDependencyException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught FailedDependencyException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught FailedDependencyException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -176,8 +176,8 @@ public class MoveController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
 
         } catch (ResourceOverwriteException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceOverwriteException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceOverwriteException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -185,8 +185,8 @@ public class MoveController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_PRECONDITION_FAILED));
 
         } catch (ResourceLockedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceLockedException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceLockedException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -194,8 +194,8 @@ public class MoveController extends AbstractWebdavController {
                       new Integer(HttpUtil.SC_LOCKED));
 
         } catch (ResourceNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught ResourceNotFoundException for URI "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ResourceNotFoundException for URI "
                              + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -203,7 +203,7 @@ public class MoveController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
 
         } catch (IOException e) {
-            logger.info("Caught IOException for URI " + uri, e);
+            this.logger.info("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));

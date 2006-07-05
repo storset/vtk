@@ -76,23 +76,23 @@ public class PatternFormatter extends Formatter {
      */
     public PatternFormatter() {
         super();
-        format.add(DATE);
-        format.add(" ");
-        format.add(LEVEL);
-        format.add(": ");
-        format.add(MESSAGE);
+        this.format.add(DATE);
+        this.format.add(" ");
+        this.format.add(LEVEL);
+        this.format.add(": ");
+        this.format.add(MESSAGE);
     }
     
     public PatternFormatter(String pattern) {
         super();
-        format = parsePattern(stripQuotes(pattern));
+        this.format = parsePattern(stripQuotes(pattern));
     }
     
 
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 
-        for (Enumeration e = format.elements(); e.hasMoreElements();) {
+        for (Enumeration e = this.format.elements(); e.hasMoreElements();) {
             buffer.append(e.nextElement());
         }
         return buffer.toString();
@@ -103,7 +103,7 @@ public class PatternFormatter extends Formatter {
     public String format(LogRecord record) {
         StringBuffer buffer = new StringBuffer();
 
-        for (Enumeration e = format.elements(); e.hasMoreElements();) {
+        for (Enumeration e = this.format.elements(); e.hasMoreElements();) {
 
             String formattingElement = (String) e.nextElement();
 

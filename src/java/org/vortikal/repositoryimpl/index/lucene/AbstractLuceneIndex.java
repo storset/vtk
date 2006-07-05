@@ -95,8 +95,8 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         } 
         
         try {
-            directory = createDirectory(this.eraseExistingIndex);
-            if (directory == null) {
+            this.directory = createDirectory(this.eraseExistingIndex);
+            if (this.directory == null) {
                 throw new BeanInitializationException("Directory was null");
             }
             initializeIndex(this.directory);
@@ -109,33 +109,33 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     
     protected synchronized IndexWriter getIndexWriter() throws IOException {
         // Check if we are already providing a reader, close it if so.
-        if (reader != null) {
-            reader.close();
-            reader = null;
+        if (this.reader != null) {
+            this.reader.close();
+            this.reader = null;
         }
         
         // Create a new writer if necessary.
-        if (writer == null) {
-            writer = new IndexWriter(directory, analyzer, false);
-            writer.setMaxBufferedDocs(this.minMergeDocs);
-            writer.setMaxMergeDocs(this.maxMergeDocs);
-            writer.setMergeFactor(this.mergeFactor);
+        if (this.writer == null) {
+            this.writer = new IndexWriter(this.directory, this.analyzer, false);
+            this.writer.setMaxBufferedDocs(this.minMergeDocs);
+            this.writer.setMaxMergeDocs(this.maxMergeDocs);
+            this.writer.setMergeFactor(this.mergeFactor);
         }
         
-        return writer;
+        return this.writer;
     }
     
     protected synchronized IndexReader getIndexReader() throws IOException {
-        if (writer != null) {
-            writer.close();
-            writer = null;
+        if (this.writer != null) {
+            this.writer.close();
+            this.writer = null;
         }
         
-        if (reader == null) {
-            reader = IndexReader.open(directory);
+        if (this.reader == null) {
+            this.reader = IndexReader.open(this.directory);
         }
         
-        return reader;
+        return this.reader;
     }
 
     protected IndexReader getReadOnlyIndexReader() throws IOException {
@@ -152,14 +152,14 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
             return;
         }
 
-        if (reader != null) {
-            reader.close();
-            reader = null;
+        if (this.reader != null) {
+            this.reader.close();
+            this.reader = null;
         }
         
-        if (writer != null) {
-            writer.close();
-            writer = null;
+        if (this.writer != null) {
+            this.writer.close();
+            this.writer = null;
         }
     }
 
@@ -168,18 +168,18 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
      * @throws IOException
      */
     protected synchronized void reinitializeIndex() throws IOException {
-        if (reader != null) {
-            reader.close();
-            reader = null;
+        if (this.reader != null) {
+            this.reader.close();
+            this.reader = null;
         }
         
-        if (writer != null) {
-            writer.close();
-            writer = null;
+        if (this.writer != null) {
+            this.writer.close();
+            this.writer = null;
         }
         
-        if (directory != null) {
-            directory.close();
+        if (this.directory != null) {
+            this.directory.close();
             // Don't null directory here. This closes a small race between this
             // method and getReadOnlyIndexReader(), getIndexSearcher(). If we don't
             // null here, they might get the old closed instance, and might throw an IOException, 
@@ -196,29 +196,29 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
      * @throws IOException
      */
     protected synchronized void createNewIndex() throws IOException {
-        if (reader != null) {
-            reader.close();
-            reader = null;
+        if (this.reader != null) {
+            this.reader.close();
+            this.reader = null;
         }
         
-        if (writer != null) {
-            writer.close();
-            writer = null;
+        if (this.writer != null) {
+            this.writer.close();
+            this.writer = null;
         }
         
 
-        if (directory != null) {
-            if (IndexReader.isLocked(directory)) {
-                IndexReader.unlock(directory);
+        if (this.directory != null) {
+            if (IndexReader.isLocked(this.directory)) {
+                IndexReader.unlock(this.directory);
             }
-            directory.close();
+            this.directory.close();
             // Don't null directory here, for the same reason as explained above.
         }
         
         this.directory = createDirectory(true);
-        writer = new IndexWriter(this.directory, this.analyzer, true);
-        writer.close();
-        writer = null;
+        this.writer = new IndexWriter(this.directory, this.analyzer, true);
+        this.writer.close();
+        this.writer = null;
     }
 
     protected synchronized void optimize() throws IOException {
@@ -237,7 +237,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
         
         // Check status on index, create new if necessary
         if (! IndexReader.indexExists(directory)) {
-            new IndexWriter(directory, analyzer, true).close();
+            new IndexWriter(directory, this.analyzer, true).close();
             logger.debug("New index created.");
         } 
     }
@@ -274,7 +274,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     }
 
     public int getMergeFactor() {
-        return mergeFactor;
+        return this.mergeFactor;
     }
 
     public void setMergeFactor(int mergeFactor) {
@@ -282,7 +282,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     }
 
     public int getMinMergeDocs() {
-        return minMergeDocs;
+        return this.minMergeDocs;
     }
 
     public void setMinMergeDocs(int minMergeDocs) {
@@ -290,7 +290,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     }
 
     public int getMaxMergeDocs() {
-        return maxMergeDocs;
+        return this.maxMergeDocs;
     }
 
     public void setMaxMergeDocs(int maxMergeDocs) {
@@ -298,7 +298,7 @@ public abstract class AbstractLuceneIndex implements InitializingBean {
     }
 
     public boolean isForceUnlock() {
-        return forceUnlock;
+        return this.forceUnlock;
     }
 
     public void setForceUnlock(boolean forceUnlock) {

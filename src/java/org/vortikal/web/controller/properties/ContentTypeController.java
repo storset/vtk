@@ -59,7 +59,7 @@ public class ContentTypeController extends SimpleFormController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
@@ -84,7 +84,7 @@ public class ContentTypeController extends SimpleFormController {
             return;
         }
         
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
 
         String contentType = contentTypeCommand.getContentType();
 
@@ -101,7 +101,7 @@ public class ContentTypeController extends SimpleFormController {
                          resource.getContentType() + 
                          "' for resource " + uri);
         }
-        repository.store(token, resource);
+        this.repository.store(token, resource);
         contentTypeCommand.setDone(true);
     }
     

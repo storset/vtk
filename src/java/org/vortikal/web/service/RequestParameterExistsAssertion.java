@@ -63,7 +63,7 @@ public class RequestParameterExistsAssertion implements Assertion {
     }
 	
     public String getParameterName() {
-        return parameterName;
+        return this.parameterName;
     }
 
 
@@ -104,13 +104,13 @@ public class RequestParameterExistsAssertion implements Assertion {
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        if (!invert && (url.getParameter(this.parameterName) == null))
+        if (!this.invert && (url.getParameter(this.parameterName) == null))
                 url.addParameter(this.parameterName, "");
         
         return true;
     }
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        return (invert != request.getParameterMap().containsKey(this.parameterName));
+        return (this.invert != request.getParameterMap().containsKey(this.parameterName));
     }
 }

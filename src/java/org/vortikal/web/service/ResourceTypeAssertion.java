@@ -31,11 +31,6 @@
 package org.vortikal.web.service;
 
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.springframework.beans.factory.BeanFactoryUtils;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;

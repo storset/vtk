@@ -72,17 +72,17 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
      * and whenever an index is re-initialized or re-created.
      */
     protected Directory createDirectory(boolean eraseContents) throws IOException {
-        logger.debug("Initializing index directory at path '" + indexPath + "'");
+        logger.debug("Initializing index directory at path '" + this.indexPath + "'");
 
-        if (indexPath == null || "".equals(indexPath.trim())) {
-            throw new IOException("Index path invalid: " + indexPath);
+        if (this.indexPath == null || "".equals(this.indexPath.trim())) {
+            throw new IOException("Index path invalid: " + this.indexPath);
         }
         
-        File path = new File(indexPath);
+        File path = new File(this.indexPath);
         if (!path.isDirectory()) {
-            throw new IOException("Path '" + indexPath + "' is not a directory.");
+            throw new IOException("Path '" + this.indexPath + "' is not a directory.");
         } else if (!path.canWrite()) {
-            throw new IOException("Path '" + indexPath + "' is not writable.");
+            throw new IOException("Path '" + this.indexPath + "' is not writable.");
         }
         
         return FSDirectory.getDirectory(path, eraseContents);

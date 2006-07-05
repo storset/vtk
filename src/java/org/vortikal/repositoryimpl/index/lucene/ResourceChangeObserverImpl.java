@@ -65,7 +65,7 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
     private boolean enabled;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (index == null) {
+        if (this.index == null) {
             throw new BeanInitializationException("Property 'index' not set.");
         }
         
@@ -77,8 +77,8 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
      * @see org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver#disable()
      */
     public synchronized void disable() {
-        if (notifier != null) {
-            if (notifier.unregisterObserver(this)) {
+        if (this.notifier != null) {
+            if (this.notifier.unregisterObserver(this)) {
                 logger.info("Un-registered from resource change notifier.");
             }
         }
@@ -90,8 +90,8 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
      * @see org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver#enable()
      */
     public synchronized void enable() {
-        if (notifier != null) {
-            if (notifier.registerObserver(this)) {
+        if (this.notifier != null) {
+            if (this.notifier.registerObserver(this)) {
                 logger.info("Registered with resource change notifier.");
             }
         }
@@ -120,7 +120,7 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
         }
         
         // Take lock immediately, we'll be doing some writing.
-        if (! index.lockAcquire()) {
+        if (! this.index.lockAcquire()) {
             logger.error("Unable to acquire lock on index, will not attempt to " +
                          "apply modifications, changes are lost !");
             return;
@@ -175,7 +175,7 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
                 }
             }
             addDocuments(documentUpdates);
-            index.commit(); // commit (will close IndexWriter and IndexReader)
+            this.index.commit(); // commit (will close IndexWriter and IndexReader)
         } catch (IOException io) {
             logger.warn("Got IOException while indexing: ", io);
         } finally {
@@ -189,13 +189,13 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
      */
     private void addDocuments(List uris)
     throws IOException {
-        IndexWriter writer = index.getIndexWriter();
+        IndexWriter writer = this.index.getIndexWriter();
         // Iterate through list of URLs and add
         Iterator i = uris.iterator();
         while (i.hasNext()) {
             ResourceChange c = (ResourceChange)i.next();
             String uri = c.getUri();
-            boolean added = index.addDocument(writer, uri);
+            boolean added = this.index.addDocument(writer, uri);
             if (logger.isDebugEnabled()) {
                 if (added) logger.debug("Added/updated document: '" + uri + "'");
             }
@@ -208,11 +208,11 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
     private void deleteDocuments(List uris)
     throws IOException {
         // Iterate through list of URIs and delete from index.
-        IndexReader reader = index.getIndexReader();
+        IndexReader reader = this.index.getIndexReader();
         Iterator i = uris.iterator();
         while (i.hasNext()) {
             String uri = ((ResourceChange)i.next()).getUri();
-            if (index.deleteDocument(reader, uri)) {
+            if (this.index.deleteDocument(reader, uri)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deleted document from index: '" + uri + "'");
                 }
@@ -225,7 +225,7 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
      */
     private void delTrees(List uris)
     throws IOException {
-        IndexReader reader = index.getIndexReader();
+        IndexReader reader = this.index.getIndexReader();
         Iterator i = uris.iterator();
         while (i.hasNext()) {
             ResourceDeletion r = (ResourceDeletion)i.next();
@@ -233,7 +233,7 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
             String uri = r.getUri();
             logger.debug("Deleting subtree '" + uri + "' from index..");
             
-            int deleted = index.deleteSubtree(reader, collectionId, uri);
+            int deleted = this.index.deleteSubtree(reader, collectionId, uri);
             
             if (logger.isDebugEnabled()) {
                 if (deleted > 0) logger.debug("Deleted " + deleted + " document(s) from index.");

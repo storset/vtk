@@ -59,25 +59,25 @@ public class BeanShellConsole extends AbstractConsole {
 
     public void bind(String name, Object o) {
         try {
-            interpreter.set(name, o);
+            this.interpreter.set(name, o);
         } catch (Throwable t) {
-            logger.warn("Unable to set binding: ['" + name + "' = '" + o + "']", t);
+            this.logger.warn("Unable to set binding: ['" + name + "' = '" + o + "']", t);
         }
     }
 
 
     protected void evalInitFile(InputStream inStream, PrintStream out) {
         try {
-            interpreter.setOut(out);
+            this.interpreter.setOut(out);
             Reader reader = new InputStreamReader(inStream);
-            out.println(interpreter.eval(reader));
+            out.println(this.interpreter.eval(reader));
 
         } catch (EvalError e) {
             out.println("Evaluation error: " + e.getMessage());
             e.printStackTrace(out);
 
         } catch (Throwable t) {
-            logger.warn("Unable to run init file", t);
+            this.logger.warn("Unable to run init file", t);
         }
     }
 
@@ -86,8 +86,8 @@ public class BeanShellConsole extends AbstractConsole {
     public void eval(String line, PrintStream out) {
         try {
             if (line != null && !"".equals(line.trim())) {
-                interpreter.setOut(out);
-                Object o = interpreter.eval(line);
+                this.interpreter.setOut(out);
+                Object o = this.interpreter.eval(line);
                 if (this.wrapOutputInBrackets) {
                     out.println("[" + o + "]");
                 } else {

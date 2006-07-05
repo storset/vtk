@@ -126,10 +126,10 @@ public abstract class AbstractViewProcessingTextContentFilter
         RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
         BufferedResponse tmpResponse = new BufferedResponse();
 
-        view.render(model, requestWrapper, tmpResponse);
+        this.view.render(model, requestWrapper, tmpResponse);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Rendered wrapped view " + view + ". "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Rendered wrapped view " + this.view + ". "
                          + "Character encoding was: "
                          + tmpResponse.getCharacterEncoding() + ", "
                          + "Content-Length was: " + tmpResponse.getContentLength());

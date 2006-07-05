@@ -53,7 +53,7 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
 
     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
         
-        PropertyTypeDefinition def = query.getPropertyDefinition();
+        PropertyTypeDefinition def = this.query.getPropertyDefinition();
         
         String fieldName = DocumentMapper.getFieldName(def);
         

@@ -140,9 +140,9 @@ public class RequestLocaleMatchAssertion
 
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        Locale locale = localeResolver.resolveLocale(request);
+        Locale locale = this.localeResolver.resolveLocale(request);
         boolean match = match(locale);
-        if (invert) {
+        if (this.invert) {
             return !match;
         }
         return match;

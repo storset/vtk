@@ -84,10 +84,10 @@ public class HostNameDelegatingServlet extends HttpServletBean {
             }
 
             String servletName = mappings[i].substring(mappings[i].lastIndexOf("=") + 1).trim();
-            logger.info("Adding mapping: " + primaryMapping + " --> " + servletName);
+            this.logger.info("Adding mapping: " + primaryMapping + " --> " + servletName);
             this.hostMap.put(primaryMapping, servletName);
             if (secondaryMapping != null) {
-                logger.info("Adding mapping: " + secondaryMapping + " --> " + servletName);
+                this.logger.info("Adding mapping: " + secondaryMapping + " --> " + servletName);
                 this.hostMap.put(secondaryMapping, servletName);
             }
         }
@@ -111,8 +111,8 @@ public class HostNameDelegatingServlet extends HttpServletBean {
                 "No request dispatcher available for servlet '" + servletName + "'");
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Forwarding request '" + request.getRequestURL()
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Forwarding request '" + request.getRequestURL()
                          + "' to servlet '" + servletName + "'");
         }
 

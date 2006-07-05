@@ -46,7 +46,7 @@ public class ListMenu {
     private MenuItem activeItem;
 
     public String getLabel() {
-        return label;
+        return this.label;
     }
     
     public void setLabel(String label) {
@@ -54,7 +54,7 @@ public class ListMenu {
     }
     
     public MenuItem getActiveItem() {
-        return activeItem;
+        return this.activeItem;
     }
 
     public void setActiveItem(MenuItem activeItem) {
@@ -62,7 +62,7 @@ public class ListMenu {
     }
     
     public MenuItem[] getItems() {
-        return items;
+        return this.items;
     }
     
     public void setItems(MenuItem[] items) {

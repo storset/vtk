@@ -39,6 +39,8 @@ import org.vortikal.repositoryimpl.index.IndexException;
  */
 public class ManagementException extends IndexException {
     
+    private static final long serialVersionUID = -5489313632590001247L;
+
     public ManagementException() {
         super();
     }

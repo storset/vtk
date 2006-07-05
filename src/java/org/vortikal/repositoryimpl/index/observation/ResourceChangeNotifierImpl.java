@@ -56,31 +56,31 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
         try {
             // Get last relevant changes to resources. This list should only
             // contain unique resources, and the last change that has happened to them.
-            List changes = changeFetcher.fetchLastChanges();
+            List changes = this.changeFetcher.fetchLastChanges();
             
             if (changes != null && changes.size() > 0) {
                 // Index changes
-                logger.debug("Notifying observers/indexes of resource changes.");
-                for (Iterator iter = observers.iterator(); iter.hasNext();) {
+                this.logger.debug("Notifying observers/indexes of resource changes.");
+                for (Iterator iter = this.observers.iterator(); iter.hasNext();) {
                     ResourceChangeObserver observer = (ResourceChangeObserver) iter.next();
                     
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Notifying observer '" + observer.getObserverId() + "'");
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Notifying observer '" + observer.getObserverId() + "'");
                     }
                     
                     observer.notifyResourceChanges(changes);
                 }
-                logger.debug("Finished notifying observers of changes.");
+                this.logger.debug("Finished notifying observers of changes.");
                 
                 // Remove _all_ changes _up_until_the_latest_ change in the list.
-                changeFetcher.removeChanges(changes);
-                if (observers.size() == 0 && logger.isDebugEnabled()) {
-                    logger.debug("Changelog contents discarded, no observers are registered.");
+                this.changeFetcher.removeChanges(changes);
+                if (this.observers.size() == 0 && this.logger.isDebugEnabled()) {
+                    this.logger.debug("Changelog contents discarded, no observers are registered.");
                 }
             }
         } catch (Throwable t) {
-            logger.error("Unexpected error while updating indexes !", t);
-            logger.error("CHANGELOG HAS NOT BEEN FLUSHED !!");
+            this.logger.error("Unexpected error while updating indexes !", t);
+            this.logger.error("CHANGELOG HAS NOT BEEN FLUSHED !!");
             // FIXME: We need a proper policy on what happens when errors occur during
             //        update. For instance, we can require of observers to maintain their
             //        own redo-log, instead of relying on the notifier, in case of
@@ -90,16 +90,16 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     }
     
     public synchronized boolean registerObserver(ResourceChangeObserver observer) {
-        if (observers.add(observer)) {
-            logger.info("An observer with id '" + observer.getObserverId() + "' was registered.");
+        if (this.observers.add(observer)) {
+            this.logger.info("An observer with id '" + observer.getObserverId() + "' was registered.");
             return true;
         }
         return false;
     }
     
     public synchronized boolean unregisterObserver(ResourceChangeObserver observer) {
-        if (observers.remove(observer)) {
-            logger.info("An observer with id '" + observer.getObserverId() + "' was removed.");
+        if (this.observers.remove(observer)) {
+            this.logger.info("An observer with id '" + observer.getObserverId() + "' was removed.");
             return true;
         } 
         return false;

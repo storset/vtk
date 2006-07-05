@@ -53,9 +53,9 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
 
     public Query buildQuery() throws QueryBuilderException {
         
-        String from = prq.getFromTerm();
-        String to = prq.getToTerm();
-        PropertyTypeDefinition def = prq.getPropertyDefinition();
+        String from = this.prq.getFromTerm();
+        String to = this.prq.getToTerm();
+        PropertyTypeDefinition def = this.prq.getPropertyDefinition();
         
         String fromEncoded = FieldValueMapper.encodeIndexFieldValue(from, def.getType());
         String toEncoded = FieldValueMapper.encodeIndexFieldValue(to, def.getType());
@@ -63,7 +63,7 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         String fieldName = DocumentMapper.getFieldName(def);
         
         ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(fieldName, 
-                fromEncoded, toEncoded, prq.isInclusive(), prq.isInclusive());
+                fromEncoded, toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
         
         return csrq;
         

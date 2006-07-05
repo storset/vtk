@@ -159,8 +159,8 @@ public class DisplayClassPathResourceController
         ClassPathResource resource = new ClassPathResource(path);
         
         if (!resource.exists()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to serve resource: " + resource
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unable to serve resource: " + resource
                              + " from path: " + path + ": resource does not exist");
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -203,15 +203,15 @@ public class DisplayClassPathResourceController
                 }
             }
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully served resource: " + resource
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Successfully served resource: " + resource
                              + " from path: " + path);
             }
 
         } catch (Exception e) {
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to serve resource: " + resource
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unable to serve resource: " + resource
                              + " from path: " + path, e);
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -244,7 +244,7 @@ public class DisplayClassPathResourceController
 
         ClassPathResource resource = new ClassPathResource(path);
         if (resource.exists()) {
-            return applicationContext.getStartupDate();
+            return this.applicationContext.getStartupDate();
         }
 
         return -1;

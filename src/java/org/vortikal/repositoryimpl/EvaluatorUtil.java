@@ -72,7 +72,7 @@ public class EvaluatorUtil implements InitializingBean {
         if (resource == null) {
             throw new IOException("Resource " + uri + " does not exist");
         }
-        logger.info("Evaluating: " + resource.getURI());
+        this.logger.info("Evaluating: " + resource.getURI());
 
         if (!resource.isCollection()) {
             resource = this.propertyManager.fileContentModification(

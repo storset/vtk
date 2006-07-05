@@ -144,10 +144,10 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException("JavaBean property 'repository' not set");
         }
-        if (transformerManager == null) {
+        if (this.transformerManager == null) {
             throw new BeanInitializationException("JavaBean property 'transformerManager' not set");
         }
     }
@@ -163,14 +163,14 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
 
         String uri = requestContext.getResourceURI();
 
-        if (childName != null) {
-            uri += (uri.equals("/")) ? childName : "/" + childName;
+        if (this.childName != null) {
+            uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
         }
         
         Resource resource = null;
 
         try {
-            resource = repository.retrieve(securityContext.getToken(), uri, true);
+            resource = this.repository.retrieve(securityContext.getToken(), uri, true);
         } catch (RepositoryException e) {
             // These exceptions are expected
             return -1;
@@ -190,11 +190,11 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
             return -1;
         }
 
-        if (schemasForHandleLastModified != null && schemasForHandleLastModified.size() > 0) {
+        if (this.schemasForHandleLastModified != null && this.schemasForHandleLastModified.size() > 0) {
             Property schemaProp = resource.getProperty(
-                    Namespace.CUSTOM_NAMESPACE, schemaPropertyName);
+                    Namespace.CUSTOM_NAMESPACE, this.schemaPropertyName);
             String schema = schemaProp.getStringValue();
-            Iterator schemaIterator = schemasForHandleLastModified.iterator();
+            Iterator schemaIterator = this.schemasForHandleLastModified.iterator();
             boolean schemaIsInList = false;
             while (schemaIterator.hasNext()) {
                 String schemaFromList = (String) schemaIterator.next();
@@ -203,8 +203,8 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
                     break;
                 }
             }
-            if ((schemaIsInList && !handleLastModifiedForSchemasInList)
-                    || (!schemaIsInList && handleLastModifiedForSchemasInList)) {
+            if ((schemaIsInList && !this.handleLastModifiedForSchemasInList)
+                    || (!schemaIsInList && this.handleLastModifiedForSchemasInList)) {
                 return -1;
             }
         }
@@ -219,15 +219,15 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
 
         String uri = requestContext.getResourceURI();
 
-        if (childName != null) {
-            uri += (uri.equals("/")) ? childName : "/" + childName;
+        if (this.childName != null) {
+            uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
         }
         
         String token = securityContext.getToken();
 
         Map model = new HashMap();
 
-        Resource resource = repository.retrieve(token, uri, true);
+        Resource resource = this.repository.retrieve(token, uri, true);
 
         if (resource.isCollection()) {
             throw new IllegalStateException("Unable to display collections");
@@ -239,7 +239,7 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
 
         model.put("resource", resource);
 
-        InputStream stream = repository.getInputStream(token, uri, true);
+        InputStream stream = this.repository.getInputStream(token, uri, true);
 
         // Build a JDOM tree of the input stream:
         Document document = null;
@@ -262,7 +262,7 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
         if (document != null) {
 
             if (!this.ignoreXMLErrors) {
-                transformerManager.getTransformer(resource, document);
+                this.transformerManager.getTransformer(resource, document);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Successfully obtained XSLT transformer for resource "
                                  + resource);

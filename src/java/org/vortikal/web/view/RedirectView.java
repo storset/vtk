@@ -57,7 +57,7 @@ public class RedirectView extends AbstractView implements ReferenceDataProviding
     private ReferenceDataProvider[] referenceDataProviders;
     
     public ReferenceDataProvider[] getReferenceDataProviders() {
-        return referenceDataProviders;
+        return this.referenceDataProviders;
     }
 
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
@@ -78,7 +78,7 @@ public class RedirectView extends AbstractView implements ReferenceDataProviding
         if (url == null)
             throw new InvalidModelException("Missing expected model data 'redirectURL'");
             
-        if (http10) {
+        if (this.http10) {
             // send status code 302
             response.sendRedirect(url);
         }

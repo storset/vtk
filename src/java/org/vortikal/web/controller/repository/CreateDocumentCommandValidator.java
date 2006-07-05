@@ -100,7 +100,7 @@ public class CreateDocumentCommandValidator
         destinationURI += createDocumentCommand.getName();
 
         try {
-            if (repository.exists(token, destinationURI)) {
+            if (this.repository.exists(token, destinationURI)) {
                 errors.rejectValue("name", "manage.create.document.exists",
                                    "A resource of this name already exists");
             }

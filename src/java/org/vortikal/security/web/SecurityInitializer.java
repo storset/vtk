@@ -144,7 +144,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
         
         if (token != null) {
-            Principal principal = tokenManager.getPrincipal(token);
+            Principal principal = this.tokenManager.getPrincipal(token);
             if (principal == null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(
@@ -184,9 +184,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                             + "Setting security context.");
                     }
                     
-                    token = tokenManager.newToken(principal, handler);
+                    token = this.tokenManager.newToken(principal, handler);
                     SecurityContext securityContext = 
-                        new SecurityContext(token, tokenManager.getPrincipal(token));
+                        new SecurityContext(token, this.tokenManager.getPrincipal(token));
                         
                     SecurityContext.setSecurityContext(securityContext);
                     req.getSession(true).setAttribute(
@@ -274,13 +274,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         Principal principal = securityContext.getPrincipal();
         if (principal == null) return false;
 
-        AuthenticationHandler handler = tokenManager.getAuthenticationHandler(
+        AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(
             securityContext.getToken());
 
         // FIXME: what if handler.isLogoutSupported() == false?
         boolean result = handler.logout(principal, req, resp);
 
-        tokenManager.removeToken(securityContext.getToken());
+        this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
         req.getSession(true).invalidate();
 

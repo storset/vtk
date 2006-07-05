@@ -54,7 +54,7 @@ public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
 
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourceURIAssertion) {
-            Matcher m = pattern.matcher(((ResourceURIAssertion) assertion).getUri());
+            Matcher m = this.pattern.matcher(((ResourceURIAssertion) assertion).getUri());
             return ! m.matches();
         }
         return false;
@@ -64,14 +64,14 @@ public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; pattern = ").append(pattern.pattern());
+        sb.append("; pattern = ").append(this.pattern.pattern());
 		
         return sb.toString();
     }
 
 
     public boolean matches(Resource resource, Principal principal) {
-        Matcher m = pattern.matcher(resource.getURI());
+        Matcher m = this.pattern.matcher(resource.getURI());
         return m.matches();
     }
 

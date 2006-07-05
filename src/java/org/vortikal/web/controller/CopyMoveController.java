@@ -112,7 +112,7 @@ public class CopyMoveController implements Controller {
 	    	}		
 	    	
 	    	model.put("infoMessage", "copyMove." + sessionBean.getAction() + ".header");
-	    	return new ModelAndView(viewName, model);
+	    	return new ModelAndView(this.viewName, model);
     }
     
 }

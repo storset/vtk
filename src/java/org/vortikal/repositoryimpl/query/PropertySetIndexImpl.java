@@ -75,9 +75,9 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     private Analyzer analyzer;
 
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (index == null) {
+        if (this.index == null) {
             throw new BeanInitializationException("Property 'index' not set.");
-        } else if (documentMapper == null) {
+        } else if (this.documentMapper == null) {
             throw new BeanInitializationException("Property 'documentMapper' not set.");
         }
         
@@ -86,7 +86,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     private PerFieldAnalyzerWrapper initializePerFieldAnalyzer() {
         
-        List propDefs = propertyManager.getPropertyTypeDefinitions();
+        List propDefs = this.propertyManager.getPropertyTypeDefinitions();
         
         KeywordAnalyzer keywordAnalyzer = new KeywordAnalyzer();
         EscapedMultiValueFieldAnalyzer multiValueAnalyzer = 
@@ -131,24 +131,24 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         // XXX: FIXME: ugly casting 
         // XXX: FIXME: locking must be done above this level.
         try {
-            doc = documentMapper.getDocument((PropertySetImpl)propertySet);
+            doc = this.documentMapper.getDocument((PropertySetImpl)propertySet);
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Adding new property set at URI '" 
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Adding new property set at URI '" 
                                                 + propertySet.getURI() + "'");
-                logger.debug("Document mapper created the following document: ");
+                this.logger.debug("Document mapper created the following document: ");
                 
                 Enumeration fieldEnum = doc.fields();
                 while (fieldEnum.hasMoreElements()) {
                     Field field = (Field)fieldEnum.nextElement();
-                    logger.debug("Field '" + field.name() + "', value: '" 
+                    this.logger.debug("Field '" + field.name() + "', value: '" 
                                                     + field.stringValue() + "'");
                 }
             }
             
-            index.getIndexWriter().addDocument(doc, this.analyzer);
+            this.index.getIndexWriter().addDocument(doc, this.analyzer);
         } catch (DocumentMappingException dme) {
-            logger.warn("Could not map property set to index document", dme);
+            this.logger.warn("Could not map property set to index document", dme);
             throw new IndexException("Could not map property set to index document", dme);
         } catch (IOException io) {
             throw new IndexException(io);
@@ -157,7 +157,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
 
     public void clear() throws IndexException {
         try {
-            index.clear();
+            this.index.clear();
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -167,33 +167,32 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         TermDocs td = null;
         try {
             Term uriTerm = new Term(DocumentMapper.URI_FIELD_NAME, uri);
-            IndexReader reader = index.getIndexReader();
+            IndexReader reader = this.index.getIndexReader();
             
             td = reader.termDocs(uriTerm);
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Deleting property set at URI '" + uri + "' from index.");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Deleting property set at URI '" + uri + "' from index.");
             }
             
             if (! td.next()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Property set at URI '" + uri + "' not found in index.");
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Property set at URI '" + uri + "' not found in index.");
                 }
                 return 0;
-            } else {
-                Field idField = reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
-                String id = 
-                    Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(idField));
-                
-                int n = reader.deleteDocuments(uriTerm);
-                n += reader.deleteDocuments(new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, id));
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Deleted " + n + " documents from index.");
-                }
-                
-                return n;
             }
+            Field idField = reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
+            String id = 
+                Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(idField));
+            
+            int n = reader.deleteDocuments(uriTerm);
+            n += reader.deleteDocuments(new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, id));
+
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Deleted " + n + " documents from index.");
+            }
+            
+            return n;
         } catch (IOException io) {
             throw new IndexException (io);
         } finally {
@@ -207,11 +206,11 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
 
     public void updatePropertySet(PropertySet propertySet) throws IndexException {
         try {
-            IndexReader reader = index.getIndexReader();
+            IndexReader reader = this.index.getIndexReader();
             reader.deleteDocuments(new Term(DocumentMapper.URI_FIELD_NAME, propertySet.getURI()));
             
-            IndexWriter writer = index.getIndexWriter();
-            writer.addDocument(documentMapper.getDocument((PropertySetImpl)propertySet), this.analyzer);
+            IndexWriter writer = this.index.getIndexWriter();
+            writer.addDocument(this.documentMapper.getDocument((PropertySetImpl)propertySet), this.analyzer);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -220,19 +219,19 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public PropertySet getPropertySet(String uri) throws IndexException {
         TermDocs td = null;
         try {
-            IndexReader reader = index.getIndexReader();
+            IndexReader reader = this.index.getIndexReader();
             PropertySet propSet = null;
             td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, uri));
             
             if (td.next()) {
                 Document doc = reader.document(td.doc()); 
-                propSet = documentMapper.getPropertySet(doc);
+                propSet = this.documentMapper.getPropertySet(doc);
             } else {
                 throw new IndexException("Could not find any property set at URI '" + uri + "'");
             }
           
             if (td.next()) {
-                logger.warn("Multiple property sets exist in index for a single URI");
+                this.logger.warn("Multiple property sets exist in index for a single URI");
             }
             
             return propSet;
@@ -249,18 +248,18 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
 
     public void commit() throws IndexException {
         try {
-            index.commit();
+            this.index.commit();
         } catch (IOException io) {
             throw new IndexException(io);
         }
     }
 
     public boolean lock() {
-        return index.writeLockAcquire();
+        return this.index.writeLockAcquire();
     }
 
     public void unlock() throws IndexException {
-        index.writeLockRelease();
+        this.index.writeLockRelease();
     }
 
     public void setDocumentMapper(DocumentMapper documentMapper) {

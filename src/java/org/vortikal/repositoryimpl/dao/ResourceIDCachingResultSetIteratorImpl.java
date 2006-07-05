@@ -108,36 +108,36 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
 
             String uri = this.rs.getString("uri");
             
-            currentURI = uri;
+            this.currentURI = uri;
 
-            PropertySetImpl propertySet = new PropertySetImpl(currentURI);
+            PropertySetImpl propertySet = new PropertySetImpl(this.currentURI);
 
             SqlDaoUtils.populateStandardProperties(this.propertyManager, this.principalManager,
                                                   propertySet, this.rs);
 
-            putResourceId(currentURI, rs.getInt("resource_id"));
+            putResourceId(this.currentURI, this.rs.getInt("resource_id"));
             
-            propertySet.setAncestorIds(getAncestorIdsForUri(currentURI));
+            propertySet.setAncestorIds(getAncestorIdsForUri(this.currentURI));
             
             Map propMap = new HashMap();
 
-            while (currentURI.equals(uri)) {
+            while (this.currentURI.equals(uri)) {
 
                 SqlDaoUtils.PropHolder holder = new SqlDaoUtils.PropHolder();
-                holder.namespaceUri = rs.getString("name_space");
-                holder.name = rs.getString("name");
-                holder.resourceId = rs.getInt("resource_id");
+                holder.namespaceUri = this.rs.getString("name_space");
+                holder.name = this.rs.getString("name");
+                holder.resourceId = this.rs.getInt("resource_id");
             
                 if (holder.name != null) { 
 
                     List values = (List) propMap.get(holder);
                     if (values == null) {
                         values = new ArrayList();
-                        holder.type = rs.getInt("prop_type_id");
+                        holder.type = this.rs.getInt("prop_type_id");
                         holder.values = values;
                         propMap.put(holder, values);
                     }
-                    values.add(rs.getString("value"));
+                    values.add(this.rs.getString("value"));
                 }
 
                 if (this.rs.next()) {

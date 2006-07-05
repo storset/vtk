@@ -46,7 +46,7 @@ public class HttpBasicAuthenticationChallenge
 
     public void challenge(HttpServletRequest req, HttpServletResponse resp)
         throws AuthenticationProcessingException {
-        String authHeader = "Basic realm=\"" + realm + "\"";
+        String authHeader = "Basic realm=\"" + this.realm + "\"";
         try {
             resp.setHeader("WWW-Authenticate", authHeader);
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -58,7 +58,7 @@ public class HttpBasicAuthenticationChallenge
     }
     
     public void setPrincipalStore(MD5PasswordStore store) {
-        realm = store.getRealm();
+        this.realm = store.getRealm();
     }
     
     

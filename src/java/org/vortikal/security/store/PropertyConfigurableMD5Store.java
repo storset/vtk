@@ -103,7 +103,7 @@ public class PropertyConfigurableMD5Store
      * @deprecated
      */
     public String getRealm() {
-        return realm;
+        return this.realm;
     }
     
     
@@ -124,22 +124,22 @@ public class PropertyConfigurableMD5Store
     public boolean validatePrincipal(Principal principal) {
 
         if (principal == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Validate principal: " + principal + ": false");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Validate principal: " + principal + ": false");
             }
             return false;
         }
         
         if (this.domain != null && !this.domain.equals(principal.getDomain())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Validate principal: " + principal + ": false");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Validate principal: " + principal + ": false");
             }
             return false;
         }
 
         boolean hit = this.principals.getProperty(principal.getQualifiedName()) != null;
-        if (logger.isDebugEnabled()) {
-            logger.debug("Validate principal: " + principal + ": " + hit);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Validate principal: " + principal + ": " + hit);
         }
         return hit;
     }
@@ -149,16 +149,16 @@ public class PropertyConfigurableMD5Store
     public boolean validateGroup(Principal group) {
         if (this.domain == null) {
             if (group.getDomain() != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validate group: " + group + ": false");
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Validate group: " + group + ": false");
                 }
                 return false;
             }
 
         } else {
             if (!this.domain.equals(group.getDomain())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validate group: " + group + ": false");
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Validate group: " + group + ": false");
                 }
                 return false;
             }
@@ -166,23 +166,23 @@ public class PropertyConfigurableMD5Store
 
         String groupName = group.getUnqualifiedName();
         if (groupName == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Validate group: " + group + ": false");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Validate group: " + group + ": false");
             }
             return false;
         }
 
         if (this.groups == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Validate group: " + group + ": false");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Validate group: " + group + ": false");
             }
             return false;
         }
 
 
         boolean hit = this.groups.containsKey(groupName);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Validate group: " + groupName + ": " + hit);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Validate group: " + groupName + ": " + hit);
         }
         return hit;
     }
@@ -204,16 +204,16 @@ public class PropertyConfigurableMD5Store
         String groupName = group.getUnqualifiedName();
         
         if (!this.groups.containsKey(groupName)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Resolve group: " + groupName + ": unknown group");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Resolve group: " + groupName + ": unknown group");
             }
 
             return new String[0];
         }
 
         List members = (List) this.groups.get(groupName);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Resolve group: " + groupName + ": " + members);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Resolve group: " + groupName + ": " + members);
         }
 
         return (String[]) members.toArray(new String[members.size()]);
@@ -223,8 +223,8 @@ public class PropertyConfigurableMD5Store
     public boolean isMember(Principal principal, Principal group) {
         String groupName = group.getQualifiedName();
         if (!this.groups.containsKey(groupName)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Check membership for principal " + principal
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Check membership for principal " + principal
                              + ", group: " + groupName + ": unknown group");
             }
             return false;
@@ -232,8 +232,8 @@ public class PropertyConfigurableMD5Store
 
         List members = (List) this.groups.get(groupName);
         boolean hit = members.contains(principal.getQualifiedName());
-        if (logger.isDebugEnabled()) {
-            logger.debug("Check membership for principal " + principal
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Check membership for principal " + principal
                          + ", group: " + groupName + ": " + hit);
         }
         return hit;
@@ -246,7 +246,7 @@ public class PropertyConfigurableMD5Store
         
         String hash = getMD5HashString(principal);
         String clientHash = 
-            MD5.md5sum(principal.getQualifiedName() + ":" + realm + ":" + password); 
+            MD5.md5sum(principal.getQualifiedName() + ":" + this.realm + ":" + password); 
 
         if (hash == null || !hash.equals(clientHash)) {
             throw new AuthenticationException(
@@ -254,8 +254,8 @@ public class PropertyConfigurableMD5Store
                 + ", " + "wrong credentials.");
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Successfully authenticated principal: " + principal);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Successfully authenticated principal: " + principal);
         }
 
     }

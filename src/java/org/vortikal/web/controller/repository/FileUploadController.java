@@ -62,7 +62,7 @@ public class FileUploadController extends SimpleFormController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
 
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
         String url = service.constructLink(
@@ -114,7 +114,7 @@ public class FileUploadController extends SimpleFormController {
                 logger.debug("Uploaded resource will be: " + itemURI);
             }
 
-            boolean exists = repository.exists(token, itemURI);
+            boolean exists = this.repository.exists(token, itemURI);
             if (exists) {
 
                 if (logger.isDebugEnabled()) {
@@ -124,7 +124,7 @@ public class FileUploadController extends SimpleFormController {
                 return;
             }
 
-            Resource newResource = repository.createDocument(token, itemURI);
+            Resource newResource = this.repository.createDocument(token, itemURI);
             if (file.getContentType() != null) {
 
                 if (logger.isDebugEnabled()) {
@@ -132,11 +132,11 @@ public class FileUploadController extends SimpleFormController {
                                  + file.getContentType());
                 }
                 newResource.setContentType(file.getContentType());
-                repository.store(token, newResource);
+                this.repository.store(token, newResource);
             }
 
             InputStream inStream = file.getInputStream();
-            repository.storeContent(token, itemURI, inStream);
+            this.repository.storeContent(token, itemURI, inStream);
 
         } catch (Exception e) {
             logger.info("Caught exception while performing file upload", e);

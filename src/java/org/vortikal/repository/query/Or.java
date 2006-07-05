@@ -55,7 +55,7 @@ public class Or implements Condition {
     
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("(").append(left).append(" Or ").append(right).append(")");
+        buffer.append("(").append(this.left).append(" Or ").append(this.right).append(")");
         return buffer.toString();
     }
 }

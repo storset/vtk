@@ -73,7 +73,6 @@ import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
 import org.vortikal.web.filter.RequestFilter;
-import org.vortikal.web.filter.StandardRequestFilter;
 import org.vortikal.web.service.Service;
 
 
@@ -159,7 +158,7 @@ public class VortikalServlet extends DispatcherServlet {
         String threadName = Thread.currentThread().getName();
         try {
             Thread.currentThread().setName(config.getServletName());
-            logger.info(getServletInfo());
+            this.logger.info(getServletInfo());
             super.init(config);
         } finally {
             Thread.currentThread().setName(threadName);
@@ -192,7 +191,7 @@ public class VortikalServlet extends DispatcherServlet {
                     SECURITY_INITIALIZER_BEAN_NAME + "' is reserved", 
                     SecurityInitializer.class, bean.getClass());
         }
-        logger.info("Security initializer set up successfully: " + bean);
+        this.logger.info("Security initializer set up successfully: " + bean);
         this.securityInitializer = (SecurityInitializer) bean;
     }
 
@@ -206,7 +205,7 @@ public class VortikalServlet extends DispatcherServlet {
                     REQUEST_CONTEXT_INITIALIZER_BEAN_NAME + "' is reserved", 
                     RequestContextInitializer.class, bean.getClass());
         }
-        logger.info("Request context initializer " + bean + " set up successfully");
+        this.logger.info("Request context initializer " + bean + " set up successfully");
         this.requestContextInitializer = (RequestContextInitializer) bean;
     }
     
@@ -220,7 +219,7 @@ public class VortikalServlet extends DispatcherServlet {
                 REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME, 
                     RepositoryContextInitializer.class, bean.getClass());
         }
-        logger.info("Repository context initializer " + bean + " set up successfully");
+        this.logger.info("Repository context initializer " + bean + " set up successfully");
         this.repositoryContextInitializer = (RepositoryContextInitializer) bean;
     }
     
@@ -237,7 +236,7 @@ public class VortikalServlet extends DispatcherServlet {
         this.requestFilters = (RequestFilter[]) filters.toArray(
             new RequestFilter[filters.size()]);
 
-        logger.info("Request filters: " + filters + " set up successfully");
+        this.logger.info("Request filters: " + filters + " set up successfully");
     }
     
 
@@ -251,7 +250,7 @@ public class VortikalServlet extends DispatcherServlet {
             for (Iterator i = handlers.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry) i.next();
                 this.errorHandlers[j] = (ErrorHandler) entry.getValue();
-                logger.info("Registered error handler " + this.errorHandlers[j]);
+                this.logger.info("Registered error handler " + this.errorHandlers[j]);
                 j++;
             }
         }
@@ -294,8 +293,8 @@ public class VortikalServlet extends DispatcherServlet {
                     maybeSetLastModified(response, lastModified);
                 } else {
                     response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Skipping service of "
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Skipping service of "
                         + request.getRequestURI()
                         + " because content didn't change since last request");
                     }
@@ -332,8 +331,8 @@ public class VortikalServlet extends DispatcherServlet {
         long number = 0;
 
         synchronized(this) {
-            requests++;
-            number = requests;
+            this.requests++;
+            number = this.requests;
         }                        
 
         boolean proceedService = true;
@@ -347,8 +346,8 @@ public class VortikalServlet extends DispatcherServlet {
 
                 if (this.requestFilters != null) {
                     for (int i = 0; i < this.requestFilters.length; i++) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Running request filter: " + this.requestFilters[i]);
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.debug("Running request filter: " + this.requestFilters[i]);
                         }
                         request = this.requestFilters[i].filterRequest(request);
                     }
@@ -358,8 +357,8 @@ public class VortikalServlet extends DispatcherServlet {
 
                 if (this.securityInitializer != null
                     && !this.securityInitializer.createContext(request, responseWrapper)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Request " + request + " handled by " +
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Request " + request + " handled by " +
                                 "security initializer (authentication challenge)");
                     }
                     return;
@@ -381,8 +380,8 @@ public class VortikalServlet extends DispatcherServlet {
                         .getService();
                 AuthenticationChallenge challenge = getAuthenticationChallenge(service);
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Authentication required for request "
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Authentication required for request "
                                  + request + ", service " + service + ". "
                                  + "Using challenge " + challenge, ex);
                 }
@@ -441,8 +440,8 @@ public class VortikalServlet extends DispatcherServlet {
 
                             getUsernameForRequest(request), failureCause));
 
-            securityInitializer.destroyContext();
-            requestContextInitializer.destroyContext();
+            this.securityInitializer.destroyContext();
+            this.requestContextInitializer.destroyContext();
             Thread.currentThread().setName(threadName);
         }
         
@@ -481,7 +480,7 @@ public class VortikalServlet extends DispatcherServlet {
     private void logRequest(HttpServletRequest req, StatusAwareResponseWrapper resp,
                             long processingTime, boolean wasCacheRequest) {
 
-        if (!requestLogger.isInfoEnabled()) {
+        if (!this.requestLogger.isInfoEnabled()) {
             return;
         }
 
@@ -533,7 +532,7 @@ public class VortikalServlet extends DispatcherServlet {
         msg.append(" - cached: ").append(wasCacheRequest);
         msg.append(" - time: ").append(processingTime);
         msg.append(getIfHeaders(req));
-        requestLogger.info(msg);
+        this.requestLogger.info(msg);
     }
     
     private StringBuffer getIfHeaders(HttpServletRequest request) {
@@ -615,7 +614,7 @@ public class VortikalServlet extends DispatcherServlet {
         sb.append("host: [").append(URLUtil.getHostName(req)).append("], ");
         sb.append("remote host: [").append(req.getRemoteHost()).append("]");
 
-        errorLogger.error(sb.toString(), t);
+        this.errorLogger.error(sb.toString(), t);
     }
     
 
@@ -650,8 +649,8 @@ public class VortikalServlet extends DispatcherServlet {
             // errors, etc.). The safest thing to do here is to log
             // the error and throw a ServletException and let the
             // container handle it.
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caught unexpected throwable " + t.getClass()
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught unexpected throwable " + t.getClass()
                              + " with no Spring context available, "
                              + "logging as internal server error");
             }
@@ -661,8 +660,8 @@ public class VortikalServlet extends DispatcherServlet {
             throw new ServletException(t);
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Caught unexpected throwable " + t.getClass()
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Caught unexpected throwable " + t.getClass()
                          + ", resolving error handler");
         }
         ErrorHandler handler = resolveErrorHandler(t);
@@ -709,8 +708,8 @@ public class VortikalServlet extends DispatcherServlet {
         
         try {
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug(
                     "Performed error handling using handler " + handler + ". "
                     + "Status code is " + statusCode + "." + " Will render "
                     + "error model using view " + view);
@@ -741,9 +740,9 @@ public class VortikalServlet extends DispatcherServlet {
 
         ErrorHandler selected = null;
 
-        for (int i = 0; i < errorHandlers.length; i++) {
+        for (int i = 0; i < this.errorHandlers.length; i++) {
 
-            ErrorHandler candidate = errorHandlers[i];
+            ErrorHandler candidate = this.errorHandlers[i];
 
             if (!candidate.getErrorType().isAssignableFrom(t.getClass())) {
                 continue;
@@ -778,8 +777,8 @@ public class VortikalServlet extends DispatcherServlet {
             }
 
             if (selected != null && selected == candidate) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting new currently matched error handler: "
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Setting new currently matched error handler: "
                                  + candidate);
                 }
             }

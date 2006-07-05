@@ -47,8 +47,8 @@ public class IfMatchHeader {
 
     public IfMatchHeader(final HttpServletRequest request) {
         super();
-        headerValue = request.getHeader("If-Match");
-        logger.debug("if-match-header: " + headerValue);
+        this.headerValue = request.getHeader("If-Match");
+        logger.debug("if-match-header: " + this.headerValue);
         // stateEntryList = parse();
     }
 
@@ -61,13 +61,13 @@ public class IfMatchHeader {
      */
     public boolean matches(final Resource resource) {
         boolean match;
-        if (headerValue == null) {
+        if (this.headerValue == null) {
             match = true;
-        } else if (headerValue.equals("*")) {
+        } else if (this.headerValue.equals("*")) {
             match = true;
         } else {
             // TODO: Implement support for multiple etags in the header
-            match = headerValue.equals(resource.getEtag());
+            match = this.headerValue.equals(resource.getEtag());
         }
         logger.debug("match: " + match);
         return match;

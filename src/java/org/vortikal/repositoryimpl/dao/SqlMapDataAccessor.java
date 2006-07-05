@@ -185,7 +185,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             return resource;
 
         } catch (SQLException e) {
-            logger.warn("Error occurred while loading resource: " + uri, e);
+            this.logger.warn("Error occurred while loading resource: " + uri, e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -218,7 +218,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             this.sqlMapClient.commitTransaction();
 
         } catch (SQLException e) {
-            logger.warn("Error occurred while deleting expired locks", e);
+            this.logger.warn("Error occurred while deleting expired locks", e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -263,10 +263,10 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             this.sqlMapClient.commitTransaction();
 
         } catch (NumberFormatException e) {
-            logger.warn("No changelog entry added! Only numerical types and " +
+            this.logger.warn("No changelog entry added! Only numerical types and " +
                 "IDs are supported by this database backend.");
         } catch (SQLException e) {
-            logger.warn("Error occurred while adding changelog entry: " + operation
+            this.logger.warn("Error occurred while adding changelog entry: " + operation
                         + " for resource: " + uri, e);
             throw new IOException(e.getMessage());
         } finally {
@@ -298,7 +298,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             return locks;
 
         } catch (SQLException e) {
-            logger.warn("Error occurred while discovering locks below resource: "
+            this.logger.warn("Error occurred while discovering locks below resource: "
                         + uri, e);
             throw new IOException(e.getMessage());
         } finally {
@@ -330,7 +330,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             return uris;
 
         } catch (SQLException e) {
-            logger.warn("Error occurred while listing sub tree of resource: "
+            this.logger.warn("Error occurred while listing sub tree of resource: "
                         + parent.getURI(), e);
             throw new IOException(e.getMessage());
         } finally {
@@ -356,8 +356,8 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                                SqlDaoUtils.getUriDepth(r.getURI())));
 
             sqlMap = existed ? getSqlMap("updateResource") : getSqlMap("insertResource");
-            if (logger.isDebugEnabled()) {
-                logger.debug((existed? "Updating" : "Storing") + " resource " + r
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug((existed? "Updating" : "Storing") + " resource " + r
                              + ", parameter map: " + parameters);
             }
 
@@ -392,7 +392,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             this.sqlMapClient.commitTransaction();
 
         } catch (SQLException e) {
-            logger.warn("Error occurred while storing resource: " + r.getURI(), e);
+            this.logger.warn("Error occurred while storing resource: " + r.getURI(), e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -426,12 +426,12 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             sqlMap = getSqlMap("deleteResourceByUri");
             this.sqlMapClient.update(sqlMap, parameters);
 
-            contentStore.deleteResource(resource.getURI());
+            this.contentStore.deleteResource(resource.getURI());
             
             this.sqlMapClient.commitTransaction();
 
         } catch (SQLException e) {
-            logger.warn("Error occurred while deleting resource: "
+            this.logger.warn("Error occurred while deleting resource: "
                         + resource.getURI(), e);
             throw new IOException(e.getMessage());
         } finally {
@@ -456,7 +456,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
             List children = new ArrayList();
             String sqlMap = getSqlMap("loadChildren");
-            List resources = (List) this.sqlMapClient.queryForList(sqlMap, parameters);
+            List resources = this.sqlMapClient.queryForList(sqlMap, parameters);
             Map locks = loadLocksForChildren(parent);
 
             for (Iterator i = resources.iterator(); i.hasNext();) {
@@ -486,7 +486,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             return result;
         
         } catch (SQLException e) {
-            logger.warn("Error occurred while loading children of resource: "
+            this.logger.warn("Error occurred while loading children of resource: "
                         + parent.getURI(), e);
             throw new IOException(e.getMessage());
         } finally {
@@ -519,7 +519,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             return result;
 
         } catch (SQLException e) {
-            logger.warn("Error occurred while discovering ACLs below resource: " + uri, e);
+            this.logger.warn("Error occurred while discovering ACLs below resource: " + uri, e);
             throw new IOException(e.getMessage());
         } finally {
             try {
@@ -540,8 +540,8 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 if (property.getValue().getType() == PropertyType.TYPE_PRINCIPAL) {
                     value = ((Principal) value).getQualifiedName();
                 }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Copy: fixed property: " + property.getName() + ": " + value);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Copy: fixed property: " + property.getName() + ": " + value);
                 }
                 parameters.put(property.getName(), value);
             }
@@ -624,11 +624,11 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             sqlMap = getSqlMap("clearPrevResourceIdByUri");
             this.sqlMapClient.update(sqlMap, parameters);
 
-            contentStore.copy(resource.getURI(), destURI);
+            this.contentStore.copy(resource.getURI(), destURI);
 
             this.sqlMapClient.commitTransaction();
         } catch (SQLException e) {
-            logger.warn("Error occurred while copying resource: " + resource.getURI()
+            this.logger.warn("Error occurred while copying resource: " + resource.getURI()
                         + " to: " + destURI, e);
             throw new IOException(e.getMessage());
         } finally {
@@ -1001,11 +1001,11 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             Principal p = null;
 
             if (isGroup)
-                p = principalManager.getGroupPrincipal(name);
+                p = this.principalManager.getGroupPrincipal(name);
             else if (name.startsWith("pseudo:"))
                 p = PseudoPrincipal.getPrincipal(name);
             else
-                p = principalManager.getUserPrincipal(name);
+                p = this.principalManager.getUserPrincipal(name);
             RepositoryAction action = Privilege.getActionByName(privilege);
             acl.addEntry(action, p);
         }

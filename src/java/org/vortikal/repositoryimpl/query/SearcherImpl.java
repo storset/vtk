@@ -101,11 +101,11 @@ public class SearcherImpl implements Searcher, InitializingBean {
     private int maxAllowedHitsPerQuery = 50000;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (indexAccessor == null) {
+        if (this.indexAccessor == null) {
             throw new BeanInitializationException("Property 'indexAccessor' not set.");
-        } else if (documentMapper == null) {
+        } else if (this.documentMapper == null) {
             throw new BeanInitializationException("Property 'documentMapper' not set.");
-        } else if (queryBuilderFactory == null) {
+        } else if (this.queryBuilderFactory == null) {
             throw new BeanInitializationException("Property 'queryBuilderFactory' not set.");
         } else if (this.maxAllowedHitsPerQuery <= 0) {
             throw new BeanInitializationException("Property 'maxAllowedHitsPerQuery'" 
@@ -113,7 +113,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
         }
         
         if (this.queryResultAuthorizationManager == null) {
-            logger.warn("No authorization manager configured, queries will not be filtered with regard to"
+            this.logger.warn("No authorization manager configured, queries will not be filtered with regard to"
                     + " permissions.");
         }
     }
@@ -177,13 +177,13 @@ public class SearcherImpl implements Searcher, InitializingBean {
         org.apache.lucene.search.Query q =
             this.queryBuilderFactory.getBuilder(query).buildQuery();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Built lucene query '" + q + "' from query " + query.dump(""));
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Built lucene query '" + q + "' from query " + query.dump(""));
         }
 
         IndexSearcher searcher = null;
         try {
-            searcher = indexAccessor.getIndexSearcher();
+            searcher = this.indexAccessor.getIndexSearcher();
             
             // The n parameter is the upper maximum number of results we allow
             // Lucene to fetch.
@@ -193,21 +193,21 @@ public class SearcherImpl implements Searcher, InitializingBean {
             long start = System.currentTimeMillis();
             TopDocs topDocs = null;
             if (sorting != null) {
-                Sort sort = sortBuilder.buildSort(sorting);
+                Sort sort = this.sortBuilder.buildSort(sorting);
                 topDocs = searcher.search(q, null, n, sort);
             } else {
                 topDocs = searcher.search(q, null, n);
             }
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Got " + topDocs.totalHits 
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Got " + topDocs.totalHits 
                                         + " total hits for Lucene query: " + q);
                 
                 if (sorting != null) {
-                    logger.debug("Sorted Lucene query took: " 
+                    this.logger.debug("Sorted Lucene query took: " 
                             + (System.currentTimeMillis()-start) + " ms");
                 } else {
-                    logger.debug("Unsorted (index-ordered) Lucene query took: " 
+                    this.logger.debug("Unsorted (index-ordered) Lucene query took: " 
                             + (System.currentTimeMillis()-start) + " ms");
                 }
             }
@@ -215,19 +215,19 @@ public class SearcherImpl implements Searcher, InitializingBean {
             ResultSet rs = buildResultSet(topDocs.scoreDocs, searcher.getIndexReader(), 
                                           token, maxResults, cursor);
             
-            if (logger.isDebugEnabled()) {
-                logger.debug("Total query time including result set building: " 
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Total query time including result set building: " 
                         + (System.currentTimeMillis()-start) + " ms");
             }
             
             return rs;
             
         } catch (IOException io) {
-            logger.warn("IOException while performing query on index", io);
+            this.logger.warn("IOException while performing query on index", io);
             throw new QueryException("IOException while performing query on index", io);
         } finally {
             try {
-                indexAccessor.releaseIndexSearcher(searcher);                
+                this.indexAccessor.releaseIndexSearcher(searcher);                
             } catch (IOException io) {}
         }
     }
@@ -260,8 +260,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
             long start = System.currentTimeMillis();
             this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
             long finish = System.currentTimeMillis();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Query result authorization took " 
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Query result authorization took " 
                         + (finish-start) + " ms");
             }
             
@@ -274,12 +274,12 @@ public class SearcherImpl implements Searcher, InitializingBean {
                 
                 if (rsi.isAuthorized()) {
                     // Only create property sets for authorized hits
-                    rs.addResult(documentMapper.getPropertySet(rsi.getDocument()));
+                    rs.addResult(this.documentMapper.getPropertySet(rsi.getDocument()));
                 } 
             }
         } else {
             for (int i = cursor; i < end; i++) {
-                rs.addResult(documentMapper.getPropertySet(reader.document(docs[i].doc)));
+                rs.addResult(this.documentMapper.getPropertySet(reader.document(docs[i].doc)));
             }
         }
         
@@ -309,7 +309,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
     }
 
     public int getMaxAllowedHitsPerQuery() {
-        return maxAllowedHitsPerQuery;
+        return this.maxAllowedHitsPerQuery;
     }
 
     public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager queryResultAuthorizationManager) {
@@ -326,20 +326,20 @@ public class SearcherImpl implements Searcher, InitializingBean {
         List docNums = new ArrayList(SearcherImpl.this.maxAllowedHitsPerQuery);
         
         public void collect(int doc, float score) {
-            if (docNums.size() > SearcherImpl.this.maxAllowedHitsPerQuery) {
+            if (this.docNums.size() > SearcherImpl.this.maxAllowedHitsPerQuery) {
                 // Max number of hits exceeded, don't add anything more
                 return;
             }
             
-            docNums.add(new Integer(doc));
+            this.docNums.add(new Integer(doc));
         }
         
         public int doc(int index) {
-            return ((Integer)docNums.get(index)).intValue();
+            return ((Integer)this.docNums.get(index)).intValue();
         }
         
         public int length() {
-            return docNums.size();
+            return this.docNums.size();
         }
         
     }

@@ -155,10 +155,9 @@ public class URIUtil {
 
         if (uri.equals("/")) {
             return ancestorUris;
-        } else {
-            if (uri.length() == 0 || uri.endsWith("/")) {
-                throw new IllegalArgumentException("Invalid URI '" + uri + "'");
-            }
+        }
+        if (uri.length() == 0 || uri.endsWith("/")) {
+            throw new IllegalArgumentException("Invalid URI '" + uri + "'");
         }
         
         int from = uri.length();
@@ -266,9 +265,8 @@ public class URIUtil {
     public static String stripTrailingSlash(String uri) {
         if (uri.length() > 1 && uri.endsWith("/")) {
             return uri.substring(0, uri.length()-1);
-        } else {
-            return uri;
         }
+        return uri;
     }
 
 }

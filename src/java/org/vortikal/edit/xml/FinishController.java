@@ -57,7 +57,7 @@ public class FinishController extends AbstractXmlEditController {
         String uri = RequestContext.getRequestContext().getResourceURI();
         
         try {
-            document.finish(repository);
+            document.finish(this.repository);
         } catch (IOException e) {
             // FIXME: what?
         }
@@ -67,7 +67,7 @@ public class FinishController extends AbstractXmlEditController {
 
         request.getSession(true).removeAttribute(sessionID);
 
-        return new ModelAndView(viewName);
+        return new ModelAndView(this.viewName);
     }
     
 

@@ -114,9 +114,9 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
             throw new BeanInitializationException("Property 'indexResourceIdHelper' not set.");
         }
         
-        this.extractorBeanClass = extractor.getExtractedClass();
+        this.extractorBeanClass = this.extractor.getExtractedClass();
         if (this.extractorBeanClass == null) {
-            throw new BeanInitializationException("Bean class supplied by extractor " + extractor
+            throw new BeanInitializationException("Bean class supplied by extractor " + this.extractor
                     + " is null");
         }
     }
@@ -146,17 +146,17 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
         try {
             indexBean = this.extractor.extract(uri);
         } catch (ExtractorException ee) {
-            logger.warn("Unable to extract resource '" + uri + "', " + ee.getMessage());
+            this.logger.warn("Unable to extract resource '" + uri + "', " + ee.getMessage());
         }
         
         if (indexBean == null) {
-            logger.warn("Extractor returned null, not adding document at '" + uri + "'");
+            this.logger.warn("Extractor returned null, not adding document at '" + uri + "'");
             return false;
         }
         
         String parentIds = this.indexResourceIdHelper.getResourceParentCollectionIds(uri);
         if (parentIds == null) {
-            logger.warn("Unable to get parent resource IDs for resource '" + "'" + 
+            this.logger.warn("Unable to get parent resource IDs for resource '" + "'" + 
                         ", will not add to index.");
             return false;
         }
@@ -165,7 +165,7 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
                                                          uri, parentIds);
         
         if (doc == null) {
-            logger.warn("Unable to create Lucene document from extracted index bean of class '" + 
+            this.logger.warn("Unable to create Lucene document from extracted index bean of class '" + 
                         this.extractorBeanClass.getName() + "' for resource '" + uri + "'");
             return false;
         }
@@ -252,9 +252,8 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
         String id = this.indexResourceIdHelper.getResourceId(uri);
         if (id == null) {
             return deleteSubtreeWithoutId(reader, uri);
-        } else {
-            return deleteSubtree(reader, id, uri);
         }
+        return deleteSubtree(reader, id, uri);
     }
     
     /**
@@ -295,7 +294,7 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
             Document doc = hits.doc(0);
             String className = doc.get(IndexConstants.CLASS_FIELD);
             if (className == null) {
-                logger.warn("No CLASS field found for index document at '" + uri + "'");
+                this.logger.warn("No CLASS field found for index document at '" + uri + "'");
                 
                 // Try with the class assigned to this index' extractor implementation.
                 className = this.extractorBeanClass.getName();
@@ -305,16 +304,15 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
             try {
                 beanClass = Class.forName(className);
             } catch (ClassNotFoundException cnf) {
-                logger.warn("Unable to instantiate object of class " + className + 
+                this.logger.warn("Unable to instantiate object of class " + className + 
                             " for index document at '" + uri + "'", cnf);
             }
             
             Object indexBean = IndexDocumentUtil.createIndexBean(doc, beanClass);
             searcher.close();
             return indexBean;
-        } else {
-            return null;
         }
+        return null;
     }
     
     // Locking
@@ -325,8 +323,8 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
             return false;
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Thread '" + Thread.currentThread().getName() + 
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Thread '" + Thread.currentThread().getName() + 
                          "' got index lock.");
         }
         
@@ -342,8 +340,8 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
     }
     
     protected void lockRelease() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Thread '" + Thread.currentThread().getName() + 
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Thread '" + Thread.currentThread().getName() + 
                          "' released index lock.");
         }
         
@@ -353,7 +351,7 @@ public class LuceneIndex extends FSBackedLuceneIndex implements
     // Override parent's commit() to allow for optimization at a certain interval.
     protected synchronized void commit() throws IOException {
         // Optimize index, if we've reached 'optimizeInterval' number of commits.
-        if (++commitCounter % optimizeInterval == 0) {
+        if (++this.commitCounter % this.optimizeInterval == 0) {
             super.optimize();
         }
         

@@ -57,9 +57,9 @@ public class GroovyConsole extends AbstractConsole {
 
     public void bind(String name, Object o) {
         try {
-            shell.getContext().setVariable(name, o);
+            this.shell.getContext().setVariable(name, o);
         } catch (GroovyRuntimeException e) {
-            logger.warn("Binding error", e);
+            this.logger.warn("Binding error", e);
         }
     }
     
@@ -67,9 +67,9 @@ public class GroovyConsole extends AbstractConsole {
 
     protected void evalInitFile(InputStream inStream, PrintStream out) {
         try {
-            shell.evaluate(inStream);
+            this.shell.evaluate(inStream);
         } catch (Throwable t) {
-            logger.warn("Evaluation error", t);
+            this.logger.warn("Evaluation error", t);
         }
     }
     
@@ -77,16 +77,16 @@ public class GroovyConsole extends AbstractConsole {
     public void eval(String line, PrintStream out) {
         try {
             if (line != null && !"".equals(line.trim())) {
-                Object o = shell.evaluate(line);
+                Object o = this.shell.evaluate(line);
                 out.println("\n[" + o + "]");
             }
         } catch (GroovyRuntimeException e) {
             out.println(e.getMessage());
-            logger.warn("Runtime error", e);
+            this.logger.warn("Runtime error", e);
 
         } catch (Throwable t) {
             out.println(t.getMessage());
-            logger.warn("Evaluation error", t);
+            this.logger.warn("Evaluation error", t);
         }
     }
 }

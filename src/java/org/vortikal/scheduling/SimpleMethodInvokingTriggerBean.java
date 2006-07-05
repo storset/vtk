@@ -128,26 +128,26 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
             throw new BeanInitializationException("Bean property 'targetObject' null");
         } else if (this.targetMethodName == null) {
             throw new BeanInitializationException("Bean property 'targetMethodName' null");
-        } else if (startDelay < 0) {
+        } else if (this.startDelay < 0) {
             throw new BeanInitializationException(
                     "Bean property 'startDelay' must be positive integer");
-        } else if (repeatInterval <= 0) {
+        } else if (this.repeatInterval <= 0) {
             throw new BeanInitializationException(
                     "Bean property 'repeatInterval' must be greater than zero.");
-        } else if (repeatCount != REPEAT_INDEFINITELY && repeatCount < 0) {
+        } else if (this.repeatCount != REPEAT_INDEFINITELY && this.repeatCount < 0) {
             throw new BeanInitializationException(
                     "Bean property 'repeatCount' must be either REPEAT_INDEFINITELY, 0 or "
                     + " a positive integer");
         }
         
-        if (! (arguments == null && argumentTypes == null)) {
-            if (argumentTypes == null) {
+        if (! (this.arguments == null && this.argumentTypes == null)) {
+            if (this.argumentTypes == null) {
                 throw new BeanInitializationException("Bean property 'arguments' "
                         + "set, but missing needed property 'argumentTypes'");
-            } else if (arguments == null) {
+            } else if (this.arguments == null) {
                 throw new BeanInitializationException("Bean property 'argumentTypes' "
                         + "set, but missing needed property 'arguments'");
-            } else if (arguments.length != argumentTypes.length) {
+            } else if (this.arguments.length != this.argumentTypes.length) {
                 throw new BeanInitializationException(
                 "Number of 'arguments' and 'argumentTypes' must match.");
             }
@@ -173,7 +173,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
      */
     public synchronized void start() {
         if (isEnabled()) {
-            logger.warn("start() called, but interval triggering is already enabled and running");
+            this.logger.warn("start() called, but interval triggering is already enabled and running");
             return;
         }
         
@@ -186,7 +186,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                                                                     + "-trigger");
         }
         
-        logger.info("Starting interval trigger thread '" 
+        this.logger.info("Starting interval trigger thread '" 
                                         + this.triggerThread.getName() + "'");
         
         this.triggerThread.setDaemon(true);
@@ -201,30 +201,30 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
      */
     public synchronized void stop(boolean interrupt) {
         if (! isEnabled()) {
-            logger.warn("stop() called, but interval triggering is not running");
+            this.logger.warn("stop() called, but interval triggering is not running");
             return;
             
         }
         
-        logger.info("Signalling interval trigger thread '"
+        this.logger.info("Signalling interval trigger thread '"
                 + this.triggerThread.getName() + "' to stop.");
         this.trigger.alive = false;
         if (interrupt) {
-            logger.info("Interrupting trigger thread");
+            this.logger.info("Interrupting trigger thread");
             this.triggerThread.interrupt(); // Interrupt
         }
         try {
             this.triggerThread.join();
         } catch (InterruptedException ie) {
-            logger.warn("Interrupted while waiting for trigger thread '"
+            this.logger.warn("Interrupted while waiting for trigger thread '"
                     + this.triggerThread.getName() + "' to stop");
         }
         
         if (this.triggerThread.isAlive()) {
-            logger.warn("Failed to stop interval triggering thread '" 
+            this.logger.warn("Failed to stop interval triggering thread '" 
                     + this.triggerThread.getName() + "' !");
         } else {
-            logger.info("Stopped interval trigger thread '" 
+            this.logger.info("Stopped interval trigger thread '" 
                     + this.triggerThread.getName() + "'");
             
         }
@@ -239,7 +239,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
      * @return
      */
     public synchronized boolean isEnabled() {
-        return triggerThread != null && triggerThread.isAlive();
+        return this.triggerThread != null && this.triggerThread.isAlive();
     }
     
     /**
@@ -253,8 +253,8 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
             
             if (SimpleMethodInvokingTriggerBean.this.startDelay > 0) {
                 try {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Delaying " 
+                    if (SimpleMethodInvokingTriggerBean.this.logger.isDebugEnabled()) {
+                        SimpleMethodInvokingTriggerBean.this.logger.debug("Delaying " 
                                 + SimpleMethodInvokingTriggerBean.this.startDelay 
                                 + " ms before" 
                                 + " starting the interval triggering");
@@ -262,7 +262,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     
                     Thread.sleep(SimpleMethodInvokingTriggerBean.this.startDelay);
                 } catch (InterruptedException ie) {
-                    logger.warn("Interrupted while waiting to start !");
+                    SimpleMethodInvokingTriggerBean.this.logger.warn("Interrupted while waiting to start !");
                 }
             }
             
@@ -274,55 +274,55 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     
                     // Invoke
                     SimpleMethodInvokingTriggerBean.this.targetMethod.invoke(
-                                                        targetObject, arguments);
+                                                        SimpleMethodInvokingTriggerBean.this.targetObject, SimpleMethodInvokingTriggerBean.this.arguments);
                     
                 } catch (IllegalAccessException iae) {
-                    logger.error("Target method not accessible", iae);
-                    logger.error("Unrecoverable error, aborting interval trigger");
+                    SimpleMethodInvokingTriggerBean.this.logger.error("Target method not accessible", iae);
+                    SimpleMethodInvokingTriggerBean.this.logger.error("Unrecoverable error, aborting interval trigger");
                     this.alive = false;
                     break;
                     
                 } catch (IllegalArgumentException iae) {
-                    if (arguments!= null) {
+                    if (SimpleMethodInvokingTriggerBean.this.arguments!= null) {
                         StringBuffer argTypes = new StringBuffer("(");
-                        for (int i=0; i<arguments.length; i++) {
-                            argTypes.append(arguments[i].getClass().getName());
-                            if (i < arguments.length-1) {
+                        for (int i=0; i<SimpleMethodInvokingTriggerBean.this.arguments.length; i++) {
+                            argTypes.append(SimpleMethodInvokingTriggerBean.this.arguments[i].getClass().getName());
+                            if (i < SimpleMethodInvokingTriggerBean.this.arguments.length-1) {
                                 argTypes.append(", ");
                             }
                         }
                         argTypes.append(")");
                         
-                        logger.error("Supplied arguments illegal for given target method: "
+                        SimpleMethodInvokingTriggerBean.this.logger.error("Supplied arguments illegal for given target method: "
                                 + argTypes.toString(), iae);
                     } else {
-                        logger.error("No arguments supplied for given target method", iae);
+                        SimpleMethodInvokingTriggerBean.this.logger.error("No arguments supplied for given target method", iae);
                     }
                     
-                    logger.error("Unrecoverable error, aborting interval trigger");
+                    SimpleMethodInvokingTriggerBean.this.logger.error("Unrecoverable error, aborting interval trigger");
                     this.alive = false;
                     break;
 
                 } catch (InvocationTargetException ite) {
-                    logger.warn("Invoked method threw an exception: " + 
+                    SimpleMethodInvokingTriggerBean.this.logger.warn("Invoked method threw an exception: " + 
                             ite.getTargetException().getMessage(), 
                             ite.getTargetException());
                     if (SimpleMethodInvokingTriggerBean.
                             this.abortTriggerOnTargetMethodException) {
-                        logger.warn("Aborting interval trigger " 
+                        SimpleMethodInvokingTriggerBean.this.logger.warn("Aborting interval trigger " 
                                 + "because of unhandled target method exception");
                         this.alive = false;
                         break;
                     }
                 } catch (Exception e) {
-                    logger.warn("Got an unexpected exception during method invocation:", e);
+                    SimpleMethodInvokingTriggerBean.this.logger.warn("Got an unexpected exception during method invocation:", e);
                 }
                 
                 // Sleep
                 try {
                     Thread.sleep(SimpleMethodInvokingTriggerBean.this.repeatInterval);
                 } catch (InterruptedException ie) {
-                    logger.warn("Interrupted while sleeping");
+                    SimpleMethodInvokingTriggerBean.this.logger.warn("Interrupted while sleeping");
                 }
             } // while(this.alive)
             

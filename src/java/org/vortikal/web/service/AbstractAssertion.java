@@ -41,7 +41,7 @@ public abstract class AbstractAssertion implements Assertion, BeanNameAware {
     private String beanName;
 
     public String getBeanName() {
-        return beanName;
+        return this.beanName;
     }
 	
     public void setBeanName(String beanName) {

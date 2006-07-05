@@ -57,7 +57,7 @@ public class And implements Condition {
     
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("(").append(left).append(" And ").append(right).append(")");
+        buffer.append("(").append(this.left).append(" And ").append(this.right).append(")");
         return buffer.toString();
     }
 

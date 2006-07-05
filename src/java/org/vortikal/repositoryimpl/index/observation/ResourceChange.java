@@ -112,11 +112,11 @@ public abstract class ResourceChange {
         StringBuffer sb = new StringBuffer();
 
         sb.append(this.getClass().getName()).append(": ");
-        sb.append("[uri: ").append(uri);
+        sb.append("[uri: ").append(this.uri);
         sb.append(", id = ").append(this.id);
         sb.append(", loggerType = ").append(this.loggerType);
         sb.append(", loggerId = ").append(this.loggerId);
-        sb.append(", timestamp = ").append(new Date(timestamp));
+        sb.append(", timestamp = ").append(new Date(this.timestamp));
         sb.append(", collection = ").append(this.collection);
         sb.append("]");
 

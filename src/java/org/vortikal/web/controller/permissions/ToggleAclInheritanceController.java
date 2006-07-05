@@ -77,7 +77,7 @@ public class ToggleAclInheritanceController  implements Controller {
         String token = securityContext.getToken();
         Resource resource = this.repository.retrieve(token, uri, false);
 
-        Acl acl = repository.getACL(token, uri);
+        Acl acl = this.repository.getACL(token, uri);
         acl.setInherited(!acl.isInherited());
         if (resource.isCollection() && !acl.isInherited()) {
             acl.addEntry(Privilege.ALL, resource.getOwner());

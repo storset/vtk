@@ -238,7 +238,7 @@ public class PropfindView implements View, InitializingBean {
         Principal p = SecurityContext.getSecurityContext().getPrincipal();
 
         Element responseElement = new Element("response", WebdavConstants.DAV_NAMESPACE);
-        String href = webdavService.constructLink(resource, p);
+        String href = this.webdavService.constructLink(resource, p);
 
         responseElement.addContent(
                 new Element("href", WebdavConstants.DAV_NAMESPACE).addContent(href));

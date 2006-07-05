@@ -115,7 +115,7 @@ public abstract class AbstractSaveCancelCommand {
      * @return Returns the done.
      */
     public boolean isDone() {
-        return done;
+        return this.done;
     }
     
 

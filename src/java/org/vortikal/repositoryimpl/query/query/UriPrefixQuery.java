@@ -39,14 +39,14 @@ public class UriPrefixQuery implements UriQuery {
     }
 
     public String getUri() {
-        return uri;
+        return this.uri;
     }
 
     public String dump(String prefix) {
         StringBuffer buf = new StringBuffer().append(prefix);
         buf.append(this.getClass().getName()).append("\n");
         
-        buf.append(prefix).append("Uri = ").append(uri).append("\n");
+        buf.append(prefix).append("Uri = ").append(this.uri).append("\n");
 
         return buf.toString();
     }

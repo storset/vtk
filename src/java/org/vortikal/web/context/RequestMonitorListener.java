@@ -80,7 +80,7 @@ public class RequestMonitorListener implements ApplicationListener {
 
         if (curTime - this.lastComputationTime > this.interval) {
             long timeSinceLastCompute = curTime - this.lastComputationTime;
-            this.avgRequestsPerSec = ((float) requestsSinceLastCompute
+            this.avgRequestsPerSec = ((float) this.requestsSinceLastCompute
                                       / (float) timeSinceLastCompute) * 1000;
 
             // Reset counters:
@@ -106,9 +106,9 @@ public class RequestMonitorListener implements ApplicationListener {
 
         public void run() {
 
-            while (alive) {
+            while (this.alive) {
                 try {
-                    sleep(interval);
+                    sleep(RequestMonitorListener.this.interval);
                     compute();
                     
                 } catch (InterruptedException e) {

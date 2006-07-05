@@ -40,11 +40,11 @@ public abstract class AbstractMultipleQuery implements Query {
     private List queries = new ArrayList();
 
     public void add(Query query) {
-        queries.add(query);
+        this.queries.add(query);
     }
     
     public List getQueries() {
-        return queries;
+        return this.queries;
     }
 
     public String dump(String prefix) {
@@ -52,7 +52,7 @@ public abstract class AbstractMultipleQuery implements Query {
         buf.append(this.getClass().getName()).append("\n");
         
         prefix += "  ";
-        for (Iterator iter = queries.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.queries.iterator(); iter.hasNext();) {
             Query query = (Query) iter.next();
             buf.append(query.dump(prefix));
         }

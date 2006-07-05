@@ -74,7 +74,7 @@ public class NewElementAtController extends AbstractXmlEditController {
 
             if (path == null) {
                 setXsltParameter(model,"ERRORMESSAGE", "NEW_ELEMENT_AT_MISSING_PATH_PARAMETER");
-                return new ModelAndView(viewName, model);
+                return new ModelAndView(this.viewName, model);
             }
 
             Element element = new Element(elementName);
@@ -85,12 +85,12 @@ public class NewElementAtController extends AbstractXmlEditController {
             document.setEditingElement(element);
 
             document.setDocumentMode("newElementAt");
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         } else if (mode.equals("newElement") && !"true".equals(con)) {
             document.setDocumentMode("default");
             document.setNewElementName(null);
             document.setEditingElement(null);
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         } else if (mode.equals("newElementAt")) {
             if ("true".equals(con)) {
 
@@ -100,12 +100,12 @@ public class NewElementAtController extends AbstractXmlEditController {
                 document.setDocumentMode("default");
                 document.resetEditingElement();
                 
-                document.save(repository);
+                document.save(this.repository);
 
             } else {
                 /* Cancel; remove the new element from the document */
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cancelled, removing newly inserted " + "element "
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Cancelled, removing newly inserted " + "element "
                                  + document.getEditingElement().getName()
                                  + " from document " + uri);
                 }
@@ -113,7 +113,7 @@ public class NewElementAtController extends AbstractXmlEditController {
                 document.getEditingElement().detach();
                 document.setEditingElement(null);
             }
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         }
         return null;
     }

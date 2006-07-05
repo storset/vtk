@@ -97,7 +97,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
 
     // Getters and setters
     public String getVortexResourceType() {
-        return vortexResourceType;
+        return this.vortexResourceType;
     }
 
     public void setVortexResourceType(String vortexResourceType) {
@@ -105,7 +105,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
     
     public String getCreationDate() {
-        return creationDate;
+        return this.creationDate;
     }
 
     public void setCreationDate(String creationDate) {
@@ -113,7 +113,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getLastModified() {
-        return lastModified;
+        return this.lastModified;
     }
 
     public void setLastModified(String lastModified) {
@@ -121,7 +121,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getSchemaId() {
-        return schemaId;
+        return this.schemaId;
     }
 
     public void setSchemaId(String schemaId) {
@@ -129,7 +129,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getOwner() {
-        return owner;
+        return this.owner;
     }
 
     public void setOwner(String owner) {
@@ -137,7 +137,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getLastModifiedBy() {
-        return lastModifiedBy;
+        return this.lastModifiedBy;
     }
 
     public void setLastModifiedBy(String lastModifiedBy) {
@@ -145,7 +145,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getContentType() {
-        return contentType;
+        return this.contentType;
     }
 
     public void setContentType(String contentType) {
@@ -153,7 +153,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getContentLength() {
-        return contentLength;
+        return this.contentLength;
     }
 
     public void setContentLength(String contentLength) {
@@ -161,7 +161,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getDavResourceType() {
-        return davResourceType;
+        return this.davResourceType;
     }
 
     public void setDavResourceType(String davResourceType) {
@@ -169,7 +169,7 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
     }
 
     public String getEncoding() {
-        return encoding;
+        return this.encoding;
     }
 
     public void setEncoding(String encoding) {
@@ -180,16 +180,16 @@ public class DMSIndexBean implements FieldInfoProvidingBean {
         StringBuffer buffer = new StringBuffer();
 
         buffer.append("DMSIndexBean[");
-        buffer.append("creationDate='").append(creationDate).append("',");
-        buffer.append("lastModified='").append(lastModified).append("',");
-        buffer.append("schemaId='").append(schemaId).append("',");
-        buffer.append("owner='").append(owner).append("',");
-        buffer.append("lastModifiedBy='").append(lastModifiedBy).append("',");
-        buffer.append("contentType='").append(contentType).append("',");
-        buffer.append("encoding='").append(encoding).append("',");
-        buffer.append("contentLength='").append(contentLength).append("',");
-        buffer.append("davResourceType='").append(davResourceType).append("',");
-        buffer.append("vortexResourceType='").append(vortexResourceType).append("']");
+        buffer.append("creationDate='").append(this.creationDate).append("',");
+        buffer.append("lastModified='").append(this.lastModified).append("',");
+        buffer.append("schemaId='").append(this.schemaId).append("',");
+        buffer.append("owner='").append(this.owner).append("',");
+        buffer.append("lastModifiedBy='").append(this.lastModifiedBy).append("',");
+        buffer.append("contentType='").append(this.contentType).append("',");
+        buffer.append("encoding='").append(this.encoding).append("',");
+        buffer.append("contentLength='").append(this.contentLength).append("',");
+        buffer.append("davResourceType='").append(this.davResourceType).append("',");
+        buffer.append("vortexResourceType='").append(this.vortexResourceType).append("']");
         
         return buffer.toString();
     }

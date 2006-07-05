@@ -68,15 +68,15 @@ public class PropertyIncrementer implements InitializingBean {
      */
     public void afterPropertiesSet()
             throws Exception {
-        logger.debug("Initializing bean");
+        this.logger.debug("Initializing bean");
 
         // check if all properties are set
-        if ( _increment == 0 
-                || _namespace == null
-                || _propertyName == null
-                || _repository == null
-                || _resourceURI == null
-                || _token == null) {
+        if ( this._increment == 0 
+                || this._namespace == null
+                || this._propertyName == null
+                || this._repository == null
+                || this._resourceURI == null
+                || this._token == null) {
             throw new BeanInitializationException("Failed to init bean (missing property)");
         }
         
@@ -91,14 +91,14 @@ public class PropertyIncrementer implements InitializingBean {
         // get Resource
         String uri = RequestContext.getRequestContext().getResourceURI();
         if (!"/".equals(uri)) uri += "/";
-        uri += _resourceURI;
-        Resource resource = getResource(uri, _token);
+        uri += this._resourceURI;
+        Resource resource = getResource(uri, this._token);
         
         // read property
-        Property p = resource.getProperty(_namespace, _propertyName);
+        Property p = resource.getProperty(this._namespace, this._propertyName);
 
         if (p == null) {
-            p = resource.createProperty(_namespace, _propertyName);
+            p = resource.createProperty(this._namespace, this._propertyName);
             p.setStringValue("0");
         }
         
@@ -107,10 +107,10 @@ public class PropertyIncrementer implements InitializingBean {
         int propValue = Integer.parseInt(p.getStringValue());
         
         // increment property
-        propValue += _increment;
+        propValue += this._increment;
         
         // write property
-        logger.debug("property incremented to " + propValue);
+        this.logger.debug("property incremented to " + propValue);
         p.setStringValue(Integer.toString(propValue));
 
         storeResource(resource);
@@ -124,7 +124,7 @@ public class PropertyIncrementer implements InitializingBean {
      */
     private void storeResource(Resource resource)
             throws IOException {
-        _repository.store(_token, resource);
+        this._repository.store(this._token, resource);
     }
 
     /**
@@ -133,44 +133,44 @@ public class PropertyIncrementer implements InitializingBean {
    private Resource getResource(final String url, final String token) {
        Resource r = null;
        try {
-           if (_repository.exists(token, url)) {
+           if (this._repository.exists(token, url)) {
             // Try to get Resource object
-            r = _repository.retrieve(token, url, false);
+            r = this._repository.retrieve(token, url, false);
            } else {
-               logger.warn("Resource at " + url + " does not exist in repository.");
+               this.logger.warn("Resource at " + url + " does not exist in repository.");
            }
        } catch (IOException io) {
-           logger.warn("Got IOException when attempting to get resource from repository.", io);
+           this.logger.warn("Got IOException when attempting to get resource from repository.", io);
        } catch (AuthenticationException ae) {
-           logger.warn("Got AuthenticationException when attempting to get resource from repository.", ae);
+           this.logger.warn("Got AuthenticationException when attempting to get resource from repository.", ae);
        } catch (RepositoryException repex) {
-           logger.warn("Got RepositoryException when attempting to get resource from repository.", repex);
+           this.logger.warn("Got RepositoryException when attempting to get resource from repository.", repex);
        }
        
        return r;
    }
 
     public void setIncrement(final int increment) {
-        _increment = increment;
+        this._increment = increment;
     }
     
     public void setNamespace(final org.vortikal.repository.Namespace namespace) {
-        _namespace = namespace;
+        this._namespace = namespace;
     }
     
     public void setPropertyName(final String propertyName) {
-        _propertyName = propertyName;
+        this._propertyName = propertyName;
     }
     
     public void setRepository(Repository repository) {
-        _repository = repository;
+        this._repository = repository;
     }
     
     public void setResourceURI(final String resourceURI) {
-        _resourceURI = resourceURI;
+        this._resourceURI = resourceURI;
     }
     
     public void setToken(final String token) {
-        _token = token;
+        this._token = token;
     }
 }

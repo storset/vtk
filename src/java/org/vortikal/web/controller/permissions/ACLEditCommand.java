@@ -33,9 +33,7 @@ package org.vortikal.web.controller.permissions;
 import java.util.List;
 import java.util.Map;
 
-import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 public class ACLEditCommand extends AbstractSaveCancelCommand {
@@ -143,11 +141,11 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
     }
 
     public Resource getResource() {
-        return resource;
+        return this.resource;
     }
 
     public String[] getGroupNames() {
-        return groupNames;
+        return this.groupNames;
     }
 
     public void setGroupNames(String[] groupNames) {
@@ -155,7 +153,7 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
     }
 
     public String[] getUserNames() {
-        return userNames;
+        return this.userNames;
     }
 
     public void setUserNames(String[] userNames) {

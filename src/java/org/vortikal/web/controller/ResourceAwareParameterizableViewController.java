@@ -73,7 +73,7 @@ public class ResourceAwareParameterizableViewController
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-        repository.retrieve(token, uri, true);
+        this.repository.retrieve(token, uri, true);
         return super.handleRequestInternal(request, response);
     }
 }

@@ -72,7 +72,7 @@ public class MoveController extends AbstractXmlEditController {
                 String s = (String) enumeration.nextElement();
                 if (s.matches("\\d+(\\.\\d+)*")) {
                     v.add(s);
-                    logger.debug("Marking element " + s + " for moving");
+                    this.logger.debug("Marking element " + s + " for moving");
                 }
             }
             Object[] array = v.toArray();
@@ -91,7 +91,7 @@ public class MoveController extends AbstractXmlEditController {
             } else {
                 setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_TO_MOVE");
             }
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         }
         return null;
     }

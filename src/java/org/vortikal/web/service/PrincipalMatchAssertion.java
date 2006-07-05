@@ -90,9 +90,9 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
                 "JavaBean property 'principalManager' cannot be null");
         }
 
-        for (Iterator iter = groupNames.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.groupNames.iterator(); iter.hasNext();) {
             String groupName = (String) iter.next();
-            groups.add(principalManager.getGroupPrincipal(groupName));
+            this.groups.add(this.principalManager.getGroupPrincipal(groupName));
         }
         
     }

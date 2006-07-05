@@ -31,16 +31,16 @@ public class TypeTermQueryBuilder implements QueryBuilder {
     }
 
     public Query buildQuery() {
-        String typeTerm = ttq.getTerm();
+        String typeTerm = this.ttq.getTerm();
         
-        if (ttq.getOperator() == TypeOperator.EQ) {
+        if (this.ttq.getOperator() == TypeOperator.EQ) {
             return new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm));
-        } else if (ttq.getOperator() == TypeOperator.IN) {
+        } else if (this.ttq.getOperator() == TypeOperator.IN) {
             
             BooleanQuery bq = new BooleanQuery(true);
             bq.add(new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm)),
                                 BooleanClause.Occur.SHOULD);
-            List descendantNames = (List)typeDescendantNames.get(typeTerm);
+            List descendantNames = (List)this.typeDescendantNames.get(typeTerm);
             
             if (descendantNames != null) {
                 for (Iterator i = descendantNames.iterator();i.hasNext();) {
@@ -50,7 +50,7 @@ public class TypeTermQueryBuilder implements QueryBuilder {
             }
             
             return bq;
-        } else throw new QueryBuilderException("Unsupported type operator: " + ttq.getOperator());
+        } else throw new QueryBuilderException("Unsupported type operator: " + this.ttq.getOperator());
 
     }
 

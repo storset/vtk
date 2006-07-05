@@ -51,7 +51,7 @@ public class ResourceOwnerAssertion
 
     public void afterPropertiesSet() throws Exception {
 
-        if (roleManager == null) 
+        if (this.roleManager == null) 
             throw new BeanInitializationException(
                 "Property 'roleManager' must be set");
     }
@@ -64,6 +64,6 @@ public class ResourceOwnerAssertion
     public boolean matches(Resource resource, Principal principal) {
 
         return resource.getOwner().equals(principal)
-            || roleManager.hasRole(principal, RoleManager.ROOT);
+            || this.roleManager.hasRole(principal, RoleManager.ROOT);
     }
 }

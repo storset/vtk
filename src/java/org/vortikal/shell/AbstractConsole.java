@@ -156,35 +156,35 @@ public abstract class AbstractConsole
 
         this.init();
 
-        if (logger.isDebugEnabled())
-            logger.debug("Binding: 'context'");
+        if (this.logger.isDebugEnabled())
+            this.logger.debug("Binding: 'context'");
         this.bind("context", this.context);
-        if (logger.isDebugEnabled())
-            logger.debug("Binding: 'resourceLoader'");
+        if (this.logger.isDebugEnabled())
+            this.logger.debug("Binding: 'resourceLoader'");
         this.bind("resourceLoader", this.resourceLoader);
-        if (logger.isDebugEnabled())
-            logger.debug("Binding: 'logger'");
+        if (this.logger.isDebugEnabled())
+            this.logger.debug("Binding: 'logger'");
         this.bind("logger", this.logger);
 
         if (this.initFiles != null) {
-            for (int i = 0; i < initFiles.length; i++) {
-                Resource resource = this.resourceLoader.getResource(initFiles[i]);
+            for (int i = 0; i < this.initFiles.length; i++) {
+                Resource resource = this.resourceLoader.getResource(this.initFiles[i]);
                 InputStream stream = null;
                 try {
                     stream = resource.getInputStream();
-                    if (logger.isDebugEnabled())
-                        logger.debug("Evaluating init file " + resource);
+                    if (this.logger.isDebugEnabled())
+                        this.logger.debug("Evaluating init file " + resource);
                     this.evalInitFile(stream, System.out);
                 
                 } catch (IOException e) {
-                    logger.warn("Cannot resolve init file path '" +
-                                initFiles[i] + "'", e);
+                    this.logger.warn("Cannot resolve init file path '" +
+                                this.initFiles[i] + "'", e);
                 } finally {
                     try {
                         if (stream != null) stream.close();
                     } catch (IOException e) {
-                        logger.warn("Error closing input stream for resource '" +
-                                    initFiles[i] + "'", e);
+                        this.logger.warn("Error closing input stream for resource '" +
+                                    this.initFiles[i] + "'", e);
                     }
                 }
             }

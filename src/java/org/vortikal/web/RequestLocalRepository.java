@@ -74,7 +74,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx == null) {
-            return repository.retrieve(token, uri, forProcessing);
+            return this.repository.retrieve(token, uri, forProcessing);
         }
 
         
@@ -105,7 +105,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
                 logger.debug("Retrieve resource " + uri
                              + ": retrieving from repository");
             }
-            r = repository.retrieve(token, uri, forProcessing);
+            r = this.repository.retrieve(token, uri, forProcessing);
             ctx.addResourceHit(token, r, forProcessing);
             return r;
         } catch (Throwable retrieveException) {
@@ -123,7 +123,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
                                    boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, IOException {
-        return repository.listChildren(token, uri, forProcessing);
+        return this.repository.listChildren(token, uri, forProcessing);
     }
 
     public Resource store(String token, Resource resource)
@@ -136,7 +136,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
             ctx.clear();
         }
         // XXX: Fix this
-        return repository.store(token, resource);
+        return this.repository.store(token, resource);
     }
 
     public void storeContent(String token, String uri, InputStream byteStream)
@@ -148,7 +148,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        repository.storeContent(token, uri, byteStream);
+        this.repository.storeContent(token, uri, byteStream);
     }
 
     public InputStream getInputStream(String token, String uri,
@@ -156,7 +156,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, ResourceLockedException, IOException {
 
-        return repository.getInputStream(token, uri, forProcessing);
+        return this.repository.getInputStream(token, uri, forProcessing);
     }
 
     public Resource createDocument(String token, String uri)
@@ -168,14 +168,14 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }        
-        return repository.createDocument(token, uri);
+        return this.repository.createDocument(token, uri);
     }
 
     public Resource createCollection(String token, String uri)
         throws AuthorizationException, AuthenticationException, 
         IllegalOperationException, ResourceLockedException, 
         ReadOnlyException, IOException {
-        return repository.createCollection(token, uri);
+        return this.repository.createCollection(token, uri);
     }
 
     public void copy(String token, String srcUri, String destUri, String depth,
@@ -189,7 +189,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }        
-        repository.copy(token, srcUri, destUri, depth, overwrite, preserveACL);
+        this.repository.copy(token, srcUri, destUri, depth, overwrite, preserveACL);
     }
 
     public void move(String token, String srcUri, String destUri,
@@ -203,7 +203,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        repository.move(token, srcUri, destUri, overwrite);
+        this.repository.move(token, srcUri, destUri, overwrite);
     }
 
     public void delete(String token, String uri)
@@ -216,7 +216,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        repository.delete(token, uri);
+        this.repository.delete(token, uri);
     }
 
     public boolean exists(String token, String uri)
@@ -227,7 +227,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
                             || ctx.getResourceHit(token, uri, false) != null)) {
             return true;
         }
-        return repository.exists(token, uri);
+        return this.repository.exists(token, uri);
     }
 
     public Resource lock(String token, String uri, String ownerInfo,
@@ -242,7 +242,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        return repository.lock(token, uri, ownerInfo, depth,
+        return this.repository.lock(token, uri, ownerInfo, depth,
                                requestedTimoutSeconds, lockToken);
     }
 
@@ -255,13 +255,13 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        repository.unlock(token, uri, lockToken);
+        this.repository.unlock(token, uri, lockToken);
     }
 
     public Acl getACL(String token, String uri)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, IOException {
-        return repository.getACL(token, uri);
+        return this.repository.getACL(token, uri);
     }
 
     public void storeACL(String token, String uri, Acl acl)
@@ -273,7 +273,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        repository.storeACL(token, uri, acl);
+        this.repository.storeACL(token, uri, acl);
     }
 
     // XXX: Losing stack traces unnecessary

@@ -63,10 +63,10 @@ public class RoleManager {
         
         switch (role) {
         case ROOT:
-            return rootRole.contains(principalName);
+            return this.rootRole.contains(principalName);
             
         case READ_EVERYTHING:
-            return readEverythingRole.contains(principalName);
+            return this.readEverythingRole.contains(principalName);
 
         default:
             throw new IllegalArgumentException("Unknown role: " + role);
@@ -78,10 +78,10 @@ public class RoleManager {
 
         switch (role) {
         case ROOT:
-            return rootRole;
+            return this.rootRole;
 
         case READ_EVERYTHING:
-            return readEverythingRole;
+            return this.readEverythingRole;
 
         default:
             throw new IllegalArgumentException("Unknown role: " + role);

@@ -52,7 +52,7 @@ public class HttpBasicAuthenticationHandler extends
 
     public void authenticateInternal(Principal principal, String password)
             throws AuthenticationProcessingException, AuthenticationException {
-        principalStore.authenticate(principal, password);
+        this.principalStore.authenticate(principal, password);
     }
 
 }

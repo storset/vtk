@@ -174,8 +174,8 @@ public class HttpDigestAuthenticationHandler
         String headerFields = authHeader.substring("Digest: ".length() -1 );
         String username = TextUtils.extractField(headerFields, "username");
         if (username == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to extract field 'username' from header: " + authHeader);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unable to extract field 'username' from header: " + authHeader);
             }
             return false;
         }
@@ -214,8 +214,8 @@ public class HttpDigestAuthenticationHandler
                 "Authorization header either missing or does not start with 'Digest'");
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Authentication header: " + authHeader);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Authentication header: " + authHeader);
         }
         
         String headerFields = authHeader.substring("Digest: ".length() -1 );
@@ -239,8 +239,8 @@ public class HttpDigestAuthenticationHandler
                 "Missing authentication header field 'username'");
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Authentication fields: response = '" + response + "', "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Authentication fields: response = '" + response + "', "
                          + "nc = '" + nc + "', cnonce = '" + cnonce + "', "
                          + "qop = '" + qop + "', username = '" + username + "'");
         }
@@ -382,9 +382,6 @@ public class HttpDigestAuthenticationHandler
         
 
         Principal principal = this.principalManager.getUserPrincipal(username);
-        boolean correctDigest = false;
-
-
         if (principal == null) {
             throw new AuthenticationException(
                 "Unable to authenticate principal using HTTP/Digest for request"
@@ -417,8 +414,8 @@ public class HttpDigestAuthenticationHandler
                 
         String serverDigest = MD5.md5sum(b.toString());
       
-        if (logger.isDebugEnabled()) {
-            logger.debug("client digest: '" + response
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("client digest: '" + response
                          + "', server digest: '" + serverDigest + "'");
         }
                 
@@ -440,8 +437,8 @@ public class HttpDigestAuthenticationHandler
                 "Stale nonce header field in authentication request: " + request);
         } 
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Successfully authenticated principal " + principal);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Successfully authenticated principal " + principal);
         }
         return principal;
     }

@@ -39,11 +39,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.PseudoPrincipal;
 
 
@@ -75,11 +73,11 @@ public class AclImpl implements Acl {
 
  
     public Set getActions() {
-        return actionSets.keySet();
+        return this.actionSets.keySet();
     }
 
     public Set getPrincipalSet(RepositoryAction action) {
-        Set set = (Set) actionSets.get(action);
+        Set set = (Set) this.actionSets.get(action);
         if (set == null) {
             return new HashSet();
         }
@@ -90,7 +88,7 @@ public class AclImpl implements Acl {
         this.actionSets = new HashMap();
         this.inherited = true;
         addEntry(Privilege.ALL, PseudoPrincipal.OWNER);
-        dirty = true;
+        this.dirty = true;
     }
     
 
@@ -246,7 +244,7 @@ public class AclImpl implements Acl {
             return false;
         }
 
-        Set actions = actionSets.keySet();
+        Set actions = this.actionSets.keySet();
 
         if (actions.size() != acl.actionSets.keySet().size()) {
             return false;
@@ -259,7 +257,7 @@ public class AclImpl implements Acl {
                 return false;
             }
 
-            Set myPrincipals = (Set) actionSets.get(action);
+            Set myPrincipals = (Set) this.actionSets.get(action);
             Set otherPrincipals = (Set) acl.actionSets.get(action);
 
             if (myPrincipals.size() != otherPrincipals.size()) {
@@ -281,11 +279,11 @@ public class AclImpl implements Acl {
     public int hashCode() {
         int hashCode = super.hashCode();
 
-        Set actions = actionSets.keySet();
+        Set actions = this.actionSets.keySet();
 
         for (Iterator i = actions.iterator(); i.hasNext();) {
             RepositoryAction action = (RepositoryAction) i.next();
-            Set principals = (Set) actionSets.get(action);
+            Set principals = (Set) this.actionSets.get(action);
 
             for (Iterator j = principals.iterator(); j.hasNext();) {
                 Principal p = (Principal) j.next();
@@ -301,7 +299,7 @@ public class AclImpl implements Acl {
         AclImpl clone = new AclImpl();
         clone.setInherited(this.inherited);
 
-        for (Iterator iter = actionSets.entrySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = this.actionSets.entrySet().iterator(); iter.hasNext();) {
             Map.Entry entry = (Map.Entry) iter.next();
             for (Iterator iterator = ((Set)entry.getValue()).iterator(); iterator.hasNext();) {
                 Principal p = (Principal) iterator.next();
@@ -319,9 +317,9 @@ public class AclImpl implements Acl {
         sb.append("[ACL: ");
         sb.append("[inherited: ").append(this.inherited).append("] ");
         sb.append("access: ");
-        for (Iterator i = actionSets.keySet().iterator(); i.hasNext();) {
+        for (Iterator i = this.actionSets.keySet().iterator(); i.hasNext();) {
             RepositoryAction action = (RepositoryAction) i.next();
-            Set principalSet = (Set)actionSets.get(action);
+            Set principalSet = (Set)this.actionSets.get(action);
 
             sb.append(" [");
             sb.append(action);

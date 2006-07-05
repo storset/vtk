@@ -109,7 +109,7 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
         
         Resource resource = null;
         try {
-             resource = repository.retrieve(
+             resource = this.repository.retrieve(
                  securityContext.getToken(), requestContext.getResourceURI(), false);
         } catch (Throwable t) {
             // Ignore

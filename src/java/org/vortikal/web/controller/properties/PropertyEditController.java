@@ -285,8 +285,8 @@ public class PropertyEditController extends SimpleFormController
                     resource.removeProperty(def.getNamespace(), def.getName());
                 } else {
                     if (property == null) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Property does not exist on resource " + resource
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.debug("Property does not exist on resource " + resource
                                          + ", creating from definition: " + def);
                         }
                         property = resource.createProperty(def.getNamespace(), def.getName());
@@ -308,11 +308,11 @@ public class PropertyEditController extends SimpleFormController
                         property.setValue(value);
                         }
                     }
-                    if (logger.isDebugEnabled()) {
+                    if (this.logger.isDebugEnabled()) {
                         String debugVal = def.isMultiple()
                             ? java.util.Arrays.asList(property.getValues()).toString()
                             : property.getValue().toString();
-                        logger.debug("Setting property '" + property + "'for resource "
+                        this.logger.debug("Setting property '" + property + "'for resource "
                                      + resource + " to value " + debugVal);
                     }
                 }
@@ -377,8 +377,8 @@ public class PropertyEditController extends SimpleFormController
 
             PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
             if (!isApplicableProperty(def, resource.getResourceTypeDefinition())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Property type definition " + def
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Property type definition " + def
                                  + " not applicable for resource " + resource + ", skipping");
                 }
                 continue;

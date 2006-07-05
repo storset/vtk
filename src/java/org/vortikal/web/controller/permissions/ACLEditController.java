@@ -31,7 +31,6 @@
 package org.vortikal.web.controller.permissions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +103,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         if (!Privilege.PRIVILEGES.contains(this.privilege)) {
             throw new BeanInitializationException(
                 "Legal values for bean property 'privilege' are defined by " +
-                "Privilege.PRIVILEGES. Value is '" + privilege + "'.");
+                "Privilege.PRIVILEGES. Value is '" + this.privilege + "'.");
         }
         if (this.privilegePrincipalMap == null) {
             throw new BeanInitializationException(
@@ -126,7 +125,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         String uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
         
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         return getACLEditCommand(resource);
     }
 
@@ -250,7 +249,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
-            repository.storeACL(token, uri, acl);
+            this.repository.storeACL(token, uri, acl);
             return new ModelAndView(getSuccessView());
         }
 
@@ -263,7 +262,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 if (userNames[i].startsWith("pseudo")) {
                     principal = PseudoPrincipal.getPrincipal(userNames[i]);
                 } else {
-                    principal = principalManager.getUserPrincipal(userNames[i]);
+                    principal = this.principalManager.getUserPrincipal(userNames[i]);
                 }
                 if (!PseudoPrincipal.OWNER.equals(principal)) {
                     acl.removeEntry(this.privilege, principal);
@@ -277,7 +276,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             String[] groupNames = editCommand.getGroupNames();
             
             for (int i = 0; i < groupNames.length; i++) {
-                Principal group = principalManager.getGroupPrincipal(groupNames[i]);
+                Principal group = this.principalManager.getGroupPrincipal(groupNames[i]);
                 acl.removeEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
@@ -286,7 +285,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
             for (int i = 0; i < userNames.length; i++) {
-                Principal principal = principalManager.getUserPrincipal(userNames[i]);
+                Principal principal = this.principalManager.getUserPrincipal(userNames[i]);
                 acl.addEntry(this.privilege, principal);
             }
             ModelAndView mv =  showForm(
@@ -300,7 +299,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             
            
             for (int i = 0; i < groupNames.length; i++) {
-                Principal group = principalManager.getGroupPrincipal(groupNames[i]);
+                Principal group = this.principalManager.getGroupPrincipal(groupNames[i]);
 
                 acl.addEntry(this.privilege, group);
             }

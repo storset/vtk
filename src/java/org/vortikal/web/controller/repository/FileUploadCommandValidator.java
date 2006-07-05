@@ -55,7 +55,7 @@ public class FileUploadCommandValidator implements Validator, InitializingBean {
 
     
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "Property 'repository' cannot be null");
         }
@@ -104,7 +104,7 @@ public class FileUploadCommandValidator implements Validator, InitializingBean {
         }
 
         try {
-            boolean exists = repository.exists(token, itemURI);
+            boolean exists = this.repository.exists(token, itemURI);
             if (exists) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Uploaded file already existed.");

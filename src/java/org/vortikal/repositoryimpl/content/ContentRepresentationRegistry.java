@@ -84,7 +84,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
 
             Class[] supportedClasses = factory.getRepresentationClasses();
             for (int j = 0; j < supportedClasses.length; j++) {
-                logger.info("Registering content factory for class '"
+                this.logger.info("Registering content factory for class '"
                             + supportedClasses[j] + "': " + factory);
 
                 this.contentFactories.put(supportedClasses[j], factory);

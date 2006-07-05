@@ -52,8 +52,8 @@ public abstract class AbstractSearcher implements Searcher, InitializingBean {
     
     protected void applySecurityFilter(ModifiableResults results, String token) 
         throws ResultSecurityFilterException {
-        if (applySecurityFilter && this.securityFilter != null) {
-            securityFilter.filterResults(results, token);
+        if (this.applySecurityFilter && this.securityFilter != null) {
+            this.securityFilter.filterResults(results, token);
         }
     }
     

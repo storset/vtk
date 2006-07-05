@@ -73,7 +73,7 @@ public class URIPrefixRequestFilter implements RequestFilter, InitializingBean {
     }
     
     public HttpServletRequest filterRequest(HttpServletRequest request) {
-        return new URIPrefixRequestWrapper(request, uriPrefixes);
+        return new URIPrefixRequestWrapper(request, this.uriPrefixes);
     }
     
     private class URIPrefixRequestWrapper extends HttpServletRequestWrapper {

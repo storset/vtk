@@ -61,7 +61,7 @@ public class RequestURIRegexpAssertion
     
 
     public void afterPropertiesSet() {
-        if (pattern == null) throw new IllegalArgumentException(
+        if (this.pattern == null) throw new IllegalArgumentException(
             "Property 'pattern' cannot be null");
     }
     
@@ -75,7 +75,7 @@ public class RequestURIRegexpAssertion
         StringBuffer sb = new StringBuffer();
 		
         sb.append(super.toString());
-        sb.append("; pattern = ").append(pattern.pattern());
+        sb.append("; pattern = ").append(this.pattern.pattern());
 		
         return sb.toString();
     }
@@ -87,7 +87,7 @@ public class RequestURIRegexpAssertion
 
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        Matcher m = pattern.matcher(request.getRequestURI());
+        Matcher m = this.pattern.matcher(request.getRequestURI());
         return m.find();
     }
 

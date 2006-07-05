@@ -105,11 +105,11 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
         }
 
         if (resource == null) {
-            resource = repository.retrieve(
+            resource = this.repository.retrieve(
                 securityContext.getToken(), requestContext.getResourceURI(), false);
         }
         
-        String redirectURL = redirectToService.constructLink(resource, principal);
+        String redirectURL = this.redirectToService.constructLink(resource, principal);
         model.put("redirectURL", redirectURL);
     }
 

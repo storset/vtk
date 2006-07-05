@@ -39,6 +39,7 @@ import org.vortikal.repository.query.QueryException;
  */
 public class ResultSecurityFilterException extends QueryException {
     
+    private static final long serialVersionUID = -5171731085818656336L;
     private String token;
     
     public ResultSecurityFilterException(String message, String token) {

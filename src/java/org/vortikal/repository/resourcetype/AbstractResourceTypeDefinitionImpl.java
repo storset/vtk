@@ -46,16 +46,16 @@ public abstract class AbstractResourceTypeDefinitionImpl
     private PropertyTypeDefinition[] propertyTypeDefinitions = new PropertyTypeDefinitionImpl[0];
     
     public void afterPropertiesSet() {
-        if (name == null) {
+        if (this.name == null) {
             throw new BeanInitializationException("Property 'name' not set.");
-        } else if (namespace == null) {
+        } else if (this.namespace == null) {
             throw new BeanInitializationException("Property 'namespace' not set.");
         }
 
         // XXX hack:
         for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
-            if (propertyTypeDefinitions[i] instanceof PropertyTypeDefinitionImpl) {
-                ((PropertyTypeDefinitionImpl) propertyTypeDefinitions[i]).setNamespace(this.namespace);
+            if (this.propertyTypeDefinitions[i] instanceof PropertyTypeDefinitionImpl) {
+                ((PropertyTypeDefinitionImpl) this.propertyTypeDefinitions[i]).setNamespace(this.namespace);
             }
 
         }

@@ -66,8 +66,8 @@ public class LogoutSupportedAssertion extends AbstractRepositoryAssertion implem
         String token = securityContext.getToken();
 
         if (token == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No authentication token present, match = false");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("No authentication token present, match = false");
             }
             return false;
         }
@@ -75,23 +75,23 @@ public class LogoutSupportedAssertion extends AbstractRepositoryAssertion implem
         AuthenticationHandler handler = this.tokenManager.getAuthenticationHandler(token);
 
         if (handler == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No authentication handler for token "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("No authentication handler for token "
                              + token + ", match = false");
             }
             return false;
         }
 
         if (!handler.isLogoutSupported()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Authentication handler " + handler
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Authentication handler " + handler
                              + " does not support logout, match = false");
             }
             return false;
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Authentication handler " + handler
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Authentication handler " + handler
                          + " supports logout, match = true");
         }
         

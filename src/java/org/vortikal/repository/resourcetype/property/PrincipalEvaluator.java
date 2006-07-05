@@ -63,7 +63,7 @@ public class PrincipalEvaluator implements CreatePropertyEvaluator, PropertyVali
         }
 //
         Principal principalFromProperty = property.getPrincipalValue();
-        if (!principalManager.validatePrincipal(principalFromProperty)) {
+        if (!this.principalManager.validatePrincipal(principalFromProperty)) {
             throw new ConstraintViolationException(
                     "Unable to set " + property.getDefinition().getName() + " for resource to invalid principal: '" 
                     + principalFromProperty + "'");

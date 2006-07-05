@@ -57,18 +57,18 @@ public class HtmlFooterContentFilter
         Matcher footerMatcher = FOOTER_REGEXP.matcher(content);
         if (footerMatcher.find()) {
 
-            if (debug && logger.isDebugEnabled()) {
-                logger.debug("Found </body> or similar, will add footer");
+            if (this.debug && this.logger.isDebugEnabled()) {
+                this.logger.debug("Found </body> or similar, will add footer");
             }
             int index = footerMatcher.start();
-            if (debug && logger.isDebugEnabled()) {
-                logger.debug("Start index of </body>: " + index);
+            if (this.debug && this.logger.isDebugEnabled()) {
+                this.logger.debug("Start index of </body>: " + index);
             }
             return content.substring(0, index) + footer + content.substring(index);
         } 
 
-        if (debug && logger.isDebugEnabled()) {
-            logger.debug("Did not find </body> or similar, returning original content");
+        if (this.debug && this.logger.isDebugEnabled()) {
+            this.logger.debug("Did not find </body> or similar, returning original content");
         }
         return content;
     }

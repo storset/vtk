@@ -53,7 +53,7 @@ public class Query {
     }
 
     public Condition getCondition() {
-        return condition;
+        return this.condition;
     }
 
     public void setSort(Sort sort) {

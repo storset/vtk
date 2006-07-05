@@ -65,7 +65,7 @@ public class DeleteSubElementAtController extends AbstractXmlEditController {
             Element element = document.findElementByPath(path);
             element.detach();
 
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         }
         return null;
     }

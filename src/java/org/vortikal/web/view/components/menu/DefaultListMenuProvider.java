@@ -159,7 +159,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         Principal principal = securityContext.getPrincipal();
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(),
             this.retrieveForProcessing);
         Service currentService = requestContext.getService();
@@ -194,7 +194,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         
         menu.setItems((MenuItem[]) items.toArray(new MenuItem[items.size()]));
         menu.setActiveItem(activeItem);
-        model.put(modelName, menu);
+        model.put(this.modelName, menu);
     }
 
 

@@ -54,7 +54,7 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
     public void testFormatting() {
         
         Date testDate = new Date();
-        ReusableObjectCache cache = new SimpleDateFormatCache(pattern);
+        ReusableObjectCache cache = new SimpleDateFormatCache(this.pattern);
         
         DateFormat f = (DateFormat)cache.getInstance();
         String formatted = f.format(testDate);
@@ -70,7 +70,7 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
     }
     
     public void testStackCaching() {
-        ReusableObjectCache cache = new SimpleDateFormatCache(pattern, 3);
+        ReusableObjectCache cache = new SimpleDateFormatCache(this.pattern, 3);
         
         // Get some instances
         DateFormat f1 = (DateFormat)cache.getInstance();
@@ -92,7 +92,7 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
     
     public void testMultithreadedAccess() {
         
-        final ReusableObjectCache cache = new SimpleDateFormatCache(pattern, 50);
+        final ReusableObjectCache cache = new SimpleDateFormatCache(this.pattern, 50);
 
         int numWorkers = 100;
         int iterationsPerWorker = 50;
@@ -174,12 +174,12 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
         }
         
         public void run() {
-            for (int i=0; i<iterations; i++) {
+            for (int i=0; i<this.iterations; i++) {
                 Date d = new Date();
 
                 DateFormat f;
-                if (useCache) {
-                    f = (DateFormat)dateFormatCache.getInstance();
+                if (this.useCache) {
+                    f = (DateFormat)this.dateFormatCache.getInstance();
                 } else {
                     f = new SimpleDateFormat(SimpleDateFormatCacheTestCase.this.pattern); 
                 }
@@ -199,8 +199,8 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
                     break;
                 }
                 
-                if (useCache) {
-                    dateFormatCache.putInstance(f);
+                if (this.useCache) {
+                    this.dateFormatCache.putInstance(f);
                 }
             }
         }

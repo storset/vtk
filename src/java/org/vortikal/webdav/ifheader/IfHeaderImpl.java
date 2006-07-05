@@ -54,9 +54,9 @@ public class IfHeaderImpl implements IfHeader {
     
     public IfHeaderImpl(HttpServletRequest request) {
         super();
-        headerValue = request.getHeader("If");
-        logger.debug("if-header: " + headerValue);
-        stateEntryList = parse();
+        this.headerValue = request.getHeader("If");
+        logger.debug("if-header: " + this.headerValue);
+        this.stateEntryList = parse();
     }
     
     
@@ -82,12 +82,11 @@ public class IfHeaderImpl implements IfHeader {
      *      given tag matches the token and etag given.
      */
     public boolean matches(Resource resource, boolean shouldMatchOnNoIfHeader) {
-        if (stateEntryList == null) {
+        if (this.stateEntryList == null) {
             logger.debug("matches: No If header, assume match: " + shouldMatchOnNoIfHeader);
             return shouldMatchOnNoIfHeader;
-        } else {
-            return stateEntryList.matches(resource);
         }
+        return this.stateEntryList.matches(resource);
     }
         
 
@@ -96,11 +95,11 @@ public class IfHeaderImpl implements IfHeader {
      *         leading NOT statement.
      */
     public Iterator getAllTokens() {
-        return allTokens.iterator();
+        return this.allTokens.iterator();
     }
 
     public boolean hasTokens() {
-        return !allTokens.isEmpty();
+        return !this.allTokens.isEmpty();
     }
     
     /**
@@ -108,7 +107,7 @@ public class IfHeaderImpl implements IfHeader {
      * were explicitely denied.
      */
     public Iterator getAllNotTokens() {
-        return allNotTokens.iterator();
+        return this.allNotTokens.iterator();
     }
     
     
@@ -118,12 +117,12 @@ public class IfHeaderImpl implements IfHeader {
      */
     private StateEntryList parse() {
         StateEntryList ifHeader;
-        if (headerValue != null && headerValue.length() > 0) {
+        if (this.headerValue != null && this.headerValue.length() > 0) {
             StringReader reader = null;
             int firstChar = 0;
 
             try {
-                reader = new StringReader(headerValue);
+                reader = new StringReader(this.headerValue);
                 // get the first character to decide - expect '(' or '<'
                 try {
                     reader.mark(1);
@@ -293,9 +292,9 @@ public class IfHeaderImpl implements IfHeader {
                         res.add(new IfListEntryToken(word, positive));
                         // also add the token to the list of all tokens
                         if (positive) {
-                        allTokens.add(word);
+                        this.allTokens.add(word);
                         } else {
-                            allNotTokens.add(word);
+                            this.allNotTokens.add(word);
                         }
                         positive = true;
                     }
@@ -408,7 +407,7 @@ public class IfHeaderImpl implements IfHeader {
 
         // log the error
         logger.error("logIllegalState: Unexpected character '"+effString+" in state "+state+", expected any of "+expChar);
-        logger.error("logIllegalState: headerValue: " + headerValue);
+        logger.error("logIllegalState: headerValue: " + this.headerValue);
         // catch up if a reader is given
         if (reader != null && effChar >= 0) {
             try {

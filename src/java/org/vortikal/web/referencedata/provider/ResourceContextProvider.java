@@ -149,7 +149,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
 
         if (resource == null) {
             try {
-                resource = repository.retrieve(
+                resource = this.repository.retrieve(
                     securityContext.getToken(), requestContext.getResourceURI(),
                     this.retrieveForProcessing);
        

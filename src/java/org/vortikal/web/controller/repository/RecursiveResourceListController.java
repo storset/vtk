@@ -194,8 +194,8 @@ public class RecursiveResourceListController implements Controller, Initializing
                     String url = this.service.constructLink(r, principal);
                     ancestors.add(url);
                 } catch (Exception e) {
-                    if (logger.isInfoEnabled()) {
-                        logger.info("Unable to construct link to resource " + r, e);
+                    if (this.logger.isInfoEnabled()) {
+                        this.logger.info("Unable to construct link to resource " + r, e);
                     }
                 }
             }
@@ -210,8 +210,8 @@ public class RecursiveResourceListController implements Controller, Initializing
                         s.push(children[i]);
                     }
                 } catch (Exception e) {
-                    if (logger.isInfoEnabled()) {
-                        logger.info("Caught exception while listing ancestors", e);
+                    if (this.logger.isInfoEnabled()) {
+                        this.logger.info("Caught exception while listing ancestors", e);
                     }
                 }
             } 

@@ -181,8 +181,8 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
     public void postRender(Map model, HttpServletRequest request,
             BufferedResponseWrapper bufferedResponse) throws Exception {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("About to process buffered content, content type: "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("About to process buffered content, content type: "
                     + bufferedResponse.getContentType()
                     + ", character encoding: "
                     + bufferedResponse.getCharacterEncoding());
@@ -210,8 +210,8 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         }
 
         if (!Charset.isSupported(characterEncoding)) {
-            if (logger.isInfoEnabled()) {
-                logger.info("Unable to perform content filtering on response  "
+            if (this.logger.isInfoEnabled()) {
+                this.logger.info("Unable to perform content filtering on response  "
                         + bufferedResponse + " for requested URL "
                         + request.getRequestURL() + ": character encoding '"
                         + characterEncoding
@@ -221,8 +221,8 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
             return;
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Reading buffered content using character encoding "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Reading buffered content using character encoding "
                     + characterEncoding);
         }
 
@@ -231,8 +231,8 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         if (this.contentFilters != null) {
             for (int i = 0; i < this.contentFilters.length; i++) {
                 content = this.contentFilters[i].process(model, request, content);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Ran content filter " + this.contentFilters[i]
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Ran content filter " + this.contentFilters[i]
                             + ", content length after = " + content.length());
                 }
             }
@@ -268,8 +268,8 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         writeStaticHeaders(response);
 
         byte[] content = responseWrapper.getContentBuffer();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Write response: Content-Length: " + content.length
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Write response: Content-Length: " + content.length
                     + ", unspecified content type");
         }
         response.setContentLength(content.length);
@@ -288,8 +288,8 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         writeStaticHeaders(response);
         ServletOutputStream outStream = response.getOutputStream();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Write response: Content-Length: " + content.length
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Write response: Content-Length: " + content.length
                     + ", Content-Type: " + contentType);
         }
         response.setContentType(contentType);

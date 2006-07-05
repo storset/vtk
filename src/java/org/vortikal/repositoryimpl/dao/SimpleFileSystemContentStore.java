@@ -206,7 +206,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     public void afterPropertiesSet() throws Exception {
 
-        if (repositoryDataDirectory == null) {
+        if (this.repositoryDataDirectory == null) {
             throw new IOException("Missing property \"repositoryDataDirectory\"");
         }
 
@@ -214,7 +214,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
         if (!root.isAbsolute()) {
             this.repositoryDataDirectory = System.getProperty("vortex.home") + File.separator
-                    + repositoryDataDirectory;
+                    + this.repositoryDataDirectory;
             root = new File(this.repositoryDataDirectory);
         }
 

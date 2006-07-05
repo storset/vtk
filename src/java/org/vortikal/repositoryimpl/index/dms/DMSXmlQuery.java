@@ -132,9 +132,9 @@ public class DMSXmlQuery implements InitializingBean {
         try {
             
             if (maxResults > 0) {                
-                results = searcher.execute(token, query, maxResults);
+                results = this.searcher.execute(token, query, maxResults);
             } else {
-                results = searcher.execute(token, query);
+                results = this.searcher.execute(token, query);
             }
             
         } catch (QueryException qe) {
@@ -158,8 +158,8 @@ public class DMSXmlQuery implements InitializingBean {
                 Integer.toString(xmlResultsRootElement.getContentSize())));
         statusElement.setAttribute(new Attribute("code", STATUS_OK));
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Performed  search for query '" + query
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Performed  search for query '" + query
                          + "', returning document '" + doc + "'");
         }
 

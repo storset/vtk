@@ -58,13 +58,13 @@ public class IsAuthenticatedAssertion extends AbstractRepositoryAssertion {
     public boolean matches(Resource resource, Principal principal) {
         
         
-        if (requiresAuthentication && principal == null)
+        if (this.requiresAuthentication && principal == null)
             throw new AuthenticationException();
         
         if (principal == null) 
-            return invert;
+            return this.invert;
 
-        return !invert;
+        return !this.invert;
     }
 
     public boolean conflicts(Assertion assertion) {
@@ -76,7 +76,7 @@ public class IsAuthenticatedAssertion extends AbstractRepositoryAssertion {
     }
 
     public boolean isInvert() {
-        return invert;
+        return this.invert;
     }
     
     public void setInvert(boolean invert) {

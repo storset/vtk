@@ -55,7 +55,7 @@ public class RepositoryLookupResultSecurityFilter implements ResultSecurityFilte
     private Repository repository;
     
     public void afterPropertiesSet() {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException("Property 'repository' not set.");
         }
     }
@@ -76,21 +76,21 @@ public class RepositoryLookupResultSecurityFilter implements ResultSecurityFilte
                 uri = results.getResultMetadata(i).getUri();
                 // Try and see if we can get resource without causing an exception to be
                 // thrown.
-                repository.retrieve(token, uri, true);
+                this.repository.retrieve(token, uri, true);
                 continue;
             } catch (AuthorizationException authorizationEx) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Removing result at URI '" + uri + "', reason: " +
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Removing result at URI '" + uri + "', reason: " +
                             " AuthorizationException using given security token.");
                 }
             } catch (AuthenticationException authenticationEx) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Removing result at URI '" + uri + "', reason: " +
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Removing result at URI '" + uri + "', reason: " +
                             " AuthenticationException using given security token.");
                 }
             } catch (Exception e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Removing result at URI: '" + uri + "', reason: " +
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Removing result at URI: '" + uri + "', reason: " +
                             " Exception caught trying to retrieve resource.");
                 }
             }

@@ -68,7 +68,7 @@ public class DMSXmlQueryController implements Controller,
     
     public void afterPropertiesSet()
         throws BeanInitializationException {
-        if (dmsXmlQueryHelper == null) {
+        if (this.dmsXmlQueryHelper == null) {
             throw new BeanInitializationException("Property" +
                     " 'dmsXmlQueryHelper' not set.");
         }
@@ -77,30 +77,30 @@ public class DMSXmlQueryController implements Controller,
     public ModelAndView handleRequest(HttpServletRequest request, 
             HttpServletResponse response) throws IOException {
 
-        String query = request.getParameter(expressionParameterName);
+        String query = request.getParameter(this.expressionParameterName);
         if (query == null) 
             return null;
 
-        String multiField = request.getParameter(multiFieldParameterName);
+        String multiField = request.getParameter(this.multiFieldParameterName);
 
-        int maxResults = defaultMaxLimit;
-        String limitStr = request.getParameter(limitParameterName);
+        int maxResults = this.defaultMaxLimit;
+        String limitStr = request.getParameter(this.limitParameterName);
         if (limitStr != null) {
             try {
                 maxResults = Integer.parseInt(limitStr);
             } catch (NumberFormatException e) { }
         }
 
-        String sortStr = request.getParameter(sortParameterName);
+        String sortStr = request.getParameter(this.sortParameterName);
 
         // Used for security filtering of search results.
         String securityToken = SecurityContext.getSecurityContext().getToken();
         
-        Document xmlResult = dmsXmlQueryHelper.executeQuery(query, multiField != null, 
+        Document xmlResult = this.dmsXmlQueryHelper.executeQuery(query, multiField != null, 
                                                             securityToken, maxResults,
                                                             sortStr);
         if (xmlResult == null) {
-            logger.warn("Query result document null.");
+            this.logger.warn("Query result document null.");
             return null;
         }
 

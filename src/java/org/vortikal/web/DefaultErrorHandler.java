@@ -112,7 +112,7 @@ public class DefaultErrorHandler
     }
 
     public Class getErrorType() {
-        return errorType;
+        return this.errorType;
     }
     
     public void setService(Service service) {
@@ -153,7 +153,7 @@ public class DefaultErrorHandler
         Map model = new HashMap();
         if (this.providers != null) {
             try {
-                for (int i = 0; i < providers.length; i++) {
+                for (int i = 0; i < this.providers.length; i++) {
                     this.providers[i].referenceData(model, request);
                 }
             } catch (Throwable t) {

@@ -61,14 +61,14 @@ public class RepositoryTemplateLoader implements TemplateLoader {
      */
     public Object findTemplateSource(String name) throws IOException {
         logger.info("findTemplateSource('" + name + "' called, will resolve" +
-                "with basePath = '" + basePath + "'" +
+                "with basePath = '" + this.basePath + "'" +
                         " ");
         
         Resource resource = null;
         
         try {
             resource = 
-                repository.retrieve(trustedToken, basePath + name, false);
+                this.repository.retrieve(this.trustedToken, this.basePath + name, false);
         } catch (RepositoryException ex) {
             return null;
         }
@@ -85,8 +85,8 @@ public class RepositoryTemplateLoader implements TemplateLoader {
     public long getLastModified(Object templateSource) {
         Resource resource = null;
         try {
-            resource = repository.retrieve(trustedToken, 
-                    basePath + ((String)templateSource), false);
+            resource = this.repository.retrieve(this.trustedToken, 
+                    this.basePath + ((String)templateSource), false);
         } catch (IOException ex) {
             return -1;
         }
@@ -101,15 +101,15 @@ public class RepositoryTemplateLoader implements TemplateLoader {
      * @see freemarker.cache.TemplateLoader#getReader(java.lang.Object, java.lang.String)
      */
     public Reader getReader(Object templateSource, String encoding) throws IOException {
-        String uri = basePath + (String)templateSource;
+        String uri = this.basePath + (String)templateSource;
         Resource resource = 
-            repository.retrieve(trustedToken, uri, false);
+            this.repository.retrieve(this.trustedToken, uri, false);
         
         if (resource == null || resource.isCollection())
             throw new IOException("the template with repository URI '" +
                     uri + "' couldn't be loaded");
 
-        InputStream inputStream = repository.getInputStream(trustedToken, uri, false);
+        InputStream inputStream = this.repository.getInputStream(this.trustedToken, uri, false);
         return new InputStreamReader(inputStream, encoding);
     }
 

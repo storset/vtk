@@ -136,9 +136,9 @@ public class TextReplaceInputStreamFilter implements RequestFilter, Initializing
         }
         
         public ServletInputStream getInputStream() throws IOException {
-            byte[] buffer = StreamUtil.readInputStream(request.getInputStream());
+            byte[] buffer = StreamUtil.readInputStream(this.request.getInputStream());
             String content = new String(buffer, this.characterEncoding);
-            Matcher matcher = pattern.matcher(content);
+            Matcher matcher = this.pattern.matcher(content);
             StringBuffer sb = new StringBuffer();
             
             if (matcher.find()) {

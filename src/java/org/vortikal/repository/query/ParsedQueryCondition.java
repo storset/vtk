@@ -73,7 +73,7 @@ public class ParsedQueryCondition implements Condition {
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("ParsedQueryCondition('");
-        buf.append(expression);
+        buf.append(this.expression);
         buf.append("'");
         if (this.multiField) {
             buf.append(", multiField");

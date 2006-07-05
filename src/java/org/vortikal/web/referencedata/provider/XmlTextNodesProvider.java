@@ -95,7 +95,7 @@ public class XmlTextNodesProvider
             Object value = this.expressions.get(key);
             
             try {
-                xpathExpressions.put(key, XPath.newInstance((String)value));
+                this.xpathExpressions.put(key, XPath.newInstance((String)value));
             } catch (Exception e) {
                 throw new BeanInitializationException("Caught exception evaluating " +
                         "xpath expression with key '" + key + "'", e);
@@ -143,9 +143,9 @@ public class XmlTextNodesProvider
             SAXBuilder builder = new SAXBuilder();
             Document doc = builder.build(this.repository.getInputStream(token, docUri, true));
             
-            for (Iterator iter = xpathExpressions.keySet().iterator(); iter.hasNext();) {
+            for (Iterator iter = this.xpathExpressions.keySet().iterator(); iter.hasNext();) {
                 Object key = iter.next();
-                XPath xpathExpression = (XPath) xpathExpressions.get(key);
+                XPath xpathExpression = (XPath) this.xpathExpressions.get(key);
                 ArrayList nodes = Xml.getNodesByXPath(doc, xpathExpression);
             
                 if (nodes != null && nodes.size() > 0)
@@ -211,7 +211,7 @@ public class XmlTextNodesProvider
     }
 
     protected Repository getRepository() {
-        return repository;
+        return this.repository;
     }
     
 }

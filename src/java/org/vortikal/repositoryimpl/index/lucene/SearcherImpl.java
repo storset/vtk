@@ -84,7 +84,7 @@ public class SearcherImpl extends AbstractSearcher
     private String defaultField = IndexConstants.URI_FIELD;
     
     public void afterPropertiesSet() {
-        if (index == null) {
+        if (this.index == null) {
             throw new BeanInitializationException("Required property 'index' not set.");
         } 
     }
@@ -103,7 +103,7 @@ public class SearcherImpl extends AbstractSearcher
         throws QueryException {
         IndexReader reader = null;
         try {
-            reader = index.getReadOnlyIndexReader();
+            reader = this.index.getReadOnlyIndexReader();
             IndexSearcher searcher = new IndexSearcher(reader);
 
             Sort sort = query.getSort();
@@ -131,7 +131,7 @@ public class SearcherImpl extends AbstractSearcher
                 hits = searcher.search(luceneQuery);
             }
             
-            ModifiableResults results = new CachedLuceneResults(hits, index.getIndexBeanClass(), maxResults, cursor);
+            ModifiableResults results = new CachedLuceneResults(hits, this.index.getIndexBeanClass(), maxResults, cursor);
 
             int rawSize = results.getSize();
 
@@ -194,12 +194,11 @@ public class SearcherImpl extends AbstractSearcher
                         occur[i] = BooleanClause.Occur.SHOULD;
                     }
                     
-                    return MultiFieldQueryParser.parse(expression, fields, occur, index.getAnalyzer());
-                } else {
-                    QueryParser parser = new QueryParser(this.defaultField, index.getAnalyzer());
-                    //return QueryParser.parse(expression, index.getAnalyzer());
-                    return parser.parse(expression);
+                    return MultiFieldQueryParser.parse(expression, fields, occur, this.index.getAnalyzer());
                 }
+                QueryParser parser = new QueryParser(this.defaultField, this.index.getAnalyzer());
+                //return QueryParser.parse(expression, index.getAnalyzer());
+                return parser.parse(expression);
             } catch (org.apache.lucene.queryParser.ParseException pe) {
                 throw new ParseException("Query parse error: " + pe.getMessage());
             }

@@ -48,7 +48,7 @@ public class ResourceXmlApplicationContext extends AbstractXmlApplicationContext
     }
     protected void initBeanDefinitionReader(XmlBeanDefinitionReader beanDefinitionReader) {
         System.out.println("initBeanDefinitionReader starter");
-        beanDefinitionReader.loadBeanDefinitions(resource);
+        beanDefinitionReader.loadBeanDefinitions(this.resource);
     }
 
     /**

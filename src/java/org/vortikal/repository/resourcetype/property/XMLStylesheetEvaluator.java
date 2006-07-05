@@ -94,8 +94,8 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
         try {
             Document doc = (Document) content.getContentRepresentation(org.jdom.Document.class);
             if (doc == null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Content representation '"
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Content representation '"
                                  + org.jdom.Document.class.getName() + "' not available");
                 }
                 return false;
@@ -104,14 +104,14 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
             String stylesheetReference = resolveTemplateReference(ancestorPropertySet, doc);
             
             if (stylesheetReference == null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Did not find stylesheet identifier for resource '" +
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Did not find stylesheet identifier for resource '" +
                                  ancestorPropertySet + "'");
                 }
                 return false;
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Found stylesheet identifier for resource '" +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Found stylesheet identifier for resource '" +
                              ancestorPropertySet + "': '" + stylesheetReference + "'");
             }
             property.setStringValue(stylesheetReference);
@@ -119,8 +119,8 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
             
 
         } catch (Exception e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to find stylesheet reference for resource "
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unable to find stylesheet reference for resource "
                              + ancestorPropertySet, e);
             }
             return false;
@@ -128,8 +128,8 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
     }
 
     private String resolveTemplateReference(PropertySet resource, Document document) {
-        for (int i = 0; i < stylesheetReferenceResolvers.length; i++) {
-            StylesheetReferenceResolver resolver = stylesheetReferenceResolvers[i];
+        for (int i = 0; i < this.stylesheetReferenceResolvers.length; i++) {
+            StylesheetReferenceResolver resolver = this.stylesheetReferenceResolvers[i];
             String reference = resolver.getStylesheetIdentifier(resource, document);
             
             if (reference != null) {

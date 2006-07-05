@@ -85,11 +85,11 @@ public class LockManager {
                             .toString();
 
             Date timeout = new Date(System.currentTimeMillis()
-                    + lockDefaultTimeout);
+                    + this.lockDefaultTimeout);
 
-            if ((desiredTimeoutSeconds * 1000) > lockMaxTimeout) {
+            if ((desiredTimeoutSeconds * 1000) > this.lockMaxTimeout) {
                 timeout = new Date(System.currentTimeMillis()
-                        + lockDefaultTimeout);
+                        + this.lockDefaultTimeout);
             }
 
             LockImpl lock = new LockImpl(lockToken, principal, ownerInfo,

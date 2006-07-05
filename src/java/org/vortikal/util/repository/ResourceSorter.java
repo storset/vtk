@@ -104,7 +104,7 @@ public class ResourceSorter {
             Resource r1 = (Resource) o1;
             Resource r2 = (Resource) o2;
 
-            if (!invert) {
+            if (!this.invert) {
                 return r1.getName().compareTo(r2.getName());
             }
 
@@ -129,7 +129,7 @@ public class ResourceSorter {
             Resource r1 = (Resource) o1;
             Resource r2 = (Resource) o2;
 
-            if (!invert) {
+            if (!this.invert) {
                 return r1.getLastModified().compareTo(r2.getLastModified());
 
             }
@@ -153,7 +153,7 @@ public class ResourceSorter {
             Resource r1 = (Resource) o1;
             Resource r2 = (Resource) o2;
 
-            if (!invert) {
+            if (!this.invert) {
                 return r1.getOwner().getQualifiedName().compareTo(
                     r2.getOwner().getQualifiedName());
 
@@ -189,7 +189,7 @@ public class ResourceSorter {
                 owner2 = r2.getLock().getOwnerInfo();
             }
 
-            if (!invert) {
+            if (!this.invert) {
                 return owner1.compareTo(owner2);
 
             }
@@ -217,7 +217,7 @@ public class ResourceSorter {
             Long size1 = new Long(r1.getContentLength());
             Long size2 = new Long(r2.getContentLength());
 
-            if (!invert) {
+            if (!this.invert) {
                 return size1.compareTo(size2);
 
             }
@@ -241,20 +241,20 @@ public class ResourceSorter {
             Resource r2 = (Resource) o2;
 
             if (r1.isCollection() && r2.isCollection()) {
-                return invert ?
+                return this.invert ?
                     r2.getName().compareTo(r1.getName()) :
                     r1.getName().compareTo(r2.getName());
             }
 
             if (r1.isCollection()) {
-                return invert ? -1 : 1;
+                return this.invert ? -1 : 1;
             }
 
             if (r2.isCollection()) {
-                return invert ? 1 : -1;
+                return this.invert ? 1 : -1;
             }
 
-            return invert ?
+            return this.invert ?
                 r2.getContentType().compareTo(r1.getContentType()) :
                 r1.getContentType().compareTo(r2.getContentType());
         }

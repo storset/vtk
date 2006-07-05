@@ -92,13 +92,13 @@ public class CopyResourceController implements Controller,
 
         String uri = RequestContext.getRequestContext().getResourceURI();
 
-        String token = trustedToken;
+        String token = this.trustedToken;
         if (token == null)
             token = SecurityContext.getSecurityContext().getToken();
 
-        String name = resourceName;
+        String name = this.resourceName;
         if (name == null) {
-            Resource template = repository.retrieve(token, templateUri,false);
+            Resource template = this.repository.retrieve(token, this.templateUri,false);
             name = template.getName();
         }
 
@@ -108,35 +108,35 @@ public class CopyResourceController implements Controller,
             newResourceUri = uri + newResourceUri;
         }
 
-        boolean exists = repository.exists(token, newResourceUri);
+        boolean exists = this.repository.exists(token, newResourceUri);
 
         if (exists) {
             model.put("createErrorMessage", "resource.exists");
-            return new ModelAndView(errorView, model);
+            return new ModelAndView(this.errorView, model);
         }
             
-        repository.copy(trustedToken, templateUri, newResourceUri, "infinity", false, true);
-    	 	Resource newResource = repository.retrieve(trustedToken, newResourceUri, true);
+        this.repository.copy(this.trustedToken, this.templateUri, newResourceUri, "infinity", false, true);
+    	 	Resource newResource = this.repository.retrieve(this.trustedToken, newResourceUri, true);
             
         model.put("resource", newResource);
         
-        return new ModelAndView(successView, model);
+        return new ModelAndView(this.successView, model);
     }
 
     public void afterPropertiesSet() throws Exception {
 
-        if (repository == null) 
+        if (this.repository == null) 
             throw new BeanInitializationException("Property 'repository' required");
         
-        if (templateUri == null)
+        if (this.templateUri == null)
             throw new BeanInitializationException("Property 'templateUri' required");
     
 //        if (trustedToken == null)
 //            throw new BeanInitializationException("Property 'trustedToken' required");
         
-        if (! (trustedToken == null || repository.exists(trustedToken,templateUri)))
+        if (! (this.trustedToken == null || this.repository.exists(this.trustedToken,this.templateUri)))
             //throw new BeanInitializationException("Property 'templateUri' must specify an existing resource");
-            logger.warn("Property 'templateUri' must specify an existing resource");
+            this.logger.warn("Property 'templateUri' must specify an existing resource");
     }
 
     public void setErrorView(String errorView) {

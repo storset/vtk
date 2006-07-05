@@ -32,6 +32,8 @@ package org.vortikal.repositoryimpl.query;
 
 public class DocumentMappingException extends IndexException {
 
+    private static final long serialVersionUID = -1196354519437156618L;
+
     public DocumentMappingException() {
         super();
     }

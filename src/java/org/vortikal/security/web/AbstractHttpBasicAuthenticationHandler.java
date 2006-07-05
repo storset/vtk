@@ -184,27 +184,27 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         Principal principal = null;
         
         try {
-            principal = principalManager.getUserPrincipal(username);
+            principal = this.principalManager.getUserPrincipal(username);
         } catch (InvalidPrincipalException e) {
             throw new AuthenticationException("Invalid principal '" + username + "'", e);
         }
 
-        if (cache != null) {
+        if (this.cache != null) {
             Principal cachedPrincipal = (Principal) 
                 this.cache.get(MD5.md5sum(principal.getQualifiedName() + password));
         
             if (cachedPrincipal != null) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Found authenticated principal '" + username + "' in cache.");
+                if (this.logger.isDebugEnabled())
+                    this.logger.debug("Found authenticated principal '" + username + "' in cache.");
                 return cachedPrincipal;
             }
         }
         
         authenticateInternal(principal, password);
         
-        if (cache != null)
+        if (this.cache != null)
             /* add to cache */
-            cache.put(MD5.md5sum(principal.getQualifiedName() + password), principal);
+            this.cache.put(MD5.md5sum(principal.getQualifiedName() + password), principal);
 
         return principal;
     }
@@ -236,7 +236,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     
 
     public AuthenticationChallenge getAuthenticationChallenge() {
-        return challenge;
+        return this.challenge;
     }
     
     protected String getUserName(HttpServletRequest request) {

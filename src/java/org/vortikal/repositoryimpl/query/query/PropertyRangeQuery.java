@@ -47,15 +47,15 @@ public class PropertyRangeQuery extends AbstractPropertyQuery {
     }
 
     public String getFromTerm() {
-        return fromTerm;
+        return this.fromTerm;
     }
 
     public boolean isInclusive() {
-        return inclusive;
+        return this.inclusive;
     }
 
     public String getToTerm() {
-        return toTerm;
+        return this.toTerm;
     }
     
     public String dump(String prefix) {
@@ -67,9 +67,9 @@ public class PropertyRangeQuery extends AbstractPropertyQuery {
         buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
         buf.append("', name = '").append(def.getName()).append("'\n");
 
-        buf.append(prefix).append("fromTerm = '").append(fromTerm);
-        buf.append("', toTerm = '").append(toTerm).append("', inclusive = '");
-        buf.append(inclusive).append("'\n");
+        buf.append(prefix).append("fromTerm = '").append(this.fromTerm);
+        buf.append("', toTerm = '").append(this.toTerm).append("', inclusive = '");
+        buf.append(this.inclusive).append("'\n");
         
         return buf.toString();
     }

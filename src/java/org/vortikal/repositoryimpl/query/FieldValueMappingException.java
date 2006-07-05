@@ -32,6 +32,8 @@ package org.vortikal.repositoryimpl.query;
 
 public class FieldValueMappingException extends DocumentMappingException {
 
+    private static final long serialVersionUID = 2989933317347109891L;
+
     public FieldValueMappingException() {
         super();
         // TODO Auto-generated constructor stub

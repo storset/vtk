@@ -59,7 +59,7 @@ public class CreateDocumentController extends SimpleFormController
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (documentTemplates == null) {
+        if (this.documentTemplates == null) {
             throw new BeanInitializationException(
                 "Required bean property 'documentTemplates' not set.");
         }
@@ -72,10 +72,10 @@ public class CreateDocumentController extends SimpleFormController
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        Map topTemplates = documentTemplates.getTopTemplates();
-        Map categories = documentTemplates.getCategoryTemplates();
+        Map topTemplates = this.documentTemplates.getTopTemplates();
+        Map categories = this.documentTemplates.getCategoryTemplates();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
@@ -107,8 +107,8 @@ public class CreateDocumentController extends SimpleFormController
 
 
     protected Map referenceData(HttpServletRequest request) throws Exception {
-        Map topTemplates = documentTemplates.getTopTemplates();
-        Map categories = documentTemplates.getCategoryTemplates();
+        Map topTemplates = this.documentTemplates.getTopTemplates();
+        Map categories = this.documentTemplates.getCategoryTemplates();
         
         Map model = new HashMap();
         
@@ -138,7 +138,7 @@ public class CreateDocumentController extends SimpleFormController
         if (!"/".equals(uri)) destinationURI += "/";
         destinationURI += createDocumentCommand.getName();
 
-        repository.copy(token, sourceURI, destinationURI, "0", false, false);
+        this.repository.copy(token, sourceURI, destinationURI, "0", false, false);
         createDocumentCommand.setDone(true);
     }
     

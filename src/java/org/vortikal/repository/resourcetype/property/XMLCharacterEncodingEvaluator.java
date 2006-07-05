@@ -125,16 +125,16 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         Matcher m = CHARSET_PATTERN.matcher(xmlContent);
 
         if (m.matches()) {
-            if (logger.isDebugEnabled())
-                logger.debug("Regexp match in XML declaration for pattern "
+            if (this.logger.isDebugEnabled())
+                this.logger.debug("Regexp match in XML declaration for pattern "
                              + CHARSET_PATTERN.pattern());
             characterEncoding = m.group(1);
             
             try {
                 Charset.forName(characterEncoding);
             } catch (Exception e) {
-                if (logger.isDebugEnabled())
-                    logger.debug(
+                if (this.logger.isDebugEnabled())
+                    this.logger.debug(
                         "Invalid character encoding '" + characterEncoding
                         + "' for XML document <string>, using default encoding");
                 characterEncoding = null;

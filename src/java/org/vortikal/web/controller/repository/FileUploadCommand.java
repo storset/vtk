@@ -48,7 +48,7 @@ public class FileUploadCommand extends AbstractSaveCancelCommand {
     }
     
     public MultipartFile getFile() {
-        return file;
+        return this.file;
     }
 
 }

@@ -60,6 +60,7 @@ import org.apache.lucene.search.WildcardTermEnum;
  */
 public class WildcardTermFilter extends Filter {
 
+    private static final long serialVersionUID = -6256371462543503386L;
     private BitSet bits = null;
     private Term wildcardTerm;
     
@@ -78,7 +79,7 @@ public class WildcardTermFilter extends Filter {
     private BitSet getBits(IndexReader reader) throws IOException {
         
         BitSet bits = new BitSet(reader.maxDoc());
-        String fieldName = wildcardTerm.field();
+        String fieldName = this.wildcardTerm.field();
         WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
         TermDocs tdocs = reader.termDocs();
         try {

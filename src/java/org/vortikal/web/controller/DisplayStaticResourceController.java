@@ -97,14 +97,14 @@ public class DisplayStaticResourceController implements Controller {
 
         String token = securityContext.getToken();
         Map model = new HashMap();
-        Resource resource = repository.retrieve(token, this.resourceURI, true);
+        Resource resource = this.repository.retrieve(token, this.resourceURI, true);
 
         if (resource.isCollection()) {
             throw new RuntimeException(
                 "Cannot display a collection resource");
         }
 
-        InputStream stream = repository.getInputStream(token, this.resourceURI, true);
+        InputStream stream = this.repository.getInputStream(token, this.resourceURI, true);
 
         model.put("resource", resource);
         model.put("resourceStream", stream);

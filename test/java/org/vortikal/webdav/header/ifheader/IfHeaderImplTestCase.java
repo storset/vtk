@@ -25,11 +25,11 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         super.setUp();
         BasicConfigurator.configure();
 
-        etag = "\"I am an ETag\"";
-        lockToken = "locktoken:a-write-lock-token";
+        this.etag = "\"I am an ETag\"";
+        this.lockToken = "locktoken:a-write-lock-token";
         
         //ifHeaderContent = "(<locktoken:a-write-lock-token> [\"I am an ETag\"]) ([\"I am another ETag\"])";
-        ifHeaderContent = "(<locktoken:a-write-lock-token> [\"I am an ETag\"])";
+        this.ifHeaderContent = "(<locktoken:a-write-lock-token> [\"I am an ETag\"])";
         
 
     }
@@ -41,7 +41,7 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
     public void testIfHeaderImpl() {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
-        request.addHeader("If", ifHeaderContent);
+        request.addHeader("If", this.ifHeaderContent);
         IfHeader ifHeader = new IfHeaderImpl(request);
         assertNotNull(ifHeader);
         assertNotNull(ifHeader.getAllTokens());
@@ -59,41 +59,41 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
     
     public void testMatchTrue() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("If", ifHeaderContent);
+        request.addHeader("If", this.ifHeaderContent);
         IfHeader ifHeader = new IfHeaderImpl(request);
         
         Mock mockLock = mock(Lock.class);
-        mockLock.stubs().method("getLockToken").withNoArguments().will(returnValue(lockToken));
+        mockLock.stubs().method("getLockToken").withNoArguments().will(returnValue(this.lockToken));
         Lock lock = (Lock) mockLock.proxy();
         
         Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(etag));
+        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(this.etag));
         mockResource.expects(atLeastOnce()).method("getLock").withNoArguments().will(returnValue(lock));
-        resource = (Resource) mockResource.proxy();
+        this.resource = (Resource) mockResource.proxy();
         
-        assertTrue(ifHeader.matches(resource, true));
+        assertTrue(ifHeader.matches(this.resource, true));
     }
     
     public void testMatchWrongEtag() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("If", ifHeaderContent);
+        request.addHeader("If", this.ifHeaderContent);
         IfHeader ifHeader = new IfHeaderImpl(request);
         
         Mock mockLock = mock(Lock.class);
-        mockLock.stubs().method("getLockToken").withNoArguments().will(returnValue(lockToken));
+        mockLock.stubs().method("getLockToken").withNoArguments().will(returnValue(this.lockToken));
         Lock lock = (Lock) mockLock.proxy();
         
         Mock mockResource = mock(Resource.class);
         mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue("dummy"));
         mockResource.expects(atLeastOnce()).method("getLock").withNoArguments().will(returnValue(lock));
-        resource = (Resource) mockResource.proxy();
+        this.resource = (Resource) mockResource.proxy();
         
-        assertFalse(ifHeader.matches(resource, true));
+        assertFalse(ifHeader.matches(this.resource, true));
     }
 
     public void testMatchWrongLockToken() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("If", ifHeaderContent);
+        request.addHeader("If", this.ifHeaderContent);
         IfHeader ifHeader = new IfHeaderImpl(request);
         
         Mock mockLock = mock(Lock.class);
@@ -101,11 +101,11 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         Lock lock = (Lock) mockLock.proxy();
         
         Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(etag));
+        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(this.etag));
         mockResource.expects(atLeastOnce()).method("getLock").withNoArguments().will(returnValue(lock));
-        resource = (Resource) mockResource.proxy();
+        this.resource = (Resource) mockResource.proxy();
         
-        assertFalse(ifHeader.matches(resource, true));
+        assertFalse(ifHeader.matches(this.resource, true));
     }
     
 }

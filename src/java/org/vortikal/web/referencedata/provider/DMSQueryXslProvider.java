@@ -86,7 +86,7 @@ public class DMSQueryXslProvider implements ReferenceDataProvider,
     }
     
     public void afterPropertiesSet() {
-        if (dmsXmlQueryHelper == null) {
+        if (this.dmsXmlQueryHelper == null) {
             throw new BeanInitializationException("Property 'dmsXmlQueryHelper' not set.");
         }
         

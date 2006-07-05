@@ -46,7 +46,7 @@ public class DefaultStructuredTextTestCase extends TestCase {
     
     protected void setUp() throws Exception {
         super.setUp();
-        dst = new DefaultStructuredText();
+        this.dst = new DefaultStructuredText();
     }
 
     protected void tearDown() throws Exception {
@@ -58,7 +58,7 @@ public class DefaultStructuredTextTestCase extends TestCase {
      */
     public void testEndsWithUnfinishedLink() {
         try {
-            dst.parseStructuredText("lala lala \"lala\":");
+            this.dst.parseStructuredText("lala lala \"lala\":");
         } catch (StringIndexOutOfBoundsException e) {
             fail(e.getMessage());
         }

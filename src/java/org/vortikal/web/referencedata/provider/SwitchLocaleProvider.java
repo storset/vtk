@@ -124,7 +124,7 @@ public class SwitchLocaleProvider implements InitializingBean, ReferenceDataProv
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         Principal principal = securityContext.getPrincipal();
-        Resource resource = repository.retrieve(
+        Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
         org.springframework.web.servlet.support.RequestContext springContext =
@@ -133,9 +133,9 @@ public class SwitchLocaleProvider implements InitializingBean, ReferenceDataProv
 
         Map localeServiceURLs = new HashMap();
         List localeServiceNames = new ArrayList();
-        for (Iterator i = locales.keySet().iterator(); i.hasNext();) {
+        for (Iterator i = this.locales.keySet().iterator(); i.hasNext();) {
             String key = (String) i.next();
-            Service service = (Service) locales.get(key);
+            Service service = (Service) this.locales.get(key);
             if (!currentLocale.equals(key)) {
                 try {
                     localeServiceNames.add(key);
@@ -148,7 +148,7 @@ public class SwitchLocaleProvider implements InitializingBean, ReferenceDataProv
         localeMap.put("currentLocale", currentLocale);
         localeMap.put("localeServiceNames", localeServiceNames);
         localeMap.put("localeServiceURLs", localeServiceURLs);
-        model.put(modelName, localeMap);
+        model.put(this.modelName, localeMap);
     }
 
 }

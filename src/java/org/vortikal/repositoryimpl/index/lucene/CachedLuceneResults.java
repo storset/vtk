@@ -88,7 +88,7 @@ public class CachedLuceneResults implements ModifiableResults {
     }
 
     public ResultMetadata getResultMetadata(int index) {
-        return (ResultMetadata) resultsMetadata.get(index);
+        return (ResultMetadata) this.resultsMetadata.get(index);
     }
     
     /**
@@ -110,15 +110,15 @@ public class CachedLuceneResults implements ModifiableResults {
             Object indexBean = IndexDocumentUtil.createIndexBean(doc,
                     resultClass);
             if (indexBean != null) {
-                results.add(indexBean);
-                resultsMetadata.add(new ResultMetadata(doc.get(IndexConstants.URI_FIELD), 
+                this.results.add(indexBean);
+                this.resultsMetadata.add(new ResultMetadata(doc.get(IndexConstants.URI_FIELD), 
                                     hits.score(i)));
             }
         }
     }
 
     public Object getResult(int index) {
-        return results.get(index);
+        return this.results.get(index);
     }
     
     public List getResults(int maxResults) {
@@ -126,7 +126,7 @@ public class CachedLuceneResults implements ModifiableResults {
         List list = new ArrayList(len);
         
         for (int i = 0; i < len; i++) {
-            list.add(results.get(i));
+            list.add(this.results.get(i));
         }
         
         return list;

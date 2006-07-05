@@ -46,11 +46,11 @@ public final class ResultMetadata {
     }
 
     public String getUri() {
-        return uri;
+        return this.uri;
     }
 
     public float getScore() {
-        return score;
+        return this.score;
     }
 
     public String toString() {

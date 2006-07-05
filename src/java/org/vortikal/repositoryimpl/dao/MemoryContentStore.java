@@ -71,9 +71,8 @@ public class MemoryContentStore implements ContentStore {
             if ((node instanceof DirectoryNode) ^ isCollection) {
                 throw new IOException("Cannot create resource, " + 
                   (isCollection ? "a non-directory already exists" : "a directory already exists"));
-            } else {
-                return;
             }
+            return;
         }
         
         if (isCollection) {
@@ -185,9 +184,8 @@ public class MemoryContentStore implements ContentStore {
         int i = uri.lastIndexOf(URI_COMPONENT_SEPARATOR);
         if (i == -1) {
             return uri;
-        } else {
-            return uri.substring(i+1, uri.length());
         }
+        return uri.substring(i+1, uri.length());
     }
     
     private DirectoryNode getParent(String uri) {
@@ -197,14 +195,14 @@ public class MemoryContentStore implements ContentStore {
         
         if (uri.lastIndexOf(URI_COMPONENT_SEPARATOR) == 0) {
             return this.root;
-        } else {
-            Node node = getNode(uri.substring(0, uri.lastIndexOf(URI_COMPONENT_SEPARATOR)));
-            if (! (node instanceof DirectoryNode)) {
-                return null;
-            } else {
-                return (DirectoryNode)node;
-            }
-        }
+        } 
+
+        Node node = getNode(uri.substring(0, uri.lastIndexOf(URI_COMPONENT_SEPARATOR)));
+        
+        if (! (node instanceof DirectoryNode))
+            return null;
+
+        return (DirectoryNode)node;
     }
     
     // Non-recursive search for node in tree
@@ -282,7 +280,7 @@ public class MemoryContentStore implements ContentStore {
         
         public ContentNode(String name) {
             super(name);
-            content = new byte[0];
+            this.content = new byte[0];
         }
         
         public String toString() {
@@ -291,8 +289,8 @@ public class MemoryContentStore implements ContentStore {
         
         public Object clone() {
             ContentNode n = new ContentNode(this.name);
-            n.content = new byte[content.length];
-            System.arraycopy(content, 0, n.content, 0, content.length);
+            n.content = new byte[this.content.length];
+            System.arraycopy(this.content, 0, n.content, 0, this.content.length);
             return n;
         }
     }
@@ -302,7 +300,7 @@ public class MemoryContentStore implements ContentStore {
         
         public DirectoryNode(String name) {
             super(name);
-            entries = new HashMap();
+            this.entries = new HashMap();
         }
         
         public String toString() {
@@ -312,10 +310,10 @@ public class MemoryContentStore implements ContentStore {
         // recursive clone of entire (sub)tree (for copying)
         public Object clone() {
             DirectoryNode n = new DirectoryNode(this.name);
-            n.entries = new HashMap(entries.size());
-            for (Iterator i = entries.keySet().iterator(); i.hasNext();) {
+            n.entries = new HashMap(this.entries.size());
+            for (Iterator i = this.entries.keySet().iterator(); i.hasNext();) {
                 String key = (String)i.next();
-                Node child = (Node)entries.get(key);
+                Node child = (Node)this.entries.get(key);
                 n.entries.put(key, child.clone());
             }
             

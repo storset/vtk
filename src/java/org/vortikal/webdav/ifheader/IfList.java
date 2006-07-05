@@ -32,6 +32,8 @@ import java.util.ArrayList;
  */
 class IfList extends ArrayList {
 
+    private static final long serialVersionUID = -2368752136718198410L;
+
     /**
      * Throws an <code>IllegalStateException</code> because only
      * {@link IfListEntry} objects are supported in this list.

@@ -35,6 +35,8 @@ import org.vortikal.repository.RepositoryException;
 public class UnsupportedContentRepresentationException extends
         RepositoryException {
     
+    private static final long serialVersionUID = 2809890152005653498L;
+
     public UnsupportedContentRepresentationException(String msg) {
         super(msg);
     }

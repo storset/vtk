@@ -54,7 +54,7 @@ public class LuceneIndexStatus implements IndexStatus {
     
     public boolean isLocked() throws IndexStatusException {
         try {
-            return IndexReader.isLocked(index.getDirectory());
+            return IndexReader.isLocked(this.index.getDirectory());
         } catch (IOException io) {
             throw new IndexStatusException("IOException while checking lock status: " +
                     io.getMessage());
@@ -64,7 +64,7 @@ public class LuceneIndexStatus implements IndexStatus {
     public boolean hasDeletions() throws IndexStatusException {
         IndexReader reader = null;
         try {
-            reader = index.getReadOnlyIndexReader();
+            reader = this.index.getReadOnlyIndexReader();
             return reader.hasDeletions(); 
         } catch (IOException io) {
             throw new IndexStatusException("IOException while checking deletions status: " +
@@ -81,7 +81,7 @@ public class LuceneIndexStatus implements IndexStatus {
     public int getNumberOfDocuments() throws IndexStatusException {
         IndexReader reader = null;
         try {
-            reader = index.getReadOnlyIndexReader();
+            reader = this.index.getReadOnlyIndexReader();
             return reader.numDocs();
         } catch (IOException io) {
             throw new IndexStatusException("IOException while getting number of docs: " 
@@ -98,7 +98,7 @@ public class LuceneIndexStatus implements IndexStatus {
     public List getFieldNames() throws IndexStatusException {
         IndexReader reader = null;
         try {
-            reader = index.getReadOnlyIndexReader();
+            reader = this.index.getReadOnlyIndexReader();
             return new ArrayList(reader.getFieldNames(IndexReader.FieldOption.ALL));
         } catch (IOException io) {
             throw new IndexStatusException("IOException while getting field names: " 
@@ -114,7 +114,7 @@ public class LuceneIndexStatus implements IndexStatus {
     
     public long getPhysicalSize() throws IndexStatusException {
         try {
-            return index.getIndexByteSize();
+            return this.index.getIndexByteSize();
         } catch (IOException io) {
             throw new IndexStatusException("Got IOException while getting size: " +
                     io.getMessage());
@@ -122,6 +122,6 @@ public class LuceneIndexStatus implements IndexStatus {
     }
     
     public String getSystemPath() {
-        return index.getIndexPath();
+        return this.index.getIndexPath();
     }
 }

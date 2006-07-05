@@ -55,21 +55,21 @@ public class LuceneSearcher implements InitializingBean {
     private LuceneIndex index;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (index == null) {
+        if (this.index == null) {
             throw new BeanInitializationException("Property 'index' not set.");
         }
     }
     
     public Results search(Query query) throws IOException {
-        IndexSearcher searcher = index.getIndexSearcher();
+        IndexSearcher searcher = this.index.getIndexSearcher();
         Hits hits = searcher.search(query);
-        Results results = new CachedLuceneResults(hits, index.getIndexBeanClass());
+        Results results = new CachedLuceneResults(hits, this.index.getIndexBeanClass());
         searcher.close();
         return results;
     }
     
     public IndexSearcher getIndexSearcher() throws IOException {
-        return index.getIndexSearcher();
+        return this.index.getIndexSearcher();
     }
     
     public void setIndex(LuceneIndex index) {

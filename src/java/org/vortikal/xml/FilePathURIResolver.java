@@ -50,8 +50,8 @@ public class FilePathURIResolver extends AbstractPathBasedURIResolver {
 
     
     protected InputStream getInputStream(String path) throws IOException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Attempting to open input stream for file '" + path + "'");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Attempting to open input stream for file '" + path + "'");
         }
 
         return new FileInputStream(path);

@@ -90,24 +90,22 @@ public abstract class AbstractReusableObjectArrayStackCache
     }
     
     private final synchronized Object pop() {
-        if (top == -1) {
+        if (this.top == -1) {
             return null;
-        } else {
-            // Return instance at the top
-            Object object = this.stack[top];
-            this.stack[top--] = null;
-            return object;
         }
+        // Return instance at the top
+        Object object = this.stack[this.top];
+        this.stack[this.top--] = null;
+        return object;
     }
 
     private final synchronized void push(Object object) {
-        if (top == stack.length-1) {
+        if (this.top == this.stack.length-1) {
             // Cache full
             return;
-        } else {
-            // Add at the top
-            stack[++top] = object;
         }
+        // Add at the top
+        this.stack[++this.top] = object;
     }
     
     /**

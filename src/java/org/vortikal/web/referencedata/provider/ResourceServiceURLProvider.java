@@ -152,7 +152,7 @@ public class ResourceServiceURLProvider
 
         try {
             if (uri != null) {
-                resource = repository.retrieve(
+                resource = this.repository.retrieve(
                     securityContext.getToken(), uri, true);
             }
         } catch (Throwable t) { }

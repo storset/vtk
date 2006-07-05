@@ -32,14 +32,12 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
 
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 
 

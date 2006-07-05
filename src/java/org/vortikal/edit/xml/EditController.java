@@ -70,14 +70,14 @@ public class EditController extends AbstractXmlEditController {
             document.setClone((Element)element.clone());
             
             document.setDocumentMode("edit");
-            if (logger.isDebugEnabled()) {
-                logger.debug("Expanding focused element: " + path);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Expanding focused element: " + path);
             }
             
             element.addContent(new ProcessingInstruction("expanded", "true"));
             documentDefinition.translateToEditingElement(element);
             
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
 
         }
         return null;

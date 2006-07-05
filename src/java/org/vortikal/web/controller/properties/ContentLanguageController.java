@@ -65,14 +65,14 @@ public class ContentLanguageController extends SimpleFormController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
         String language = resource.getContentLanguage();
 
         ContentLanguageCommand command =
-            new ContentLanguageCommand(language, possibleLanguages, url);
+            new ContentLanguageCommand(language, this.possibleLanguages, url);
         return command;
     }
 
@@ -92,7 +92,7 @@ public class ContentLanguageController extends SimpleFormController {
             return;
         }
         
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
 
         Locale locale = LocaleHelper.getLocale(contentLanguageCommand.getContentLanguage());
         resource.setContentLocale((locale == null) ? null : locale.toString());
@@ -102,7 +102,7 @@ public class ContentLanguageController extends SimpleFormController {
                          resource.getContentLanguage() + 
                          "' for resource " + uri);
         }
-        repository.store(token, resource);
+        this.repository.store(token, resource);
         contentLanguageCommand.setDone(true);
     }
     

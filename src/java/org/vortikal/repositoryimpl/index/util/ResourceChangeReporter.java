@@ -67,14 +67,14 @@ public class ResourceChangeReporter implements InitializingBean {
       
     public void afterPropertiesSet() 
     throws BeanInitializationException {
-        if (changeFetcher == null) {
+        if (this.changeFetcher == null) {
             throw new BeanInitializationException("Property changeFetcher not set.");
         }
         
-        logger.debug("Starting polling thread. Poll interval is " + pollingInterval + " seconds.");
-        poller = new PollingThread();
-        pollerThread = new Thread(poller);
-        pollerThread.start();
+        this.logger.debug("Starting polling thread. Poll interval is " + this.pollingInterval + " seconds.");
+        this.poller = new PollingThread();
+        this.pollerThread = new Thread(this.poller);
+        this.pollerThread.start();
     }
 
     private class PollingThread implements Runnable {
@@ -82,21 +82,21 @@ public class ResourceChangeReporter implements InitializingBean {
         boolean isRunning = true;
         
         public void run() {
-            while(isRunning) {
+            while(this.isRunning) {
                 try {
-                    Thread.sleep(1000*pollingInterval);
+                    Thread.sleep(1000*ResourceChangeReporter.this.pollingInterval);
                 } catch (InterruptedException i) {}
                 
                 // Fetch changes
                 //List changes = changeFetcher.fetchChanges();
-                List changes = changeFetcher.fetchLastChanges();
+                List changes = ResourceChangeReporter.this.changeFetcher.fetchLastChanges();
                 
                 // Report them
                 reportChanges(changes);
                 
                 // Tell changeFetcher to remove them
-                if (removeChanges) {
-                   changeFetcher.removeChanges(changes); // Tell the change fetcher that we have "committed" the changes to index.
+                if (ResourceChangeReporter.this.removeChanges) {
+                   ResourceChangeReporter.this.changeFetcher.removeChanges(changes); // Tell the change fetcher that we have "committed" the changes to index.
                 }
            }
         }
@@ -110,7 +110,7 @@ public class ResourceChangeReporter implements InitializingBean {
         Iterator i = changes.iterator();
         while (i.hasNext()) {
             ResourceChange c = (ResourceChange) i.next();
-            logger.debug(c);
+            this.logger.debug(c);
         }
     }
     

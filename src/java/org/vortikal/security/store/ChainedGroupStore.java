@@ -90,18 +90,18 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
 
     public boolean validateGroup(Principal group)
         throws AuthenticationProcessingException {
-        for (Iterator i = managers.iterator(); i.hasNext();) {
+        for (Iterator i = this.managers.iterator(); i.hasNext();) {
             GroupStore manager = (GroupStore) i.next();
             if (manager.validateGroup(group)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validated group '" + group
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Validated group '" + group
                                  + "' using manager " + manager);
                 }
                 return true;
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Invalid group '" + group + "'");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Invalid group '" + group + "'");
         }
         return false;
     }
@@ -142,8 +142,8 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
         for (Iterator i = this.managers.iterator(); i.hasNext();) {
             GroupStore manager = (GroupStore) i.next();
             if (manager.validateGroup(group)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validated group membership for principal '"
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Validated group membership for principal '"
                             + principal + "', group '" + group.getQualifiedName() + "' using "
                             + "manager " + manager);
                 }
@@ -152,8 +152,8 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
                 return isMember;
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Validating group membership failed: no principal "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Validating group membership failed: no principal "
                     + "manager match for principal '" + principal + "'"
                     + ", group '" + group.getQualifiedName() + "'");
         }
@@ -166,11 +166,11 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
 
         String groupName = group.getQualifiedName();
             
-            GroupItem item = (GroupItem) cache.get(principal);
+            GroupItem item = (GroupItem) this.cache.get(principal);
             if (item == null) {
 
                 item = new GroupItem();
-                cache.put(principal, item);
+                this.cache.put(principal, item);
             
             }
 
@@ -178,8 +178,8 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
 
             if (groupsMap.containsKey(groupName)) {
                 boolean isMember = (groupsMap.get(groupName) != null);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validated group membership for principal '"
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Validated group membership for principal '"
                                  + principal + "', group '" + groupName + "'" + " to '"
                                  + isMember + "' from cache ");
                 }
@@ -200,8 +200,8 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
                 } else {
                     item.getGroupsMap().put(groupName, null);
                 }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Validated group membership to '" + isMember 
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Validated group membership to '" + isMember 
                             + "' for principal '" + principal + "', group '" 
                             + group + "' using " + "manager " + manager);
                 }
@@ -209,8 +209,8 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
                 return isMember;
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Validating group membership failed: no principal "
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Validating group membership failed: no principal "
                     + "manager match for principal '" + principal + "'"
                     + ", group '" + groupName + "'");
         }

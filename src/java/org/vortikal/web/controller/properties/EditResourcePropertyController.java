@@ -101,7 +101,7 @@ public class EditResourcePropertyController extends SimpleFormController
                 + "with the request");
         }
 
-        Resource resource = repository.retrieve(securityContext.getToken(),
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
 
         EnumerationPropertyDescriptor descriptor = getPropertyDescriptor(namespace, name);
@@ -151,7 +151,7 @@ public class EditResourcePropertyController extends SimpleFormController
             return;
         }
         String uri = requestContext.getResourceURI();
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         
         Namespace ns = Namespace.getNamespace(propertyCommand.getNamespace());
         String name = propertyCommand.getName();
@@ -171,17 +171,17 @@ public class EditResourcePropertyController extends SimpleFormController
             }
             prop.setStringValue(value);
         }
-        repository.store(token, resource);
+        this.repository.store(token, resource);
         propertyCommand.setDone(true);
     }
     
 
     private EnumerationPropertyDescriptor getPropertyDescriptor(
         String namespace, String name) {
-        for (int i = 0; i < propertyDescriptors.length; i++) {
-            if (propertyDescriptors[i].getNamespace().equals(namespace) &&
-                propertyDescriptors[i].getName().equals(name)) {
-                return propertyDescriptors[i];
+        for (int i = 0; i < this.propertyDescriptors.length; i++) {
+            if (this.propertyDescriptors[i].getNamespace().equals(namespace) &&
+                this.propertyDescriptors[i].getName().equals(name)) {
+                return this.propertyDescriptors[i];
             }
         }
         return null;

@@ -87,8 +87,8 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             throw new BeanInitializationException("JavaBean property 'dataSource' not set.");
         }
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("There are " + countPendingChanges()
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("There are " + countPendingChanges()
                          + " pending changes in the changelog.");
         }
     }
@@ -121,7 +121,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             rs.close();
             pstmt.close();
         } catch (SQLException sqle) {
-            logger.warn("SQLException: ", sqle);
+            this.logger.warn("SQLException: ", sqle);
         } finally {
             try {
                 if (conn != null) {
@@ -129,7 +129,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
                     conn = null;
                 }
             } catch (SQLException sqle) {
-                logger.warn("SQLException when closing connection: ", sqle);
+                this.logger.warn("SQLException when closing connection: ", sqle);
             }
         }
         
@@ -208,7 +208,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 maxId = rs.getInt(1);
-                logger.debug("MAX(changelog_entry_id)=" + maxId);
+                this.logger.debug("MAX(changelog_entry_id)=" + maxId);
             }
             rs.close();
             pstmt.close();
@@ -266,7 +266,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             rs.close();
             pstmt.close();
         } catch (SQLException sqle) {
-                logger.warn("SQLException: ", sqle);
+                this.logger.warn("SQLException: ", sqle);
         } finally {
             try {
                 if (conn != null) {
@@ -274,7 +274,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
                     conn = null;
                 }
             } catch (SQLException sqle) {
-                logger.warn("SQLException when closing connection: ", sqle);
+                this.logger.warn("SQLException when closing connection: ", sqle);
             }
         }
         
@@ -315,7 +315,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             rs.close();
             pstmt.close();
         } catch (SQLException sqle) {
-            logger.warn("SQLException: ", sqle);
+            this.logger.warn("SQLException: ", sqle);
         } finally {
             try {
                 if (conn != null) {
@@ -323,7 +323,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
                     conn = null;
                 }
             } catch (SQLException sqle) {
-                logger.warn("SQLException while closing connection: ", sqle);
+                this.logger.warn("SQLException while closing connection: ", sqle);
             }
         }
         
@@ -367,7 +367,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             conn.commit();
             pstmt.close();
         } catch (SQLException sqle) {
-            logger.warn("SQLException: ", sqle);
+            this.logger.warn("SQLException: ", sqle);
         } finally {
             try {
                 if (conn != null) {
@@ -375,7 +375,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
                     conn = null;
                 }
             } catch (SQLException sqle) {
-                logger.warn("SQLException when closing connection: ", sqle);
+                this.logger.warn("SQLException when closing connection: ", sqle);
             }
         }
     }

@@ -38,6 +38,8 @@ package org.vortikal.repositoryimpl.query;
  */
 public class FieldValueEncodingException extends FieldValueMappingException {
 
+    private static final long serialVersionUID = -40952838002519568L;
+
     public FieldValueEncodingException() {
         super();
         // TODO Auto-generated constructor stub

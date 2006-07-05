@@ -51,7 +51,7 @@ public class NewElementController extends AbstractXmlEditController {
             document.setDocumentMode("newElement");
             
             
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         }
         return null;
     }

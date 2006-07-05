@@ -181,12 +181,12 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     }
     
     public void afterPropertiesSet() {
-        if (repository == null) {
+        if (this.repository == null) {
             throw new BeanInitializationException(
                 "JavaBean Property 'repository' must be set");
         }
 
-        if (browsingService == null) {
+        if (this.browsingService == null) {
             throw new BeanInitializationException(
                     "JavaBean Property 'browsingService' must be set");    
         }
@@ -197,8 +197,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                 + "'contentTypeFilter' cannot both be specified");
         }
 
-        for (int i = 0; i < childInfoItems.length; i++) {
-            String column = childInfoItems[i];
+        for (int i = 0; i < this.childInfoItems.length; i++) {
+            String column = this.childInfoItems[i];
             if (! supportedResourceColumns.contains(column))
                 throw new BeanInitializationException(
                     "JavaBean Property 'childInfoColumns' " +
@@ -216,17 +216,17 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-        collectionListingModel.put("childInfoItems", childInfoItems);
+        collectionListingModel.put("childInfoItems", this.childInfoItems);
         Resource[] children = null;
 
-        Resource resource = repository.retrieve(token, uri,
+        Resource resource = this.repository.retrieve(token, uri,
                                                 this.retrieveForProcessing);
         if (!resource.isCollection()) {
             // Can't do anything unless resource is a collection
             return;
         }
 
-        children = repository.listChildren(token, uri, true);
+        children = this.repository.listChildren(token, uri, true);
 
         children = filterChildren(children);
 
@@ -234,8 +234,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         String sortBy = request.getParameter("sort-by");
         boolean invertedSort = "true".equals(request.getParameter("invert"));
         boolean validSortByParameter = false;
-        for (int i = 0; i < childInfoItems.length; i++) {
-            if (childInfoItems[i].equals(sortBy)) validSortByParameter = true;
+        for (int i = 0; i < this.childInfoItems.length; i++) {
+            if (this.childInfoItems[i].equals(sortBy)) validSortByParameter = true;
         }
         if (!validSortByParameter) sortBy = DEFAULT_SORT_BY_PARAMETER;
         sortChildren(children, sortBy, invertedSort);
@@ -245,7 +245,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         
         List linkedServiceNames = new ArrayList();
         
-        for (Iterator iter = linkedServices.keySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = this.linkedServices.keySet().iterator(); iter.hasNext();) {
             String linkName = (String) iter.next();
             linkedServiceNames.add(linkName);
         }
@@ -258,9 +258,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         for (int i = 0;  i < children.length; i++) {
             Map linkMap = new HashMap();
             
-            for (Iterator iter = linkedServices.keySet().iterator(); iter.hasNext();) {
+            for (Iterator iter = this.linkedServices.keySet().iterator(); iter.hasNext();) {
                 String linkName = (String) iter.next();
-                Service service = (Service) linkedServices.get(linkName);
+                Service service = (Service) this.linkedServices.get(linkName);
                 try {
                     String url = service.constructLink(children[i], 
                             securityContext.getPrincipal());
@@ -272,7 +272,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             childLinks[i] = linkMap; 
             
             try {
-                browsingLinks[i] = browsingService.constructLink(
+                browsingLinks[i] = this.browsingService.constructLink(
                     children[i], securityContext.getPrincipal());
             } catch (ServiceUnlinkableException e) {
                 // do nothing
@@ -283,14 +283,14 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
         Map sortByLinks = new HashMap(); 
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        for (int i = 0; i < childInfoItems.length; i++) {
-            String column = childInfoItems[i];
+        for (int i = 0; i < this.childInfoItems.length; i++) {
+            String column = this.childInfoItems[i];
             Map parameters = new HashMap();
             parameters.put("sort-by", column);
             if (sortBy.equals(column) && !invertedSort) {
                 parameters.put("invert", "true");
             }
-            String url = browsingService.constructLink(resource, principal, parameters);
+            String url = this.browsingService.constructLink(resource, principal, parameters);
             sortByLinks.put(column, url);
         }
         collectionListingModel.put("sortByLinks", sortByLinks);
@@ -298,8 +298,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         String parentURL = null;
         if (resource.getParent() != null) {
             try {
-                Resource parent = repository.retrieve(token, resource.getParent(), true);
-                parentURL = browsingService.constructLink(parent, principal);
+                Resource parent = this.repository.retrieve(token, resource.getParent(), true);
+                parentURL = this.browsingService.constructLink(parent, principal);
             } catch (RepositoryException e) {
                 // Ignore
             } catch (AuthenticationException e) {

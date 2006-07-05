@@ -65,20 +65,20 @@ public class URIWildcardFilterCriterion implements FilterCriterion,
     private String[] excludePatterns;
 
     public void afterPropertiesSet() {
-        if (includePatterns == null) {
-            includePatterns = new String[]{};
+        if (this.includePatterns == null) {
+            this.includePatterns = new String[]{};
         }
         
-        if (excludePatterns == null) {
-            excludePatterns = new String[]{};
+        if (this.excludePatterns == null) {
+            this.excludePatterns = new String[]{};
         }
 
-        for (int i=0; i<includePatterns.length; i++) {
-            includePatterns[i] = includePatterns[i].replaceAll("\\*+", "*");
+        for (int i=0; i<this.includePatterns.length; i++) {
+            this.includePatterns[i] = this.includePatterns[i].replaceAll("\\*+", "*");
         }
         
-        for (int i=0; i<excludePatterns.length; i++) {
-            excludePatterns[i] = excludePatterns[i].replaceAll("\\*+", "*");
+        for (int i=0; i<this.excludePatterns.length; i++) {
+            this.excludePatterns[i] = this.excludePatterns[i].replaceAll("\\*+", "*");
         }
     }
     
@@ -86,16 +86,16 @@ public class URIWildcardFilterCriterion implements FilterCriterion,
      * @see FilterCriterion#isFiltered(String)
      */
     public boolean isFiltered(String uri) {
-        boolean filter = includePatterns.length == 0 ? false : true;
+        boolean filter = this.includePatterns.length == 0 ? false : true;
         
-        for (int i=0; i<includePatterns.length; i++) {
-            if (match(uri, includePatterns[i])) {
+        for (int i=0; i<this.includePatterns.length; i++) {
+            if (match(uri, this.includePatterns[i])) {
                 filter = false;
             }
         }
 
-        for (int i=0; i<excludePatterns.length; i++) {
-            if (match(uri, excludePatterns[i])) {
+        for (int i=0; i<this.excludePatterns.length; i++) {
+            if (match(uri, this.excludePatterns[i])) {
                 filter = true;
             }
         }
@@ -152,19 +152,19 @@ public class URIWildcardFilterCriterion implements FilterCriterion,
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("URIWildcard[");
-        for (int i=0; i<includePatterns.length; i++) {
+        for (int i=0; i<this.includePatterns.length; i++) {
             buffer.append("inc=");
-            buffer.append(includePatterns[i]);
-            if (i < includePatterns.length-1) buffer.append(", ");
+            buffer.append(this.includePatterns[i]);
+            if (i < this.includePatterns.length-1) buffer.append(", ");
         }
         
-        if (excludePatterns.length > 0 && includePatterns.length > 0) 
+        if (this.excludePatterns.length > 0 && this.includePatterns.length > 0) 
             buffer.append(", ");
         
-        for (int i=0; i<excludePatterns.length; i++) {
+        for (int i=0; i<this.excludePatterns.length; i++) {
             buffer.append("ex=");
-            buffer.append(excludePatterns[i]);
-            if (i < excludePatterns.length-1) buffer.append(", ");
+            buffer.append(this.excludePatterns[i]);
+            if (i < this.excludePatterns.length-1) buffer.append(", ");
         }
         
         buffer.append("]");

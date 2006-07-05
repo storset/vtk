@@ -74,7 +74,7 @@ public class EditDoneController extends AbstractXmlEditController {
                 document.resetEditingElement();
                 document.setClone(null);
 
-                document.save(repository);
+                document.save(this.repository);
 
             } else {
                 Element element = document.getEditingElement();
@@ -88,7 +88,7 @@ public class EditDoneController extends AbstractXmlEditController {
                 document.setEditingElement(null);
                 document.setDocumentMode("default");
             }
-            return new ModelAndView(viewName, model);
+            return new ModelAndView(this.viewName, model);
         }
         return null;
     }

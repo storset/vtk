@@ -2,7 +2,7 @@
 <!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
 
 <sqlMap>
-  
+
   <resultMap id="Resource" class="java.util.HashMap">
     <result property="uri" column="uri" />
     <result property="id" column="resource_id"/>
@@ -186,7 +186,7 @@
   </select>
   
   <select id="nextTempTableSessionId" resultClass="java.lang.Integer">
-    select nextval('vortex_tmp_session_id_seq')
+    select <include refid="nextTempTableSessionId" />
   </select>
   
   <insert id="insertIntoUriTempTable" parameterClass="java.util.Map">
@@ -256,7 +256,7 @@
        last_modified)
 
     values 
-      (nextval('vortex_resource_seq_pk'),
+      (<include refid="nextVortexResourceId" />,
        #uri#,
        #resourceType#,
        #contentLength#,
@@ -309,7 +309,7 @@
        last_modified)
 
     select
-      nextval('vortex_resource_seq_pk'),
+      <include refid="nextVortexResourceId" />,
       #destUri# || substring(uri, length(#uri#) + 1),
       resource_id,
       resource_type,
@@ -457,7 +457,7 @@
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry
       (extra_prop_entry_id, resource_id, prop_type_id, name_space, name, value)
-    values (nextval('extra_prop_entry_seq_pk'), #resourceId#, #type#,
+    values (<include refid="nextExtraPropEntryId" />, #resourceId#, #type#,
             #namespaceUri#, #name#, #value#)
   </insert>
 
@@ -471,7 +471,7 @@
        name,
        value)
     select
-      nextval('extra_prop_entry_seq_pk'),
+      <include refid="nextExtraPropEntryId" />,
       r.resource_id,
       p.prop_type_id,
       p.name_space,
@@ -517,7 +517,7 @@
     insert into acl_entry
       (acl_entry_id, action_type_id, resource_id, user_or_group_name,
        is_user, granted_by_user_name, granted_date)
-    values (nextval('acl_entry_seq_pk'), #actionId#, #resourceId#, #principal#,
+    values (<include refid="nextAclEntryId" />, #actionId#, #resourceId#, #principal#,
             #isUser#, #grantedBy#, #grantedDate#)
   </insert>
 
@@ -532,7 +532,7 @@
        granted_by_user_name,
        granted_date)
      select
-       nextval('acl_entry_seq_pk'),
+       <include refid="nextAclEntryId" />,
        r.resource_id,
        a.action_type_id,
        a.user_or_group_name,
@@ -624,7 +624,7 @@
     insert into vortex_lock
       (lock_id, token, resource_id, lock_owner,
        lock_owner_info, depth, timeout)
-     values (nextval('vortex_lock_seq_pk'),
+     values (<include refid="nextLockId" />,
             #lockToken#, #resourceId#, #owner#,
             #ownerInfo#, #depth#, #timeout#)
   </insert>
@@ -674,7 +674,7 @@
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
-    select nextval('changelog_entry_seq_pk'), #loggerId#, #loggerType#,
+    select <include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
       #operation#, now(), uri, resource_id, is_collection 
     from vortex_resource 
     where uri = #uri# or uri like #uriWildcard#
@@ -685,9 +685,8 @@
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
-    values (nextval('changelog_entry_seq_pk'), #loggerId#, #loggerType#,
+    values (<include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
       #operation#, now(), #uri#, #resourceId#, #collection#)
   </insert>
-
 
 </sqlMap>

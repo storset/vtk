@@ -42,7 +42,8 @@
     <property name="transactionConfigClass"
               value="com.ibatis.sqlmap.engine.transaction.jdbc.JdbcTransactionConfig" />
     <property name="useTransactionAwareDataSource" value="false" />
-    <property name="configLocation" value="classpath:/vortikal/beans/vhost/sql-map-config.xml"/>
+    <property name="configLocation"
+              value="classpath:/org/vortikal/repositoryimpl/dao/ibatis/${sqlDialect}-sql-map-config.xml"/>
     <property name="dataSource" ref="repository.dataSource"/>
   </bean>
 
@@ -52,54 +53,27 @@
     <property name="propertyManager" ref="propertyManager" />
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="principalManager" ref="principalManager" />
-    <property name="sqlMaps" ref="repository.statementMappings.${sqlDialect}" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
   </bean>
 
 
-  <bean id="repository.statementMappings.default" class="java.util.HashMap">
+  <!-- Override iBATIS SQL map statement names in this map (should
+       generally not be necessary): -->
+  <bean id="repository.statementMappings" class="java.util.HashMap">
     <constructor-arg>
       <map>
       </map>
     </constructor-arg>
   </bean>
 
-
-  <!-- Oracle variants, defined in OracleSqlMaps.xml: -->
-  <bean id="repository.statementMappings.oracle" class="java.util.HashMap">
-    <constructor-arg>
-      <map>
-        <entry key="insertResource" value="oracle.insertResource" />
-        <entry key="copyResource" value="oracle.copyResource" />
-        <entry key="insertPropertyEntry" value="oracle.insertPropertyEntry" />
-        <entry key="copyProperties" value="oracle.copyProperties" />
-        <entry key="insertAclEntry" value="oracle.insertAclEntry" />
-        <entry key="copyAclEntries" value="oracle.copyAclEntries" />
-        <entry key="insertLock" value="oracle.insertLock" />
-        <entry key="insertChangelogEntriesRecursively" value="oracle.insertChangelogEntriesRecursively" />
-        <entry key="insertChangelogEntry" value="oracle.insertChangelogEntry" />
-        <entry key="updateAclInheritedFromByPreviousResourceId" value="oracle.updateAclInheritedFromByPreviousResourceId" />
-        <entry key="nextTempTableSessionId" value="oracle.nextTempTableSessionId"/>
-      </map>
-    </constructor-arg>
-  </bean>
-
-  <!--
-  <bean id="repository.database" class="org.vortikal.repositoryimpl.dao.JDBCClient">
-    <property name="dataSource" ref="repository.dataSource" />
-    <property name="contentStore" ref="repository.contentStore" />
-    <property name="propertyManager" ref="propertyManager" />
-    <property name="authorizationManager" ref="authorizationManager" />
-    <property name="principalManager" ref="principalManager" />
-  </bean>
-  -->
 
   <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
     <property name="dataSource" ref="repository.dataSource" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="principalManager" ref="principalManager" />
     <property name="sqlMapClient" ref="sqlMapClientFactory"/>
-    <property name="sqlMaps" ref="repository.statementMappings.${sqlDialect}"/>
+    <property name="sqlMaps" ref="repository.statementMappings"/>
     
     <!-- Only temporary -->
     <property name="sqlDialect" value="${sqlDialect}"/>

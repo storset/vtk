@@ -7,7 +7,7 @@
   <bean id="collectionResourceTypeDefinition"
     class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="collection"/>
-    <property name="namespace" ref="CUSTOM_NAMESPACE"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE"/>
     <property name="assertions">
       <list>
         <ref bean="collectionAssertion"/>

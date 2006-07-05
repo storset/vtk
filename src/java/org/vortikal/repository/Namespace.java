@@ -33,12 +33,18 @@ package org.vortikal.repository;
 
 public class Namespace {
 
+    /**
+     * @deprecated this namespace will be removed
+     */
     private final static String CUSTOM_NAMESPACE_URI = 
         "http://www.uio.no/vortex/custom-properties";
 
     public final static Namespace DEFAULT_NAMESPACE = 
         new Namespace(null, null);
     
+    /**
+     * @deprecated this namespace will be removed
+     */
     public final static Namespace CUSTOM_NAMESPACE = 
         new Namespace("custom", CUSTOM_NAMESPACE_URI);
     

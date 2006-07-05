@@ -146,7 +146,6 @@
         <ref bean="setContentTypeService" />
         <ref bean="setContentLanguageService" />
         <ref bean="setCharacterEncodingService" />
-        <ref bean="editResourcePropertyService" />
         <ref bean="setResourcePropertyService" />
         <ref bean="deleteResourcePropertyService" />      
       </list>
@@ -499,26 +498,6 @@
     <property name="handler" ref="editReadProcessedPermissionsHandler" />
   </bean>
 
-
-  <bean id="editResourcePropertyService"
-        class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>edit-property</value>
-          </property>
-        </bean>
-      </list>    
-    </property>
-    <property name="handler">
-      <ref bean="editResourcePropertyController" />
-    </property>
-  </bean>
 
   <bean id="setContentTypeService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
@@ -1063,100 +1042,6 @@
   </bean>
 
 
-  <bean id="editResourcePropertyController"
-        class="org.vortikal.web.controller.properties.EditResourcePropertyController"
-        parent="requestLocalRepositoryAware">
-    <property name="propertyDescriptors">
-      <ref bean="standardEditablePropertyList" />
-    </property>
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="editResourcePropertyForm" />
-    <property name="commandClass"
-              value="org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand" />
-  </bean>
-
-  <bean id="standardEditablePropertyList" class="java.util.ArrayList">
-    <description>
-      Represents the set of "controlled" resource properties that are
-      treated in a special way. These properties have a fixed
-      set of values.
-    </description>
-    <constructor-arg>
-      <list>
-        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
-          <property name="assertions">
-            <list>
-              <ref bean="contentTypeMatchesXmlOrHtmlOrCollection" />
-            </list>
-          </property>
-          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
-          <property name="name" value="visual-profile" />
-          <property name="values">
-            <list>
-              <value>yes</value>
-            </list>
-          </property>
-        </bean>
-        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
-          <property name="assertions">
-            <list>
-              <ref bean="contentTypeMatchesXml" />
-            </list>
-          </property>
-          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
-          <property name="name"><value>web-edit</value></property>
-          <property name="values">
-            <list>
-              <value>yes</value>
-            </list>
-          </property>
-        </bean>
-        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
-          <property name="assertions">
-            <list>
-              <ref bean="contentTypeMatchesXml" />
-            </list>
-          </property>
-          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
-          <property name="name"><value>transform-view</value></property>
-          <property name="values">
-            <list>
-              <value>yes</value>
-            </list>
-          </property>
-          <!--
-          <property name="defaultValue">
-            <description>
-              If this string has a value, that value is used as the
-              default value (typically shows up in a web form with
-              this value selected when setting the property for the
-              first time). If it has no value (i.e. null), the default
-              value is "not set".
-            </description>
-            <value>no</value>
-          </property>
-          -->
-        </bean>
-  
-        
-        <bean class="org.vortikal.web.controller.properties.EnumerationPropertyDescriptor">
-          <property name="assertions">
-            <list>
-              <ref bean="contentTypeMatchesXml" />
-            </list>
-          </property>
-          <property name="namespace"><value>http://www.uio.no/vortex/custom-properties</value></property>
-          <property name="name"><value>plaintext-xmledit</value></property>
-          <property name="values">
-            <list>
-              <value>yes</value>
-            </list>
-          </property>
-        </bean>
-      </list>
-    </constructor-arg>
-  </bean>
 
   <bean id="setResourcePropertyController"
         class="org.vortikal.web.controller.properties.SetResourcePropertyController"
@@ -1499,7 +1384,6 @@
         <ref bean="aboutResourceHandler" /> 
         <ref bean="adminCSSProvider" />
         <ref bean="resourceDetailProvider" />
-        <ref bean="aboutResourcePropertiesProvider" />
       </list>
     </property>
   </bean>
@@ -1597,12 +1481,6 @@
     <property name="retrieveForProcessing" value="false" />
   </bean>
 
-  <bean id="aboutResourcePropertiesProvider"
-        class="org.vortikal.web.referencedata.provider.ResourcePropertiesProvider"
-        parent="requestLocalRepositoryAware" >
-    <property name="propertyDescriptors" ref="standardEditablePropertyList" />
-    <property name="editPropertyService" ref="editResourcePropertyService" />
-  </bean>
 
   <bean id="resourceMenuProvider" 
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">

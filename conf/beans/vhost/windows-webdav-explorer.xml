@@ -5,7 +5,7 @@
 
   <bean id="windowsWebdavExplorerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webdavService" />
-    <property name="order" value="0" />
+    <property name="order" value="-990" />
 
     <property name="categories">
       <set>

@@ -21,7 +21,7 @@
 </head>
 <body>
 
-  <div class="resourceInfo">
+  <div class="resourceInfo permissions">
 
     <h2><@vrtx.msg code="permissions.header" default="Permissions on this resource" /></h2>
     <p><@permissions.editInheritance />
@@ -48,7 +48,7 @@
         <@vrtx.msg code="permissions.privilege.bind" default="Create resources only" />:
         <@permissions.editOrDisplay 'bind' />
       </div>
-      <div class="smaller"><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" />:
+      <div class="smaller" style="padding-top: 0px;"><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" />:
           <@permissions.editOrDisplay 'read-processed' />
       </div>
       <!-- table>

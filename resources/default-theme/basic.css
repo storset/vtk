@@ -505,11 +505,45 @@ div.resourceInfo {
 } 
 
 
+/* Editing of properties and permissions */
+
+.expandedForm {
+        background: #ccccff;
+	width: 100%;
+}
+
+.expandedForm form {
+        /* Expanded properties/permissions form */
+        padding: 1em;
+}
+
+.expandedForm h3 {
+        font-size: 100%;
+        border-bottom: 0px;
+        margin-top: 0px;
+        padding-top: 0px;
+}
+
+.expandedForm h3.nonul, .expandedForm div.nonul {
+	padding-bottom: 10px;
+}
+
+.expandedForm ul.property {
+        padding: 0.75em 0;
+	list-style-type: none;
+}
+
+.expandedForm div.submitButtons { 
+	clear: both;
+	padding-top: 10px;
+        margin: 0;
+}
+
 /* Permissions section: */
 
 .permissions h3 {margin-top: 0.6em}  /* See resourceInfo h3 */
 
-fieldset {
+.expandedForm fieldset {
 	display: inline;
 	margin: 0;
 	border-width: 1px;
@@ -518,24 +552,11 @@ fieldset {
 	padding: 0 10px 10px 15px;
 } 
 
-legend {
+.expandedForm legend {
 	margin: 0; 
 	padding: 0 2px 0 2px;
 	font-weight: normal;
 } 
-
-.expandedForm {
-        background: #ccccff;
-	width: 100%;
-
-}
-
-.expandedForm form {
-        /* Expanded properties/permissions form */
-        padding: 15px;
-	margin: 0;
-}
-
 
 .expandedForm ul.everyoneOrSelectedUsers { 
 	float: left; 
@@ -582,32 +603,17 @@ legend {
 	padding: 1px 0 1px 0;
 }
 
-.expandedForm ul.inheritance, .expandedForm ul.property {
+.expandedForm ul.inheritance {
 	padding: 10px;
 	list-style-type: none;
 } 
 
-.expandedForm ul.inheritance li, .expandedForm ul.property li{
+.expandedForm ul.inheritance li {
 	padding: 3px;
 } 
 
-.expandedForm div.submitButtons { 
-	clear: both;
-	padding-top: 10px;
-        margin: 0;
-}
-
 .expandedForm span.addGroup, .expandedForm span.addUser{ 
 	white-space: nowrap;
-}
-
-.expandedForm h3.nonul, .expandedForm div.nonul {
-	padding-bottom: 10px;
-}
-
-.expandedForm h3 {
-        font-size: 100%;
-        border-bottom: 0px;
 }
 
 /* Directory listing section: */

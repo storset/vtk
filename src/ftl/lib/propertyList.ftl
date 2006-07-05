@@ -95,24 +95,19 @@
             </#if>
           </#list>
         <#else>
-          <#local value="${formValue}" />
-          <#if form.value?exists && item.property?exists>
-            <#if item.definition.type = 5>
-              <#local value=item.property.principalValue.name>
+          <#local value>
+            <#compress>
+            <#if formValue != "">
+              ${formValue}
+            <#elseif form.value?exists>
+              ${form.value}
             <#else>
-              <#local value>
-                <#compress>
-                <#if item.property.definition.multiple>
-                  <#list item.property.values as val>${val}<#if val_has_next>,</#if></#list>
-                <#else>
-                  ${item.property.value}
-                </#if>
-                </#compress>
-              </#local>
-            </#if> 
-          </#if>
+              
+            </#if>
+            </#compress>
+          </#local>
           <li>
-            <input type="text" name="value" value="${value?if_exists}">
+            <input type="text" name="value" value="${value}">
             <#if item.format?exists>(${item.format})</#if>
           </li>
         </#if>

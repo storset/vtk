@@ -88,48 +88,4 @@ public class WebdavConstants {
 
     public static final String WEBDAVMODEL_ETAG = "ETag";
 
-//    /**
-//     * Describe <code>buildLockDiscovery</code> method here.
-//     *
-//     * @param content a <code>String</code> value
-//     * @return an <code>Element</code>
-//     * @deprecated Should be in LockRenderer
-//     */
-//    public static Element buildLockOwnerElement(String content) {
-//        Element ownerElement = new Element("owner", DAV_NAMESPACE);
-//        
-//        try {
-//            if (!content.startsWith("<")) {
-//                // Simple content:
-//                ownerElement.addContent(content);
-//
-//            } else {
-//                // XML content:
-//                String xmlContent =
-//                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + content;
-//                SAXBuilder builder = new SAXBuilder();
-//                org.jdom.Document doc = builder.build(
-//                    new ByteArrayInputStream(xmlContent.getBytes()));
-//
-//                Element rootElement = doc.getRootElement();
-//
-//                rootElement.setNamespace(DAV_NAMESPACE);
-//
-//                ownerElement.addContent(rootElement);
-//            }
-//            
-//        } catch (RuntimeException e) {
-//            // FIXME:
-//            ownerElement.addContent(content);
-//
-//        } catch (JDOMException e) {
-//            // FIXME:
-//            ownerElement.addContent(content);
-//
-//        } catch (IOException e) {
-//            // FIXME:
-//            ownerElement.addContent(content);
-//        } 
-//        return ownerElement;
-//    }
 }

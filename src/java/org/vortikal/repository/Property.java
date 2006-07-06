@@ -86,6 +86,8 @@ public interface Property extends Cloneable {
     
     public PropertyTypeDefinition getDefinition();
     
+    public boolean isValueInitialized();
+    
     public Object clone() throws CloneNotSupportedException;
 
 }

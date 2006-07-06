@@ -82,9 +82,9 @@ public interface AuthorizationManager {
 
     /**
      * Authorizes a principal for a given action on a resource
-     * URI. Equivalent to calling one of the <code>authorizeXXX(uri,
+     * URI. Equivalent to calling one of the <code>authorizeYYY(uri,
      * principal)</code> methods of this interface (with
-     * <code>XXX</code> mapping to one of the actions).
+     * <code>YYY</code> mapping to one of the actions).
      *
      * @param uri a resource URI
      * @param action the action to perform. One of the action types

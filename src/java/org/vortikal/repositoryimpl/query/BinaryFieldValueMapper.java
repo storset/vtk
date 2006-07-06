@@ -132,40 +132,32 @@ public final class BinaryFieldValueMapper {
         
         byte[] value = field.binaryValue();
     
-        Value v = new Value();
         switch (type) {
         case (PropertyType.TYPE_PRINCIPAL):
         case (PropertyType.TYPE_STRING):
             try {
                 String stringValue = new String(value, STRING_VALUE_ENCODING);
-                v = vf.createValue(stringValue, type);
-            } catch (UnsupportedEncodingException ue) {}
-            break;
+                return vf.createValue(stringValue, type);
+            } catch (UnsupportedEncodingException ue) {} // won't happen
             
         case (PropertyType.TYPE_BOOLEAN):
             boolean b = FieldValueEncoder.decodeBooleanFromBinary(value);
-            v.setBooleanValue(b);
-            break;
+            return new Value(b);
             
         case (PropertyType.TYPE_DATE):
             long time = FieldValueEncoder.decodeDateValueFromBinary(value);
-            v.setDateValue(new Date(time));
-            break;
+            return new Value(new Date(time));
             
         case (PropertyType.TYPE_INT):
             int n = FieldValueEncoder.decodeIntegerFromBinary(value);
-            v.setIntValue(n);
-            break;
+            return new Value(n);
             
         case (PropertyType.TYPE_LONG):
             long l = FieldValueEncoder.decodeLongFromBinary(value);
-            v.setLongValue(l);
-            break;
-            
-        default: throw new FieldValueEncodingException("Unknown type: " + type); 
-        }
-        
-        return v;
+            return new Value(l);
+        }            
+
+        throw new FieldValueEncodingException("Unknown type: " + type); 
     }
 
     /**

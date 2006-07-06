@@ -10,7 +10,7 @@ import org.vortikal.util.repository.LocaleHelper;
 public class LocaleConstraint implements Constraint {
 
     public void validate(Value value) throws ConstraintViolationException {
-        Locale locale = LocaleHelper.getLocale(value.getValue());
+        Locale locale = LocaleHelper.getLocale(value.getStringValue());
         if (locale == null)
             throw new ConstraintViolationException("Value not a legal locale string");
     }

@@ -42,7 +42,7 @@ public interface PrincipalManager {
      * @throws InvalidPrincipalException when the id is an invalid principal identifier.
      * 
      */
-    public Principal getUserPrincipal(String id);
+    public Principal getUserPrincipal(String id) throws InvalidPrincipalException;
     
     public Principal getGroupPrincipal(String id);
 

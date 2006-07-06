@@ -65,15 +65,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     private Value value;
     private Value[] values;
     
-    /* Flags if a PropertyImpl instance is initialized with a proper 
-     * value or not. */
-    private boolean valueInitialized = false;
-
-    public PropertyImpl() {
-        this.value = new Value();
-        this.values = new Value[0];
-    }
-    
     public Namespace getNamespace() {
         return this.namespace;
     }
@@ -107,7 +98,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
         validateValue(value);
         this.value = value;
-        this.valueInitialized = true;
     }
     
     public void setValues(Value[] values) throws ValueFormatException {
@@ -118,7 +108,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
         validateValues(values);
         this.values = values;
-        this.valueInitialized = true;
     }
     
     public Value[] getValues() {
@@ -139,34 +128,25 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public void setDateValue(Date dateValue) throws ValueFormatException {
-        Value v = new Value();
-        v.setDateValue(dateValue);
-        validateValue(v);
-        this.value = v;
-        this.valueInitialized = true;
+        Value v = new Value(dateValue);
+        setValue(v);
     }
 
     public String getStringValue() throws IllegalOperationException {
         if (this.value == null || getType() != PropertyType.TYPE_STRING) {
             throw new IllegalOperationException("Property " + this + " not of type String");
         }
-        return this.value.getValue();
+        return this.value.getStringValue();
     }
 
     public void setStringValue(String stringValue) throws ValueFormatException {
-        Value v = new Value();
-        v.setValue(stringValue);
-        validateValue(v);
-        this.value = v;
-        this.valueInitialized = true;
+        Value v = new Value(stringValue);
+        setValue(v);
     }
     
     public void setLongValue(long longValue) throws ValueFormatException {
-        Value v = new Value();
-        v.setLongValue(longValue);
-        validateValue(v);
-        this.value = v;
-        this.valueInitialized = true;
+        Value v = new Value(longValue);
+        setValue(v);
     }
 
     public long getLongValue() throws IllegalOperationException {
@@ -177,11 +157,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public void setIntValue(int intValue) throws ValueFormatException {
-        Value v = new Value();
-        v.setIntValue(intValue);
-        validateValue(v);
-        this.value = v;
-        this.valueInitialized = true;
+        Value v = new Value(intValue);
+        setValue(v);
     }
 
     public int getIntValue() throws IllegalOperationException {
@@ -199,11 +176,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public void setBooleanValue(boolean booleanValue) throws ValueFormatException {
-        Value v = new Value();
-        v.setBooleanValue(booleanValue);
-        validateValue(v);
-        this.value = v;
-        this.valueInitialized = true;
+        Value v = new Value(booleanValue);
+        setValue(v);
     }
 
     public Principal getPrincipalValue() throws IllegalOperationException {
@@ -214,14 +188,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public void setPrincipalValue(Principal principalValue) throws ValueFormatException {
-        Value v = new Value();
-        v.setPrincipalValue(principalValue);
-        validateValue(v);
-        this.value = v;
-        this.valueInitialized = true;
+        Value v = new Value(principalValue);
+        setValue(v);
     }
     
-    public Object clone() throws CloneNotSupportedException {
+    public Object clone() {
         PropertyImpl clone = new PropertyImpl();
         
         // "Dumb" clone, avoid all type checks, just copy data structures
@@ -303,6 +274,9 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
     private void validateValues(Value[] values) throws ValueFormatException,
                                                 ConstraintViolationException {
+        if (values == null || values.length == 0) 
+            throw new ValueFormatException("A property must have non null value");
+        
         for (int i=0; i<values.length; i++) {
             validateValue(values[i]);
         }
@@ -311,7 +285,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     private void validateValue(Value value) throws ValueFormatException,
                                                 ConstraintViolationException {
         if (value == null) {
-            throw new ValueFormatException("Null-values not allowed.");
+            throw new ValueFormatException("A property must have non null value");
         }
         
         if (value.getType() != getType()) {
@@ -330,7 +304,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
             break;
         case PropertyType.TYPE_STRING:
-            if (value.getValue() == null) {
+            if (value.getStringValue() == null) {
                 throw new ValueFormatException(
                     "String value of property '" + this + "' cannot be null");
             }
@@ -381,7 +355,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public boolean isValueInitialized() {
-        return this.valueInitialized;
+        if (this.propertyTypeDefinition != null && this.propertyTypeDefinition.isMultiple()) {
+            return this.values != null;
+        }
+        return this.value != null;
     }
     
 

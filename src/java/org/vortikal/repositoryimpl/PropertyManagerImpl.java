@@ -309,7 +309,7 @@ public class PropertyManagerImpl implements PropertyManager,
                 throw new Error("Property  " + prop + " not initialized");
             }
 
-            if (((PropertyImpl) prop).isValueInitialized()) {
+            if (prop.isValueInitialized()) {
                 newProps.add(prop);
             }
         }
@@ -407,8 +407,7 @@ public class PropertyManagerImpl implements PropertyManager,
                 // Added
                 if (userProp.getDefinition() == null) {
                     // Dead
-                    // XXX FIXME:
-                    if (!((PropertyImpl) userProp).isValueInitialized()) {
+                    if (!userProp.isValueInitialized()) {
                         throw new ConstraintViolationException("Property " + userProp
                                                                + " is not initialized");
                     }

@@ -34,8 +34,8 @@ package org.vortikal.repository.resourcetype.property;
 
 
 import java.util.Date;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
+
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
@@ -47,7 +47,6 @@ import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.security.Principal;
-import java.util.List;
 
 
 
@@ -62,11 +61,8 @@ import java.util.List;
  *   extracted values are treated as string values.
  * </ul>
  *
- * <p>XXX: Handle list values.
  */
 public class XPathEvaluator implements ContentModificationPropertyEvaluator {
-
-    private Log logger = LogFactory.getLog(this.getClass());
 
     private ValueFactory valueFactory;
     private XPath xPath;
@@ -111,22 +107,20 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
                         int type = property.getDefinition().getType();
                         value = this.valueFactory.createValue(c.getValue(), type);
                     } else {
-                        value = new Value();
-                        value.setValue(c.getValue());
+                        value = new Value(c.getValue());
                     }
                     values[i] = value;
                 }
                 property.setValues(values);
             } else {
                 String stringVal = this.xPath.valueOf(doc);
-                Value value = new Value();
+                Value value = null;
                 if (this.valueFactory != null) {
                     int type = property.getDefinition().getType();
                     value = this.valueFactory.createValue(stringVal, type);
 
                 } else {
-                    value = new Value();
-                    value.setValue(stringVal);
+                    value = new Value(stringVal);
                 }
                 property.setValue(value);
             }

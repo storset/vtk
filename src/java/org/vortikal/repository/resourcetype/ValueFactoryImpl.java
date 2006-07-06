@@ -40,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -48,9 +47,6 @@ import org.vortikal.security.PrincipalManager;
 /**
  * Implementation for interface <code>ValueFactory</code>.
  * 
- * 
- * @author oyviste
- *
  */
 public class ValueFactoryImpl implements ValueFactory, InitializingBean {
 
@@ -94,7 +90,6 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
             throw new IllegalArgumentException("stringValue cannot be null");
         }
         
-        Value value = new Value();
         switch (type) {
         
         case PropertyType.TYPE_STRING:
@@ -102,63 +97,43 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
                 throw new ValueFormatException(
                     "Illegal string value: '" + stringValue + "'");
             }
-            value.setValue(stringValue);
-            break;
-            
+            return new Value(stringValue);
+
         case PropertyType.TYPE_BOOLEAN:
-            value.setBooleanValue("true".equalsIgnoreCase(stringValue));
-            break;
-        
+            return new Value("true".equalsIgnoreCase(stringValue));
+
         case PropertyType.TYPE_DATE:
             // old: Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
             // Dates are represented as described in the configuration for this bean in the List stringFormats
             Date date = getDateFromStringValue(stringValue);
-            value.setDateValue(date);
-            break;
-        
+            return new Value(date);
+            
         case PropertyType.TYPE_INT:
             try {
-                value.setIntValue(Integer.parseInt(stringValue));
+                return new Value(Integer.parseInt(stringValue));
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException(nfe.getMessage());
             }
-            break;
-            
+
         case PropertyType.TYPE_LONG:
             try {
-                value.setLongValue(Long.parseLong(stringValue));
+                return new Value(Long.parseLong(stringValue));
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException(nfe.getMessage());
             }
-            break;
             
         case PropertyType.TYPE_PRINCIPAL:
             try {
                 Principal principal = this.principalManager.getUserPrincipal(stringValue);
-                
-//                 if (!principalManager.validatePrincipal(principal)) {
-//                     logger.debug("Validation failed for principal with stringValue '" + stringValue);
-//                     throw new ValueFormatException(
-//                             "Unable to convert string to valid principal. Principal '"
-//                                     + stringValue + "' does not exists");
-//                 }
-                value.setPrincipalValue(principal);
+                return new Value(principal);
             } catch (InvalidPrincipalException e) {
-                this.logger.debug("Exception for stringValue '" + stringValue + "': " + e);
-                throw new ValueFormatException(e.getMessage());
-            } catch (AuthenticationProcessingException e) {
-                this.logger.debug("Exception for stringValue '" + stringValue + "': " + e);
-                throw new ValueFormatException(
-                        "Unable to convert string to valid principal. Principal does not exists");
+                throw new ValueFormatException(e.getMessage(), e);
             }
-            break;
-                    
-        default:
-            throw new IllegalArgumentException("Cannot convert to unknown type '" + type+ "'");
-            
         }
-        
-        return value;
+                    
+        throw new IllegalArgumentException("Cannot convert '" + stringValue 
+                + "' to unknown type '" + type+ "'");
+            
     }
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
@@ -184,6 +159,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         if (stringValue.equals("")) {
             return null; // XXX: allow this to happen ? Seems like a ValueFormatException-case...
         }
+        
         throw new ValueFormatException("Illegal date format");
     }
 

@@ -56,7 +56,6 @@ public class LinkConstructorImpl implements LinkConstructor,
 	private Repository repository;
 	private ApplicationContext context;
 	
-	// FIXME: Expand '../'
     public String construct(String resourceURI, String parametersCSV, String serviceName) {
 
         this.logger.debug("About to construct link to service '" + serviceName + "' for resource '"

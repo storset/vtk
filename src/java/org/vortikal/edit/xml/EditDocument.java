@@ -64,8 +64,6 @@ import org.vortikal.web.RequestContext;
 
 /**
  * The document being edited.
- *
- * @version $Id$
  */
 public class EditDocument extends Document {
 

@@ -56,8 +56,7 @@ import org.springframework.context.ApplicationContextAware;
  * content representations.
  *
  * <p>Also contains default representations for the classes
- * <code>byte[]</code>, <code>java.lang.String</code> and
- * <code>java.nio.ByteBuffer</code>.
+ * <code>byte[]</code> and <code>java.nio.ByteBuffer</code>.
  */
 public class ContentRepresentationRegistry implements ApplicationContextAware, InitializingBean {
 
@@ -104,9 +103,6 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
 
             if (clazz == byte[].class) {
                 return getContentAsByteArray(content);
-            } else if (clazz == String.class) {
-                // XXX default encoding only ..
-                return new String(getContentAsByteArray(content)); 
             } else if (clazz == java.nio.ByteBuffer.class) {
                 return ByteBuffer.wrap(getContentAsByteArray(content));
             }

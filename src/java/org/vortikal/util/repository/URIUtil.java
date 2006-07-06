@@ -225,22 +225,19 @@ public class URIUtil {
     }
     
 
-    /** Resolve href relative to base, reworked from AbstractPathBasedURIResolver
-     * @param href
+    /** Resolve path relative to base, reworked from AbstractPathBasedURIResolver
+     * @param path
      * @param base
      * @return null if href is a qualified url or base isn't an absolute path, otherwise
      * an '..'-expanded path..
      */
-    public static String getAbsolutePath(String href, String base) {
+    public static String getAbsolutePath(String path, String base) {
 
-        String uri = null;
+        // qualified path isn't handled.
+        if (path == null || path.matches(".+://.+")) return null;
         
-        // Fully qualified hrefs isn't handled.
-        if (href == null || href.matches(".+://.+")) return null;
-        
-        if (href.startsWith("/")) {
+        if (path.startsWith("/")) {
             // hrefs starting with '/' don't care about base
-            uri = href;
         } else if (base == null || !base.startsWith("/")) {
             // Relative hrefs need to be resolved relative to an absolute base
             return null;
@@ -248,13 +245,13 @@ public class URIUtil {
             // Strip the name of the base resource    
             base = base.substring(0, base.lastIndexOf("/") + 1);
             
-            uri = base + href;
+            path = base + path;
         }
         
-        if (uri.indexOf("../") > -1) {
-            uri = expandPath(uri);
+        if (path.indexOf("../") > -1) {
+            path = expandPath(path);
         }
-        return uri;
+        return path;
     }
     
     /**

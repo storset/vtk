@@ -183,13 +183,12 @@ public abstract class AbstractXmlEditController implements Controller {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
-        // FIXME: possible multiple repositories at once!
         String sessionID = AbstractXmlEditController.class.getName() + ":" + uri; 
         
         Map sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
 
         /* Check that sessionmap isn't stale (the lock has been released) */
-        // FIXME: a user can access the same (locked) resource from different clients
+        /* a user can access the same (locked) resource from different clients */
         if (sessionMap != null) {
             String token = SecurityContext.getSecurityContext().getToken();
             Principal principal = SecurityContext.getSecurityContext().getPrincipal();

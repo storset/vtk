@@ -257,7 +257,7 @@ public class ProppatchController extends AbstractWebdavController  {
                                     Document requestBody, String token) 
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
-        InvalidRequestException, java.io.IOException {
+        InvalidRequestException {
         
         Element root = requestBody.getRootElement();
 
@@ -303,8 +303,7 @@ public class ProppatchController extends AbstractWebdavController  {
                                  List propElements, 
                                  String token)
         throws ResourceNotFoundException, AuthorizationException,
-        AuthenticationException, IllegalOperationException,
-        IOException {
+        AuthenticationException, IllegalOperationException {
 
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
@@ -327,8 +326,7 @@ public class ProppatchController extends AbstractWebdavController  {
     protected void setProperty(Resource resource, Element propertyElement, 
                                String token)
         throws ResourceNotFoundException, AuthorizationException,
-        AuthenticationException, IllegalOperationException,
-        IOException {
+        AuthenticationException, IllegalOperationException {
 
         String propertyName = propertyElement.getName();
         String nameSpace = propertyElement.getNamespace().getURI();
@@ -468,19 +466,15 @@ public class ProppatchController extends AbstractWebdavController  {
     protected Value elementToValue(Element element, int type) throws ValueFormatException {
         String stringValue = element.getText();
         
-        Value value;
         if (type == PropertyType.TYPE_DATE) {
-            value = new Value();
             try {
-                value.setDateValue(WebdavUtil.parsePropertyDateValue(stringValue));
+                return new Value(WebdavUtil.parsePropertyDateValue(stringValue));
             } catch (ParseException e) {
                 throw new ValueFormatException(e.getMessage());
             }
-        } else {
-            value = this.valueFactory.createValue(stringValue, type);
-        }
-
-        return value;
+        } 
+        
+        return this.valueFactory.createValue(stringValue, type);
     }
     
     protected Value[] elementToValues(Element element, int type) throws ValueFormatException {
@@ -513,8 +507,7 @@ public class ProppatchController extends AbstractWebdavController  {
             values = new Value[stringValues.length];
             try {
                 for (int i=0; i<values.length; i++) {
-                    values[i] = new Value();
-                    values[i].setDateValue(WebdavUtil.parsePropertyDateValue(stringValues[i]));
+                    values[i] = new Value(WebdavUtil.parsePropertyDateValue(stringValues[i]));
                 }
             } catch (ParseException e) {
                 throw new ValueFormatException(e.getMessage());

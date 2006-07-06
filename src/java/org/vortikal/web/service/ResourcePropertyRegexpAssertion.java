@@ -70,7 +70,6 @@ public class ResourcePropertyRegexpAssertion
     
     
     public boolean conflicts(Assertion assertion) {
-        // FIXME: ?
         return false;
     }
 

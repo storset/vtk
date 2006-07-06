@@ -182,15 +182,11 @@ public class PutController extends AbstractWebdavController {
                     this.logger.debug("Resource does not exist (creating)");
                 }
                 resource = this.repository.createDocument(token, uri);
-                // XXX: wrong resource?
-                model.put(WebdavConstants.WEBDAVMODEL_CREATED_RESOURCE, resource);
             }
 
             InputStream inStream = request.getInputStream();
-//                 new BoundedInputStream(request.getInputStream(), this.maxUploadSize);
             this.repository.storeContent(token, resource.getURI(), inStream);
 
-            // FIXME: Properties may change while storing content?
             resource = this.repository.retrieve(token, resource.getURI(), false);
             boolean store = false;
             
@@ -213,7 +209,7 @@ public class PutController extends AbstractWebdavController {
             }
 
             if (store) {
-                this.repository.store(token, resource);
+                resource = this.repository.store(token, resource);
             }
 
             if (exists) {

@@ -38,39 +38,45 @@ import org.vortikal.security.Principal;
 public final class Value implements Cloneable {
     private int type = PropertyType.TYPE_STRING;
 
-    private String value = "";
+    private String stringValue;
     private Date dateValue;
     private boolean booleanValue;
     private int intValue;
     private long longValue;
     private Principal principalValue;
 
-    public void setValue(String value) {
+    public Value(String stringValue) {
+        if (stringValue == null)
+            throw new IllegalArgumentException("Value object cannot be null");
         this.type = PropertyType.TYPE_STRING;
-        this.value = value;
+        this.stringValue = stringValue;
     }
     
-    public void setBooleanValue(boolean booleanValue) {
+    public Value(boolean booleanValue) {
         this.type = PropertyType.TYPE_BOOLEAN;
         this.booleanValue = booleanValue;
     }
 
-    public void setDateValue(Date dateValue) {
+    public Value(Date dateValue) {
+        if (dateValue == null)
+            throw new IllegalArgumentException("Value object cannot be null");
         this.type = PropertyType.TYPE_DATE;
-        this.dateValue = dateValue;
+        this.dateValue = (Date)dateValue.clone();
     }
 
-    public void setLongValue(long longValue) {
+    public Value(long longValue) {
         this.type = PropertyType.TYPE_LONG;
         this.longValue = longValue;
     }
     
-    public void setIntValue(int intValue) {
+    public Value(int intValue) {
         this.type = PropertyType.TYPE_INT;
         this.intValue = intValue;
     }
     
-    public void setPrincipalValue(Principal principalValue) {
+    public Value(Principal principalValue) {
+        if (principalValue == null)
+            throw new IllegalArgumentException("Value object cannot be null");
         this.type = PropertyType.TYPE_PRINCIPAL;
         this.principalValue = principalValue;
     }
@@ -84,7 +90,7 @@ public final class Value implements Cloneable {
     }
 
     public Date getDateValue() {
-        return this.dateValue;
+        return (Date)this.dateValue.clone();
     }
     
     public long getLongValue() {
@@ -99,8 +105,8 @@ public final class Value implements Cloneable {
         return this.principalValue;
     }
 
-    public String getValue() {
-        return this.value;
+    public String getStringValue() {
+        return this.stringValue;
     }
  
         
@@ -111,7 +117,7 @@ public final class Value implements Cloneable {
                 return new Boolean(this.booleanValue);
             
             case PropertyType.TYPE_DATE:
-                return this.dateValue;
+                return this.dateValue.clone();
             
             case PropertyType.TYPE_INT:
                 return new Integer(this.intValue);
@@ -120,7 +126,7 @@ public final class Value implements Cloneable {
                 return new Long(this.longValue);
 
             case PropertyType.TYPE_STRING:
-                return this.value;
+                return this.stringValue;
             
             case PropertyType.TYPE_PRINCIPAL:
                 return this.principalValue;
@@ -131,7 +137,6 @@ public final class Value implements Cloneable {
     }
     
 
-    // XXX: Use hashCode?
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Value)) {
             return false;
@@ -158,15 +163,14 @@ public final class Value implements Cloneable {
             return (this.principalValue == null && v.getPrincipalValue() == null) ||
                 (this.principalValue != null && this.principalValue.equals(v.getPrincipalValue()));
         default:
-            return (this.value == null && v.getValue() == null) ||
-                (this.value != null && this.value.equals(v.getValue()));
+            return (this.stringValue == null && v.getStringValue() == null) ||
+                (this.stringValue != null && this.stringValue.equals(v.getStringValue()));
         }
     }
     
     public int hashCode() {
-        int hash = 7;
-        
-        hash  = hash * 31 + this.type;
+        int hash  = 7 * 31 + this.type;
+
         switch (this.type) {
         case PropertyType.TYPE_BOOLEAN:
             return hash + (this.booleanValue ? 1231 : 1237);
@@ -180,22 +184,26 @@ public final class Value implements Cloneable {
             return hash + (this.principalValue == null ? 0 : this.principalValue.hashCode());
             
         default:
-            return hash + (this.value == null ? 0 : this.value.hashCode());
+            return hash + (this.stringValue == null ? 0 : this.stringValue.hashCode());
         }
     }
     
-    public Object clone() throws CloneNotSupportedException {
-        // XXX: Clone only the field corresponding to the value's type ?
-        Value clone = new Value();
-        clone.type = this.type;
-        clone.dateValue = this.dateValue != null ? (Date)this.dateValue.clone() : null;
-        clone.booleanValue = this.booleanValue;
-        clone.intValue = this.intValue;
-        clone.longValue = this.longValue;
-        clone.value = this.value;
-        clone.principalValue = this.principalValue;
-        
-        return clone;
+    public Object clone() {
+
+        switch (this.type) {
+        case PropertyType.TYPE_BOOLEAN:
+            return new Value(this.booleanValue);
+        case PropertyType.TYPE_INT:
+            return new Value(this.intValue);   
+        case PropertyType.TYPE_LONG:
+            return new Value(this.longValue);
+        case PropertyType.TYPE_DATE:    
+            return new Value((Date)this.dateValue.clone());
+        case PropertyType.TYPE_PRINCIPAL:
+            return new Value(this.principalValue);
+        default:
+            return new Value(this.stringValue);
+        }
     }
     
     public String toString() {
@@ -203,7 +211,7 @@ public final class Value implements Cloneable {
 
         switch (this.type) {
             case PropertyType.TYPE_STRING:
-                sb.append(this.value);
+                sb.append(this.stringValue);
                 break;
             case PropertyType.TYPE_INT:
                 sb.append(this.intValue);
@@ -221,7 +229,7 @@ public final class Value implements Cloneable {
                 sb.append(this.principalValue);
                 break;
             default:
-                sb.append(this.value);
+                sb.append(this.stringValue);
                 break;
         }
         return sb.toString();
@@ -255,7 +263,7 @@ public final class Value implements Cloneable {
             break;
             
         case PropertyType.TYPE_STRING:
-            representation = this.value;
+            representation = this.stringValue;
             break;
             
         case PropertyType.TYPE_PRINCIPAL:

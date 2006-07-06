@@ -13,7 +13,7 @@ public class StringEnumerationConstraint implements Constraint {
     private Set allowedValues = new HashSet();
     
     public void validate(Value value) throws ConstraintViolationException {
-        if (!this.allowedValues.contains(value.getValue()))
+        if (!this.allowedValues.contains(value.getStringValue()))
             throw new ConstraintViolationException("Value not in allowed set");
     }
 

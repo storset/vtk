@@ -45,7 +45,6 @@ import org.vortikal.security.Principal;
  * Evaluate XML schema property on content modification.
  * 
  * XXX: When to throw PropertyEvaluationException and when to just return false ??
- * @author oyviste
  *
  */
 public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator {

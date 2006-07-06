@@ -28,7 +28,9 @@
     <property name="allowedValues">
       <list>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="booleanValue" value="false" />
+          <constructor-arg type="boolean">
+            <value>false</value>
+          </constructor-arg>
         </bean>
       </list>
     </property>
@@ -42,46 +44,74 @@
     <property name="allowedValues">
       <list>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="uio" />
+          <constructor-arg type="java.lang.String">
+            <value>uio</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="hf" />
+          <constructor-arg type="java.lang.String">
+            <value>hf</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="jf" />
+          <constructor-arg type="java.lang.String">
+            <value>jf</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="mn" />
+          <constructor-arg type="java.lang.String">
+            <value>mn</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="mf" />
+          <constructor-arg type="java.lang.String">
+            <value>mf</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="od" />
+          <constructor-arg type="java.lang.String">
+            <value>od</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="sv" />
+          <constructor-arg type="java.lang.String">
+            <value>sv</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="sosiologi" />
+          <constructor-arg type="java.lang.String">
+            <value>sosiologi</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="tf" />
+          <constructor-arg type="java.lang.String">
+            <value>tf</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="uv" />
+          <constructor-arg type="java.lang.String">
+            <value>uv</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="ia" />
+          <constructor-arg type="java.lang.String">
+            <value>ia</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="sta" />
+          <constructor-arg type="java.lang.String">
+            <value>sta</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="fa" />
+          <constructor-arg type="java.lang.String">
+            <value>fa</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="usit" />
+          <constructor-arg type="java.lang.String">
+            <value>usit</value>
+          </constructor-arg>
         </bean>
       </list>
     </property>
@@ -95,55 +125,89 @@
     <property name="allowedValues">
       <list>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="studier" />
+          <constructor-arg type="java.lang.String">
+            <value>studier</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="forskning" />
+          <constructor-arg type="java.lang.String">
+            <value>forskning</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="omuio" />
+          <constructor-arg type="java.lang.String">
+            <value>omuio</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="it" />
+          <constructor-arg type="java.lang.String">
+            <value>it</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="studentliv" />
+          <constructor-arg type="java.lang.String">
+            <value>studentliv</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="foransatte" />
+          <constructor-arg type="java.lang.String">
+            <value>foransatte</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="bibliotek" />
+          <constructor-arg type="java.lang.String">
+            <value>bibliotek</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="publikum" />
+          <constructor-arg type="java.lang.String">
+            <value>publikum</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="tavle" />
+          <constructor-arg type="java.lang.String">
+            <value>tavle</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="omhf" />
+          <constructor-arg type="java.lang.String">
+            <value>omhf</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="omjus" />
+          <constructor-arg type="java.lang.String">
+            <value>omjus</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="ommn" />
+          <constructor-arg type="java.lang.String">
+            <value>ommn</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="ommed" />
+          <constructor-arg type="java.lang.String">
+            <value>ommed</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="omod" />
+          <constructor-arg type="java.lang.String">
+            <value>omod</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="omsv" />
+          <constructor-arg type="java.lang.String">
+            <value>omsv</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="omtf" />
+          <constructor-arg type="java.lang.String">
+            <value>omtf</value>
+          </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="omuv" />
+          <constructor-arg type="java.lang.String">
+            <value>omuv</value>
+          </constructor-arg>
         </bean>
       </list>
     </property>

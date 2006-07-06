@@ -27,7 +27,9 @@
     <property name="arguments">
       <list>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="value" value="portal-page" />
+          <constructor-arg type="java.lang.String">
+            <value>portal-page</value>
+          </constructor-arg>
         </bean>
       </list>
     </property>

@@ -97,7 +97,9 @@
     <property name="mandatory" value="true" /> 
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
-        <property name="value" value="annet" />
+        <constructor-arg type="java.lang.String">
+          <value>annet</value>
+        </constructor-arg>
       </bean>
     </property>
     <property name="contentModificationEvaluator" ref="emneUndervisningsSpraakEvaluator" />
@@ -116,7 +118,9 @@
     <property name="mandatory" value="true" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
-        <property name="value" value="annet" />
+        <constructor-arg type="java.lang.String">
+          <value>annet</value>
+        </constructor-arg>
       </bean>
     </property>
     <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterEvaluator" />
@@ -163,7 +167,9 @@
     <property name="mandatory" value="true" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
-        <property name="value" value="annet" />
+        <constructor-arg type="java.lang.String">
+          <value>annet</value>
+        </constructor-arg>
       </bean>
     </property>
     <property name="contentModificationEvaluator" ref="emneEksamensSemesterEvaluator" />
@@ -225,7 +231,9 @@
     <property name="mandatory" value="true" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
-        <property name="value" value="bokmaal" />
+        <constructor-arg type="java.lang.String">
+          <value>bokmaal</value>
+        </constructor-arg>
       </bean>
     </property>
     <property name="contentModificationEvaluator" ref="emneSpraakEvaluator" />

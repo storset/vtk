@@ -96,7 +96,9 @@
     <property name="mandatory" value="true" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
-        <property name="value" value="bokmaal" />
+        <constructor-arg type="java.lang.String">
+          <value>bokmaal</value>
+        </constructor-arg>
       </bean>
     </property>
     <property name="contentModificationEvaluator" ref="emnegruppeSpraakEvaluator" />

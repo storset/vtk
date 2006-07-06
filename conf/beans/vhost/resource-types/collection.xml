@@ -48,7 +48,9 @@
     <property name="allowedValues">
       <list>
         <bean class="org.vortikal.repository.resourcetype.Value">
-          <property name="booleanValue" value="true" />
+          <constructor-arg type="boolean">
+            <value>true</value>
+          </constructor-arg>
         </bean>
       </list>
     </property>

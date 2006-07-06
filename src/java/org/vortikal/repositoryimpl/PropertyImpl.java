@@ -201,12 +201,15 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         clone.namespace = this.namespace; // XXX: Do we need to clone namespace ? 
         
         // Values
-        clone.value = (Value)this.value.clone();
-        clone.values = new Value[this.values.length];
-        
-        // Need to deep-copy array of values
-        for (int i=0; i<this.values.length; i++) {
-            clone.values[i] = (Value)this.values[i].clone();
+        if (this.value != null) 
+            clone.value = (Value)this.value.clone();
+
+        if (this.values != null) {
+            clone.values = new Value[this.values.length];
+            // Need to deep-copy array of values
+            for (int i=0; i<this.values.length; i++) {
+                clone.values[i] = (Value)this.values[i].clone();
+            }
         }
         
         return clone;

@@ -31,7 +31,7 @@
 
   <bean id="schemaIsStudieretning" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="schema" />
     <property name="pattern" value="http://www.uio.no/xsd/studier/studieretning-hjemmeside/v00.*" />
   </bean>
@@ -46,10 +46,12 @@
     <property name="contentModificationEvaluator" ref="studieretningStudieretningskodeEvaluator" />
   </bean>
 
-  <bean id="studieretningStudieretningskodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="studieretningStudieretningskodeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieretning-hjemmeside/studieretningskode" />
+  </bean>
 
-
-  <bean id="studieretningStudieretningsnavnPropDef" 
+ 
+ <bean id="studieretningStudieretningsnavnPropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studieretningsnavn" /> 
     <property name="type" ref="TYPE_STRING" />
@@ -58,7 +60,9 @@
     <property name="contentModificationEvaluator" ref="studieretningStudieretningsnavnEvaluator" />
   </bean>
 
-  <bean id="studieretningStudieretningsnavnEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="studieretningStudieretningsnavnEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieretning-hjemmeside/studieretningsnavn" />
+  </bean>
 
 
   <bean id="studieretningProgramkodeReferansePropDef" 
@@ -70,6 +74,8 @@
     <property name="contentModificationEvaluator" ref="studieretningProgramkodeEvaluator" />
   </bean>
 
-  <bean id="studieretningProgramkodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="studieretningProgramkodeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieretning-hjemmeside/programkode" />
+  </bean>
 
 </beans>

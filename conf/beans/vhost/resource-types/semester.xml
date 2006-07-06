@@ -32,7 +32,7 @@
 
   <bean id="schemaIsSemester" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="schema" />
     <property name="pattern" value="http://www.uio.no/xsd/studier/kurs/v00.*" />
   </bean>
@@ -46,7 +46,9 @@
     <property name="contentModificationEvaluator" ref="semesterEmnekodeEvaluator" />
   </bean>
 
-  <bean id="semesterEmnekodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="semesterEmnekodeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/kurs/tittel/emnekode" />
+  </bean>
 
 
   <bean id="semesterSemesterPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -57,8 +59,9 @@
     <property name="contentModificationEvaluator" ref="semesterSemesterEvaluator" />
   </bean>
 
-  <bean id="semesterSemesterEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
-
+  <bean id="semesterSemesterEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/kurs/tittel/semester" />
+  </bean>
 
   <bean id="semesterAarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="aar" />
@@ -68,7 +71,9 @@
     <property name="contentModificationEvaluator" ref="semesterAarEvaluator" />
   </bean>
 
-  <bean id="semesterAarEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="semesterAarEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/kurs/tittel/aar" />
+  </bean>
 
 
   <bean id="semesterSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -84,7 +89,9 @@
     <property name="contentModificationEvaluator" ref="semesterSpraakEvaluator" />
   </bean>
 
-  <bean id="semesterSpraakEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="semesterSpraakEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/kurs/spraak" />
+  </bean>
 
 
 

@@ -15,7 +15,7 @@
         <ref bean="emnegruppeEmnegruppenavnPropDef" />
         <ref bean="emnegruppeEmnegruppeomfangPropDef" />
         <ref bean="emnegruppeStatusPropDef" />
-        <ref bean="emnegruppeSpraakPropDef" />
+        <!-- ref bean="emnegruppeSpraakPropDef" / -->
       </list>
     </property>
     <property name="assertions">
@@ -33,7 +33,7 @@
 
   <bean id="schemaIsEmnegruppe" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="schema" />
     <property name="pattern" value="http://www.uio.no/xsd/studier/emnegruppe/v00.*" />
   </bean>
@@ -47,8 +47,9 @@
     <property name="contentModificationEvaluator" ref="emnegruppeEmnegruppekodeEvaluator" />
   </bean>
 
-  <bean id="emnegruppeEmnegruppekodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
-
+  <bean id="emnegruppeEmnegruppekodeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/emnegruppe/emnegruppekode" />
+  </bean>
 
   <bean id="emnegruppeEmnegruppenavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnegruppenavn" />
@@ -58,8 +59,9 @@
     <property name="contentModificationEvaluator" ref="emnegruppeEmnegruppenavnEvaluator" />
   </bean>
 
-  <bean id="emnegruppeEmnegruppenavnEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
-
+  <bean id="emnegruppeEmnegruppenavnEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/emnegruppe/emnegruppenavn" />
+  </bean>
 
   <bean id="emnegruppeEmnegruppeomfangPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnegruppeomfang" />
@@ -69,7 +71,9 @@
     <property name="contentModificationEvaluator" ref="emnegruppeEmnegruppeomfangEvaluator" />
   </bean>
 
-  <bean id="emnegruppeEmnegruppeomfangEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="emnegruppeEmnegruppeomfangEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/emnegruppe/emnegruppeomfang" />
+  </bean>
 
   <bean id="emnegruppeStatusPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -85,7 +89,7 @@
   </bean>
 
 
-  <bean id="emnegruppeSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <!-- bean id="emnegruppeSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="spraak" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -98,7 +102,7 @@
     <property name="contentModificationEvaluator" ref="emnegruppeSpraakEvaluator" />
   </bean>
 
-  <bean id="emnegruppeSpraakEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="emnegruppeSpraakEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" / -->
 
 
 

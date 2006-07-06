@@ -31,7 +31,7 @@
 
   <bean id="schemaIsStudieprogram" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="schema" />
     <property name="pattern" value="http://www.uio.no/xsd/studier/studieprogram-hjemmeside/v00.*" />
   </bean>
@@ -46,7 +46,9 @@
     <property name="contentModificationEvaluator" ref="studieprogramProgramkodeEvaluator" />
   </bean>
 
-  <bean id="studieprogramProgramkodeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="studieprogramProgramkodeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/programkode" />
+  </bean>
 
 
   <bean id="studieprogramProgramnavnPropDef" 
@@ -58,7 +60,9 @@
     <property name="contentModificationEvaluator" ref="studieprogramProgramnavnEvaluator" />
   </bean>
 
-  <bean id="studieprogramProgramnavnEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="studieprogramProgramnavnEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/programnavn" />
+  </bean>
 
 
   <bean id="studieprogramProgramtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -69,6 +73,9 @@
     <property name="contentModificationEvaluator" ref="studieprogramProgramtypeEvaluator" />
   </bean>
 
-  <bean id="studieprogramProgramtypeEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
+  <bean id="studieprogramProgramtypeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/programtype" />
+  </bean>
+
 
 </beans>

@@ -47,12 +47,7 @@ public interface Resource extends PropertySet {
 
     public Property createProperty(Namespace namespace, String name);
     
-//    public void deleteProperty(Property property);
-    
     public void removeProperty(Namespace namespace, String name);
-    
-    // XXX: What to do about this?! Old client code operates with a divison of know/unknown props.
-    public List getOtherProperties();
     
     /**
      * Gets a resource's serial string.  A serial string is a unique

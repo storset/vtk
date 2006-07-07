@@ -31,19 +31,23 @@
 package org.vortikal.webdav;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jdom.Namespace;
-
 import org.springframework.web.servlet.mvc.Controller;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.webdav.ifheader.IfHeader;
 
 
@@ -77,34 +81,47 @@ public abstract class AbstractWebdavController implements Controller {
     }
     
 
+    
     /**
-     * The standard WebDAV XML properties supported by the WebDAV
-     * controllers.
-     *
+     * Maps WebDAV property names to resource property names
      */
-    protected static final List davProperties;
+    public static final Map MAPPED_DAV_PROPERTIES;
+
+    /**
+     * The set of WebDAV property names that do not map directly to
+     * resource propery names
+     */
+    public static final Set SPECIAL_DAV_PROPERTIES;
+
+
+    /**
+     * The set of all WebDAV property names
+     */
+    public static final Set DAV_PROPERTIES;
+
 
     static {
-        davProperties = new ArrayList();
-        davProperties.add("creationdate");
-        davProperties.add("displayname");
-        davProperties.add("getcontentlanguage");
-        davProperties.add("getcontentlength");
-        davProperties.add("getcontenttype");
-        davProperties.add("getetag");
-        davProperties.add("getlastmodified");
-        davProperties.add("lockdiscovery");
-        davProperties.add("resourcetype");
-        davProperties.add("source");
-        davProperties.add("supportedlock");
+        MAPPED_DAV_PROPERTIES = new HashMap();
+        MAPPED_DAV_PROPERTIES.put("creationdate", PropertyType.CREATIONTIME_PROP_NAME);
+        MAPPED_DAV_PROPERTIES.put("displayname", PropertyType.DISPLAYNAME_PROP_NAME);
+        MAPPED_DAV_PROPERTIES.put("getcontentlanguage", PropertyType.CONTENTLOCALE_PROP_NAME);
+        MAPPED_DAV_PROPERTIES.put("getcontentlength", PropertyType.CONTENTLENGTH_PROP_NAME);
+        MAPPED_DAV_PROPERTIES.put("getcontenttype", PropertyType.CONTENTTYPE_PROP_NAME);
+        MAPPED_DAV_PROPERTIES.put("getlastmodified", PropertyType.LASTMODIFIED_PROP_NAME);
 
-        // TESTING MS
-        davProperties.add("iscollection");
+        SPECIAL_DAV_PROPERTIES = new HashSet();
+        SPECIAL_DAV_PROPERTIES.add("getetag");
+        SPECIAL_DAV_PROPERTIES.add("lockdiscovery");
+        SPECIAL_DAV_PROPERTIES.add("resourcetype");
+        SPECIAL_DAV_PROPERTIES.add("source");
+        SPECIAL_DAV_PROPERTIES.add("supportedlock");
 
-        //davProperties.add("supported-privilege-set");
-        //davProperties.add("current-user-privilege-set");
+        DAV_PROPERTIES = new HashSet();
+        DAV_PROPERTIES.addAll(MAPPED_DAV_PROPERTIES.keySet());
+        DAV_PROPERTIES.addAll(SPECIAL_DAV_PROPERTIES);
     }
-   
+    
+
 
     /**
      * Determines whether a DAV property name is supported.
@@ -119,17 +136,7 @@ public abstract class AbstractWebdavController implements Controller {
         if (!WebdavConstants.DAV_NAMESPACE.equals(namespace)) {
             return true;
         }
-
-        // We don't protect any other namespace than "DAV:", even
-        // though some of the UIO properties are interpreted/live.
-
-        for (Iterator iter = davProperties.iterator(); iter.hasNext();) {
-            String property = (String) iter.next();
-            if (property.toLowerCase().equals(propertyName.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        return DAV_PROPERTIES.contains(propertyName);
     }
     
 
@@ -200,15 +207,5 @@ public abstract class AbstractWebdavController implements Controller {
         return this.ifHeader.matches(resource, shouldMatchOnNoIfHeader);
     }
     
-//    protected boolean matchesIfHeaderEtags(Resource resource, boolean shouldMatchOnNoIfHeader) {
-//        if (ignoreIfHeader) {
-//            return true;
-//        }
-//        if (ifHeader == null) {
-//            return shouldMatchOnNoIfHeader;
-//        }
-//        return ifHeader.matchesEtags(resource, shouldMatchOnNoIfHeader);
-//    }
-//   
 }
 

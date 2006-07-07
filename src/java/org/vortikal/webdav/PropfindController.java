@@ -277,7 +277,7 @@ public class PropfindController extends AbstractWebdavController {
      * represented as <code>org.jdom.Element</code> objects.
      */
     protected List getRequestedProperties(Document requestBody, Resource res) {
-        ArrayList propList = new ArrayList();
+        List propList = new ArrayList();
 
         /* Check for 'allprop' or 'propname': */
         if (requestBody.getRootElement().getChild(
@@ -286,28 +286,47 @@ public class PropfindController extends AbstractWebdavController {
                 "propname", WebdavConstants.DAV_NAMESPACE) != null) {
 
             /* DAV properties: */
-            for (Iterator iter = davProperties.iterator(); iter.hasNext();) {
+            for (Iterator iter = DAV_PROPERTIES.iterator(); iter.hasNext();) {
                 String name = (String) iter.next();
 
                 Element e = new Element(name, WebdavConstants.DAV_NAMESPACE);
                 propList.add(e);
             }
 
-            /* Custom properties: */
-            // XXX: now returns all properties!
-            List customProperties = res.getOtherProperties();
-            for (Iterator iter = customProperties.iterator(); iter.hasNext();) {
-                Property prop = (Property) iter.next();
-                
-                Namespace namespace = prop.getNamespace();
-                String name = prop.getName();
+            List defaultNsPropList = new ArrayList();
+            List otherProps = new ArrayList();
 
-                Element e = new Element(name, namespace.getUri());
-                if (isSupportedProperty(name, e.getNamespace())) {
-                    propList.add(e);
+            /* Resource type (treat it as a normal property): */
+            defaultNsPropList.add(new Element("resourceType", WebdavConstants.DEFAULT_NAMESPACE.getURI()));
+        
+
+            /* Other properties: */
+            List otherProperties = res.getProperties();
+            for (Iterator iter = otherProperties.iterator(); iter.hasNext();) {
+                Property prop = (Property) iter.next();
+                Namespace namespace = prop.getNamespace();
+
+                if (Namespace.DEFAULT_NAMESPACE.equals(namespace)
+                    && MAPPED_DAV_PROPERTIES.containsValue(prop.getName())) {
+                    continue;
+                }
+                String name = prop.getName();
+                Element e;
+
+                if (Namespace.DEFAULT_NAMESPACE.equals(namespace)) {
+                    e = new Element(name, WebdavConstants.DEFAULT_NAMESPACE.getURI());
+                    if (isSupportedProperty(name, e.getNamespace())) {
+                        defaultNsPropList.add(e);
+                    }
+                } else {
+                    e = new Element(name, namespace.getUri());
+                    if (isSupportedProperty(name, e.getNamespace())) {
+                        otherProps.add(e);
+                    }
                 }
             }
-            
+            propList.addAll(defaultNsPropList);
+            propList.addAll(otherProps);
             
         } else {
 
@@ -319,13 +338,13 @@ public class PropfindController extends AbstractWebdavController {
 
                 Element requestedProperty = (Element) propIter.next();
 
+
                 if (isSupportedProperty(requestedProperty.getName(),
                                         requestedProperty.getNamespace())) {
                     propList.add(requestedProperty);
                 }
             }
         }
-
         return propList;
     }
    

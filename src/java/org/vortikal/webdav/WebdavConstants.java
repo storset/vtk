@@ -83,7 +83,10 @@ public class WebdavConstants {
      * Namespace for representation of multiple property values in XML-list-format.
      */
     public static final Namespace VORTIKAL_PROPERTYVALUES_XML_NAMESPACE =
-        Namespace.getNamespace("vx", "http://vortikal.org/xml-value-list");
+        Namespace.getNamespace("vrtx", "http://vortikal.org/xml-value-list");
+
+    public static final Namespace DEFAULT_NAMESPACE =
+        Namespace.getNamespace("v", "vrtx");
 
 
     public static final String WEBDAVMODEL_ETAG = "ETag";

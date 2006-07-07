@@ -30,15 +30,13 @@
  */
 package org.vortikal.repositoryimpl;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Lock;
@@ -57,8 +55,6 @@ import org.vortikal.util.repository.URIUtil;
 
 public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable {
     
-    protected Log logger = LogFactory.getLog(this.getClass());
-
     private Acl acl;
     private Lock lock = null;
     private String[] childURIs = null;
@@ -155,36 +151,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     }
     
 
-    public List getOtherProperties() {
-        List otherProps = new ArrayList();
-        
-        for (Iterator iter = super.propertyMap.entrySet().iterator(); iter.hasNext();) {
-            Map.Entry element = (Map.Entry) iter.next();
-            Namespace namespace = (Namespace)element.getKey();
-            Map props = (Map)element.getValue();
-            // XXX: namespace.equals(PropertyType.DEFAULT_NAMESPACE_URI)
-            if (namespace.equals(Namespace.DEFAULT_NAMESPACE)) {
-                List specialProps =  Arrays.asList(PropertyType.SPECIAL_PROPERTIES);
-                for (Iterator iterator = props.values().iterator(); iterator.hasNext();) {
-                    Property prop = (Property) iterator.next();
-                    if (!specialProps.contains(prop.getName())) {
-                        otherProps.add(prop);
-                    }
-                }
-            } else {
-                otherProps.addAll(props.values());
-            }
-        }
-        return otherProps;
-    }
-
     public String getSerial() {
         String serial = getURI() + getContentLastModified() + getPropertiesLastModified();
         serial = MD5.md5sum(serial);
         serial = "vortex-" + serial;
-
-        this.logger.debug("etag: " + serial);
-
         return serial;
     }
     
@@ -275,12 +245,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
 
     }
     
-
-//     public void setCharacterEncoding(String characterEncoding) {
-//         setProperty(Namespace.DEFAULT_NAMESPACE, 
-//                 PropertyType.CHARACTERENCODING_PROP_NAME, characterEncoding);
-//     }
-
     public void setContentLocale(String locale) {
         setProperty(Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.CONTENTLOCALE_PROP_NAME, locale);

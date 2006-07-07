@@ -30,6 +30,8 @@
  */
 package org.vortikal.webdav;
 
+
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -37,10 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -56,6 +56,7 @@ import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -129,6 +130,15 @@ public class ProppatchController extends AbstractWebdavController  {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_NOT_FOUND));
+
+        } catch (ConstraintViolationException e) {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Caught ConstraintViolationException for URI "
+                             + uri, e);
+            }
+            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                      new Integer(HttpServletResponse.SC_FORBIDDEN));
 
         } catch (IllegalOperationException e) {
             if (this.logger.isDebugEnabled()) {
@@ -370,7 +380,13 @@ public class ProppatchController extends AbstractWebdavController  {
 
         } else {
 
-            Namespace ns = Namespace.getNamespace(nameSpace);
+            Namespace ns;
+            if (nameSpace.toUpperCase().equals(WebdavConstants.DEFAULT_NAMESPACE.getURI().toUpperCase())) {
+                ns = Namespace.DEFAULT_NAMESPACE;
+            } else {
+                ns = Namespace.getNamespace(nameSpace);
+            }
+ 
             Property property = resource.getProperty(ns, propertyName);
 
             if (property == null) {
@@ -421,18 +437,12 @@ public class ProppatchController extends AbstractWebdavController  {
     protected void removeProperty(Resource resource, Element propElement) {
 
         if (propElement.getNamespace().equals(WebdavConstants.DAV_NAMESPACE)) {
-            return; //throw new AuthorizationException();
+            return; 
         }
 
         String propertyName = propElement.getName();
         Namespace namespace = Namespace.getNamespace(propElement.getNamespace().getURI());
-
         resource.removeProperty(namespace, propertyName);
-//        Property theProperty = resource.getProperty(namespace, propertyName);
-//            
-//        if (theProperty != null) {
-//            resource.deleteProperty(theProperty);
-//        }
     }
     
 
@@ -467,13 +477,17 @@ public class ProppatchController extends AbstractWebdavController  {
         String stringValue = element.getText();
         
         if (type == PropertyType.TYPE_DATE) {
+            // Try to be liberal in accepting date formats:
             try {
                 return new Value(WebdavUtil.parsePropertyDateValue(stringValue));
             } catch (ParseException e) {
-                throw new ValueFormatException(e.getMessage());
+                try {
+                    return this.valueFactory.createValue(stringValue, type);
+                } catch (Exception vfe) {
+                    throw new ValueFormatException(e);
+                }
             }
         } 
-        
         return this.valueFactory.createValue(stringValue, type);
     }
     
@@ -484,7 +498,8 @@ public class ProppatchController extends AbstractWebdavController  {
         if ((valuesElement = element.getChild("values", 
                 WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE))!= null) {
                 
-            List children = valuesElement.getChildren("value", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
+            List children = valuesElement.getChildren(
+                "value", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
             
             stringValues = new String[children.size()];
             int u=0;

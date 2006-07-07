@@ -157,7 +157,6 @@ public class PropfindView implements View, InitializingBean {
         try {
             out = response.getOutputStream();
             out.write(buffer, 0, buffer.length);
-
             out.flush();
             out.close();
 
@@ -274,8 +273,7 @@ public class PropfindView implements View, InitializingBean {
             Element propStatElement = new Element("propstat", WebdavConstants.DAV_NAMESPACE);
             propStatElement.addContent(foundProperties);
             Element status = new Element("status", WebdavConstants.DAV_NAMESPACE);
-            status.addContent(WebdavUtil.getStatusMessage(
-                                  HttpServletResponse.SC_OK));
+            status.addContent(WebdavUtil.getStatusMessage(HttpServletResponse.SC_OK));
             propStatElement.addContent(status);
             responseElement.addContent(propStatElement);
         }
@@ -287,8 +285,7 @@ public class PropfindView implements View, InitializingBean {
             Element propStatUnknown = new Element("propstat", WebdavConstants.DAV_NAMESPACE);
             propStatUnknown.addContent(unknownProperties);
             propStatUnknown.addContent(status);
-            status.addContent(WebdavUtil.getStatusMessage(
-                                  HttpServletResponse.SC_NOT_FOUND));
+            status.addContent(WebdavUtil.getStatusMessage(HttpServletResponse.SC_NOT_FOUND));
             responseElement.addContent(propStatUnknown);
         }
         
@@ -314,31 +311,31 @@ public class PropfindView implements View, InitializingBean {
                                            Element propElement, boolean appendValue)
         throws Exception {
         
-        String property = propElement.getName();
+        String propertyName = propElement.getName();
         Namespace namespace = propElement.getNamespace();
 
-        Element element = new Element(property, propElement.getNamespace());
+        Element element = new Element(propertyName, propElement.getNamespace());
         if (!appendValue) {
             return element;
         }
       
         if (namespace.equals(WebdavConstants.DAV_NAMESPACE)) {
 
-            if (property.equals("creationdate")) {
+            if (propertyName.equals("creationdate")) {
                 element.addContent(formatCreationTime(
                                        resource.getCreationTime()));
             
-            } else if (property.equals("displayname")) {
+            } else if (propertyName.equals("displayname")) {
                 String name = resource.getDisplayName();
                 if (name == null || name.equals("")) return null;
                 element.addContent(name);
 
-            } else if (property.equals("getcontentlanguage")) {
+            } else if (propertyName.equals("getcontentlanguage")) {
                 Locale locale = LocaleHelper.getLocale(resource.getContentLanguage());
                 if (locale == null) return null;
                 element.addContent(locale.getLanguage());
 
-            } else if (property.equals("getcontentlength")) {
+            } else if (propertyName.equals("getcontentlength")) {
                 if (resource.isCollection()) {
                     element.addContent("0");
                 } else {
@@ -346,7 +343,7 @@ public class PropfindView implements View, InitializingBean {
                                            resource.getContentLength()));
                 }
 
-            } else if (property.equals("getcontenttype")) {
+            } else if (propertyName.equals("getcontenttype")) {
                 String type = resource.getContentType();
                 if (type == null || type.equals("")) return null;
                 
@@ -359,53 +356,64 @@ public class PropfindView implements View, InitializingBean {
                
                 element.addContent(type);
                
-            } else if (property.equals("getetag")) {
+            } else if (propertyName.equals("getetag")) {
                 if (resource.getSerial() == null) {
                     return null;
                 }
                 element.addContent(resource.getSerial());
 
-            } else if (property.equals("getlastmodified")) {
+            } else if (propertyName.equals("getlastmodified")) {
                 element.addContent(HttpUtil.getHttpDateString(resource.getLastModified()));
 
-            } else if (property.equals("lockdiscovery")) {
+            } else if (propertyName.equals("lockdiscovery")) {
                 element = buildLockDiscoveryElement(resource);
 
-            } else if (property.equals("resourcetype")) {
+            } else if (propertyName.equals("resourcetype")) {
                 if (resource.isCollection()) {
                     element.addContent(new Element("collection",
                                                    WebdavConstants.DAV_NAMESPACE));
                 }
-            } else if (property.equals("source")) {
+            } else if (propertyName.equals("source")) {
                 //element.addContent(buildSourceElement(resource));
                 return null;            
 
-            } else if (property.equals("supportedlock")) {
+            } else if (propertyName.equals("supportedlock")) {
                 element = buildSupportedLockElement(resource);
 
-            } else if (property.equals("supported-privilege-set")) {
+            } else if (propertyName.equals("supported-privilege-set")) {
                 element = buildSupportedPrivilegeSetElement(resource);
 
-            } else if (property.equals("current-user-privilege-set")) {
+            } else if (propertyName.equals("current-user-privilege-set")) {
                 element = buildCurrentUserPrivilegeSetElement(resource);
             }
 
 
         } else {
 
-            org.vortikal.repository.Namespace ns = org.vortikal.repository.Namespace.getNamespace(namespace.getURI());
-            Property customProperty = resource.getProperty(ns, property);
-            if (customProperty == null) {
+            org.vortikal.repository.Namespace ns;
+            if (WebdavConstants.DEFAULT_NAMESPACE.equals(namespace)) {
+                ns = org.vortikal.repository.Namespace.DEFAULT_NAMESPACE;
+            } else {
+                ns = org.vortikal.repository.Namespace.getNamespace(namespace.getURI());
+            }
+
+            if ("resourceType".equals(propertyName)) {
+                Element e = new Element("resourceType", WebdavConstants.DEFAULT_NAMESPACE);
+                e.setText(resource.getResourceType());
+                return e;
+            }
+
+            Property property = resource.getProperty(ns, propertyName);
+            if (property == null) {
                 return null;
             }
             
-            PropertyTypeDefinition def = customProperty.getDefinition();
+            PropertyTypeDefinition def = property.getDefinition();
             if (def != null && def.isMultiple()) {
-                element = buildMultiValueCustomPropertyElement(customProperty);
+                element = buildMultiValueCustomPropertyElement(property);
             } else {
-                element = buildCustomPropertyElement(customProperty);
+                element = buildCustomPropertyElement(property);
             }
-
         }
 
         return element;
@@ -512,6 +520,12 @@ public class PropfindView implements View, InitializingBean {
          * fails, we assume it is a 'name = value' style property, and
          * build a simple JDOM element from it. */
 
+        Namespace namespace = Namespace.getNamespace(property.getNamespace().getUri());
+
+        if (org.vortikal.repository.Namespace.DEFAULT_NAMESPACE.equals(property.getNamespace())) {
+            namespace = WebdavConstants.DEFAULT_NAMESPACE;
+        }
+
         String value = property.getValue().getNativeStringRepresentation();
 
         /* If the value does not contain both "<" and ">" we know for
@@ -521,18 +535,15 @@ public class PropfindView implements View, InitializingBean {
             
             try {
         
-                Namespace customNamespace =
-                    Namespace.getNamespace(property.getNamespace().getUri());
-
                 String xml = "<" + property.getName() + " xmlns=\"" +
-                    customNamespace.getURI() + "\">" + value + "</" +
+                    namespace.getURI() + "\">" + value + "</" +
                     property.getName() + ">";
 
                 Document doc = (new SAXBuilder()).build(
                     new StringReader(xml));
 
-                if (!doc.getRootElement().getNamespace().equals(customNamespace)) {
-                    doc.getRootElement().setNamespace(customNamespace);
+                if (!doc.getRootElement().getNamespace().equals(namespace)) {
+                    doc.getRootElement().setNamespace(namespace);
                 }
                 Element rootElement = doc.getRootElement();
                 rootElement.detach();
@@ -548,10 +559,8 @@ public class PropfindView implements View, InitializingBean {
             }
         }
         
-        Namespace customNamespace = 
-            Namespace.getNamespace(property.getNamespace().getUri());
         Element propElement = new Element(property.getName(),
-                                          customNamespace);
+                                          namespace);
         
         // Format dates according to HTTP spec, 
         // use value's native string representation for other types.
@@ -573,10 +582,12 @@ public class PropfindView implements View, InitializingBean {
     private Element buildMultiValueCustomPropertyElement(Property property) {
         Value[] values = property.getValues();
 
-        Namespace customNamespace = 
-            Namespace.getNamespace(property.getNamespace().getUri());
-        Element propElement = new Element(property.getName(),
-                                          customNamespace);
+        Namespace namespace = Namespace.getNamespace(property.getNamespace().getUri());
+
+        if (org.vortikal.repository.Namespace.DEFAULT_NAMESPACE.equals(property.getNamespace())) {
+            namespace = WebdavConstants.DEFAULT_NAMESPACE;
+        }
+        Element propElement = new Element(property.getName(), namespace);
         
         Element valuesElement = new Element("values", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
         

@@ -19,6 +19,8 @@
   <import resource="studieretning.xml" />
 
   <import resource="image.xml" />
+  <import resource="audio.xml" />
+  <import resource="video.xml" />
 
   <import resource="portal-page.xml" />
 

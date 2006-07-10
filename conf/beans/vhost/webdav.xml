@@ -10,6 +10,10 @@
         <ref bean="webdavPortAssertion" />
         <ref bean="webdavHostNameAssertion" />
         <ref bean="webdavProtocolAssertion" />
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="invert" value="false" />
+          <property name="requiresAuthentication" value="true" />
+        </bean>
       </list>
     </property>
     <property name="services">

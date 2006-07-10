@@ -287,7 +287,6 @@ public class AclImpl implements Acl {
 
             for (Iterator j = principals.iterator(); j.hasNext();) {
                 Principal p = (Principal) j.next();
-                // XXX: needs to take actions into account(?)
                 hashCode += p.hashCode() + action.hashCode();
             }
         }

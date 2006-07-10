@@ -54,16 +54,14 @@ import org.vortikal.util.io.StreamUtil;
 /**
  * Evaluator for XML character encoding.
  *
- * <p>
- * XXX: This class should ideally use some XML representation class,
- * such as JDOM Document. However, org.jdom.Documents do not return
- * XML declarations as processing instructions, and there is no other
- * way to obtain the character encoding using JDOM, so we are forced
- * to inspect the raw content.
+ * <p>Note: This class should ideally use some XML representation
+ * class, such as JDOM Document. However, org.jdom.Documents do not
+ * return XML declarations as processing instructions, and there is no
+ * other way to obtain the character encoding using JDOM, so we are
+ * forced to inspect the raw content.
  *
- * <p>
- * XXX: Could possibly use org.dom4j.Document#getXMLEncoding ?
- * 
+ * <p>One possibility might be to use
+ * <code>org.dom4j.Document#getXMLEncoding</code>?
  */
 public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         ContentModificationPropertyEvaluator {

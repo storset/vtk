@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -92,6 +93,12 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
     
     public boolean authorizeAction(String uri, RepositoryAction action, Principal principal) {
+        if (!AuthorizationManager.ACTION_AUTHORIZATION_SET.contains(action)) {
+            throw new IllegalArgumentException(
+                "Unable to authorize for action " + action
+                + ": must be one of " + AuthorizationManager.ACTION_AUTHORIZATION_SET);
+        }
+
         try {
             if (RepositoryAction.READ_PROCESSED.equals(action)) {
                 authorizeReadProcessed(uri, principal);
@@ -107,12 +114,13 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 authorizeUnlock(uri, principal);
             } else if (RepositoryAction.DELETE.equals(action)) {
                 authorizeDelete(uri, principal);
-            } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+            } else if (RepositoryAction.ALL.equals(action)) {
                 authorizePropertyEditAdminRole(uri, principal);
+            } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+                authorizePropertyEditRootRole(uri, principal);
             } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
                 authorizePropertyEditRootRole(uri, principal);
             } else {
-                // XXX: copy/move shouldn't be allowed, currently ends up here
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("authorization: false for uri = " + uri + ", action = "
                                  + action + ", principal = " + principal);
@@ -482,9 +490,6 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
             // Condition 1:
             if (principalSet.contains(PseudoPrincipal.ALL)) {
-            // XXX: removed this:
-            //            && (Privilege.READ.equals(action) || 
-            //                    Privilege.READ_PROCESSED.equals(action))
                 return;
             }
 
@@ -511,7 +516,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             }
         }
 
-        // XXX: is this correct?
+        // At this point a principal should always be available:
         if (principal == null) throw new AuthenticationException();
             
         for (int i = 0; i < privileges.length; i++) {

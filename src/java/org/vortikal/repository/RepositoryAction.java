@@ -50,6 +50,8 @@ public final class RepositoryAction {
 
     public final static RepositoryAction MOVE = new RepositoryAction("move");
 
+    public final static RepositoryAction ALL = new RepositoryAction("all");
+
     public final static RepositoryAction UNEDITABLE_ACTION =
         new RepositoryAction("property-edit-uneditable-action");
 

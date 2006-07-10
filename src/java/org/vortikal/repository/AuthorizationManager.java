@@ -59,6 +59,7 @@ public interface AuthorizationManager {
         RepositoryAction.DELETE,
         RepositoryAction.COPY,
         RepositoryAction.MOVE,
+        RepositoryAction.ALL,
         RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION,
         RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION};
     

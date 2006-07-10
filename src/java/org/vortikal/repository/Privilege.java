@@ -43,7 +43,7 @@ public class Privilege {
     public static final RepositoryAction READ = RepositoryAction.READ;
     public static final RepositoryAction BIND = RepositoryAction.CREATE;
     public static final RepositoryAction WRITE = RepositoryAction.WRITE;
-    public static final RepositoryAction ALL = RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION;
+    public static final RepositoryAction ALL = RepositoryAction.ALL;
     
 
     public static final Set PRIVILEGES =

@@ -329,14 +329,6 @@ public class Cache implements DataAccessor, InitializingBean {
                 if (this.items.containsURI(uri)) {
                     this.items.remove(uri);
                 }
-
-
-                // XXX: Removed this to avoid dirty flag problems.
-                // Does it cause any problems?
-//                if (uri.equals(r.getURI())) {
-//                    enterResource(r);
-//                }
-
             }
         } finally {
             this.lockManager.unlock(uris);

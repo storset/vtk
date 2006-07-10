@@ -14,9 +14,8 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro propertyList propertyList>
-  <div style="padding-left:0.5em;padding-right:0.5em;padding-bottom:1em;">
-
-    <table style="clear: both;" class="resourceInfo">
+  <div>
+    <table class="resourceInfo">
       <#list propertyList as item>
         <@editOrDisplay item />
       </#list>
@@ -135,9 +134,6 @@
      ( <a href="${item.editURL?html}">
       <#if item.definition.type = 4> <#-- type boolean = 4 -->
         <@vrtx.msg code="propertyEditor.toggle" default="toggle" />
-      <#else>
-        <@vrtx.msg code="propertyEditor.edit" default="edit" />
-      </#if>
-    </a> )
+      <#else><@vrtx.msg code="propertyEditor.edit" default="edit" /></#if></a> )
   </#if>
 </#macro>

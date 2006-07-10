@@ -42,10 +42,10 @@ import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator
 import org.vortikal.security.Principal;
 
 /**
- * Evaluate XML schema property on content modification.
- * 
- * XXX: When to throw PropertyEvaluationException and when to just return false ??
- *
+ * Evaluate XML schema property on content modification. Gets the XML
+ * schema URL from the 
+ * <code>http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation</code>
+ * attribute on the root element of the document.
  */
 public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator {
 
@@ -62,16 +62,11 @@ public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator 
         
         String schemaLocation = null;
         try {
-            
             Document doc = (Document)content.getContentRepresentation(org.jdom.Document.class);
-            
             Element root = doc.getRootElement();
-
             Namespace ns = Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
             schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);
-
         } catch (Exception e) {
-            // throw new PropertyEvaluationException("Could not evaluate schema property from content", e);
             return false;
         }
 
@@ -79,8 +74,6 @@ public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator 
             property.setStringValue(schemaLocation);
             return true;
         } 
-        
-        //throw new PropertyEvaluationException("No schema specified in document.");
         return false;
     }
 }

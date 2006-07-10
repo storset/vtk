@@ -152,15 +152,12 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
                 date = format.parse(stringValue);
                 return date;
             } catch (ParseException e) {
-                this.logger.debug("Dateformat not ok for dateformat '" + dateFormat
-                        + "' and stringValue '" + stringValue + "': " + e.getMessage());
+                this.logger.debug("Failed to parse date using format '" + dateFormat
+                                  + "', input '" + stringValue + "'", e);
             }
         }
-        if (stringValue.equals("")) {
-            return null; // XXX: allow this to happen ? Seems like a ValueFormatException-case...
-        }
-        
-        throw new ValueFormatException("Illegal date format");
+        throw new ValueFormatException(
+            "Unable to parse date value for input string: '" + stringValue + "'");
     }
 
     public void setPrincipalManager(PrincipalManager principalManager) {

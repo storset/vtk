@@ -61,7 +61,8 @@ public interface AuthorizationManager {
         RepositoryAction.MOVE,
         RepositoryAction.ALL,
         RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION,
-        RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION};
+        RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION,
+        RepositoryAction.UNEDITABLE_ACTION};
     
     public final static Set ACTION_AUTHORIZATION_SET = 
         new HashSet(Arrays.asList(ACTION_AUTHORIZATIONS));

@@ -99,7 +99,7 @@
  * @param privilege the privilege to edit
  *
 -->
-<#macro editACLForm formName privilege groupingPrincipal>
+<#macro editACLForm formName privilege groupingPrincipal privilegeHeading>
   <#-- 
     Should we use this to access form without having to do @spring.bind all the time?
     assign form=.vars[formName] /
@@ -110,7 +110,9 @@
 
   <@spring.bind formName + ".submitURL" /> 
   <div class="expandedForm">
+
   <form class="aclEdit" action="${spring.status.value?html}" method="POST">
+    <h3>${privilegeHeading}</h3>
     <ul class="everyoneOrSelectedUsers">
     <@spring.bind formName + ".grouped" /> 
     <#assign grouped = spring.status.value />
@@ -253,7 +255,7 @@
 
 
 
-<#macro editOrDisplay privilegeName>
+<#macro editOrDisplay privilegeName privilegeHeading type="single-edit">
   <#assign formName = 'permissionsForm_' + privilegeName />
   <#assign privilege = aclInfo.privileges[privilegeName] />
   <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
@@ -263,19 +265,42 @@
   <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
 
   <#if .vars[formName]?exists>
+    <div>
     <@editACLForm
        formName = formName
        privilege = privilege
-       groupingPrincipal = groupingPrincipal />
+       groupingPrincipal = groupingPrincipal
+       privilegeHeading = privilegeHeading />
+    </div>
   <#else>
-    <@listPrincipals
-       pseudoPrincipals = pseudoPrincipals
-       users = users
-       groups = groups
-       groupingPrincipal = groupingPrincipal />
+    <#if type="group-edit">
+      <#if privilegeHeading?exists>
+        <h3>${privilegeHeading}</h3>
+      </#if>
+      <div>
+        <@listPrincipals
+           pseudoPrincipals = pseudoPrincipals
+           users = users
+           groups = groups
+           groupingPrincipal = groupingPrincipal />
 
-    <#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if>
+        <#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if>
+      </div>
+    <#else>
+      <div class="smaller">
+        ${privilegeHeading}:
+        <@listPrincipals
+           pseudoPrincipals = pseudoPrincipals
+           users = users
+           groups = groups
+           groupingPrincipal = groupingPrincipal />
+
+        <#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if>
+
+      </div>
+     </#if>
   </#if>
+
 </#macro>
 
 

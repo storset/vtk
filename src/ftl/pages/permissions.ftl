@@ -34,10 +34,28 @@
       </#if>
       </p>
 
-      <h3><@vrtx.msg code="permissions.privilege.read" default="Read" /></h3>
-      <div><@permissions.editOrDisplay 'read' /></div>
+     
+      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
+      <@permissions.editOrDisplay privilegeName="read" privilegeHeading = privilegeHeading type="group-edit" />
 
-      <h3><@vrtx.msg code="permissions.privilege.write" default="Write" /></h3>
+      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.write" default="Write" /></#assign>
+      <@permissions.editOrDisplay privilegeName="write" privilegeHeading = privilegeHeading type="group-edit" />
+
+      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin" /></#assign>
+      <@permissions.editOrDisplay privilegeName="all" privilegeHeading = privilegeHeading type="group-edit" />
+
+
+      <h3 style="margin-top:1em;"><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></h3>
+
+      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
+      <@permissions.editOrDisplay privilegeName="bind" privilegeHeading = privilegeHeading />
+
+      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
+      <@permissions.editOrDisplay privilegeName="read-processed" privilegeHeading = privilegeHeading />
+
+
+
+      <#-- h3><@vrtx.msg code="permissions.privilege.write" default="Write" /></h3>
       <div><@permissions.editOrDisplay 'write' /></div>
 
       <h3><@vrtx.msg code="permissions.privilege.all" default="Admin" /></h3>
@@ -50,8 +68,10 @@
       </div>
       <div class="smaller" style="padding-top: 0px;"><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" />:
           <@permissions.editOrDisplay 'read-processed' />
-      </div>
-      <!-- table>
+      </div -->
+
+
+      <#-- table>
         <tr>
           <td><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" />:</td>
           <td><@permissions.editOrDisplay 'bind' /></td>

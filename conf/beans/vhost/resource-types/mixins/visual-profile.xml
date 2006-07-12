@@ -9,17 +9,42 @@
     <property name="namespace" ref="VISUAL_PROFILE_NAMESPACE" /> 
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="inheritedPropdef" />
+        <ref bean="visualProfileEnabledPropdef" />
+        <ref bean="visualProfileInheritedPropdef" />
         <ref bean="unitPropDef" />
         <ref bean="topicPropDef" />
-        <ref bean="publisherNamePropDef" />
-        <ref bean="publisherMailPropDef" />
-        <ref bean="publisherURLPropDef" />
+        <ref bean="editorNamePropDef" />
+        <ref bean="editorEmailPropDef" />
+        <ref bean="editorURLPropDef" />
       </list>
     </property>
   </bean>
 
-  <bean id="inheritedPropdef" 
+  <bean id="visualProfileEnabledPropdef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="enabled" /> 
+    <property name="type" ref="TYPE_BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="allowedValues">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="boolean">
+            <value>true</value>
+          </constructor-arg>
+        </bean>
+      </list>
+    </property>
+    <property name="defaultValue">
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="boolean">
+            <value>true</value>
+          </constructor-arg>
+        </bean>
+    </property>
+  </bean>
+
+  <bean id="visualProfileInheritedPropdef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="inherited" /> 
     <property name="type" ref="TYPE_BOOLEAN" />
@@ -33,6 +58,13 @@
           </constructor-arg>
         </bean>
       </list>
+    </property>
+    <property name="defaultValue">
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="boolean">
+            <value>false</value>
+          </constructor-arg>
+        </bean>
     </property>
   </bean>
 
@@ -213,22 +245,22 @@
     </property>
   </bean>
 
-  <bean id="publisherNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="publisherName" /> 
+  <bean id="editorNamePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="editorName" /> 
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="publisherMailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="publisherMail" /> 
+  <bean id="editorEmailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="editorEmail" /> 
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="publisherURLPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="publisherURL" /> 
+  <bean id="editorURLPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="editorURL" /> 
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />

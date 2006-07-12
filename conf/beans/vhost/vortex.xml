@@ -92,7 +92,7 @@
          class="org.springframework.context.support.ResourceBundleMessageSource">
      <property name="basenames">
        <list>
-         <value>messages</value>
+         <value>vortikal.i18n.messages</value>
        </list>
      </property>
    </bean>

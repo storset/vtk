@@ -20,7 +20,7 @@
 
 <#macro propertyItemIfExists propertyName>
   <#if aboutItems[propertyName]?exists>
-    <@propList.editOrDisplayPropertyItem aboutItems[propertyName] />
+    <@propList.editOrDisplayPropertyItem item=aboutItems[propertyName] />
   </#if>
 </#macro>
 
@@ -29,7 +29,6 @@
     <@propList.propertyEditURL aboutItems[propertyName] />
   </#if>
 </#macro>
-
 
 <#function shouldDisplayForm propertyName>
   <#if aboutItems[propertyName]?exists && form?exists
@@ -40,8 +39,13 @@
   <#return false />
 </#function>
 
+<#macro defaultPropertyDisplay name value editURL="">
+  <#local display = propList.defaultPropertyDisplayFormat?interpret />
+  <@display />
+</#macro>
+
 <#macro displayForm propertyName value="" >
-  <@propList.propertyForm item=aboutItems[propertyName] formValue=value />
+  <tr><td colspan="2" class="expandedForm"><@propList.propertyForm item=aboutItems[propertyName] formValue=value /></td></tr>
 </#macro>
 
 
@@ -55,16 +59,7 @@
 <#assign resource = resourceContext.currentResource />
 <#assign defaultHeader = vrtx.getMsg("resource.metadata.about", "About this resource") />
 
-<#--
-<#pre>
-  <#list aboutItems?keys as key>
-    ${key} = ${aboutItems[key]}
-  </#list>
-</pre>
- -->
-
   <div class="resourceInfo">
-
   <h2>
     <@vrtx.msg
        code="resource.metadata.about.${resource.resourceType}"
@@ -77,7 +72,7 @@
        code="resource.metadata.about.basic"
        default="Basic information"/>
   </h3 -->
-  <table>
+  <table class="resourceInfo">
     <tr>
       <!-- Last modified -->
       <#assign modifiedByStr = resource.modifiedBy.name />
@@ -92,8 +87,8 @@
                    default = "${resource.lastModified?date} by ${modifiedByStr}" />
       </#assign>
 
-      <@propList.defaultPropertyDisplay
-             key = vrtx.getMsg("resource.lastModified", "Last modified")
+      <@defaultPropertyDisplay
+             name = vrtx.getMsg("property.lastModified", "Last modified")
              value = modifiedStr />
     </tr>
     <tr>
@@ -109,8 +104,8 @@
                    args = [ "${resource.creationTime?date}", "${createdByStr}" ]
                    default = "${resource.creationTime?date} by ${createdByStr}" />
       </#assign>
-      <@propList.defaultPropertyDisplay
-             key = vrtx.getMsg("resource.creationTime", "Created")
+      <@defaultPropertyDisplay
+             name = vrtx.getMsg("property.creationTime", "Created")
              value = createdByStr />
 
     </tr>
@@ -119,25 +114,25 @@
       <@propertyItemIfExists propertyName = 'owner' />
     <tr>
       <!-- ResourceType -->
-      <@propList.defaultPropertyDisplay
-             key = vrtx.getMsg("resource.resourceType", "Resource type")
-             value = vrtx.getMsg("resource.resourceType." + resource.resourceType, 
+      <@defaultPropertyDisplay
+             name = vrtx.getMsg("property.resourceType", "Resource type")
+             value = vrtx.getMsg("property.resourceType." + resource.resourceType, 
                                  resource.resourceType) />
     </tr>
 
     <tr>
       <!-- Web address -->
       <#assign url><a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
-      <@propList.defaultPropertyDisplay
-             key = vrtx.getMsg("resource.viewURL", "Web address")
+      <@defaultPropertyDisplay
+             name = vrtx.getMsg("property.viewURL", "Web address")
              value = url />
     </tr>
 
     <tr>
       <!-- WebDAV address -->
       <#assign url><a href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
-      <@propList.defaultPropertyDisplay
-             key = vrtx.getMsg("resource.webdavURL", "WebDAV address")
+      <@defaultPropertyDisplay
+             name = vrtx.getMsg("property.webdavURL", "WebDAV address")
              value = url />
     </tr>
 
@@ -161,11 +156,11 @@
             ${resourceContext.currentResource.contentLength} B
           </#if>
        <#else>
-	 <@vrtx.msg code="resource.contentLength.unavailable" default="Not available" />
+	 <@vrtx.msg code="property.contentLength.unavailable" default="Not available" />
        </#if>
       </#assign>
-      <@propList.defaultPropertyDisplay
-             key = vrtx.getMsg("resource.contentLength", "Size")
+      <@defaultPropertyDisplay
+             name = vrtx.getMsg("property.contentLength", "Size")
              value = size />
     </tr>
     </#if>
@@ -178,8 +173,10 @@
        default="Information describing the content"/>
   </h3>
   <table class="resourceInfo">
+    <#if resource.collection>
       <!-- Title -->
-      <@propertyItemIfExists propertyName = 'collection.title' />
+      <@propertyItemIfExists propertyName = 'title' />
+    </#if>
       <!-- Short Title -->
       <@propertyItemIfExists propertyName = 'shortTitle' />
       <!-- Keywords -->
@@ -226,8 +223,8 @@
       <#assign editURL>
         <@propertyEditURLIfExists propertyName = 'userSpecifiedCharacterEncoding' />
       </#assign>
-      <@propList.defaultPropertyDisplay
-             key = vrtx.getMsg("resource.characterEncoding", "Character encoding")
+      <@defaultPropertyDisplay
+             name = vrtx.getMsg("property.characterEncoding", "Character encoding")
              value = encoding
              editURL = editURL />
 
@@ -236,8 +233,9 @@
     </tr>
   </table>
   </#if>
-
   </div>
+
+
 
 </body>
 </html>

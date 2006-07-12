@@ -421,7 +421,7 @@
       <resource>
         <!-- Include Language bundles in the jar under '/'. -->
         <directory>src/i18n</directory>
-        <targetPath>/</targetPath>
+        <targetPath>/vortikal/i18n</targetPath>
         <includes>
           <include>*.properties</include>
         </includes>

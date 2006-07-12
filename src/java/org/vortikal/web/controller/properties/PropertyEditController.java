@@ -81,10 +81,6 @@ public class PropertyEditController extends SimpleFormController
     private String propertyListModelName;
     private String propertyMapModelName;
 
-//     private String modelKey;
-  
-//     private Service service;
-    
     public void setPropertyListModelName(String propertyListModelName) {
         this.propertyListModelName = propertyListModelName;
     }
@@ -159,15 +155,13 @@ public class PropertyEditController extends SimpleFormController
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                      requestContext.getResourceURI(), false);
         String value = null;
-        String[] formAllowedValues = null;
+        List formAllowedValues = null;
         String editURL = null;
         PropertyTypeDefinition definition = null;
-
 
         for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
 
             if (isFocusedProperty(this.propertyTypeDefinitions[i], request)) {
-
                 definition = this.propertyTypeDefinitions[i];
 
                 Property property = resource.getProperty(
@@ -190,36 +184,30 @@ public class PropertyEditController extends SimpleFormController
                 Value[] definitionAllowedValues = definition.getAllowedValues();
 
                 if (definitionAllowedValues != null) {
-                    int startIdx = 0;
-                    if (!definition.isMandatory()) {
-                        // Allow "" value (remove property)
-                        formAllowedValues = new String[definitionAllowedValues.length + 1];
-                        formAllowedValues[0] = "";
-                        startIdx = 1;
-                    } else {
-                        formAllowedValues = new String[definitionAllowedValues.length];
+                    formAllowedValues = new ArrayList();
+                    for (int j = 0; j < definitionAllowedValues.length; j++) {
+                        formAllowedValues.add(definitionAllowedValues[j].toString());
                     }
+                    if (!definition.isMandatory())
+                        formAllowedValues.add(0, "");
 
-                    for (int j = startIdx; j < definitionAllowedValues.length; j++) {
-                        formAllowedValues[j] = definitionAllowedValues[j].toString();
-                    }
                 }
                 Map urlParameters = new HashMap();
                 String namespaceURI = definition.getNamespace().getUri();
-                if (namespaceURI != null) {
+                if (namespaceURI != null)
                     urlParameters.put("namespace", namespaceURI);
-                }
+
                 urlParameters.put("name", definition.getName());
                 editURL = service.constructLink(resource, securityContext.getPrincipal(),
                                                 urlParameters);
             }
-
         }
         
         PropertyEditCommand propertyEditCommand = new PropertyEditCommand(
             editURL, definition, value, formAllowedValues);
         return propertyEditCommand;
     }
+
 
     private String getValueForPropertyAsString(Property property)
         throws IllegalOperationException {
@@ -242,15 +230,16 @@ public class PropertyEditController extends SimpleFormController
 
     protected boolean isFormSubmission(HttpServletRequest request) {
         boolean isFormSubmission = super.isFormSubmission(request);
-        if ("toggle".equals(request.getParameter("action"))) {
-            return true;
-        }
+//         if ("toggle".equals(request.getParameter("action"))) {
+//             return true;
+//         }
         return isFormSubmission;
     }
     
  
-    protected ModelAndView onSubmit (HttpServletRequest request, HttpServletResponse response,
-                                     Object command, BindException errors) throws Exception {    
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
+                                    Object command, BindException errors) throws Exception {    
+
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
@@ -274,46 +263,43 @@ public class PropertyEditController extends SimpleFormController
                 Property property = resource.getProperty(def.getNamespace(), def.getName());
 
                 String stringValue = propertyCommand.getValue();
-                if ("".equals(stringValue)) {
-                    if (property == null) {
-                        propertyCommand.setDone(true);
-                        propertyCommand.clear();
-                        return new ModelAndView(getSuccessView());
-                    }
-                    resource.removeProperty(def.getNamespace(), def.getName());
-                } else {
-                    if (property == null) {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug("Property does not exist on resource " + resource
-                                         + ", creating from definition: " + def);
-                        }
-                        property = resource.createProperty(def.getNamespace(), def.getName());
-                    }
-
-                    
-                    if (def.isMultiple()) {
-                        String[] splitValues = stringValue.split(",");
-                        Value[] values = this.valueFactory.createValues(
-                            splitValues, def.getType());
-                        property.setValues(values);
-                    } else if (def.getType() == PropertyType.TYPE_BOOLEAN) {
-                        boolean oldValue = property.getBooleanValue();
-                        property.setBooleanValue(!oldValue);
-                    } else {
-                        Value value = this.valueFactory.createValue(
-                            stringValue, def.getType());
-                        property.setValue(value);
-                    }
-                    if (this.logger.isDebugEnabled()) {
-                        String debugVal = def.isMultiple()
-                            ? java.util.Arrays.asList(property.getValues()).toString()
-                            : property.getValue().toString();
-                        this.logger.debug("Setting property '" + property + "'for resource "
-                                     + resource + " to value " + debugVal);
-                    }
-                }
-
                 try {
+                    if ("".equals(stringValue)) {
+                        if (property == null) {
+                            propertyCommand.setDone(true);
+                            propertyCommand.clear();
+                            return new ModelAndView(getSuccessView());
+                        }
+                        resource.removeProperty(def.getNamespace(), def.getName());
+                    } else {
+                        if (property == null) {
+                            if (this.logger.isDebugEnabled()) {
+                                this.logger.debug("Property does not exist on resource " + resource
+                                                  + ", creating from definition: " + def);
+                            }
+                            property = resource.createProperty(def.getNamespace(), def.getName());
+                        }
+                    
+                        if (def.isMultiple()) {
+                            String[] splitValues = stringValue.split(",");
+                            Value[] values = this.valueFactory.createValues(splitValues, def.getType());
+                            property.setValues(values);
+//                         } else if (def.getType() == PropertyType.TYPE_BOOLEAN) {
+//                             boolean oldValue = property.isValueInitialized() ? property.getBooleanValue() : false;
+//                             property.setBooleanValue(!oldValue);
+                        } else {
+                            Value value = this.valueFactory.createValue(stringValue, def.getType());
+                            property.setValue(value);
+                        }
+                        if (this.logger.isDebugEnabled()) {
+                            String debugOutput = def.isMultiple()
+                                ? java.util.Arrays.asList(property.getValues()).toString()
+                                : property.getValue().toString();
+                            this.logger.debug("Setting property '" + property + "'for resource "
+                                              + resource + " to value " + debugOutput);
+                        }
+                    }
+
                     this.repository.store(token, resource);
                 } catch (ConstraintViolationException e) {
                     if (logger.isDebugEnabled()) {
@@ -397,10 +383,9 @@ public class PropertyEditController extends SimpleFormController
                     urlParameters.put("namespace", namespaceURI);
                 }
                 urlParameters.put("name", def.getName());
-                if (def.getType() == PropertyType.TYPE_BOOLEAN) {
-                    urlParameters.put("action", "toggle");
-                } else {
-                }
+//                 if (def.getType() == PropertyType.TYPE_BOOLEAN) {
+//                         urlParameters.put("action", "toggle");
+//                 }
                 if (def.getType() == PropertyType.TYPE_DATE) {
                     format = this.dateFormat;
                 }

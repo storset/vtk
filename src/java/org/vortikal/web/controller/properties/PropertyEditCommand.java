@@ -30,16 +30,17 @@
  */
 package org.vortikal.web.controller.properties;
 
+import java.util.Arrays;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
-import java.util.Arrays;
+import java.util.List;
 
 
 
 public class PropertyEditCommand extends AbstractSaveCancelCommand {
 
     private PropertyTypeDefinition definition;
-    private String[] possibleValues;
+    private List possibleValues;
     private String value;
     
     private String namespace;
@@ -56,7 +57,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
     }
 
     public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition,
-                               String value, String[] possibleValues) {
+                               String value, List possibleValues) {
         super(submitURL);
         this.definition = definition;
         this.value = value;
@@ -85,7 +86,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         this.value = value;
     }
     
-    public String[] getPossibleValues() {
+    public List getPossibleValues() {
         return this.possibleValues;
     }
     
@@ -95,28 +96,21 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         this.possibleValues = null;
     }
 
-    /**
-         * toString methode: creates a String representation of the object
-         * @return the String representation
-         * @author info.vancauwenberge.tostring plugin
-    
-         */
-        public String toString() {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("PropertyEditCommand[");
-            buffer.append("definition = ").append(this.definition);
-            if (this.possibleValues == null) {
-                buffer.append(", possibleValues = ").append("null");
-            } else {
-                buffer.append(", possibleValues = ").append(
-                    Arrays.asList(this.possibleValues).toString());
-            }
-            buffer.append(", value = ").append(this.value);
-            buffer.append(", namespace = ").append(this.namespace);
-            buffer.append(", name = ").append(this.name);
-            buffer.append("]");
-            return buffer.toString();
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("PropertyEditCommand[");
+        buffer.append("definition = ").append(this.definition);
+        if (this.possibleValues == null) {
+            buffer.append(", possibleValues = ").append("null");
+        } else {
+            buffer.append(", possibleValues = ").append(this.possibleValues);
         }
+        buffer.append(", value = ").append(this.value);
+        buffer.append(", namespace = ").append(this.namespace);
+        buffer.append(", name = ").append(this.name);
+        buffer.append("]");
+        return buffer.toString();
+    }
     
 }
 

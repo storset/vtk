@@ -57,6 +57,7 @@ public class PropertyEditValidator implements Validator {
     
 
     public boolean supports(Class clazz) {
+System.out.println("__supports: " + clazz);
         boolean retVal = (PropertyEditCommand.class.isAssignableFrom(clazz));
         return retVal;
     }
@@ -95,6 +96,7 @@ public class PropertyEditValidator implements Validator {
                 }
 
             } else {
+System.out.println("__validate");
                 Value value = this.valueFactory.createValue(
                     formValue, command.getDefinition().getType());
                 if (command.getDefinition().getType() == PropertyType.TYPE_PRINCIPAL) {
@@ -112,6 +114,7 @@ public class PropertyEditValidator implements Validator {
                 if (allowedValues != null) {
                     boolean found = false;
                     for (int i = 0; i < allowedValues.length; i++) {
+System.out.println("__allowed_val: " + allowedValues[i]);
                         if (value.equals(allowedValues[i])) {
                             found = true;
                             break;

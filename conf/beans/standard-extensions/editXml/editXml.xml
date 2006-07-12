@@ -332,7 +332,7 @@
         class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">
       <list>
-        <value>xmledit</value>
+        <value>vortikal.i18n.xmledit</value>
       </list>
     </property>
   </bean>

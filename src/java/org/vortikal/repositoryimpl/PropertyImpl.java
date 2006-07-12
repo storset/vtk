@@ -334,7 +334,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             if (!valuesList.contains(value)) {
                 ConstraintViolationException e = 
                     new ConstraintViolationException(
-                        "Value not in list of allowed values for property '" + this);
+                        "Value '" + value + "' not in list of allowed values for property '" + this);
                 e.setStatusCode(ConstraintViolationException.NOT_IN_ALLOWED_VALUES);
                 throw e;
             }

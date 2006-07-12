@@ -16,73 +16,40 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-  <title>Permissions on resource</title>
-</head>
-<body>
+  <head>
+    <title>Permissions on resource</title>
+  </head>
+  <body>
 
-  <div class="resourceInfo permissions">
-
-    <h2><@vrtx.msg code="permissions.header" default="Permissions on this resource" /></h2>
-    <p><@permissions.editInheritance />
-    <#if resourceContext.currentResource.acl.inherited>
-      <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
-      <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setCustom" default="edit" /></a>&nbsp;)</#if>
-      <#else>
-        <@vrtx.msg code="permissions.notInherited" default="Custom permissions" />
-        <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setInherited" default="edit" /></a>&nbsp;)</#if>
-      </#if>
+    <div class="resourceInfo permissions">
+      <h2><@vrtx.msg code="permissions.header" default="Permissions on this resource" /></h2>
+      <p>
+        <#if resourceContext.currentResource.acl.inherited>
+          <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
+          <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setCustom" default="edit" /></a>&nbsp;)</#if>
+        <#else>
+          <@vrtx.msg code="permissions.notInherited" default="Custom permissions" />
+          <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setInherited" default="edit" /></a>&nbsp;)</#if>
+        </#if>
       </p>
 
      
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
-      <@permissions.editOrDisplay privilegeName="read" privilegeHeading = privilegeHeading type="group-edit" />
+      <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />
 
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.write" default="Write" /></#assign>
-      <@permissions.editOrDisplay privilegeName="write" privilegeHeading = privilegeHeading type="group-edit" />
+      <@permissions.editOrDisplayPrivilege privilegeName="write" privilegeHeading=privilegeHeading />
 
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin" /></#assign>
-      <@permissions.editOrDisplay privilegeName="all" privilegeHeading = privilegeHeading type="group-edit" />
+      <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
 
 
-      <h3 style="margin-top:1em;"><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></h3>
-
-      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
-      <@permissions.editOrDisplay privilegeName="bind" privilegeHeading = privilegeHeading />
-
-      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
-      <@permissions.editOrDisplay privilegeName="read-processed" privilegeHeading = privilegeHeading />
-
-
-
-      <#-- h3><@vrtx.msg code="permissions.privilege.write" default="Write" /></h3>
-      <div><@permissions.editOrDisplay 'write' /></div>
-
-      <h3><@vrtx.msg code="permissions.privilege.all" default="Admin" /></h3>
-      <div><@permissions.editOrDisplay 'all' /></div>
-
-      <h3 style="margin-top:1em;"><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></h3>
-      <div class="smaller">
-        <@vrtx.msg code="permissions.privilege.bind" default="Create resources only" />:
-        <@permissions.editOrDisplay 'bind' />
-      </div>
-      <div class="smaller" style="padding-top: 0px;"><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" />:
-          <@permissions.editOrDisplay 'read-processed' />
-      </div -->
-
-
-      <#-- table>
-        <tr>
-          <td><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" />:</td>
-          <td><@permissions.editOrDisplay 'bind' /></td>
-        </tr>
-        <tr>
-          <td><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" />:</td>
-          <td><@permissions.editOrDisplay 'read-processed' /></td>
-        </tr>
-      </table -->
-
-  </div>
-
-</body>
+      <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>
+      <#assign bindHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
+      <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
+      <#assign privilegeList = [{"name":"bind", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
+      <@permissions.editOrDisplayPrivileges privilegeList = privilegeList heading = groupHeading />
+    </div>
+  </body>
 </html>
+

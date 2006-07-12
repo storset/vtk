@@ -19,55 +19,98 @@
   'resourceContext' missing">
 </#if>
 
-<#macro editInheritance>
-  <#if aclInheritanceForm?exists && !aclInheritanceForm.done>
-    <tr class="inheritance">
-      <td colspan="2" class="expandedForm">
-        <form action="${aclInheritanceForm.submitURL?html}" method="POST">
-          <h3>
-            <@vrtx.msg
-               code="permissions.header.${resourceContext.currentResource.resourceType}"
-               default="defaultHeader"/>
-          </h3>
-          <ul class="inheritance">
-            <li>
-              <input id="permissions.isInherited" type="radio" name="inherited" value="true"
-                     <#if aclInfo.inherited>checked="checked"</#if>>
-              <label for="permissions.isInherited"><@vrtx.msg code="permissions.isInherited" default="Inherited"/></label>
-            </li>
-            <li>
-              <input id="permissions.notInherited" type="radio" name="inherited" value="false"
-                     <#if !aclInfo.inherited>checked="checked"</#if>>
-              <label for="permissions.notInherited"><@vrtx.msg code="permissions.notInherited" default="Custom"/></label>
-            </li>
-          </ul>
-          <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>">
-          <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
-        </form>
-      </td>
-    </tr>
-  </#if>
 
+<#--
+ * editOrDisplayPrivilege
+ *
+ * Display privilege as a single group with heading.
+ * 
+ * @param privilegeName - name of privilege
+ * @param privilegeHeading 
+ *
+-->
+
+<#macro editOrDisplayPrivilege privilegeName privilegeHeading>
+  <#assign formName = 'permissionsForm_' + privilegeName />
+
+  <#if .vars[formName]?exists>
+    <div>
+      <div class="expandedForm">
+        <@editACLFormNew
+           formName = formName
+           privilegeName = privilegeName
+           privilegeHeading = privilegeHeading />
+      </div>
+    </div>
+   <#else>
+      <h3>${privilegeHeading} <span style="font-size:90%; font-weight:normal;"><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if><span></h3>
+    <@listPrincipalsSeparatedLists privilegeName = privilegeName />
+   </#if>
 </#macro>
 
 
 <#--
- * listPrincipals
+ * editOrDisplayPrivileges
  *
- * Lists users and groups that have permissions on the current
- * resource. Owners are displayed with a '(owner') suffix.
- *
- * @param users list of users
- * @param groups list of groups
+ * Display a list of privileges as one group with heading (table).
+ * 
+ * @param privilegeList - sequence of hashes with name of privilege, privilege heading
+ * @param heading - name of group
  *
 -->
-<#macro listPrincipals pseudoPrincipals users groups groupingPrincipal>
+
+<#macro editOrDisplayPrivileges privilegeList heading>
+  <h3>${heading}</h3>
+  <table>
+    <#list privilegeList as p>
+      <tr>
+      <#assign formName = 'permissionsForm_' + p.name />
+      <#assign privilegeName = p.name />
+      <#assign privilegeHeading = p.heading />
+      <#if .vars[formName]?exists>
+        <td colspan="2" class="expandedForm">
+        <@editACLFormNew
+           formName = formName
+           privilegeName = privilegeName 
+           privilegeHeading = privilegeHeading />
+        </td>
+      <#else>
+        <td class="key">${privilegeHeading}</td>
+        <td>
+             <@listPrincipalsSingleList        
+                privilegeName = privilegeName />
+             <#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if>
+          </td>
+      </#if>
+      </tr>
+    </#list>
+  </table>
+</#macro>
+
+
+<#--
+ * listPrincipalsSingleList
+ *
+ * Lists users and groups that have privileges on the current
+ * resource as one list. Owners are displayed with a '(owner') suffix.
+ *
+ * @param privilegeName - name of privilege
+ *
+-->
+
+<#macro listPrincipalsSingleList privilegeName>
+  <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
+  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
+  <#assign users = aclInfo.privilegedUsers[privilegeName] />
+  <#assign groups = aclInfo.privilegedGroups[privilegeName] />
+
   <#assign grouped = false />
   <#list pseudoPrincipals as pseudoPrincipal>
     <#if pseudoPrincipal.name = groupingPrincipal.name>
       <#assign grouped = true />
     </#if>
   </#list>
+
   <#if grouped>
     <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" /><#t/>
   <#else>
@@ -91,26 +134,84 @@
 
 
 <#--
+ * listPrincipalsSeparatedLists
+ *
+ * Lists users and groups that have privileges on the current
+ * resource in two tablerows. Paragraph if "everyone" have privileges. 
+ * Owners are displayed with a '(owner') suffix.
+ *
+ * @param privilegeName - name of privilege
+ *
+-->
+<#macro listPrincipalsSeparatedLists privilegeName>
+  <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
+  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
+  <#assign users = aclInfo.privilegedUsers[privilegeName] />
+  <#assign groups = aclInfo.privilegedGroups[privilegeName] />
+
+  <#assign grouped = false />
+  <#list pseudoPrincipals as pseudoPrincipal>
+    <#if pseudoPrincipal.name = groupingPrincipal.name>
+      <#assign grouped = true />
+    </#if>
+  </#list>
+
+  <#if grouped>
+    <p><@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" /><#t/></p>
+  <#else>
+    <table>
+      <tr>
+        <td class="key"><@vrtx.msg code="permissions.users" default="Users"/>:</td>
+        <td> 
+          <#list pseudoPrincipals as pseudoPrincipal>
+            <#compress>
+              <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
+              <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(${resourceContext.currentResource.owner})</#if><#t/>
+            </#compress>
+            <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0>, <#t/></#if>
+          </#list>
+          <#list users as user>
+            <#compress>${user.name}</#compress><#t/>
+            <#if user_index &lt; users?size - 1>,<#t/></#if>
+          </#list>
+        </td>
+      </tr>
+      <tr>
+        <td class="key"><@vrtx.msg code="permissions.groups" default="Groups"/>:</td>
+        <td>
+          <#list groups as group>
+            <#compress>${group.name}</#compress><#t/>
+            <#if group_index &lt; groups?size - 1>,<#t/></#if>
+          </#list>
+        </td>
+      </tr>
+    </table>
+  </#if>
+</#macro>
+
+
+<#--
  * editACLForm
  *
  * Macro for displaying the 'Edit ACL' form
  *
- * @param formName the name of the form
- * @param privilege the privilege to edit
+ * @param formName the - name of the form
+ * @param privilegeName - the privilege to edit
  *
 -->
-<#macro editACLForm formName privilege groupingPrincipal privilegeHeading>
   <#-- 
     Should we use this to access form without having to do @spring.bind all the time?
     assign form=.vars[formName] /
   -->
 
-   <#--assign grouped = acl.containsEntry(privilege, groupingPrincipal) /-->
-   <#assign grouped = false />
+<#macro editACLFormNew formName privilegeName privilegeHeading>
+  <#assign privilege = aclInfo.privileges[privilegeName] />
+  <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
+  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
+
+  <#assign grouped = false />
 
   <@spring.bind formName + ".submitURL" /> 
-  <div class="expandedForm">
-
   <form class="aclEdit" action="${spring.status.value?html}" method="POST">
     <h3>${privilegeHeading}</h3>
     <ul class="everyoneOrSelectedUsers">
@@ -249,58 +350,5 @@
     <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>">
     <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
     </div>
-  </form>	
-  </div>
+  </form>
 </#macro>
-
-
-
-<#macro editOrDisplay privilegeName privilegeHeading type="single-edit">
-  <#assign formName = 'permissionsForm_' + privilegeName />
-  <#assign privilege = aclInfo.privileges[privilegeName] />
-  <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
-  <#assign users = aclInfo.privilegedUsers[privilegeName] />
-  <#assign groups = aclInfo.privilegedGroups[privilegeName] />
-  
-  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
-
-  <#if .vars[formName]?exists>
-    <div>
-    <@editACLForm
-       formName = formName
-       privilege = privilege
-       groupingPrincipal = groupingPrincipal
-       privilegeHeading = privilegeHeading />
-    </div>
-  <#else>
-    <#if type="group-edit">
-      <#if privilegeHeading?exists>
-        <h3>${privilegeHeading}</h3>
-      </#if>
-      <div>
-        <@listPrincipals
-           pseudoPrincipals = pseudoPrincipals
-           users = users
-           groups = groups
-           groupingPrincipal = groupingPrincipal />
-
-        <#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if>
-      </div>
-    <#else>
-      <div class="smaller">
-        ${privilegeHeading}:
-        <@listPrincipals
-           pseudoPrincipals = pseudoPrincipals
-           users = users
-           groups = groups
-           groupingPrincipal = groupingPrincipal />
-
-        <#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if>
-
-      </div>
-     </#if>
-  </#if>
-
-</#macro>
-
-

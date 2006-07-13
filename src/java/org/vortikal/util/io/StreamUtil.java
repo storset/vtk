@@ -30,6 +30,7 @@
  */
 package org.vortikal.util.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -108,4 +109,16 @@ public class StreamUtil {
             }
         }
     }
+
+    public static InputStream stringToStream(String s, String encoding) throws IOException {
+        ByteArrayInputStream stream = new ByteArrayInputStream(s.getBytes(encoding));
+        return stream;
+    }
+    
+    public static InputStream stringToStream(String s) throws IOException {
+        ByteArrayInputStream stream = new ByteArrayInputStream(
+            s.getBytes(System.getProperty("file.encoding")));
+        return stream;
+    }
+    
 }

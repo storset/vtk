@@ -16,12 +16,15 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
+<!--
         <ref bean="viewXslStylesheetPropDef" />
         <ref bean="editXslStylesheetPropDef" />
+-->
       </list>
     </property>
   </bean>
 
+<!--
   <bean id="viewXslStylesheetPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="view-xsl-ref" />
@@ -51,7 +54,7 @@
     <property name="stylesheetReferenceResolvers" ref="editXslStylesheetResolvers" />
   </bean>
 
-
+-->
   <bean id="schemaPropSet" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -59,6 +62,7 @@
     <property name="checkExistenceOnly" value="true" />
   </bean>
 
+<!--
   <bean id="viewXslPropSet" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="CUSTOM_NAMESPACE" />
@@ -72,5 +76,5 @@
     <property name="name" value="edit-xsl-ref" />    
     <property name="checkExistenceOnly" value="true" />
   </bean>
-
+-->
 </beans>

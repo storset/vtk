@@ -23,7 +23,6 @@
     </property>
   </bean>
 
-
   <bean id="htmlDocTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="docType" />
     <property name="type" ref="TYPE_STRING" />

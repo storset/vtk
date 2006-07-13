@@ -152,6 +152,12 @@ public abstract class AbstractConsole
     }
     
 
+    public final void evalInputStream(InputStream inputStream) {
+        // XXX should rename evalInitFile:
+        this.evalInitFile(inputStream, System.out);
+    }
+    
+
     public final void afterPropertiesSet() {
 
         this.init();

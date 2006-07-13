@@ -23,7 +23,8 @@
         <bean class="org.vortikal.web.service.ResourceTypeAssertion">
           <property name="resourceTypeDefinition" ref="managedXmlResource" />
         </bean>
-        <ref bean="editXslPropSet" />
+        <!-- XXX: temporarily removed: -->
+        <!--ref bean="editXslPropSet" /-->
         <!--
         <ref bean="contentTypeMatchesXml" />
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">

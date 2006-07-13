@@ -17,7 +17,8 @@
           <property name="childResourceAssertions">
             <list>
               <ref bean="resourceIsManagedXml" />
-              <ref bean="viewXslPropSet" />
+              <!-- XXX: temporarily removed: -->
+              <!--ref bean="viewXslPropSet" /-->
             </list>
           </property>
         </bean>
@@ -41,7 +42,8 @@
           <property name="childResourceAssertions">
             <list>
               <ref bean="resourceIsManagedXml" />
-              <ref bean="viewXslPropSet" />
+              <!-- XXX: temporarily removed: -->
+              <!--ref bean="viewXslPropSet" /-->
             </list>
           </property>
         </bean>
@@ -84,7 +86,8 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsManagedXml" />
-        <ref bean="viewXslPropSet" />
+        <!-- XXX: temporarily removed: -->
+        <!--ref bean="viewXslPropSet" /-->
 
         <!--
         <ref bean="contentTypeMatchesXml" />
@@ -121,7 +124,8 @@
           <property name="childResourceAssertions">
             <list>
               <ref bean="resourceIsManagedXml" />
-              <ref bean="viewXslPropSet" />
+              <!-- XXX: temporarily removed: -->
+              <!--ref bean="viewXslPropSet" /-->
             </list>
           </property>
         </bean>
@@ -153,7 +157,8 @@
           <property name="childResourceAssertions">
             <list>
               <ref bean="resourceIsManagedXml" />
-              <ref bean="viewXslPropSet" />
+              <!-- XXX: temporarily removed: -->
+              <!--ref bean="viewXslPropSet" /-->
             </list>
           </property>
         </bean>
@@ -182,7 +187,8 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsManagedXml" />
-        <ref bean="viewXslPropSet" />
+        <!-- XXX: temporarily removed: -->
+        <!--ref bean="viewXslPropSet" /-->
         <!--
         <ref bean="contentTypeMatchesXml" />
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">

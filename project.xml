@@ -389,7 +389,7 @@
           <includes>
             <include>**/*.xml</include>
             <include>**/*.xsd</include>
-            <include>log4j.properties</include>
+            <include>**/*.properties</include>
           </includes>
         </resource>
       </resources>
@@ -424,6 +424,14 @@
         <targetPath>/vortikal/i18n</targetPath>
         <includes>
           <include>*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <!-- Include SQL DDL files. -->
+        <directory>src/sql</directory>
+        <targetPath>/vortikal/sql</targetPath>
+        <includes>
+          <include>*-schema.sql</include>
         </includes>
       </resource>
       <resource>

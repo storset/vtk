@@ -40,7 +40,13 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-public class EditDocumentTest extends TestCase {
+import org.jmock.Mock;
+import org.jmock.MockObjectTestCase;
+
+import org.vortikal.repository.Resource;
+
+
+public class EditDocumentTest extends MockObjectTestCase {
 
     private static final String TEST_XML = "org/vortikal/edit/xml/test.xml";
 
@@ -70,8 +76,12 @@ public class EditDocumentTest extends TestCase {
             Document d = builder.build(testXML);
             Element root = d.getRootElement();
             root.detach();
+
+            Mock mockResource = mock(Resource.class);
+            mockResource.expects(atLeastOnce()).method("getURI").withNoArguments().will(
+                returnValue("/foo.xml"));
             // XXX: will tests run without a resource?
-            this.testDocument = new EditDocument(root, d.getDocType(), null);
+            this.testDocument = new EditDocument(root, d.getDocType(), (Resource) mockResource.proxy());
 
             URL testXSD = 
                 this.getClass().getClassLoader().getResource(TEST_XSD);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+  
+  <update id="updateAclInheritedFromByPreviousResourceId" parameterClass="java.util.Map">
+    update vortex_resource
+      set acl_inherited_from = r.resource_id
+        from vortex_resource r
+          where (vortex_resource.uri = #uri# or vortex_resource.uri like #uriWildcard#)
+                 and r.prev_resource_id = vortex_resource.acl_inherited_from
+  </update>
+
+</sqlMap>
+

@@ -179,4 +179,24 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         this.ancestorIds = ancestorIds;
     }
 
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PropertySetImpl))
+            return false;
+        PropertySetImpl other = (PropertySetImpl) obj;
+        if (!this.uri.equals(other.uri)) return false;
+        if (!this.resourceType.equals(other.resourceType)) return false;
+        if (!this.propertyMap.equals(other.propertyMap)) return false;
+        if (this.id != other.id) return false;
+        if (this.aclInheritedFrom != other.aclInheritedFrom) return false;
+        if (this.ancestorIds == null && other.ancestorIds != null) return false;
+        if (this.ancestorIds != null && other.ancestorIds == null) return false;
+        if (this.ancestorIds != null) {
+            for (int i = 0; i < this.ancestorIds.length; i++) {
+                if (this.ancestorIds[i] != other.ancestorIds[i]) return false;
+            }
+        }
+        return true;
+    }
+    
 }

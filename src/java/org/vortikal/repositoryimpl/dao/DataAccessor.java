@@ -32,6 +32,7 @@ package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ResourceImpl;
@@ -114,7 +115,8 @@ public interface DataAccessor {
      */
     public void addChangeLogEntry(String loggerID, String recordType,
                                   String uri, String operation, int resourceId,
-                                  boolean collection, boolean recurse) throws IOException;
+                                  boolean collection, Date timestamp,
+                                  boolean recurse) throws IOException;
 
     /**
      * Atomically copies a resource to a new destination.

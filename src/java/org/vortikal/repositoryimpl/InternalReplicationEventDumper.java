@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.beans.factory.BeanInitializationException;
 
@@ -72,15 +73,16 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void created(Resource resource) {
         try {
             this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
-                                           CREATED, -1, resource.isCollection(), false);
+                                                CREATED, -1, resource.isCollection(),
+                                                new Date(), false);
 
             if (resource.isCollection()) {
                 org.vortikal.repositoryimpl.ResourceImpl[] childResources =
                     this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
                 for (int i = 0; i < childResources.length; i++) {
                     this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, childResources[i].getURI(),
-                                                   CREATED, -1, childResources[i].isCollection(),
-                                                   false);
+                                                        CREATED, -1, childResources[i].isCollection(),
+                                                        new Date(), false);
                 }
             }
         } catch (IOException e) {
@@ -97,7 +99,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
         
         try {
             this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, uri, DELETED, resourceId,
-                                           collection, false);
+                                                collection, new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
                 "Caught IOException while reporting resource deletion " +
@@ -111,7 +113,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
         try {
             this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_PROPS,
-                                           -1, resource.isCollection(), false);
+                                                -1, resource.isCollection(), new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
                 "Caught IOException while reporting property modification " +
@@ -122,8 +124,8 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
     public void contentModified(Resource resource) {
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
-                                           MODIFIED_CONTENT, -1, resource.isCollection(), false);
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_CONTENT,
+                                                -1, resource.isCollection(), new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
                 "Caught IOException while reporting content modification " +
@@ -141,8 +143,8 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 //                return;
 //            }
         
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
-                                           MODIFIED_ACL, -1, resource.isCollection(), false);
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_ACL,
+                                                -1, resource.isCollection(), new Date(), false);
             
         } catch (IOException e) {
             this.logger.warn(

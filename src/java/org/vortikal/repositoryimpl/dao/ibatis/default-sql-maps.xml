@@ -675,18 +675,18 @@
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
     select <include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
-      #operation#, now(), uri, resource_id, is_collection 
+      #operation#, #timestamp#, uri, resource_id, is_collection 
     from vortex_resource 
     where uri = #uri# or uri like #uriWildcard#
   </insert>
 
 
-  <insert id="insertChangelogEntry" parameterClass="java.util.Map" >
+  <insert id="insertChangelogEntry" parameterClass="java.util.Map">
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
     values (<include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
-      #operation#, now(), #uri#, #resourceId#, #collection#)
+      #operation#, #timestamp#, #uri#, #resourceId#, #collection#)
   </insert>
 
 </sqlMap>

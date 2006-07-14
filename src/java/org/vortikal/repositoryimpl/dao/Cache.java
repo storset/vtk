@@ -35,6 +35,7 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -453,9 +454,9 @@ public class Cache implements DataAccessor, InitializingBean {
 
     public void addChangeLogEntry(String loggerID, String loggerType,
                                   String uri, String operation, int resourceId,
-                                  boolean collection, boolean recurse) throws IOException {
+                                  boolean collection, Date timestamp, boolean recurse) throws IOException {
         this.wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation,
-                                               resourceId, collection, recurse);
+                                               resourceId, collection, timestamp, recurse);
     }
 
     /**

@@ -345,6 +345,22 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
             this.childURIs = newChildren;
     }
 
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ResourceImpl)) return false;
+        if (!super.equals(obj)) return false;
+        ResourceImpl other = (ResourceImpl) obj;
+        if (!this.acl.equals(other.acl)) return false;
+        if (this.lock == null && other.lock != null) return false;
+        if (this.lock != null && other.lock == null) return false;
+        if (this.lock != null && !this.lock.equals(other.lock)) return false;
+        if (this.childURIs.length != other.childURIs.length) return false;
+        for (int i = 0; i < this.childURIs.length; i++) {
+            if (!this.childURIs[i].equals(other.childURIs[i])) return false;
+        }
+        return true;
+    }
+
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName());

@@ -235,7 +235,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
     public void addChangeLogEntry(String loggerID, String loggerType, String uri,
                                   String operation, int resourceId, boolean collection,
-                                  boolean recurse) throws IOException {
+                                  Date timestamp, boolean recurse) throws IOException {
         try {
             this.sqlMapClient.startTransaction();
 
@@ -250,6 +250,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             parameters.put("operation", operation);
             parameters.put("resourceId", resourceId == -1 ? null : new Integer(resourceId));
             parameters.put("collection", collection ? "Y" : "N");
+            parameters.put("timestamp", timestamp);
             parameters.put("uri", uri);
             parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri));
 

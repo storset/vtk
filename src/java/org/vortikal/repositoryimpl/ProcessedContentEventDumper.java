@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -77,8 +78,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void created(Resource resource) {
         try {
 
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), CREATED, -1,
-                                           resource.isCollection(), true);
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), CREATED,
+                                                -1, resource.isCollection(), new Date(), true);
 
         } catch (IOException e) {
             this.logger.warn(
@@ -93,8 +94,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void deleted(String uri, int resourceId, boolean collection) {
         
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, uri, DELETED, resourceId,
-                                           collection, false);
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, uri, DELETED,
+                                                resourceId, collection, new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
                 "Caught IOException while reporting resource deletion " +
@@ -107,8 +108,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void modified(Resource resource, Resource originalResource) {
 
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_PROPS, -1, 
-                                           resource.isCollection(), false);
+            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_PROPS,
+                                                -1, resource.isCollection(), new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
                 "Caught IOException while reporting property modification " +
@@ -120,7 +121,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void contentModified(Resource resource) {
         try {
             this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
-                                           MODIFIED_CONTENT, -1, resource.isCollection(), false);
+                                                MODIFIED_CONTENT, -1, resource.isCollection(),
+                                                new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
                 "Caught IOException while reporting content modification " +
@@ -177,7 +179,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
             this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), op, -1,
-                                           resource.isCollection(), false);
+                                                resource.isCollection(), new Date(), false);
             
             if (resource.isCollection()) {
                 
@@ -185,8 +187,8 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                     this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
                 for (int i=0; i < childResources.length; i++) {
                     this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, childResources[i].getURI(),
-                                                   op, -1, childResources[i].isCollection(),
-                                                   false);
+                                                        op, -1, childResources[i].isCollection(), new Date(),
+                                                        false);
                 }
             }
 

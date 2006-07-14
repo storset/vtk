@@ -310,7 +310,7 @@
 
     select
       <include refid="nextVortexResourceId" />,
-      #destUri# || substring(uri, length(#uri#) + 1),
+      <include refid="destinationUriCopy" />,
       resource_id,
       resource_type,
       content_length,

@@ -2,29 +2,33 @@
 <!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
 
 <sqlMap>
-
+  
   <sql id="nextVortexResourceId">
-    nextval('vortex_resource_seq_pk')
+    vortex_resource_seq_pk.nextval
   </sql>
 
   <sql id="nextExtraPropEntryId">
-    nextval('extra_prop_entry_seq_pk')
+    extra_prop_entry_seq_pk.nextval
   </sql>
 
   <sql id="nextAclEntryId">
-    nextval('acl_entry_seq_pk')
+    acl_entry_seq_pk.nextval
   </sql>
 
   <sql id="nextLockId">
-    nextval('vortex_lock_seq_pk')
+    vortex_lock_seq_pk.nextval
   </sql>
 
   <sql id="nextChangelogEntryId">
-    nextval('changelog_entry_seq_pk')
+    changelog_entry_seq_pk.nextval
   </sql>
 
   <sql id="nextTempTableSessionId">
-    nextval('vortex_tmp_session_id_seq')
+    vortex_tmp_session_id_seq.nextval
+  </sql>
+
+  <sql id="destinationUriCopy">
+    #destUri# || substr(uri, length(#uri#) + 1)
   </sql>
 
 </sqlMap>

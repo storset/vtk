@@ -471,17 +471,19 @@
        name,
        value)
     select
-      <include refid="nextExtraPropEntryId" />,
-      r.resource_id,
-      p.prop_type_id,
-      p.name_space,
-      p.name,
-      p.value
-    from vortex_resource r inner join extra_prop_entry p 
-      on r.prev_resource_id = p.resource_id
-    where (r.uri = #destUri# or r.uri like #destUriWildcard#)
+      <include refid="nextExtraPropEntryId" />, t.*
+      from
+        (select
+          r.resource_id,
+          p.prop_type_id,
+          p.name_space,
+          p.name,
+          p.value
+        from vortex_resource r inner join extra_prop_entry p 
+             on r.prev_resource_id = p.resource_id
+        where (r.uri = #destUri# or r.uri like #destUriWildcard#)
           and r.prev_resource_id is not null
-    order by p.extra_prop_entry_id
+          order by p.extra_prop_entry_id) t
   </insert>    
 
 

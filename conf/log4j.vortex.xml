@@ -71,6 +71,8 @@
   <logger name="org.vortikal.repositoryimpl.AuthorizationManagerImpl"><level value="info" /></logger>
   <logger name="org.vortikal.repositoryimpl.PropertyManagerImpl"><level value="info" /></logger>
   <logger name="org.vortikal.repositoryimpl.dao"><level value="info" /></logger>
+  <logger name="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher"><level value="info" /></logger>
+  <logger name="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl"><level value="info" /></logger>
   <logger name="org.vortikal.repositoryimpl.query"><level value="debug" /></logger>
   <logger name="org.vortikal.repositoryimpl.query.Reindexer"><level value="info" /></logger>
 
@@ -85,7 +87,6 @@
   <logger name="org.vortikal.web.view.xslt.ResourceXsltView"><level value="info" /></logger>
   <logger name="org.vortikal.web.view.components.menu"><level value="info" /></logger>
   <logger name="org.vortikal.web.controller"><level value="info" /></logger>
-  <logger name="org.vortikal.web.controller.permissions"><level value="info" /></logger>
   <logger name="org.vortikal.web.service"><level value="info" /></logger>
   <logger name="org.vortikal.web.RequestContextInitializer"><level value="info" /></logger>
   <logger name="org.vortikal.webdav"><level value="info" /></logger>

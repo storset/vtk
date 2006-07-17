@@ -13,43 +13,173 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#macro propertyList propertyList>
-  <div>
-    <table class="resourceInfo">
-      <#list propertyList as item>
-        <@editOrDisplayPropertyItem item />
-      </#list>
-    </table>
-  </div>
+
+<#macro propertyList modelName itemNames
+        propertyListWrapperMacro="defaultPropertyListWrapper"
+        displayMacro="defaultPropertyDisplay"
+        editWrapperMacro="defaultEditWrapper"
+        formWrapperMacro="defaultFormWrapper"
+        formInputWrapperMacro="defaultFormInputWrapper"
+        formSubmitWrapperMacro="defaultFormSubmitWrapper"
+        formErrorsWrapperMacro="defaultFormErrorsWrapper"
+        formErrorWrapperMacro="defaultFormErrorWrapper">
+  <#local itemList = [] />
+  <#list itemNames as propertyName>
+    <#if .vars[modelName][propertyName]?exists>
+      <#local itemList = itemList + [ .vars[modelName][propertyName] ] /> 
+    </#if>
+  </#list>
+  <@propertyItemList
+     propertyList=itemList
+     propertyListWrapperMacro=propertyListWrapperMacro 
+     propertyListWrapperMacro=propertyListWrapperMacro
+     displayMacro=displayMacro
+     editWrapperMacro=editWrapperMacro
+     formWrapperMacro=formWrapperMacro
+     formInputWrapperMacro=formInputWrapperMacro
+     formSubmitWrapperMacro=formSubmitWrapperMacro
+     formErrorsWrapperMacro=formErrorsWrapperMacro
+     formErrorWrapperMacro=formErrorWrapperMacro/>
 </#macro>
 
 
-<#macro editOrDisplayPropertyItem item propertyDisplayFormat=defaultPropertyDisplayFormat>
-  <#if form?exists && form.definition?exists && form.definition = item.definition>
-    <tr>
-      <td colspan="2" class="expandedForm">
-        <@propertyForm item />
-      </td>
-    </tr>
+<#macro propertyItemList propertyList 
+        propertyListWrapperMacro="defaultPropertyListWrapper"
+        displayMacro="defaultPropertyDisplay"
+        editWrapperMacro="defaultEditWrapper"
+        formWrapperMacro="defaultFormWrapper"
+        formInputWrapperMacro="defaultFormInputWrapper"
+        formSubmitWrapperMacro="defaultFormSubmitWrapper"
+        formErrorsWrapperMacro="defaultFormErrorsWrapper"
+        formErrorWrapperMacro="defaultFormErrorWrapper">
+  <#local wrapperMacro="" />
+  <#if propertyListWrapperMacro?eval?exists && propertyListWrapperMacro?eval?is_macro>
+    <#local wrapperMacro = propertyListWrapperMacro?eval />
+  <#elseif .main[propertyListWrapperMacro]?exists && .main[propertyListWrapperMacro]?is_macro>
+    <#local wrapperMacro = .main[propertyListWrapperMacro] />
   <#else>
-    <@propertyDisplay item=item />
+    <#stop "No such macro: ${propertyListWrapperMacro}" />
+  </#if>
+  <@wrapperMacro>
+    <#list propertyList as item>
+      <@editOrDisplayPropertyItem item />
+    </#list>
+  </@wrapperMacro>
+</#macro>
+
+
+<#macro editOrDisplayProperty modelName propertyName
+        propertyListWrapperMacro="defaultPropertyListWrapper"
+        displayMacro="defaultPropertyDisplay"
+        editWrapperMacro="defaultEditWrapper"
+        formWrapperMacro="defaultFormWrapper"
+        formInputWrapperMacro="defaultFormInputWrapper"
+        formSubmitWrapperMacro="defaultFormSubmitWrapper"
+        formErrorsWrapperMacro="defaultFormErrorsWrapper"
+        formErrorWrapperMacro="defaultFormErrorWrapper">
+  <#if .vars[modelName]?exists && .vars[modelName][propertyName]?exists>
+  <#local item = .vars[modelName][propertyName] />
+  <#if form?exists && form.definition?exists && form.definition = item.definition>
+    <@propertyForm 
+       item=item
+       editWrapperMacro=editWrapperMacro
+       formWrapperMacro=formWrapperMacro
+       formInputWrapperMacro=formInputWrapperMacro
+       formSubmitWrapperMacro=formSubmitWrapperMacro
+       formErrorsWrapperMacro=formErrorsWrapperMacro
+       formErrorWrapperMacro=formErrorWrapperMacro/>
+  <#else>
+    <@propertyDisplay item=item displayMacro=displayMacro/>
+  </#if>
   </#if>
 </#macro>
 
 
-<#assign defaultPropertyDisplayFormat>
-  <#noparse>
+<#macro editOrDisplayPropertyItem item
+        propertyListWrapperMacro="defaultPropertyListWrapper"
+        displayMacro="defaultPropertyDisplay"
+        editWrapperMacro="defaultEditWrapper"
+        formWrapperMacro="defaultFormWrapper"
+        formInputWrapperMacro="defaultFormInputWrapper"
+        formSubmitWrapperMacro="defaultFormSubmitWrapper"
+        formErrorsWrapperMacro="defaultFormErrorsWrapper"
+        formErrorWrapperMacro="defaultFormErrorWrapper">
+  <#if form?exists && form.definition?exists && form.definition = item.definition>
+    <@propertyForm 
+       item=item
+       editWrapperMacro=editWrapperMacro
+       formWrapperMacro=formWrapperMacro
+       formInputWrapperMacro=formInputWrapperMacro
+       formSubmitWrapperMacro=formSubmitWrapperMacro
+       formErrorsWrapperMacro=formErrorsWrapperMacro
+       formErrorWrapperMacro=formErrorWrapperMacro/>
+  <#else>
+    <@propertyDisplay item=item displayMacro=displayMacro/>
+  </#if>
+</#macro>
+
+
+<#macro defaultPropertyListWrapper>
+  <table class="resourceInfo">
+    <#nested />
+  </table>
+</#macro>
+
+<#macro defaultPropertyDisplay name value editURL="">
   <tr>
     <td class="key">
       ${name}:
     </td>
     <td>
       ${value}
-      ${editURL}
+      <#if editURL != "">
+        ${editURL}
+      </#if>
     </td>
   </tr>
-  </#noparse>
-</#assign>
+</#macro>
+
+<#macro defaultEditWrapper>
+  <tr>
+    <td colspan="2" class="expandedForm">
+      <#nested /> 
+    </td>
+  </tr>
+</#macro>
+
+<#macro defaultFormWrapper item>
+  <#local localizedValueLookupKeyPrefix>
+    <#compress>
+      <#if item.definition.namespace.uri?exists>
+        property.${item.definition.namespace.uri}:${item.definition.name}
+      <#else>
+        property.${item.definition.name}
+      </#if>
+    </#compress>
+  </#local>
+  <#local name = vrtx.getMsg(localizedValueLookupKeyPrefix, item.definition.name) />
+  <h3>${name}:</h3>
+  <ul class="property">
+    <#nested />
+  </ul>
+</#macro>
+
+<#macro defaultFormInputWrapper item>
+  <li><#nested /></li>
+</#macro>
+
+<#macro defaultFormSubmitWrapper item>
+  <li><div><#nested /></div></li>
+</#macro>
+
+<#macro defaultFormErrorsWrapper>
+  <ul><#nested /></ul>
+</#macro>
+
+<#macro defaultFormErrorWrapper>
+  <li><#nested /></li>
+</#macro>
+
 
 
 <#--
@@ -61,14 +191,11 @@
  *
  * @param item a org.vortikal.web.controller.properties.PropertyItem
  *        representing a resource property
- * @param propertyDisplayFormat (optional) a string containing 
- *        Freemarker code for displaying the name, value and editURL
- *        of a proprty. The variables "name", "value" and "editURL"
- *        are supplied and available for interpolation. The default  
- *        display format is defined in the variable
- *        "defaultPropertyDisplayFormat".
+ * @param displayMacro a macro that takes parameters "name", "value"
+ *        and "editURL", used for displaying the property.
+ *        Default is "defaultPropertyDisplay"
 -->
-<#macro propertyDisplay item propertyDisplayFormat=defaultPropertyDisplayFormat>
+<#macro propertyDisplay item displayMacro="defaultPropertyDisplay">
   <#local localizedValueLookupKeyPrefix>
     <#compress>
       <#if item.definition.namespace.uri?exists>
@@ -91,6 +218,8 @@
         <#-- type principal = 5 -->
         <#if item.definition.type = 5>
           ${item.property.principalValue.name}
+        <#elseif item.definition.type = 3>
+          ${item.property.dateValue?date}
         <#else>
           <#local label>
             <@vrtx.msg code="${localizedValueLookupKeyPrefix}.${item.property.value?string}"
@@ -109,11 +238,20 @@
     </#if>
   </#local>
   <#local editURL>
-    <@propertyEditURL item = item />
+    <@propertyItemEditURL item = item />
   </#local>
-  <#local display = propertyDisplayFormat?interpret />
-  <@display />
+  
+  <#if displayMacro?eval?exists && displayMacro?eval?is_macro>
+    <#local macroCall = displayMacro?eval />
+    <@macroCall name=name value=value editURL=editURL />
+  <#elseif .main[displayMacro]?exists && .main[displayMacro]?is_macro>
+    <#local macroCall = .main[displayMacro] />
+    <@macroCall name=name value=value editURL=editURL />
+  <#else>
+    <#stop "No such macro: ${displayMacro}" />
+  </#if>
 </#macro>
+
 
 
 
@@ -125,12 +263,22 @@
  *
  * @param item a org.vortikal.web.controller.properties.PropertyItem
  *        representing a resource property
- * @param formValue (optional) the value to insert in the input field
- *        (only applies to properties that are not limited to a number
- *        of fixed values). This value, if specified, overrides the one
  *        usually obtained from the property itself.
+ * @param editWrapperMacro a macro for wrapping around the <form> element
+ * @param formWrapperMacro a macro for wrapping inside the <form> element
+ * @param formInputWrapperMacro a macro for wrapping a <input> element
+ * @param formSubmitWrapperMacro a macro for wrapping the submit elements
+ * @param formErrorsWrapperMacro a macro for wrapping the error list
+ * @param formErrorWrapperMacro a macro for wrapping a form error
 -->
-<#macro propertyForm item formValue="">
+<#macro propertyForm item formValue=""
+        editWrapperMacro="defaultEditWrapper"
+        formWrapperMacro="defaultFormWrapper"
+        formInputWrapperMacro="defaultFormInputWrapper"
+        formSubmitWrapperMacro="defaultFormSubmitWrapper"
+        formErrorsWrapperMacro="defaultFormErrorsWrapper"
+        formErrorWrapperMacro="defaultFormErrorWrapper">
+
   <#local localizedValueLookupKeyPrefix>
     <#compress>
       <#if item.definition.namespace.uri?exists>
@@ -140,6 +288,62 @@
         </#if>
       </#compress>
     </#local>
+
+    <#local editWrapper = "" />
+    <#if editWrapperMacro?eval?exists && editWrapperMacro?eval?is_macro>
+      <#local editWrapper = editWrapperMacro?eval />
+    <#elseif .main[editWrapperMacro]?exists && .main[editWrapperMacro]?is_macro>
+      <#local editWrapper = .main[editWrapperMacro] />
+    <#else>
+      <#stop "No such macro: ${editWrapperMacro}" />
+    </#if>        
+
+    <#local formWrapper = "" />
+    <#if formWrapperMacro?eval?exists && formWrapperMacro?eval?is_macro>
+      <#local formWrapper = formWrapperMacro?eval />
+    <#elseif .main[formWrapperMacro]?exists && .main[formWrapperMacro]?is_macro>
+      <#local formWrapper = .main[formWrapperMacro] />
+    <#else>
+      <#stop "No such macro: ${formWrapperMacro}" />
+    </#if>
+        
+    <#local formInputWrapper = "" />
+    <#if formInputWrapperMacro?eval?exists && formInputWrapperMacro?eval?is_macro>
+      <#local formInputWrapper = formInputWrapperMacro?eval />
+    <#elseif .main[formInputWrapperMacro]?exists && .main[formInputWrapperMacro]?is_macro>
+      <#local formInputWrapper = .main[formInputWrapperMacro] />
+    <#else>
+      <#stop "No such macro: ${formInputWrapperMacro}" />
+    </#if>
+
+    <#local formSubmitWrapper = "" />
+    <#if formSubmitWrapperMacro?eval?exists && formSubmitWrapperMacro?eval?is_macro>
+      <#local formSubmitWrapper = formSubmitWrapperMacro?eval />
+    <#elseif .main[formSubmitWrapperMacro]?exists && .main[formSubmitWrapperMacro]?is_macro>
+      <#local formSubmitWrapper = .main[formSubmitWrapperMacro] />
+    <#else>
+      <#stop "No such macro: ${formSubmitWrapperMacro}" />
+    </#if>
+
+    <#local formErrorsWrapper = "" />
+    <#if formErrorsWrapperMacro?eval?exists && formErrorsWrapperMacro?eval?is_macro>
+      <#local formErrorsWrapper = formErrorsWrapperMacro?eval />
+    <#elseif .main[formErrorsWrapperMacro]?exists && .main[formErrorsWrapperMacro]?is_macro>
+      <#local formErrorsWrapper = .main[formErrorsWrapperMacro] />
+    <#else>
+      <#stop "No such macro: ${formErrorsWrapperMacro}" />
+    </#if>
+
+    <#local formErrorWrapper = "" />
+    <#if formErrorWrapperMacro?eval?exists && formErrorWrapperMacro?eval?is_macro>
+      <#local formErrorWrapper = formErrorWrapperMacro?eval />
+    <#elseif .main[formErrorWrapperMacro]?exists && .main[formErrorWrapperMacro]?is_macro>
+      <#local formErrorWrapper = .main[formErrorWrapperMacro] />
+    <#else>
+      <#stop "No such macro: ${formErrorWrapperMacro}" />
+    </#if>
+
+    <@editWrapper>
     <form action="${form.submitURL?html}" method="POST">
       <@formWrapper item>
         <#-- Display radio buttons for a value set of 2: -->
@@ -217,46 +421,30 @@
         </@formErrorsWrapper>
       </#if>
 
+      <@formSubmitWrapper item>
       <input type="submit" name="save"
              value="<@vrtx.msg code="propertyEditor.save" default="Save"/>">
       <input type="submit" name="cancelAction"
              value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>">
+      </@formSubmitWrapper>
       </@formWrapper>
     </form>
+    </@editWrapper>
 </#macro>
 
 
-<#macro formWrapper item>
-  <#local localizedValueLookupKeyPrefix>
-    <#compress>
-      <#if item.definition.namespace.uri?exists>
-        property.${item.definition.namespace.uri}:${item.definition.name}
-      <#else>
-        property.${item.definition.name}
+<#macro propertyEditURL modelName propertyName>
+  <#if .vars[modelName][propertyName]?exists>
+      <#local item =  .vars[modelName][propertyName] /> 
+      <#if item.editURL?exists>
+        ( <a href="${item.editURL?html}"><@vrtx.msg code="propertyEditor.edit" default="edit" /></a> )
       </#if>
-    </#compress>
-  </#local>
-  <#local name = vrtx.getMsg(localizedValueLookupKeyPrefix, item.definition.name) />
-  <h3>${name}:</h3>
-  <ul class="property">
-    <#nested />
-  </ul>
+  </#if>
 </#macro>
 
-<#macro formInputWrapper item>
-  <li><#nested /></li>
-</#macro>
-
-<#macro formErrorsWrapper>
-  <ul><#nested /></ul>
-</#macro>
-
-<#macro formErrorWrapper>
-  <li><#nested /></li>
-</#macro>
-
-<#macro propertyEditURL item>
+<#macro propertyItemEditURL item>
   <#if item.editURL?exists>
      ( <a href="${item.editURL?html}"><@vrtx.msg code="propertyEditor.edit" default="edit" /></a> )
   </#if>
 </#macro>
+

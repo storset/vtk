@@ -166,7 +166,7 @@
 </#macro>
 
 <#macro defaultFormErrorsWrapper>
-  <ul><#nested /></ul>
+  <ul class="errors"><#nested /></ul>
 </#macro>
 
 <#macro defaultFormErrorWrapper>

@@ -37,8 +37,6 @@ package org.vortikal.repositoryimpl.index.observation;
  */
 public class ResourceACLModification extends ResourceChange {
 
-    private boolean aclReadForAll;
-    
     public ResourceACLModification() {};
     
     /**
@@ -46,22 +44,12 @@ public class ResourceACLModification extends ResourceChange {
      */
     public ResourceACLModification (String uri, int id, long timestamp,
                                     int loggerId, int loggerType, 
-                                    boolean aclReadForAll, boolean collection) {
+                                    boolean collection) {
         super(uri, id, timestamp, loggerId, loggerType, collection);
-        this.aclReadForAll = aclReadForAll;
-    }
-
-    /* Getters and setters */
-    public boolean isAclReadForAll() {
-        return this.aclReadForAll;
-    }
-
-    public void setAclReadForAll(boolean aclReadForAll) {
-        this.aclReadForAll = aclReadForAll;
     }
 
     public String toString() {
-        return super.toString() + ",operation=ACLModification,readforall=" + this.aclReadForAll;
+        return super.toString() + ",operation=ACLModification";
     }
   
 }

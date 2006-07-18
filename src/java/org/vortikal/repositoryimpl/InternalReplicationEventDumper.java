@@ -72,7 +72,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     
     public void created(Resource resource) {
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
                                                 CREATED, -1, resource.isCollection(),
                                                 new Date(), false);
 
@@ -80,7 +80,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
                 org.vortikal.repositoryimpl.ResourceImpl[] childResources =
                     this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
                 for (int i = 0; i < childResources.length; i++) {
-                    this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, childResources[i].getURI(),
+                    this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
                                                         CREATED, -1, childResources[i].isCollection(),
                                                         new Date(), false);
                 }
@@ -98,7 +98,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void deleted(String uri, int resourceId, boolean collection) {
         
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, uri, DELETED, resourceId,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED, resourceId,
                                                 collection, new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
@@ -112,7 +112,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public void modified(Resource resource, Resource originalResource) {
 
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_PROPS,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
                                                 -1, resource.isCollection(), new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
@@ -124,7 +124,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
     public void contentModified(Resource resource) {
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_CONTENT,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_CONTENT,
                                                 -1, resource.isCollection(), new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
@@ -143,7 +143,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 //                return;
 //            }
         
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_ACL,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_ACL,
                                                 -1, resource.isCollection(), new Date(), false);
             
         } catch (IOException e) {

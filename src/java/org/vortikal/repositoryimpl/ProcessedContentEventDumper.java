@@ -78,7 +78,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void created(Resource resource) {
         try {
 
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), CREATED,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), CREATED,
                                                 -1, resource.isCollection(), new Date(), true);
 
         } catch (IOException e) {
@@ -94,7 +94,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void deleted(String uri, int resourceId, boolean collection) {
         
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, uri, DELETED,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED,
                                                 resourceId, collection, new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
@@ -108,7 +108,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public void modified(Resource resource, Resource originalResource) {
 
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), MODIFIED_PROPS,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
                                                 -1, resource.isCollection(), new Date(), false);
         } catch (IOException e) {
             this.logger.warn(
@@ -120,7 +120,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
     public void contentModified(Resource resource) {
         try {
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(),
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
                                                 MODIFIED_CONTENT, -1, resource.isCollection(),
                                                 new Date(), false);
         } catch (IOException e) {
@@ -178,7 +178,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             String op = resource.isAuthorized(Privilege.READ_PROCESSED, all) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
 
-            this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, resource.getURI(), op, -1,
+            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), op, -1,
                                                 resource.isCollection(), new Date(), false);
             
             if (resource.isCollection()) {
@@ -186,7 +186,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 Resource[] childResources =
                     this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
                 for (int i=0; i < childResources.length; i++) {
-                    this.dataAccessor.addChangeLogEntry(this.id, this.loggerType, childResources[i].getURI(),
+                    this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
                                                         op, -1, childResources[i].isCollection(), new Date(),
                                                         false);
                 }

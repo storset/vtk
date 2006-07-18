@@ -233,19 +233,15 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     
 
 
-    public void addChangeLogEntry(String loggerID, String loggerType, String uri,
+    public void addChangeLogEntry(int loggerId, int loggerType, String uri,
                                   String operation, int resourceId, boolean collection,
                                   Date timestamp, boolean recurse) throws IOException {
         try {
             this.sqlMapClient.startTransaction();
 
-            // XXX: convert to numerical values:
-            Integer id = new Integer(Integer.parseInt(loggerID));
-            Integer type = new Integer(Integer.parseInt(loggerType));
-
             Map parameters = new HashMap();
-            parameters.put("loggerId", id);
-            parameters.put("loggerType", type);
+            parameters.put("loggerId", new Integer(loggerId));
+            parameters.put("loggerType", new Integer(loggerType));
             parameters.put("uri", uri);
             parameters.put("operation", operation);
             parameters.put("resourceId", resourceId == -1 ? null : new Integer(resourceId));
@@ -263,9 +259,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             this.sqlMapClient.update(sqlMap, parameters);
             this.sqlMapClient.commitTransaction();
 
-        } catch (NumberFormatException e) {
-            this.logger.warn("No changelog entry added! Only numerical types and " +
-                "IDs are supported by this database backend.");
         } catch (SQLException e) {
             this.logger.warn("Error occurred while adding changelog entry: " + operation
                         + " for resource: " + uri, e);

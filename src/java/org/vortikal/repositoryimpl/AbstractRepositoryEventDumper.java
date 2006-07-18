@@ -55,36 +55,32 @@ public abstract class AbstractRepositoryEventDumper
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    protected String id = null;
-    protected String loggerType = null;
+    protected int loggerId = -1;
+    protected int loggerType = -1;
     protected Repository repository;
-    
 
-
-    public void setRepository(Repository repository)  {
-        this.repository = repository;
-    }
-    
-
-    public void setId(String id) {
-        this.id = id;
-    }      
-    
-
-    public void setLoggerType(String loggerType) {
-        this.loggerType = loggerType;
-    }      
-    
 
     public void afterPropertiesSet() {
         if (this.repository == null) {
             throw new BeanInitializationException("Bean property 'repository' not set.");
-        }
-        if (this.id == null) {
-            throw new BeanInitializationException("Bean property 'id' not set.");
+        } else if (this.loggerId == -1) {
+            throw new BeanInitializationException("Bean property 'loggerId' not set/un-initialized (-1).");
+        } else if (this.loggerType == -1) {
+            throw new BeanInitializationException("Bean property 'loggerType' not set/un-initialized (-1).");
         }
     }
     
+    public void setLoggerId(int loggerId) {
+        this.loggerId = loggerId;
+    }      
+
+    public void setLoggerType(int loggerType) {
+        this.loggerType = loggerType;
+    }      
+    
+    public void setRepository(Repository repository)  {
+        this.repository = repository;
+    }
     
     public void onApplicationEvent(ApplicationEvent event) {
 
@@ -100,28 +96,23 @@ public abstract class AbstractRepositoryEventDumper
 
         if (event instanceof ResourceCreationEvent) {
             created(((ResourceCreationEvent) event).getResource());
-        }
-        if (event instanceof ResourceDeletionEvent) {
+        } else if (event instanceof ResourceDeletionEvent) {
             deleted(((ResourceDeletionEvent) event).getURI(),
                     ((ResourceDeletionEvent) event).getResourceId(),
                     ((ResourceDeletionEvent) event).isCollection());
-        }
-        if (event instanceof ResourceModificationEvent) {
+        } else if (event instanceof ResourceModificationEvent) {
             modified(((ResourceModificationEvent) event).getResource(),
                      ((ResourceModificationEvent) event).getOriginal());
-        }
-        if (event instanceof ContentModificationEvent) {
+        } else if (event instanceof ContentModificationEvent) {
             contentModified(((ContentModificationEvent) event).getResource());
-        }
-        if (event instanceof ACLModificationEvent) {
+        } else if (event instanceof ACLModificationEvent) {
             aclModified(((ACLModificationEvent) event).getResource(),
                         ((ACLModificationEvent) event).getOriginal(),
                         ((ACLModificationEvent) event).getACL(),
                         ((ACLModificationEvent) event).getOriginalACL());
         }
+        
     }
-
-
 
     public abstract void created(Resource resource);
 

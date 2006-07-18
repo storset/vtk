@@ -33,7 +33,7 @@ package org.vortikal.repositoryimpl.index.observation;
 import java.util.List;
 
 /**
- * Interface for fetching changes to Vortex resources from en event source.
+ * Interface for fetching changes to Vortex resources from an event source.
  *
  * @author oyviste
  */

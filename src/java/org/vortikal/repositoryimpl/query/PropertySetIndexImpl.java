@@ -128,8 +128,11 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
         Document doc = null;
-        // XXX: FIXME: ugly casting 
-        // XXX: FIXME: locking must be done above this level.
+        // XXX: FIXME: ugly casting
+        
+        // NOTE: "Transaction"-write-locking must be done above this level.
+        //       This is needed to ensure the possibility of efficiently batching 
+        //       together operations.
         try {
             doc = this.documentMapper.getDocument((PropertySetImpl)propertySet);
             
@@ -141,8 +144,12 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                 Enumeration fieldEnum = doc.fields();
                 while (fieldEnum.hasMoreElements()) {
                     Field field = (Field)fieldEnum.nextElement();
-                    this.logger.debug("Field '" + field.name() + "', value: '" 
+                    if (field.isBinary()) {
+                        this.logger.debug("Field '" + field.name() + "', value: [BINARY]");
+                    } else {
+                        this.logger.debug("Field '" + field.name() + "', value: '" 
                                                     + field.stringValue() + "'");
+                    }
                 }
             }
             
@@ -163,7 +170,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         }
     }
 
-    public int deletePropertySet(String uri) throws IndexException {
+    public int deletePropertySet(String uri, boolean deleteDescendants) throws IndexException {
         TermDocs td = null;
         try {
             Term uriTerm = new Term(DocumentMapper.URI_FIELD_NAME, uri);
@@ -171,25 +178,35 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
             
             td = reader.termDocs(uriTerm);
             
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Deleting property set at URI '" + uri + "' from index.");
-            }
-            
             if (! td.next()) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Property set at URI '" + uri + "' not found in index.");
-                }
-                return 0;
+                return 0; // Not found in index
             }
-            Field idField = reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
-            String id = 
-                Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(idField));
             
-            int n = reader.deleteDocuments(uriTerm);
-            n += reader.deleteDocuments(new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, id));
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Deleted " + n + " documents from index.");
+            int n = 0;
+            if (deleteDescendants) {
+                Field idField = reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
+                String id = 
+                    Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(idField));
+                
+                int d = reader.deleteDocuments(
+                            new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, id));
+               
+                if (logger.isDebugEnabled() && d > 0) {
+                    logger.debug("Deleted " + d
+                        + " descendant(s) of property set at URI '" + uri
+                        + "' from index");
+                }
+                
+                n += d;
+            } 
+            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deleting property set at URI '" + uri + "' from index.");
+            }
+            n += reader.deleteDocuments(uriTerm);
+            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deleted " + n + " index documents.");
             }
             
             return n;

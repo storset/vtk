@@ -138,40 +138,47 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             }
             
             // Batch/separate deletes and updates for better performance.
-            List updates = new ArrayList(); // Updates
+            // List of additions and updates
+            List updates = new ArrayList();
             
             // List of resources that will be deleted from index.
-            List deletes = new ArrayList(); // Deletes
+            List deletes = new ArrayList();
             
             for (Iterator i = resourceChanges.iterator(); i.hasNext();) {
-                ResourceChange c = (ResourceChange)i.next();
-                deletes.add(c.getUri());
-                if (! (c instanceof ResourceDeletion)) {
-                    updates.add(c.getUri());
+                ResourceChange change = (ResourceChange)i.next();
+
+                if (change instanceof ResourceDeletion) {
+                    deletes.add(change);
+                } else {
+                    updates.add(change);
                 }
             }
             
             // Apply changes to index
-            // Deletes
+            // Regular deletes (might include collections)
             for (Iterator i = deletes.iterator(); i.hasNext();) {
-                String uri = (String)i.next();
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Deleting property set at URI '" + uri + "'");                    
-                }
-                this.index.deletePropertySet(uri);
+                ResourceChange change = (ResourceChange)i.next();
+                this.index.deletePropertySet(change.getUri(),
+                                             change.isCollection());
             }
             
             // Updates/additions
             if (updates.size() > 0) {
+                List updateUris = new ArrayList(updates.size());
+                
+                // Remove updated property sets from index in one batch, first, 
+                // before re-adding them.
+                for (Iterator i = updates.iterator(); i.hasNext();) {
+                    ResourceChange change = (ResourceChange)i.next();
+                    this.index.deletePropertySet(change.getUri(), false);
+                    updateUris.add(change.getUri());
+                }
+                
                 // Get iterator over property sets that need updating
-                rsi = this.indexDataAccessor.getPropertySetIteratorForURIs(updates);
+                rsi = this.indexDataAccessor.getPropertySetIteratorForURIs(updateUris);
                 
                 while (rsi.hasNext()) {
                     PropertySet propSet = (PropertySet)rsi.next();
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Adding property set at URI '" + propSet.getURI() + "' to index");
-                    }
-                    
                     this.index.addPropertySet(propSet);
                 }
             }

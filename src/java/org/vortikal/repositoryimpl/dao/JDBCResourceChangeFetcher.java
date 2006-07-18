@@ -44,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repositoryimpl.RepositoryEventDumperImpl;
 import org.vortikal.repositoryimpl.index.observation.ResourceACLModification;
 import org.vortikal.repositoryimpl.index.observation.ResourceChange;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeFetcher;
@@ -53,22 +54,23 @@ import org.vortikal.repositoryimpl.index.observation.ResourceDeletion;
 import org.vortikal.repositoryimpl.index.observation.ResourcePropModification;
 
 /**
- * Fetch resource changes from a JDBC connected database.
+ * Fetch resource changes from database changelog.
+ * 
+ * <em>Important:</em> 
+ * <p>Only entries produced by
+ * {@link org.vortikal.repositoryimpl.RepositoryEventDumperImpl} are supported.
+ * </p>
+ * 
+ * Logger type and logger id must be configured properly.
+ * 
+ * TODO: Convert to iBatis
+ * 
  * @author oyviste
  */
 public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, InitializingBean {
     
-    // NOTE: duplicated from org.vortikal.backend.ProcessedContentEventDumper
-    private final static String CREATED = "created";
-    private final static String DELETED = "deleted";
-    private final static String MODIFIED_PROPS = "modified_props";
-    private final static String MODIFIED_CONTENT = "modified_content";
-    private final static String ACL_READ_ALL_YES = "acl_read_all_yes";
-    private final static String ACL_READ_ALL_NO = "acl_read_all_no";
-    
     Log logger = LogFactory.getLog(this.getClass());
     private DataSource dataSource;
-    
     
     /**
      * Holds value of property loggerType, which determines what type of log entries
@@ -148,21 +150,22 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         
         ResourceChange c = null;
         String op = rs.getString("operation");
-        if (op.equals(CREATED)) {
+        if (op.equals(RepositoryEventDumperImpl.CREATED)) {
             c = new ResourceCreation();
-        } else if (op.equals(DELETED)) {
+        } else if (op.equals(RepositoryEventDumperImpl.DELETED)) {
             c = new ResourceDeletion();
             ((ResourceDeletion)c).setResourceId(rs.getString("resource_id"));
-        } else if (op.equals(MODIFIED_PROPS)) {
+        } else if (op.equals(RepositoryEventDumperImpl.MODIFIED_PROPS)) {
             c = new ResourcePropModification();
-        } else if (op.equals(MODIFIED_CONTENT)) {
+        } else if (op.equals(RepositoryEventDumperImpl.MODIFIED_CONTENT)) {
             c = new ResourceContentModification();
-        } else if (op.equals(ACL_READ_ALL_YES)) {
+        } else if (op.equals(RepositoryEventDumperImpl.ACL_MODIFIED)) {
             c = new ResourceACLModification();
-            ((ResourceACLModification)c).setAclReadForAll(true);
-        } else if (op.equals(ACL_READ_ALL_NO)) {
-            c = new ResourceACLModification();
-            ((ResourceACLModification)c).setAclReadForAll(false);
+        } else {
+            logger.warn("Unknown operation '" + op + "' in database changelog."
+                     +  "Make sure logger id and logger type are configured correctly.");
+            throw new SQLException("Unknown operation '" + op + 
+                                                    "' in database changelog"); 
         }
         
         c.setUri(rs.getString("uri"));

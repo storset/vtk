@@ -113,7 +113,7 @@ public interface DataAccessor {
     /**
      * Used externally to report a resource modification
      */
-    public void addChangeLogEntry(String loggerID, String recordType,
+    public void addChangeLogEntry(int loggerID, int loggerType,
                                   String uri, String operation, int resourceId,
                                   boolean collection, Date timestamp,
                                   boolean recurse) throws IOException;

@@ -4,10 +4,10 @@
 
   <!-- Publish events whenever changes to Vortex resources occur. -->
   <bean id="repository.processedContentEventDumper" 
-    class="org.vortikal.repositoryimpl.ProcessedContentEventDumper">
+    class="org.vortikal.repositoryimpl.RepositoryEventDumperImpl">
     <property name="dataAccessor" ref="repository.database"/>
-    <property name="id" value="1" />
     <property name="repository" ref="repository"/>
+    <property name="loggerId" value="1" />
     <property name="loggerType" value="2" />
   </bean>
 
@@ -16,10 +16,9 @@
   <bean id="repository.dbResourceChangeFetcher" 
         class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
     <property name="dataSource" ref="repository.dataSource" />
-    <property name="loggerType" value="2" />
     <property name="loggerId" value="1" />
+    <property name="loggerType" value="2" />
   </bean>
-  
 
   <!-- Resource change notifier, polls resource change fetcher and publishes
        changes to any registered observers. Requires a Quartz scheduler trigger

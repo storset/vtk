@@ -281,7 +281,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
      *  (non-Javadoc)
      *  TODO: Optimize if possible (use different approaches, etc.)
      *        I think most of the time is spent hashing integers to 
-     *        avoid unnecessary database lookups (which I'm guessing are even more expensive)
+     *        avoid unnecessary database lookups
+     *        (which I'm guessing are even more expensive).
      * @see org.vortikal.repositoryimpl.dao.IndexDataAccessor#processQueryResultsAuthorization(java.util.List)
      */
     public void processQueryResultsAuthorization(Set principalNames,

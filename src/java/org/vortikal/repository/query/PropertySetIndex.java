@@ -31,14 +31,13 @@
 package org.vortikal.repository.query;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.index.IndexException;
+import org.vortikal.repositoryimpl.query.IndexException;
 
 /**
  * Defines an interface to a hierarchically organized index of <code>PropertySet</code>s.
  * Each <code>PropertySet</code> is identified by its URI. A 
  * <code>PropertySet</code> can be a parent of other <code>PropertySet</code>s. 
- * (collections). Deleting a parent <code>PropertySet</code> shall also 
- * delete all its children.
+ * (collections).
  * 
  * @author oyviste
  *
@@ -47,17 +46,16 @@ public interface PropertySetIndex {
 
     public void addPropertySet(PropertySet propertySet) throws IndexException;
     
-    public void updatePropertySet(PropertySet propertySet) throws IndexException;
+    public void updatePropertySet(PropertySet propertySet) 
+                                                      throws IndexException;
     
-    public int deletePropertySet(String uri) throws IndexException;
+    public int deletePropertySet(String uri, boolean deleteDescendants) 
+                                                      throws IndexException;
     
     public PropertySet getPropertySet(String uri) throws IndexException;
     
     public void clear() throws IndexException;
     
-    
-    // XXX: should be somewhere else, or be done in a different way, but keep 
-    // it like this for now.
     public boolean lock() throws IndexException;
     
     public void unlock() throws IndexException;

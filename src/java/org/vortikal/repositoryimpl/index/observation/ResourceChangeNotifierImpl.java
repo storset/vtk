@@ -80,7 +80,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
             }
         } catch (Throwable t) {
             this.logger.error("Unexpected error while updating indexes !", t);
-            this.logger.error("CHANGELOG HAS NOT BEEN FLUSHED !!");
+            this.logger.error("CHANGELOG HAS NOT BEEN FLUSHED !");
             // FIXME: We need a proper policy on what happens when errors occur during
             //        update. For instance, we can require of observers to maintain their
             //        own redo-log, instead of relying on the notifier, in case of

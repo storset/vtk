@@ -42,6 +42,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repositoryimpl.index.observation.ResourceACLModification;
 import org.vortikal.repositoryimpl.index.observation.ResourceChange;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifier;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver;
@@ -141,6 +142,13 @@ public class ResourceChangeObserverImpl implements BeanNameAware,
         Iterator i = changes.iterator();
         while (i.hasNext()) {
             ResourceChange c = (ResourceChange)i.next();
+            
+            // Unfortunatly we cannot skip ACL modification events, even though
+            // they are not siginificant for the old indexing system.
+            //
+            // This is because an ACL modification might mask earlier creation/modification
+            // events in changelog, and thus, the resource needs to be 
+            // added/updated anyway.
             
             // Non-selective (re-)indexing (all resource creation/modification types will
             // trigger re-indexing, except deletion).

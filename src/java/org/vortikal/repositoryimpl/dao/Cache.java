@@ -452,7 +452,7 @@ public class Cache implements DataAccessor, InitializingBean {
         return this.wrappedAccessor.discoverLocks(uri);
     }
 
-    public void addChangeLogEntry(String loggerID, String loggerType,
+    public void addChangeLogEntry(int loggerID, int loggerType,
                                   String uri, String operation, int resourceId,
                                   boolean collection, Date timestamp, boolean recurse) throws IOException {
         this.wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation,

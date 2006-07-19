@@ -462,7 +462,7 @@
                 <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${alternative}"
                            default="${alternative}" />
               </#local>
-              <option id="${alternative}" 
+              <option value="${alternative}" 
                       <#if form.value?has_content && form.value = alternative>selected="true"</#if>
                       label="${label}">${label}</option>
             <#else>

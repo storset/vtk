@@ -30,9 +30,9 @@
  */
 package org.vortikal.web.controller.properties;
 
-
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+
 import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -57,7 +57,6 @@ public class PropertyEditValidator implements Validator {
     
 
     public boolean supports(Class clazz) {
-System.out.println("__supports: " + clazz);
         boolean retVal = (PropertyEditCommand.class.isAssignableFrom(clazz));
         return retVal;
     }
@@ -96,7 +95,6 @@ System.out.println("__supports: " + clazz);
                 }
 
             } else {
-System.out.println("__validate");
                 Value value = this.valueFactory.createValue(
                     formValue, command.getDefinition().getType());
                 if (command.getDefinition().getType() == PropertyType.TYPE_PRINCIPAL) {
@@ -114,7 +112,6 @@ System.out.println("__validate");
                 if (allowedValues != null) {
                     boolean found = false;
                     for (int i = 0; i < allowedValues.length; i++) {
-System.out.println("__allowed_val: " + allowedValues[i]);
                         if (value.equals(allowedValues[i])) {
                             found = true;
                             break;

@@ -38,13 +38,16 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -419,11 +422,8 @@ public class PropertyEditController extends SimpleFormController
 
     private boolean isToggleableProperty(PropertyTypeDefinition def) {
         if (!def.isMandatory()) {
-        System.out.println("toggleable1: " + def + ": " + (def.getAllowedValues() != null && def.getAllowedValues().length == 1));
-
             return (def.getAllowedValues() != null && def.getAllowedValues().length == 1);
         } 
-        System.out.println("toggleable2: " + def + ": " + (def.getAllowedValues() != null && def.getAllowedValues().length == 2));
         return (def.getAllowedValues() != null && def.getAllowedValues().length == 2);
     }
     

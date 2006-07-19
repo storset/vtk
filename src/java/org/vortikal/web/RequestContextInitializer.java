@@ -172,7 +172,10 @@ public class RequestContextInitializer
             RequestContext.setRequestContext(null);
         }
 
-        // FIXME: What if no service is resolved?
+        if (RequestContext.getRequestContext() == null) {
+            throw new RequestInitializationException(
+                "Unable to map request " + request + " to a valid service", request);
+        }
     }
 
 

@@ -127,6 +127,13 @@ public abstract class AbstractConsole
 
 
     public final void setInitFilesCSV(String initFilesCSV) {
+        if (initFilesCSV == null) {
+            throw new IllegalArgumentException(
+                "Argument must be a comma-separated list");
+        }
+        if ("".equals(initFilesCSV.trim())) {
+            return;
+        }
         String[] list = initFilesCSV.split(",");
         this.initFiles = list;
     }

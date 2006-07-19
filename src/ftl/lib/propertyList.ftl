@@ -367,7 +367,7 @@
         <#if item.definition.type = 5>
           ${item.property.principalValue.name}
         <#elseif item.definition.type = 3>
-          ${item.property.dateValue?date}
+          ${item.property.dateValue?datetime?string.long}
         <#else>
           <#local label>
             <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${item.property.value?string}"

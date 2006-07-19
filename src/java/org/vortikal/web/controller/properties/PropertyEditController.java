@@ -72,6 +72,8 @@ public class PropertyEditController extends SimpleFormController
 
     private Log logger = LogFactory.getLog(this.getClass());
 
+    private String toggleRequestParameter = "toggle";
+
     private Repository repository;
     private PrincipalManager principalManager;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
@@ -157,7 +159,7 @@ public class PropertyEditController extends SimpleFormController
         String value = null;
         List formAllowedValues = null;
         String editURL = null;
-        PropertyTypeDefinition definition = null;
+        PropertyTypeDefinition definition = null;        
 
         for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
 
@@ -177,7 +179,7 @@ public class PropertyEditController extends SimpleFormController
                         }
                         value = val.toString();
                     } else {
-                        value = getValueForPropertyAsString(property);
+                        value = getValueAsString(property.getValue());
                     }
                 }
 
@@ -198,6 +200,7 @@ public class PropertyEditController extends SimpleFormController
                     urlParameters.put("namespace", namespaceURI);
 
                 urlParameters.put("name", definition.getName());
+
                 editURL = service.constructLink(resource, securityContext.getPrincipal(),
                                                 urlParameters);
             }
@@ -209,30 +212,12 @@ public class PropertyEditController extends SimpleFormController
     }
 
 
-    private String getValueForPropertyAsString(Property property)
-        throws IllegalOperationException {
-        String value;
-        int type = property.getDefinition().getType();
-        switch (type) {
-
-        case PropertyType.TYPE_DATE:
-            SimpleDateFormat format = new SimpleDateFormat(this.dateFormat);
-            Date date = property.getDateValue();
-            value = format.format(date);
-            break;
-
-        default:
-            value = property.getValue().toString();
-            
-        }
-        return value;
-    }
 
     protected boolean isFormSubmission(HttpServletRequest request) {
         boolean isFormSubmission = super.isFormSubmission(request);
-//         if ("toggle".equals(request.getParameter("action"))) {
-//             return true;
-//         }
+        if ("true".equals(request.getParameter(this.toggleRequestParameter))) {
+            isFormSubmission = true;
+        }
         return isFormSubmission;
     }
     
@@ -263,6 +248,18 @@ public class PropertyEditController extends SimpleFormController
                 Property property = resource.getProperty(def.getNamespace(), def.getName());
 
                 String stringValue = propertyCommand.getValue();
+
+                if (isToggleableProperty(def)
+                    && "true".equals(request.getParameter(this.toggleRequestParameter))) {
+
+                    Value toggleValue = getToggleValue(def, property);
+                    if (toggleValue == null) {
+                        stringValue = "";
+                    } else {
+                        stringValue = getValueAsString(toggleValue);
+                    }
+                }
+
                 try {
                     if ("".equals(stringValue)) {
                         if (property == null) {
@@ -284,9 +281,7 @@ public class PropertyEditController extends SimpleFormController
                             String[] splitValues = stringValue.split(",");
                             Value[] values = this.valueFactory.createValues(splitValues, def.getType());
                             property.setValues(values);
-//                         } else if (def.getType() == PropertyType.TYPE_BOOLEAN) {
-//                             boolean oldValue = property.isValueInitialized() ? property.getBooleanValue() : false;
-//                             property.setBooleanValue(!oldValue);
+                                                    
                         } else {
                             Value value = this.valueFactory.createValue(stringValue, def.getType());
                             property.setValue(value);
@@ -373,6 +368,8 @@ public class PropertyEditController extends SimpleFormController
             Property property = resource.getProperty(def.getNamespace(), def.getName());
             String editURL = null;
             String format = null;
+            String toggleURL = null;
+            String toggleValue = null;
             
             if (resource.isAuthorized(def.getProtectionLevel(),
                                       securityContext.getPrincipal())) {
@@ -383,9 +380,6 @@ public class PropertyEditController extends SimpleFormController
                     urlParameters.put("namespace", namespaceURI);
                 }
                 urlParameters.put("name", def.getName());
-//                 if (def.getType() == PropertyType.TYPE_BOOLEAN) {
-//                         urlParameters.put("action", "toggle");
-//                 }
                 if (def.getType() == PropertyType.TYPE_DATE) {
                     format = this.dateFormat;
                 }
@@ -396,9 +390,20 @@ public class PropertyEditController extends SimpleFormController
                 } catch (ServiceUnlinkableException e) {
                     // Assertion doesn't match, OK in this case
                 }
+
+                if (isToggleableProperty(def)) {
+                    Value toggleValueObject = getToggleValue(def, property);
+                    if (toggleValueObject != null) {
+                        toggleValue = getValueAsString(toggleValueObject);
+                    }
+                    urlParameters.put(this.toggleRequestParameter, "true");
+                    toggleURL = service.constructLink(resource, securityContext.getPrincipal(),
+                                                urlParameters);
+                }
             }
 
-            PropertyItem item = new PropertyItem(property, def, editURL, format);
+            PropertyItem item = new PropertyItem(property, def, editURL, format,
+                                                 toggleURL, toggleValue);
             propsList.add(item);
             if (def.getNamespace() == Namespace.DEFAULT_NAMESPACE) {
                 propsMap.put(def.getName(), item);
@@ -411,6 +416,57 @@ public class PropertyEditController extends SimpleFormController
         model.put(this.propertyMapModelName, propsMap);
     }
     
+
+    private boolean isToggleableProperty(PropertyTypeDefinition def) {
+        if (!def.isMandatory()) {
+        System.out.println("toggleable1: " + def + ": " + (def.getAllowedValues() != null && def.getAllowedValues().length == 1));
+
+            return (def.getAllowedValues() != null && def.getAllowedValues().length == 1);
+        } 
+        System.out.println("toggleable2: " + def + ": " + (def.getAllowedValues() != null && def.getAllowedValues().length == 2));
+        return (def.getAllowedValues() != null && def.getAllowedValues().length == 2);
+    }
+    
+    private Value getToggleValue(PropertyTypeDefinition def, Property property) {
+        
+        Value[] allowedValues = def.getAllowedValues();
+
+        if (!def.isMandatory() && allowedValues != null && allowedValues.length == 1) {
+            if (property == null) {
+                return allowedValues[0];
+            }
+            return null;
+        }
+
+        if (def.isMandatory() && allowedValues != null && allowedValues.length == 2) {
+            if (property.getValue().equals(allowedValues[0])) {
+                return allowedValues[0];
+            }
+            return allowedValues[1];
+        }
+
+        throw new IllegalArgumentException("Property " + def + " is not a toggleable property");
+    }
+    
+
+    private String getValueAsString(Value value) throws IllegalOperationException {
+        String stringValue;
+        int type = value.getType();
+        switch (type) {
+
+        case PropertyType.TYPE_DATE:
+            SimpleDateFormat format = new SimpleDateFormat(this.dateFormat);
+            Date date = value.getDateValue();
+            stringValue = format.format(date);
+            break;
+
+        default:
+            stringValue = value.toString();
+            
+        }
+        return stringValue;
+    }
+
 
     private boolean isFocusedProperty(PropertyTypeDefinition propDef,
                                       HttpServletRequest request) {

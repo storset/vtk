@@ -48,15 +48,6 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
     
 
     public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition,
-                               String value) {
-        super(submitURL);
-        this.definition = definition;
-        this.value = value;
-        this.namespace = definition != null ? definition.getNamespace().getUri() : null;
-        this.name = definition != null ? definition.getName() : null;
-    }
-
-    public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition,
                                String value, List possibleValues) {
         super(submitURL);
         this.definition = definition;

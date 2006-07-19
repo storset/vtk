@@ -1,20 +1,63 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: properties-listing.ftl
+  - File: propertyList.ftl
   - 
-  - Description: A HTML page that displays resource properties
+  - Description: A library for displaying and editing
+  - resource properties. Property listing works with lists of
+  - org.vortikal.web.controller.properties.PropertyItem objects.
+  -
+  - TODO: general documentation of this library.
   - 
   - Required model data:
-  -     - aboutItems
+  - 
   - Optional model data:
+  -   form - an object of the class
+  -   org.vortikal.web.controller.properties.PropertyEditCommand
   -
   -->
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
 
-<#macro propertyList modelName itemNames
+<#--
+ * propertyList
+ *
+ * Display (and possibly edit) a list of propertyItems based on their
+ * names in the data model.
+ * Display is usually in this format: [propertyName]: [propertyValue] (editURL).
+ * Example: <@propertyList modelName='myDataModel' itemNames=['lastModified', 'createdBy'] />
+ *
+ * @param modelName the name of the data model entry containing the
+ *        property items
+ * @param itemNames a sequence containing the names of the properties
+ *        to display (the name format is [prefix:]propertyName)
+ * @param toggle (optional) whether to attempt to generate toggle URLs instead of
+ *        edit URLs for the properties that can be toggled. Default is false.
+ * @param displayMacro (optional) name of a macro that takes
+ *        parameters 'name', 'value'  and 'editURL', used to display
+ *        each property. 
+ *        Default is 'defaultPropertyDisplay'
+ * @param editWrapperMacro (optional) name of a macro that wraps around
+ *        the <form> element in edit mode, using <#nested />.
+ *        Default is 'defaultEditWrapper'
+ * @param formWrapperMacro (optional) name of a macro that wraps inside
+ *        the <form> element in edit mode, using <#nested />.
+ *        Default is 'defaultFormWrapper'
+ * @param formInputWrapperMacro (optional) name of a macro that wraps around
+ *        each <input> element (except submit elements) in edit mode, using <#nested />.
+ *        Default is 'defaultFormInputWrapper'
+ * @param formSubmitWrapperMacro (optional) name of a macro that wraps around
+ *        the <input type="submit"> elements in edit mode, using <#nested />.
+ *        Default is 'defaultFormSubmitWrapper'
+ * @param formErrorsWrapperMacro (optional) name of a macro that wraps around
+ *        the error list display in edit mode, using <#nested />.
+ *        Default is 'defaultFormErrorsWrapper
+ * @param formErrorWrapperMacro (optional) name of a macro that wraps around
+ *        each error display in edit mode, using <#nested />.
+ *        Default is 'defaultFormErrorWrapper
+-->
+<#macro propertyList modelName itemNames toggle=false
         propertyListWrapperMacro='defaultPropertyListWrapper'
         displayMacro='defaultPropertyDisplay'
         editWrapperMacro='defaultEditWrapper'
@@ -31,6 +74,7 @@
   </#list>
   <@propertyItemList
      propertyList=itemList
+     toggle=toggle
      propertyListWrapperMacro=propertyListWrapperMacro 
      propertyListWrapperMacro=propertyListWrapperMacro
      displayMacro=displayMacro
@@ -43,7 +87,25 @@
 </#macro>
 
 
-<#macro propertyItemList propertyList 
+
+<#--
+ * propertyItemList
+ *
+ * Display (and possibly edit) a list of propertyItems.
+ * Display is usually in this format: [propertyName]: [propertyValue] (editURL).
+ * Example: <@propertyItemList items=[item1, item2] />
+ *
+ * @param items a list of
+ *        org.vortikal.web.controller.properties.PropertyItem objects
+ * @param toggle [see documentation for propertyList]
+ * @param displayMacro [see documentation for propertyList]
+ * @param editWrapperMacro [see documentation for propertyList]
+ * @param formWrapperMacro [see documentation for propertyList]
+ * @param formInputWrapperMacro [see documentation for propertyList]
+ * @param formErrorsWrapperMacro [see documentation for propertyList]
+ * @param formErrorWrapperMacro [see documentation for propertyList]
+-->
+<#macro propertyItemList propertyList toggle=false
         propertyListWrapperMacro='defaultPropertyListWrapper'
         displayMacro='defaultPropertyDisplay'
         editWrapperMacro='defaultEditWrapper'
@@ -55,13 +117,33 @@
   <#local wrapperMacro = resolveMacro(propertyListWrapperMacro) />
   <@wrapperMacro>
     <#list propertyList as item>
-      <@editOrDisplayPropertyItem item />
+      <@editOrDisplayPropertyItem item=item toggle=toggle />
     </#list>
   </@wrapperMacro>
 </#macro>
 
 
-<#macro editOrDisplayProperty modelName propertyName
+<#--
+ * editOrDisplayProperty
+ *
+ * Display or edit a single property item based on its name in the
+ * data model.
+ * 
+ * Example: <@editOrDisplayProperty modelName='myDataModel' propertyName='characterEncoding' />
+ *
+ * @param modelName the name of the data model entry containing the
+ *        property item (should be a hash)
+ * @param propertyName the name of the property item in the 
+ *        hash identified by [modelName].
+ * @param toggle [see documentation for propertyList]
+ * @param displayMacro [see documentation for propertyList]
+ * @param editWrapperMacro [see documentation for propertyList]
+ * @param formWrapperMacro [see documentation for propertyList]
+ * @param formInputWrapperMacro [see documentation for propertyList]
+ * @param formErrorsWrapperMacro [see documentation for propertyList]
+ * @param formErrorWrapperMacro [see documentation for propertyList]
+-->
+<#macro editOrDisplayProperty modelName propertyName toggle=false
         propertyListWrapperMacro='defaultPropertyListWrapper'
         displayMacro='defaultPropertyDisplay'
         editWrapperMacro='defaultEditWrapper'
@@ -82,13 +164,29 @@
        formErrorsWrapperMacro=formErrorsWrapperMacro
        formErrorWrapperMacro=formErrorWrapperMacro/>
   <#else>
-    <@propertyDisplay item=item displayMacro=displayMacro/>
+    <@propertyDisplay item=item toggle=toggle displayMacro=displayMacro/>
   </#if>
   </#if>
 </#macro>
 
 
-<#macro editOrDisplayPropertyItem item
+<#--
+ * editOrDisplayPropertyItem
+ *
+ * Display or edit a single property item.
+ * 
+ * Example: <@editOrDisplayPropertyItem item=myPropertyItem />
+ *
+ * @param item an org.vortikal.web.controller.properties.PropertyItem object
+ * @param toggle [see documentation for propertyList]
+ * @param displayMacro [see documentation for propertyList]
+ * @param editWrapperMacro [see documentation for propertyList]
+ * @param formWrapperMacro [see documentation for propertyList]
+ * @param formInputWrapperMacro [see documentation for propertyList]
+ * @param formErrorsWrapperMacro [see documentation for propertyList]
+ * @param formErrorWrapperMacro [see documentation for propertyList]
+-->
+<#macro editOrDisplayPropertyItem item toggle=false        
         propertyListWrapperMacro='defaultPropertyListWrapper'
         displayMacro='defaultPropertyDisplay'
         editWrapperMacro='defaultEditWrapper'
@@ -107,17 +205,37 @@
        formErrorsWrapperMacro=formErrorsWrapperMacro
        formErrorWrapperMacro=formErrorWrapperMacro/>
   <#else>
-    <@propertyDisplay item=item displayMacro=displayMacro/>
+    <@propertyDisplay item=item toggle=toggle displayMacro=displayMacro/>
   </#if>
 </#macro>
 
 
+<#--
+ * defaultPropertyListWrapper
+ *
+ * Default wrapper around the property list. Uses a <table> and
+ * <#nested /> to wrap
+ * around the list.
+ * 
+-->
 <#macro defaultPropertyListWrapper>
   <table class="resourceInfo">
     <#nested />
   </table>
 </#macro>
 
+
+<#--
+ * defaultPropertyDisplay
+ *
+ * Default property display macro. Creates a table row for each
+ * property.
+ *
+ * @param name the name of the property
+ * @param value the value of the property
+ * @editURL (optional) the edit (possibly toggle) URL of the property
+ * 
+-->
 <#macro defaultPropertyDisplay name value editURL="">
   <tr>
     <td class="key">
@@ -132,6 +250,14 @@
   </tr>
 </#macro>
 
+
+<#--
+ * defaultEditWrapper
+ *
+ * Default wrapper around the property edit <form> element. Creates a
+ * table row using <tr>, <td> and <#nested />.
+ * 
+-->
 <#macro defaultEditWrapper>
   <tr>
     <td colspan="2" class="expandedForm">
@@ -140,16 +266,19 @@
   </tr>
 </#macro>
 
+
+<#--
+ * defaultFormWrapper
+ *
+ * Default wrapper inside the property edit <form> element. 
+ * Creates a <h3> with the name, and then a <ul> element containing
+ * the <#nested /> content.
+ *
+ * @param item the property item currently being edited.
+ * 
+-->
 <#macro defaultFormWrapper item>
-  <#local localizedValueLookupKeyPrefix>
-    <#compress>
-      <#if item.definition.namespace.uri?exists>
-        property.${item.definition.namespace.uri}:${item.definition.name}
-      <#else>
-        property.${item.definition.name}
-      </#if>
-    </#compress>
-  </#local>
+  <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
   <#local name = vrtx.getMsg(localizedValueLookupKeyPrefix, item.definition.name) />
   <h3>${name}:</h3>
   <ul class="property">
@@ -157,18 +286,52 @@
   </ul>
 </#macro>
 
+
+<#--
+ * defaultFormInputWrapper
+ *
+ * Default wrapper around form <input> elements. 
+ * Wraps the <#nested /> content in a <li>
+ *
+ * @param item the property item currently being edited.
+ * 
+-->
 <#macro defaultFormInputWrapper item>
   <li><#nested /></li>
 </#macro>
 
+
+<#--
+ * defaultFormSubmitWrapper
+ *
+ * Default wrapper around form submit elements. 
+ * Wraps the <#nested /> content in a <li><div>
+ *
+ * @param item the property item currently being edited.
+ * 
+-->
 <#macro defaultFormSubmitWrapper item>
   <li><div><#nested /></div></li>
 </#macro>
 
+<#--
+ * defaultFormErrorsWrapper
+ *
+ * Default wrapper around the form error list.
+ * Wraps the <#nested /> content in a <ul>
+ * 
+-->
 <#macro defaultFormErrorsWrapper>
   <ul class="errors"><#nested /></ul>
 </#macro>
 
+<#--
+ * defaultFormErrorsWrapper
+ *
+ * Default wrapper around each form error.
+ * Wraps the <#nested /> content in a <li>
+ * 
+-->
 <#macro defaultFormErrorWrapper>
   <li><#nested /></li>
 </#macro>
@@ -184,20 +347,12 @@
  *
  * @param item a org.vortikal.web.controller.properties.PropertyItem
  *        representing a resource property
- * @param displayMacro a macro that takes parameters "name", "value"
- *        and "editURL", used for displaying the property.
+ * @param displayMacro (optional) name of a macro that takes parameters "name", "value"
+ *        and "editURL", used to display the property.
  *        Default is 'defaultPropertyDisplay'
 -->
-<#macro propertyDisplay item displayMacro='defaultPropertyDisplay'>
-  <#local localizedValueLookupKeyPrefix>
-    <#compress>
-      <#if item.definition.namespace.uri?exists>
-        property.${item.definition.namespace.uri}:${item.definition.name}
-      <#else>
-        property.${item.definition.name}
-      </#if>
-    </#compress>
-  </#local>
+<#macro propertyDisplay item toggle=false displayMacro='defaultPropertyDisplay'>
+  <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />  
   <#local name = vrtx.getMsg(localizedValueLookupKeyPrefix, item.definition.name) />
   <#local value>
     <#if item.property?exists>
@@ -215,7 +370,7 @@
           ${item.property.dateValue?date}
         <#else>
           <#local label>
-            <@vrtx.msg code="${localizedValueLookupKeyPrefix}.${item.property.value?string}"
+            <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${item.property.value?string}"
                        default="${item.property.value?string}" />
           </#local>
           ${label}
@@ -224,14 +379,13 @@
     <#else>
       <#local defaultNotSet><@vrtx.msg code="property.unset" default="Not set" /></#local>
       <#local label>
-        <@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset"
-                       default="${defaultNotSet}" />
+        <@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" />
       </#local>
       ${label}
     </#if>
   </#local>
   <#local editURL>
-    <@propertyItemEditURL item = item />
+    <@propertyItemEditURL item=item toggle=toggle />
   </#local>
   
   <#local macroCall = resolveMacro(displayMacro) />
@@ -248,14 +402,12 @@
  * org.vortikal.web.controller.properties.PropertyItem object,
  *
  * @param item a org.vortikal.web.controller.properties.PropertyItem
- *        representing a resource property
- *        usually obtained from the property itself.
- * @param editWrapperMacro a macro for wrapping around the <form> element
- * @param formWrapperMacro a macro for wrapping inside the <form> element
- * @param formInputWrapperMacro a macro for wrapping a <input> element
- * @param formSubmitWrapperMacro a macro for wrapping the submit elements
- * @param formErrorsWrapperMacro a macro for wrapping the error list
- * @param formErrorWrapperMacro a macro for wrapping a form error
+ *        representing a resource property.
+ * @param editWrapperMacro [see documentation for propertyList]
+ * @param formWrapperMacro [see documentation for propertyList]
+ * @param formInputWrapperMacro [see documentation for propertyList]
+ * @param formErrorsWrapperMacro [see documentation for propertyList]
+ * @param formErrorWrapperMacro [see documentation for propertyList]
 -->
 <#macro propertyForm item formValue=''
         editWrapperMacro='defaultEditWrapper'
@@ -265,15 +417,7 @@
         formErrorsWrapperMacro='defaultFormErrorsWrapper'
         formErrorWrapperMacro='defaultFormErrorWrapper'>
 
-  <#local localizedValueLookupKeyPrefix>
-    <#compress>
-      <#if item.definition.namespace.uri?exists>
-        property.${item.definition.namespace.uri}:${item.definition.name}
-        <#else>
-          property.${item.definition.name}
-        </#if>
-      </#compress>
-    </#local>
+  <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
 
     <#local editWrapper = resolveMacro(editWrapperMacro) />
     <#local formWrapper = resolveMacro(formWrapperMacro) />
@@ -291,7 +435,7 @@
           <#list form.possibleValues as alternative>
             <#if alternative?has_content>
               <@formInputWrapper item>
-              <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.${alternative}" default="${alternative}" /></#local>
+              <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${alternative}" default="${alternative}" /></#local>
               <input id="${alternative}" type="radio" name="value" value="${alternative}"
                          <#if form.value?has_content && form.value = alternative>checked</#if>>
                 <label for="${alternative}">${label}</label>
@@ -315,7 +459,7 @@
           <#list form.possibleValues as alternative>
             <#if alternative?has_content>
               <#local label>
-                <@vrtx.msg code="${localizedValueLookupKeyPrefix}.${alternative}"
+                <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${alternative}"
                            default="${alternative}" />
               </#local>
               <option id="${alternative}" 
@@ -372,22 +516,69 @@
 </#macro>
 
 
-<#macro propertyEditURL modelName propertyName>
+<#--
+ * propertyEditURL
+ *
+ * Display a URL to edit a property item based on its name in the data
+ * model. 
+ *
+ * @param modelName the name of the data model entry containing the
+ *        property item (should be a hash)
+ * @param propertyName the name of the property item in the 
+ *        hash identified by [modelName].
+ * @param toggle (optional) whether to attempt to generate a toggle URL instead of
+ *        a regular edit URL for the propery. Default is false.
+-->
+<#macro propertyEditURL modelName propertyName toggle=false>
   <#if .vars[modelName][propertyName]?exists>
       <#local item =  .vars[modelName][propertyName] /> 
-      <#if item.editURL?exists>
-        ( <a href="${item.editURL?html}"><@vrtx.msg code="propertyEditor.edit" default="edit" /></a> )
-      </#if>
+      <@propertyItemEditURL item=item toggle=toggle />
   </#if>
 </#macro>
 
-<#macro propertyItemEditURL item>
-  <#if item.editURL?exists>
+<#--
+ * propertyEditURL
+ *
+ * Display a URL to edit a property item based on its name in the data
+ * model. 
+ *
+ * @param item a org.vortikal.web.controller.properties.PropertyItem
+ *        representing a resource property.
+ * @param toggle (optional) whether to attempt to generate a toggle URL instead of
+ *        a regular edit URL for the propery. Default is false.
+-->
+<#macro propertyItemEditURL item toggle=false>
+  <#if toggle && item.toggleURL?exists>
+    <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
+    <#local defaultToggle>
+      <@vrtx.msg code="propertyEditor.toggle" default="toggle" />
+    </#local>
+    <#local label>
+      <#if item.toggleValue?exists>
+        <@vrtx.msg
+           code="${localizedValueLookupKeyPrefix}.toggle.value.${item.toggleValue}" 
+           default="${defaultToggle}" />
+        <#else>
+        <@vrtx.msg
+           code="${localizedValueLookupKeyPrefix}.toggle.unset" default="${defaultToggle}" />
+      </#if>
+    </#local>
+     ( <a href="${item.toggleURL?html}">${label}</a> )
+  <#elseif item.editURL?exists>
      ( <a href="${item.editURL?html}"><@vrtx.msg code="propertyEditor.edit" default="edit" /></a> )
   </#if>
 </#macro>
 
 
+<#--
+ * resolveMacro
+ *
+ * Resolves a macro based on its name in either the current or
+ * 'global' namespace. (Mostly intended for internal use in this
+ * library.)
+ *
+ * @param macroName the (possibly fully qualified) name of the macro
+-->
 <#function resolveMacro macroName>
   <#local macroCall = "" />
   <#if macroName?eval?exists && macroName?eval?is_macro>
@@ -398,4 +589,19 @@
     <#stop "No such macro: ${macroName}" />
   </#if>        
   <#return macroCall />
+</#function>
+
+
+<#--
+ * getLocalizedValueLookupKeyPrefix
+ *
+ * Internal utility function.
+ *
+-->
+<#function getLocalizedValueLookupKeyPrefix item>
+  <#if item.definition.namespace.prefix?exists>
+    <#return 'property.' + item.definition.namespace.prefix + ':' + item.definition.name />
+   <#else>
+     <#return 'property.' + item.definition.name />
+   </#if>
 </#function>

@@ -40,22 +40,19 @@ public class PropertyItem {
     private PropertyTypeDefinition definition;
     private String editURL;
     private String format;
+    private String toggleURL;
+    private String toggleValue;
 
     public PropertyItem(Property property, PropertyTypeDefinition definition,
-                        String editURL) {
-        this.property = property;
-        this.definition = definition;
-        this.editURL = editURL;
-    }
-
-    public PropertyItem(Property property, PropertyTypeDefinition definition,
-                        String editURL, String format) {
+                        String editURL, String format, String toggleURL,
+                        String toggleValue) {
         this.property = property;
         this.definition = definition;
         this.editURL = editURL;
         this.format = format;
+        this.toggleURL = toggleURL;
+        this.toggleValue = toggleValue;
     }
-
 
     public Property getProperty() {
         return this.property;
@@ -86,4 +83,12 @@ public class PropertyItem {
         this.editURL = editURL;
     }
 
+    public String getToggleURL() {
+        return this.toggleURL;
+    }
+    
+    public String getToggleValue() {
+        return this.toggleValue;
+    }
+    
 }

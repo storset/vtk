@@ -46,6 +46,26 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <!-- should have a constraint -->
+    <property name="allowedValues">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>no_NO</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>no_NO_NY</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>en</value>
+          </constructor-arg>
+        </bean>
+      </list>
+    </property>
+
   </bean>
 
 

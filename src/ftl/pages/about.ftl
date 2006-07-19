@@ -56,8 +56,8 @@
         </#assign>
       </#if>
       <#assign modifiedStr>
-        <@vrtx.rawMsg code = "resource.lastModifiedBy"
-                   args = [ "${resource.lastModified?date}", "${modifiedByStr}" ]
+        <@vrtx.rawMsg code = "property.lastModifiedBy"
+                   args = [ "${resource.lastModified?datetime?string.long}", "${modifiedByStr}" ]
                    default = "${resource.lastModified?date} by ${modifiedByStr}" />
       </#assign>
 
@@ -73,8 +73,8 @@
         </#assign>
       </#if>
       <#assign createdByStr>
-        <@vrtx.rawMsg code = "resource.createdBy"
-                   args = [ "${resource.creationTime?date}", "${createdByStr}" ]
+        <@vrtx.rawMsg code = "property.createdBy"
+                   args = [ "${resource.creationTime?datetime?string.long}", "${createdByStr}" ]
                    default = "${resource.creationTime?date} by ${createdByStr}" />
       </#assign>
       <@propList.defaultPropertyDisplay
@@ -87,20 +87,20 @@
 
       <!-- ResourceType -->
       <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("property.resourceType", "Resource type")
-             value = vrtx.getMsg("property.resourceType." + resource.resourceType, 
+             name = vrtx.getMsg("resource.resourceType", "Resource type")
+             value = vrtx.getMsg("resource.resourceType." + resource.resourceType, 
                                  resource.resourceType) />
 
       <!-- Web address -->
       <#assign url><a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
       <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("property.viewURL", "Web address")
+             name = vrtx.getMsg("resource.viewURL", "Web address")
              value = url />
 
       <!-- WebDAV address -->
       <#assign url><a href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
       <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("property.webdavURL", "WebDAV address")
+             name = vrtx.getMsg("resource.webdavURL", "WebDAV address")
              value = url />
 
       <!-- Content language -->
@@ -137,7 +137,7 @@
        code="resource.metadata.about.content"
        default="Information describing the content"/>
   </h3>
-  
+
   <@propList.propertyList
        modelName = "aboutItems"
        itemNames =  [ 'title', 'shortTitle', 'content:keywords',

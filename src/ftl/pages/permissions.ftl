@@ -21,19 +21,28 @@
   </head>
   <body>
 
+    <#assign resource = resourceContext.currentResource />
+    <#assign defaultHeader = vrtx.getMsg("permissions.header", "Permissions on this resource") />
+
     <div class="resourceInfo permissions">
-      <h2><@vrtx.msg code="permissions.header" default="Permissions on this resource" /></h2>
+      <h2>
+        <@vrtx.msg
+           code="permissions.header.${resource.resourceType}"
+           default="${defaultHeader}"/>
+      </h2>
+
+      <#assign defaultNotInherited = vrtx.getMsg("permissions.notInherited", "Custom permissions") />
+
       <p>
         <#if resourceContext.currentResource.acl.inherited>
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
           <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setCustom" default="edit" /></a>&nbsp;)</#if>
         <#else>
-          <@vrtx.msg code="permissions.notInherited" default="Custom permissions" />
+          <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
           <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setInherited" default="edit" /></a>&nbsp;)</#if>
         </#if>
       </p>
 
-     
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />
 
@@ -42,13 +51,15 @@
 
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
+     
+      <#if resource.collection>
+        <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>
+        <#assign bindHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
+        <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
+        <#assign privilegeList = [{"name":"bind", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
+        <@permissions.editOrDisplayPrivileges privilegeList = privilegeList heading = groupHeading />
+      </#if>
 
-
-      <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>
-      <#assign bindHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
-      <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
-      <#assign privilegeList = [{"name":"bind", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
-      <@permissions.editOrDisplayPrivileges privilegeList = privilegeList heading = groupHeading />
     </div>
   </body>
 </html>

@@ -366,6 +366,7 @@
         <#-- type principal = 5 -->
         <#if item.definition.type = 5>
           ${item.property.principalValue.name}
+        <#-- type date = 3 -->
         <#elseif item.definition.type = 3>
           ${item.property.dateValue?datetime?string.long}
         <#else>

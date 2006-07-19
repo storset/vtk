@@ -43,8 +43,8 @@
       </div>
     </div>
    <#else>
-      <h3>${privilegeHeading} <span style="font-size:90%; font-weight:normal;"><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if><span></h3>
-    <@listPrincipalsSeparatedLists privilegeName = privilegeName />
+      <h3 class="${privilegeName}">${privilegeHeading}</h3>
+      <div><@listPrincipals privilegeName = privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
    </#if>
 </#macro>
 
@@ -60,7 +60,7 @@
 -->
 
 <#macro editOrDisplayPrivileges privilegeList heading>
-  <h3>${heading}</h3>
+  <h3 class="privelegeList">${heading}</h3>
   <table>
     <#list privilegeList as p>
       <tr>
@@ -143,6 +143,7 @@
  * @param privilegeName - name of privilege
  *
 -->
+
 <#macro listPrincipalsSeparatedLists privilegeName>
   <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
   <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
@@ -188,6 +189,55 @@
     </table>
   </#if>
 </#macro>
+
+
+<#--
+ * listPrincipals
+ *
+ * Lists users and groups that have permissions on the current
+ * resource. Owners are displayed with a '(owner') suffix.
+ *
+ * @param users list of users
+ * @param groups list of groups
+ *
+-->
+
+<#macro listPrincipals privilegeName>
+  <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
+  <#assign groupingPrincipal = aclInfo.groupingPrivilegePrincipalMap[privilegeName] />
+  <#assign users = aclInfo.privilegedUsers[privilegeName] />
+  <#assign groups = aclInfo.privilegedGroups[privilegeName] />
+
+  <#assign grouped = false />
+  <#list pseudoPrincipals as pseudoPrincipal>
+    <#if pseudoPrincipal.name = groupingPrincipal.name>
+      <#assign grouped = true />
+    </#if>
+  </#list>
+
+  <#if grouped>
+    <#compress>
+      <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" />&nbsp;
+    </#compress>
+  <#else>
+    <#list pseudoPrincipals as pseudoPrincipal>
+      <#compress>
+        <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" />
+        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(${resourceContext.currentResource.owner})</#if><#t/>
+      </#compress>
+      <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
+    </#list>
+    <#list users as user>
+      <#compress>${user.name}</#compress><#t/>
+      <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
+    </#list>
+    <#list groups as group>
+      <#compress>${group.name}</#compress><#t/>
+      <#if group_index &lt; groups?size - 1>,<#t/></#if>
+    </#list>
+  </#if>
+</#macro>
+
 
 
 <#--

@@ -23,7 +23,7 @@
     'org.vortikal.repositoryimpl.dao.RepositoryEventDumperImpl'-event dumper.
   -->
   <bean id="dbResourceChangeFetcher" 
-        class="${dbResourceChangeFetcherClass}">
+        class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
     <property name="jdbcDatabase" ref="repository.database" />
     <property name="loggerType" value="1" />
     <property name="loggerId" value="1" />

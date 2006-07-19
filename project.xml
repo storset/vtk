@@ -276,6 +276,14 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
+    <!-- Jython: -->
+    <dependency>
+      <id>jython</id>
+      <version>2.1</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
     <!-- Quartz job scheduling-->
     <dependency>
       <id>quartz</id>

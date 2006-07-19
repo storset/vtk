@@ -383,44 +383,24 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         }
     }
     
-//     public void setJdbcDatabase(JDBCClient jdbcDatabase) {
-//         this.jdbcDatabase = jdbcDatabase;
-//     }
-
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    /**
-     * Getter for property loggerType.
-     * @return Value of property loggerType.
-     */
     public int getLoggerType() {
         return this.loggerType;
     }
 
-    /**
-     * Setter for property loggerType.
-     * @param loggerType New value of property loggerType.
-     */
     public void setLoggerType(int loggerType) {
         this.loggerType = loggerType;
     }
 
 
-    /**
-     * Setter for property id.
-     * @param id New value of property id.
-     */
     public void setLoggerId(int loggerId)  {
 
         this.loggerId = loggerId;
     }
 
-    /**
-     * Getter for property id.
-     * @return Value of property id.
-     */
     public int getLoggerId()  {
 
         return this.loggerId;

@@ -203,7 +203,7 @@ div#titleContainer {
 div.resource-title {
     	background: transparent url(file.png) no-repeat 0px 5px;
         height: 30px;
-        padding-top: 7px;
+        padding-top: 8px;
 }
 
 div.resource-title h1 {
@@ -211,7 +211,7 @@ div.resource-title h1 {
         padding-right: 5px;
 	float:left;
         display: inline;
-    	font-size: 140%;
+    	font-size: 135%;
     	font-weight: bold;
     	margin: 0 0 0 30px;
 }
@@ -420,7 +420,7 @@ div.resourceInfo {
 }
 
 .resourceInfo h2, .resourceInfo h3, .resourceInfo h4 {
-	padding-bottom: 0.1em; 
+	padding-bottom: 0.2em; 
 	border-bottom: 1px solid #aaa;
 }
 
@@ -429,7 +429,7 @@ div.resourceInfo {
 }
 
 .resourceInfo h3 { 
-        font-size:100%;
+        font-size:95%;
         margin-top: 1em;
 }
 
@@ -450,13 +450,21 @@ div.resourceInfo {
 
 .resourceInfo table {
         margin-top: 0.5em; 
-        font-size: 85%;
+        font-size: 80%;
         border-collapse: collapse;
 }
 
 .resourceInfo tr {
         background: #eeeeee;
 	border-bottom: solid 1px #ccc;
+}
+
+.read { 
+        padding-top: 1em;
+}
+
+.read, .privelegeList { 
+        padding-top: 0.5em;
 }
 
 /* Check if this can be deleted when visual profile editing is in place */

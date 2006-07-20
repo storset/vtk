@@ -7,7 +7,12 @@
         class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
     <property name="name" value="vp"/>
     <property name="namespace" ref="VISUAL_PROFILE_NAMESPACE" /> 
-    <property name="propertyTypeDefinitions">
+    <property name="propertyTypeDefinitions" ref="visualProfilePropertyDefinitions" />
+  </bean>
+
+  <bean id="visualProfilePropertyDefinitions"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
       <list>
         <ref bean="visualProfileEnabledPropdef" />
         <ref bean="visualProfileInheritedPropdef" />
@@ -17,7 +22,7 @@
         <ref bean="editorEmailPropDef" />
         <ref bean="editorURLPropDef" />
       </list>
-    </property>
+    </property>    
   </bean>
 
   <bean id="visualProfileEnabledPropdef" 

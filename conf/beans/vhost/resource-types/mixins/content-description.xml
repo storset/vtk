@@ -9,7 +9,12 @@
         class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
     <property name="name" value="contentDescription"/>
     <property name="namespace" ref="CONTENT_NAMESPACE" /> 
-    <property name="propertyTypeDefinitions">
+    <property name="propertyTypeDefinitions" ref="contentDescriptionPropertyDefinitions" />
+  </bean>
+
+  <bean id="contentDescriptionPropertyDefinitions"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
       <list>
         <ref bean="verifiedDatePropDef" />
         <ref bean="keywordsPropDef" />

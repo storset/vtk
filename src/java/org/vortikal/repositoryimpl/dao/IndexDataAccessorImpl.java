@@ -98,7 +98,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         }
     }
 
-    public ResultSetIterator getOrderedPropertySetIterator() throws IOException {
+    public Iterator getOrderedPropertySetIterator() throws IOException {
         Connection conn = null;
 
         try {
@@ -121,7 +121,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
     }
     
     
-    public ResultSetIterator getOrderedPropertySetIterator(String startURI) throws IOException {
+    public Iterator getOrderedPropertySetIterator(String startURI) throws IOException {
         Connection conn = null;
         try {
             conn = this.dataSource.getConnection();
@@ -157,7 +157,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             stmt.setString(1, uri);
             ResultSet rs = stmt.executeQuery();
             
-            ResultSetIterator iterator =  new ResultSetIteratorImpl(
+            ResultSetIteratorImpl iterator =  new ResultSetIteratorImpl(
                 this.propertyManager, this.principalManager, rs, stmt, conn);
             
             PropertySet propSet = null;
@@ -173,7 +173,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         }
     }
     
-    public ResultSetIterator getPropertySetIteratorForURIs(List uris) throws IOException {
+    public Iterator getPropertySetIteratorForURIs(List uris) throws IOException {
         
         if (uris.size() == 0) {
             throw new IllegalArgumentException("At least one URI must be specified for retrieval.");
@@ -409,6 +409,16 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                     this.logger.warn("SQLException while closing connection", sqle);
                 }
             }
+        }
+    }
+    
+    public void close(Iterator iterator) throws IOException {
+        if (iterator instanceof ResultSetIteratorImpl) {
+            ((ResultSetIteratorImpl)iterator).close();
+        } else if (iterator instanceof ResourceIDCachingResultSetIteratorImpl) {
+            ((ResourceIDCachingResultSetIteratorImpl)iterator).close();
+        } else {
+            throw new IllegalArgumentException("Unknown iterator implementation");
         }
     }
     

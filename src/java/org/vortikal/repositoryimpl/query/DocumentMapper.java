@@ -78,7 +78,8 @@ public class DocumentMapper implements InitializingBean {
     public static final String RESOURCETYPE_FIELD_NAME =       "resourceType";
     public static final String ANCESTORIDS_FIELD_NAME =        "ANCESTORIDS";
     public static final String ID_FIELD_NAME =                 "ID";
-    public static final String ACL_INHERITED_FROM_FIELD_NAME = "ACL_INHERITED_FROM";
+    public static final String STORED_ID_FIELD_NAME =          "_ID";
+    public static final String ACL_INHERITED_FROM_FIELD_NAME = "_ACL_INHERITED_FROM";
     
     private static final Set RESERVED_FIELD_NAMES;
     static {
@@ -88,6 +89,7 @@ public class DocumentMapper implements InitializingBean {
         RESERVED_FIELD_NAMES.add(RESOURCETYPE_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ANCESTORIDS_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ID_FIELD_NAME);
+        RESERVED_FIELD_NAMES.add(STORED_ID_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ACL_INHERITED_FROM_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_DEPTH_FIELD_NAME);
     }
@@ -137,10 +139,11 @@ public class DocumentMapper implements InitializingBean {
         doc.add(ancestorIdsField);
         
         // ID (index system field)
-        //Field idField = FieldValueMapper.getStoredKeywordField(ID_FIELD_NAME, propSet.getID());
-        Field idField = BinaryFieldValueMapper.getStoredBinaryIntegerField(ID_FIELD_NAME, 
-                                                                    propSet.getID());
+        Field idField = FieldValueMapper.getKeywordField(ID_FIELD_NAME, propSet.getID());
         doc.add(idField);
+        Field storedIdField = BinaryFieldValueMapper.getStoredBinaryIntegerField(STORED_ID_FIELD_NAME, 
+                                                                    propSet.getID());
+        doc.add(storedIdField);
         
         // ACL_INHERITED_FROM (index system field)
         //Field aclField = FieldValueMapper.getStoredKeywordField(ACL_INHERITED_FROM_FIELD_NAME, 
@@ -183,7 +186,7 @@ public class DocumentMapper implements InitializingBean {
         propSet.setAclInheritedFrom(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
                 doc.getField(ACL_INHERITED_FROM_FIELD_NAME)));
         propSet.setID(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
-                doc.getField(ID_FIELD_NAME)));
+                doc.getField(STORED_ID_FIELD_NAME)));
         propSet.setResourceType(doc.get(RESOURCETYPE_FIELD_NAME));
         
         // XXX: I don't think applications/clients are really interested in this

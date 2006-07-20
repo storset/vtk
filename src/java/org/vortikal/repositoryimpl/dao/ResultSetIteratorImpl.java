@@ -54,7 +54,7 @@ import org.vortikal.security.PrincipalManager;
  *
  * XXX: exception handling
  */
-public class ResultSetIteratorImpl implements ResultSetIterator {
+public class ResultSetIteratorImpl implements Iterator {
 
     private static Log logger = LogFactory.getLog(ResultSetIteratorImpl.class);
     
@@ -89,12 +89,12 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
     }
     
 
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
         return this.hasNext;
     }
     
 
-    public Object next() throws IOException {
+    public Object next() {
 
         try {
 
@@ -149,7 +149,8 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
             return propertySet;
 
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            logger.warn("SQLException during iteration", e);
+            return null;
         }
     }
     
@@ -190,6 +191,10 @@ public class ResultSetIteratorImpl implements ResultSetIterator {
                 }
             }
         }
+    }
+    
+    public void remove() {
+        throw new UnsupportedOperationException("This iterator does not support removal of elements");
     }
     
     /**

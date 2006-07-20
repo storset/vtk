@@ -43,7 +43,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
-import org.vortikal.repositoryimpl.dao.ResultSetIterator;
 import org.vortikal.repositoryimpl.index.observation.ResourceChange;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifier;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver;
@@ -128,7 +127,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             }
         }
         
-        ResultSetIterator rsi = null;
+        Iterator propSetIterator = null;
         try {
             // Take lock immediately, we'll be doing some writing.
             if (! this.index.lock()) {
@@ -157,9 +156,14 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             // Apply changes to index
             // Regular deletes (might include collections)
             for (Iterator i = deletes.iterator(); i.hasNext();) {
-                ResourceChange change = (ResourceChange)i.next();
-                this.index.deletePropertySet(change.getUri(),
-                                             change.isCollection());
+                ResourceDeletion deletion = (ResourceDeletion)i.next();
+                
+                // Delete by resource ID, this info is should be provided in the event
+                if (deletion.isCollection()) {
+                    this.index.deletePropertySetTreeByUUID(deletion.getResourceId());
+                } else {
+                    this.index.deletePropertySetByUUID(deletion.getResourceId());
+                }
             }
             
             // Updates/additions
@@ -170,15 +174,15 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 // before re-adding them.
                 for (Iterator i = updates.iterator(); i.hasNext();) {
                     ResourceChange change = (ResourceChange)i.next();
-                    this.index.deletePropertySet(change.getUri(), false);
+                    this.index.deletePropertySet(change.getUri());
                     updateUris.add(change.getUri());
                 }
                 
                 // Get iterator over property sets that need updating
-                rsi = this.indexDataAccessor.getPropertySetIteratorForURIs(updateUris);
+                propSetIterator = this.indexDataAccessor.getPropertySetIteratorForURIs(updateUris);
                 
-                while (rsi.hasNext()) {
-                    PropertySet propSet = (PropertySet)rsi.next();
+                while (propSetIterator.hasNext()) {
+                    PropertySet propSet = (PropertySet)propSetIterator.next();
                     this.index.addPropertySet(propSet);
                 }
             }
@@ -191,9 +195,9 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         } finally {
             this.index.unlock();
             
-            if (rsi != null) {
+            if (propSetIterator != null) {
                 try {
-                    rsi.close();
+                    this.indexDataAccessor.close(propSetIterator);
                 } catch (IOException io) {
                     this.logger.warn("Exception while closing ResultSetIterator");
                 }

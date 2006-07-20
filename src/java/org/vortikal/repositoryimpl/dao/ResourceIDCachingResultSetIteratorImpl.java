@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
@@ -67,8 +69,10 @@ import org.vortikal.security.PrincipalManager;
  * @author oyviste
  *
  */
-public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator {
+public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
 
+    Log logger = LogFactory.getLog(ResourceIDCachingResultSetIteratorImpl.class);
+    
     private ResultSet rs;
     private PropertyManager propertyManager;
     private PrincipalManager principalManager;
@@ -95,12 +99,11 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
     }
     
 
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
         return this.hasNext;
     }
-    
 
-    public Object next() throws IOException {
+    public Object next()  {
 
         try {
 
@@ -167,7 +170,8 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
             return propertySet;
 
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            logger.warn("SQLException during iteration", e);
+            return null;
         }
     }
     
@@ -206,6 +210,10 @@ public class ResourceIDCachingResultSetIteratorImpl implements ResultSetIterator
         }
         
         return ids;
+    }
+    
+    public void remove() {
+        throw new UnsupportedOperationException("This iterator does not support removal of elements");
     }
     
     public void close() throws IOException {

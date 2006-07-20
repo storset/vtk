@@ -43,9 +43,9 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.TermEnum;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
@@ -60,7 +60,7 @@ import org.vortikal.repositoryimpl.PropertySetImpl;
  * May need to model things a bit differently to support indexing to alternate
  * index, hot-switching between indexes after re-indexing, locking etc.
  * 
- * XXX: handle DocumentMappingException's
+ * XXX: handle DocumentMappingException's here ?
  * 
  * @author oyviste
  *
@@ -128,7 +128,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
         Document doc = null;
-        // XXX: FIXME: ugly casting
+        // XXX: ugly casting to obtain implementation specific details
         
         // NOTE: "Transaction"-write-locking must be done above this level.
         //       This is needed to ensure the possibility of efficiently batching 
@@ -136,18 +136,18 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         try {
             doc = this.documentMapper.getDocument((PropertySetImpl)propertySet);
             
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Adding new property set at URI '" 
+            if (logger.isDebugEnabled()) {
+                logger.debug("Adding new property set at URI '" 
                                                 + propertySet.getURI() + "'");
-                this.logger.debug("Document mapper created the following document: ");
+                logger.debug("Document mapper created the following document: ");
                 
                 Enumeration fieldEnum = doc.fields();
                 while (fieldEnum.hasMoreElements()) {
                     Field field = (Field)fieldEnum.nextElement();
                     if (field.isBinary()) {
-                        this.logger.debug("Field '" + field.name() + "', value: [BINARY]");
+                        logger.debug("Field '" + field.name() + "', value: [BINARY]");
                     } else {
-                        this.logger.debug("Field '" + field.name() + "', value: '" 
+                        logger.debug("Field '" + field.name() + "', value: '" 
                                                     + field.stringValue() + "'");
                     }
                 }
@@ -155,55 +155,35 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
             
             this.index.getIndexWriter().addDocument(doc, this.analyzer);
         } catch (DocumentMappingException dme) {
-            this.logger.warn("Could not map property set to index document", dme);
+            logger.warn("Could not map property set to index document", dme);
             throw new IndexException("Could not map property set to index document", dme);
         } catch (IOException io) {
             throw new IndexException(io);
         }
     }
 
-    public void clear() throws IndexException {
+    public int deletePropertySetTreeByUUID(String rootUuid) 
+        throws IndexException {
         try {
-            this.index.clear();
-        } catch (IOException io) {
-            throw new IndexException(io);
-        }
-    }
-
-    public int deletePropertySet(String uri, boolean deleteDescendants) throws IndexException {
-        TermDocs td = null;
-        try {
-            Term uriTerm = new Term(DocumentMapper.URI_FIELD_NAME, uri);
-            IndexReader reader = this.index.getIndexReader();
-            
-            td = reader.termDocs(uriTerm);
-            
-            if (! td.next()) {
-                return 0; // Not found in index
-            }
-            
             int n = 0;
-            if (deleteDescendants) {
-                Field idField = reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
-                String id = 
-                    Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(idField));
-                
-                int d = reader.deleteDocuments(
-                            new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, id));
-               
-                if (logger.isDebugEnabled() && d > 0) {
-                    logger.debug("Deleted " + d
-                        + " descendant(s) of property set at URI '" + uri
-                        + "' from index");
-                }
-                
-                n += d;
-            } 
             
+            IndexReader reader = this.index.getIndexReader();
+    
             if (logger.isDebugEnabled()) {
-                logger.debug("Deleting property set at URI '" + uri + "' from index.");
+                logger.debug("Deleting property set tree with root ID '" 
+                                                            + rootUuid + "'");
             }
-            n += reader.deleteDocuments(uriTerm);
+            
+            n += reader.deleteDocuments(new Term(DocumentMapper.ID_FIELD_NAME,
+                                                                      rootUuid));
+            
+            n += reader.deleteDocuments(new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME,
+                                                                      rootUuid));
+            
+            if (n == 0) {
+                logger.warn("Consistency warning: zero index documents deleted"
+                        + " for tree with root ID '" + rootUuid + "'");
+            }
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Deleted " + n + " index documents.");
@@ -211,23 +191,106 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
             
             return n;
         } catch (IOException io) {
-            throw new IndexException (io);
-        } finally {
-            if (td != null) {
-                try {
-                    td.close();
-                } catch (IOException io) {}
+            throw new IndexException(io);
+        } 
+    }
+    
+    public int deletePropertySetTree(String rootUri) 
+        throws IndexException {
+        
+        TermEnum tenum = null;
+        TermDocs tdocs = null;
+        try {
+
+            IndexReader reader = this.index.getIndexReader();
+    
+            String fieldName = DocumentMapper.URI_FIELD_NAME.intern();
+            Term rootUriTerm = new Term(fieldName, rootUri);
+            tenum = reader.terms(rootUriTerm);
+            tdocs = reader.termDocs();
+
+            int n = 0;
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deleting property set tree with root URI '" 
+                        + rootUri + "'");
             }
+            
+            do {
+                Term term = tenum.term();
+                if (term != null 
+                    && term.field() == fieldName 
+                    && term.text().startsWith(rootUri)) {
+                    
+                    tdocs.seek(tenum);
+                    
+                    while (tdocs.next()) {
+                        reader.deleteDocument(tdocs.doc());
+                        ++n;
+                    }
+                } else break;
+
+            } while (tenum.next());
+            
+            if (n == 0) {
+                logger.warn("Consistency warning: zero index documents deleted"
+                        + " for tree with root URI '" + rootUri + "'");
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deleted " + n + " index documents.");
+            }
+
+            return n;
+        } catch (IOException io) {
+            throw new IndexException(io);
+        } finally {
+            try {
+                if (tenum != null) tenum.close();
+                if (tdocs != null) tdocs.close();
+            } catch (IOException io) {}
         }
     }
-
-    public void updatePropertySet(PropertySet propertySet) throws IndexException {
+    
+    public int deletePropertySet(String uri) throws IndexException {
         try {
+            Term uriTerm = new Term(DocumentMapper.URI_FIELD_NAME, uri);
             IndexReader reader = this.index.getIndexReader();
-            reader.deleteDocuments(new Term(DocumentMapper.URI_FIELD_NAME, propertySet.getURI()));
             
-            IndexWriter writer = this.index.getIndexWriter();
-            writer.addDocument(this.documentMapper.getDocument((PropertySetImpl)propertySet), this.analyzer);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deleting property set at URI '" + uri + "' from index.");
+            }
+            
+            int n = reader.deleteDocuments(uriTerm);
+            
+            if (n > 1) {
+                logger.warn("Consitency warning: " + n 
+                        + " index documents deleted for URI '" + uri + "'"); 
+            }
+
+            return n;
+        } catch (IOException io) {
+            throw new IndexException (io);
+        }
+    }
+    
+    public int deletePropertySetByUUID(String uuid) throws IndexException {
+        try {
+            Term uuidTerm = new Term(DocumentMapper.ID_FIELD_NAME, uuid);
+            IndexReader reader = this.index.getIndexReader();
+            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deleting property set with ID '" + uuid + "'");
+            }
+            
+            int n = reader.deleteDocuments(uuidTerm);
+            
+            if (n != 1) { 
+                logger.warn("Consitency warning: " + n + " index documents deleted"
+                        + " for ID '" + uuid + "'");
+            }
+            
+            return n;
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -248,7 +311,8 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
             }
           
             if (td.next()) {
-                this.logger.warn("Multiple property sets exist in index for a single URI");
+                logger.warn("Consistency warning: Multiple property sets"
+                        + " exist in index for URI '" + uri + "'");
             }
             
             return propSet;
@@ -260,6 +324,52 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                     td.close();
                 } catch (IOException io) {}
             }
+        }
+    }
+
+    public void clear() throws IndexException {
+        try {
+            this.index.clear();
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
+    
+    public Iterator orderedIterator() throws IndexException {
+        try {
+            return new PropertySetIndexIterator(this.index, 
+                                            this.documentMapper,
+                                            DocumentMapper.URI_FIELD_NAME,
+                                            "");
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
+    
+    public Iterator orderedSubtreeIterator(String rootUri) throws IndexException {
+        try {
+            return new PropertySetIndexSubtreeIterator(this.index, 
+                                            this.documentMapper,
+                                            rootUri);
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
+    
+    public void close(Iterator iterator) throws IndexException {
+        try {
+            
+            if ((iterator instanceof PropertySetIndexIterator)) {
+                ((PropertySetIndexIterator)iterator).close();
+            } else if (iterator instanceof PropertySetIndexSubtreeIterator) {
+                ((PropertySetIndexSubtreeIterator)iterator).close();
+            } else {
+                throw new IllegalArgumentException("Illegal iterator type");
+            }
+        
+            
+        } catch (IOException io) {
+            throw new IndexException(io);
         }
     }
 

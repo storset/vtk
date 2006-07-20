@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +40,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
-import org.vortikal.repositoryimpl.dao.ResultSetIterator;
 
 /**
  * Fast and furious re-indexer whipped together even faster ..
@@ -72,17 +72,23 @@ public class Reindexer implements InitializingBean {
            throw new IndexException("Unable to acquire lock.");
        }
        
-       ResultSetIterator resultSetIterator = null;
+       Iterator iterator = null;
        try {
            this.index.clear();
-           resultSetIterator = this.indexDataAccessor.getOrderedPropertySetIterator();
+           iterator = this.indexDataAccessor.getOrderedPropertySetIterator();
            
-           while (resultSetIterator.hasNext()) {
-               PropertySet propertySet = (PropertySet)resultSetIterator.next();
+           while (iterator.hasNext()) {
+               PropertySet propertySet = (PropertySet)iterator.next();
+               
+               if (propertySet == null) {
+                   throw new IndexException("Property set iterator returned null");
+               }
+               
                if (this.logger.isDebugEnabled()) {
                    this.logger.debug("Adding property set at URI '" 
                            + propertySet.getURI() + "' to index.");
                }
+               
                this.index.addPropertySet(propertySet);
            }
            
@@ -91,12 +97,13 @@ public class Reindexer implements InitializingBean {
            throw new IndexException(io);
        } finally {
            try {
-               if (resultSetIterator != null) {
-                   resultSetIterator.close();
+               if (iterator != null) {
+                   this.indexDataAccessor.close(iterator);
                } 
            } catch (IOException io) {
                this.logger.warn("IOException while closing result set iterator.");
            }
+           
            this.index.unlock();
        }
        

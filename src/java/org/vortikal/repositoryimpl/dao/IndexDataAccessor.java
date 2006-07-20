@@ -1,6 +1,7 @@
 package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public interface IndexDataAccessor {
      * @return
      * @throws IOException
      */
-    public ResultSetIterator getOrderedPropertySetIterator() throws IOException;
+    public Iterator getOrderedPropertySetIterator() throws IOException;
     
     /**
      * Get an ordered <code>PropertySet</code> iterator, starting from the given 
@@ -32,7 +33,7 @@ public interface IndexDataAccessor {
      * @return
      * @throws IOException
      */
-    public ResultSetIterator getOrderedPropertySetIterator(String startURI) throws IOException;
+    public Iterator getOrderedPropertySetIterator(String startURI) throws IOException;
     
     /**
      * Get iterator over all <code>PropertySet</code>s from URIs in the given 
@@ -42,7 +43,7 @@ public interface IndexDataAccessor {
      * @return
      * @throws IOException
      */
-    public ResultSetIterator getPropertySetIteratorForURIs(List uris) throws IOException;
+    public Iterator getPropertySetIteratorForURIs(List uris) throws IOException;
     
     /**
      * Returns a single <code>PropertySet</code> for the given URI.
@@ -53,6 +54,21 @@ public interface IndexDataAccessor {
      */
     public PropertySet getPropertySetForURI(String uri) throws IOException;
     
+    /**
+     * Close an {@link java.util.Iterator} instance obtained with any of the
+     * following methods:
+     * <ul>
+     *  <li>{@link #getOrderedPropertySetIterator()}</li>
+     *  <li>{@link #getOrderedPropertySetIterator(String)}</li>
+     *  <li>{@link #getPropertySetIteratorForURIs(List)}</li>
+     * </ul>
+     * 
+     * This should always be done to free database resources.
+     * 
+     * @param iterator
+     * @throws IOException
+     */
+    public void close(Iterator iterator) throws IOException;
     
     /**
      * Process list of <code>ResultSecurityInfo</code> instances

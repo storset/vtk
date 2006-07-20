@@ -250,7 +250,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
                                 + this.currentSearchReaderRefCount);
                     }
                 } else {
-                    logger.warn("Ref-count for current search index reader below zero, something is wrong !");
+                    logger.warn("Ref-count for current search index reader went below zero");
                 }
             } else {
                 // Searcher released an outdated reader, decrease ref-count and close

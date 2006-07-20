@@ -157,7 +157,6 @@ public final class FieldValueMapper {
     // XXX: Used for generating ancestor ids field. We don't bother to encode
     //      it because of its system-specific nature, and that it should never
     //      be used as a sane sorting key or in range queries.
-    // XXX: Review if storing this is really necessary (don't think so)
     public static Field getUnencodedMultiValueFieldFromIntegers(String name, 
                                                                 int[] integers) {
         StringBuffer fieldValue = new StringBuffer();
@@ -168,11 +167,12 @@ public final class FieldValueMapper {
             }
         }
         
-        return new Field(name, fieldValue.toString(), Field.Store.YES, 
+        return new Field(name, fieldValue.toString(), Field.Store.NO, 
                                                       Field.Index.TOKENIZED);
     }
 
-    // XXX: Used for ancestor ids field. Expensive.
+    // XXX: Used for re-creating a stored ancestor ids field. Expensive and
+    //      currently not in use.
     public static int[] getIntegersFromUnencodedMultiValueField(Field field) {
         if ("".equals(field.stringValue())) return new int[0];
         

@@ -200,10 +200,12 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
                                                 URIUtil.stripTrailingSlash(uri)));
             
             if (td.next()) {
-                Field field= reader.document(td.doc()).getField(DocumentMapper.ID_FIELD_NAME);
+                Field field= reader.document(td.doc()).getField(
+                                            DocumentMapper.STORED_ID_FIELD_NAME);
                 
                 String value = 
-                    Integer.toString(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(field));
+                    Integer.toString(
+                            BinaryFieldValueMapper.getIntegerFromStoredBinaryField(field));
                 
                 return new Term(DocumentMapper.ID_FIELD_NAME, value);
                 

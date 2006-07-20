@@ -378,7 +378,7 @@
         </#if>
       </#if>
     <#else>
-      <#local defaultNotSet><@vrtx.msg code="property.unset" default="Not set" /></#local>
+      <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
       <#local label>
         <@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" />
       </#local>

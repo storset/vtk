@@ -617,7 +617,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         
         try {
 
-            Resource originalResource = (Resource)r.clone();
+            Resource originalResource = (Resource) r.clone();
 
             AclImpl newAcl = null;
             if (acl.isInherited()) {
@@ -629,12 +629,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 newAcl = (AclImpl) parent.getAcl().clone();
                 newAcl.setInherited(true);
             } else {
-                newAcl = (AclImpl)acl.clone();
+                newAcl = (AclImpl) acl.clone();
+                newAcl.setInherited(false);
                 r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
             }
         
             r.setACL(newAcl);
-            //r.setInheritedACL(newAcl.isInherited());
             
             try {
                 newAcl.setDirty(true);
@@ -683,10 +683,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.propertyManager.create(principal, uri, collection);
 
         try {
-            newResource.setACL((Acl)parent.getAcl().clone());
-            //newResource.setInheritedACL(true);
-            newResource.setAclInheritedFrom(parent.getID());
-            newResource.getAcl().setInherited(true);
+            Acl newAcl = (Acl) parent.getAcl().clone();
+            newAcl.setInherited(true);
+            newResource.setACL(newAcl);
+            int aclIneritedFrom = parent.isInheritedACL()
+                ? parent.getAclInheritedFrom() : parent.getID();
+            newResource.setAclInheritedFrom(aclIneritedFrom);
             this.dao.store(newResource);
             newResource = this.dao.load(uri);
 

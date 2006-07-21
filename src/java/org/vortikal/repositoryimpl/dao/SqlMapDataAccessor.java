@@ -117,7 +117,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         this.sqlMaps = sqlMaps;
     }
     
-
     public void afterPropertiesSet() throws Exception {
         if (this.contentStore == null) {
             throw new BeanInitializationException(
@@ -366,18 +365,10 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 this.contentStore.createResource(r.getURI(), r.isCollection());
             } 
 
-            if (!existed) {
-                // Make sure ACL is inherited for new resources:
+            if (!existed && !r.isInheritedACL()) {
+                insertAcl(r);
+            } else if (r.getAcl().isDirty()) {
                 updateAcl(r);
-            }
-
-            if (r.getAcl().isDirty()) {
-                if (existed) {
-                    // Save the ACL:
-                    updateAcl(r);
-                } else {
-                    insertAcl(r);
-                }
             }
 
             storeLock(r);
@@ -821,7 +812,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
             // ACL was inherited, new ACL is not inherited:
             int oldInheritedFrom = findNearestACL(r.getURI());
-
             insertAcl(r);
             
             Map parameters = new HashMap();
@@ -1132,7 +1122,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
         propertySet.setID(((Number)resourceMap.get("id")).intValue());
         
-        boolean collection = "Y".equals( resourceMap.get("isCollection"));
+        boolean collection = "Y".equals(resourceMap.get("isCollection"));
         Property prop = propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
             new Boolean(collection));
@@ -1268,29 +1258,36 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
 
     
-    // XXX: get property names from PropertyType.SPECIAL_PROPERTIES
     private Map getResourceAsMap(ResourceImpl r) {
         Map map = new HashMap();
         map.put("parent", r.getParent());
+        // XXX: use Integer (not int) as aclInheritedFrom field:
+        map.put("aclInheritedFrom", r.getAclInheritedFrom() == PropertySetImpl.NULL_RESOURCE_ID
+                ? null : new Integer(r.getAclInheritedFrom()));
         map.put("uri", r.getURI());
-        map.put("lastModified", r.getLastModified());
-        map.put("contentLastModified", r.getContentLastModified());
-        map.put("propertiesLastModified", r.getPropertiesLastModified());
-        map.put("creationTime", r.getCreationTime());
-        map.put("modifiedBy", r.getModifiedBy().getQualifiedName());
-        map.put("createdBy", r.getCreatedBy().getQualifiedName());
-        map.put("owner", r.getOwner().getQualifiedName());
-        map.put("contentModifiedBy", r.getContentModifiedBy().getQualifiedName());
-        map.put("propertiesModifiedBy", r.getPropertiesModifiedBy().getQualifiedName());
+        map.put("resourceType", r.getResourceType());
+        
+
+        // XXX: get list of names from PropertyType.SPECIAL_PROPERTIES:
         map.put("collection", r.isCollection() ? "Y" : "N");
+        map.put("owner", r.getOwner().getQualifiedName());
+        map.put("creationTime", r.getCreationTime());
+        map.put("createdBy", r.getCreatedBy().getQualifiedName());
         map.put("displayName", r.getDisplayName());
         map.put("contentType", r.getContentType());
         map.put("characterEncoding", r.getCharacterEncoding());
-        map.put("guessedCharacterEncoding", r.getGuessedCharacterEncoding());
         map.put("userSpecifiedCharacterEncoding", r.getUserSpecifiedCharacterEncoding());
+        map.put("guessedCharacterEncoding", r.getGuessedCharacterEncoding());
+        // XXX: contentLanguage should be contentLocale:
         map.put("contentLanguage", r.getContentLanguage());
-        map.put("resourceType", r.getResourceType());
+        map.put("lastModified", r.getLastModified());
+        map.put("modifiedBy", r.getModifiedBy().getQualifiedName());
+        map.put("contentLastModified", r.getContentLastModified());
+        map.put("contentModifiedBy", r.getContentModifiedBy().getQualifiedName());
+        map.put("propertiesLastModified", r.getPropertiesLastModified());
+        map.put("propertiesModifiedBy", r.getPropertiesModifiedBy().getQualifiedName());
         map.put("contentLength", new Long(r.getContentLength()));
+
         return map;
     }
     

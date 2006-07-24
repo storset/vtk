@@ -44,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repositoryimpl.ProcessedContentEventDumper;
 import org.vortikal.repositoryimpl.RepositoryEventDumperImpl;
 import org.vortikal.repositoryimpl.index.observation.ResourceACLModification;
 import org.vortikal.repositoryimpl.index.observation.ResourceChange;
@@ -58,12 +59,11 @@ import org.vortikal.repositoryimpl.index.observation.ResourcePropModification;
  * 
  * <em>Important:</em> 
  * <p>Only entries produced by
- * {@link org.vortikal.repositoryimpl.RepositoryEventDumperImpl} are supported.
+ * {@link org.vortikal.repositoryimpl.RepositoryEventDumperImpl} or 
+ * {@link org.vortikal.repositoryimpl.ProcessedContentEventDumper} are supported.
  * </p>
  * 
- * Logger type and logger id must be configured properly.
- * 
- * TODO: Convert to iBatis
+ * TODO: Convert to iBatis, if we decide to keep some of this in the future.
  * 
  * @author oyviste
  */
@@ -116,7 +116,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             ResultSet rs = pstmt.executeQuery();
             
             while (rs.next()) {
-                ResourceChange c = createResourceChange(rs);
+                ResourceChange c = getResourceChange(rs);
                 result.add(c);
             }
             
@@ -145,7 +145,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
      * @throws java.sql.SQLException
      * @return a ResourceChange object.
      */
-    private ResourceChange createResourceChange(ResultSet rs)
+    private ResourceChange getResourceChange(ResultSet rs)
     throws SQLException {
         
         ResourceChange c = null;
@@ -159,7 +159,9 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             c = new ResourcePropModification();
         } else if (op.equals(RepositoryEventDumperImpl.MODIFIED_CONTENT)) {
             c = new ResourceContentModification();
-        } else if (op.equals(RepositoryEventDumperImpl.ACL_MODIFIED)) {
+        } else if (op.equals(RepositoryEventDumperImpl.ACL_MODIFIED)
+                  || op.equals(ProcessedContentEventDumper.ACL_READ_ALL_NO) // Stay compatible with ProcessedContentEventDumper
+                  || op.equals(ProcessedContentEventDumper.ACL_READ_ALL_YES)) {
             c = new ResourceACLModification();
         } else {
             logger.warn("Unknown operation '" + op + "' in database changelog."
@@ -262,7 +264,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             result = new ArrayList();
 
             while (rs.next()) {
-                ResourceChange c = createResourceChange(rs);
+                ResourceChange c = getResourceChange(rs);
                 result.add(c);
             }
             

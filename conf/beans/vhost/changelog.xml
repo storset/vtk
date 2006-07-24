@@ -2,27 +2,69 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <!-- Publish events whenever changes to Vortex resources occur. -->
-  <bean id="repository.processedContentEventDumper" 
-    class="org.vortikal.repositoryimpl.RepositoryEventDumperImpl">
+  <!-- Changelog beans for old index system -->
+
+  <!-- Event dumper for old indexing system (logger id = 1 and logger type = 2) -->
+  <bean id="repository.processedContentEventDumper.old" 
+    class="org.vortikal.repositoryimpl.ProcessedContentEventDumper">
     <property name="dataAccessor" ref="repository.database"/>
     <property name="repository" ref="repository"/>
     <property name="loggerId" value="1" />
     <property name="loggerType" value="2" />
   </bean>
 
-  <!-- Resource change fetcher.  This bean can be used to extract
-    lists of resource changes from the database changelog table. -->
-  <bean id="repository.dbResourceChangeFetcher" 
+  <!-- Resource change fetcher for old indexing system -->
+  <bean id="repository.dbResourceChangeFetcher.old" 
         class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
     <property name="dataSource" ref="repository.dataSource" />
     <property name="loggerId" value="1" />
     <property name="loggerType" value="2" />
   </bean>
 
-  <!-- Resource change notifier, polls resource change fetcher and publishes
-       changes to any registered observers. Requires a Quartz scheduler trigger
-       to call its pollChanges() method periodically -->
+
+  <!-- Resource change notifier for old indexing system -->
+  <bean id="repository.resourceChangeNotifier.old"
+    class="org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifierImpl">
+    <property name="changeFetcher" ref="repository.dbResourceChangeFetcher.old"/>
+  </bean>
+
+  <!-- Simple trigger bean for pollChanges() in 
+       'repository.resourceChangeNotifier.old' -->
+  <bean id="repository.indexUpdateTrigger.old" 
+        class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    
+    <property name="targetMethodName" value="pollChanges"/>
+    <property name="targetObject" ref="repository.resourceChangeNotifier.old"/>
+    <property name="triggerThreadName" value="indexupdater.old"/>
+    <property name="startDelay" value="20000"/>
+    <property name="repeatInterval" value="5000"/>
+    <property name="startTriggerAfterInitialization" value="true"/>
+    <property name="abortTriggerOnTargetMethodException" value="false"/>
+
+  </bean>
+  
+
+
+  <!-- Changelog beans for new system index -->
+
+  <!-- Event dumper for new system index (logger id = 1 and logger type = 3)  -->
+  <bean id="repository.eventDumper" 
+    class="org.vortikal.repositoryimpl.RepositoryEventDumperImpl">
+    <property name="dataAccessor" ref="repository.database"/>
+    <property name="repository" ref="repository"/>
+    <property name="loggerId" value="1" />
+    <property name="loggerType" value="3" />
+  </bean>
+
+  <!-- Resource change fetcher for new system index -->
+  <bean id="repository.dbResourceChangeFetcher" 
+        class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
+    <property name="dataSource" ref="repository.dataSource" />
+    <property name="loggerId" value="1" />
+    <property name="loggerType" value="3" />
+  </bean>
+
+  <!-- Resource change notifier for new system index -->
   <bean id="repository.resourceChangeNotifier"
     class="org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifierImpl">
     <property name="changeFetcher" ref="repository.dbResourceChangeFetcher"/>
@@ -42,7 +84,6 @@
     <property name="abortTriggerOnTargetMethodException" value="false"/>
 
   </bean>
-  
 
 <!-- Quartz scheduler factory for resourceChangeNotifier -->
 <!--   <bean id="repository.DMSSchedulerfactory"  -->

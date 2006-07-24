@@ -14,7 +14,7 @@
         <ref bean="dmsIndexResourceChangeObserver"/>
       </list>
     </property>
-    <property name="notifier" ref="repository.resourceChangeNotifier"/>
+    <property name="notifier" ref="repository.resourceChangeNotifier.old"/>
     <property name="filterCriterion" ref="dmsIndexFilter"/>
   </bean>
   

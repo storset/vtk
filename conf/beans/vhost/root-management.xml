@@ -190,7 +190,7 @@
   </bean>
 
 
-  <!-- Index management service. Belongs in 'management.xml' ? -->
+  <!-- Old index management service. -->
   <bean id="indexManagementService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-300"/>
     <property name="parent" ref="repositoryManageService"/>
@@ -221,8 +221,5 @@
     <property name="runtimeManager" ref="indexRuntimeManager"/>
     <!--<property name="viewName" value="redirectToManage"/>-->
   </bean>
-
-
-  
 
 </beans>

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -882,7 +883,12 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
 
     private int findNearestACL(String uri) throws SQLException {
+        
         List path = java.util.Arrays.asList(URLUtil.splitUriIncrementally(uri));
+        
+        // Reverse list to get deepest URI first
+        Collections.reverse(path);
+        
         Map parameters = new HashMap();
         parameters.put("path", path);
         String sqlMap = getSqlMap("findNearestAclResourceId");

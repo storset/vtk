@@ -106,7 +106,7 @@ public class URLUtil {
     /**
      * Splits a URI into incremental path elements. For example, the
      * URI <code>/foo/bar/baaz</code> produce the result: 
-     * <code>{"/", "/foo", "/foo/bar/", "/foo/bar/baaz"}</code>
+     * <code>{"/", "/foo", "/foo/bar", "/foo/bar/baaz"}</code>
      *
      * @param uri the uri to split
      * @return an array consisting of the components

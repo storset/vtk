@@ -45,11 +45,11 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
     protected DataAccessor dataAccessor;
 
-    private final static String CREATED = "created";
-    private final static String DELETED = "deleted";
-    private final static String MODIFIED_PROPS = "modified_props";
-    private final static String MODIFIED_CONTENT = "modified_content";
-    private final static String MODIFIED_ACL = "modified_acl";
+    public final static String CREATED = "created";
+    public final static String DELETED = "deleted";
+    public final static String MODIFIED_PROPS = "modified_props";
+    public final static String MODIFIED_CONTENT = "modified_content";
+    public final static String MODIFIED_ACL = "modified_acl";
 
 
 

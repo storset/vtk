@@ -8,38 +8,56 @@
         class="org.vortikal.web.view.wrapper.MappingViewResolver">
     <property name="views">
       <map>
-        <entry key="httpOptions">
-          <ref bean="httpOptionsView" />
-        </entry>
-        <entry key="collectionRedirect">
-          <ref bean="collectionRedirectView" />
-        </entry>
-        <entry key="redirect">
-          <ref bean="redirectView" />
-        </entry>
-        <entry key="redirectToManage">
-          <ref bean="redirectToManageView" />
-        </entry>
-        <entry key="redirectToPermissions">
-          <ref bean="redirectToPermissionView" />
-        </entry>
-        <entry key="redirectToPreviewCollection">
-          <ref bean="redirectToPreviewCollectionView" />
-        </entry>
-        <entry key="displayResource">
-          <ref bean="displayResourceView" />
-        </entry>
-        <entry key="collectionListing">
-          <ref bean="collectionListingView" />
-        </entry>
-        <entry key="displayHTMLResource" 
-               value-ref="displayResourceView" />
-        <entry key="collectionListingAsFeed" 
-          value-ref="collectionListingAsFeedView" />        
-        
+        <entry key="httpOptions" value-ref="httpOptionsView" />
+        <entry key="collectionRedirect" value-ref="collectionRedirectView" />
+        <entry key="redirect" value-ref="redirectView" />
+        <entry key="redirectToManage" value-ref="redirectToManageView" />
+        <entry key="redirectToPermissions" value-ref="redirectToPermissionView" />
+        <entry key="redirectToPreviewCollection" value-ref="redirectToPreviewCollectionView" />
+        <entry key="displayResource" value-ref="displayResourceView" />
+        <entry key="displayHTMLResource" value-ref="displayResourceView" />
+        <entry key="collectionListingAsFeed" value-ref="collectionListingAsFeedView" />        
       </map>
     </property>
   </bean>
+
+
+  <bean id="collectionListingViewResolver"
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="collectionListing">
+          <ref bean="collectionListingView" />
+        </entry>
+      </map>
+    </property>
+    <property name="viewWrapper" ref="collectionListingViewWrapper" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="collectionListingHtmlTitleProvider" />
+        <ref bean="manageLinkProvider" />
+        <ref bean="viewResourceMenuProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="collectionListingViewWrapper" 
+        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+    <property name="propagateExceptions" value="true" />
+    <property name="contentFilters">
+      <list>
+        <ref bean="collectionListingHeadContentFilter" />
+        <ref bean="collectionListingHeaderContentFilter" />
+        <ref bean="collectionListingFooterContentFilter" />
+        <ref bean="adminURLFooterContentFilter" />
+      </list>
+    </property>
+  </bean>
+
+
+
+
 
 
   <!-- View definitions -->
@@ -136,7 +154,59 @@
     </property>
   </bean>
 
-    <!-- Model data providers -->
+
+  <bean id="collectionListingHeadContentFilter"
+        class="org.vortikal.web.view.wrapper.HtmlHeadContentFilter">
+    <property name="view">
+      <bean id="collectionListingHeadView" parent="freemarkerView">
+        <property name="attributesMap">
+          <map>
+            <entry key="cssURLs">
+              <list>
+                <value>${cssBaseURL}/basic.css</value>
+                <!--value>http://www.uio.no/visuell-profil/css/uio.css</value-->
+                <value>${cssBaseURL}/view-collectionlisting.css</value>
+              </list>
+            </entry>
+          </map>
+        </property>
+        <property name="url" value="layouts/head.ftl" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="collectionListingHeaderContentFilter"
+        class="org.vortikal.web.view.wrapper.HtmlHeaderContentFilter">
+    <property name="view">
+      <bean id="collectionListingHeader" parent="freemarkerView">
+        <property name="url" value="layouts/plain-header.ftl" />
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="collectionListingFooterContentFilter"
+        class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+    <property name="view">
+      <bean id="collectionListingFooterView" parent="freemarkerView">
+        <property name="url" value="layouts/plain-footer.ftl" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="adminURLFooterContentFilter"
+        class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+    <property name="view">
+      <bean parent="freemarkerView">
+        <property name="url" value="layouts/manage-link.ftl" />
+      </bean>
+    </property>
+  </bean>
+
+
+
+  <!-- Model data providers -->
 
     <bean id="defaultBreadcrumbTitlePropertyList" class="java.util.ArrayList">
       <constructor-arg>
@@ -199,6 +269,13 @@
         <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.collectionListing" />
       </map>
     </property>
+  </bean>
+
+  <bean id="manageLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelName" value="manageLink" />
+    <property name="service" ref="manageService" />
   </bean>
 
   <bean id="resourceDetailProvider"

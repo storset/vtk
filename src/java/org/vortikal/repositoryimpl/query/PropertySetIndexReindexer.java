@@ -144,6 +144,29 @@ public class PropertySetIndexReindexer implements InitializingBean {
        }
    }
    
+   /**
+    * Directly re-index the secondary index.
+    * 
+    * @return The numbers of <code>PropertySet</code>s indexed.
+    * @throws IndexException
+    */
+   public synchronized int reindexSecondary() throws IndexException {
+    
+       if (this.secondaryIndex == null) {
+           throw new IllegalStateException("No secondary index is configured");
+       }
+       
+       if (!this.secondaryIndex.lock()) {
+           throw new IndexException("Unable to acquire lock on secondary index");
+       }
+       
+       try {
+           return reindex(this.secondaryIndex, this.indexDataAccessor);
+       } finally {
+           this.secondaryIndex.unlock();
+       }
+   }
+
    private int reindex(PropertySetIndex index, IndexDataAccessor indexDataAccessor) 
        throws IndexException {
        

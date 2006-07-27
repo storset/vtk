@@ -48,15 +48,10 @@ import org.springframework.beans.factory.InitializingBean;
 import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
 
 /**
- * TODO: better javadoc/description
- * 
  * New class for low-level index access.
  * 
  * Manages write & search access to a single Lucene index.
- * TODO: provide access to secondary index for re-indexing, etc.
- * TODO: provide method for switching in secondary index to primary
- *       after re-indexing.
- *       
+
  * Manages access to searcher for the index. The searcher instance
  * is reference-counted, and re-instantiated if it becomes outdated due
  * to index modifications. Outdated searcher instances that have 
@@ -68,7 +63,6 @@ import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
  * used to temporarily stop anything from modifying the index.
  *
  * @author oyviste
- *
  */
 public class LuceneIndex implements InitializingBean, DisposableBean {
     
@@ -76,25 +70,22 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
 
     private static final int MAX_OUTDATED_SEARCH_READERS = 10;
 
-    private boolean currentSearchReaderOutdated = false;
-    private int currentSearchReaderRefCount = 0;
-    private IndexReaderRefCountMap outdatedSearchReaders = 
-        new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_READERS + 2);
-    private IndexReader currentSearchReader;
-    private Object searchReaderManagementLock = new Object();
+    private boolean currentReadOnlyReaderOutdated = false;
+    private int currentReadOnlyReaderRefCount = 0;
+    private IndexReaderRefCountMap outdatedReadOnlyReaders = 
+                    new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_READERS + 2);
+    private IndexReader currentReadOnlyReader;
+    private Object readOnlyReaderManagementLock = new Object();
     
-    private FSBackedLuceneIndex primaryFSIndex;
-//  private FSBackedLuceneIndex secondaryFSIndex;
-//  private VolatileLuceneIndex vIndex;
+    private FSBackedLuceneIndex fsIndex;
     
-    private String primaryIndexPath;
-    private String secondaryIndexPath;
+    private String indexPath;
     private int optimizeInterval = 100;
     private int commitCounter = 0;
     private int mergeFactor = 10;
-    private int minMergeDocs = 100;
+    private int maxBufferedDocs = 100;
     private int maxMergeDocs = 10000;
-    private int maxLockAcquireTimeOnShutdown = 30; // 30 seconds max to wait for lock
+    private int maxLockAcquireTimeOnShutdown = 30; // 30 seconds max to wait for lock when shutting down
     private boolean eraseExistingIndex = false;
     private boolean forceUnlock = false;
     
@@ -107,22 +98,22 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     
     public void afterPropertiesSet() throws BeanInitializationException {
         
-        if (this.primaryIndexPath == null) {
-            throw new BeanInitializationException ("Property 'primaryIndexPath' not set.");
+        if (this.indexPath == null) {
+            throw new BeanInitializationException ("Property 'indexPath' not set.");
         }
         
         try {
 
-            this.primaryFSIndex = new FSBackedLuceneIndex(this.primaryIndexPath, 
-                                                          new KeywordAnalyzer(),
-                                                          this.eraseExistingIndex,
-                                                          this.forceUnlock);
+            this.fsIndex = new FSBackedLuceneIndex(this.indexPath, 
+                                                   new KeywordAnalyzer(),
+                                                   this.eraseExistingIndex,
+                                                   this.forceUnlock);
             
-            this.primaryFSIndex.setMaxMergeDocs(this.maxMergeDocs);
-            this.primaryFSIndex.setMergeFactor(this.mergeFactor);
-            this.primaryFSIndex.setMinMergeDocs(this.minMergeDocs);
+            this.fsIndex.setMaxMergeDocs(this.maxMergeDocs);
+            this.fsIndex.setMergeFactor(this.mergeFactor);
+            this.fsIndex.setMaxBufferedDocs(this.maxBufferedDocs);
             
-            this.currentSearchReader = this.primaryFSIndex.getNewReadOnlyIndexReader();
+            this.currentReadOnlyReader = this.fsIndex.getNewReadOnlyIndexReader();
             
         } catch (IOException io) {
             logger.error("Got IOException while initializing indexes: " + io.getMessage());
@@ -131,15 +122,20 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
     
     /**
-     * Removes and closes all outdated search index readers.
+     * Removes and closes all outdated read-only index readers 
+     * regardless of reference count.
      */
-    protected void cleanupOutdatedSearchReaders() {
-        synchronized(this.searchReaderManagementLock) {
-            for (Iterator i = this.outdatedSearchReaders.keySet().iterator(); i.hasNext();) {
-                IndexReader reader = (IndexReader)i.next();
+    protected void cleanupOutdatedReadOnlyReaders() {
+        synchronized(this.readOnlyReaderManagementLock) {
+            for (Iterator i = this.outdatedReadOnlyReaders.entrySet().iterator(); i.hasNext();) {
+                Map.Entry entry = (Map.Entry)i.next();
+                
+                IndexReader reader = (IndexReader) entry.getKey();
+                Integer refCount = (Integer)entry.getValue();
+                
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Closing and removing an outdated search index reader with" 
-                            + " ref-count = " + this.outdatedSearchReaders.get(reader));
+                    logger.debug("Closing and removing an outdated index reader with" 
+                            + " ref-count = " + refCount);
                 }
                 
                 i.remove();
@@ -147,7 +143,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
                 try {
                     reader.close();
                 } catch (IOException io) {
-                    logger.warn("IOException while closing outdated search index reader.");
+                    logger.warn("IOException while closing outdated index reader.");
                 }
             }
         }
@@ -173,54 +169,56 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
      * The instance must be released with #releaseIndexReader(IndexReader)
      * after usage because of reference-counting.
      * 
-     * XXX: locking might be too aggressive and provoke thread lock contention on
+     * XXX: Locking might be too aggressive and provoke thread lock contention on
      *      SMP architectures.
      * 
      * @return
      * @throws IOException
      */
     protected IndexReader getReadOnlyIndexReader() throws IOException {
-        synchronized (this.searchReaderManagementLock) {
-            if (this.currentSearchReaderOutdated) {
+        synchronized (this.readOnlyReaderManagementLock) {
+            if (this.currentReadOnlyReaderOutdated) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Current search index reader is outdated !");
+                    logger.debug("Current index reader is outdated !");
                 }
                 
-                if (this.currentSearchReaderRefCount > 0) {
+                if (this.currentReadOnlyReaderRefCount > 0) {
                     // Still in use, put it into outdated readers storage
                     // (schedule for closing either when too old, or when ref-count
                     // eventually reaches 0)
-                    this.outdatedSearchReaders.put(this.currentSearchReader, 
-                            new Integer(this.currentSearchReaderRefCount));
+                    this.outdatedReadOnlyReaders.put(this.currentReadOnlyReader, 
+                            new Integer(this.currentReadOnlyReaderRefCount));
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Added outdated but still in-use search index reader to map of outdated readers.");
+                        logger.debug("Added outdated but still in-use index reader to map of outdated readers.");
                         logger.debug("Current number of outdated, but still open readers is " 
-                                + this.outdatedSearchReaders.size());
+                                + this.outdatedReadOnlyReaders.size());
                     }
                 } else {
-                    this.currentSearchReader.close();
+                    
+                    this.currentReadOnlyReader.close();
+                    
                     if (logger.isDebugEnabled()) {
                         logger.debug("Closed outdated and un-used search index reader");
                     }
                 }
                 
-                this.currentSearchReader = this.primaryFSIndex.getNewReadOnlyIndexReader();
-                this.currentSearchReaderRefCount = 0;
+                this.currentReadOnlyReader = this.fsIndex.getNewReadOnlyIndexReader();
+                this.currentReadOnlyReaderRefCount = 0;
 
                 // No longer out-dated
-                this.currentSearchReaderOutdated = false;
+                this.currentReadOnlyReaderOutdated = false;
             } 
             
             // Bump ref-count
-            ++this.currentSearchReaderRefCount;
+            ++this.currentReadOnlyReaderRefCount;
             
             if (logger.isDebugEnabled()) {
-                logger.debug("Search index reader ref-count increased to " 
-                        + this.currentSearchReaderRefCount);
+                logger.debug("Index reader ref-count increased to " 
+                        + this.currentReadOnlyReaderRefCount);
             }
             
             // Return new searcher on the reader
-            return this.currentSearchReader;
+            return this.currentReadOnlyReader;
         }
     }
     
@@ -238,25 +236,25 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             return;
         }
         
-        synchronized(this.searchReaderManagementLock) {
+        synchronized(this.readOnlyReaderManagementLock) {
             
-            if (reader == this.currentSearchReader) {
+            if (reader == this.currentReadOnlyReader) {
                 // Decrease ref-count
-                if (this.currentSearchReaderRefCount > 0) {
-                    --this.currentSearchReaderRefCount;
+                if (this.currentReadOnlyReaderRefCount > 0) {
+                    --this.currentReadOnlyReaderRefCount;
                     
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Search index reader ref-count decreased to " 
-                                + this.currentSearchReaderRefCount);
+                        logger.debug("Index reader ref-count decreased to " 
+                                + this.currentReadOnlyReaderRefCount);
                     }
                 } else {
-                    logger.warn("Ref-count for current search index reader went below zero");
+                    logger.warn("Ref-count for current index reader went below zero.");
                 }
             } else {
-                // Searcher released an outdated reader, decrease ref-count and close
+                // Thread released an outdated reader, decrease ref-count and close
                 // if we can.
                 
-                Integer refCount = (Integer)this.outdatedSearchReaders.get(reader);
+                Integer refCount = (Integer)this.outdatedReadOnlyReaders.get(reader);
                 if (refCount == null) {
                     // We no longer have any pointer to this, ignore release-request.
                     return;
@@ -265,11 +263,11 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
                 int c = refCount.intValue()-1;
                 if (c == 0) {
                     // OK, last reference released, we close it.
-                    this.outdatedSearchReaders.remove(reader);
+                    this.outdatedReadOnlyReaders.remove(reader);
                     reader.close();
                 } else {
                     // Still references left, we put it back with a decreased counter.
-                    this.outdatedSearchReaders.put(reader, new Integer(c));
+                    this.outdatedReadOnlyReaders.put(reader, new Integer(c));
                 }
             }
         }
@@ -277,27 +275,64 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
 
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     protected IndexReader getIndexReader() throws IOException {
-        return this.primaryFSIndex.getIndexReader();
+        return this.fsIndex.getIndexReader();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     protected IndexWriter getIndexWriter() throws IOException {
-        return this.primaryFSIndex.getIndexWriter();
+        return this.fsIndex.getIndexWriter();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected void clear() throws IOException {
-        this.primaryFSIndex.createNewIndex();
+    protected void clearContents() throws IOException {
+        
+        synchronized (this.readOnlyReaderManagementLock) {
+            cleanupOutdatedReadOnlyReaders();
+            this.currentReadOnlyReader.close();
+            this.currentReadOnlyReaderRefCount = 0;
+
+            this.fsIndex.createNewIndex();
+            
+            this.currentReadOnlyReader = fsIndex.getNewReadOnlyIndexReader();
+            this.currentReadOnlyReaderOutdated = false;
+        }
+        
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     protected void reinitialize() throws IOException {
-        this.primaryFSIndex.reinitializeIndex();
+
+        synchronized (this.readOnlyReaderManagementLock) {
+            cleanupOutdatedReadOnlyReaders();
+            this.currentReadOnlyReader.close();
+            this.currentReadOnlyReaderRefCount = 0;
+
+            this.fsIndex.reinitialize();
+            
+            this.currentReadOnlyReader = fsIndex.getNewReadOnlyIndexReader();
+            this.currentReadOnlyReaderOutdated = false;
+        }
+        
+    }
+    
+    //  CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
+    protected void close() throws IOException {
+        
+        synchronized (this.readOnlyReaderManagementLock) {
+            cleanupOutdatedReadOnlyReaders();
+            this.currentReadOnlyReader.close();
+            this.currentReadOnlyReaderRefCount = 0;
+
+            this.fsIndex.close();
+            
+            this.currentReadOnlyReader = fsIndex.getNewReadOnlyIndexReader();
+            this.currentReadOnlyReaderOutdated = false;
+        }
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     protected void optimize() throws IOException {
-        this.primaryFSIndex.optimize();
+        this.fsIndex.optimize();
     }
     
     // Commit changes done by reader/writer and optimize index if necessary.
@@ -309,22 +344,22 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         if (++this.commitCounter % this.optimizeInterval == 0) {
             logger.info("Reached " + this.commitCounter 
                                         + " commits, auto-optimizing index ..");
-            this.primaryFSIndex.optimize();
+            this.fsIndex.optimize();
             logger.info("Auto-optimization completed.");
         }
         
-        this.primaryFSIndex.commit();
+        this.fsIndex.commit();
 
-        synchronized (this.searchReaderManagementLock) {
+        synchronized (this.readOnlyReaderManagementLock) {
             if (logger.isDebugEnabled()) {
-                if (this.currentSearchReader.isCurrent()) {
+                if (this.currentReadOnlyReader.isCurrent()) {
                     logger.debug("Current search reader reports that it is current.");
                 } else {
                     logger.debug("Current search reader reports that it is outdated.");
                 }
             }
             
-            this.currentSearchReaderOutdated = ! this.currentSearchReader.isCurrent();
+            this.currentReadOnlyReaderOutdated = ! this.currentReadOnlyReader.isCurrent();
             
         }        
     }
@@ -338,16 +373,18 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
        logger.info("Graceful index shutdown, waiting for write lock ..");
        if (writeLockAttempt(this.maxLockAcquireTimeOnShutdown * 1000)) {
            logger.info("Got write lock, closing down.");
-           this.primaryFSIndex.close();
+           this.fsIndex.close();
        } else {
            logger.warn("Failed to acquire the write lock within "
-                   + " the time limit of " + this.maxLockAcquireTimeOnShutdown 
-                   + " seconds, index might be corrupted.");
+              + " the time limit of " + this.maxLockAcquireTimeOnShutdown 
+              + " seconds, index might be corrupted.");
        }
     }
 
-    // Explicit write locking. Must be acquired before doing any write
-    // operations on index, using either the reader or the writer.
+    /**
+     * Explicit write locking. Must be acquired before doing any write
+     * operations on index, using either the reader or the writer.
+     */
     protected boolean writeLockAcquire() {
         try {
             this.lock.acquire();
@@ -362,15 +399,28 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         
         return true;
     }
-    
+
+    /**
+     * Attempt write lock with timeout 
+     */
     protected boolean writeLockAttempt(long timeout) {
         try {
-            return this.lock.attempt(timeout);
+            this.lock.attempt(timeout);
         } catch (InterruptedException ie) {
             return false;
         }
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Thread '" + Thread.currentThread().getName() + 
+                         "' got index lock.");
+        }
+        
+        return true;
     }
-    
+
+    /**
+     * Write lock release.
+     */
     protected void writeLockRelease() {
         if (logger.isDebugEnabled()) {
             logger.debug("Thread '" + Thread.currentThread().getName() + 
@@ -452,12 +502,12 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         this.mergeFactor = mergeFactor;
     }
 
-    public int getMinMergeDocs() {
-        return this.minMergeDocs;
+    public int getMaxBufferedDocs() {
+        return this.maxBufferedDocs;
     }
 
-    public void setMinMergeDocs(int minMergeDocs) {
-        this.minMergeDocs = minMergeDocs;
+    public void setMaxBufferedDocs(int maxBufferedDocs) {
+        this.maxBufferedDocs = maxBufferedDocs;
     }
 
     public int getOptimizeInterval() {
@@ -468,25 +518,14 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         this.optimizeInterval = optimizeInterval;
     }
 
-    public String getPrimaryIndexPath() {
-        return this.primaryIndexPath;
+    public String getIndexPath() {
+        return this.indexPath;
     }
 
-    public void setPrimaryIndexPath(String primaryIndexPath) {
-        this.primaryIndexPath = primaryIndexPath;
+    public void setIndexPath(String indexPath) {
+        this.indexPath = indexPath;
     }
 
-    public String getSecondaryIndexPath() {
-        return this.secondaryIndexPath;
-    }
-
-    public void setSecondaryIndexPath(String secondaryIndexPath) {
-        this.secondaryIndexPath = secondaryIndexPath;
-    }
-
-    /**
-     * @param maxLockAcquireTimeOnShutdown The maxLockAcquireTimeOnShutdown to set.
-     */
     public void setMaxLockAcquireTimeOnShutdown(int maxLockAcquireTimeOnShutdown) {
         this.maxLockAcquireTimeOnShutdown = maxLockAcquireTimeOnShutdown;
     }

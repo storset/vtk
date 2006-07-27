@@ -350,7 +350,7 @@
 
   <bean id="xmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
     <property name="queryManager" ref="queryManager" />
-    <property name="searcher" ref="newSystemIndexSearcher" />
+    <property name="searcher" ref="systemIndexSearcher" />
     <property name="propertyManager" ref="propertyManager" />
   </bean>
 

@@ -57,7 +57,7 @@ public abstract class AbstractLuceneIndex {
     
     /* Lucene tunables */
     private int mergeFactor = 10;
-    private int minMergeDocs = 100;
+    private int maxBufferedDocs = 100;
     private int maxMergeDocs = 10000;
     
     /** Specifies if any existing index should be forcibly unlocked, if it was
@@ -75,7 +75,7 @@ public abstract class AbstractLuceneIndex {
     /** Lucene <code>Directory</code> implementation. */
     private Directory directory;
     
-    /** Lucene <code>Analyzer</code> implementation used. */
+    /** Default Lucene <code>Analyzer</code> implementation used. */
     private Analyzer analyzer;
     
     /**
@@ -113,7 +113,7 @@ public abstract class AbstractLuceneIndex {
         // Create a new writer if necessary.
         if (this.writer == null) {
             this.writer = new IndexWriter(this.directory, this.analyzer, false);
-            this.writer.setMaxBufferedDocs(this.minMergeDocs);
+            this.writer.setMaxBufferedDocs(this.maxBufferedDocs);
             this.writer.setMaxMergeDocs(this.maxMergeDocs);
             this.writer.setMergeFactor(this.mergeFactor);
         }
@@ -172,10 +172,10 @@ public abstract class AbstractLuceneIndex {
     }
 
     /**
-     * Re-initializes index directory.
+     * Re-initializes index directory. 
      * @throws IOException
      */
-    protected synchronized void reinitializeIndex() throws IOException {
+    protected synchronized void reinitialize() throws IOException {
         if (this.reader != null) {
             this.reader.close();
             this.reader = null;
@@ -223,12 +223,10 @@ public abstract class AbstractLuceneIndex {
         }
         
         this.directory = createDirectory(true);
-        this.writer = new IndexWriter(this.directory, this.analyzer, true);
-        this.writer.close();
-        this.writer = null;
+        initializeIndex(this.directory);
     }
 
-    protected synchronized void optimize() throws IOException {
+    protected void optimize() throws IOException {
         getIndexWriter().optimize();
     }
     
@@ -292,12 +290,12 @@ public abstract class AbstractLuceneIndex {
         this.mergeFactor = mergeFactor;
     }
 
-    public int getMinMergeDocs() {
-        return this.minMergeDocs;
+    public int getMaxBufferedDocs() {
+        return this.maxBufferedDocs;
     }
 
-    public void setMinMergeDocs(int minMergeDocs) {
-        this.minMergeDocs = minMergeDocs;
+    public void setMaxBufferedDocs(int maxBufferedDocs) {
+        this.maxBufferedDocs = maxBufferedDocs;
     }
 
     public int getMaxMergeDocs() {

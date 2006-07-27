@@ -250,6 +250,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
                 }
             }
         }
+        
     }
 
 }

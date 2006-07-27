@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
   
+<!-- This is the configuration for the old DMS system index -->
 <beans>
-
 
   <!-- Observer between the index observer and the notifier.
        Used to apply a filter criterion, before the index observer sees the list
@@ -17,8 +17,6 @@
     <property name="notifier" ref="repository.resourceChangeNotifier.old"/>
     <property name="filterCriterion" ref="dmsIndexFilter"/>
   </bean>
-  
-
 
   <!-- The ResourceChangeObserver responsible for applying changes to an index.
        If this is wrapped in a filter, a notifier should _not_ be set here, but
@@ -29,12 +27,10 @@
     <!-- This observer is wrapped by another observer, so we don't want it to register
          itself with the master notifier, directly (the wrapper does this).--> 
   </bean>
-  
-
 
   <!-- This is the main index definition. -->
   <bean id="dmsIndex" class="org.vortikal.repositoryimpl.index.lucene.LuceneIndex">
-    <property name="indexPath" value="${systemIndexPath}"/>
+    <property name="indexPath" value="${dmsIndexPath}"/>
     <property name="optimizeInterval" value="500"/>
     <property name="forceUnlock" value="true"/>
     <property name="indexResourceIdHelper" ref="backendIndexResourceIdHelper"/>

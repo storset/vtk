@@ -88,7 +88,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
         return FSDirectory.getDirectory(path, eraseContents);
     }
     
-    public long getIndexByteSize() throws IOException {
+    public long getIndexSizeInBytes() throws IOException {
         long length = 0;
         File indexDir = new File(this.indexPath);
         if (!indexDir.isDirectory()) 

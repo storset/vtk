@@ -2,19 +2,18 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+
   <bean id="queryParser"
         class="org.vortikal.repositoryimpl.query.parser.QueryParser">
     <constructor-arg ref="propertyManager" />
   </bean>
 
-
   <bean id="queryManager" class="org.vortikal.repositoryimpl.query.parser.QueryManager">
     <property name="parser" ref="queryParser" />
-    <property name="searcher" ref="newSystemIndexSearcher" />
+    <property name="searcher" ref="systemIndexSearcher" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="queryStringProcessor" ref="queryStringProcessor" />
   </bean>
-
 
   <bean id="queryStringProcessor"
         class="org.vortikal.repositoryimpl.query.parser.QueryStringProcessor">
@@ -33,16 +32,16 @@
     <property name="valueFactory" ref="valueFactory"/>
   </bean>
 
-  <!-- A Lucene index instance. Manages low-level access. -->
-  <bean id="newLuceneSystemIndex" class="org.vortikal.repositoryimpl.query.LuceneIndex">
-    <property name="primaryIndexPath" value="${newSystemIndexPath}"/>
+  <!-- A Lucene index accessor instance. Manages low-level access. -->
+  <bean id="systemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
+    <property name="indexPath" value="${systemIndexPath}"/>
     <property name="forceUnlock" value="true"/>
     <property name="maxLockAcquireTimeOnShutdown" value="30"/>
   </bean>
 
-  <!-- Property set index based on a single Lucene index instance. -->
-  <bean id="newSystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
-    <property name="index" ref="newLuceneSystemIndex"/>
+  <!-- Property set index based on a single Lucene index accessor instance.  -->
+  <bean id="systemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
+    <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="propertyManager" ref="propertyManager"/>
   </bean>
@@ -51,17 +50,16 @@
   <bean id="queryBuilderFactory"
         class="org.vortikal.repositoryimpl.query.QueryBuilderFactoryImpl">
     <property name="propertyManager" ref="propertyManager"/>
-    <property name="indexAccessor" ref="newLuceneSystemIndex"/>
+    <property name="indexAccessor" ref="systemIndexAccessor"/>
   </bean>
 
-  <!-- Searcher -->
-  <bean id="newSystemIndexSearcher"
+  <!-- Searcher implementation -->
+  <bean id="systemIndexSearcher"
         class="org.vortikal.repositoryimpl.query.SearcherImpl">
-    <property name="indexAccessor" ref="newLuceneSystemIndex"/>
+    <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
     <property name="maxAllowedHitsPerQuery" value="50000"/>
-
     <property name="queryResultAuthorizationManager" ref="queryResultAuthorizationManager"/>
   </bean>
 
@@ -73,26 +71,47 @@
     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
 
     <!-- A set of principals can be excluded from database 
-         result authorization check -->
+         result authorization check. -->
     <!--property name="noAuthorizationCheckForPrincipals">
       <set>
         <value>root@localhost</value>
       </set>
     </property-->
-
   </bean>
 
   <!-- Perform incremental updates on property set index from resource changes. -->
-  <bean id="newSystemIndexUpdater" 
+  <bean id="systemIndexUpdater" 
         class="org.vortikal.repositoryimpl.query.observation.PropertySetIndexUpdater">
-    <property name="index" ref="newSystemIndex"/>
+    <property name="index" ref="systemIndex"/>
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
   </bean>
-
-  <!-- Simple re-indexer for propety set index 'newSystemIndex'. -->
-  <bean id="newSystemIndexReindexer" class="org.vortikal.repositoryimpl.query.Reindexer">
+  
+  <!-- Simple re-indexer for propety set index 'systemIndex' -->
+  <bean id="systemIndexReindexer" class="org.vortikal.repositoryimpl.query.PropertySetIndexReindexer">
     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
-    <property name="index" ref="newSystemIndex"/>
+
+    <!-- Primary index -->
+    <property name="primaryIndex" ref="systemIndex"/>
+
+    <!-- Auxiliary secondary index used by re-indexer (with settings
+        tuned for batch indexing) -->
+    <property name="secondaryIndex">
+      <bean id="secondarySystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
+        <property name="indexAccessor">
+          <bean class="org.vortikal.repositoryimpl.query.LuceneIndex">
+            <property name="indexPath" value="${secondarySystemIndexPath}"/>
+            <property name="maxBufferedDocs" value="100"/>
+            <property name="mergeFactor" value="100"/>
+            <property name="maxMergeDocs" value="15000"/>
+            <property name="forceUnlock" value="true"/>
+            <property name="maxLockAcquireTimeOnShutdown" value="30"/>
+          </bean>
+        </property>
+        <property name="documentMapper" ref="documentMapper"/>
+        <property name="propertyManager" ref="propertyManager"/>
+      </bean>
+    </property>
   </bean>
+
 </beans>

@@ -47,6 +47,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.PropertySet;
@@ -65,18 +66,20 @@ import org.vortikal.repositoryimpl.PropertySetImpl;
  * @author oyviste
  *
  */
-public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean {
+public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean, 
+                                             BeanNameAware {
 
     Log logger = LogFactory.getLog(PropertySetIndexImpl.class);
     
-    private LuceneIndex index; // Underlying Lucene index accessor.
+    private LuceneIndex indexAccessor; // Underlying Lucene index accessor.
     private DocumentMapper documentMapper;
     private PropertyManager propertyManager;
     private Analyzer analyzer;
+    private String id;
 
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.index == null) {
-            throw new BeanInitializationException("Property 'index' not set.");
+        if (this.indexAccessor == null) {
+            throw new BeanInitializationException("Property 'indexAccessor' not set.");
         } else if (this.documentMapper == null) {
             throw new BeanInitializationException("Property 'documentMapper' not set.");
         }
@@ -128,11 +131,11 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
         Document doc = null;
-        // XXX: ugly casting to obtain implementation specific details
+        // XXX: Ugly casting to obtain implementation specific details.
         
-        // NOTE: "Transaction"-write-locking must be done above this level.
+        // NOTE: Write-locking must be done above this level.
         //       This is needed to ensure the possibility of efficiently batching 
-        //       together operations.
+        //       together operations without interruption.
         try {
             doc = this.documentMapper.getDocument((PropertySetImpl)propertySet);
             
@@ -153,7 +156,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                 }
             }
             
-            this.index.getIndexWriter().addDocument(doc, this.analyzer);
+            this.indexAccessor.getIndexWriter().addDocument(doc, this.analyzer);
         } catch (DocumentMappingException dme) {
             logger.warn("Could not map property set to index document", dme);
             throw new IndexException("Could not map property set to index document", dme);
@@ -167,7 +170,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         try {
             int n = 0;
             
-            IndexReader reader = this.index.getIndexReader();
+            IndexReader reader = this.indexAccessor.getIndexReader();
     
             if (logger.isDebugEnabled()) {
                 logger.debug("Deleting property set tree with root ID '" 
@@ -202,10 +205,9 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         TermDocs tdocs = null;
         try {
 
-            IndexReader reader = this.index.getIndexReader();
-    
-            String fieldName = DocumentMapper.URI_FIELD_NAME.intern();
-            Term rootUriTerm = new Term(fieldName, rootUri);
+            IndexReader reader = this.indexAccessor.getIndexReader();
+            Term rootUriTerm = new Term(DocumentMapper.URI_FIELD_NAME, rootUri);
+            String fieldName = rootUriTerm.field();
             tenum = reader.terms(rootUriTerm);
             tdocs = reader.termDocs();
 
@@ -255,7 +257,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public int deletePropertySet(String uri) throws IndexException {
         try {
             Term uriTerm = new Term(DocumentMapper.URI_FIELD_NAME, uri);
-            IndexReader reader = this.index.getIndexReader();
+            IndexReader reader = this.indexAccessor.getIndexReader();
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Deleting property set at URI '" + uri + "' from index.");
@@ -277,7 +279,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public int deletePropertySetByUUID(String uuid) throws IndexException {
         try {
             Term uuidTerm = new Term(DocumentMapper.ID_FIELD_NAME, uuid);
-            IndexReader reader = this.index.getIndexReader();
+            IndexReader reader = this.indexAccessor.getIndexReader();
             
             if (logger.isDebugEnabled()) {
                 logger.debug("Deleting property set with ID '" + uuid + "'");
@@ -299,7 +301,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public PropertySet getPropertySet(String uri) throws IndexException {
         TermDocs td = null;
         try {
-            IndexReader reader = this.index.getIndexReader();
+            IndexReader reader = this.indexAccessor.getIndexReader();
             PropertySet propSet = null;
             td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, uri));
             
@@ -327,9 +329,9 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         }
     }
 
-    public void clear() throws IndexException {
+    public void clearContents() throws IndexException {
         try {
-            this.index.clear();
+            this.indexAccessor.clearContents();
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -337,7 +339,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     public Iterator orderedIterator() throws IndexException {
         try {
-            return new PropertySetIndexIterator(this.index, 
+            return new PropertySetIndexIterator(this.indexAccessor, 
                                             this.documentMapper,
                                             DocumentMapper.URI_FIELD_NAME,
                                             "");
@@ -348,7 +350,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     public Iterator orderedSubtreeIterator(String rootUri) throws IndexException {
         try {
-            return new PropertySetIndexSubtreeIterator(this.index, 
+            return new PropertySetIndexSubtreeIterator(this.indexAccessor, 
                                             this.documentMapper,
                                             rootUri);
         } catch (IOException io) {
@@ -375,30 +377,81 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
 
     public void commit() throws IndexException {
         try {
-            this.index.commit();
+            this.indexAccessor.commit();
         } catch (IOException io) {
             throw new IndexException(io);
         }
     }
+    
+    public void close() throws IndexException {
+        try {
+            this.indexAccessor.close();
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
+    
+    public void reinitialize() throws IndexException {
+        try {
+            this.indexAccessor.reinitialize();
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
+    
+    public void addIndexContents(PropertySetIndex index) throws IndexException {
+        if (! (index instanceof PropertySetIndexImpl)) {
+            throw new IllegalArgumentException(
+                    "Only 'org.vortikal.repositoryimpl.query.PropertySetIndexImpl' instances are supported.");
+        }
+        
+        try {
+            PropertySetIndexImpl indexImpl = (PropertySetIndexImpl)index;
+            
+            LuceneIndex accessor = indexImpl.indexAccessor;
+            
+            IndexReader[] readers = new IndexReader[] { accessor.getIndexReader() };
+            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Adding all contents of index '" 
+                                        + indexImpl.getId()
+                                        + "' to '"
+                                        + this.getId() + "' (this index)");
+            }
+            
+            this.indexAccessor.getIndexWriter().addIndexes(readers);
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+        
+    }
 
     public boolean lock() {
-        return this.index.writeLockAcquire();
+        return this.indexAccessor.writeLockAcquire();
     }
 
     public void unlock() throws IndexException {
-        this.index.writeLockRelease();
+        this.indexAccessor.writeLockRelease();
     }
 
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 
-    public void setIndex(LuceneIndex index) {
-        this.index = index;
+    public void setIndexAccessor(LuceneIndex indexAccessor) {
+        this.indexAccessor = indexAccessor;
     }
 
     public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
+    }
+    
+    public void setBeanName(String beanName) {
+        this.id = beanName;
+    }
+    
+    public String getId() {
+        return this.id;
     }
 
 }

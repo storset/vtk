@@ -44,7 +44,7 @@ import org.vortikal.repositoryimpl.query.IndexException;
  * implementations may provide an auxilliary UUID, which should be uniqe for any given <code>
  * PropertySet</code> <em>and also independent of time</em> (UUIDs should thus never 
  * be re-used, even for new nodes at the same URI in the same index instance).
- *  
+ * 
  * This might be used in the implementation for increased efficiency when
  * modifying or searching an index hierarchially and for consistency reasons. 
  * The benefits of using UUIDs is entirely implementation specific. This interface
@@ -63,7 +63,7 @@ import org.vortikal.repositoryimpl.query.IndexException;
  * 
  * <p>
  * The {@link #lock()}, {@link #unlock()} and {@link #commit()} methods
- * should provide the possibility of executing a "semi-transactional" set
+ * should provide the possibility of executing a set
  * operations that cannot be mixed with other write operations from other threads
  * at the same time. Any modifying operation is not guaranteed to be visible by
  * other index users before {@link commit()} has been called.
@@ -181,7 +181,32 @@ public interface PropertySetIndex {
      * 
      * @throws IndexException
      */
-    public void clear() throws IndexException;
+    public void clearContents() throws IndexException;
+    
+    /**
+     * Close down an index to free associated resources. 
+     * This method should implicitly commit any changes before closing down.
+     * 
+     * @throws IndexException
+     */
+    public void close() throws IndexException;
+    
+    /**
+     * Re-initialize the index. Should be used to re-open a previously
+     * closed instance.
+     * 
+     * @throws IndexException
+     */
+    public void reinitialize() throws IndexException;
+    
+    /**
+     * Merge the contents of another <code>PropertySetIndex</code> into this index.
+     * It is implementation dependent whether this method removes duplicate
+     * URIs resulting from the merge, or not.
+     * 
+     * @param index
+     */
+    public void addIndexContents(PropertySetIndex index) throws IndexException;
     
     /**
      * Obtain index mutex write lock.
@@ -202,5 +227,10 @@ public interface PropertySetIndex {
      * @throws IndexException
      */
     public void commit() throws IndexException;
+    
+    /**
+     * Return an ID for the index.
+     */
+    public String getId();
     
 }

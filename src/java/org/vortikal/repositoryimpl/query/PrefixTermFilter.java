@@ -42,19 +42,18 @@ import org.apache.lucene.search.Filter;
 /**
  * A Lucene <code>Filter</code> that filters on the given prefix term.
  * 
- * NOTE: This filter is only meant as a short-lived filter for a single query.
- *       The results are cached once, and only once, and applies to the reader
- *       that was passed in after the first call to {@link #bits(IndexReader)}.
- *       Sub-sequent calls with different readers will not update the cached
- *       results ! So don't re-use instances of this class.
+ * This filter is only meant as a short-lived filter for a single query.
+ * The results are cached once, and only once, and applies to the reader
+ * that was passed in after the first call to {@link #bits(IndexReader)}.
+ * Sub-sequent calls with different readers will not update the cached
+ * results ! So don't re-use instances of this class.
  *       
- *       Not thread safe (common usage scenario doesn't require this).
+ * Not thread safe (common usage scenario doesn't require this).
  *       
- *       Long-term filters which rarely change should be wrapped with
- *       {@link org.apache.lucene.search.CachingWrapperFilter} instead.
+ * Long-term filters which rarely change should be wrapped with
+ * {@link org.apache.lucene.search.CachingWrapperFilter} instead.
  * 
  * @author oyviste
- *
  */
 public class PrefixTermFilter extends Filter {
 

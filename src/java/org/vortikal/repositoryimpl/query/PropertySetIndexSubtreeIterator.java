@@ -48,7 +48,7 @@ import org.vortikal.repository.PropertySet;
  * @author oyviste
  *
  */
-public class PropertySetIndexSubtreeIterator implements Iterator {
+class PropertySetIndexSubtreeIterator implements Iterator {
 
     private Log logger = LogFactory.getLog(PropertySetIndexSubtreeIterator.class);
     

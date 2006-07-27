@@ -182,7 +182,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
     private int[] getAncestorIdsForUri(String uri) throws IllegalStateException {
         List ancestorUris = new ArrayList();
         
-        if (uri.equals("/")) return new int[0];
+        if ("/".equals(uri)) return new int[0];
         
         int from = uri.length();
         while (from > 0) {

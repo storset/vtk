@@ -252,10 +252,6 @@ CREATE SEQUENCE changelog_entry_seq_pk INCREMENT BY 1 START WITH 1000;
 
 DROP TABLE changelog_entry CASCADE CONSTRAINTS;
 
-/* The attribute 'uri' can't be longer that 1578 chars (OS-dependent?).     */
-/* If bigger -> "ORA-01450: maximum key length exceeded" (caused by index). */
-/* Since combined index '(uri, changelog_entry_id)' -> 1500 chars.          */
-
 CREATE TABLE changelog_entry
 (
     changelog_entry_id NUMBER NOT NULL,
@@ -263,7 +259,7 @@ CREATE TABLE changelog_entry
     logger_type NUMBER NOT NULL,
     operation VARCHAR2 (128) NULL,
     timestamp DATE NOT NULL,
-    uri VARCHAR2 (1500) NOT NULL,
+    uri VARCHAR2 (2048) NOT NULL,
     resource_id NUMBER,
     is_collection CHAR(1) DEFAULT 'N' NOT NULL
 );

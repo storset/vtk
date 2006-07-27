@@ -207,7 +207,8 @@ public class ResultSetIteratorImpl implements Iterator {
      * sorted out, either by not using procedures/functions at all, or change
      * how we do the SQL/procedures.
      * 
-     * @param idString White-space separated String of ancestor ids (parseable as integers) 
+     * @param idString Single-space separated string of ancestor ids 
+     *                 (where ids are parseable integers) 
      * @return array of integers
      */
     private int[] getAncestorIdsFromString(String idString) {
@@ -215,14 +216,20 @@ public class ResultSetIteratorImpl implements Iterator {
             return new int[0];
         }
         
-        String[] ids = idString.trim().split(" ");
+        idString = idString.trim();
         
-        int[] integerIds = new int[ids.length];
-        for (int i=0; i<integerIds.length; i++) {
-            integerIds[i] = Integer.parseInt(ids[i]);
+        int n = 1, p = -1, c = 0;
+        while ((p = idString.indexOf(' ', p+1)) != -1) ++n;
+        
+        int[] ids = new int[n];
+        
+        p = 0; n = -1;
+        while ((n = idString.indexOf(' ', (p = n+1))) != -1) {
+            ids[c++] = Integer.parseInt(idString.substring(p, n));
         }
+        ids[c] = Integer.parseInt(idString.substring(p, idString.length()));
         
-        return integerIds;
+        return ids;
     }
 
 }

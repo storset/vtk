@@ -600,7 +600,7 @@
   </bean>
   
   
-  <bean id="transformHtmlToXhtml" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="transformHtmlToXhtmlService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" /> 
     <property name="order"><value>-997</value></property>
     <property name="categories">

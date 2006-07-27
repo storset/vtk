@@ -71,7 +71,7 @@
     </dependency>
     <dependency>
       <id>jtidy</id>
-      <!--version>r8-2005-01-04</version-->
+      <!-- <version>r8-SNAPSHOT</version>  - this nightly build is latest release, stable since 2005-01-04 -->
       <version>4aug2000r7-dev</version>
       <properties>
         <war.bundle>true</war.bundle>
@@ -483,7 +483,7 @@
       <!-- Include Standard Kupu resources in the jar/war
            under '/vortikal/resources/kupu-resources'. -->
       <resource>
-        <directory>ext/kupu/v1.3.1</directory>
+        <directory>ext/kupu/v1.3.5</directory>
         <targetPath>/vortikal/resources/kupu-resources</targetPath>
         <includes>
           <include>common/**</include>

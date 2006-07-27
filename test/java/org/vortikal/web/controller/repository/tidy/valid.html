@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+  <title> Valid HTML test page </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <style type="text/css">
+    .blue  {
+                background-color:yellow; 
+                color: blue; 
+                font-family: monospace;
+           }
+  </style>
+</head>
+
+<body>
+  <h1> Funny stuff</h1>
+  
+  <p style="font-style: italic">
+    Bla bla bla - lalala...
+    <br/>
+    <br/>
+    Running <b>wild</b> <!-- and commenting --> is not a fellony these days, <i>unlike arson</i> or GTA (Vice City).
+  </p>
+  
+  <h2> Network - Wireless connection </h2>
+
+  <h3>Set up</h3>
+
+  <b>command line [as ROOT]:</b>
+  <ol> 
+    <li> iwconfig eth1 essid [network name] (key [encryption key]) <i>(configure unencrypted / WEP-encrypted interface)</i> </li>
+    <li> ifup eth1 <i>(enable interface and acquire IP address from DHCP server)</i> </li>
+  </ol>
+  
+  <b><i>Alternative (if problem when accessing interface):</i></b>
+  <ol> 
+    <li> ifup eth1 </li>
+    <li> iwconfig eth1 essid [network name] (key [encryption key]) </li>
+    <li> dhclient eth1 <i>(alternative "dhclient3 eth1")</i> </li>
+  </ol>
+  
+  <p style="color: red;">
+    Roses are red and viols are <span class="blue">blue</span>
+  </p>
+
+</body>
+</html>

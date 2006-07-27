@@ -38,7 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.HitCollector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
@@ -57,7 +56,7 @@ import org.vortikal.repositoryimpl.query.security.QueryResultAuthorizationManage
 /**
  * @author oyviste
  *
- *  TODO: As efficient ACL filtering as possible
+ *  TODO: Integrate ACL filtering in search, index relevant parts of ACL lists.
  *  TODO: Define behaviour when results are removed because of permissions
  *        wrt. to expected number of maxResults, etc.
  *        
@@ -178,7 +177,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
             this.queryBuilderFactory.getBuilder(query).buildQuery();
 
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Built lucene query '" + q + "' from query " + query.dump(""));
+            this.logger.debug("Built lucene query '" + q 
+                                            + "' from query " + query.dump(""));
         }
 
         IndexSearcher searcher = null;
@@ -246,7 +246,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
             maxResults = 0;
 
         int end = (cursor + maxResults) < docs.length ? 
-                                                cursor + maxResults : docs.length;
+                                              cursor + maxResults : docs.length;
 
         if (this.queryResultAuthorizationManager != null) {
             // XXX: cursor/maxresults might be confusing after filtering, define it 
@@ -258,7 +258,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
             }
             
             long start = System.currentTimeMillis();
-            this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
+            this.queryResultAuthorizationManager.authorizeQueryResults(token, 
+                                                                       rsiList);
             long finish = System.currentTimeMillis();
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Query result authorization took " 
@@ -316,32 +317,4 @@ public class SearcherImpl implements Searcher, InitializingBean {
         this.queryResultAuthorizationManager = queryResultAuthorizationManager;
     }
     
-    /**
-     * Collect all document numbers that match a query, discard all scores.
-     * Can only be used in a no-sorting scenario, as Lucene uses its own
-     * special collectors for sorting, internally.
-     */
-    private class SimpleHitCollector extends HitCollector {
-        
-        List docNums = new ArrayList(SearcherImpl.this.maxAllowedHitsPerQuery);
-        
-        public void collect(int doc, float score) {
-            if (this.docNums.size() > SearcherImpl.this.maxAllowedHitsPerQuery) {
-                // Max number of hits exceeded, don't add anything more
-                return;
-            }
-            
-            this.docNums.add(new Integer(doc));
-        }
-        
-        public int doc(int index) {
-            return ((Integer)this.docNums.get(index)).intValue();
-        }
-        
-        public int length() {
-            return this.docNums.size();
-        }
-        
-    }
-
 }

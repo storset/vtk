@@ -42,8 +42,6 @@ public interface ResultSecurityInfo {
     /**
      * Get an easily hashable Integer object representing the ID of the ACL node
      * in question.
-     * 
-     * @return
      */
     public Integer getAclNodeId();
     

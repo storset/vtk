@@ -96,7 +96,7 @@
     <constructor-arg>
       <map>
         <entry key="Cache size">
-          <value>context.getBean("repository.backend").size()</value>
+          <value>context.getBean("${repositoryBackend}").size()</value>
         </entry>
       </map>
     </constructor-arg>

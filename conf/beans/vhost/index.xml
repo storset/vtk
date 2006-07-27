@@ -83,7 +83,7 @@
        from the repository. -->
   <bean id="backendIndexResourceIdHelper"
         class="org.vortikal.repositoryimpl.dao.RepositoryBackendIndexResourceIdHelper">
-    <property name="dao" ref="repository.backend" />
+    <property name="dao" ref="${repositoryBackend}" />
   </bean>
   
 

@@ -106,8 +106,9 @@ public final class DatabaseQueryResultAuthorizationManager implements
         
         // XXX: Resolve group names and add to list of principal names
         try {
-            this.indexDataAccessor.processQueryResultsAuthorization(principalNames, 
-                                                            rsiList);
+            this.indexDataAccessor.processQueryResultsAuthorization(
+                                                                principalNames, 
+                                                                rsiList);
         } catch (IOException io) {
             this.logger.warn("IOException while authorizing query result list: " 
                                                             + io.getMessage());
@@ -131,7 +132,6 @@ public final class DatabaseQueryResultAuthorizationManager implements
     public void setNoAuthorizationCheckForPrincipals(Set noAuthorizationCheckForPrincipals) {
         this.noAuthorizationCheckForPrincipals = noAuthorizationCheckForPrincipals;
     }
-
 
     
 }

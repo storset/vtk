@@ -397,7 +397,7 @@
       <ref bean="renameHandler" />
     </property>
   </bean>
-
+  
   <bean id="ownershipService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
@@ -598,7 +598,43 @@
       <ref bean="deleteResourcePropertyController" />
     </property>
   </bean>
-
+  
+  
+  <bean id="transformHtmlToXhtml" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" /> 
+    <property name="order"><value>-997</value></property>
+    <property name="categories">
+      <set>
+        <value>resourceMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>html-to-xhtml</value>
+          </property>
+        </bean>
+        
+        <ref bean="docTypeIsHtml" /> <!-- <ref bean="docTypeIsNotXhtml10" /> does not work, see 'html.xml' -->
+        <ref bean="fileAssertion" />  <!-- opposite of 'resourceIsCollectionAssertion' -->
+        <ref bean="contentTypeMatchesHtml" />
+                
+      </list>
+    </property>
+    <property name="handler" ref="htmlToXhtmlHandler" />
+  </bean>
+  
+  <bean id="htmlToXhtmlHandler" 
+        class="org.vortikal.web.controller.repository.tidy.ResourceTransformer"
+        parent="requestLocalRepositoryAware">
+    <property name="transformerType" value="JTidyTransformer" />
+    <property name="transformation" value="htmlToXhtml" />
+  </bean>
+  
 
   <!-- preview services -->
   

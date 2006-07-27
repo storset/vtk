@@ -74,8 +74,31 @@
       </list>
     </property>
   </bean>
-
-
+  
+  
+  <!-- XXX
+       a bit mysterious, but InvertAssertion (both types) must be wrapped to ensure that
+       it is attempted 'matched' by the relevant service(s)...
+       Will look into this behaviour later (may be due to handling in 'LinkConstructionHelperImpl')-->
+  <bean id="docTypeIsHtml" class="org.vortikal.web.service.RepositoryShortcutOrAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="docTypeIsNotXhtml" />
+      </list>
+    </property>    
+  </bean>
+  
+  <bean id="docTypeIsNotXhtml" class="org.vortikal.web.service.InvertRepositoryAssertion" 
+        parent="requestLocalRepositoryAware">
+    <property name="assertion" ref="docTypeIsXHtml10" />
+  </bean>
+    
+<!--  
+  <bean id="docTypeIsNotXhtml10" class="org.vortikal.web.service.InvertAssertion" 
+        parent="requestLocalRepositoryAware">
+    <property name="assertion" ref="docTypeIsXHtml10" />
+  </bean>
+-->
 
 </beans>
 

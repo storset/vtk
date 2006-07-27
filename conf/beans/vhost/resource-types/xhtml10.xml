@@ -79,6 +79,8 @@
   </bean>
 
 
+  <!-- XXX
+       Fix disse string-testene, virker ikke hvis DOCTYPE-tag er skrevet over flere linjer (jf som etter JTidy-transformasjon) -->
   <bean id="docTypeIsXHtml10" class="org.vortikal.web.service.RepositoryShortcutOrAssertion">
     <property name="assertions">
       <list>

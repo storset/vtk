@@ -87,8 +87,8 @@
 
       <!-- ResourceType -->
       <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("resource.resourceType", "Resource type")
-             value = vrtx.getMsg("resource.resourceType." + resource.resourceType, 
+             name = vrtx.getMsg("property.resourceType", "Resource type")
+             value = vrtx.getMsg("property.resourceType." + resource.resourceType, 
                                  resource.resourceType) />
 
       <!-- Web address -->
@@ -167,7 +167,7 @@
         <#if resource.userSpecifiedCharacterEncoding?has_content>
           ${resource.userSpecifiedCharacterEncoding}
         <#else>
-          <@vrtx.msg code = "resource.characterEncoding.guessed"
+          <@vrtx.msg code = "property.characterEncoding.guessed"
                      args = [ "${resource.characterEncoding}" ]
                      default = "Guessed to be ${resource.characterEncoding}" />
         </#if>

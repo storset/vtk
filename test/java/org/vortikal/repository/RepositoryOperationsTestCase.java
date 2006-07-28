@@ -128,5 +128,29 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
         }
     }
     
+
+    public void testChangeAclInheritance() throws Exception {
+        String parentURI = "/parent";
+        String childURI = "/parent/child.txt";
+
+        Repository repo = getRepository();
+        Principal root = getPrincipalManager().getUserPrincipal("root@localhost");
+        String token = getTokenManager().getRegisteredToken(root);
+
+        Resource parent = repo.createCollection(token, parentURI);
+        assertTrue(parent.isInheritedAcl());
+
+        Resource child = repo.createDocument(token, childURI);
+        assertTrue(child.isInheritedAcl());
+
+        parent.setInheritedAcl(false);
+        repo.storeACL(token, parent);
+        
+        parent = repo.retrieve(token, parentURI, true);
+        Acl newAcl = parent.getAcl();
+        assertFalse(parent.isInheritedAcl());
+
+        child = repo.retrieve(token, childURI, true);
+    }
 }
 

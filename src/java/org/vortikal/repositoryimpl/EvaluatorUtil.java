@@ -67,13 +67,24 @@ public class EvaluatorUtil implements InitializingBean {
         }
     }
     
-    public void evaluate(String uri) throws IOException, CloneNotSupportedException {
+    public void evaluate(String uri) throws Exception {
         ResourceImpl resource = this.dataAccessor.load(uri);
         if (resource == null) {
             throw new IOException("Resource " + uri + " does not exist");
         }
         this.logger.info("Evaluating: " + resource.getURI());
-
+        resource = evaluateResource(resource);
+        this.dataAccessor.store(resource);
+        
+        if (resource.isCollection()) {
+            ResourceImpl[] children = this.dataAccessor.loadChildren(resource);
+            for (int i = 0; i < children.length; i++) {
+                evaluate(children[i].getURI());
+            }
+        }
+    }
+    
+    public ResourceImpl evaluateResource(ResourceImpl resource) throws Exception {
         if (!resource.isCollection()) {
             resource = this.propertyManager.fileContentModification(
                 resource, resource.getOwner());
@@ -86,15 +97,8 @@ public class EvaluatorUtil implements InitializingBean {
             this.propertyManager.storeProperties(
                 resource, resource.getOwner(), resource);
 
-
-        this.dataAccessor.store(resource);
-        
-        if (resource.isCollection()) {
-            ResourceImpl[] children = this.dataAccessor.loadChildren(resource);
-            for (int i = 0; i < children.length; i++) {
-                evaluate(children[i].getURI());
-            }
-        }
+        return resource;
     }
     
+
 }

@@ -41,12 +41,47 @@ public interface Resource extends PropertySet {
 
     public ResourceTypeDefinition getResourceTypeDefinition();
 
+    /**
+     * Determines whether this resource is of a given resource type. 
+     *
+     * @param type a resource type definition
+     * @return <code>true</code> if this resource's definition is the
+     * same as or a descendant of the supplied resource type or the
+     * supplied definition is one of this resource's mixin types,
+     * <code>false</code> otherwise.
+     */
     public boolean isOfType(ResourceTypeDefinition type);
 
+
+    /**
+     * Determines whether a principal is authorized to perform a given
+     * repository action on this resource.
+     *
+     * @param privilege the action in question
+     * @param principal the principal in question
+     * @return <code>true</code> if the principal is authorized,
+     * <code>false</code> otherwise.
+     */
     public boolean isAuthorized(RepositoryAction privilege, Principal principal);
 
+
+    /**
+     * Creates a property with a given name space and name on this
+     * resource.
+     *
+     * @param namespace the name space of the property
+     * @param name the name of the property
+     * @return the created property
+     */
     public Property createProperty(Namespace namespace, String name);
     
+
+    /**
+     * Removes a property on this resource.
+     *
+     * @param namespace the name space of the property
+     * @param name the name of the property
+     */
     public void removeProperty(Namespace namespace, String name);
     
     /**
@@ -101,8 +136,27 @@ public interface Resource extends PropertySet {
      */
     public Lock getLock();
     
+
+    /**
+     * Retrieves the Access Control List (ACL) for a resource. The ACL
+     * may or may not be inherited.
+     */
     public Acl getAcl();
+
+
+    /**
+     * Determines whether this resource has an inherited ACL.     
+     */
+    public boolean isInheritedAcl();
+
+
+    /**
+     * Sets this resource's ACL inheritance flag (called prior to
+     * performing a {@link Repository#storeACL} operation).
+     */
+    public void setInheritedAcl(boolean inheritedAcl);
     
+
     /**
      * Determines whether this resource is a collection.
      *
@@ -117,6 +171,11 @@ public interface Resource extends PropertySet {
      */
     public Principal getOwner();
     
+
+    /**
+     * Gets the principal that created this resource.
+     *
+     */
     public Principal getCreatedBy();
 
     /**
@@ -213,12 +272,29 @@ public interface Resource extends PropertySet {
      */
     public String getCharacterEncoding();
     
+
+    /**
+     * Sets this resource's content locale.
+     *
+     */
     public void setContentLocale(String locale);
 
+    /**
+     * Sets this resource's content (MIME) type.
+     *
+     */
     public void setContentType(String string);
 
+    /**
+     * Sets the owner of this resource.
+     *
+     */
     public void setOwner(Principal principal);
 
+    /**
+     * Sets the display name of this resource.
+     *
+     */
     public void setDisplayName(String displayName);
     
 }

@@ -277,6 +277,8 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         ResourceImpl clone = new ResourceImpl(this.uri, this.propertyManager, this.authorizationManager);
         clone.setID(this.id);
         clone.setACL(acl);
+        clone.setInheritedAcl(this.aclInherited);
+        clone.setAclInheritedFrom(this.getAclInheritedFrom());
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
         clone.setResourceType(super.resourceType);

@@ -258,13 +258,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         this.repository.unlock(token, uri, lockToken);
     }
 
-    public Acl getACL(String token, String uri)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, IOException {
-        return this.repository.getACL(token, uri);
-    }
-
-    public void storeACL(String token, String uri, Acl acl)
+    public void storeACL(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, IllegalOperationException, 
         ReadOnlyException, IOException {
@@ -273,7 +267,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        this.repository.storeACL(token, uri, acl);
+        this.repository.storeACL(token, resource);
     }
 
     // XXX: Losing stack traces unnecessary

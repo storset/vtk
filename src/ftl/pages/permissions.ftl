@@ -34,7 +34,7 @@
       <#assign defaultNotInherited = vrtx.getMsg("permissions.notInherited", "Custom permissions") />
 
       <p>
-        <#if resourceContext.currentResource.acl.inherited>
+        <#if resourceContext.currentResource.inheritedAcl>
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
           <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setCustom" default="edit" /></a>&nbsp;)</#if>
         <#else>

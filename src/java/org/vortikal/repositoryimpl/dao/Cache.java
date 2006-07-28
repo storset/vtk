@@ -297,31 +297,56 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public void store(ResourceImpl r) throws IOException {
+    public void storeACL(ResourceImpl r) throws IOException {
         List uris = new ArrayList();
-
         uris.add(r.getURI());
-
-        if (r.isCollection() && r.getAcl().isDirty()) {
+        if (r.isCollection()) {
             String testURI = r.getURI();
 
             if (!testURI.equals("/")) {
                 testURI += "/";
             }
-
             for (Iterator iterator = this.items.uriSet().iterator();
                     iterator.hasNext();) {
                 String uri = (String) iterator.next();
-
                 if (uri.startsWith(testURI) && !uri.equals("/")) {
                     uris.add(uri);
                 }
             }
         }
-
-        this.lockManager.lock(uris);
-
+        
+        String[] lockedUris = null;
         try {
+            lockedUris = this.lockManager.lock(uris);
+            this.wrappedAccessor.storeACL(r);
+            for (Iterator i = uris.iterator(); i.hasNext();) {
+                String uri = (String) i.next();
+
+                if (this.items.containsURI(uri)) {
+                    this.items.remove(uri);
+                }
+            }
+
+        } finally {
+            if (lockedUris != null) {
+                this.lockManager.unlock(lockedUris);
+            }
+
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("cache size : " + this.items.size());
+            }
+        }
+    }
+    
+
+    public void store(ResourceImpl r) throws IOException {
+        List uris = new ArrayList();
+
+        uris.add(r.getURI());
+
+        String[] lockedUris = null;
+        try {
+            lockedUris = this.lockManager.lock(uris);
             this.wrappedAccessor.store(r);
 
             for (Iterator i = uris.iterator(); i.hasNext();) {
@@ -332,7 +357,9 @@ public class Cache implements DataAccessor, InitializingBean {
                 }
             }
         } finally {
-            this.lockManager.unlock(uris);
+            if (lockedUris != null) {
+                this.lockManager.unlock(lockedUris);
+            }
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());

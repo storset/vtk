@@ -59,8 +59,10 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     protected Map propertyMap;
     
     // Numeric ID used by database 
-    protected int id = NULL_RESOURCE_ID;   
+    protected int id = NULL_RESOURCE_ID;
     
+    protected boolean aclInherited = true;
+
     // Numeric ID of resource from which this resource inherits its ACL definition.
     private int aclInheritedFrom = NULL_RESOURCE_ID;
                                
@@ -101,15 +103,29 @@ public class PropertySetImpl implements PropertySet, Cloneable {
 
     public void setAclInheritedFrom(int aclInheritedFrom) {
         this.aclInheritedFrom = aclInheritedFrom;
+        if (aclInheritedFrom == NULL_RESOURCE_ID) {
+            this.aclInherited = false;
+        } else {
+            this.aclInherited = true;
+        }
     }
+
+    public void setInheritedAcl(boolean aclInherited) {
+        this.aclInherited = aclInherited;
+        if (!aclInherited) {
+            this.aclInheritedFrom = NULL_RESOURCE_ID;
+        }
+    }
+    
 
     public int getAclInheritedFrom() {
         return this.aclInheritedFrom;
     }
     
 
-    public boolean isInheritedACL() {
-        return this.aclInheritedFrom != -1;
+    public boolean isInheritedAcl() {
+//         return this.aclInheritedFrom != NULL_RESOURCE_ID;
+        return this.aclInherited;
     }
 
 
@@ -156,6 +172,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         PropertySetImpl clone = new PropertySetImpl(this.uri);
         clone.resourceType = this.resourceType;
         clone.setAclInheritedFrom(this.aclInheritedFrom);
+        clone.setInheritedAcl(this.aclInherited);
         
         for (Iterator i = getProperties().iterator(); i.hasNext(); ){
             Property prop = (Property)i.next();

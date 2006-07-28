@@ -439,25 +439,7 @@ public interface Repository {
             AuthenticationException, ResourceLockedException, ReadOnlyException, 
             IOException;
 
-    /* Below: new methods corresponding to WebDAV ACL functionality */
 
-    /**
-     * Retrieves the Access Control List (ACL) for a resource.
-     *
-     * @param token identifies the client's authenticated session
-     * @param uri identifies the resource for which to get the ACL.
-     * @exception ResourceNotFoundException if the resource identified
-     * by <code>uri</code> does not exists
-     * @exception AuthorizationException if an authenticated user
-     * is denied access to the resource
-     * @exception AuthenticationException if the resource demands
-     * authorization and the client does not supply a token
-     * identifying a valid client session
-     * @exception IOException if an I/O error occurs
-     */
-    public Acl getACL(String token, String uri)
-        throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IOException;
 
     /**
      * Stores the Access Control List (ACL) for a resource.
@@ -477,7 +459,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception IOException if an I/O error occurs
      */
-    public void storeACL(String token, String uri, Acl acl)
+    public void storeACL(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException, 
             ReadOnlyException, IOException;

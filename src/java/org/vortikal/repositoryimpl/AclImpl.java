@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -47,21 +47,10 @@ import org.vortikal.security.PseudoPrincipal;
 
 public class AclImpl implements Acl {
 
-    private boolean inherited = true;
-    private boolean dirty = false; 
-    
     /**
      * map: [action --> Set(Principal)]
      */
     private Map actionSets = new HashMap();
-
-    public void setDirty(boolean dirty) {
-        this.dirty = dirty;
-    }
-
-    public boolean isDirty() {
-        return this.dirty;
-    }
 
     public boolean hasPrivilege(RepositoryAction privilege, Principal principal) {
         Set actionSet = (Set) this.actionSets.get(privilege);
@@ -86,9 +75,7 @@ public class AclImpl implements Acl {
 
     public void clear() {
         this.actionSets = new HashMap();
-        this.inherited = true;
         addEntry(Privilege.ALL, PseudoPrincipal.OWNER);
-        this.dirty = true;
     }
     
 
@@ -105,7 +92,6 @@ public class AclImpl implements Acl {
                 && all.equals(p))
                 throw new IllegalArgumentException("Not allowed to add acl entry");
         
-        this.dirty = true;
         
         Set actionEntry = (Set) this.actionSets.get(action);
         if (actionEntry == null) {
@@ -129,8 +115,6 @@ public class AclImpl implements Acl {
                 Privilege.ALL.equals(action))
                 throw new IllegalArgumentException("Not allowed to remove acl entry");
         
-        this.dirty = true;
-
         Set actionEntry = (Set) this.actionSets.get(action);
         
         if (actionEntry == null) return;
@@ -204,14 +188,6 @@ public class AclImpl implements Acl {
         return (Principal[]) principalList.toArray(new Principal[principalList.size()]);
     }
 
-    public boolean isInherited() {
-        return this.inherited;
-    }
-
-    public void setInherited(boolean inherited) {
-        this.dirty = true;
-        this.inherited = inherited;
-    }
 
     public RepositoryAction[] getPrivilegeSet(Principal principal) {
         Set actions = new HashSet();
@@ -238,10 +214,6 @@ public class AclImpl implements Acl {
 
         if (acl == this) {
             return true;
-        }
-
-        if (acl.isInherited() != this.inherited) {
-            return false;
         }
 
         Set actions = this.actionSets.keySet();
@@ -296,7 +268,6 @@ public class AclImpl implements Acl {
 
     public Object clone() {
         AclImpl clone = new AclImpl();
-        clone.setInherited(this.inherited);
 
         for (Iterator iter = this.actionSets.entrySet().iterator(); iter.hasNext();) {
             Map.Entry entry = (Map.Entry) iter.next();
@@ -305,8 +276,6 @@ public class AclImpl implements Acl {
                 clone.addEntry((RepositoryAction) entry.getKey(), p);
             }
         }
-        clone.setDirty(this.dirty);
-        
         return clone;
     }
 
@@ -314,7 +283,6 @@ public class AclImpl implements Acl {
         StringBuffer sb = new StringBuffer();
 
         sb.append("[ACL: ");
-        sb.append("[inherited: ").append(this.inherited).append("] ");
         sb.append("access: ");
         for (Iterator i = this.actionSets.keySet().iterator(); i.hasNext();) {
             RepositoryAction action = (RepositoryAction) i.next();

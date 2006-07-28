@@ -50,7 +50,6 @@ public class RepositoryOperations {
     public final static String STORE = "store";
     public final static String GET_INPUTSTREAM = "getInputStream";
     public final static String STORE_CONTENT = "storeContent";
-    public final static String GET_ACL = "getACL";
     public final static String STORE_ACL = "storeACL";
     
     public static final Set WRITE_OPERATIONS;

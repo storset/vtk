@@ -152,11 +152,12 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         
-        Acl acl = this.repository.getACL(token, uri);
+        
         Resource resource = this.repository.retrieve(token, uri, false);
+        Acl acl = resource.getAcl();
         Map editURLs = new HashMap();
 
-        if (!acl.isInherited()) {
+        if (!resource.isInheritedAcl()) {
             for (Iterator i = this.aclEditServices.keySet().iterator(); i.hasNext();) {
                 RepositoryAction action = (RepositoryAction) i.next();
                 String privilegeName = Privilege.getActionName(action);
@@ -165,7 +166,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                     String url = editService.constructLink(
                         resource, securityContext.getPrincipal());
                     editURLs.put(privilegeName, url);
-                } catch (Exception e) {System.out.println("error: " + e.getMessage()); e.printStackTrace(); }
+                } catch (Exception e) { }
             }
         }
 
@@ -209,7 +210,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         aclModel.put("aclEditURLs", editURLs);
         aclModel.put("privileges", privileges);
         aclModel.put("groupingPrivilegePrincipalMap", pseudoPrincipalPrivilegeMap);
-        aclModel.put("inherited", new Boolean(acl.isInherited()));
+        aclModel.put("inherited", new Boolean(resource.isInheritedAcl()));
         aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
         aclModel.put("privilegedUsers", privilegedUsers);
         aclModel.put("privilegedGroups", privilegedGroups);

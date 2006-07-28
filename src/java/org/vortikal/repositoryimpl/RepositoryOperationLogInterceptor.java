@@ -101,7 +101,6 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         // Reduce avg. overhead by putting most common ops early in list ..
         if (RepositoryOperations.RETRIEVE.equals(operation)          ||
             RepositoryOperations.LIST_CHILDREN.equals(operation)     ||
-            RepositoryOperations.GET_ACL.equals(operation)           ||
             RepositoryOperations.GET_INPUTSTREAM.equals(operation)   ||
             RepositoryOperations.LOCK.equals(operation)              ||
             RepositoryOperations.UNLOCK.equals(operation)            ||
@@ -109,8 +108,7 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             RepositoryOperations.CREATE_COLLECTION.equals(operation) ||
             RepositoryOperations.CREATE.equals(operation)            ||
             RepositoryOperations.DELETE.equals(operation)            ||
-            RepositoryOperations.STORE_CONTENT.equals(operation)     ||
-            RepositoryOperations.STORE_ACL.equals(operation)) {
+            RepositoryOperations.STORE_CONTENT.equals(operation)) {
             
             token = (String)args[0];
             String uri = (String)args[1];
@@ -124,7 +122,8 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             String dstUri = (String)args[2];
             params = "(" + srcUri + ", " + dstUri + ")";
             
-        } else if (RepositoryOperations.STORE.equals(operation)) {
+        } else if (RepositoryOperations.STORE.equals(operation) ||
+                   RepositoryOperations.STORE_ACL.equals(operation)) {
 
             token = (String)args[0];
             Resource resource = (Resource)args[1];

@@ -427,7 +427,7 @@ public class PropertyManagerImpl implements PropertyManager,
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this,
                                                     this.authorizationManager);
         newResource.setID(resource.getID());
-        newResource.setACL((Acl)resource.getAcl().clone());
+        newResource.setACL(resource.getAcl() != null ? (Acl)resource.getAcl().clone() : null);
 
         if (resource.getLock() != null)
             newResource.setLock((Lock)resource.getLock().clone());

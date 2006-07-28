@@ -30,12 +30,13 @@
  */
 package org.vortikal.web.controller.permissions;
 
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -63,11 +64,10 @@ public class ACLInheritanceController extends SimpleFormController {
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         Resource resource = this.repository.retrieve(token, uri, false);
-        Acl acl = this.repository.getACL(token, uri);
         String url = service.constructLink(resource, securityContext.getPrincipal());
          
         UpdateACLInheritanceCommand command =
-            new UpdateACLInheritanceCommand(acl.isInherited(), url);
+            new UpdateACLInheritanceCommand(resource.isInheritedAcl(), url);
         return command;
     }
 
@@ -94,20 +94,20 @@ public class ACLInheritanceController extends SimpleFormController {
         
         String token = securityContext.getToken();
 
-        Acl acl = this.repository.getACL(token, uri);
+        Resource r = this.repository.retrieve(token, uri, true);
+        Acl acl = r.getAcl();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Update inheritance: input = "
                          + updateCommand.isInherited());
         }
 
-        acl.setInherited(updateCommand.isInherited());
-
+        r.setInheritedAcl(true);
         if (logger.isDebugEnabled()) {
             logger.debug("Storing new acl for resource " + uri + ": " + acl);
         }
         
-        this.repository.storeACL(token, uri, acl);
+        this.repository.storeACL(token, r);
         updateCommand.setDone(true);
     }
     

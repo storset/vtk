@@ -47,20 +47,11 @@ public interface Acl extends Cloneable {
     
     public Principal[] listPrivilegedPseudoPrincipals(RepositoryAction action);
 
-    public boolean isInherited();
-    
     public Set getPrincipalSet(RepositoryAction action);
 
     public Set getActions();
 
-    /**
-     * @return if any modifications has been performed on the ACL
-     */
-    public boolean isDirty();
-    
     public void clear();
-
-    public void setInherited(boolean inherited);
 
     public void addEntry(RepositoryAction action, Principal principal) 
         throws IllegalArgumentException;

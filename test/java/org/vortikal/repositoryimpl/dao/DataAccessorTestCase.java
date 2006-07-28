@@ -39,6 +39,7 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
@@ -51,8 +52,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     protected void setUp() throws Exception {
         System.setProperty("org.apache.commons.logging.Log",
                            "org.apache.commons.logging.impl.Log4JLogger");
-        System.setProperty("log4j.configuration",
-                           "log4j.test.xml");
+        System.setProperty("log4j.configuration", "log4j.test.xml");
         super.setUp();
     }
 
@@ -63,7 +63,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     
 
     private DataAccessor getDataAccessor() {
-        return (DataAccessor) getApplicationContext().getBean("repository.backend");
+        return (DataAccessor) getApplicationContext().getBean("repository.database");
     }
     
 
@@ -77,40 +77,50 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         // Create /parent with inherited ACL:
         String parentURI = "/parent";
         ResourceImpl parent = propertyManager.create(rootPrincipal, parentURI, true);
-        parent.setACL((Acl) root.getAcl().clone());
-        parent.setAclInheritedFrom(root.getID());
-        parent.getAcl().setInherited(true);
         dao.store(parent);
-        parent = dao.load(parentURI);        
+        parent = dao.load(parentURI);
         assertEquals(root.getID(), parent.getAclInheritedFrom());
         
         // Create /parent/child with inherited ACL:
         String childURI = parentURI + "/child";
         ResourceImpl child = propertyManager.create(rootPrincipal, childURI, false);
-        child.setACL((Acl) root.getAcl().clone());
-        child.setAclInheritedFrom(root.getID());
-        child.getAcl().setInherited(true);
         dao.store(child);
         child = dao.load(childURI);
+        assertTrue(child.isInheritedAcl());
+        assertEquals(root.getID(), child.getAclInheritedFrom());
+
+        // Storing the child's inherited ACL should have no effect:
+        child.setACL((Acl) root.getAcl().clone());
+        child.setAclInheritedFrom(root.getID());
+        child.setInheritedAcl(true);
+        dao.storeACL(child);
+        child = dao.load(childURI);
+        assertTrue(child.isInheritedAcl());
         assertEquals(root.getID(), child.getAclInheritedFrom());
 
         // Set parent's ACL inherited = false
-        parent.getAcl().setInherited(false);
-        dao.store(parent);
+        parent.setInheritedAcl(false);
+        parent.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
+        dao.storeACL(parent);
         parent = dao.load(parentURI);
         child = dao.load(childURI);
+        assertFalse(parent.isInheritedAcl());
         assertEquals(parent.getID(), child.getAclInheritedFrom());
 
         // Create /parent/second-child with inherited ACL:
         String secondChildURI = parentURI + "/second-child";
         ResourceImpl secondChild = propertyManager.create(rootPrincipal, secondChildURI, false);
-        secondChild.setACL((Acl) parent.getAcl().clone());
-        secondChild.setAclInheritedFrom(parent.getID());
-        secondChild.getAcl().setInherited(true);
-        dao.store(secondChild);
+        dao.store(secondChild);        
         secondChild = dao.load(secondChildURI);
         assertEquals(parent.getID(), secondChild.getAclInheritedFrom());
 
+        // Storing the second child's inherited ACL should have no effect either:
+        secondChild.setACL((Acl) parent.getAcl().clone());
+        secondChild.setAclInheritedFrom(parent.getID());
+        secondChild.setInheritedAcl(true);
+        dao.storeACL(secondChild);
+        secondChild = dao.load(secondChildURI);
+        assertEquals(parent.getID(), secondChild.getAclInheritedFrom());
     }
     
     

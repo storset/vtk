@@ -164,9 +164,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             }
             ResourceImpl resource = new ResourceImpl(uri, this.propertyManager,
                                                      this.authorizationManager);
-
-            loadChildUris(resource);
-
             Map locks = loadLocks(new String[] {resource.getURI()});
             if (locks.containsKey(resource.getURI())) {
                 resource.setLock((Lock) locks.get(resource.getURI()));
@@ -179,7 +176,16 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             List propertyList = this.sqlMapClient.queryForList(sqlMap, resourceId);
             populateCustomProperties(new ResourceImpl[] {resource}, propertyList);
 
+            Integer aclInheritedFrom = (Integer) resourceMap.get("aclInheritedFrom");
+            boolean aclInherited = aclInheritedFrom != null;
+            resource.setInheritedAcl(aclInherited);
+            resource.setAclInheritedFrom(aclInherited ?
+                                         aclInheritedFrom.intValue() :
+                                         PropertySetImpl.NULL_RESOURCE_ID);
+
             loadACLs(new ResourceImpl[] {resource});
+
+            loadChildUris(resource);
 
             this.sqlMapClient.commitTransaction();
             return resource;
@@ -337,6 +343,85 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
     }
 
+    public void storeACL(ResourceImpl r) throws IOException {
+        try {
+            this.sqlMapClient.startTransaction();
+            updateACL(r);
+            this.sqlMapClient.commitTransaction();
+        } catch (SQLException e) {
+            this.logger.warn("Error occurred while storing ACL of resource: " + r.getURI(), e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                this.sqlMapClient.endTransaction();
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+
+    }
+    
+
+
+    public void updateACL(ResourceImpl r) throws SQLException {
+
+        // XXX: ACL inheritance checking does not belong here!?
+        Acl newAcl = r.getAcl();
+        boolean wasInherited = isInheritedAcl(r);
+        if (wasInherited && r.isInheritedAcl()) {
+            return;
+        } 
+
+        if (wasInherited) {
+
+            // ACL was inherited, new ACL is not inherited:
+            int oldInheritedFrom = findNearestACL(r.getURI());
+            insertAcl(r);
+                
+            Map parameters = new HashMap();
+            parameters.put("resourceId", new Integer(r.getID()));
+            parameters.put("inheritedFrom", null);
+
+            String sqlMap = getSqlMap("updateAclInheritedFromByResourceId");
+            this.sqlMapClient.update(sqlMap, parameters);
+
+            parameters = new HashMap();
+            parameters.put("previouslyInheritedFrom", new Integer(oldInheritedFrom));
+            parameters.put("inheritedFrom", new Integer(r.getID()));
+            parameters.put("uri", r.getURI());
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(r.getURI()));
+            
+            sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
+            this.sqlMapClient.update(sqlMap, parameters);
+            return;
+        }
+
+        // ACL was not inherited
+        // Delete previous ACL entries for resource:
+        String sqlMap = getSqlMap("deleteAclEntriesByResourceId");
+        this.sqlMapClient.delete(sqlMap, new Integer(r.getID()));
+
+        if (!r.isInheritedAcl()) {
+            insertAcl(r);
+
+        } else {
+
+            // The new ACL is inherited, update pointers to the
+            // previously "nearest" ACL node:
+            int nearest = findNearestACL(r.getURI());
+            
+            Map parameters = new HashMap();
+            parameters.put("inheritedFrom", new Integer(nearest));
+            parameters.put("resourceId", new Integer(r.getID()));
+            parameters.put("previouslyInheritedFrom", new Integer(r.getID()));
+            
+            sqlMap = getSqlMap("updateAclInheritedFromByResourceIdOrPreviousInheritedFrom");
+            this.sqlMapClient.update(sqlMap, parameters);
+        }
+
+    }
+    
+    
 
     public void store(ResourceImpl r) throws IOException {
         try {
@@ -346,6 +431,9 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             boolean existed = this.sqlMapClient.queryForObject(sqlMap, r.getURI()) != null;
 
             Map parameters = getResourceAsMap(r);
+            if (!existed) {
+                parameters.put("aclInheritedFrom", new Integer(findNearestACL(r.getURI())));
+            }
             parameters.put("depth", new Integer(
                                SqlDaoUtils.getUriDepth(r.getURI())));
 
@@ -365,12 +453,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
                 this.contentStore.createResource(r.getURI(), r.isCollection());
             } 
-
-            if (!existed && !r.isInheritedACL()) {
-                insertAcl(r);
-            } else if (r.getAcl().isDirty()) {
-                updateAcl(r);
-            }
 
             storeLock(r);
             storeProperties(r);
@@ -765,6 +847,10 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         Map actionTypes = loadActionTypes();
 
         Acl newAcl = r.getAcl();
+        if (newAcl == null) {
+            throw new SQLException("Resource " + r + " has no ACL");
+        }
+
         Set actions = newAcl.getActions();
         
         String sqlMap = getSqlMap("insertAclEntry");
@@ -801,62 +887,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     
 
 
-    private void updateAcl(ResourceImpl r) throws SQLException {
-        // XXX: ACL inheritance checking does not belong here!?
-        Acl newAcl = r.getAcl();
-        boolean wasInherited = isInheritedAcl(r);
-        if (wasInherited && newAcl.isInherited()) {
-                return;
-        } 
-
-        if (wasInherited) {
-
-            // ACL was inherited, new ACL is not inherited:
-            int oldInheritedFrom = findNearestACL(r.getURI());
-            insertAcl(r);
-            
-            Map parameters = new HashMap();
-            parameters.put("resourceId", new Integer(r.getID()));
-            parameters.put("inheritedFrom", null);
-
-            String sqlMap = getSqlMap("updateAclInheritedFromByResourceId");
-            this.sqlMapClient.update(sqlMap, parameters);
-
-            parameters = new HashMap();
-            parameters.put("previouslyInheritedFrom", new Integer(oldInheritedFrom));
-            parameters.put("inheritedFrom", new Integer(r.getID()));
-            parameters.put("uri", r.getURI());
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(r.getURI()));
-            
-            sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
-            this.sqlMapClient.update(sqlMap, parameters);
-            return;
-        }
-
-        // ACL was not inherited
-        // Delete previous ACL entries for resource:
-        String sqlMap = getSqlMap("deleteAclEntriesByResourceId");
-        this.sqlMapClient.delete(sqlMap, new Integer(r.getID()));
-
-        if (!newAcl.isInherited()) {
-            insertAcl(r);
-
-        } else {
-
-            // The new ACL is inherited, update pointers to the
-            // previously "nearest" ACL node:
-            int nearest = findNearestACL(r.getURI());
-            
-            Map parameters = new HashMap();
-            parameters.put("inheritedFrom", new Integer(nearest));
-            parameters.put("resourceId", new Integer(r.getID()));
-            parameters.put("previouslyInheritedFrom", new Integer(r.getID()));
-            
-            sqlMap = getSqlMap("updateAclInheritedFromByResourceIdOrPreviousInheritedFrom");
-            this.sqlMapClient.update(sqlMap, parameters);
-        }
-    }
-    
 
     private Map loadActionTypes() throws SQLException {
         Map actionTypes = new HashMap();
@@ -921,13 +951,12 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
         List resourceIds = new ArrayList();
         for (int i = 0; i < resources.length; i++) {
-            if (resources[i].getAclInheritedFrom() != -1) {
+            if (resources[i].isInheritedAcl()) {
                 resourceIds.add(new Integer(resources[i].getAclInheritedFrom()));
             } else {
                 resourceIds.add(new Integer(resources[i].getID()));
             }
         }
-
         Map map = loadAclMap(resourceIds);
 
         if (map.isEmpty()) {
@@ -952,7 +981,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             }
 
             acl = (AclImpl) acl.clone();
-            acl.setInherited(resources[i].isInheritedACL());
+//             acl.setInherited(resources[i].isInheritedACL());
             resources[i].setACL(acl);
         }
     }

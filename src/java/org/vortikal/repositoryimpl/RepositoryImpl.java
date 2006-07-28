@@ -164,30 +164,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         return this.dao.getInputStream(uri);
     }
 
-    public Acl getACL(String token, String uri) throws AuthenticationException,
-        ResourceNotFoundException, AuthorizationException, IOException {
-
-        Principal principal = this.tokenManager.getPrincipal(token);
-
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new ResourceNotFoundException(uri);
-        }
-
-        Resource r = this.dao.load(uri);
-
-        if (r == null) {
-            throw new ResourceNotFoundException(uri);
-        }
-
-        this.authorizationManager.authorizeRead(uri, principal);
-
-        try {
-            return (Acl) r.getAcl().clone();
-
-        } catch (CloneNotSupportedException e) {
-            throw new IOException(e.getMessage());
-        }
-    }
 
 
     public Resource[] listChildren(String token, String uri, 
@@ -594,58 +570,57 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
 
-    public void storeACL(String token, String uri, Acl acl)
+    public void storeACL(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException,
             ReadOnlyException, IOException {
 
+        if (resource == null) {
+            throw new IllegalArgumentException("Resource is null");
+        }
+
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new ResourceNotFoundException(uri);
+        if (!this.uriValidator.validateURI(resource.getURI())) {
+            throw new ResourceNotFoundException(resource.getURI());
         }
 
-        ResourceImpl r = this.dao.load(uri);
+        ResourceImpl r = this.dao.load(resource.getURI());
 
         if (r == null) {
-            throw new ResourceNotFoundException(uri);
-        } else if ("/".equals(r.getURI()) && acl.isInherited()) {
-            throw new IllegalOperationException("Can't make root acl inherited.");
+            throw new ResourceNotFoundException(resource.getURI());
+        } else if ("/".equals(r.getURI()) && r.isInheritedAcl()) {
+            throw new IllegalOperationException("The root resource cannot have an inherited ACL");
         }
 
-        this.authorizationManager.authorizeWriteAcl(uri, principal);
+        this.authorizationManager.authorizeWriteAcl(resource.getURI(), principal);
         
         try {
 
             Resource originalResource = (Resource) r.clone();
 
             AclImpl newAcl = null;
-            if (acl.isInherited()) {
+            if (resource.isInheritedAcl()) {
                 /* When the ACL is inherited, make the new ACL a copy
                  * of the parent's ACL, since the supplied one may
                  * contain other ACEs than the one we now inherit
                  * from. */
-                Resource parent = this.dao.load(r.getParent());
+                ResourceImpl parent = this.dao.load(r.getParent());
                 newAcl = (AclImpl) parent.getAcl().clone();
-                newAcl.setInherited(true);
+                r.setInheritedAcl(true);
+                r.setAclInheritedFrom(parent.getID());
             } else {
-                newAcl = (AclImpl) acl.clone();
-                newAcl.setInherited(false);
+                newAcl = (AclImpl) resource.getAcl().clone();
+                r.setInheritedAcl(false);
                 r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
             }
         
             r.setACL(newAcl);
-            
-            try {
-                newAcl.setDirty(true);
-                this.dao.store(r);
-            } finally {
-                newAcl.setDirty(false);
-            }
+            this.dao.storeACL(r);
 
             ACLModificationEvent event = new ACLModificationEvent(
-                this, (Resource)r.clone(),
-                originalResource, acl, originalResource.getAcl());
+                this, (Resource) r.clone(),
+                originalResource, r.getAcl(), originalResource.getAcl());
 
             this.context.publishEvent(event);
         } catch (CloneNotSupportedException e) {
@@ -654,9 +629,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     }
 
     private Resource create(String token, String uri, boolean collection)
-    throws AuthorizationException, AuthenticationException, 
-    IllegalOperationException, ResourceLockedException, 
-    ReadOnlyException, IOException {
+        throws AuthorizationException, AuthenticationException, 
+        IllegalOperationException, ResourceLockedException, 
+        ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
@@ -684,9 +659,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         try {
             Acl newAcl = (Acl) parent.getAcl().clone();
-            newAcl.setInherited(true);
             newResource.setACL(newAcl);
-            int aclIneritedFrom = parent.isInheritedACL()
+            newResource.setInheritedAcl(true);
+            int aclIneritedFrom = parent.isInheritedAcl()
                 ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
             this.dao.store(newResource);

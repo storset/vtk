@@ -72,6 +72,12 @@ public interface DataAccessor {
 
 
     /**
+     * Stores the ACL of a resource
+     */
+    public void storeACL(ResourceImpl r) throws IOException;
+
+
+    /**
      * Deletes a single resource (and any children)
      */
     public void delete(ResourceImpl resource) throws IOException;

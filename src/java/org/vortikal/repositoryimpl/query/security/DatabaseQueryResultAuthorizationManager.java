@@ -84,11 +84,16 @@ public final class DatabaseQueryResultAuthorizationManager implements
         throws QueryAuthorizationException {
         Principal principal = this.tokenManager.getPrincipal(token);
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("authorizeQueryResults(): principal = " 
+                    + principal + ", token = " + token);
+        }
+        
         if (this.noAuthorizationCheckForPrincipals != null
             && principal != null 
             && this.noAuthorizationCheckForPrincipals.contains(
                                             principal.getQualifiedName())) {
-            this.logger.info("Auto-authorizing all results for principal '" + 
+            this.logger.info("Unconditionally authorizing all results for principal '" + 
                     principal + "'");
             
             for (Iterator i = rsiList.iterator(); i.hasNext();) {
@@ -97,18 +102,17 @@ public final class DatabaseQueryResultAuthorizationManager implements
             }
             
             return;
-        } 
+        }
         
         Set principalNames = new HashSet();
         if (principal != null) {
             principalNames.add(principal.getQualifiedName());
         }
         
-        // XXX: Resolve group names and add to list of principal names
+        // XXX: Resolve authenticated principal's groups and add to list of principal names
         try {
-            this.indexDataAccessor.processQueryResultsAuthorization(
-                                                                principalNames, 
-                                                                rsiList);
+            this.indexDataAccessor.processQueryResultsAuthorization(principalNames, 
+                                                                    rsiList);
         } catch (IOException io) {
             this.logger.warn("IOException while authorizing query result list: " 
                                                             + io.getMessage());

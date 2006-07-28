@@ -57,14 +57,8 @@ import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 
 /**
- * XXX: Not to be considered finished, but functional, at least.
- * May need to model things a bit differently to support indexing to alternate
- * index, hot-switching between indexes after re-indexing, locking etc.
- * 
- * XXX: handle DocumentMappingException's here ?
  * 
  * @author oyviste
- *
  */
 public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean, 
                                              BeanNameAware {

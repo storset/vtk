@@ -260,7 +260,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
                     return;
                 }
                 
-                int c = refCount.intValue()-1;
+                int c = refCount.intValue() - 1;
                 if (c == 0) {
                     // OK, last reference released, we close it.
                     this.outdatedReadOnlyReaders.remove(reader);

@@ -66,8 +66,7 @@ public class NameWildcardQueryBuilder implements QueryBuilder {
         
         Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
         
-        Filter filter = 
-            new WildcardTermFilter(wTerm);
+        Filter filter = new WildcardTermFilter(wTerm);
         
         return new ConstantScoreQuery(filter);
         

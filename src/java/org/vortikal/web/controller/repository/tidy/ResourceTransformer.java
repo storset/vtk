@@ -31,12 +31,7 @@
 
 package org.vortikal.web.controller.repository.tidy;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,33 +62,15 @@ public class ResourceTransformer implements Controller, InitializingBean {
     private Transformer transformer;
         
     // Configurable variables
-    private String trustedToken;
     private Repository repository;
-//    private String resourceName;
-    //private String templateUri;
+    private String trustedToken;
+    private String transformerType;  // which transformerImpl to use
+    private String transformation; // which transformation to actually perform
+    
     private String errorView = "admin";
     private String successView = "redirect";
     
-    // This is the only one with a setter, so far...
-    private String transformerType;  // which transformerImpl to use
-    private String transformation; // which transformation to actually perform
-
     
-    /*
-    public ResourceTransformer(String type) {
-        TransformerFactory transformerFactory = new TransformerFactory();
-        
-        if (JTIDY_TRANSFORMER.equals(type)) {
-            transformer = transformerFactory.createJTidyTransformer();
-            transformerType = HTML_TO_XHTML;
-            // can so far only perform default transformation 'htmlToXhtml'
-        } else {
-            logger.error("Invalid transformer type");
-        }
-    }
-    */
-    
-
     
     private Transformer createTransformer(String transformerType) {
         // can so far only perform default transformation 'htmlToXhtml'
@@ -122,19 +99,9 @@ public class ResourceTransformer implements Controller, InitializingBean {
         String token = trustedToken;
         if (token == null)
             token = SecurityContext.getSecurityContext().getToken();
-        
-        /*
-        String name = resourceName;
-        if (name == null) {
-            Resource template = repository.retrieve(token, templateUri,false);
-            name = template.getName();
-        }
-        */
-        
-        
+                
         transformer = createTransformer(transformerType);
-        
-        
+                
         // JTidyTransformation:
         
         if ( HTML_TO_XHTML.equals(transformation) ) {
@@ -154,8 +121,7 @@ public class ResourceTransformer implements Controller, InitializingBean {
                 newResourceUri = uri + newResourceUri;
             }
             */
-
-            //boolean exists = repository.exists(token, newResourceUri);
+            
             boolean exists = repository.exists(token, newUri);
 
             if (exists) {
@@ -171,11 +137,8 @@ public class ResourceTransformer implements Controller, InitializingBean {
             InputStream is = repository.getInputStream(trustedToken, uri, true);
             
             repository.copy(token, uri, newUri, "0", false, true);
-            
-            //repository.createDocument(token, newUri);
             repository.storeContent( token, newUri, transformer.transform(is, transformation) );
-            
-            
+                        
             Resource newResource = repository.retrieve(trustedToken, newUri, true);
             model.put("resource", newResource);
             
@@ -212,35 +175,19 @@ public class ResourceTransformer implements Controller, InitializingBean {
     public void afterPropertiesSet() throws Exception {
         if (repository == null) 
             throw new BeanInitializationException("Property 'repository' required");
-        
-//        if (trustedToken == null) 
-//            throw new BeanInitializationException("Property 'trustedToken' required");
-        
-//        if (templateUri == null)
-//            throw new BeanInitializationException("Property 'templateUri' required");
-        
-//        if (! (trustedToken == null || repository.exists(trustedToken,templateUri)))
-            //throw new BeanInitializationException("Property 'templateUri' must specify an existing resource");
-//            logger.warn("Property 'templateUri' must specify an existing resource");
     }
 
 
     /*
      * Public setters for configurable parameters
      */
-
-    public void setErrorView(String errorView) {
-        this.errorView = errorView;
-    }
-
-
+    
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
-    public void setSuccessView(String successView) {
-        this.successView = successView;
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
     }
 
     public void setTransformerType(String transformation) {
@@ -251,8 +198,13 @@ public class ResourceTransformer implements Controller, InitializingBean {
         this.transformation = transformation;
     }
 
-    public void setTrustedToken(String trustedToken) {
-        this.trustedToken = trustedToken;
+    
+    public void setErrorView(String errorView) {
+        this.errorView = errorView;
     }
 
+    public void setSuccessView(String successView) {
+        this.successView = successView;
+    }
+    
 } // end of class ResourceTransformer

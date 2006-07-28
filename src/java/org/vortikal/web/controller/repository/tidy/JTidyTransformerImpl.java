@@ -78,12 +78,13 @@ public class JTidyTransformerImpl implements Transformer {
             throws FileNotFoundException {
         try {
             Tidy tidy = new Tidy();
+            
             // Setting up Tidy (default) output
             tidy.setInputStreamName(is.getClass().getName());
             tidy.setTidyMark(tidyMark);
             tidy.setMakeClean(makeClean);
             tidy.setShowWarnings(showWarnings);
-            // tidy.setOnlyErrors(onlyErrors); // If set TRUE, only(!) error
+            // tidy.setOnlyErrors(onlyErrors); // If set TRUE, then only error
                                                // messages are written to the
                                                // OutputStream (i.e. no file
                                                // content is written)
@@ -99,7 +100,7 @@ public class JTidyTransformerImpl implements Transformer {
             ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
             
             outBuffer.close();
-            bais.reset(); // reset buffer pointer to 0
+            bais.reset(); // must reset buffer pointer to [0]
 
             return bais;
 

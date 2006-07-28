@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.servlet;
 
-
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.core.OrderComparator;
@@ -59,6 +57,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
+
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -531,24 +530,9 @@ public class VortikalServlet extends DispatcherServlet {
         msg.append(" - user agent: ").append(userAgent);
         msg.append(" - cached: ").append(wasCacheRequest);
         msg.append(" - time: ").append(processingTime);
-        msg.append(getIfHeaders(req));
         this.requestLogger.info(msg);
     }
     
-    private StringBuffer getIfHeaders(HttpServletRequest request) {
-        StringBuffer ifHeaders = new StringBuffer();
-        ifHeaders.append(" - ifheaders[ ");
-        Enumeration headers = request.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String header = (String) headers.nextElement();
-            if (header.startsWith("If") || header.startsWith("if")) {
-                ifHeaders.append(header + ": " + request.getHeader(header) + " ");
-            }
-        }
-        ifHeaders.append("]");
-        return ifHeaders;
-    }
-
 
 
     /**

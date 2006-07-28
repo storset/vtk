@@ -254,9 +254,9 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         StringBuffer query = new StringBuffer();
         query.append("SELECT ace.resource_id FROM acl_entry ace, vortex_tmp vtmp ");
         query.append("WHERE ace.resource_id = vtmp.resource_id AND vtmp.session_id = ? ");
-        query.append("AND ace.user_or_group_name IN ('pseudo:all','pseudo:authenticated'");
+        query.append("AND ace.user_or_group_name IN ('pseudo:all'");
         if (principalNames.size() > 0) {
-            query.append(",");
+            query.append(",'pseudo:authenticated',");
         }
         for (int i=0; i<principalNames.size(); i++) {
             query.append("?");

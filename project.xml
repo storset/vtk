@@ -342,9 +342,6 @@
       </properties>
     </dependency>
 
-    
-
-
     <!-- These dependencies are needed in order to build the
           project: -->
     <dependency>
@@ -402,7 +399,7 @@
         </resource>
       </resources>
     </unitTest>
-    <!-- J A R  R E S O U R C E S -->
+
     <!-- Resources that are packaged up inside the JAR file -->
     <resources>
       <!-- Include bean definition files in the jar/war
@@ -461,10 +458,6 @@
       </resource>
       <resource>
         <!-- Include FreeMarker templates in the jar under '/vortikal/ftl'. -->
-        <!--
-         TODO: should move 'src/webapp/WEB-INF/ftl' to 'src/ftl', to
-         avoid duplication of ftl files in webapps.
-       -->
         <directory>src/ftl</directory>
         <targetPath>/vortikal/ftl</targetPath>
         <includes>

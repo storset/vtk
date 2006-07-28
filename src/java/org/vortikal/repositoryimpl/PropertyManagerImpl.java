@@ -427,7 +427,7 @@ public class PropertyManagerImpl implements PropertyManager,
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this,
                                                     this.authorizationManager);
         newResource.setID(resource.getID());
-        newResource.setACL(resource.getAcl() != null ? (Acl)resource.getAcl().clone() : null);
+        newResource.setAcl(resource.getAcl() != null ? (Acl)resource.getAcl().clone() : null);
 
         if (resource.getLock() != null)
             newResource.setLock((Lock)resource.getLock().clone());
@@ -645,7 +645,7 @@ public class PropertyManagerImpl implements PropertyManager,
         
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
-        newResource.setACL(resource.getAcl());
+        newResource.setAcl(resource.getAcl());
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(principal, newResource, 
                 resource, null, new Date(), this.rootResourceTypeDefinition);
@@ -660,7 +660,7 @@ public class PropertyManagerImpl implements PropertyManager,
         // XXX: What to do about swapping old resource with new?
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
-        newResource.setACL(resource.getAcl());
+        newResource.setAcl(resource.getAcl());
         newResource.setLock(resource.getLock());
         ResourceTypeDefinition rt = contentModification(
             principal, newResource, resource,

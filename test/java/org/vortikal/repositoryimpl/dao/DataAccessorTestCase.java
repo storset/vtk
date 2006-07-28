@@ -31,12 +31,19 @@
 package org.vortikal.repositoryimpl.dao;
 
 import java.io.IOException;
+import java.util.Date;
+
 import junit.framework.TestCase;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import org.vortikal.repository.AbstractRepositoryTestCase;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.PropertySetImpl;
@@ -90,7 +97,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         assertEquals(root.getID(), child.getAclInheritedFrom());
 
         // Storing the child's inherited ACL should have no effect:
-        child.setACL((Acl) root.getAcl().clone());
+        child.setAcl((Acl) root.getAcl().clone());
         child.setAclInheritedFrom(root.getID());
         child.setInheritedAcl(true);
         dao.storeACL(child);
@@ -115,7 +122,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         assertEquals(parent.getID(), secondChild.getAclInheritedFrom());
 
         // Storing the second child's inherited ACL should have no effect either:
-        secondChild.setACL((Acl) parent.getAcl().clone());
+        secondChild.setAcl((Acl) parent.getAcl().clone());
         secondChild.setAclInheritedFrom(parent.getID());
         secondChild.setInheritedAcl(true);
         dao.storeACL(secondChild);
@@ -123,6 +130,32 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         assertEquals(parent.getID(), secondChild.getAclInheritedFrom());
     }
     
+    
+
+    public void testSetLiveProperty() throws Exception {
+        PropertyManagerImpl propertyManager = getPropertyManager();
+        DataAccessor dao = getDataAccessor();
+        Principal rootPrincipal = getPrincipalManager().getUserPrincipal("root@localhost");
+
+        ResourceImpl root = dao.load("/");
+
+        // Create /property-collection:
+        String collectionURI = "/property-collection";
+        ResourceImpl collection = propertyManager.create(rootPrincipal, collectionURI, true);
+        Date lastModifiedBefore = collection.getLastModified();
+        dao.store(collection);
+        collection = dao.load(collectionURI);
+        assertEquals(lastModifiedBefore, collection.getLastModified());
+        
+        // Set the propertiesLastModified property to a future date:
+        Date futureDate = new Date(System.currentTimeMillis() + 10000000);
+        Property propertiesLastModified = (Property) collection.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
+        propertiesLastModified.setDateValue(futureDate);
+        dao.store(collection);
+        collection = dao.load(collectionURI);
+        assertEquals(futureDate, collection.getPropertiesLastModified());
+    }
     
 }
 

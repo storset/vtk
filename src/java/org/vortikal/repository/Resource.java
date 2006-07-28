@@ -145,6 +145,12 @@ public interface Resource extends PropertySet {
 
 
     /**
+     * Sets the Access Control List (ACL) for a resource. 
+     */
+    public void setAcl(Acl acl);
+    
+
+    /**
      * Determines whether this resource has an inherited ACL.     
      */
     public boolean isInheritedAcl();

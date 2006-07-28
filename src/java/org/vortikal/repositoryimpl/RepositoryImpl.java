@@ -615,7 +615,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
             }
         
-            r.setACL(newAcl);
+            r.setAcl(newAcl);
             this.dao.storeACL(r);
 
             ACLModificationEvent event = new ACLModificationEvent(
@@ -659,7 +659,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         try {
             Acl newAcl = (Acl) parent.getAcl().clone();
-            newResource.setACL(newAcl);
+            newResource.setAcl(newAcl);
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl()
                 ? parent.getAclInheritedFrom() : parent.getID();

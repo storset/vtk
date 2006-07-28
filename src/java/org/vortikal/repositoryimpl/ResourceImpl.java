@@ -127,7 +127,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         return this.acl;
     }
 
-    public void setACL(Acl acl) {
+    public void setAcl(Acl acl) {
         this.acl = acl;
     }
 
@@ -276,7 +276,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
 
         ResourceImpl clone = new ResourceImpl(this.uri, this.propertyManager, this.authorizationManager);
         clone.setID(this.id);
-        clone.setACL(acl);
+        clone.setAcl(acl);
         clone.setInheritedAcl(this.aclInherited);
         clone.setAclInheritedFrom(this.getAclInheritedFrom());
         clone.setLock(lock);

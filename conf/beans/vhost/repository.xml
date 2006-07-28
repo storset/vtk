@@ -94,6 +94,15 @@
     <property name="repository" ref="repository"/>
   </bean>
 
+  <bean id="requestLocalRepositoryAware" abstract="true">
+    <description>
+      Simple parent template for repository aware controllers.  Just
+      saves a couple of lines for each controller having a repository
+      property, that's just about all of them
+    </description>
+    <property name="repository" ref="repository.requestLocal" />
+  </bean>
+
   <bean id="lockManager" class="org.vortikal.repositoryimpl.LockManager">
     <property name="dao" ref="${repositoryBackend}" />
   </bean>

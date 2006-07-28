@@ -53,15 +53,6 @@
   <bean id="repositoryContextInitializer"
         class="org.vortikal.web.RepositoryContextInitializer" />
 
-  <bean id="requestLocalRepositoryAware" abstract="true">
-    <description>
-      Simple parent template for repository aware controllers.  Just
-      saves a couple of lines for each controller having a repository
-      property, that's just about all of them
-    </description>
-    <property name="repository" ref="repository.requestLocal" />
-  </bean>
-
    <!-- HandlerMapping -->
 
    <bean id="serviceMapping" class="org.vortikal.web.service.ServiceHandlerMapping">

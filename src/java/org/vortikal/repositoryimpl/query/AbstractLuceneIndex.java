@@ -72,7 +72,8 @@ public abstract class AbstractLuceneIndex {
     /** <code>IndexReader</code> instance. */
     private IndexReader reader;
     
-    /** Lucene <code>Directory</code> implementation. */
+    /** Lucene <code>Directory</code> implementation.
+     *  Index is considered closed if this is null. */
     private Directory directory;
     
     /** Default Lucene <code>Analyzer</code> implementation used. */
@@ -103,6 +104,25 @@ public abstract class AbstractLuceneIndex {
         
     }
 
+    /**
+     * Should be called <em>once</em> before any of the other methods.
+     * @throws IOException
+     */
+    protected void initialize() throws IOException {
+        this.directory = createDirectory(this.eraseExistingIndex);
+        if (this.directory == null) {
+            throw new IOException("Directory provided by subclass was null");
+        }
+        initializeIndex(this.directory);
+    }
+    
+    /**
+     * Must be implemented by subclasses to provide a directory implementation.
+     */
+    protected abstract Directory createDirectory(boolean eraseContents) 
+        throws IOException;
+
+    
     protected synchronized IndexWriter getIndexWriter() throws IOException {
         // Check if we are already providing a reader, close it if so.
         if (this.reader != null) {
@@ -135,6 +155,7 @@ public abstract class AbstractLuceneIndex {
     }
     
     protected IndexReader getNewReadOnlyIndexReader() throws IOException {
+        
         return IndexReader.open(this.directory);
     }
 
@@ -155,6 +176,10 @@ public abstract class AbstractLuceneIndex {
         }
     }
     
+    /* TODO: Enforce closed status, or remove "close-semantics" altogether. Need to
+    *       review Lucene code, to understand how resources are freed when directory
+    *       is closed (I think they're reference-counting and freeing upon GC/finalize()).
+    */ 
     protected synchronized void close() throws IOException {
         if (this.reader != null) {
             this.reader.close();
@@ -200,7 +225,9 @@ public abstract class AbstractLuceneIndex {
     }
 
     /**
-     * Clear existing index contents, and create a new one.
+     * Clear existing index contents, and create a new one. This method will 
+     * automaticallly re-initialize index.
+     * 
      * @throws IOException
      */
     protected synchronized void createNewIndex() throws IOException {
@@ -226,22 +253,6 @@ public abstract class AbstractLuceneIndex {
         initializeIndex(this.directory);
     }
 
-    protected void optimize() throws IOException {
-        getIndexWriter().optimize();
-    }
-    
-    /**
-     * Should be called once before any of the other methods.
-     * @throws IOException
-     */
-    protected void initialize() throws IOException {
-        this.directory = createDirectory(this.eraseExistingIndex);
-        if (this.directory == null) {
-            throw new IOException("Directory was null");
-        }
-        initializeIndex(this.directory);
-    }
-    
     /** Initialize Lucene index */
     private void initializeIndex(Directory directory) throws IOException {
         // Check index lock, no matter if a valid index exists in directory
@@ -271,12 +282,6 @@ public abstract class AbstractLuceneIndex {
             }
         }
     }
-
-    /**
-     * Must be implemented by subclasses to provide a directory implementation.
-     */
-    protected abstract Directory createDirectory(boolean eraseContents) 
-        throws IOException;
 
     protected synchronized Directory getDirectory() {
         return this.directory;

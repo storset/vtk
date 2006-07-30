@@ -48,19 +48,20 @@ import org.springframework.beans.factory.InitializingBean;
 import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
 
 /**
- * New class for low-level index access.
+ * Class for low-level index access.
  * 
  * Manages write & search access to a single Lucene index.
 
- * Manages access to searcher for the index. The searcher instance
+ * Manages access to shared searcher(s) for the index. The searcher instance
  * is reference-counted, and re-instantiated if it becomes outdated due
  * to index modifications. Outdated searcher instances that have 
  * not been released should be handled gracefully and eventually closed.
  * 
  * The implementation requires that a write-lock is acquired whenever writing
  * operations are done. When a thread has the write lock, all other threads that
- * need write access are blocked and queued. The write lock can be
- * used to temporarily stop anything from modifying the index.
+ * try to acquire the lock are <em>blocked and queued</em>. The write lock can be
+ * used to prevent other threads from modifying the index (it assures
+ * mutually exclusive write access to index between threads).
  *
  * @author oyviste
  */
@@ -317,7 +318,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     
     //  CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     protected void close() throws IOException {
-        
+        // XXX: needs review, also see TODO in {@link AbstractLuceneIndex#close()}
         synchronized (this.readOnlyReaderManagementLock) {
             cleanupOutdatedReadOnlyReaders();
             this.currentReadOnlyReader.close();
@@ -325,14 +326,13 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
 
             this.fsIndex.close();
             
-            this.currentReadOnlyReader = fsIndex.getNewReadOnlyIndexReader();
-            this.currentReadOnlyReaderOutdated = false;
+            this.currentReadOnlyReaderOutdated = true;
         }
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     protected void optimize() throws IOException {
-        this.fsIndex.optimize();
+        this.fsIndex.getIndexWriter().optimize();
     }
     
     // Commit changes done by reader/writer and optimize index if necessary.
@@ -344,7 +344,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         if (++this.commitCounter % this.optimizeInterval == 0) {
             logger.info("Reached " + this.commitCounter 
                                         + " commits, auto-optimizing index ..");
-            this.fsIndex.optimize();
+            this.fsIndex.getIndexWriter().optimize();
             logger.info("Auto-optimization completed.");
         }
         
@@ -353,9 +353,9 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         synchronized (this.readOnlyReaderManagementLock) {
             if (logger.isDebugEnabled()) {
                 if (this.currentReadOnlyReader.isCurrent()) {
-                    logger.debug("Current search reader reports that it is current.");
+                    logger.debug("Read-only index reader is current");
                 } else {
-                    logger.debug("Current search reader reports that it is outdated.");
+                    logger.debug("Read-only index reader is outdated");
                 }
             }
             
@@ -405,29 +405,37 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
      */
     protected boolean writeLockAttempt(long timeout) {
         try {
-            this.lock.attempt(timeout);
+            boolean acquired = this.lock.attempt(timeout);
+            
+            if (logger.isDebugEnabled()) {
+                if (acquired) {
+                    logger.debug("Thread '" + Thread.currentThread().getName() + 
+                    "' got index lock.");
+                } else {
+                    logger.debug("Thread '" + Thread.currentThread().getName() + 
+                      "' failed to acquire lock after waiting for " + timeout + " ms");
+                    
+                }
+            }
+            
+            return acquired;
         } catch (InterruptedException ie) {
             return false;
         }
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Thread '" + Thread.currentThread().getName() + 
-                         "' got index lock.");
-        }
-        
-        return true;
     }
 
     /**
      * Write lock release.
      */
     protected void writeLockRelease() {
+        
+        this.lock.release();
+        
         if (logger.isDebugEnabled()) {
             logger.debug("Thread '" + Thread.currentThread().getName() + 
                          "' released index lock.");
         }
         
-        this.lock.release();
     }
     
     

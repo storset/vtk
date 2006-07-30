@@ -45,13 +45,36 @@ import org.springframework.web.servlet.View;
  * HTTP status view with parameterizable status code and headers.
  * 
  * <p>Configurable JavaBean properties:
- * <ul><code>statusCode</code> - an integer specifying the HTTP status
+ * <ul>
+ * <li><code>statusCode</code> - an integer specifying the HTTP status
  * code. Default is <code>200</code>
- * <ul><code>statusMessage</code> - a string specifying the HTTP
+ * </li>
+ * <li><code>statusMessage</code> - a string specifying the HTTP
  * status message. Default is <code>null</code> (leave it to the
  * servlet container).
- * <ul><code>headers</code> - a {@link Map} specifying the HTTP
+ * </li>
+ * <li><code>headers</code> - a {@link Map} specifying the HTTP
  * headers to send.
+ * </li>
+ * </ul></p>
+ * 
+ * <p>Optional model properties:
+ * <ul>
+ *  <li><code>statusMessage</code> - a string specifying HTTP status message.
+ *  This model property will override any statically configured status message for
+ *  a particular request.
+ *  </li>
+ *  <li><code>statusCode</code> - an <code>Integer</code> specifying the HTTP status code.
+ *  This model property will override any statically configured status message for
+ *  a particular request.
+ *  </li>
+ *  <li><code>headers</code> - a {@link Map} specifying the HTTP headers to send. 
+ *  This model property will override any statically configured headers
+ *  for a particular request.
+ *  </li>
+ * </ul>
+ * </p>
+ * 
  */
 public class StandardHttpView implements View {
 
@@ -59,32 +82,26 @@ public class StandardHttpView implements View {
     private String statusMessage = null;
     private Map headers = new HashMap();
 
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public void setStatusMessage(String statusMessage) {
-        this.statusMessage = statusMessage;
-    }
-
-    
-    public void setHeaders(Map headers) {
-        this.headers = headers;
-    }
-    
-
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
-
-        if (this.statusMessage != null) {
-            response.setStatus(this.statusCode, this.statusMessage);
+        
+        Integer modelStatusCode = (Integer)model.get("statusCode");
+        String modelStatusMessage = (String)model.get("statusMessage");
+        Map modelHeaders = (Map)model.get("headers");
+        
+        int statusCode = modelStatusCode != null ? modelStatusCode.intValue() : this.statusCode;
+        String statusMessage = modelStatusMessage != null ? modelStatusMessage : this.statusMessage;
+        Map headers = modelHeaders != null ? modelHeaders : this.headers;
+        
+        if (statusMessage != null) {
+            response.setStatus(statusCode, statusMessage);
         } else {
-            response.setStatus(this.statusCode);
+            response.setStatus(statusCode);
         }
 
-        for (Iterator i = this.headers.keySet().iterator(); i.hasNext();) {
+        for (Iterator i = headers.keySet().iterator(); i.hasNext();) {
             String name = (String) i.next();
-            Object value = this.headers.get(name);
+            Object value = headers.get(name);
 
             if (value instanceof Date) {
                 response.setDateHeader(name, ((Date) value).getTime());
@@ -101,6 +118,18 @@ public class StandardHttpView implements View {
                     + "Date, String or Integer");
             }
         }
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
+    }
+    
+    public void setHeaders(Map headers) {
+        this.headers = headers;
     }
 
 }

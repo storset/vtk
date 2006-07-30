@@ -45,8 +45,9 @@ import org.vortikal.security.Principal;
  * URI.
  * <p>Configurable properties:
  * <ul>
- *   <li><code>pattern</code> - a the {@link Pattern regular
+ *   <li><code>pattern</code> - The {@link Pattern regular
  *     expression} to match.
+ *   </li>
  * </ul>
  */
 public class RequestURIRegexpAssertion

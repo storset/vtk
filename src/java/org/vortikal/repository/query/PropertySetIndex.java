@@ -211,10 +211,24 @@ public interface PropertySetIndex {
     /**
      * Obtain index mutex write lock.
      * 
-     * @return
+     * @return <code>true</code> iff the lock was acquired, <code>false</code>
+     *         otherwise.
+     *         
      * @throws IndexException
      */
     public boolean lock() throws IndexException;
+    
+    /**
+     * Try to obtain index mutex write lock.
+     * 
+     * @param timeout The number of milliseconds to wait before failing.
+     * 
+     * @return <code>true</code> iff the lock was acquired, 
+     *         <code>false</code< otherwise.
+     *         
+     * @throws IndexException
+     */
+    public boolean lock(long timeout) throws IndexException;
     
     /**
      * Release index mutex write lock.

@@ -360,7 +360,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean,
             } else if (iterator instanceof PropertySetIndexSubtreeIterator) {
                 ((PropertySetIndexSubtreeIterator)iterator).close();
             } else {
-                throw new IllegalArgumentException("Illegal iterator type");
+                throw new IllegalArgumentException("Illegal Iterator type");
             }
         
             
@@ -380,6 +380,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean,
     public void close() throws IndexException {
         try {
             this.indexAccessor.close();
+            logger.info("Closed index");
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -388,6 +389,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean,
     public void reinitialize() throws IndexException {
         try {
             this.indexAccessor.reinitialize();
+            logger.info("Re-initialized index");
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -426,6 +428,10 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean,
 
     public void unlock() throws IndexException {
         this.indexAccessor.writeLockRelease();
+    }
+    
+    public boolean lock(long timeout) {
+        return this.indexAccessor.writeLockAttempt(timeout);
     }
 
     public void setDocumentMapper(DocumentMapper documentMapper) {

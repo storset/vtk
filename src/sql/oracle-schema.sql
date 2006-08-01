@@ -15,10 +15,6 @@ CREATE SEQUENCE vortex_resource_seq_pk INCREMENT BY 1 START WITH 1000;
 
 DROP TABLE vortex_resource CASCADE CONSTRAINTS;
 
-/* The attribute 'uri' can't be longer that 1578 chars (OS-dependent?).     */
-/* If bigger -> "ORA-01450: maximum key length exceeded" (caused by index). */
-/* Since combined index '(uri, changelog_entry_id)' -> 1500 chars.          */
-
 CREATE TABLE vortex_resource
 (
     resource_id NUMBER NOT NULL,
@@ -33,7 +29,6 @@ CREATE TABLE vortex_resource
     content_modified_by VARCHAR2 (64) NOT NULL,
     properties_modified_by VARCHAR2 (64) NOT NULL,
     modified_by VARCHAR2 (64) NOT NULL,
---    serial VARCHAR(64) NULL,
     resource_owner VARCHAR2 (64) NOT NULL,
     display_name VARCHAR2 (128) NULL,
     content_language VARCHAR2 (64) NULL,

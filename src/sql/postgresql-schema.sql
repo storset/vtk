@@ -26,7 +26,6 @@ CREATE TABLE vortex_resource
     content_modified_by VARCHAR (64) NOT NULL,
     properties_modified_by VARCHAR (64) NOT NULL,
     modified_by VARCHAR (64) NOT NULL,
---    serial VARCHAR(64) NULL,
     resource_owner VARCHAR (64) NOT NULL,
     display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,
@@ -58,7 +57,7 @@ CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 -----------------------------------------------------------------------------
 -- resource_ancestor_ids
 -- Stored function for retrieving a resource's ancestor IDs.
--- Returns a VARCHAR of space-separated id integers.
+-- Returns a VARCHAR of single-space-separated id integers.
 -----------------------------------------------------------------------------
 DROP FUNCTION resource_ancestor_ids(varchar); CREATE OR REPLACE
 FUNCTION resource_ancestor_ids(varchar) RETURNS VARCHAR AS ' DECLARE
@@ -84,8 +83,8 @@ END;
 ' LANGUAGE plpgsql;
 
 -----------------------------------------------------------------------------
--- vortex_tmp - Auxiliary temp-table used to hold lists of URIs or resource-
---              IDs
+-- vortex_tmp 
+-- Auxiliary temp-table used to hold lists of URIs or resource-IDs
 -----------------------------------------------------------------------------
 DROP SEQUENCE vortex_tmp_session_id_seq;
 CREATE SEQUENCE vortex_tmp_session_id_seq INCREMENT 1 START 1000;
@@ -199,6 +198,7 @@ CREATE TABLE prop_type
 ALTER TABLE prop_type
     ADD CONSTRAINT prop_type_PK PRIMARY KEY (prop_type_id);
 
+
 -----------------------------------------------------------------------------
 -- extra_prop_entry
 -----------------------------------------------------------------------------
@@ -233,6 +233,7 @@ ALTER TABLE extra_prop_entry
 ;
 
 CREATE INDEX extra_prop_entry_index1 ON extra_prop_entry(resource_id);
+
 
 ----------------------------------------------------------------------
 -- changelog_entry
@@ -387,8 +388,6 @@ VALUES (
 );    
 
 -- Property value types
--- This data currently corresponds to definitions in 
--- org.vortikal.repository.resourcetype.PropertyType
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
 INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');

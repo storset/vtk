@@ -72,7 +72,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
     
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private String delimiter = "@";
+    private static final String DOMAIN_DELIMITER = "@";
     private String defaultDomain;
     private Map domainURLMap;
 
@@ -89,10 +89,10 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             if ("".equals(defaultDomain.trim())) {
                 defaultDomain = null;
 
-            } else if (defaultDomain.indexOf(this.delimiter) != -1) {
+            } else if (defaultDomain.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) != -1) {
                 throw new InvalidPrincipalException(
                     "Invalid domain: " + defaultDomain + ": "
-                    + "must not contain delimiter: '" + this.delimiter + "'");
+                    + "must not contain delimiter: '" + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
             }
             this.defaultDomain = defaultDomain;
         }
@@ -183,22 +183,22 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
         if (id.equals(""))
             throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
         
-        if (id.startsWith(this.delimiter)) {
+        if (id.startsWith(PrincipalManagerImpl.DOMAIN_DELIMITER)) {
             throw new InvalidPrincipalException(
                 "Invalid principal id: " + id + ": "
-                + "must not start with delimiter: '" + this.delimiter + "'");
+                + "must not start with delimiter: '" + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
         }
-        if (id.endsWith(this.delimiter)) {
+        if (id.endsWith(PrincipalManagerImpl.DOMAIN_DELIMITER)) {
             throw new InvalidPrincipalException(
                 "Invalid principal id: " + id + ": "
-                + "must not end with delimiter: '" + this.delimiter + "'");
+                + "must not end with delimiter: '" + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
         }
 
-        if (id.indexOf(this.delimiter) != id.lastIndexOf(this.delimiter)) {
+        if (id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) != id.lastIndexOf(PrincipalManagerImpl.DOMAIN_DELIMITER)) {
             throw new InvalidPrincipalException(
                 "Invalid principal id: " + id + ": "
                 + "must not contain more that one delimiter: '"
-                + this.delimiter + "'");
+                + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
         }
 
 
@@ -211,16 +211,16 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
         String defDomain = 
             (type == Principal.TYPE_GROUP) ? null : this.defaultDomain;
 
-        if (id.indexOf(this.delimiter) > 0) {
+        if (id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) > 0) {
 
             /* id is a fully qualified principal with a domain part: */
-            domain = id.substring(id.indexOf(this.delimiter) + 1);
+            domain = id.substring(id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) + 1);
 
             
             if (defDomain != null && defDomain.equals(domain)) {
                 /* In cases where domain equals default domain, strip
                  * the domain part off the name: */
-                name = id.substring(0, id.indexOf(this.delimiter));
+                name = id.substring(0, id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER));
             } 
                         
         } else if (defDomain != null) {
@@ -228,7 +228,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             /* id is not a fully qualified principal, but since we
              * have a default domain, we append it: */
             domain = defDomain;
-            qualifiedName = name + this.delimiter + domain;
+            qualifiedName = name + PrincipalManagerImpl.DOMAIN_DELIMITER + domain;
         }
 
         String url = null;

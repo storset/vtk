@@ -27,7 +27,8 @@
     <result property="aclInheritedFrom" column="acl_inherited_from" javaType="int" />
   </resultMap>
 
-
+  <!-- TODO: Result map class can be a java.lang.String directly. 
+             No need to go through a Map -->
   <resultMap id="Uri" class="java.util.HashMap">
     <result property="uri" column="uri" />
   </resultMap>
@@ -70,7 +71,7 @@
     <result property="name" column="name" />
   </resultMap>
   
-  <resultMap id="UserOrGroupName" class="java.util.HashMap">
+  <resultMap id="UserOrGroupName" class="java.lang.String">
     <result property="userOrGroupName"/>
   </resultMap>
   

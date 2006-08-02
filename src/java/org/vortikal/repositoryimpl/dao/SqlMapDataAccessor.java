@@ -1343,8 +1343,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         
             Set groups = new HashSet();
             for (Iterator i = groupNames.iterator(); i.hasNext();) {
-                Map map = (Map)i.next();
-                String groupName = (String)map.get("userOrGroupName");
+                String groupName = (String)i.next();
                 Principal group = this.principalManager.getGroupPrincipal(groupName);
                 groups.add(group);
             }

@@ -47,18 +47,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
-import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
@@ -1332,6 +1331,36 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             return (String) this.sqlMaps.get(statementId);
         }
         return statementId;
+    }
+    
+    public Set discoverGroups() throws IOException {
+        
+        try {
+            this.sqlMapClient.startTransaction();
+
+            String sqlMap = getSqlMap("discoverGroups");
+            List groupNames = this.sqlMapClient.queryForList(sqlMap, null);
+        
+            Set groups = new HashSet();
+            for (Iterator i = groupNames.iterator(); i.hasNext();) {
+                Map map = (Map)i.next();
+                String groupName = (String)map.get("userOrGroupName");
+                Principal group = this.principalManager.getGroupPrincipal(groupName);
+                groups.add(group);
+            }
+            
+            return groups;
+        } catch (SQLException e) {
+            this.logger.warn("Error occurred while queyring for distinct group names", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                this.sqlMapClient.endTransaction();
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+        
     }
     
 }

@@ -69,8 +69,11 @@
     <result property="id" column="action_type_id" javaType="int" />
     <result property="name" column="name" />
   </resultMap>
-
-
+  
+  <resultMap id="UserOrGroupName" class="java.util.HashMap">
+    <result property="userOrGroupName"/>
+  </resultMap>
+  
   <resultMap id="Lock" class="java.util.HashMap">
     <result property="id" column="lock_id" javaType="int" />
     <result property="resourceId" column="resource_id" javaType="int" />
@@ -82,7 +85,7 @@
     <result property="timeout" column="timeout" javaType="date" />
   </resultMap>
 
-  <!-- FIXME: a lot of duplication here. There must be a better way ... -->
+  <!-- XXX: Use <resultMap extends="parent-result-map" ....> -->
   <resultMap id="ResourceAndExtraProperties" class="java.util.HashMap">
     <!-- Copied from result map 'Resource' -->
     <result property="uri" column="uri" />
@@ -116,6 +119,7 @@
     <result property="value" column="value" />
   </resultMap>
 
+  <!-- XXX: Use <resultMap extends="parent-result-map" ....> -->
   <resultMap id="ResourceAndExtraPropertiesWithAncestorIds" class="java.util.HashMap">
     <!-- Resource ancestor ids -->
     <result property="ancestorIds" column="ancestor_ids" javaType="string"/>
@@ -657,7 +661,11 @@
     where l.timeout &gt; #timestamp# and r.uri like #uriWildcard#
   </select>
   
-
+  <select id="discoverGroups" resultMap="UserOrGroupName">
+    select distinct user_or_group_name from acl_entry where is_user = 'N'
+  </select>
+  
+  
   <select id="listSubTree" parameterClass="java.util.Map" resultMap="Uri">
     select uri from vortex_resource where uri like #uriWildcard#
   </select>

@@ -33,6 +33,7 @@ package org.vortikal.repositoryimpl.dao;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.Set;
 
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ResourceImpl;
@@ -151,5 +152,13 @@ public interface DataAccessor {
      * hierarchy defined by that resource.
      */
     public String[] discoverACLs(String uri) throws IOException;
+    
+    /**
+     * Discover all distinct groups currently present in the database.
+     * 
+     * @return A <code>Set</code> of <code>Principal</code> objects representing
+     *         the groups.
+     */
+    public Set discoverGroups() throws IOException;
 
 }

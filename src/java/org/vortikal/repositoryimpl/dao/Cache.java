@@ -707,5 +707,8 @@ public class Cache implements DataAccessor, InitializingBean {
         return this.wrappedAccessor.discoverACLs(uri);
     }
     
+    public Set discoverGroups() throws IOException {
+        return this.wrappedAccessor.discoverGroups();
+    }
 
 }

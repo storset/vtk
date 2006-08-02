@@ -68,13 +68,13 @@ public class PropertySetIndexReindexer implements InitializingBean {
    }
    
    /**
-    * Re-index to secondary index, swap contents into primary index
-    * when finished.
+    * Re-index to secondary index, replace contents of primary index with
+    * newly re-indexed contents of secondary index when finished.
     * 
     * @return The number of <code>PropertySet</code>s indexed.
     * @throws IndexException
     */
-   public synchronized int reindexToSecondaryWithContentSwap() throws IndexException {
+   public synchronized int reindexSecondaryReplacePrimary() throws IndexException {
        
        if (this.secondaryIndex == null) {
            throw new IllegalStateException("No secondary index is configured");
@@ -100,7 +100,7 @@ public class PropertySetIndexReindexer implements InitializingBean {
            logger.info("Starting reindexing on secondary index");
            int count = reindex(this.secondaryIndex, this.indexDataAccessor);
            
-           // Now, delete the contents of the primary index. Searches occuring 
+           // Delete the contents of the primary index. Searches occuring 
            // at this moment might fail. It is not really feasible to avoid this.
            logger.info("Clearing contents of primary index now");
            this.primaryIndex.clearContents();

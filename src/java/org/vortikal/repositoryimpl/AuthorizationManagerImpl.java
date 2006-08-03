@@ -31,13 +31,11 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
@@ -482,7 +480,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         for (int i = 0; i < privileges.length; i++) {
             RepositoryAction privilege = privileges[i];
             Set principalSet = acl.getPrincipalSet(privilege);
-
+            
             // Dont't need to test the conditions if (principalSet == null)
             if (principalSet == null || principalSet.size() == 0) {
                 continue;

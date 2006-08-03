@@ -86,7 +86,7 @@
     <result property="timeout" column="timeout" javaType="date" />
   </resultMap>
 
-  <!-- XXX: Use <resultMap extends="parent-result-map" ....> -->
+  <!-- TODO: Use <resultMap extends="parent-result-map" ....> -->
   <resultMap id="ResourceAndExtraProperties" class="java.util.HashMap">
     <!-- Copied from result map 'Resource' -->
     <result property="uri" column="uri" />
@@ -120,7 +120,7 @@
     <result property="value" column="value" />
   </resultMap>
 
-  <!-- XXX: Use <resultMap extends="parent-result-map" ....> -->
+  <!-- TODO: Use <resultMap extends="parent-result-map" ....> -->
   <resultMap id="ResourceAndExtraPropertiesWithAncestorIds" class="java.util.HashMap">
     <!-- Resource ancestor ids -->
     <result property="ancestorIds" column="ancestor_ids" javaType="string"/>

@@ -61,7 +61,7 @@ public class PrincipalEvaluator implements CreatePropertyEvaluator, PropertyVali
         if (property.getPrincipalValue() == null) {
             throw new ConstraintViolationException("All resources must have an owner.");
         }
-//
+
         Principal principalFromProperty = property.getPrincipalValue();
         if (!this.principalManager.validatePrincipal(principalFromProperty)) {
             throw new ConstraintViolationException(

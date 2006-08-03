@@ -442,9 +442,13 @@ public class PropertyManagerImpl implements PropertyManager,
 
 
         // Evaluate resource tree, for all live props not overridden, evaluate
-        ResourceTypeDefinition rt = propertiesModification(
-            principal, newResource, dto, new Date(), alreadySetProperties,
-            deletedProps, this.rootResourceTypeDefinition);
+        ResourceTypeDefinition rt = propertiesModification(principal, 
+                                                           newResource, 
+                                                           dto, 
+                                                           new Date(), 
+                                                           alreadySetProperties,
+                                                           deletedProps, 
+                                                           this.rootResourceTypeDefinition);
 
         newResource.setResourceType(rt.getName());
         
@@ -456,6 +460,7 @@ public class PropertyManagerImpl implements PropertyManager,
             
             newResource.addProperty(prop);
         }
+        
         for (Iterator iter = alreadySetProperties.values().iterator(); iter.hasNext();) {
             Map map = (Map) iter.next();
             for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
@@ -487,31 +492,44 @@ public class PropertyManagerImpl implements PropertyManager,
         if (!checkAssertions(rt, newResource, principal)) return null;
 
         // Evaluating primary resource type properties
-        List newProps = new ArrayList();
+        List propertiesToAdd = new ArrayList();
         PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
-        evalPropertiesModification(principal, newResource, dto, time,
-                                   alreadySetProperties, deletedProps, rt, def, newProps);
+        propertiesToAdd.addAll(evalPropertiesModification(principal, 
+                                                          newResource, 
+                                                          dto, 
+                                                          time,
+                                                          alreadySetProperties, 
+                                                          deletedProps, 
+                                                          rt, 
+                                                          def));
         
         // Evaluating mixin resource type properties
         MixinResourceTypeDefinition[] mixinTypes =
             (MixinResourceTypeDefinition[]) this.mixinTypeDefinitionMap.get(rt);
+        
 
         for (int i = 0; i < mixinTypes.length; i++) {
             PropertyTypeDefinition[] mixinDef = mixinTypes[i].getPropertyTypeDefinitions();
-            evalPropertiesModification(principal, newResource, dto, time,
-                                       alreadySetProperties, deletedProps, mixinTypes[i],
-                                       mixinDef, newProps);
+            propertiesToAdd.addAll(evalPropertiesModification(principal, 
+                                                              newResource, 
+                                                              dto, 
+                                                              time,
+                                                              alreadySetProperties,
+                                                              deletedProps, 
+                                                              mixinTypes[i],
+                                                              mixinDef));
         }
 
         // Check validator...
-        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
-            PropertyValidator validator = prop.getDefinition().getValidator();
-            if (validator != null)
-                validator.validate(principal, newResource, prop);
-        }
+//        for (Iterator iter = propertiesToAdd.iterator(); iter.hasNext();) {
+//            Property prop = (Property) iter.next();
+//            PropertyValidator validator = prop.getDefinition().getValidator();
+//            if (validator != null) {
+//                validator.validate(principal, newResource, prop);                
+//            }
+//        }
         
-        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
+        for (Iterator iter = propertiesToAdd.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             newResource.addProperty(prop);
         }
@@ -520,8 +538,13 @@ public class PropertyManagerImpl implements PropertyManager,
         PrimaryResourceTypeDefinition[] children = getResourceTypeDefinitionChildrenInternal(rt);
         for (int i = 0; i < children.length; i++) {
             PrimaryResourceTypeDefinition resourceType = 
-                propertiesModification(principal, newResource, dto, time,
-                                       alreadySetProperties, deletedProps, children[i]);
+                propertiesModification(principal, 
+                                       newResource,
+                                       dto,
+                                       time,
+                                       alreadySetProperties,
+                                       deletedProps,
+                                       children[i]);
             if (resourceType != null) {
                 return resourceType;
             }
@@ -531,11 +554,13 @@ public class PropertyManagerImpl implements PropertyManager,
     }
     
 
-    private void evalPropertiesModification(
+    private List evalPropertiesModification(
         Principal principal, ResourceImpl newResource, Resource dto,
         Date time, Map alreadySetProperties, Map deletedProps, ResourceTypeDefinition rt,
-        PropertyTypeDefinition[] propertyDefs, List newProps) {
+        PropertyTypeDefinition[] propertyDefs) {
 
+        List newProps = new ArrayList();
+        
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Evaluating properties modification for resource "
                          + newResource + ", resource type " + rt);
@@ -550,6 +575,7 @@ public class PropertyManagerImpl implements PropertyManager,
             }
 
             PropertyTypeDefinition propertyDef = propertyDefs[i];
+            PropertyValidator validator = propertyDef.getValidator();
             
 
             // If property already set, don't evaluate
@@ -558,8 +584,15 @@ public class PropertyManagerImpl implements PropertyManager,
                 Property p = (Property) propsMap.get(propertyDef.getName());
                 if (p != null) {
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Property " + p + " already set, will not evaluate");
+                        this.logger.debug("Property " 
+                                        + p + " already set, will not evaluate");
                     }
+                    
+                    // Validate 
+                    if (validator != null) {
+                        validator.validate(principal, newResource, p);
+                    }
+                    
                     newProps.add(p);
                     propsMap.remove(propertyDef.getName());
                     continue;
@@ -612,6 +645,12 @@ public class PropertyManagerImpl implements PropertyManager,
                                         + "returned false");
                     }
                 }
+                
+                // Validate
+                if (validator != null) {
+                    validator.validate(principal, newResource, prop);
+                }
+                
             } else if (prop != null) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("No properties modification evaluator for property " + prop
@@ -635,6 +674,8 @@ public class PropertyManagerImpl implements PropertyManager,
                 newProps.add(prop);
             }
         }
+        
+        return newProps;
     }
     
 

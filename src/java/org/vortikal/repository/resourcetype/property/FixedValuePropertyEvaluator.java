@@ -41,9 +41,6 @@ import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvalua
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
 
-
-
-
 /**
  * Property evaluator that always evaluates to the same, fixed value.
  *

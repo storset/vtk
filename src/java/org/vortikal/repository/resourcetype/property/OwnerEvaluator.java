@@ -116,7 +116,7 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
        if (!principal.equals(property.getPrincipalValue())) {
            throw new ConstraintViolationException(
                    "Unable to set owner of resource to invalid value: '" 
-                   + principal + "'");
+                   + owner + "'");
        }
     }
     

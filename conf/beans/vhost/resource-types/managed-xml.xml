@@ -24,6 +24,10 @@
     </property>
   </bean>
 
+  <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="managedXmlResource" />
+  </bean>
+
 <!--
   <bean id="viewXslStylesheetPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

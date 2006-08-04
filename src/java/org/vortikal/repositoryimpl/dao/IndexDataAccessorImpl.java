@@ -51,7 +51,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.security.ResultSecurityInfo;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -64,7 +64,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
     Log logger = LogFactory.getLog(IndexDataAccessorImpl.class);
     
     private PropertyManager propertyManager;
-    private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
     private DataSource dataSource;
     private SqlMapClient sqlMapClient;
     private Map sqlMaps;
@@ -81,8 +81,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
     public void afterPropertiesSet() throws BeanInitializationException {
         if (this.propertyManager == null) {
             throw new BeanInitializationException("Property 'propertyManager' not set.");
-        } else if (this.principalManager == null) {
-            throw new BeanInitializationException("Property 'principalManager' not set.");
+        } else if (this.principalFactory == null) {
+            throw new BeanInitializationException("Property 'principalFactory' not set.");
         } else if (this.dataSource == null) {
             throw new BeanInitializationException("Property 'dataSource' not set.");
         } else if (this.sqlMapClient == null) {
@@ -112,7 +112,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             ResultSet rs = stmt.executeQuery();
             
             return new ResourceIDCachingResultSetIteratorImpl(this.propertyManager, 
-                                                              this.principalManager, rs);
+                                                              this.principalFactory, rs);
 
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
@@ -135,7 +135,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(startURI));
             ResultSet rs = stmt.executeQuery();
             
-            return new ResultSetIteratorImpl(this.propertyManager, this.principalManager,
+            return new ResultSetIteratorImpl(this.propertyManager, this.principalFactory,
                                              rs, stmt, conn);
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
@@ -158,7 +158,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             ResultSet rs = stmt.executeQuery();
             
             ResultSetIteratorImpl iterator =  new ResultSetIteratorImpl(
-                this.propertyManager, this.principalManager, rs, stmt, conn);
+                this.propertyManager, this.principalFactory, rs, stmt, conn);
             
             PropertySet propSet = null;
 
@@ -216,7 +216,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             deleteStmt.close();
             
             return new ResultSetIteratorImpl(this.propertyManager, 
-                                             this.principalManager,
+                                             this.principalFactory,
                                              rs, pstmt, conn);
             
         } catch (SQLException e) {
@@ -430,8 +430,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         this.propertyManager = propertyManager;
     }
     
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
     
     public void setSqlMapClient(SqlMapClient sqlMapClient) {

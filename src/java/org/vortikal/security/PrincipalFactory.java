@@ -30,41 +30,19 @@
  */
 package org.vortikal.security;
 
-import java.util.Set;
-
-import org.springframework.core.Ordered;
-
-public interface GroupStore extends Ordered {
+public interface PrincipalFactory {
 
     /**
-     * Validates the existence of a given group.
+     * Gets a principal object. Principals should be instantiated from
+     * application code using this method exclusively.
      *
-     * @param group the group to validate
-     * @return <code>true</code> if the group exists,
-     * <code>false</code> otherwise.
+     * @param id a (possibly fully qualified) principal name
+     * @return a principal object
+     * @throws InvalidPrincipalException when the id is an invalid principal identifier.
+     * 
      */
-    public boolean validateGroup(Principal group)
-        throws AuthenticationProcessingException;
-
-
-
-    /**
-     * Lists the members of a group.
-     *
-     * @param groupName the group in question
-     * @return an array of the principals that are members of the group
-     */
+    public Principal getUserPrincipal(String id) throws InvalidPrincipalException;
     
-    /**
-     * Convenience method for determining whether a principal is a
-     * member of a group.
-     *
-     * @param principal the name of the principal
-     * @param group the group in question 
-     * @return true if the group exists and the given principal is a
-     * member of that group, false otherwise.
-     */
-    public boolean isMember(Principal principal, Principal group);
+    public Principal getGroupPrincipal(String id);
 
-    public Set getMemberGroups(Principal principal);
 }

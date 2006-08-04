@@ -45,7 +45,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.Base64;
 import org.vortikal.util.codec.MD5;
@@ -58,7 +58,7 @@ import org.vortikal.util.codec.MD5;
  * 
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>principalManager</code> - a {@link PrincipalManager} (required)
+ *   <li><code>principalFactory</code> - a {@link PrincipalFactory} (required)
  *   <li><code>challenge</code> - an {@link
  *   HttpBasicAuthenticationChallenge authentication challenge}
  *   (required)
@@ -88,16 +88,12 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     private int order = Integer.MAX_VALUE;
 
     protected HttpBasicAuthenticationChallenge challenge;
-    protected PrincipalManager principalManager;
+    protected PrincipalFactory principalFactory;
   
     public void setCache(SimpleCache cache) {
         this.cache = cache;
     }
     
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-
     public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
         this.challenge = challenge;
     }
@@ -120,9 +116,9 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     
 
     public void afterPropertiesSet() {
-        if (this.principalManager == null) {
+        if (this.principalFactory == null) {
             throw new BeanInitializationException(
-                "Property 'principalManager' must be set");
+                "Property 'principalFactory' must be set");
         }
         
         if (this.challenge == null) {
@@ -149,7 +145,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
 
 
         try {
-            principal = this.principalManager.getUserPrincipal(username);
+            principal = this.principalFactory.getUserPrincipal(username);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -184,7 +180,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         Principal principal = null;
         
         try {
-            principal = this.principalManager.getUserPrincipal(username);
+            principal = this.principalFactory.getUserPrincipal(username);
         } catch (InvalidPrincipalException e) {
             throw new AuthenticationException("Invalid principal '" + username + "'", e);
         }
@@ -277,5 +273,9 @@ public abstract class AbstractHttpBasicAuthenticationHandler
             decodedString.indexOf(":") + 1, decodedString.length());
 
         return password;
+    }
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 }

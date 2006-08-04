@@ -30,9 +30,12 @@
  */
 package org.vortikal.security.store;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,9 +59,9 @@ import org.vortikal.util.codec.MD5;
  *   a hashed value of the string <code>username:realm:password</code>.
  *   <li><code>groups</code> - This {@link Map} is assumed to contain
  *   entries of type <code>(group, memberlist)</code>, where
- *   <code>memberlist</code> is a <code>java.util.List</code> of
- *   strings which represent the names of those principals that are
- *   members of the group.
+ *   <code>group</code> is a group prinbcipal and <code>memberlist</code> 
+ *   is a <code>java.util.List</code> of strings which represent the names of 
+ *   those principals that are members of the group.
  *   <li><code>realm</code> - the authentication realm
  *   <li><code>domain</code> - the domain of the principals in this
  *   store (may be <code>null</code>)
@@ -74,7 +77,6 @@ public class PropertyConfigurableMD5Store
     private Properties principals;
     private Map groups;
     private String realm;
-    private String domain;
 
     private int order = Integer.MAX_VALUE;
     
@@ -112,12 +114,8 @@ public class PropertyConfigurableMD5Store
     }
 
 
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    
     public void afterPropertiesSet() throws Exception {
+        // XXX: Implement me
     }
 
 
@@ -130,13 +128,6 @@ public class PropertyConfigurableMD5Store
             return false;
         }
         
-        if (this.domain != null && !this.domain.equals(principal.getDomain())) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Validate principal: " + principal + ": false");
-            }
-            return false;
-        }
-
         boolean hit = this.principals.getProperty(principal.getQualifiedName()) != null;
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Validate principal: " + principal + ": " + hit);
@@ -147,30 +138,6 @@ public class PropertyConfigurableMD5Store
 
 
     public boolean validateGroup(Principal group) {
-        if (this.domain == null) {
-            if (group.getDomain() != null) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Validate group: " + group + ": false");
-                }
-                return false;
-            }
-
-        } else {
-            if (!this.domain.equals(group.getDomain())) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Validate group: " + group + ": false");
-                }
-                return false;
-            }
-        }
-
-        String groupName = group.getUnqualifiedName();
-        if (groupName == null) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Validate group: " + group + ": false");
-            }
-            return false;
-        }
 
         if (this.groups == null) {
             if (this.logger.isDebugEnabled()) {
@@ -180,9 +147,9 @@ public class PropertyConfigurableMD5Store
         }
 
 
-        boolean hit = this.groups.containsKey(groupName);
+        boolean hit = this.groups.containsKey(group);
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Validate group: " + groupName + ": " + hit);
+            this.logger.debug("Validate group: " + group.getQualifiedName() + ": " + hit);
         }
         return hit;
     }
@@ -196,45 +163,20 @@ public class PropertyConfigurableMD5Store
     }
     
 
-    public String[] resolveGroup(Principal group) {
-
-        if (!this.domain.equalsIgnoreCase(group.getDomain())) {
-            return new String[0];
-        }
-        String groupName = group.getUnqualifiedName();
-        
-        if (!this.groups.containsKey(groupName)) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Resolve group: " + groupName + ": unknown group");
-            }
-
-            return new String[0];
-        }
-
-        List members = (List) this.groups.get(groupName);
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Resolve group: " + groupName + ": " + members);
-        }
-
-        return (String[]) members.toArray(new String[members.size()]);
-    }
-
-
     public boolean isMember(Principal principal, Principal group) {
-        String groupName = group.getQualifiedName();
-        if (!this.groups.containsKey(groupName)) {
+        if (!this.groups.containsKey(group)) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Check membership for principal " + principal
-                             + ", group: " + groupName + ": unknown group");
+                             + ", group: " + group.getQualifiedName() + ": unknown group");
             }
             return false;
         }
 
-        List members = (List) this.groups.get(groupName);
+        List members = (List) this.groups.get(group);
         boolean hit = members.contains(principal.getQualifiedName());
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Check membership for principal " + principal
-                         + ", group: " + groupName + ": " + hit);
+                         + ", group: " + group.getQualifiedName() + ": " + hit);
         }
         return hit;
     }
@@ -258,6 +200,18 @@ public class PropertyConfigurableMD5Store
             this.logger.debug("Successfully authenticated principal: " + principal);
         }
 
+    }
+
+
+    public Set getMemberGroups(Principal principal) {
+        Set pGroups = new HashSet();
+        for (Iterator iter = groups.keySet().iterator(); iter.hasNext();) {
+            Principal group = (Principal) iter.next();
+            List members = (List) groups.get(group);
+            if (members.contains(principal.getQualifiedName()))
+                pGroups.add(group);
+        }
+        return pGroups;
     }
 
 }

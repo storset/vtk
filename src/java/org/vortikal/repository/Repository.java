@@ -32,6 +32,7 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import org.vortikal.security.AuthenticationException;
 

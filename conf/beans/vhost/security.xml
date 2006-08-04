@@ -100,7 +100,7 @@
         <null />
       </set>
     </property>
-    <property name="principalManager" ref="principalManager" />
+    <property name="principalFactory" ref="principalFactory" />
     <property name="challenge" ref="httpBasicAuthenticationChallenge" />
     <property name="principalStore" ref="localPrincipalStore"/>
   </bean>
@@ -119,7 +119,7 @@
         <null/>
       </set>
     </property>
-    <property name="principalManager" ref="principalManager" />
+    <property name="principalFactory" ref="principalFactory" />
     <property name="principalStore" ref="localPrincipalStore" />
   </bean>
 
@@ -128,9 +128,11 @@
     </bean>-->
 
 
-  <bean id="principalManager" class="org.vortikal.security.PrincipalManagerImpl">
+  <bean id="principalManager"
+        class="org.vortikal.security.PrincipalManagerImpl" />
+
+  <bean id="principalFactory" class="org.vortikal.security.PrincipalFactoryImpl">
     <property name="defaultDomain" value="${defaultPrincipalDomain}" />
-    <!--property name="principalStore" ref="principalStore"/-->
     <property name="domainURLMap" ref="principalDomainURLMap" />
   </bean>
 
@@ -142,19 +144,18 @@
     </constructor-arg>
   </bean>
 
-  <bean id="domaingroupStore"
+  <bean id="domainGroupStore"
     class="org.vortikal.security.store.DomainGroupStore">
     <property name="order" value="0" />
-    <property name="knownDomains">
+    <property name="knownGroups">
       <list>
-        <value>uio.no</value>
+        <ref bean="uioDomainGroup" />
       </list>
     </property>
   </bean>
 
   <bean id="localPrincipalStore" class="org.vortikal.security.store.PropertyConfigurableMD5Store">
     <property name="order" value="10" />
-    <!--property name="domain" value="localhost" /-->
     <property name="realm" value="${authenticationRealm}" />
     <property name="principals" ref="localPrincipals" />
 
@@ -173,7 +174,7 @@
 
     <property name="groups">
       <map>
-        <entry key="system-users">
+        <entry key-ref="systemUsersGroup">
           <list>
             <value>root@localhost</value>
             <value>vortex@localhost</value>
@@ -249,109 +250,35 @@
 <!--   </bean> -->
 
 
-  <!-- Quartz scheduled jobs cleaning up caches and token store  -->
+  <!-- Special principals and tokens -->
 
-<!--
-  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    <property name="triggers">
+ <bean id="systemUsersGroup" lazy-init="true" 
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="principalFactory"/>
+    <property name="targetMethod" value="getGroupPrincipal" />
+    <property name="arguments">
       <list>
-        <ref local="cleanupExpiredTokensTrigger" />
-        <ref local="cleanupLDAPGroupCacheTrigger" />
-        <ref local="cleanupFeideDirectCache" />
-        <ref local="cleanupUIOLDAPCache" />
+        <value>system-users@localhost</value>
       </list>
     </property>
   </bean>
 
-  <bean id="cleanupLDAPGroupCacheTrigger" 
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail" ref="cleanupLDAPGroupCacheJobDetail"/>
-    <property name="startDelay" value="60000" />
-    <property name="repeatInterval" value="600000" />
+
+  <bean id="uioDomainGroup" lazy-init="true" 
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="principalFactory"/>
+    <property name="targetMethod" value="getGroupPrincipal" />
+    <property name="arguments">
+      <list>
+        <value>alle@uio.no</value>
+      </list>
+    </property>
   </bean>
 
-  <bean id="cleanupLDAPGroupCacheJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="repository" />
-    <property name="targetObject" ref="ldapGroupCache" />
-    <property name="targetMethod" value="cleanupExpiredItems" />
-  </bean>                 
-
-  <bean id="cleanupExpiredTokensTrigger" 
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail" ref="cleanupExpiredSessionsJobDetail"/>
-    <property name="startDelay" value="60000" />
-    <property name="repeatInterval" value="600000" />
-  </bean>
-
-  <bean id="cleanupExpiredSessionsJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="repository" />
-    <property name="targetObject" ref="tokenManagerCache" />
-    <property name="targetMethod" value="cleanupExpiredItems" />
-  </bean>                 
-
-  <bean id="cleanupFeideDirectCache" 
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail" ref="cleanupFeideDirectCacheJobDetail"/>
-    <property name="startDelay" value="60000" />
-    <property name="repeatInterval" value="600000" />
-  </bean>
-  
-  <bean id="cleanupFeideDirectCacheJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="repository" />
-    <property name="targetObject" ref="feideDirectAuthenticationCache" />
-    <property name="targetMethod" value="cleanupExpiredItems" />
-  </bean>                 
-
-  <bean id="cleanupUIOLDAPCache" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail" ref="cleanupUIOLDAPCacheJobDetail"/>
-    <property name="startDelay" value="60000" />
-    <property name="repeatInterval" value="600000" />
-  </bean>
-
-  <bean id="cleanupUIOLDAPCacheJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="repository" />
-    <property name="targetObject" ref="uioLDAPAuthenticationCache" />
-    <property name="targetMethod" value="cleanupExpiredItems" />
-  </bean>                 
-
-  <bean id="cleanupGroupMembershipFastLookupCache"
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail" 
-              ref="cleanupGroupMembershipFastLookupCacheJobDetail"/>
-    <property name="startDelay" value="60000" />
-    <property name="repeatInterval" value="600000" />
-  </bean>
-  
-  <bean id="cleanupGroupMembershipFastLookupCacheJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="repository" />
-    <property name="targetObject" ref="groupMembershipFastLookupCache" />
-    <property name="targetMethod" value="cleanupExpiredItems" />
-  </bean>                 
--->
-<!--  <bean id="cleanupDigestStateMap" 
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail" ref="cleanupDigestStateMapJobDetail"/>
-    <property name="startDelay" value="60000" />
-    <property name="repeatInterval" value="600000" />
-  </bean>
-
-  <bean id="cleanupDigestStateMapJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="repository" />
-    <property name="targetObject" ref="digestStateMap"/>
-    <property name="targetMethod" value="cleanupExpiredItems" />
-  </bean>
--->
-  <!-- Special principals and tokens -->
 
   <bean id="trustedPrincipal" lazy-init="true" 
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalManager"/>
+    <property name="targetObject" ref="principalFactory"/>
     <property name="targetMethod" value="getUserPrincipal" />
     <property name="arguments">
       <list>
@@ -378,7 +305,7 @@
 
   <bean id="rootPrincipal" 
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalManager"/>
+    <property name="targetObject" ref="principalFactory"/>
     <property name="targetMethod" value="getUserPrincipal" />
     <property name="arguments">
       <list>
@@ -405,7 +332,7 @@
 
   <bean id="superPrincipal" 
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalManager" />
+    <property name="targetObject" ref="principalFactory" />
     <property name="targetMethod" value="getUserPrincipal" />
     <property name="arguments">
       <list>

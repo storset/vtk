@@ -32,6 +32,7 @@ package org.vortikal.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -326,5 +327,6 @@ public class RequestLocalRepository implements InitializingBean, Repository {
     public void setReadOnly(String token, boolean readOnly) throws AuthorizationException, IOException {
         this.repository.setReadOnly(token, readOnly);
     }
+
 
 }

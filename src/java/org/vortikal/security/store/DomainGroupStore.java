@@ -32,7 +32,10 @@ package org.vortikal.security.store;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.GroupStore;
@@ -42,13 +45,11 @@ public class DomainGroupStore implements GroupStore {
 
     private int order = Integer.MAX_VALUE;
     
-    private List knownDomains = new ArrayList();
-    private String groupName = "alle";
+    private List knownGroups = new ArrayList();
     
     public boolean validateGroup(Principal group)
             throws AuthenticationProcessingException {
-        if (this.groupName.equals(group.getUnqualifiedName())
-                && this.knownDomains.contains(group.getDomain()))
+        if (this.knownGroups.contains(group))
             return true;
         return false;
     }
@@ -72,8 +73,21 @@ public class DomainGroupStore implements GroupStore {
         this.order = order;
     }
 
-    public void setKnownDomains(String[] knownDomains) {
-        this.knownDomains = Arrays.asList(knownDomains);
+    public void setKnownGroups(Principal[] knownGroups) {
+        this.knownGroups = Arrays.asList(knownGroups);
+    }
+
+    /**
+     * @see org.vortikal.security.GroupStore#getMemberGroups(org.vortikal.security.Principal)
+     */
+    public Set getMemberGroups(Principal principal) {
+        Set groups = new HashSet();
+        for (Iterator iter = knownGroups.iterator(); iter.hasNext();) {
+            Principal group = (Principal) iter.next();
+            if (isMember(principal, group))
+                groups.add(group);
+        }
+        return groups;
     }
 
 }

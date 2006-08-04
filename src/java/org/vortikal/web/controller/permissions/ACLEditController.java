@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,14 +43,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -60,7 +60,7 @@ import org.vortikal.web.service.Service;
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
     private Repository repository;
-    private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
     private RepositoryAction privilege;
     
     private Map privilegePrincipalMap;
@@ -76,10 +76,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         this.repository = repository;
     }
 
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-
 
     public void setPrivilegePrincipalMap(Map privilegePrincipalMap) {
         this.privilegePrincipalMap = privilegePrincipalMap;
@@ -91,7 +87,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             throw new BeanInitializationException(
                 "Bean property 'repository' must be set");
         }
-        if (this.principalManager == null) {
+        if (this.principalFactory == null) {
             throw new BeanInitializationException(
                 "Bean property 'principalManager' must be set");
         }
@@ -262,7 +258,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 if (userNames[i].startsWith("pseudo")) {
                     principal = PseudoPrincipal.getPrincipal(userNames[i]);
                 } else {
-                    principal = this.principalManager.getUserPrincipal(userNames[i]);
+                    principal = this.principalFactory.getUserPrincipal(userNames[i]);
                 }
                 if (!PseudoPrincipal.OWNER.equals(principal)) {
                     acl.removeEntry(this.privilege, principal);
@@ -276,7 +272,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             String[] groupNames = editCommand.getGroupNames();
             
             for (int i = 0; i < groupNames.length; i++) {
-                Principal group = this.principalManager.getGroupPrincipal(groupNames[i]);
+                Principal group = this.principalFactory.getGroupPrincipal(groupNames[i]);
                 acl.removeEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
@@ -285,7 +281,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
             for (int i = 0; i < userNames.length; i++) {
-                Principal principal = this.principalManager.getUserPrincipal(userNames[i]);
+                Principal principal = this.principalFactory.getUserPrincipal(userNames[i]);
                 acl.addEntry(this.privilege, principal);
             }
             ModelAndView mv =  showForm(
@@ -299,7 +295,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             
            
             for (int i = 0; i < groupNames.length; i++) {
-                Principal group = this.principalManager.getGroupPrincipal(groupNames[i]);
+                Principal group = this.principalFactory.getGroupPrincipal(groupNames[i]);
 
                 acl.addEntry(this.privilege, group);
             }
@@ -310,6 +306,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
         } else {
             return new ModelAndView(getSuccessView());
         }
+    }
+
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 }
 

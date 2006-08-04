@@ -47,7 +47,7 @@
     <property name="contentStore" ref="repository.contentStore" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="authorizationManager" ref="authorizationManager" />
-    <property name="principalManager" ref="principalManager" />
+    <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
   </bean>
@@ -72,7 +72,7 @@
   <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
     <property name="dataSource" ref="repository.dataSource" />
     <property name="propertyManager" ref="propertyManager" />
-    <property name="principalManager" ref="principalManager" />
+    <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMapClient" ref="sqlMapClientFactory"/>
     <property name="sqlMaps" ref="repository.statementMappings"/>
     
@@ -108,7 +108,7 @@
   </bean>
 
   <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
-    <property name="principalManager" ref="principalManager"/>
+    <property name="principalFactory" ref="principalFactory"/>
     <property name="dateFormats">
       <list>
         <value>dd.MM.yyyy HH:mm:ss</value>

@@ -42,6 +42,10 @@ import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
+/**
+ * XXX: Document me and evaluate usage?
+ * XXX: Implement validation?
+ */
 public class PrincipalEvaluator implements CreatePropertyEvaluator, PropertyValidator {
 
     private PrincipalManager principalManager;
@@ -59,7 +63,7 @@ public class PrincipalEvaluator implements CreatePropertyEvaluator, PropertyVali
             Property property) throws ConstraintViolationException {
         
         if (property.getPrincipalValue() == null) {
-            throw new ConstraintViolationException("All resources must have an owner.");
+            throw new ConstraintViolationException("Property must have a principal value");
         }
 
         Principal principalFromProperty = property.getPrincipalValue();

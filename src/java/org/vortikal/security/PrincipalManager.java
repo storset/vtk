@@ -30,22 +30,10 @@
  */
 package org.vortikal.security;
 
+import java.util.Set;
+
 
 public interface PrincipalManager {
-
-    /**
-     * Gets a principal object. Principals should be instantiated from
-     * application code using this method exclusively.
-     *
-     * @param id a (possibly fully qualified) principal name
-     * @return a principal object
-     * @throws InvalidPrincipalException when the id is an invalid principal identifier.
-     * 
-     */
-    public Principal getUserPrincipal(String id) throws InvalidPrincipalException;
-    
-    public Principal getGroupPrincipal(String id);
-
     
     /**
      * Validates the existence of a given group.
@@ -88,5 +76,7 @@ public interface PrincipalManager {
      * member of that group, false otherwise.
      */
     public boolean isMember(Principal principal, Principal group);
+
+    public Set getMemberGroups(Principal principal);
 
 }

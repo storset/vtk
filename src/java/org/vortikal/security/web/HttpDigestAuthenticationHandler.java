@@ -45,7 +45,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.store.MD5PasswordStore;
 import org.vortikal.util.cache.SimpleCache;
@@ -91,7 +91,7 @@ public class HttpDigestAuthenticationHandler
     private Log logger = LogFactory.getLog(this.getClass());
     private String nonceKey = NetUtils.guessHostName() + "." + System.currentTimeMillis();
     private MD5PasswordStore principalStore = null;
-    private PrincipalManager principalManager = null;
+    private PrincipalFactory principalFactory;
     private Set recognizedDomains = null;
     private Set excludedPrincipals = new HashSet();
     private boolean maintainState = false;
@@ -101,10 +101,6 @@ public class HttpDigestAuthenticationHandler
 
     public void setPrincipalStore(MD5PasswordStore principalStore) {
         this.principalStore = principalStore;
-    }
-
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
     }
 
     public void setRecognizedDomains(Set recognizedDomains) {
@@ -136,7 +132,7 @@ public class HttpDigestAuthenticationHandler
             throw new BeanInitializationException(
                 "JavaBean property 'principalStore' not set.");
         }
-        if (this.principalManager == null) {
+        if (this.principalFactory == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'principalManager' not set.");
         }
@@ -183,7 +179,7 @@ public class HttpDigestAuthenticationHandler
         Principal principal = null;
 
         try {
-            principal = this.principalManager.getUserPrincipal(username);
+            principal = this.principalFactory.getUserPrincipal(username);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -381,14 +377,14 @@ public class HttpDigestAuthenticationHandler
         }
         
 
-        Principal principal = this.principalManager.getUserPrincipal(username);
+        Principal principal = this.principalFactory.getUserPrincipal(username);
         if (principal == null) {
             throw new AuthenticationException(
                 "Unable to authenticate principal using HTTP/Digest for request"
                 + request + ": no principal found");
         }
 
-        if (!this.principalManager.validatePrincipal(principal)) {
+        if (!this.principalStore.validatePrincipal(principal)) {
             throw new AuthenticationException(
                 "Unknown principal in HTTP/Digest request: " + principal);
         }
@@ -543,5 +539,11 @@ public class HttpDigestAuthenticationHandler
             sb.append("opaque = ").append(this.opaque).append("]");
             return sb.toString();
         }
+    }
+
+
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 }

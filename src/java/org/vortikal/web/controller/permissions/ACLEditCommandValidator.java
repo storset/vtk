@@ -36,20 +36,15 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 
 /**
  */
 public class ACLEditCommandValidator implements Validator, InitializingBean {
 
+    private PrincipalFactory principalFactory;
     private PrincipalManager principalManager;
-    
-    /**
-     * @param principalManager The principalManager to set.
-     */
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
     
     /**
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -77,7 +72,7 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                                    "You must type a value");
             } else {
                 try { 
-                    Principal principal = this.principalManager.getUserPrincipal(userName);	
+                    Principal principal = this.principalFactory.getUserPrincipal(userName);	
 
                     if (!this.principalManager.validatePrincipal(principal))
                         errors.rejectValue("userNames", "permissions.user.wrong.value", 
@@ -102,7 +97,7 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
                                    "You must type a value");
             Principal group = null; 
             try {
-                group = this.principalManager.getGroupPrincipal(groupName);
+                group = this.principalFactory.getGroupPrincipal(groupName);
             } catch (InvalidPrincipalException e) {
                 errors.rejectValue("groupNames", "permissions.group.illegal.value",
                         new Object[] {groupName}, "String '" + groupName
@@ -125,6 +120,18 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
             throw new BeanInitializationException(
                 "Property 'principalManager' cannot be null");
         }
+        if (this.principalFactory == null) {
+            throw new BeanInitializationException(
+                "Property 'principalFactory' cannot be null");
+        }
+    }
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
 
 }

@@ -38,6 +38,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 
 /**
@@ -57,7 +58,9 @@ import org.vortikal.security.PrincipalManager;
 public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
   implements InitializingBean {
 
+    private PrincipalFactory principalFactory;
     private PrincipalManager principalManager;
+
     private Set principals = new HashSet();
     private Set groupNames = new HashSet();
     private Set groups = new HashSet();
@@ -85,6 +88,11 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
                 "JavaBean property 'groups' cannot be null");
         }
         
+        if (this.principalFactory == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'principalFactory' cannot be null");
+        }
+
         if (this.principalManager == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'principalManager' cannot be null");
@@ -92,7 +100,7 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
 
         for (Iterator iter = this.groupNames.iterator(); iter.hasNext();) {
             String groupName = (String) iter.next();
-            this.groups.add(this.principalManager.getGroupPrincipal(groupName));
+            this.groups.add(this.principalFactory.getGroupPrincipal(groupName));
         }
         
     }
@@ -118,5 +126,9 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
     
     public boolean conflicts(Assertion assertion) {
         return false;
+    }
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 }

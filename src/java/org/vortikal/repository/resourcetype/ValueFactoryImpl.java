@@ -42,7 +42,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 
 /**
  * Implementation for interface <code>ValueFactory</code>.
@@ -50,7 +50,7 @@ import org.vortikal.security.PrincipalManager;
  */
 public class ValueFactoryImpl implements ValueFactory, InitializingBean {
 
-    private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
     
     private List dateFormats;
     
@@ -58,8 +58,8 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
 
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.principalManager == null) {
-            throw new BeanInitializationException("Property 'principalManager' not set.");
+        if (this.principalFactory == null) {
+            throw new BeanInitializationException("Property 'principalFactory' not set.");
         }
         if (this.dateFormats == null || this.dateFormats.size() == 0) {
             throw new BeanInitializationException(
@@ -124,7 +124,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
             
         case PropertyType.TYPE_PRINCIPAL:
             try {
-                Principal principal = this.principalManager.getUserPrincipal(stringValue);
+                Principal principal = this.principalFactory.getUserPrincipal(stringValue);
                 return new Value(principal);
             } catch (InvalidPrincipalException e) {
                 throw new ValueFormatException(e.getMessage(), e);
@@ -160,12 +160,12 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
             "Unable to parse date value for input string: '" + stringValue + "'");
     }
 
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-
     public void setDateFormats(List dateformats) {
         this.dateFormats = dateformats;
+    }
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

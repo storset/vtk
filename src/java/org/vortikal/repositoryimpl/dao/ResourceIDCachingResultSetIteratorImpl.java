@@ -46,7 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 
 /**
  * This iterator caches IDs of resources and uses them to set the
@@ -75,7 +75,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
     
     private ResultSet rs;
     private PropertyManager propertyManager;
-    private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
     
     private boolean hasNext = true;
     
@@ -84,9 +84,9 @@ public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
     private Map resourceIdCache;
     
     public ResourceIDCachingResultSetIteratorImpl(PropertyManager propertyManager,
-                                 PrincipalManager principalManager, ResultSet rs) throws IOException {
+                                 PrincipalFactory principalFactory, ResultSet rs) throws IOException {
         this.propertyManager = propertyManager;
-        this.principalManager = principalManager;
+        this.principalFactory = principalFactory;
         this.rs = rs;
         this.resourceIdCache = new HashMap();
         
@@ -115,7 +115,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
 
             PropertySetImpl propertySet = new PropertySetImpl(this.currentURI);
 
-            SqlDaoUtils.populateStandardProperties(this.propertyManager, this.principalManager,
+            SqlDaoUtils.populateStandardProperties(this.propertyManager, this.principalFactory,
                                                   propertySet, this.rs);
 
             putResourceId(this.currentURI, this.rs.getInt("resource_id"));
@@ -251,6 +251,11 @@ public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
             }
         }
         
+    }
+
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

@@ -46,7 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 
 
 /**
@@ -63,7 +63,7 @@ public class ResultSetIteratorImpl implements Iterator {
     private Connection conn;
 
     private PropertyManager propertyManager;
-    private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
     
     private boolean hasNext = true;
     
@@ -71,12 +71,12 @@ public class ResultSetIteratorImpl implements Iterator {
     
     
     public ResultSetIteratorImpl(PropertyManager propertyManager,
-                                 PrincipalManager principalManager,
+                                 PrincipalFactory principalFactory,
                                  ResultSet rs,
                                  Statement stmt,
                                  Connection conn) throws IOException {
         this.propertyManager = propertyManager;
-        this.principalManager = principalManager;
+        this.principalFactory = principalFactory;
         this.rs = rs;
         this.stmt = stmt;
         this.conn = conn;
@@ -105,7 +105,7 @@ public class ResultSetIteratorImpl implements Iterator {
 
             PropertySetImpl propertySet = new PropertySetImpl(this.currentURI);
 
-            SqlDaoUtils.populateStandardProperties(this.propertyManager, this.principalManager,
+            SqlDaoUtils.populateStandardProperties(this.propertyManager, this.principalFactory,
                                                   propertySet, this.rs);
             
             propertySet.setAncestorIds(getAncestorIdsFromString(this.rs.getString("ancestor_ids")));

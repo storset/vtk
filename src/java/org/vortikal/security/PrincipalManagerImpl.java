@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,30 +52,12 @@ import org.vortikal.util.cache.SimpleCacheImpl;
 /**
  * A simple principal manager implementation.
  *
- * <p>Configurable properties:
- * <ul>
- *   <li><code>defaultDomain</code> - a {@link String} specifying the
- *   domain to append to unqualified principal names. If this
- *   property is not specified, the behavior will be as if no domains
- *   exist at all.
- *   <li><code>domainURLMap</code> - a map of (<code>domain,
- *   URL-pattern</code>) entries. The domain corresponds to a
- *   principal {@link Principal#getDomain domain}, and the URL pattern
- *   is a string in which the sequence <code>%u</code> is substituted
- *   with the principal's (short) {@link Principal#getName name},
- *   thereby forming a unique URL for each principal. This URL can be
- *   acessed using the {@link Principal#getURL} method.
- * </ul>
  * XXX: reevaluate lookup strategy for stores!
  */
 public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
                                              ApplicationContextAware {
     
     private Log logger = LogFactory.getLog(this.getClass());
-
-    private static final String DOMAIN_DELIMITER = "@";
-    private String defaultDomain;
-    private Map domainURLMap;
 
     private PrincipalStore principalStore;
     private GroupStore groupStore;
@@ -83,26 +66,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
     
 
 
-    public void setDefaultDomain(String defaultDomain) {
-        if (defaultDomain != null) {
-
-            if ("".equals(defaultDomain.trim())) {
-                defaultDomain = null;
-
-            } else if (defaultDomain.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) != -1) {
-                throw new InvalidPrincipalException(
-                    "Invalid domain: " + defaultDomain + ": "
-                    + "must not contain delimiter: '" + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
-            }
-            this.defaultDomain = defaultDomain;
-        }
-    }
-    
-
-    public void setDomainURLMap(Map domainURLMap) {
-        this.domainURLMap = domainURLMap;
-    }
-    
 
     public void setPrincipalStore(PrincipalStore principalStore) {
         this.principalStore = principalStore;
@@ -165,85 +128,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
 
     }
     
-    public Principal getUserPrincipal(String id) {
-        return getPrincipal(id, Principal.TYPE_USER);
-    }
-    
-    public Principal getGroupPrincipal(String id) {
-        return getPrincipal(id, Principal.TYPE_GROUP);
-    }
-    
-    private Principal getPrincipal(String id, int type) {
-        if (id == null) {
-            throw new InvalidPrincipalException("Tried to get null principal");
-        }
-
-        id = id.trim();
-        
-        if (id.equals(""))
-            throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
-        
-        if (id.startsWith(PrincipalManagerImpl.DOMAIN_DELIMITER)) {
-            throw new InvalidPrincipalException(
-                "Invalid principal id: " + id + ": "
-                + "must not start with delimiter: '" + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
-        }
-        if (id.endsWith(PrincipalManagerImpl.DOMAIN_DELIMITER)) {
-            throw new InvalidPrincipalException(
-                "Invalid principal id: " + id + ": "
-                + "must not end with delimiter: '" + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
-        }
-
-        if (id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) != id.lastIndexOf(PrincipalManagerImpl.DOMAIN_DELIMITER)) {
-            throw new InvalidPrincipalException(
-                "Invalid principal id: " + id + ": "
-                + "must not contain more that one delimiter: '"
-                + PrincipalManagerImpl.DOMAIN_DELIMITER + "'");
-        }
-
-
-        /* Initialize name, domain and qualifiedName to default values
-         * matching a setup "without" domains: */
-        String name = id;
-        String domain = null;
-        String qualifiedName = id;
-        
-        String defDomain = 
-            (type == Principal.TYPE_GROUP) ? null : this.defaultDomain;
-
-        if (id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) > 0) {
-
-            /* id is a fully qualified principal with a domain part: */
-            domain = id.substring(id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER) + 1);
-
-            
-            if (defDomain != null && defDomain.equals(domain)) {
-                /* In cases where domain equals default domain, strip
-                 * the domain part off the name: */
-                name = id.substring(0, id.indexOf(PrincipalManagerImpl.DOMAIN_DELIMITER));
-            } 
-                        
-        } else if (defDomain != null) {
-
-            /* id is not a fully qualified principal, but since we
-             * have a default domain, we append it: */
-            domain = defDomain;
-            qualifiedName = name + PrincipalManagerImpl.DOMAIN_DELIMITER + domain;
-        }
-
-        String url = null;
-        if (domain != null && this.domainURLMap != null) {
-            String pattern = (String) this.domainURLMap.get(domain);
-            if (pattern != null) {
-                url = pattern.replaceAll("%u", name);
-            }
-        }
-
-        PrincipalImpl p  = new PrincipalImpl(name, qualifiedName, domain, url);
-        p.setType(type);
-        return p;
-    }
-
     public boolean validatePrincipal(Principal principal)
         throws AuthenticationProcessingException {
         return this.principalStore.validatePrincipal(principal);
@@ -255,12 +139,12 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
     }
 
 
-//    public String[] resolveGroup(Principal group) throws AuthenticationProcessingException {
-//        return this.principalStore.resolveGroup(group);
-//    }
-
-
     public boolean isMember(Principal principal, Principal group) {
         return this.groupStore.isMember(principal, group);
+    }
+
+
+    public Set getMemberGroups(Principal principal) {
+        return this.groupStore.getMemberGroups(principal);
     }
 }

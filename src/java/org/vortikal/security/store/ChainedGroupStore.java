@@ -31,9 +31,11 @@
 package org.vortikal.security.store;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -236,6 +238,19 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
     public int getOrder() {
         // XXX: DUMMY - not used, but should be refactored
         return 0;
+    }
+
+    /**
+     * @see org.vortikal.security.GroupStore#getMemberGroups(org.vortikal.security.Principal)
+     */
+    public Set getMemberGroups(Principal principal) {
+        Set groups = new HashSet();
+        for (Iterator i = this.managers.iterator(); i.hasNext();) {
+            GroupStore manager = (GroupStore) i.next();
+            
+            groups.addAll(manager.getMemberGroups(principal));
+        }
+        return groups;
     }
     
 }

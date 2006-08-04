@@ -63,7 +63,7 @@ import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -83,7 +83,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
     private ContentStore contentStore;
     private PropertyManager propertyManager;
-    private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
     private AuthorizationManager authorizationManager;
     private SqlMapClient sqlMapClient;
     
@@ -97,8 +97,8 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         this.propertyManager = propertyManager;
     }
 
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
+    public void setPrincipalFactory(PrincipalFactory principalfactory) {
+        this.principalFactory = principalfactory;
     }
     
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
@@ -130,7 +130,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             throw new BeanInitializationException(
                 "JavaBean property 'authorizationManager' not specified");
         }
-        if (this.principalManager == null) {
+        if (this.principalFactory == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'principalManager' not specified");
         }
@@ -168,7 +168,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 resource.setLock((Lock) locks.get(resource.getURI()));
             }
 
-            populateStandardProperties(this.propertyManager, this.principalManager,
+            populateStandardProperties(this.propertyManager, this.principalFactory,
                                        resource, resourceMap);
             Integer resourceId = new Integer(resource.getID());
             sqlMap = getSqlMap("loadPropertiesForResource");
@@ -533,7 +533,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 ResourceImpl resource = new ResourceImpl(uri, this.propertyManager,
                                                          this.authorizationManager);
 
-                populateStandardProperties(this.propertyManager, this.principalManager,
+                populateStandardProperties(this.propertyManager, this.principalFactory,
                                            resource, resourceMap);
             
                 if (locks.containsKey(uri)) {
@@ -803,7 +803,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             Map map = (Map) i.next();
             LockImpl lock = new LockImpl(
                 (String) map.get("token"),
-                this.principalManager.getUserPrincipal((String) map.get("owner")),
+                this.principalFactory.getUserPrincipal((String) map.get("owner")),
                 (String) map.get("ownerInfo"),
                 (String) map.get("depth"),
                 (Date) map.get("timeout"));
@@ -830,7 +830,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             Map map = (Map) i.next();
             LockImpl lock = new LockImpl(
                 (String) map.get("token"),
-                this.principalManager.getUserPrincipal((String) map.get("owner")),
+                this.principalFactory.getUserPrincipal((String) map.get("owner")),
                 (String) map.get("ownerInfo"),
                 (String) map.get("depth"),
                 (Date) map.get("timeout"));
@@ -1019,11 +1019,11 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             Principal p = null;
 
             if (isGroup)
-                p = this.principalManager.getGroupPrincipal(name);
+                p = this.principalFactory.getGroupPrincipal(name);
             else if (name.startsWith("pseudo:"))
                 p = PseudoPrincipal.getPrincipal(name);
             else
-                p = this.principalManager.getUserPrincipal(name);
+                p = this.principalFactory.getUserPrincipal(name);
             RepositoryAction action = Privilege.getActionByName(privilege);
             acl.addEntry(action, p);
         }
@@ -1151,7 +1151,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     
 
     public static void populateStandardProperties(
-        PropertyManager propertyManager, PrincipalManager principalManager,
+        PropertyManager propertyManager, PrincipalFactory principalFactory,
         PropertySetImpl propertySet, Map resourceMap) {
 
         propertySet.setID(((Number)resourceMap.get("id")).intValue());
@@ -1162,7 +1162,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             new Boolean(collection));
         propertySet.addProperty(prop);
         
-        Principal createdBy = principalManager.getUserPrincipal(
+        Principal createdBy = principalFactory.getUserPrincipal(
             (String) resourceMap.get("createdBy"));
         prop = propertyManager.createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME,
@@ -1174,7 +1174,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             resourceMap.get("creationTime"));
         propertySet.addProperty(prop);
 
-        Principal principal = principalManager.getUserPrincipal(
+        Principal principal = principalFactory.getUserPrincipal(
             (String) resourceMap.get("owner"));
         prop = propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
@@ -1240,7 +1240,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 resourceMap.get("lastModified"));
         propertySet.addProperty(prop);
 
-        principal = principalManager.getUserPrincipal((String) resourceMap.get("modifiedBy"));
+        principal = principalFactory.getUserPrincipal((String) resourceMap.get("modifiedBy"));
         prop = propertyManager.createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME,
                 principal);
@@ -1251,7 +1251,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             resourceMap.get("contentLastModified"));
         propertySet.addProperty(prop);
 
-        principal = principalManager.getUserPrincipal(
+        principal = principalFactory.getUserPrincipal(
             (String) resourceMap.get("contentModifiedBy"));
         prop = propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
@@ -1263,7 +1263,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             resourceMap.get("propertiesLastModified"));
         propertySet.addProperty(prop);
 
-        principal = principalManager.getUserPrincipal(
+        principal = principalFactory.getUserPrincipal(
             (String) resourceMap.get("propertiesModifiedBy"));
         prop = propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
@@ -1344,7 +1344,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             Set groups = new HashSet();
             for (Iterator i = groupNames.iterator(); i.hasNext();) {
                 String groupName = (String)i.next();
-                Principal group = this.principalManager.getGroupPrincipal(groupName);
+                Principal group = this.principalFactory.getGroupPrincipal(groupName);
                 groups.add(group);
             }
             

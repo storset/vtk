@@ -48,6 +48,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.util.repository.URIUtil;
 
 
 public class ResourceTransformer implements Controller, InitializingBean {
@@ -68,7 +69,8 @@ public class ResourceTransformer implements Controller, InitializingBean {
     private String transformation; // which transformation to actually perform
     
     private String errorView = "admin";
-    private String successView = "redirect";
+    private String successView = "redirectToManage";
+    //private String successView = "manageCollectionListing";
     
     
     
@@ -87,12 +89,9 @@ public class ResourceTransformer implements Controller, InitializingBean {
     
     
     
-        
     public synchronized ModelAndView handleRequest(HttpServletRequest req,
             HttpServletResponse resp) throws Exception {
         
-        logger.debug("### Inside handleRequest");
-
         Map model = new HashMap();
         String uri = RequestContext.getRequestContext().getResourceURI();
         
@@ -114,14 +113,6 @@ public class ResourceTransformer implements Controller, InitializingBean {
                 return new ModelAndView(errorView, model);
             }
             
-            /*
-            // ensure the uri won't start with '//'
-            String newResourceUri = "/" + name;
-            if (! uri.equals("/")) {
-                newResourceUri = uri + newResourceUri;
-            }
-            */
-            
             boolean exists = repository.exists(token, newUri);
 
             if (exists) {
@@ -139,8 +130,21 @@ public class ResourceTransformer implements Controller, InitializingBean {
             repository.copy(token, uri, newUri, "0", false, true);
             repository.storeContent( token, newUri, transformer.transform(is, transformation) );
                         
-            Resource newResource = repository.retrieve(trustedToken, newUri, true);
-            model.put("resource", newResource);
+            
+            // Setter heller redirect til parent (dvs mappen som ressursene ligger i)
+            //Resource newResource = repository.retrieve(trustedToken, newUri, true);
+            //model.put("resource", newResource);
+                        
+            String parentCollectionURI = URIUtil.getParentURI(uri);
+            Resource parentCollection = this.repository.retrieve(trustedToken, parentCollectionURI, true);
+            
+            /**
+             * FIXME: Virker ikke hvis man bruker redirect view da det kun tar med ressursen, ikke messages
+             */ 
+            //model.put("infoMessage", "balla jazzhus");
+            //model.put("statusMessage", "balla jazzhus");
+            
+            model.put("resource", parentCollection);
             
         } else {
             return new ModelAndView(errorView, model);

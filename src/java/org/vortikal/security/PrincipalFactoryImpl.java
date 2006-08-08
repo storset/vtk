@@ -43,6 +43,7 @@ import java.util.Map;
  *   domain to append to unqualified principal names. If this
  *   property is not specified, the behavior will be as if no domains
  *   exist at all.
+ *   <li><code>defaultGroupDomain</code> - the domain to append to unqualified group names 
  *   <li><code>domainURLMap</code> - a map of (<code>domain,
  *   URL-pattern</code>) entries. The domain corresponds to a
  *   principal {@link Principal#getDomain domain}, and the URL pattern
@@ -58,6 +59,7 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
     private static final String DOMAIN_DELIMITER = "@";
 
     private String defaultDomain;
+    private String defaultGroupDomain;
     private Map domainURLMap;
 
     public Principal getUserPrincipal(String id) {
@@ -104,7 +106,7 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
         String qualifiedName = id;
         
         String defDomain = 
-            (type == Principal.TYPE_GROUP) ? null : this.defaultDomain;
+            (type == Principal.TYPE_GROUP) ? this.defaultGroupDomain : this.defaultDomain;
 
         if (id.indexOf(DOMAIN_DELIMITER) > 0) {
 
@@ -157,6 +159,10 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
 
     public void setDomainURLMap(Map domainURLMap) {
         this.domainURLMap = domainURLMap;
+    }
+
+    public void setDefaultGroupDomain(String defaultGroupDomain) {
+        this.defaultGroupDomain = defaultGroupDomain;
     }
     
 }

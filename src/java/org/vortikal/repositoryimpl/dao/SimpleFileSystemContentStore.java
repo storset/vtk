@@ -72,19 +72,20 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
     
-    public long getContentLength(String uri) throws IllegalOperationException {
+    public long getContentLength(String uri) throws IOException {
         String fileName = getLocalFilename(uri);
 
         File f = new File(fileName);
+        if (!f.exists()) {
+            throw new IOException("No file exists for URI " + uri + " at " + f.getCanonicalPath());
+        }
+
         if (f.isFile()) {
             return f.length();
         } 
+        throw new IllegalOperationException("Length is undefined for collections");
         
-        if (f.isDirectory()) {
-            throw new IllegalOperationException("Length is undefined for collections");
-        }  
-        
-        return 0L; // Same as java.io.File#length() when file does not exist 
+        //return 0L; // Same as java.io.File#length() when file does not exist 
     }
 
     public void deleteResource(String uri) {

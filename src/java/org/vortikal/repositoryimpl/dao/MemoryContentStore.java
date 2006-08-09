@@ -82,11 +82,12 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
-    public long getContentLength(String uri) throws IllegalOperationException {
+    public long getContentLength(String uri) throws IOException, IllegalOperationException {
         Node node = getNode(uri);
         
         if (node == null) {
-            return 0; // Same behaviour as java.io.File#length()
+            throw new IOException("No such resource: " + uri);
+            //return 0; // Same behaviour as java.io.File#length()
         } else if (node instanceof DirectoryNode) {
             throw new IllegalOperationException("Length is undefined for directory nodes");
         } else {

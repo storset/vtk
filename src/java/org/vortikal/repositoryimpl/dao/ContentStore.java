@@ -49,9 +49,9 @@ public interface ContentStore {
     public void createResource(String uri, boolean isCollection)
             throws IOException;
 
-    public long getContentLength(String uri) throws IllegalOperationException;
+    public long getContentLength(String uri) throws IOException;
 
-    public void deleteResource(String uri);
+    public void deleteResource(String uri) throws IOException;
 
     public InputStream getInputStream(String uri) throws IOException;
 

@@ -20,7 +20,7 @@
         <ref bean="keywordsPropDef" />
         <ref bean="descriptionPropDef" />
         <ref bean="authorNamePropDef" />
-        <ref bean="authorMailPropDef" />
+        <ref bean="authorEmailPropDef" />
         <ref bean="authorURLPropDef" />
       </list>
     </property>
@@ -41,7 +41,7 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="authorMailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="authorEmailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="authorEmail" /> 
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />

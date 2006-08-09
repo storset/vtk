@@ -39,4 +39,19 @@
               value="org.vortikal.repository.resourcetype.PropertyType.TYPE_PRINCIPAL" />
   </bean>
 
+  
+  <!-- Pre-defined boolean values for convenience:  -->
+  <bean id="VALUE_TRUE" class="org.vortikal.repository.resourcetype.Value">
+    <constructor-arg type="boolean">
+      <value>true</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="VALUE_FALSE" class="org.vortikal.repository.resourcetype.Value">
+    <constructor-arg type="boolean">
+      <value>false</value>
+    </constructor-arg>
+  </bean>
+
+
 </beans>

@@ -33,20 +33,10 @@
     <property name="mandatory" value="false" />
     <property name="allowedValues">
       <list>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="boolean">
-            <value>true</value>
-          </constructor-arg>
-        </bean>
+        <ref bean="VALUE_TRUE" />
       </list>
     </property>
-    <property name="defaultValue">
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="boolean">
-            <value>true</value>
-          </constructor-arg>
-        </bean>
-    </property>
+    <property name="defaultValue" ref="VALUE_TRUE" />
   </bean>
 
   <bean id="visualProfileInheritedPropdef" 
@@ -57,20 +47,10 @@
     <property name="mandatory" value="false" />
     <property name="allowedValues">
       <list>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="boolean">
-            <value>false</value>
-          </constructor-arg>
-        </bean>
+        <ref bean="VALUE_FALSE" />
       </list>
     </property>
-    <property name="defaultValue">
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="boolean">
-            <value>false</value>
-          </constructor-arg>
-        </bean>
-    </property>
+    <property name="defaultValue" ref="VALUE_FALSE" />
   </bean>
 
   <bean id="unitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

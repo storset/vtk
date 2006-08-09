@@ -833,7 +833,7 @@
         <ref bean="descriptionPropDef" />
         <ref bean="verifiedDatePropDef" />
         <ref bean="authorNamePropDef" />
-        <ref bean="authorMailPropDef" />
+        <ref bean="authorEmailPropDef" />
         <ref bean="authorURLPropDef" />
         
         <ref bean="contentTypePropDef" />

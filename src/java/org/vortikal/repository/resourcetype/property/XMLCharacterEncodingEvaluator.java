@@ -113,11 +113,11 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
             xmlContent = new String(buffer, "utf-8");
 
         } catch (Exception e) {
-            throw new PropertyEvaluationException("Unable to get Stringcontent representation", e);
+            throw new PropertyEvaluationException("Unable to get String content representation", e);
         }
 
         if (xmlContent == null) {
-            throw new PropertyEvaluationException("Unable to get Stringcontent representation");
+            throw new PropertyEvaluationException("Unable to get String content representation");
         }
 
         Matcher m = CHARSET_PATTERN.matcher(xmlContent);

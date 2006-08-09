@@ -219,7 +219,7 @@
  * 
 -->
 <#macro defaultPropertyListWrapper>
-  <table class="resourceInfo">
+  <table>
     <#nested />
   </table>
 </#macro>
@@ -241,7 +241,7 @@
     <td class="key">
       ${name}:
     </td>
-    <td>
+    <td class="value">
       ${value}
       <#if editURL != "">
         ${editURL}
@@ -311,7 +311,7 @@
  * 
 -->
 <#macro defaultFormSubmitWrapper item>
-  <li><div><#nested /></div></li>
+  <li><div class="submitButtons"><#nested /></div></li>
 </#macro>
 
 <#--

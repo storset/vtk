@@ -452,6 +452,7 @@ div.resourceInfo {
         margin-top: 0.5em; 
         font-size: 80%;
         border-collapse: collapse;
+        width:100%;
 }
 
 .resourceInfo tr {
@@ -520,9 +521,16 @@ div.resourceInfo {
 	width: 100%;
 }
 
+div.expandedForm { 
+        /* Permissions */
+        padding-top: 0px;
+}
+
+
 .expandedForm form {
         /* Expanded properties/permissions form */
         padding: 1em;
+        padding-bottom: 1em;
 }
 
 .expandedForm h3 {
@@ -545,6 +553,10 @@ div.resourceInfo {
 	clear: both;
 	padding-top: 10px;
         margin: 0;
+}
+
+td.expandedForm div.submitButtons { 
+        margin-bottom: -10px;
 }
 
 /* Permissions section: */

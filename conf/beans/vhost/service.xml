@@ -208,6 +208,7 @@
 
 
   <bean id="displayIndexEngHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListingService" />
     <property name="assertions">
       <list>
         <bean id="hasIndexEngHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">

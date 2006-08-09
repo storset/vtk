@@ -16,16 +16,30 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-<!--
-        <ref bean="viewXslStylesheetPropDef" />
-        <ref bean="editXslStylesheetPropDef" />
--->
+        <ref bean="plaintextEditPropDef" />
       </list>
     </property>
   </bean>
 
   <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="managedXmlResource" />
+  </bean>
+
+  <bean id="plaintextEditPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="plaintext-edit" />
+    <property name="type" ref="TYPE_BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="allowedValues">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="boolean">
+            <value>true</value>
+          </constructor-arg>
+        </bean>
+      </list>
+    </property>
   </bean>
 
 <!--

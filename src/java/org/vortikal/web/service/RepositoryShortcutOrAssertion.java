@@ -45,13 +45,15 @@ import org.vortikal.security.Principal;
  * applying them in order. If one of the sub-assertions match, this
  * assertion also matches.
  * 
- * @author Eirik Meland (eirik.meland@usit.uio.no)
+ * XXX: Added andHack boolean property - switch to make assertion 'and' the sub
+ * assertions
+ * 
  */
 public class RepositoryShortcutOrAssertion
   extends AbstractRepositoryAssertion implements InitializingBean {
 
     private List assertions = new ArrayList();
-
+    private boolean andHack = false;
 
     public void afterPropertiesSet()
             throws Exception {
@@ -68,14 +70,22 @@ public class RepositoryShortcutOrAssertion
         for (Iterator assertionIter = this.assertions.iterator(); assertionIter.hasNext();) {
             RepositoryAssertion assertion = (RepositoryAssertion) assertionIter.next();
             if (assertion.matches(resource, principal)) {
-                return true;
+                if (!andHack)
+                    return true;
+            } else {
+                if (andHack)
+                    return false;
             }
         }
         
-        return false;
+        return andHack;
     }
     
     public void setAssertions(List assertions) {
         this.assertions = assertions;
+    }
+
+    public void setAndHack(boolean andHack) {
+        this.andHack = andHack;
     }
 }

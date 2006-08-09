@@ -841,6 +841,7 @@
         <ref bean="guessedCharacterEncodingPropDef" />
         <ref bean="characterEncodingPropDef" />
 
+        <ref bean="plaintextEditPropDef" />
       </list>
     </property>
     <property name="propertyListModelName" value="basicPropList" />

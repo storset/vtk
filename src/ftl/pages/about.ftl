@@ -183,6 +183,10 @@
 
     </#if>
     </#if>
+
+    <!-- Plaintext Edit on managed xml -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'custom:plaintext-edit' />
+
   </table>
   </#if>
   </div>

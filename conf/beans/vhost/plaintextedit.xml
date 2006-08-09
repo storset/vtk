@@ -5,7 +5,7 @@
 <beans>
 
   
-  <bean id="plaintextOrHTMLEditService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="plaintextEditService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="categories">
       <set>
@@ -22,7 +22,9 @@
       <list>
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="actionParameterEqualsPlaintextEdit" />
-        <ref bean="contentTypeMatchesTextOrHtml" />
+
+        <ref bean="resourceTypeIsText" />
+        <ref bean="resourceTypeIsNotXml" />
       </list>
     </property>
     <property name="handler">
@@ -30,40 +32,34 @@
     </property>
   </bean>
 
-
-  <bean id="plaintextXMLEditService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="categories">
-      <set>
-        <value>tabMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
-      </map>
-    </property>
-    <property name="order" value="-100" />
+  <bean id="plaintextXMLEditService" parent="plaintextEditService">
     <property name="assertions">
       <list>
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="actionParameterEqualsPlaintextEdit" />
-        <ref bean="contentTypeMatchesXml" />
-        <!--
-        <ref bean="xmlEditPropertyIsSet" />
-        -->
+        <ref bean="resourceTypeIsXml" />
+        <ref bean="plaintextEditPropertyIsSet" />
       </list>
-    </property>
-    <property name="handler">
-      <ref bean="plaintextEditHandler" />
     </property>
   </bean>
 
-  <bean id="xmlEditPropertyIsSet"
+  <bean id="resourceTypeIsText" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="textResourceTypeDefinition" />
+  </bean>
+
+  <bean id="resourceTypeIsXml" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="managedXmlResource" />
+  </bean>
+
+  <bean id="resourceTypeIsNotXml" parent="resourceTypeIsXml">
+    <property name="invert" value="true" />
+  </bean>
+
+  <bean id="plaintextEditPropertyIsSet"
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="CUSTOM_NAMESPACE" />
-    <property name="name" value="plaintext-xmledit" />
-    <property name="value" value="yes" />
+    <property name="name" value="plaintext-edit" />
+    <property name="checkExistenceOnly" value="true" />
   </bean>
 
   <bean id="actionParameterEqualsPlaintextEdit"

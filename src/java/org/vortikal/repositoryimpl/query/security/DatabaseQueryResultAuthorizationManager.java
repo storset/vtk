@@ -107,9 +107,19 @@ public final class DatabaseQueryResultAuthorizationManager implements
         Set principalNames = new HashSet();
         if (principal != null) {
             principalNames.add(principal.getQualifiedName());
+            
+            // Get principal's groups
+            Set memberGroups = principalManager.getMemberGroups(principal);
+            for (Iterator i = memberGroups.iterator(); i.hasNext();) {
+                Principal group = (Principal)i.next();
+                principalNames.add(group.getQualifiedName());
+            }
         }
         
-        // XXX: Resolve authenticated principal's groups and add to list of principal names
+        if (logger.isDebugEnabled()) {
+            logger.debug("Qualified principal names: " + principalNames);
+        }
+        
         try {
             this.indexDataAccessor.processQueryResultsAuthorization(principalNames, 
                                                                     rsiList);

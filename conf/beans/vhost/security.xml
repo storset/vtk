@@ -133,7 +133,7 @@
 
   <bean id="principalFactory" class="org.vortikal.security.PrincipalFactoryImpl">
     <property name="defaultDomain" value="${defaultPrincipalDomain}" />
-    <property name="defaultDomain" value="${defaultGroupDomain}" />
+    <property name="defaultGroupDomain" value="${defaultGroupDomain}" />
     <property name="domainURLMap" ref="principalDomainURLMap" />
   </bean>
 

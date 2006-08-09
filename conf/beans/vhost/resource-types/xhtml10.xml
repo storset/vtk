@@ -79,8 +79,9 @@
   </bean>
 
 
-  <!-- XXX
-       Fix disse string-testene, virker ikke hvis DOCTYPE-tag er skrevet over flere linjer (jf som etter JTidy-transformasjon) -->
+  <!-- XXX: The XHTML hierarchy (with exception of
+       XHTML10Transitional, which we treat almost as HTML 4.x) is to be placed
+       under the XML hierarchy -->
   <bean id="docTypeIsXHtml10" class="org.vortikal.web.service.RepositoryShortcutOrAssertion">
     <property name="assertions">
       <list>
@@ -92,27 +93,24 @@
   </bean>
 
   <bean id="docTypeIsXHtml10Transitional"
-        class="org.vortikal.web.service.ResourcePropertyAssertion">
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="docType" />
-    <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;"/>
-    <property name="checkExistenceOnly" value="false" />
+    <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22;\s+&#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;"/>
   </bean>
 
   <bean id="docTypeIsXHtml10Frameset"
-        class="org.vortikal.web.service.ResourcePropertyAssertion">
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="docType" />
-    <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Frameset//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&#x22;" />
-    <property name="checkExistenceOnly" value="false" />
+    <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Frameset//EN&#x22;\s+&#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&#x22;" />
   </bean>
 
   <bean id="docTypeIsXHtml10Strict"
-        class="org.vortikal.web.service.ResourcePropertyAssertion">
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="docType" />
-    <property name="value" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Strict//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&#x22;" />
-    <property name="checkExistenceOnly" value="false" />
+    <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Strict//EN&#x22;\s+&#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&#x22;" />
   </bean>
 
 </beans>

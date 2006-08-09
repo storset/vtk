@@ -352,7 +352,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         if (!super.equals(obj)) return false;
         ResourceImpl other = (ResourceImpl) obj;
         if (!this.acl.equals(other.acl)) return false;
-        if (this.aclInherited ^ other.aclInherited) return false;
         if (this.lock == null && other.lock != null) return false;
         if (this.lock != null && other.lock == null) return false;
         if (this.lock != null && !this.lock.equals(other.lock)) return false;

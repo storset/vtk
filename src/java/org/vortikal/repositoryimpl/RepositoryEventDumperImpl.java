@@ -142,8 +142,12 @@ public class RepositoryEventDumperImpl extends AbstractRepositoryEventDumper
                             Acl originalACL, Acl newACL) {
         
         
-        if (newACL.equals(originalACL)) {
-            // ACL hasn't actually changed, so we don't bother publishing an event.
+        // XXX: ACL inheritance concern moved into Resource class, so a change of the
+        //     inheritance property should perhaps be a new log event type (ACL_INHERITANCE_MODIFIED)
+        if (newACL.equals(originalACL) && 
+                originalResource.isInheritedAcl() == resource.isInheritedAcl()) {
+            
+            // ACL specific resource data hasn't actually changed
             return;
         }
         

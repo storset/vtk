@@ -828,7 +828,8 @@
         <ref bean="contentLengthPropDef" />
 
         <ref bean="titlePropDef" />
-        <!--ref bean="shortTitlePropDef" /-->
+        <ref bean="skipInPathPropDef" />
+
         <ref bean="keywordsPropDef" />
         <ref bean="descriptionPropDef" />
         <ref bean="verifiedDatePropDef" />

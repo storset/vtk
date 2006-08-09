@@ -140,7 +140,7 @@
 
   <@propList.propertyList
        modelName = "aboutItems"
-       itemNames =  [ 'title', 'shortTitle', 'content:keywords',
+       itemNames =  [ 'title', 'skipInPath', 'content:keywords',
                       'content:description', 'content:verifiedDate',
                       'content:authorName', 'content:authorEmail', 
                       'content:authorURL' ] />

@@ -52,14 +52,16 @@
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
      
-      <#if resource.collection>
         <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>
         <#assign bindHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
         <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
+      <#if resource.collection>
         <#assign privilegeList = [{"name":"bind", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
-        <@permissions.editOrDisplayPrivileges privilegeList = privilegeList heading = groupHeading />
-      </#if>
+      <#else>
+        <#assign privilegeList = [{"name":"read-processed", "heading":readProHeading }] />
+      </#if>        
 
+        <@permissions.editOrDisplayPrivileges privilegeList = privilegeList heading = groupHeading />
     </div>
   </body>
 </html>

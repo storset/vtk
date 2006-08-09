@@ -8,6 +8,11 @@
   <bean id="abstractResourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="abstractResource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="contentDescriptionMixinResourceTypeDef" />
+      </list>
+    </property>    
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="ownerPropDef" />

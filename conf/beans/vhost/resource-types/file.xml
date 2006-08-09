@@ -12,7 +12,6 @@
 
     <property name="mixinTypeDefinitions">
       <list>
-        <ref bean="contentDescriptionMixinResourceTypeDef" />
         <ref bean="visualProfileMixinResourceTypeDef" />
       </list>
     </property>    

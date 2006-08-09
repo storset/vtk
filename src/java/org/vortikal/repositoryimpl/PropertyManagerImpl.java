@@ -622,13 +622,15 @@ public class PropertyManagerImpl implements PropertyManager,
             boolean addProperty = false;
 
             if (evaluator != null) {
-                if (prop == null) 
+                if (prop == null) { 
                     prop = createProperty(rt.getNamespace(), propertyDef.getName());
+                }
 
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Created property " + prop + ", will evaluate using "
                                  + evaluator);
                 }
+                
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
                     addProperty = true;
                     if (this.logger.isDebugEnabled()) {
@@ -697,7 +699,9 @@ public class PropertyManagerImpl implements PropertyManager,
     }
 
 
-    public ResourceImpl fileContentModification(ResourceImpl resource, Principal principal) {
+    public ResourceImpl fileContentModification(ResourceImpl resource,
+                                                            Principal principal) {
+        
         // XXX: What to do about swapping old resource with new?
         ResourceImpl newResource = new ResourceImpl(resource.getURI(), this, this.authorizationManager);
         newResource.setID(resource.getID());
@@ -724,7 +728,9 @@ public class PropertyManagerImpl implements PropertyManager,
                 newResource.addProperty(prop);
             }
         }
+        
         return newResource;
+        
     }
     
     
@@ -767,7 +773,7 @@ public class PropertyManagerImpl implements PropertyManager,
         for (int i = 0; i < children.length; i++) {
             ResourceTypeDefinition resourceType = 
                 contentModification(principal, newResource,
-                                    original, content, time, children[i]);
+                                    original, content, time, children[i]); // Recursive call
             if (resourceType != null) {
                 return resourceType;
             }
@@ -900,7 +906,7 @@ public class PropertyManagerImpl implements PropertyManager,
                              + " for property " + prop);
                 throw new ValueFormatException(
                     "Cannot convert multiple values: " + Arrays.asList(stringValues)
-                    + " to a single-value prop"
+                    + " to a single-value property"
                     + " for property " + prop);
             }
             if (def == null) {

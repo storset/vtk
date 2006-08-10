@@ -45,7 +45,6 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -79,6 +78,9 @@ import org.vortikal.xml.TransformerManager;
  */
 public abstract class AbstractXmlEditController implements Controller {
 
+    private Namespace schemaNamespace = Namespace.DEFAULT_NAMESPACE;
+    private String schemaName = "schema";
+    
     private Service editElementService;
     private Service editElementDoneService;
     
@@ -102,11 +104,6 @@ public abstract class AbstractXmlEditController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
     
-    public final org.jdom.Namespace XSI_NAMESPACE = 
-        org.jdom.Namespace.getNamespace("xsi",
-                               "http://www.w3.org/2001/XMLSchema-instance");
-
-    public final String EDIT_PROPERTY = "web-edit";
 
     protected Repository repository;
     private TransformerManager transformerManager;
@@ -360,13 +357,11 @@ public abstract class AbstractXmlEditController implements Controller {
             throw new XMLEditException("Resource is not an xml document");
         }
 
-        /* The property web-edit should be 'true' or 'yes' */
-        String webEdit = 
-            resource.getProperty(Namespace.CUSTOM_NAMESPACE, this.EDIT_PROPERTY).getStringValue();
-
-        if (webEdit == null || !(webEdit.equals("true") || webEdit.equals("yes"))) {
-            throw new XMLEditException("Xml resource is not set to web editable");
-        }
+        /* get required schemaURL */
+        String schemaURL = 
+            resource.getProperty(schemaNamespace, schemaName).getStringValue();
+        if (schemaURL == null) 
+            throw new XMLEditException("Invalid schema URI '" + schemaURL + "'");
         
         /* Try to build document */
         try {
@@ -380,26 +375,17 @@ public abstract class AbstractXmlEditController implements Controller {
         
         
         String docType = document.getRootElement().getName();
-
-        URL schemaURL = null;
-
-        try {
-            schemaURL = getSchemaReference(document);
-            
-        } catch (MalformedURLException e) {
-            throw new XMLEditException("Invalid schema URI", e);
-        }
         
 
         /* try to instantiate schema-parser */
         try {
 
-            if (schemaURL == null || schemaURL.toString().trim().equals("")) {
+            if (schemaURL == null) {
                 throw new XMLEditException("XML document is uneditable, schema reference is missing");
             }
 
             documentDefinition = 
-                new SchemaDocumentDefinition(docType, schemaURL);
+                new SchemaDocumentDefinition(docType, new URL(schemaURL));
         } catch (JDOMException e) {
             throw new XMLEditException("Schema build failure for schema '" + schemaURL + "'", e);
         } catch (MalformedURLException e) {
@@ -435,27 +421,6 @@ public abstract class AbstractXmlEditController implements Controller {
 
     
 
-
-    /**
-     * Finds the schema reference in the document root element (if it
-     * exists).
-     *
-     * @param document a <code>Document</code> value
-     * @return the URL of the schema document, or <code>null</code> if
-     * there is no such reference
-     * @exception MalformedURLException if the schema URL is not a valid URL
-     */
-    public URL getSchemaReference(Document document) throws MalformedURLException {
-        String xsdURL = document.getRootElement().getAttributeValue(
-            "noNamespaceSchemaLocation", this.XSI_NAMESPACE);
-        
-        if (xsdURL != null) {
-        
-            return new URL(xsdURL);
-        }
-
-        return null;
-    }
 
     protected Object getXsltParameter(Map model, String key) {
         Map parameters = (Map)model.get("xsltParameters");

@@ -19,6 +19,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<#assign defaultStringInputSize = 20 />
 
 <#--
  * propertyList
@@ -135,6 +136,8 @@
  *        property item (should be a hash)
  * @param propertyName the name of the property item in the 
  *        hash identified by [modelName].
+ * @param inputSize the size of the input field. Used for editing strings only. 
+          Value greater than 99 displays a textarea. 
  * @param toggle [see documentation for propertyList]
  * @param displayMacro [see documentation for propertyList]
  * @param editWrapperMacro [see documentation for propertyList]
@@ -143,7 +146,7 @@
  * @param formErrorsWrapperMacro [see documentation for propertyList]
  * @param formErrorWrapperMacro [see documentation for propertyList]
 -->
-<#macro editOrDisplayProperty modelName propertyName toggle=false
+<#macro editOrDisplayProperty modelName propertyName toggle=false inputSize=defaultStringInputSize
         propertyListWrapperMacro='defaultPropertyListWrapper'
         displayMacro='defaultPropertyDisplay'
         editWrapperMacro='defaultEditWrapper'
@@ -157,6 +160,7 @@
   <#if form?exists && form.definition?exists && form.definition = item.definition>
     <@propertyForm 
        item=item
+       inputSize=inputSize
        editWrapperMacro=editWrapperMacro
        formWrapperMacro=formWrapperMacro
        formInputWrapperMacro=formInputWrapperMacro
@@ -178,6 +182,7 @@
  * Example: <@editOrDisplayPropertyItem item=myPropertyItem />
  *
  * @param item an org.vortikal.web.controller.properties.PropertyItem object
+ * @param inputSize [see documentation for editOrDisplayProperty]
  * @param toggle [see documentation for propertyList]
  * @param displayMacro [see documentation for propertyList]
  * @param editWrapperMacro [see documentation for propertyList]
@@ -186,7 +191,7 @@
  * @param formErrorsWrapperMacro [see documentation for propertyList]
  * @param formErrorWrapperMacro [see documentation for propertyList]
 -->
-<#macro editOrDisplayPropertyItem item toggle=false        
+<#macro editOrDisplayPropertyItem item toggle=false inputSize=defaultStringInputSize      
         propertyListWrapperMacro='defaultPropertyListWrapper'
         displayMacro='defaultPropertyDisplay'
         editWrapperMacro='defaultEditWrapper'
@@ -198,6 +203,7 @@
   <#if form?exists && form.definition?exists && form.definition = item.definition>
     <@propertyForm 
        item=item
+       inputSize=inputSize
        editWrapperMacro=editWrapperMacro
        formWrapperMacro=formWrapperMacro
        formInputWrapperMacro=formInputWrapperMacro
@@ -404,13 +410,14 @@
  *
  * @param item a org.vortikal.web.controller.properties.PropertyItem
  *        representing a resource property.
+ * @param inputSize [see documentation for editOrDisplayProperty]
  * @param editWrapperMacro [see documentation for propertyList]
  * @param formWrapperMacro [see documentation for propertyList]
  * @param formInputWrapperMacro [see documentation for propertyList]
  * @param formErrorsWrapperMacro [see documentation for propertyList]
  * @param formErrorWrapperMacro [see documentation for propertyList]
 -->
-<#macro propertyForm item formValue=''
+<#macro propertyForm item inputSize=defaultStringInputSize formValue=''
         editWrapperMacro='defaultEditWrapper'
         formWrapperMacro='defaultFormWrapper'
         formInputWrapperMacro='defaultFormInputWrapper'
@@ -490,9 +497,15 @@
             </#if>
             </#compress>
           </#local>
+
+          
           <@formInputWrapper item>
-            <input type="text" name="value" value="${value}">
-            <#if item.format?exists>(${item.format})</#if>
+            <#if inputSize &gt; 99>
+              <textarea name="value" rows="5" cols="60">${value}</textarea>
+            <#else>
+              <input type="text" name="value" value="${value}" size=${inputSize}>
+              <#if item.format?exists>(${item.format})</#if>
+            </#if>
           </@formInputWrapper>
 
         </#if>

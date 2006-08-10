@@ -138,12 +138,40 @@
        default="Information describing the content"/>
   </h3>
 
-  <@propList.propertyList
+  <#-- @propList.propertyList
        modelName = "aboutItems"
        itemNames =  [ 'title', 'skipInPath', 'content:keywords',
                       'content:description', 'content:verifiedDate',
                       'content:authorName', 'content:authorEmail', 
-                      'content:authorURL' ] />
+                      'content:authorURL' ] / -->
+
+  <table class="resourceInfo">
+    <!-- title -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'title' />
+
+    <!-- skipInPath -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'skipInPath' />
+
+    <!-- content:keywords -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:keywords' inputSize=40 />
+
+    <!-- content:description -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:description' inputSize=100 />
+
+    <!-- content:verifiedDate -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:verifiedDate' />
+
+    <!-- content:authorName -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorName' inputSize=40 />
+
+    <!-- content:authorEmail -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorEmail' inputSize=40 />
+
+    <!-- content:authorURL -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:authorURL' inputSize=40 />
+
+  </table>
+
 
   <#if !resource.collection>
   <h3 class="resourceInfoHeader">

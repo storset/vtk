@@ -32,17 +32,26 @@ package org.vortikal.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
-
-import org.vortikal.util.repository.URIUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.util.cache.SimpleCache;
+import org.vortikal.util.repository.URIUtil;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -54,6 +63,10 @@ import org.springframework.beans.factory.InitializingBean;
  * Configurable properties:
  * <ul>
  *  <li><code>prefix</code> - the prefix to prepend to all paths
+ *  <li><code>simpleCache</code> - a cache for source ids contained in
+ *      <code>cacheIdentifiers</code>
+ *  <li><code>cacheIdentifiers</code> - a list of path ids to resources to be cached.
+ *      required if simpleCache is specified.
  *  <!--li><code>pathRegexp</code> - regular expression denoting the
  *      legal values of stylesheet references. If this regexp does not
  *      match the value of the expanded repository URI, the resolver
@@ -72,6 +85,16 @@ public abstract class AbstractPathBasedURIResolver
 
     private String prefix = null;
 
+    private List cacheIdentifiers;
+    private SimpleCache simpleCache;
+
+    public void setSimpleCache(SimpleCache simpleCache) {
+        this.simpleCache = simpleCache;
+    }
+
+    public void setCacheIdentifiers(String[] cacheIdentifiers) {
+        this.cacheIdentifiers = Arrays.asList(cacheIdentifiers);
+    }
 
     public void setPrefix(String prefix)  {
         this.prefix = prefix;
@@ -79,7 +102,10 @@ public abstract class AbstractPathBasedURIResolver
 
 
     public void afterPropertiesSet() throws Exception {
-        
+        if (this.simpleCache != null && this.cacheIdentifiers == null) 
+            throw new BeanInitializationException(
+                "Java Bean property 'cacheIdentifiers' required when "
+                + "'simpleCahce' is specified");
     }
 
     
@@ -133,46 +159,73 @@ public abstract class AbstractPathBasedURIResolver
 
     public final Source resolve(String href, String base) 
         throws TransformerException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Resolving: [href = " + href + ", base: " + base + "]");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Resolving: [href = " + href + ", base: " + base + "]");
         }
 
         String path = getAbsolutePath(href, base);
         if (path == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to obtain absolute path for [href = '" + href +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Unable to obtain absolute path for [href = '" + href +
                              "', base = '" + base+ "']");
             }
             return null;
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Path after expansion: '" + path + "'");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Path after expansion: '" + path + "'");
         }
 
         if (base == null) {
             path = addPrefix(path);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Path after prefix prepended: '" + path + "'");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Path after prefix prepended: '" + path + "'");
             }
         }
 
         try {
+            Source source = null;
+
+            if (this.simpleCache != null) {
+                source = (Source) this.simpleCache.get(path);
+
+                if (source != null) {
+                    if (this.logger.isDebugEnabled())
+                        this.logger.debug("Using cached source for resource: " + path);
+                    return source;
+                }
+            }
+
             InputStream inStream = getInputStream(path);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Resolved URI '" + path + "' from [href = '" +
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Resolved URI '" + path + "' from [href = '" +
                              href + "', base = '" + base + "']");
             }
             
-            StreamSource streamSource = null;
+            if (inStream != null) {
+                if (this.simpleCache != null && this.cacheIdentifiers.contains(path)) {
+                    try {
+                        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                        Document doc = builder.parse(inStream);
+                        source = new DOMSource(doc);
+                    } catch (SAXException e) {
+                        throw new TransformerException("Unable to build DOM reprsentation of resource '"
+                                + path + "'", e);
+                    } catch (ParserConfigurationException e) {
+                        throw new TransformerException("Unable to build DOM reprsentation of resource '"
+                                + path + "'", e);
+                    }
+                    
+                    this.simpleCache.put(path, source);
+
+                } else {
+                    source = new StreamSource(inStream);
+                }
+            } else 
+                source = new StreamSource();
             
-            if (inStream != null)
-                streamSource = new StreamSource(inStream);
-            else 
-                streamSource = new StreamSource();
-            
-            streamSource.setSystemId(PROTOCOL_PREFIX + path);
-            return streamSource;
+            source.setSystemId(PROTOCOL_PREFIX + path);
+            return source;
                 
         } catch (IOException e) {
             throw new TransformerException(

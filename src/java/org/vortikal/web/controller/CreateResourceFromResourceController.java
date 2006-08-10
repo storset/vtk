@@ -35,12 +35,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -80,6 +82,8 @@ import org.vortikal.xml.TransformerManager;
 public class CreateResourceFromResourceController implements Controller,
         InitializingBean {
 
+    private Log logger = LogFactory.getLog(this.getClass());
+
     private Repository repository;
     private String resourceName;
     private TransformerManager transformerManager;
@@ -106,38 +110,38 @@ public class CreateResourceFromResourceController implements Controller,
             
 //    	    repository.lock(token,newResourceUri,Lock.LOCKTYPE_EXCLUSIVE_WRITE,"ownerInfo","0",5);
 
-    	    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-    	    InputStream inStream = repository.getInputStream(token, uri, true);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        InputStream inStream = repository.getInputStream(token, uri, true);
 
     	    
-    	    Transformer transformer = transformerManager.getTransformer(stylesheetIdentifier);
+        Transformer transformer = transformerManager.getTransformer(stylesheetIdentifier);
 
-    	    transformer.transform(new StreamSource(inStream), new StreamResult(outStream));
+        transformer.transform(new StreamSource(inStream), new StreamResult(outStream));
 
-    	    InputStream in = new ByteArrayInputStream(outStream.toByteArray());
+        InputStream in = new ByteArrayInputStream(outStream.toByteArray());
     	    
-    	    // Setting DAV-properties for webedit and transform-view til yes
-    	    Property[] p = new Property[3];
+        // Setting DAV-properties for webedit and transform-view til yes
+        Property[] p = new Property[3];
 
-    	    p[0] = new Property();
-    	    p[0].setNamespace("http://www.uio.no/vortex/custom-properties");
-    	    p[0].setName("web-edit");
-    	    p[0].setValue("yes");
+        p[0] = new Property();
+        p[0].setNamespace("http://www.uio.no/vortex/custom-properties");
+        p[0].setName("web-edit");
+        p[0].setValue("yes");
 
-    	    p[1] = new Property();
-    	    p[1].setNamespace("http://www.uio.no/vortex/custom-properties");
-    	    p[1].setName("transform-view");
-    	    p[1].setValue("yes");
+        p[1] = new Property();
+        p[1].setNamespace("http://www.uio.no/vortex/custom-properties");
+        p[1].setName("transform-view");
+        p[1].setValue("yes");
     	    
-    	    p[2] = new Property();
-    	    p[2].setNamespace("http://www.uio.no/vortex/custom-properties");
-    	    p[2].setName("visual-profile");
-    	    p[2].setValue("yes");
+        p[2] = new Property();
+        p[2].setNamespace("http://www.uio.no/vortex/custom-properties");
+        p[2].setName("visual-profile");
+        p[2].setValue("yes");
 
-    	 	Resource newResource = repository.createDocument(token, newResourceUri);
-    	    newResource.setProperties(p);
-    	    repository.store(token, newResource);
-    	    repository.storeContent(token, newResourceUri, in);
+        Resource newResource = repository.createDocument(token, newResourceUri);
+        newResource.setProperties(p);
+        repository.store(token, newResource);
+        repository.storeContent(token, newResourceUri, in);
 
         Resource parent = null;
         String parentUri = resource.getParent();
@@ -168,12 +172,8 @@ public class CreateResourceFromResourceController implements Controller,
 
         try {
             transformerManager.getTransformer(stylesheetIdentifier);
-        } catch (StylesheetCompilationException e) {
-            throw new BeanInitializationException("Stylesheet '" + stylesheetIdentifier
-                    + "' didn't compile", e);
         } catch (Exception e) {
-            throw new BeanInitializationException("Error trying to compile stylesheet '" + stylesheetIdentifier
-                    + "'", e);
+            logger.warn("Unable to compile stylesheet '" + stylesheetIdentifier + "'", e);
         }
     }
 

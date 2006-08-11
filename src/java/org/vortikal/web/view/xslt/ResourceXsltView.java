@@ -69,6 +69,7 @@ import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.view.LinkConstructor;
+import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 
@@ -134,6 +135,7 @@ public class ResourceXsltView extends AbstractView
   implements ReferenceDataProviding, InitializingBean {
 
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
+    private static Log processingLog = LogFactory.getLog(ResourceXsltView.class + ".PROCESSING");
 
     private static String PARAMETER_NAMESPACE = "{http://www.uio.no/vortex/xsl-parameters}";
     private TransformerManager transformerManager = null;
@@ -143,8 +145,7 @@ public class ResourceXsltView extends AbstractView
     
     private boolean includeContentLanguageHeader = false;
     private boolean handleExpiresProperty = false;
-    
-
+        
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return referenceDataProviders;
     }
@@ -237,12 +238,19 @@ public class ResourceXsltView extends AbstractView
         
         // do the transformation
         JDOMSource source = new JDOMSource(document);
-        source.setSystemId(
-            org.vortikal.xml.AbstractPathBasedURIResolver.PROTOCOL_PREFIX +
-            document.getBaseURI());
-        transformer.transform(
-            source, new StreamResult(resultBuffer));
+        source.setSystemId(AbstractPathBasedURIResolver.PROTOCOL_PREFIX + 
+                document.getBaseURI());
 
+        long start = System.currentTimeMillis();
+
+        transformer.transform(source, new StreamResult(resultBuffer));
+
+        if (logger.isDebugEnabled()) {
+            long time = System.currentTimeMillis() - start;
+            processingLog.debug("XSL transformation of '" + resource.getURI() + 
+                    "' in " + time + " ms.");
+        }
+        
         if (err.getError() != null) {
             throw err.getError();
         }

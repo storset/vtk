@@ -41,8 +41,8 @@ import org.jdom.Text;
 import org.jdom.xpath.XPath;
 
 
-/**
- * @author Eirik Meland (eirik.meland@usit.uio.no)
+/** 
+ * XML Related utilities
  */
 public class Xml {
     /**

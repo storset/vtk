@@ -93,9 +93,8 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         switch (type) {
         
         case PropertyType.TYPE_STRING:
-            if ("".equals(stringValue.trim())) {
-                throw new ValueFormatException(
-                    "Illegal string value: '" + stringValue + "'");
+            if (stringValue.trim().length() == 0) {
+                throw new ValueFormatException("Illegal string value: empty");
             }
             return new Value(stringValue);
 

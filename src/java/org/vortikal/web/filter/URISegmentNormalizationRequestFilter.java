@@ -50,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  * </ul>
  * </p>
  * 
- * @author ovyiste
+ * @author oyviste
  *
  */
 public class URISegmentNormalizationRequestFilter implements RequestFilter {

@@ -57,8 +57,7 @@ public class PropertyEditValidator implements Validator {
     
 
     public boolean supports(Class clazz) {
-        boolean retVal = (PropertyEditCommand.class.isAssignableFrom(clazz));
-        return retVal;
+        return PropertyEditCommand.class.isAssignableFrom(clazz);
     }
 
 

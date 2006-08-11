@@ -77,6 +77,7 @@ import org.vortikal.web.service.Service;
  *   service
  *   <li><code>currentURI</code> - the URI of the requested resource
  *   <li><code>currentResource</code> - the requested resource
+ *   <li><code>repositoryId</code> - the repository id
  * </ul>
  */
 public class ResourceContextProvider implements InitializingBean, ReferenceDataProvider {
@@ -160,7 +161,8 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("currentResource", resource);
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
         resourceContextModel.put("currentServiceName", currentService.getName());
-        
+        resourceContextModel.put("repositoryId", repository.getId());
+
         model.put(this.modelName, resourceContextModel);
     }
 

@@ -135,7 +135,7 @@ public class ResourceXsltView extends AbstractView
   implements ReferenceDataProviding, InitializingBean {
 
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
-    private static Log processingLog = LogFactory.getLog(ResourceXsltView.class + ".PROCESSING");
+    private static Log processingLogger = LogFactory.getLog(ResourceXsltView.class.getName() + ".PROCESSING");
 
     private static String PARAMETER_NAMESPACE = "{http://www.uio.no/vortex/xsl-parameters}";
     private TransformerManager transformerManager = null;
@@ -245,10 +245,9 @@ public class ResourceXsltView extends AbstractView
 
         transformer.transform(source, new StreamResult(resultBuffer));
 
-        if (logger.isDebugEnabled()) {
+        if (processingLogger.isDebugEnabled()) {
             long time = System.currentTimeMillis() - start;
-            processingLog.debug("XSL transformation of '" + resource.getURI() + 
-                    "' in " + time + " ms.");
+            processingLogger.debug(resource.getURI() + " " + time);
         }
         
         if (err.getError() != null) {

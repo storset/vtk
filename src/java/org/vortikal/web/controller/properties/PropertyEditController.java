@@ -281,7 +281,7 @@ public class PropertyEditController extends SimpleFormController
                         }
                     
                         if (def.isMultiple()) {
-                            String[] splitValues = stringValue.split(",");
+                            String[] splitValues = stringValue.trim().split(" *, *");
                             Value[] values = this.valueFactory.createValues(splitValues, def.getType());
                             property.setValues(values);
                                                     
@@ -400,8 +400,9 @@ public class PropertyEditController extends SimpleFormController
                         toggleValue = getValueAsString(toggleValueObject);
                     }
                     urlParameters.put(this.toggleRequestParameter, "true");
-                    toggleURL = service.constructLink(resource, securityContext.getPrincipal(),
-                                                urlParameters);
+                    toggleURL = service.constructLink(resource, 
+                                                      securityContext.getPrincipal(),
+                                                      urlParameters);
                 }
             }
 

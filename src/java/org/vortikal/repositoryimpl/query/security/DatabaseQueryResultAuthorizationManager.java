@@ -84,11 +84,6 @@ public final class DatabaseQueryResultAuthorizationManager implements
         throws QueryAuthorizationException {
         Principal principal = this.tokenManager.getPrincipal(token);
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("authorizeQueryResults(): principal = " 
-                    + principal + ", token = " + token);
-        }
-        
         if (this.noAuthorizationCheckForPrincipals != null
             && principal != null 
             && this.noAuthorizationCheckForPrincipals.contains(

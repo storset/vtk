@@ -185,7 +185,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
 
             int sessionId = getNewSessionId(conn);
             PreparedStatement pstmt = conn.prepareStatement(
-                    "INSERT INTO vortex_tmp(session_id, uri) VALUES (?,?)");
+                        "INSERT INTO vortex_tmp(session_id, uri) VALUES (?,?)");
             
             for (Iterator i = uris.iterator(); i.hasNext();) {
                 pstmt.setInt(1, sessionId);
@@ -394,8 +394,10 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             deleteTmpStmt.close();
 
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Set of authorized uniqe IDs contains " + authorizedIds.size() + " elements.");
-                this.logger.debug("Set of all uniqe IDs contains " + allIds.size() + " elements.");
+                this.logger.debug("Set of authorized uniqe IDs contains " 
+                                         + authorizedIds.size() + " elements.");
+                this.logger.debug("Set of all uniqe IDs contains " 
+                                                + allIds.size() + " elements.");
             }
 
         } catch (SQLException sqle) {

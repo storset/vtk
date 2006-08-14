@@ -156,6 +156,19 @@ div.banner {
 	he\ight: 30px;	
 }
 
+* html div.banner div.text{
+   margin: 5px 10px;
+
+}
+
+* html div.banner div.text{
+   margin: 5px 10px;
+}
+
+* html div.banner div.menu{
+   margin: 20px 10px;
+}
+
 div.banner div.text{
         margin: 5px 20px;
         float:left;
@@ -165,7 +178,8 @@ div.banner div.text{
 
 div.banner div.text span.hostname {
         font-size: 140%;
-        display: block;             
+        display: block;    
+        color: #696769;         
 }
 
 div.banner div.menu {

@@ -48,6 +48,7 @@ public final class FieldValueMapper {
     
 
     public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
+    public static final char ESCAPE_CHAR = '\\';
     
     private FieldValueMapper() {} // Util
     
@@ -130,7 +131,8 @@ public final class FieldValueMapper {
     
     /**
      * Create multiple <code>Value</code>s from <code>Field</code> with the
-     * given datatype.
+     * given datatype. The field values should be an escaped multi-value field
+     * with native string encoding of each value.
      * 
      * @param field
      * @param valueFactory
@@ -145,8 +147,9 @@ public final class FieldValueMapper {
         Value[] values = new Value[stringValues.length];
         for (int i=0; i<stringValues.length; i++) {
             String stringValue = 
-                decodeIndexFieldValueToString(unescapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, 
-                                                            stringValues[i]), type);
+                decodeIndexFieldValueToString(
+                                    unescapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, 
+                                                      stringValues[i]), type);
             
             values[i] = valueFactory.createValue(stringValue, type);
         }
@@ -154,9 +157,9 @@ public final class FieldValueMapper {
         return values;
     }
     
-    // XXX: Used for generating ancestor ids field. We don't bother to encode
-    //      it because of its system-specific nature, and that it should never
-    //      be used as a sane sorting key or in range queries.
+    // Used for generating ancestor ids field. We don't bother to encode
+    // it because of its system-specific nature, and that it should never
+    // be used as a sane sorting key or in range queries.
     public static Field getUnencodedMultiValueFieldFromIntegers(String name, 
                                                                 int[] integers) {
         StringBuffer fieldValue = new StringBuffer();
@@ -172,7 +175,7 @@ public final class FieldValueMapper {
     }
 
     // XXX: Used for re-creating a stored ancestor ids field. Expensive and
-    //      currently not in use.
+    //      currently not in use (see BinaryFieldValueMapper) !
     public static int[] getIntegersFromUnencodedMultiValueField(Field field) {
         if ("".equals(field.stringValue())) return new int[0];
         
@@ -294,37 +297,76 @@ public final class FieldValueMapper {
     }
     
     /**
-     * Un-backslash-escape given character.
+     * Un-escape given backslash-escaped character in <code>String</code>.
+     * Escaped back-slashes are also un-escaped.
+     * 
      * @param c
      * @param s
      * @return
      */
     public static String unescapeCharacter(char c, String s) {
-        StringBuffer buffer = new StringBuffer(s);
-        String escapedSeparator = "\\" + c;
-        int p = 0;              
-        while ((p = buffer.indexOf(escapedSeparator, p)) != -1) {
-            buffer.delete(p, p+1);
-        }
         
-        return buffer.toString();
+        int length = s.length();
+        char[] output = new char[length];
+        int p = 0;
+
+        for (int i=0; i < length; i++) {
+            char current = s.charAt(i);
+            if (current == ESCAPE_CHAR) {
+                if (i == length - 1) {
+                    throw new IllegalArgumentException("Invalid escape-character sequence in string");
+                }
+
+                char next = s.charAt(i+1);
+
+                if (next != c && next != ESCAPE_CHAR) {
+                    throw new IllegalArgumentException("Invalid escape-character sequence in string");
+                }
+                
+                output[p++] = next;
+                ++i;
+            } else {
+                output[p++] = current;
+            }
+        }
+
+        return new String(output, 0, p);
     }
     
     /**
-     * Backslash-escape given character.
+     * Escape given character using the backslash character '\\'.
+     * Note that occurences of the backslash character in the input string are
+     * also escaped.
+     * 
+     * Avoided use of synchronized StringBuffer; We copy only one character
+     * at a time, so we need things to go fast.
+     *
      * @param c
      * @param s
      * @return
      */
     public static String escapeCharacter(char c, String s) {
-        StringBuffer buffer = new StringBuffer(s);
-        String escapeChar = Character.toString(c);
-        int p = 0;               
-        while ((p = buffer.indexOf(escapeChar, p)) != -1) {
-            buffer.insert(p, "\\");
+        int length = s.length();
+        char[] output = new char[length];
+        int p = 0;
+
+        for (int i=0; i<length; i++) {
+            char current = s.charAt(i);
+            if (p >= output.length-1) {
+                char[] doubled = new char[output.length * 2];
+                System.arraycopy(output, 0, doubled, 0, p);
+                output = doubled;
+            }
+
+            if (current == ESCAPE_CHAR || current == c) {
+                output[p++] = ESCAPE_CHAR;
+            }
+            
+            output[p++] = current;
         }
         
-        return buffer.toString();
+        return new String(output, 0, p);
     }
+
 
 }

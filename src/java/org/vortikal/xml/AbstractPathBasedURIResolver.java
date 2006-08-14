@@ -30,18 +30,15 @@
  */
 package org.vortikal.xml;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
@@ -49,9 +46,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.util.cache.SimpleCache;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.URIUtil;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -183,44 +179,41 @@ public abstract class AbstractPathBasedURIResolver
             }
         }
 
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Resolved URI '" + path + "' from [href = '" +
+                         href + "', base = '" + base + "']");
+        }
+        
         try {
             Source source = null;
-
+            byte[] bytes = null;
+            
             if (this.simpleCache != null) {
-                source = (Source) this.simpleCache.get(path);
 
-                if (source != null) {
+                bytes = (byte[]) this.simpleCache.get(path);
+
+                if (bytes != null) {
                     if (this.logger.isDebugEnabled())
-                        this.logger.debug("Using cached source for resource: " + path);
+                        this.logger.debug("Using cached bytes for resource: " + path);
+                    
+                    source = new StreamSource(new ByteArrayInputStream(bytes));
+                    source.setSystemId(PROTOCOL_PREFIX + path);
                     return source;
                 }
             }
 
             InputStream inStream = getInputStream(path);
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Resolved URI '" + path + "' from [href = '" +
-                             href + "', base = '" + base + "']");
-            }
-            
+
             if (inStream != null) {
                 if (this.simpleCache != null && this.cacheIdentifiers.contains(path)) {
-                    try {
-                        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                        Document doc = builder.parse(inStream);
-                        source = new DOMSource(doc);
-                    } catch (SAXException e) {
-                        throw new TransformerException("Unable to build DOM reprsentation of resource '"
-                                + path + "'", e);
-                    } catch (ParserConfigurationException e) {
-                        throw new TransformerException("Unable to build DOM reprsentation of resource '"
-                                + path + "'", e);
-                    }
-                    
-                    this.simpleCache.put(path, source);
+                    bytes = StreamUtil.readInputStream(inStream);
+                    this.simpleCache.put(path, bytes);
 
-                } else {
+                    source = new StreamSource(new ByteArrayInputStream(bytes));
+
+                } else 
                     source = new StreamSource(inStream);
-                }
+                
             } else 
                 source = new StreamSource();
             

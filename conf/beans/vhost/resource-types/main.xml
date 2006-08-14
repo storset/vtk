@@ -18,6 +18,8 @@
   <import resource="studieprogram.xml" />
   <import resource="studieretning.xml" />
 
+  <import resource="sakskart.xml" />
+
   <import resource="image.xml" />
   <import resource="audio.xml" />
   <import resource="video.xml" />
@@ -32,7 +34,4 @@
   <import resource="protection-levels.xml" />
   <import resource="property-types.xml" />
 
-
-  
 </beans>
-

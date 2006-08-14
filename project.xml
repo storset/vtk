@@ -6,7 +6,7 @@
   <id>vortikal</id>
   <name>Vortikal</name>
   <groupId>vortikal</groupId>
-  <currentVersion>0.2.3-SNAPSHOT</currentVersion>
+  <currentVersion>0.2.3</currentVersion>
   <organization>
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
@@ -452,6 +452,11 @@
       <id>0.2.2</id>
       <name>0.2.2</name>
       <tag>release-0.2.2</tag>
+    </version>
+    <version>
+      <id>0.2.3</id>
+      <name>0.2.3</name>
+      <tag>release-0.2.3</tag>
     </version>
   </versions>
 </project>

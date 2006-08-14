@@ -77,7 +77,6 @@
      propertyList=itemList
      toggle=toggle
      propertyListWrapperMacro=propertyListWrapperMacro 
-     propertyListWrapperMacro=propertyListWrapperMacro
      displayMacro=displayMacro
      editWrapperMacro=editWrapperMacro
      formWrapperMacro=formWrapperMacro
@@ -118,7 +117,17 @@
   <#local wrapperMacro = resolveMacro(propertyListWrapperMacro) />
   <@wrapperMacro>
     <#list propertyList as item>
-      <@editOrDisplayPropertyItem item=item toggle=toggle />
+      <@editOrDisplayPropertyItem
+         item=item
+         toggle=toggle 
+         inputSize=defaultStringInputSize
+         displayMacro=displayMacro
+         editWrapperMacro=editWrapperMacro
+         formWrapperMacro=formWrapperMacro
+         formInputWrapperMacro=formInputWrapperMacro
+         formSubmitWrapperMacro=formSubmitWrapperMacro
+         formErrorsWrapperMacro=formErrorsWrapperMacro
+         formErrorWrapperMacro=formErrorWrapperMacro />
     </#list>
   </@wrapperMacro>
 </#macro>

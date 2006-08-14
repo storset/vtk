@@ -252,15 +252,16 @@ function initKupu(iframe) {
 
     var tabledrawer = new TableDrawer('kupu-tabledrawer', tabletool);
     drawertool.registerDrawer('tabledrawer', tabledrawer);
-
-    // register some cleanup filter
-    // remove tags that aren't in the XHTML DTD
-    //var nonxhtmltagfilter = new NonXHTMLTagFilter();
-
+   
+   
+    // Vortikal: Override kupucontentfilters' XHTML validation
+    kupu.xhtmlvalid = new VortikalXhtmlValidation(kupu);
+        
     // Vortikal: changed to our own NonXHTMLTagFilter
     var nonxhtmltagfilter = new VortikalNonXHTMLTagFilter();
     kupu.registerFilter(nonxhtmltagfilter);
-
+    
+   
     // Vortikal: removed collapsing
     /*
     if (window.kuputoolcollapser) {

@@ -120,6 +120,20 @@
     </release>
 
 
+    <release version="0.2.3" date="2006-08-14" description="Release 0.2.3">
+      <action dev="storset" type="add">
+        Implement caching of XSLT document() calls for selected URIs.
+      </action>
+      <action dev="gormap" type="fix">
+        CreateResourceFromResourceController: Avoid crashing on
+        startup if transformation stylesheet is not available.
+      </action>
+      <action dev="kristisy" type="fix">
+        Fix NPE in SchemaDocumentDefinition for empty elements
+      </action>
+    </release>
+
+
     <release version="0.2.2" date="2006-03-27" description="Release 0.2.2">
       <action dev="oyviste" type="fix">
         Fix WebDAV bugs preventing Dreamweaver/Contribute from working 

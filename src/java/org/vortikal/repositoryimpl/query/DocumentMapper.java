@@ -326,10 +326,11 @@ public class DocumentMapper implements InitializingBean {
         
         PropertyTypeDefinition def = property.getDefinition();
         if (def.isMultiple()) {
-                Value[] values = property.getValues();
-                return FieldValueMapper.getFieldFromValues(fieldName, values);
+            Value[] values = property.getValues();
+            return FieldValueMapper.getFieldFromValues(fieldName, values);
+        } else {
+            return FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
         }
-        return FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
     }
 
     private Field[] getStoredFieldsFromProperty(Property property)

@@ -22,7 +22,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
     public void testTokenizer() throws IOException {
         
         String testString = 
-            ";;value1;value2;value3;;;;value4;;two escaped semicolons: \\;\\;;lastValue";
+            ";;value1;value2;value3;;;;value4;;two escaped semicolons: \\;\\;;lastValue;literalBackslash\\\\";
         
         EscapedMultiValueFieldTokenizer tokenizer = 
             new EscapedMultiValueFieldTokenizer(new StringReader(testString), this.splitChar);
@@ -56,6 +56,11 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
         assertEquals("lastValue", t.termText());
         assertEquals(63, t.startOffset());
         assertEquals(72, t.endOffset());
+
+        t = tokenizer.next();
+        assertEquals("literalBackslash\\", t.termText());
+        assertEquals(73, t.startOffset());
+        assertEquals(91, t.endOffset());
 
         t = tokenizer.next();
         assertNull(t);

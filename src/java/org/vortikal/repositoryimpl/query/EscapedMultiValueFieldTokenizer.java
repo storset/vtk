@@ -38,24 +38,30 @@ import org.apache.lucene.analysis.Tokenizer;
 
 /**
  * EscapedMultiValueFieldTokenizer.
- * Split input into tokens at un-escaped splitting characters. 
- * Escape-character is always '\\'.
+ * Split input into tokens at un-escaped splitting character(s). 
+ * Escape-character is always '\'.
  * 
- * The escape-character ('\\') is always removed from the tokens before they
+ * The escape-character ('\') is always removed from the tokens before they
  * are returned for indexing. Thus, searching on fields analyzed by this analyzer 
- * should require no pre-escaping of the splitting character.
+ * should require no pre-escaping of the splitting character. To avoid
+ * losing literal back-slashes from the tokens, they must themselves be escaped: '\\'.
+ * 
+ * When a single back-slash precedes any other character than the splitting 
+ * character and the back-slash itself, it has no special meaning and becomes
+ * part of the token.
  * 
  * Empty tokens are discarded.
  * 
+ * @TODO: Make MAX_TOKEN_LEN a constructor parameter
+ * 
  * @author oyviste
  */
-public class EscapedMultiValueFieldTokenizer extends Tokenizer {
+public final class EscapedMultiValueFieldTokenizer extends Tokenizer {
 
     public static final char ESCAPE_CHAR = '\\';
-    
     private static final int MAX_TOKEN_LEN = 2048;
     
-    private char splitChar;
+    private final char splitChar;
     private char[] tokenBuffer;
     private int streamOffset;
     
@@ -67,39 +73,43 @@ public class EscapedMultiValueFieldTokenizer extends Tokenizer {
     }
     
     public final Token next() throws IOException {
-        int c, tOff = 0, start = this.streamOffset;
-        boolean esc = false;
+        
+        int c, tSize = 0, start = this.streamOffset;
+        boolean escape = false;
         while ((c = this.input.read()) != -1) {
             ++this.streamOffset;
 
             if (c == this.splitChar) {
-                if (esc) {
-                    --tOff;
+                if (escape) {
+                    --tSize;
                 } else {
-                    if (tOff == 0) { // Drop empty tokens
-                        esc = false;
+                    if (tSize == 0) { // Drop empty tokens
+                        escape = false;
                         start = this.streamOffset;
                         continue;
                     }
-                    break; 
+                    break;
                 }
+            } else if (c == ESCAPE_CHAR && escape) {
+                escape = false;
+                continue;
             }
             
-            if (tOff == MAX_TOKEN_LEN-1) {
+            this.tokenBuffer[tSize++] = (char)c; // Add character to token
+
+            if (tSize == MAX_TOKEN_LEN) {
                 // Max token length reached, return it (forced break)
                 break;
             }
             
-            this.tokenBuffer[tOff++] = (char)c; // Add character to token
-            esc = c == ESCAPE_CHAR ? true : false;
+            escape = (c == ESCAPE_CHAR); 
         }
         
         if (c == -1) {
-            if (tOff == 0) return null; // No more tokens left.
+            if (tSize == 0) return null; // No more tokens left.
             ++this.streamOffset;
         }
-        
-        return new Token(new String(this.tokenBuffer, 0, tOff), start, this.streamOffset-1);
-    }
 
+        return new Token(new String(this.tokenBuffer, 0, tSize), start, this.streamOffset-1);
+    }
 }

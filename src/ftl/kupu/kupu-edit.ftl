@@ -37,22 +37,25 @@
     <script type="text/javascript" src="sarissa.js"> </script>
     <script type="text/javascript" src="sarissa_ieemu_xpath.js"> </script>
     <script type="text/javascript" src="kupuhelpers.js"> </script>
-    <script type="text/javascript" src="kupueditor.js"> </script>
+    <!-- <script type="text/javascript" src="kupueditor.js"> </script> -->
+    <script type="text/javascript" src="${kupuLocalBase}/kupueditor-vortikal.js"> </script> <!-- overridden file (minor changes to alert message) -->
     <script type="text/javascript" src="kupubasetools.js"> </script>
     <script type="text/javascript" src="kupuloggers.js"> </script>
     <script type="text/javascript" src="kupunoi18n.js"> </script>
     <!--script type="text/javascript" src="../../i18n.js/i18n.js"> </script-->
     <script type="text/javascript" src="kupucleanupexpressions.js"> </script>
     <script type="text/javascript" src="kupucontentfilters.js"> </script>
-    <script type="text/javascript" src="${kupuLocalBase}/vortikalkupucontentfilters.js"> </script>
+    <script type="text/javascript" src="${kupuLocalBase}/kupucontentfilters-vortikal.js"> </script>
     <script type="text/javascript" src="kuputoolcollapser.js"> </script>
     <script type="text/javascript" src="kupucontextmenu.js"> </script>
+    
     <!-- Local modifications to Kupu: -->
     <script type="text/javascript" src="${kupuLocalBase}/kupueditor-local.js"> </script>
     <!--script type="text/javascript" src="kupuinit.js"> </script-->
-    <script type="text/javascript" src="${kupuLocalBase}/kupuinit.js"> </script>
+    <script type="text/javascript" src="${kupuLocalBase}/kupuinit-vortikal.js"> </script>
     <script type="text/javascript" src="kupustart.js"> </script>
-    <script type="text/javascript" src="kupusaveonpart.js"> </script>  <!-- NB: Denne er blitt modifisert og endringene skal meldes inn til Kupu-prosjektet! Ta hensyn hvis Kupu-versjon blir oppdatert i mellomtiden. -->
+    <!-- <script type="text/javascript" src="kupusaveonpart.js"> </script> -->
+    <script type="text/javascript" src="${kupuLocalBase}/kupusaveonpart-vortikal.js"> </script>  <!-- NB: Denne er blitt modifisert og endringene skal meldes inn til Kupu-prosjektet -->
     <script type="text/javascript" src="kupusourceedit.js"> </script>
     <script type="text/javascript" src="kupuspellchecker.js"> </script>
     <script type="text/javascript" src="kupudrawers.js"> </script>

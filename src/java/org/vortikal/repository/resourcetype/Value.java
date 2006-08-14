@@ -36,7 +36,9 @@ import org.vortikal.security.Principal;
 
 
 public final class Value implements Cloneable {
+    
     private int type = PropertyType.TYPE_STRING;
+    private static final long MAX_LENGTH = 2048;
 
     private String stringValue;
     private Date dateValue;
@@ -48,6 +50,12 @@ public final class Value implements Cloneable {
     public Value(String stringValue) {
         if (stringValue == null)
             throw new IllegalArgumentException("Value object cannot be null");
+        if (stringValue.length() > MAX_LENGTH) {
+            throw new ValueFormatException(
+                "String value too large: " + stringValue.length() + " (max size = "
+                + this.MAX_LENGTH + ")");
+        }
+
         this.type = PropertyType.TYPE_STRING;
         this.stringValue = stringValue;
     }
@@ -77,6 +85,13 @@ public final class Value implements Cloneable {
     public Value(Principal principalValue) {
         if (principalValue == null)
             throw new IllegalArgumentException("Value object cannot be null");
+        String qualifiedName = principalValue.getQualifiedName();
+        if (qualifiedName.length() > MAX_LENGTH) {
+            throw new ValueFormatException(
+                "Princpal name too long: " + qualifiedName.length() + " (max size = "
+                + this.MAX_LENGTH + ")");
+        }
+
         this.type = PropertyType.TYPE_PRINCIPAL;
         this.principalValue = principalValue;
     }
@@ -248,7 +263,8 @@ public final class Value implements Cloneable {
             Date date = this.dateValue;
             
             if (date == null) {
-                throw new ValueFormatException("Cannot convert date value to string, field was null");
+                throw new ValueFormatException(
+                    "Cannot convert date value to string, field was null");
             }
             
             representation = Long.toString(date.getTime());
@@ -269,7 +285,8 @@ public final class Value implements Cloneable {
         case PropertyType.TYPE_PRINCIPAL:
             Principal principal = this.principalValue;
             if (principal == null) {
-                throw new ValueFormatException("Cannot convert principal value to string, field was null");
+                throw new ValueFormatException(
+                    "Cannot convert principal value to string, field was null");
             }
             
             representation = principal.getQualifiedName();

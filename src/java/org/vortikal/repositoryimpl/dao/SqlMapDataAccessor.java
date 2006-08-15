@@ -1271,8 +1271,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         propertySet.addProperty(prop);
 
         if (!collection) {
-            //long contentLength = contentStore.getContentLength(propertySet.getURI());
-//             long contentLength = rs.getLong("content_length");
             long contentLength = ((Number) resourceMap.get("contentLength")).longValue();
             prop = propertyManager.createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME,

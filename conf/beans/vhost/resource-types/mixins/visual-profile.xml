@@ -15,7 +15,7 @@
     <property name="sourceList">
       <list>
         <ref bean="visualProfileEnabledPropdef" />
-        <ref bean="visualProfileInheritedPropdef" />
+        <ref bean="visualProfileCustomDefinedPropdef" />
         <ref bean="unitPropDef" />
         <ref bean="topicPropDef" />
         <ref bean="editorNamePropDef" />
@@ -39,18 +39,18 @@
     <property name="defaultValue" ref="VALUE_TRUE" />
   </bean>
 
-  <bean id="visualProfileInheritedPropdef" 
+  <bean id="visualProfileCustomDefinedPropdef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="inherited" /> 
+    <property name="name" value="customDefined" /> 
     <property name="type" ref="TYPE_BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="allowedValues">
       <list>
-        <ref bean="VALUE_FALSE" />
+        <ref bean="VALUE_TRUE" />
       </list>
     </property>
-    <property name="defaultValue" ref="VALUE_FALSE" />
+    <property name="defaultValue" ref="VALUE_TRUE" />
   </bean>
 
   <bean id="unitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

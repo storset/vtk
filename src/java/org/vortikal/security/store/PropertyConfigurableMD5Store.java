@@ -43,6 +43,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
 
 
@@ -77,6 +78,7 @@ public class PropertyConfigurableMD5Store
     private Properties principals;
     private Map groups;
     private String realm;
+    private PrincipalFactory principalFactory;
 
     private int order = Integer.MAX_VALUE;
     
@@ -88,6 +90,11 @@ public class PropertyConfigurableMD5Store
 
     public void setGroups(Map groups) {
         this.groups = groups;
+    }
+    
+
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
     
 
@@ -205,11 +212,11 @@ public class PropertyConfigurableMD5Store
 
     public Set getMemberGroups(Principal principal) {
         Set pGroups = new HashSet();
-        for (Iterator iter = groups.keySet().iterator(); iter.hasNext();) {
-            Principal group = (Principal) iter.next();
-            List members = (List) groups.get(group);
+        for (Iterator iter = this.groups.keySet().iterator(); iter.hasNext();) {
+            String group = (String) iter.next();
+            List members = (List) this.groups.get(group);
             if (members.contains(principal.getQualifiedName()))
-                pGroups.add(group);
+                pGroups.add(this.principalFactory.getGroupPrincipal(group));
         }
         return pGroups;
     }

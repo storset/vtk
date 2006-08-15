@@ -144,25 +144,14 @@ ul.errors {
 
 div.banner {
         width: 100%;
-        height: 50px;
+        height: 3.4em;
         vertical-align: middle;
         border-bottom: solid 2px; 
         border-color: #9C9A9C;
 }
 
-
-* html div.banner {
-	height: 50px;
-	he\ight: 30px;	
-}
-
 * html div.banner div.text{
-   margin: 5px 10px;
-
-}
-
-* html div.banner div.text{
-   margin: 5px 10px;
+   margin: 7px 10px;
 }
 
 * html div.banner div.menu{
@@ -170,7 +159,7 @@ div.banner {
 }
 
 div.banner div.text{
-        margin: 5px 20px;
+        margin: 7px 20px;
         float:left;
         color: #9C9A9C;
         font-size: 90%;

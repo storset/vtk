@@ -159,20 +159,6 @@
     <property name="order" value="10" />
     <property name="realm" value="${authenticationRealm}" />
     <property name="principals" ref="localPrincipals" />
-
-
-<!--     <property name="principals"> -->
-<!--       <props> -->
-<!--        <prop key="root@localhost">${password.root@localhost}</prop> -->
-<!--         <prop key="vortex@localhost">${password.vortex@localhost}"</prop> -->
-<!--         <prop key="user@localhost">${password.user@localhost}</prop> -->
-         <!-- is not possible to authenticate as: --> 
-<!--         <prop key="trustedUser@localhost">NO_REAL_VALUE</prop> -->
-<!--         <prop key="super@localhost">${password.super@localhost}</prop> -->
-<!--       </props> -->
-<!--     </property> -->
-
-
     <property name="groups">
       <map>
         <entry key-ref="systemUsersGroup">
@@ -187,68 +173,20 @@
     </property>
   </bean>
 
-  <bean id="localPrincipals"
-        class="org.vortikal.util.repository.PropertiesResource">
-    <description>
-      This is the "local users and groups" principal store. Its
-      users and groups are stored in memory, in the 'principals'
-      and 'groups' properties, respectively.
-    </description>
-
+  <bean id="localPrincipals" class="java.util.Properties">
     <constructor-arg index="0" type="java.util.Properties">
-      <description>
-        To add a new user, insert an entry where 'key' is the user
-        name and 'value' is an MD5 hash of the following
-        composition: 'username:realm:password'. I.e. if realm is
-        'Vortex', username is 'root' and password is 'fish', the
-        composition will be 'root:Vortex:fish'.
-
-        On a UNIX system this may be accomplished as follows:
-        unix> echo -n root:Vortex:fish | md5sum
-        42d92f646a0ae29a74e2484ce45b25e7 -
-        unix>
-      </description>
       <props>
        <prop key="root@localhost">${password.root@localhost}</prop>
         <prop key="vortex@localhost">${password.vortex@localhost}</prop>
         <prop key="user@localhost">${password.user@localhost}</prop>
+        <prop key="super@localhost">${password.super@localhost}</prop>
         <!-- is not possible to authenticate as: -->
         <prop key="trustedUser@localhost">NO_REAL_VALUE</prop>
-        <prop key="super@localhost">${password.super@localhost}</prop>
       </props>
     </constructor-arg>
-    <property name="lazyInit" value="true" />
-    <property name="repository" ref="repository" />
-    <property name="uri" value="${repositoryPasswdFile}" />
-    <property name="token" ref="trustedToken" />
   </bean>
 
-  <bean id="localPrincipalsRefreshTrigger"
-        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
-    <property name="repository" ref="repository" />
-    <property name="uriPattern" value="${repositoryPasswdFile}" />
-    <property name="targetObject" ref="localPrincipals" />
-    <property name="method" value="load" />
-  </bean>
-
-
-
-<!--   <bean id="localGroups" -->
-<!--         class="org.vortikal.util.repository.HashMapResource"> -->
-<!--     <property name="lazyInit" value="true" /> -->
-<!--     <property name="repository" ref="repository" /> -->
-<!--     <property name="uri" value="${repositoryGroupsFile}" /> -->
-<!--     <property name="token" ref="trustedToken" /> -->
-<!--     <property name="storeValuesAsLists" value="true" /> -->
-<!--   </bean> -->
-
-<!--   <bean id="localGroupsRefreshTrigger" -->
-<!--         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger"> -->
-<!--     <property name="repository" ref="repository" /> -->
-<!--     <property name="uriPattern" value="${repositoryGroupsFile}" /> -->
-<!--     <property name="targetObject" ref="localGroups" /> -->
-<!--     <property name="method" value="load" /> -->
-<!--   </bean> -->
+  
 
 
   <!-- Special principals and tokens -->

@@ -36,7 +36,6 @@
         <ref bean="VALUE_TRUE" />
       </list>
     </property>
-    <property name="defaultValue" ref="VALUE_TRUE" />
   </bean>
 
   <bean id="visualProfileCustomDefinedPropdef" 
@@ -50,7 +49,6 @@
         <ref bean="VALUE_TRUE" />
       </list>
     </property>
-    <property name="defaultValue" ref="VALUE_TRUE" />
   </bean>
 
   <bean id="unitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

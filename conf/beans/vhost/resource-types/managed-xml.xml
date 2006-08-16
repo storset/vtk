@@ -7,7 +7,7 @@
 
   <bean id="managedXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="managed-xml"/>
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="xmlResource" />
     <property name="assertions">
       <list>

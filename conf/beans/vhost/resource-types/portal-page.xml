@@ -21,7 +21,7 @@
     </property>
   </bean>
   
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <bean id="registerPortalPageResourceType" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="typePropDef" />
     <property name="targetMethod" value="addAllowedValue" />
     <property name="arguments">

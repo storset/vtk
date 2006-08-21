@@ -89,6 +89,8 @@
     <u:available file="${basedir}/build.properties">
       <ant:copy file="${basedir}/build.properties"
                 tofile="${maven.war.webapp.dir}/WEB-INF/classes/vortikal-custom.properties" />
+      <ant:copy file="${basedir}/build.properties"
+                tofile="${maven.build.dir}/classes/vortikal-custom.properties" />
     </u:available>
 
     <v:merge template="resin.conf" basedir="${maven.conf.dir}"

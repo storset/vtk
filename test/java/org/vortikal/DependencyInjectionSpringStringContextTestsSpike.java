@@ -63,9 +63,12 @@ public class DependencyInjectionSpringStringContextTestsSpike
 
             List beanIdList = new ArrayList();
             beanIdList.add("propertyConfigurer");
-            beanIdList.add("repository.statementMappings.default");
             beanIdList.add("collectionListingAsFeedView");
+            beanIdList.add("repository.contentStore");
             beanIdList.add("localPrincipalStore");
+            beanIdList.add("systemUsersGroup");
+            beanIdList.add("repository.cache");
+
             configAsString = m.getXml(beanIdList);
         } catch (BeanOverloadException e) {
             // found overloaded bean (not interesting in this context)

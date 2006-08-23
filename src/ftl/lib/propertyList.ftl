@@ -380,7 +380,11 @@
       <#else>
         <#-- type principal = 5 -->
         <#if item.definition.type = 5>
-          ${item.property.principalValue.name}
+          <#if item.property.principalValue.URL?exists>
+            <a href="${item.property.principalValue.URL?html}">${item.property.principalValue.name?html}</a>
+          <#else>
+            ${item.property.principalValue.name?html}
+          </#if>
         <#-- type date = 3 -->
         <#elseif item.definition.type = 3>
           ${item.property.dateValue?datetime?string.long}

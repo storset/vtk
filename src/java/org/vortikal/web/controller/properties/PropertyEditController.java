@@ -252,7 +252,15 @@ public class PropertyEditController extends SimpleFormController
 
                 String stringValue = propertyCommand.getValue();
 
-                if (isToggleableProperty(def)
+                if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
+                    PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
+                    !resource.getOwner().equals(securityContext.getPrincipal()) &&
+                    "true".equals(request.getParameter(this.toggleRequestParameter))) {
+
+                    // Using toggle submit parameter to take ownership:
+                    stringValue = securityContext.getPrincipal().getQualifiedName();
+                    
+                } else if (isToggleableProperty(def)
                     && "true".equals(request.getParameter(this.toggleRequestParameter))) {
 
                     Value toggleValue = getToggleValue(def, property);
@@ -282,7 +290,8 @@ public class PropertyEditController extends SimpleFormController
                     
                         if (def.isMultiple()) {
                             String[] splitValues = stringValue.trim().split(" *, *");
-                            Value[] values = this.valueFactory.createValues(splitValues, def.getType());
+                            Value[] values = this.valueFactory.createValues(
+                                splitValues, def.getType());
                             property.setValues(values);
                                                     
                         } else {
@@ -394,7 +403,17 @@ public class PropertyEditController extends SimpleFormController
                     // Assertion doesn't match, OK in this case
                 }
 
-                if (isToggleableProperty(def)) {
+                if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
+                    PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
+                    !resource.getOwner().equals(securityContext.getPrincipal())) {
+
+                    // Using toggle parameter to take ownership:
+                    urlParameters.put(this.toggleRequestParameter, "true");
+                    toggleURL = service.constructLink(resource,
+                                                      securityContext.getPrincipal(),
+                                                      urlParameters);
+
+                } else if (isToggleableProperty(def)) {
                     Value toggleValueObject = getToggleValue(def, property);
                     if (toggleValueObject != null) {
                         toggleValue = getValueAsString(toggleValueObject);

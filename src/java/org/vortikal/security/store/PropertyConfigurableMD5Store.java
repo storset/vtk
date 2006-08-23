@@ -212,12 +212,16 @@ public class PropertyConfigurableMD5Store
 
     public Set getMemberGroups(Principal principal) {
         Set pGroups = new HashSet();
-        for (Iterator iter = this.groups.keySet().iterator(); iter.hasNext();) {
-            String group = (String) iter.next();
-            List members = (List) this.groups.get(group);
-            if (members.contains(principal.getQualifiedName()))
-                pGroups.add(this.principalFactory.getGroupPrincipal(group));
+        for (Iterator iter = this.groups.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry entry = (Map.Entry)iter.next();
+            Principal group = (Principal) entry.getKey();
+            List members = (List) entry.getValue();
+            
+            if (members.contains(principal.getQualifiedName())) {
+                pGroups.add(group);              
+            }
         }
+        
         return pGroups;
     }
 

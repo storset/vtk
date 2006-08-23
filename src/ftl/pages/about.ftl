@@ -27,6 +27,7 @@
   <#return false />
 </#function>
 
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -43,7 +44,6 @@
        code="resource.metadata.about.${resource.resourceType}"
        default="${defaultHeader}"/>
   </h2>
-
 
 
   <table class="resourceInfo">
@@ -83,7 +83,32 @@
 
 
       <!-- Owner -->
-      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'owner' />
+      <#assign ownerItem = aboutItems['owner'] />
+      <#assign msgPrefix = propList.getLocalizedValueLookupKeyPrefix(ownerItem) />
+      <tr>
+        <td class="key">
+          <@vrtx.msg code=msgPrefix default=ownerItem.definition.name />
+        </td>
+        <td class="value">
+          <#if ownerItem.property.principalValue.URL?exists>
+            <a href="${ownerItem.property.principalValue.URL?html}">${ownerItem.property.principalValue.name?html}</a>
+          <#else>
+            ${ownerItem.property.principalValue.name?html}
+          </#if>
+
+          <#if ownerItem.toggleURL?exists>
+            <#assign editAction>
+              <@vrtx.msg code="propertyEditor.takeOwnership" default="take ownership" />
+            </#assign>
+            <#assign warning>
+              <@vrtx.msg code="propertyEditor.takeOwnershipWarning"
+                         default="Are you sure you want to take ownership of this resource?" />
+            </#assign>
+            ( <a onclick="return confirm('${warning}')" href="${ownerItem.toggleURL?html}">${editAction}</a> )
+          </#if>
+        </td>
+      </tr>
+
 
       <!-- ResourceType -->
       <@propList.defaultPropertyDisplay

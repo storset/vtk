@@ -411,6 +411,12 @@ public class ResourceXsltView extends AbstractView
             Object key = i.next();
             Object value = map.get(key);
 
+            // Check that xslt parameter is not NULL
+            if (value == null) {
+                logger.info("Supplied XSLT parameter '" + key.toString() + 
+                        "' has NULL value, won't add.");
+                continue;
+            }
             if (logger.isDebugEnabled()) {
                 logger.debug("Setting XSLT parameter " + key.toString() + " = "
                              + value);

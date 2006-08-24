@@ -178,6 +178,9 @@ public class ViewXslProvider implements ReferenceDataProvider {
 
     
     protected final void setXsltParameter(Map model, String key, Object value) {
+        if (key == null || value == null)
+            return;
+        
         Map parameters = (Map)model.get("xsltParameters");
         if (parameters == null) {
             parameters = new HashMap();

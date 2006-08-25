@@ -238,7 +238,7 @@
     </#if>
 
     <!-- Plaintext Edit on managed xml -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'custom:plaintext-edit' />
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'plaintext-edit' />
 
   </table>
   </#if>

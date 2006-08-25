@@ -49,7 +49,7 @@
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.write" default="Write" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="write" privilegeHeading=privilegeHeading />
 
-      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin" /></#assign>
+      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin - all privileges" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
      
         <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>

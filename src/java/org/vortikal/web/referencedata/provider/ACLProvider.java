@@ -194,9 +194,10 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
             privilegedGroups.put(actionName, acl.listPrivilegedGroups(action));
 
             List l = new ArrayList(java.util.Arrays.asList(acl.listPrivilegedPseudoPrincipals(action)));
-            if (!l.contains(PseudoPrincipal.OWNER)) {
-                l.add(0, PseudoPrincipal.OWNER);
-            }
+            // No reason to add owner after changed acl semantics
+            //            if (!l.contains(PseudoPrincipal.OWNER)) {
+            //                l.add(0, PseudoPrincipal.OWNER);
+            //            }
             privilegedPseudoPrincipals.put(actionName, l);
         }
         

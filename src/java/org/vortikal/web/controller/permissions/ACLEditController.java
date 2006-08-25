@@ -145,9 +145,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
         List authorizedUsers = new ArrayList(
             java.util.Arrays.asList(acl.listPrivilegedUsers(this.privilege)));
         authorizedUsers.addAll(java.util.Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
-        if (!authorizedUsers.contains(PseudoPrincipal.OWNER)) {
-            authorizedUsers.add(0, PseudoPrincipal.OWNER);
-        }
+//         if (!authorizedUsers.contains(PseudoPrincipal.OWNER)) {
+//             authorizedUsers.add(0, PseudoPrincipal.OWNER);
+//         }
 
         List authorizedGroups = new ArrayList(
             java.util.Arrays.asList(acl.listPrivilegedGroups(this.privilege)));

@@ -113,7 +113,7 @@
 
   <#if grouped>
     <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" /><#t/>
-  <#else>
+  <#elseif (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
@@ -129,6 +129,8 @@
       <#compress>${group.name}</#compress><#t/>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
+  <#else>
+    <@vrtx.msg code="permissions.not.assigned" default="Not assigned" /> <#t/>
   </#if>
 </#macro>
 
@@ -159,7 +161,7 @@
 
   <#if grouped>
     <p><@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" /><#t/></p>
-  <#else>
+  <#elseif (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
     <table>
       <tr>
         <td class="key"><@vrtx.msg code="permissions.users" default="Users"/>:</td>
@@ -187,6 +189,8 @@
         </td>
       </tr>
     </table>
+  <#else>
+    <p><@vrtx.msg code="permissions.not.assigned" default="Not assigned" /><#t/></p>
   </#if>
 </#macro>
 
@@ -219,7 +223,7 @@
     <#compress>
       <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}" default="${groupingPrincipal.name}" />&nbsp;
     </#compress>
-  <#else>
+  <#elseif (pseudoPrincipals?size > 0 || users?size > 0 || groups?size > 0)>
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" />
@@ -235,6 +239,8 @@
       <#compress>${group.name}</#compress><#t/>
       <#if group_index &lt; groups?size - 1>,<#t/></#if>
     </#list>
+  <#else>
+    <@vrtx.msg code="permissions.not.assigned" default="Not assigned" /> <#t/>
   </#if>
 </#macro>
 

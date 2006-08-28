@@ -56,11 +56,11 @@ public class Semaphore {
             try {
                 wait();
             } catch (InterruptedException e) {
-                //System.out.println("Semaphore: interrupted: " +  e.getMessage());
-                //e.printStackTrace();
+                throw new RuntimeException("Semaphore: interrupted: ", e);
+            } finally {
+                this.value--;
             }
         }
-        this.value--;
         return this.value;
     }
 }

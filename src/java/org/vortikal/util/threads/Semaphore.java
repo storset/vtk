@@ -50,16 +50,14 @@ public class Semaphore {
 
 
     public synchronized int down() {
-
-        if (this.value == 0) {
-
-            try {
+        try {
+            if (this.value == 0) {
                 wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Semaphore: interrupted: ", e);
-            } finally {
-                this.value--;
             }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Semaphore: interrupted: ", e);
+        } finally {
+            this.value--;
         }
         return this.value;
     }

@@ -69,44 +69,27 @@ public class TransformerManager implements InitializingBean {
     private ChainedURIResolver compilationURIResolver = null;
     private ChainedURIResolver transformationURIResolver = null;
 
+    private TransformationThrottle transformationThrottle;
 
 
-    /**
-     * Sets the value of alwaysCompile
-     *
-     * @param alwaysCompile 
-     */
     public void setAlwaysCompile(boolean alwaysCompile) {
         this.alwaysCompile = alwaysCompile;
     }
     
 
 
-    /**
-     * Sets the value of stylesheetRegistry
-     *
-     * @param stylesheetRegistry Value to assign to this.stylesheetRegistry
-     */
     public void setStylesheetRegistry(StylesheetTemplatesRegistry stylesheetRegistry)  {
         this.stylesheetRegistry = stylesheetRegistry;
     }
 
 
-    /**
-     * Gets the value of stylesheetRegistry
-     *
-     */
     public StylesheetTemplatesRegistry  getStylesheetRegistry()  {
         return this.stylesheetRegistry;
     }
 
 
-    /**
-     * Sets the value of stylesheetReferenceResolvers
-     *
-     * @param stylesheetReferenceResolvers Value to assign to this.stylesheetReferenceResolvers
-     */
-    public void setStylesheetReferenceResolvers(StylesheetReferenceResolver[] stylesheetReferenceResolvers)  {
+    public void setStylesheetReferenceResolvers(
+        StylesheetReferenceResolver[] stylesheetReferenceResolvers)  {
         this.stylesheetReferenceResolvers = stylesheetReferenceResolvers;
     }
 
@@ -133,6 +116,11 @@ public class TransformerManager implements InitializingBean {
      */
     public void setTransformationURIResolvers(URIResolver[] transformationURIResolvers) {
         this.transformationURIResolver = new ChainedURIResolver(transformationURIResolvers);
+    }
+    
+
+    public void setTransformationThrottle(TransformationThrottle transformationThrottle) {
+        this.transformationThrottle = transformationThrottle;
     }
     
 
@@ -213,6 +201,10 @@ public class TransformerManager implements InitializingBean {
 
         Transformer transformer = templates.newTransformer();
         transformer.setURIResolver(this.transformationURIResolver);
+        if (this.transformationThrottle != null) {
+            transformer = new ThrottledTransformer(transformer, this.transformationThrottle);
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug(
                 "Returning [transformer: " + transformer + " URI resolver: "
@@ -325,4 +317,71 @@ public class TransformerManager implements InitializingBean {
         }
         
     }
+
+    private class ThrottledTransformer extends Transformer {
+        private Transformer transformer;
+        private TransformationThrottle throttle;
+
+        public ThrottledTransformer(Transformer transformer, TransformationThrottle throttle) {
+            super();
+            this.transformer = transformer;
+            this.throttle = throttle;
+        }
+        
+        public void transform(javax.xml.transform.Source xmlSource,
+                                       javax.xml.transform.Result outputTarget)
+            throws TransformerException {
+            try {
+                this.throttle.start();
+                this.transformer.transform(xmlSource, outputTarget);
+            } finally {
+                this.throttle.end();
+            }
+        }
+        
+        public void setParameter(String name, Object value) {
+            this.transformer.setParameter(name, value);
+        }
+        
+        public Object getParameter(String name) {
+            return this.transformer.getParameter(name);
+        }
+
+        public void clearParameters() {
+            this.transformer.clearParameters();
+        }
+
+        public void setURIResolver(URIResolver resolver) {
+            this.transformer.setURIResolver(resolver);
+        }
+
+        public URIResolver getURIResolver() {
+            return this.transformer.getURIResolver();
+        }
+
+        public void setOutputProperties(java.util.Properties properties) {
+            this.transformer.setOutputProperties(properties);
+        }
+        
+        public java.util.Properties getOutputProperties() {
+            return this.transformer.getOutputProperties();
+        }
+
+        public void setOutputProperty(String name, String value) {
+            this.transformer.setOutputProperty(name, value);
+        }
+
+        public String getOutputProperty(String name) {
+            return this.transformer.getOutputProperty(name);
+        }
+
+        public void setErrorListener(javax.xml.transform.ErrorListener listener) {
+            this.transformer.setErrorListener(listener);
+        }
+
+        public javax.xml.transform.ErrorListener getErrorListener() {
+            return this.transformer.getErrorListener();
+        }
+    }
+    
 }

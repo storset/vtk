@@ -358,6 +358,7 @@
          <ref bean="xsltTransformationRepositoryURIResolver" />
        </list>
      </property>
+     <property name="transformationThrottle" ref="xmlTransformationThrottle" />
    </bean>
 
 

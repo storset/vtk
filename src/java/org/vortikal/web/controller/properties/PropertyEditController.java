@@ -70,6 +70,44 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 
+/**
+ * A {@link Property property} edit controller. This class is both a
+ * form controller and {@link ReferenceDataProvider}, allowing it to
+ * both display and edit a list of properties based on their {@link
+ * PropertyTyeDefinition definitions}.
+ *
+ * <p>When invoked as a reference data provider, the list of property
+ * definitions is traversed, and for each property found on the
+ * current resource, a {@link PropertyItem} is placed in the model,
+ * containing the property itself, along with a URL to edit the
+ * property. The property items are placed in the model both as a list
+ * and a map, using configurable (sub)model names.
+ *
+ * <p>When acting as a form controller, the formObject must be a
+ * {@link PropertyEditCommand}. Only one property may be edited at a
+ * time, and the property must be "focused" (using the editURL from
+ * the PropertyItem) before any values are submitted.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>repository</code> - the content {@link Repository repository}
+ *   <li><code>principalManager</code> - a valid {@link PrincipalManager}
+ *   <li><code>propertyTypeDefinitions</code> - the list of {@link
+ *   PropertyTypeDefinition} objects to display and/or edit
+ *   <li><code>valueFactory</code> - a {@link ValueFactory} for
+ *   creating property values.
+ *   <li><code>dateFormat</code> - a date format (string) used to
+ *   parse date values
+ *   <li><code>propertyListModelName</code> - the name to use (in the
+ *   model) for the property list
+ *   <li><code>propertyMapModelName</code> - the name to use (in the
+ *   model) for the property map
+ *   <li><code>editHooks</code> - a list of {@link
+ *   PropertyEditHook} objects, allowing hooks to be run when specific
+ *   properties are created, removed and edited.
+ * </ul>
+ *
+ */
 public class PropertyEditController extends SimpleFormController
   implements ReferenceDataProvider, ReferenceDataProviding, InitializingBean {
 
@@ -80,6 +118,7 @@ public class PropertyEditController extends SimpleFormController
     private Repository repository;
     private PrincipalManager principalManager;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
+    private PropertyEditHook[] editHooks;
     private ValueFactory valueFactory;
     private String dateFormat;
     
@@ -104,6 +143,10 @@ public class PropertyEditController extends SimpleFormController
 
     public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
         this.propertyTypeDefinitions = propertyTypeDefinitions;
+    }
+    
+    public void setEditHooks(PropertyEditHook[] editHooks) {
+        this.editHooks = editHooks;
     }
     
     public void setValueFactory(ValueFactory valueFactory) {
@@ -252,6 +295,8 @@ public class PropertyEditController extends SimpleFormController
 
                 String stringValue = propertyCommand.getValue();
 
+                boolean removed = false, created = false, modified = false;                
+
                 if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
                     PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
                     !resource.getOwner().equals(securityContext.getPrincipal()) &&
@@ -279,6 +324,9 @@ public class PropertyEditController extends SimpleFormController
                             return new ModelAndView(getSuccessView());
                         }
                         resource.removeProperty(def.getNamespace(), def.getName());
+                        removed = true;
+
+
                     } else {
                         if (property == null) {
                             if (this.logger.isDebugEnabled()) {
@@ -286,6 +334,7 @@ public class PropertyEditController extends SimpleFormController
                                                   + ", creating from definition: " + def);
                             }
                             property = resource.createProperty(def.getNamespace(), def.getName());
+                            created = true;
                         }
                     
                         if (def.isMultiple()) {
@@ -293,10 +342,11 @@ public class PropertyEditController extends SimpleFormController
                             Value[] values = this.valueFactory.createValues(
                                 splitValues, def.getType());
                             property.setValues(values);
-                                                    
+                            modified = true;
                         } else {
                             Value value = this.valueFactory.createValue(stringValue, def.getType());
                             property.setValue(value);
+                            modified = true;
                         }
                         if (this.logger.isDebugEnabled()) {
                             String debugOutput = def.isMultiple()
@@ -306,7 +356,15 @@ public class PropertyEditController extends SimpleFormController
                                               + resource + " to value " + debugOutput);
                         }
                     }
-
+                    if (this.editHooks != null) {
+                        for (int j = 0; j < this.editHooks.length; j++) {
+                            PropertyEditHook hook = this.editHooks[j];
+                            if (created) hook.created(def, resource);
+                            if (removed) hook.removed(def, resource);
+                            if (modified) hook.modified(def, resource);
+                        }
+                    }
+                    
                     this.repository.store(token, resource);
                 } catch (ConstraintViolationException e) {
                     if (logger.isDebugEnabled()) {

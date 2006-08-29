@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="ssiMixinResourceTypeDef" 
+        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="ssi"/>
+    <property name="namespace" ref="SSI_NAMESPACE" /> 
+    <property name="propertyTypeDefinitions" ref="ssiPropertyDefinitions" />
+  </bean>
+
+  <bean id="SSI_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="ssi" />
+    <constructor-arg value="http://www.uio.no/ssi" />
+  </bean>
+
+  <bean id="ssiPropertyDefinitions"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="containsSSIDirectivesPropDef" />
+      </list>
+    </property>    
+  </bean>
+
+  <bean id="containsSSIDirectivesPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="containsSSIDirectives" />
+    <property name="type" ref="TYPE_BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="allowedValues">
+      <list>
+        <ref bean="VALUE_TRUE" />
+      </list>
+    </property>
+    <property name="contentModificationEvaluator" ref="ssiDirectivesEvaluator" />
+  </bean>
+
+  <bean id="ssiDirectivesEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">
+
+    <property name="pattern"><value>&lt;!--#include\s+\w+\s*="[a-zA-Z://.@]+"\s*--&gt;</value></property>
+  </bean>
+
+</beans>

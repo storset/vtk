@@ -14,6 +14,11 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="ssiMixinResourceTypeDef" />
+      </list>
+    </property>    
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="htmlDocTypePropDef" />

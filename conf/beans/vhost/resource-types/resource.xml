@@ -11,6 +11,7 @@
     <property name="mixinTypeDefinitions">
       <list>
         <ref bean="contentDescriptionMixinResourceTypeDef" />
+        <ref bean="headerControlMixinResourceTypeDef" />
       </list>
     </property>    
     <property name="propertyTypeDefinitions">
@@ -164,5 +165,6 @@
   </bean>
 
   <bean id="lastModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedByEvaluator" />
+
 
 </beans>

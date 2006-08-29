@@ -30,27 +30,17 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-import java.io.IOException;
 import java.util.Date;
-
-import junit.framework.TestCase;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import org.vortikal.repository.AbstractRepositoryTestCase;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.token.TokenManager;
 
 
 public class DataAccessorTestCase extends AbstractRepositoryTestCase {

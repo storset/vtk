@@ -34,15 +34,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
-
 import org.vortikal.repository.Resource;
 
 

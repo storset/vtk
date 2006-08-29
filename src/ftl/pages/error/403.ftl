@@ -32,5 +32,11 @@ more information and how?"</A>.</P>
   &nbsp;&nbsp;&nbsp;<A HREF="http://www.uio.no/hjelp/">Hjelp</A>
   <P>Server-administrator: <A HREF="mailto:webmaster@uio.no">webmaster@uio.no</A></P>
 </DIV>
+
+<#if debug>
+<HR STYLE="width: 98%;">
+<#include "/lib/error-detail.ftl" />
+</#if>
+
 </body>
 </html>

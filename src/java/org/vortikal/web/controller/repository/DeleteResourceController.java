@@ -56,13 +56,8 @@ public class DeleteResourceController extends AbstractController implements Init
     private Repository repository;
     private String viewName;
     private String resourcePath;
-    
-    
     private String trustedToken;
     
-    /**
-     * @param repository The repository to set.
-     */
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -71,6 +66,31 @@ public class DeleteResourceController extends AbstractController implements Init
         this.viewName = viewName;
     }
     
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        if (this.viewName == null)
+            throw new BeanInitializationException("Property 'viewName' must be set");
+    }
+
+    protected Repository getRepository() {
+        return this.repository;
+    }
+    
+    protected String getTrustedToken() {
+        return this.trustedToken;
+    }
+
+    protected String getViewName() {
+        return this.viewName;
+    }
+
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -82,10 +102,12 @@ public class DeleteResourceController extends AbstractController implements Init
         }
         
         String uri = requestContext.getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, false);
+
+        String parentUri = URIUtil.getParentURI(uri);
+
         this.repository.delete(token, uri);
     
-        Resource modelResource = this.repository.retrieve(token, resource.getParent(), false);
+        Resource modelResource = this.repository.retrieve(token, parentUri, false);
 
         if (this.resourcePath != null) {
             String newUri = URIUtil.getAbsolutePath(this.resourcePath, uri);
@@ -104,32 +126,5 @@ public class DeleteResourceController extends AbstractController implements Init
         return new ModelAndView(this.viewName, model);
     }
 
-    public void afterPropertiesSet() throws Exception {
-        if (this.viewName == null)
-            throw new BeanInitializationException("Property 'viewName' must be set");
-    }
-
-    public void setTrustedToken(String trustedToken) {
-        this.trustedToken = trustedToken;
-    }
-
-    /**
-     * @param resourcePath The resourcePath to set.
-     */
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
-    }
-    
-    protected Repository getRepository() {
-        return this.repository;
-    }
-    
-    protected String getTrustedToken() {
-        return this.trustedToken;
-    }
-
-    protected String getViewName() {
-        return this.viewName;
-    }
     
 }

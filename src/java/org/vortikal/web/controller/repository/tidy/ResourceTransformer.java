@@ -58,7 +58,7 @@ public class ResourceTransformer implements Controller, InitializingBean {
     // Private non-configurable variables
     private static final String JTIDY_TRANSFORMER = "JTidyTransformer";
     private final String HTML_TO_XHTML = "htmlToXhtml";
-    private final String KUPU_EXTENSION = "-kupu.html";
+    private final String KUPU_EXTENSION = "-webredigerbar.html";
     
     private Transformer transformer;
         

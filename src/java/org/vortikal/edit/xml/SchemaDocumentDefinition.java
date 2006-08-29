@@ -566,13 +566,11 @@ public class SchemaDocumentDefinition {
                 || REQUIRED_STRING_ELEMENT.equals(type)
                 || UNBOUNDED_CHOICE_ELEMENT.equals(type)
                 || UNBOUNDED_ELEMENT.equals(type)) {
-
+            buildAttributes(element);
         } else {
             throw new XMLEditException("element " + element.getName()
                     + " doesn't have the required xsd:appinfo definition");
         }
-        buildAttributes(element);
-
     }
 
 

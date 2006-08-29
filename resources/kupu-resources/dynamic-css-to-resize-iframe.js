@@ -60,7 +60,7 @@ function dyniframesize() {
             }
         }
                 
-        // kupu iframe handling for non-supported browsers is done by the Vortex core system
+        // kupu iframe handling for non-supported browsers is done by the Vortikal core system
         // (browser-sniffer script etc)
     
     }

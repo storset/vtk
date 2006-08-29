@@ -77,14 +77,13 @@ public class CategoryResolvingFactoryBean
 
     /**
      * Gets a list of {@link Service services} declared to belong to a
-     * certain category.
+     * certain category (this.category).
      *
-     * @param category the category in question
      * @return a list of {@link Service} objects belonging to the
      * category in question. If no such services exist, an empty list
      * is returned.
      */
-    private List getObjectsOfCategory(String category) {
+    private List getObjectsOfCategory() {
         // find all services, and sort out those of category 'category';
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, this.clazz, true, false);
@@ -112,7 +111,7 @@ public class CategoryResolvingFactoryBean
     }
 
     public Object getObject() throws Exception {
-        return getObjectsOfCategory(this.category).toArray(new Object[0]);
+        return getObjectsOfCategory().toArray(new Object[0]);
     }
 
     public Class getObjectType() {

@@ -1,9 +1,9 @@
 <project
-   xmlns:j="jelly:core"
-   xmlns:u="jelly:util"
-   xmlns:v="jelly:org.apache.commons.jelly.tags.velocity.VelocityTagLibrary"
-   xmlns:maven="jelly:maven"
-   xmlns:ant="jelly:ant">
+  xmlns:j="jelly:core"
+  xmlns:u="jelly:util"
+  xmlns:v="jelly:org.apache.commons.jelly.tags.velocity.VelocityTagLibrary"
+  xmlns:maven="jelly:maven"
+  xmlns:ant="jelly:ant">
 
   <!--
     In order to include sandbox sources, this pregoal is needed. It
@@ -12,67 +12,63 @@
     in either the project.properties file or the build.properties file
     in the user's home directory.
   -->
-   <preGoal name="java:compile">
-     <attainGoal name="generate-parser" />
-     <j:if test="${sandbox.include}">
+  <preGoal name="java:compile">
+    <attainGoal name="generate-parser" />
+    <j:if test="${sandbox.include}">
       <ant:path id="sandbox.src.set" location="${sandbox.src.dir}"/>
       <maven:addPath id="maven.compile.src.set" refid="sandbox.src.set"/>
-     </j:if>
-   </preGoal>
-
-   <goal name="generate-parser">
-     <attainGoal name="javacc:javacc-generate" />
-
-     <ant:path id="javacc.src.set" location="${maven.build.dir}/generated-src/main/java"/>
-     <maven:addPath id="maven.compile.src.set" refid="javacc.src.set"/>
-   </goal>
-
-
+    </j:if>
+  </preGoal>
+  
+  <goal name="generate-parser">
+    <attainGoal name="javacc:javacc-generate" />
+    
+    <ant:path id="javacc.src.set" location="${maven.build.dir}/generated-src/main/java"/>
+    <maven:addPath id="maven.compile.src.set" refid="javacc.src.set"/>
+  </goal>
+  
+  
   <!--
     Intercept java:compile, add version info to the
     org/vortikal/util/FRAMEWORK_VERSION properties file.
   -->
-   <postGoal name="java:compile">
-     <j:new var="now" className="java.util.Date"/> 
-     <j:invokeStatic var="utc" className="java.util.TimeZone" method="getTimeZone">
-       <j:arg value="UTC"/>
-     </j:invokeStatic>
-     <j:new var="formatter" className="java.text.SimpleDateFormat">
-       <j:arg value="yyyy-MM-dd'T'HH:mm:ss'Z'"/>
-     </j:new>
-     <j:invoke on="${formatter}" method="setTimeZone">
-       <j:arg value="${utc}" />
-     </j:invoke>
-     <j:invoke var="build.date" on="${formatter}" method="format"> 
-       <j:arg value="${now}"/> 
-     </j:invoke> 
-     <j:invokeStatic var="inetaddr" className="java.net.InetAddress" method="getLocalHost"/>
-     <j:invoke var="host" method="getHostName" on="${inetaddr}" />
-     <j:set var="ver.file" value="${maven.build.dest}/org/vortikal/util/FRAMEWORK_VERSION"/>
-     <echo file="${ver.file}">
-       framework.title = ${pom.shortDescription}
-       framework.version = ${pom.currentVersion}
-       build.date = ${build.date}
-       build.host = ${host}
-       vendor.name = ${pom.organization.name}
-       vendor.url = ${pom.organization.url}
-     </echo>
-   </postGoal>
-
-
-
-
-   <postGoal name="war:webapp">
-
+  <postGoal name="java:compile">
+    <j:new var="now" className="java.util.Date"/> 
+    <j:invokeStatic var="utc" className="java.util.TimeZone" method="getTimeZone">
+      <j:arg value="UTC"/>
+    </j:invokeStatic>
+    <j:new var="formatter" className="java.text.SimpleDateFormat">
+      <j:arg value="yyyy-MM-dd'T'HH:mm:ss'Z'"/>
+    </j:new>
+    <j:invoke on="${formatter}" method="setTimeZone">
+      <j:arg value="${utc}" />
+    </j:invoke>
+    <j:invoke var="build.date" on="${formatter}" method="format"> 
+      <j:arg value="${now}"/> 
+    </j:invoke> 
+    <j:invokeStatic var="inetaddr" className="java.net.InetAddress" method="getLocalHost"/>
+    <j:invoke var="host" method="getHostName" on="${inetaddr}" />
+    <j:set var="ver.file" value="${maven.build.dest}/org/vortikal/util/FRAMEWORK_VERSION"/>
+    <echo file="${ver.file}">
+      framework.title = ${pom.shortDescription}
+      framework.version = ${pom.currentVersion}
+      build.date = ${build.date}
+      build.host = ${host}
+      vendor.name = ${pom.organization.name}
+      vendor.url = ${pom.organization.url}
+    </echo>
+  </postGoal>
+  
+  <postGoal name="war:webapp">
     <u:properties file="${maven.conf.dir}/beans/vortikal.properties"/>
     <!-- Avoid shadowing of variables in the build.properties file: -->
     <u:available file="${basedir}/build.properties">
       <u:properties file="${basedir}/build.properties"/>
     </u:available>
-
+    
     <u:tokenize var="classpaths" delim=",">${classpath}</u:tokenize>
     <u:tokenize var="standardExtensionFiles" delim=",">${standardExtensions}</u:tokenize>
-
+    
     <j:set var="targetPath" value="${maven.build.dir}" />
     <j:set var="logPath" value="${maven.build.dir}/logs" /> 
     <!-- 
@@ -81,18 +77,18 @@
     <j:set var="webappDir" value="${maven.war.webapp.dir}" />
     <j:set var="beanConfigDir" value="${destination.beanconfig.dir}" />
     <j:set var="srunPort" value="${srunPort}" />
-
+    
     <u:available file="${maven.war.src}/WEB-INF/beans/vortikal.properties">
       <u:properties file="${maven.war.src}/WEB-INF/beans/vortikal.properties"/>
     </u:available>
-
+    
     <u:available file="${basedir}/build.properties">
       <ant:copy file="${basedir}/build.properties"
-                tofile="${maven.war.webapp.dir}/WEB-INF/classes/vortikal-custom.properties" />
+	        tofile="${maven.war.webapp.dir}/WEB-INF/classes/vortikal-custom.properties" />
       <ant:copy file="${basedir}/build.properties"
-                tofile="${maven.build.dir}/classes/vortikal-custom.properties" />
+	        tofile="${maven.build.dir}/classes/vortikal-custom.properties" />
     </u:available>
-
+    
     <v:merge template="resin.conf" basedir="${maven.conf.dir}"
              name="${maven.build.dir}/resin.conf" />
 
@@ -102,23 +98,22 @@
 
     <u:available file="${maven.war.src}/WEB-INF/extensions.xml">
       <v:merge template="extensions.xml" basedir="${maven.war.src}/WEB-INF"
-             name="${maven.war.webapp.dir}/WEB-INF/extensions.xml" />
+               name="${maven.war.webapp.dir}/WEB-INF/extensions.xml" />
     </u:available>
-
-
-   </postGoal>
-
-   <goal name="etags"
-         prereqs="etags:java"
-         description="generates TAGS files for spring-beans and
-         java classes">
-   </goal>
+  </postGoal>
   
-   <goal name="etags:java"
-         description="Generate TAGS file for java classes">
-     <ant:exec dir="${maven.src.dir}/java" executable="etags" os="Linux">
-       <ant:arg line="--recurse=yes" />
-     </ant:exec>
-   </goal>
-
+  <goal name="etags" description="generates TAGS files for spring-beans">
+    <ant:exec dir="${maven.conf.dir}" executable="etags" os="Linux">
+      <ant:arg line="--recurse=yes" />
+      <ant:arg line="${maven.conf.dir}" />
+    </ant:exec>
+  </goal>
+  
+  <!--
+  <goal name="etags:java" description="Generate TAGS file for java classes">
+    <ant:exec dir="${maven.src.dir}/java" executable="etags" os="Linux">
+      <ant:arg line="- -recurse=yes" />
+    </ant:exec>
+  </goal>
+  -->
 </project>

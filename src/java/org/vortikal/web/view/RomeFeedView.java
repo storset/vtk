@@ -109,7 +109,7 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
     
     private ReferenceDataProvider[] referenceDataProviders;
 
-    private final String FORMAT_PARAMETER_NAME = "format";
+    private static final String FORMAT_PARAMETER_NAME = "format";
     private Service browsingService;
 
     private String defaultFeedType;
@@ -187,7 +187,7 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
     } // end of render()
 
     private String getFormatFromRequest(HttpServletRequest request, SyndFeed feed) {
-        String feedType = request.getParameter(this.FORMAT_PARAMETER_NAME);
+        String feedType = request.getParameter(FORMAT_PARAMETER_NAME);
         if (feedType == null || !isSuuportedFeedType(feedType, feed)) {
             feedType = this.defaultFeedType;
         }

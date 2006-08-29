@@ -53,7 +53,7 @@ public final class Value implements Cloneable {
         if (stringValue.length() > MAX_LENGTH) {
             throw new ValueFormatException(
                 "String value too large: " + stringValue.length() + " (max size = "
-                + this.MAX_LENGTH + ")");
+                + MAX_LENGTH + ")");
         }
 
         this.type = PropertyType.TYPE_STRING;
@@ -89,7 +89,7 @@ public final class Value implements Cloneable {
         if (qualifiedName.length() > MAX_LENGTH) {
             throw new ValueFormatException(
                 "Princpal name too long: " + qualifiedName.length() + " (max size = "
-                + this.MAX_LENGTH + ")");
+                + MAX_LENGTH + ")");
         }
 
         this.type = PropertyType.TYPE_PRINCIPAL;

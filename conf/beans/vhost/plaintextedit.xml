@@ -14,7 +14,7 @@
     </property>
     <property name="attributes">
       <map>
-        <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
+        <entry key="tabOrder"><value type="java.lang.Integer">160</value></entry>
       </map>
     </property>
     <property name="order" value="-100" />

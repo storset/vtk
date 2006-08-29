@@ -181,18 +181,27 @@ public class ResourcePrincipalPermissionAssertion
     public boolean matches(Resource resource, Principal principal) {
         if (resource == null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Resource is null, match = false");
+                logger.debug("Resource is null [match = false]");
             }
             return false;
         }
 
-        if (this.requiresAuthentication && principal == null)
+        if (this.requiresAuthentication && principal == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Principal is null, authentication required");
+            }
             throw new AuthenticationException();
-
+        }
+        
         // XXX: missing resource validation
         String uri = resource.getURI();
 
-        return this.authorizationManager.authorizeAction(uri, this.permission, principal);
+        boolean match = this.authorizationManager.authorizeAction(uri, this.permission, principal);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Unauthorized: uri: " + uri + ", permission: " + this.permission
+                         + ", principal: " + principal + " [match = false]");
+        }
+        return match;
     }
 
 

@@ -30,16 +30,15 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-
-
-
 import java.util.Date;
 import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
+
 import org.springframework.beans.factory.BeanInitializationException;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
@@ -47,8 +46,6 @@ import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.security.Principal;
-
-
 
 /**
  * Evaluates XPath expressions on an XML document.

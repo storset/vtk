@@ -51,6 +51,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
@@ -358,8 +359,12 @@ public abstract class AbstractXmlEditController implements Controller {
         }
 
         /* get required schemaURL */
-        String schemaURL = 
-            resource.getProperty(schemaNamespace, schemaName).getStringValue();
+        Property schemaProp = resource.getProperty(schemaNamespace, schemaName); 
+        if (schemaProp == null)
+            throw new XMLEditException(
+                    "XML document is uneditable, schema reference is missing");
+
+        String schemaURL = schemaProp.getStringValue();
         if (schemaURL == null) 
             throw new XMLEditException("Invalid schema URI '" + schemaURL + "'");
         

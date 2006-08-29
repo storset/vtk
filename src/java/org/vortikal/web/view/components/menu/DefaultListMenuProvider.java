@@ -36,8 +36,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;

@@ -30,10 +30,10 @@
  */
 package org.vortikal.web.controller.properties;
 
-import java.util.Arrays;
+import java.util.List;
+
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
-import java.util.List;
 
 
 

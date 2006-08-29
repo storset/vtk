@@ -32,7 +32,6 @@ package org.vortikal.repository;
 
 
 import java.util.Date;
-import java.util.List;
 
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;

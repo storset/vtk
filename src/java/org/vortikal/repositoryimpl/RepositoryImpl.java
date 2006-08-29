@@ -33,13 +33,11 @@ package org.vortikal.repositoryimpl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;

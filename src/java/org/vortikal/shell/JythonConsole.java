@@ -33,8 +33,7 @@ package org.vortikal.shell;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import org.python.core.PyException;
-import org.python.core.PyObject;
+
 import org.python.util.PythonInterpreter;
 
 /**

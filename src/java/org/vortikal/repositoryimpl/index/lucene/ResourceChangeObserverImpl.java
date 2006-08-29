@@ -42,7 +42,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.index.observation.ResourceACLModification;
 import org.vortikal.repositoryimpl.index.observation.ResourceChange;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifier;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver;

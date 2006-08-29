@@ -379,11 +379,6 @@ public abstract class AbstractXmlEditController implements Controller {
 
         /* try to instantiate schema-parser */
         try {
-
-            if (schemaURL == null) {
-                throw new XMLEditException("XML document is uneditable, schema reference is missing");
-            }
-
             documentDefinition = 
                 new SchemaDocumentDefinition(docType, new URL(schemaURL));
         } catch (JDOMException e) {

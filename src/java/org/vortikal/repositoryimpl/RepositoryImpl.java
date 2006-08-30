@@ -269,7 +269,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             PropertySet fixedProps = this.propertyManager.getFixedCopyProperties(
                 src, principal, destUri);
             this.dao.copy(src, destUri, preserveACL, fixedProps);
-// XXX: file extension of of destination resource may have changed,
+// XXX: file extension of destination resource may have changed,
 // might need re-evaluation.
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();

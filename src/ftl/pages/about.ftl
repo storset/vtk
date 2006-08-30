@@ -171,12 +171,6 @@
                       'content:authorURL' ] / -->
 
   <table class="resourceInfo">
-    <!-- title -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'title' />
-
-    <!-- skipInPath -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'skipInPath' />
-
     <!-- content:keywords -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:keywords' inputSize=40 />
 
@@ -198,7 +192,6 @@
   </table>
 
 
-  <#if !resource.collection>
   <h3 class="resourceInfoHeader">
     <@vrtx.msg
        code="resource.metadata.about.technical"
@@ -206,6 +199,13 @@
   </h3>
   <table class="resourceInfo">
 
+  <#if resource.collection>
+    <!-- title -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'title' />
+
+    <!-- skipInPath -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'skipInPath' />
+  <#else>
     <!-- Content type -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />
 
@@ -240,8 +240,8 @@
     <!-- Plaintext Edit on managed xml -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'plaintext-edit' />
 
-  </table>
   </#if>
+  </table>
   </div>
 
 </body>

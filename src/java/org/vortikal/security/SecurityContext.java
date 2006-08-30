@@ -30,6 +30,7 @@
  */
 package org.vortikal.security;
 
+import org.vortikal.context.BaseContext;
 
 
 public class SecurityContext {
@@ -46,8 +47,6 @@ public class SecurityContext {
     private String token;
     private Principal principal;
     
-    private static ThreadLocal threadLocal = new ThreadLocal();
-
     public SecurityContext(String token, Principal principal) {
         this.token = token;
         this.principal = principal;
@@ -55,11 +54,15 @@ public class SecurityContext {
     
 
     public static void setSecurityContext(SecurityContext securityContext) {
-        threadLocal.set(securityContext);
+        BaseContext ctx = BaseContext.getContext();
+        ctx.setAttribute(SecurityContext.class.getName(), securityContext);
     }
     
     public static SecurityContext getSecurityContext() {
-        return (SecurityContext) threadLocal.get();
+        BaseContext ctx = BaseContext.getContext();
+        SecurityContext securityContext = (SecurityContext)
+            ctx.getAttribute(SecurityContext.class.getName());
+        return securityContext;
     }
     
     /**

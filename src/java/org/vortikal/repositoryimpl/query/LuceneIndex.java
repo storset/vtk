@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -62,7 +63,7 @@ import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
  * try to acquire the lock are <em>blocked and queued</em>. The write lock can be
  * used to prevent other threads from modifying the index (it assures
  * mutually exclusive write access to index between threads).
- *
+ * 
  * @author oyviste
  */
 public class LuceneIndex implements InitializingBean, DisposableBean {
@@ -80,7 +81,8 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     
     private FSBackedLuceneIndex fsIndex;
     
-    private String indexPath;
+    private String storageRootPath;
+    private String storageId;
     private int optimizeInterval = 100;
     private int commitCounter = 0;
     private int mergeFactor = 10;
@@ -99,13 +101,18 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     
     public void afterPropertiesSet() throws BeanInitializationException {
         
-        if (this.indexPath == null) {
-            throw new BeanInitializationException ("Property 'indexPath' not set.");
+        if (this.storageRootPath == null) {
+            throw new BeanInitializationException ("Property 'storageRootPath' not set.");
+        } else if (this.storageId == null) {
+            throw new BeanInitializationException("Property 'storageId' not set.");
         }
         
+        
         try {
-
-            this.fsIndex = new FSBackedLuceneIndex(this.indexPath, 
+            File storageDirectory = initializeStorageDirectory(this.storageRootPath, 
+                                                               this.storageId);
+            
+            this.fsIndex = new FSBackedLuceneIndex(storageDirectory, 
                                                    new KeywordAnalyzer(),
                                                    this.eraseExistingIndex,
                                                    this.forceUnlock);
@@ -117,9 +124,36 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             this.currentReadOnlyReader = this.fsIndex.getNewReadOnlyIndexReader();
             
         } catch (IOException io) {
-            logger.error("Got IOException while initializing indexes: " + io.getMessage());
-            throw new BeanInitializationException("Got IOException while initializing indexes.", io);
+            logger.error("Got IOException while initializing index: " + io.getMessage());
+            throw new BeanInitializationException("Got IOException while initializing index", io);
         }
+    }
+    
+    private File initializeStorageDirectory(String storageRootPath, String storageId)
+        throws IOException {
+        
+        File storageDirectory = new File(storageRootPath, storageId);
+        
+        if (storageDirectory.isDirectory()) {
+            if (! storageDirectory.canWrite()) {
+                throw new IOException("Resolved storage directory '"
+                        + storageDirectory.getAbsolutePath() 
+                        + "' is not writable");
+            }
+        } else if (storageDirectory.isFile()) {
+            throw new IOException("Resolved storage directory '" 
+                    + storageDirectory.getAbsolutePath()
+                    + "' is a file");
+        } else {
+            // Directory does not exist, we need to create it.
+            if (!storageDirectory.mkdir()) {
+                throw new IOException("Failed to create resolved storage directory '"
+                        + storageDirectory.getAbsolutePath() 
+                        + "'");
+            }
+        }
+        
+        return storageDirectory;
     }
     
     /**
@@ -526,16 +560,24 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         this.optimizeInterval = optimizeInterval;
     }
 
-    public String getIndexPath() {
-        return this.indexPath;
-    }
-
-    public void setIndexPath(String indexPath) {
-        this.indexPath = indexPath;
-    }
-
     public void setMaxLockAcquireTimeOnShutdown(int maxLockAcquireTimeOnShutdown) {
         this.maxLockAcquireTimeOnShutdown = maxLockAcquireTimeOnShutdown;
+    }
+
+    public String getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
+    }
+
+    public String getStorageRootPath() {
+        return storageRootPath;
+    }
+
+    public void setStorageRootPath(String storageRootPath) {
+        this.storageRootPath = storageRootPath;
     }
     
 }

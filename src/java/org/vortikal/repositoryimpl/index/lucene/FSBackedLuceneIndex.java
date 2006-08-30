@@ -52,16 +52,25 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex
     private static final Log logger = LogFactory.getLog(FSBackedLuceneIndex.class);
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.indexPath == null) {
-            throw new BeanInitializationException("Required property 'indexPath' not set.");
+        if (this.storageRootPath == null) {
+            throw new BeanInitializationException("Required property 'storageRootPath' not set.");
+        } else if (this.storageId == null) {
+            throw new BeanInitializationException("Required property 'storageId' not set.");
         }
+        
+        try {
+            this.storageDirectory = initializeStorageDirectory(this.storageRootPath,
+                                                               this.storageId);
+        } catch (IOException io) {
+            throw new BeanInitializationException("IOException while initializing storage directory", io);
+        }
+        
         super.afterPropertiesSet();
     }
     
-    /**
-     * Path to index directory on local file system.
-     */
-    private String indexPath;
+    private String storageRootPath;
+    private String storageId;
+    private File storageDirectory;
     
     /** Creates a new instance of FSBackedStandardLuceneIndex */
     public FSBackedLuceneIndex() {
@@ -72,42 +81,57 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex
      * and whenever an index is re-initialized or re-created.
      */
     protected Directory createDirectory(boolean eraseContents) throws IOException {
-        logger.debug("Initializing index directory at path '" + this.indexPath + "'");
-
-        if (this.indexPath == null || "".equals(this.indexPath.trim())) {
-            throw new IOException("Index path invalid: " + this.indexPath);
-        }
+        logger.debug("Initializing index directory at path '" 
+                                                + this.storageDirectory.getAbsolutePath() + "'");
         
-        File path = new File(this.indexPath);
-        if (!path.isDirectory()) {
-            throw new IOException("Path '" + this.indexPath + "' is not a directory.");
-        } else if (!path.canWrite()) {
-            throw new IOException("Path '" + this.indexPath + "' is not writable.");
-        }
-        
-        return FSDirectory.getDirectory(path, eraseContents);
+        return FSDirectory.getDirectory(this.storageDirectory, eraseContents);
     }
     
+    private File initializeStorageDirectory(String storageRootPath, String storageId)
+            throws IOException {
+
+        File storageDirectory = new File(storageRootPath, storageId);
+
+        if (storageDirectory.isDirectory()) {
+            if (!storageDirectory.canWrite()) {
+                throw new IOException("Resolved storage directory '"
+                        + storageDirectory.getAbsolutePath()
+                        + "' is not writable");
+            }
+        } else if (storageDirectory.isFile()) {
+            throw new IOException("Resolved storage directory '"
+                    + storageDirectory.getAbsolutePath() + "' is a file");
+        } else {
+            // Directory does not exist, we need to create it.
+            if (!storageDirectory.mkdir()) {
+                throw new IOException(
+                        "Failed to create resolved storage directory '"
+                                + storageDirectory.getAbsolutePath() + "'");
+            }
+        }
+
+        return storageDirectory;
+    }
+
     public long getIndexByteSize() throws IOException {
         long length = 0;
-        File indexDir = new File(getIndexPath());
-        if (!indexDir.isDirectory()) 
-            throw new IOException("Index path is not a directory: '" +
-                                  getIndexPath() + "'");
-
-        File[] contents = indexDir.listFiles();
+        File[] contents = this.storageDirectory.listFiles();
         for (int i=0; i<contents.length; i++) {
             if (contents[i].isFile()) length += contents[i].length();
         }
         return length;
     }
 
-    public void setIndexPath(String indexPath) {
-        this.indexPath = indexPath;
+    public File getStorageDirectory() {
+        return storageDirectory;
     }
 
-    public String getIndexPath() {
-        return this.indexPath;
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
     }
-    
+
+    public void setStorageRootPath(String storageRootPath) {
+        this.storageRootPath = storageRootPath;
+    }
+
 }

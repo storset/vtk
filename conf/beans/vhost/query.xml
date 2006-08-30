@@ -34,7 +34,8 @@
 
   <!-- A Lucene index accessor instance. Manages low-level access. -->
   <bean id="systemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
-    <property name="indexPath" value="${systemIndexPath}"/>
+    <property name="storageRootPath" value="${indexStorageRootPath}"/>
+    <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
     <property name="maxLockAcquireTimeOnShutdown" value="30"/>
   </bean>
@@ -99,8 +100,10 @@
     <property name="secondaryIndex">
       <bean id="secondarySystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
         <property name="indexAccessor">
+          <!-- This accessor is anonymous, it doesn't need to be referenced from any other beans -->
           <bean class="org.vortikal.repositoryimpl.query.LuceneIndex">
-            <property name="indexPath" value="${secondarySystemIndexPath}"/>
+            <property name="storageRootPath" value="${indexStorageRootPath}"/>
+            <property name="storageId" value="property_index.secondary"/>
             <property name="maxBufferedDocs" value="100"/>
             <property name="mergeFactor" value="100"/>
             <property name="maxMergeDocs" value="15000"/>

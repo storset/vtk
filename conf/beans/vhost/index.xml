@@ -30,7 +30,8 @@
 
   <!-- This is the main index definition. -->
   <bean id="dmsIndex" class="org.vortikal.repositoryimpl.index.lucene.LuceneIndex">
-    <property name="indexPath" value="${dmsIndexPath}"/>
+    <property name="storageRootPath" value="${indexStorageRootPath}"/>
+    <property name="storageId" value="dms"/>
     <property name="optimizeInterval" value="500"/>
     <property name="forceUnlock" value="true"/>
     <property name="indexResourceIdHelper" ref="backendIndexResourceIdHelper"/>

@@ -50,56 +50,52 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
     private static final Log logger = LogFactory.getLog(FSBackedLuceneIndex.class);
     
     /**
-     * Path to index directory on local file system.
+     * Absolute path to existing index storage directory on local file system.
      */
-    private String indexPath;
+    private File storageDirectory;
     
-    /** Creates a new instance of FSBackedStandardLuceneIndex */
-    public FSBackedLuceneIndex(String indexPath, 
+    public FSBackedLuceneIndex(File storageDirectory, 
                                Analyzer analyzer, 
                                boolean eraseExistingIndex,
                                boolean forceUnlock) throws IOException {
-        
         super(analyzer, eraseExistingIndex, forceUnlock);
         
-        this.indexPath = indexPath;
+        this.storageDirectory = storageDirectory;
         
         super.initialize();
+        
     }
-    
+
     /**
      * Create fs directory. One instance of this is created at startup
      * and whenever an index is re-initialized or re-created.
      */
     protected Directory createDirectory(boolean eraseContents) throws IOException {
-        logger.debug("Initializing index directory at path '" + this.indexPath + "'");
+        logger.debug("Initializing index storage directory at path '" 
+                + this.storageDirectory.getAbsolutePath() + "'");
 
-        if (this.indexPath == null || "".equals(this.indexPath.trim())) {
-            throw new IOException("Index path invalid: " + this.indexPath);
+        if (! this.storageDirectory.isDirectory()) {
+            throw new IOException("Storage directory path '" 
+                    + this.storageDirectory.getAbsolutePath() + "' is not a directory.");
+        } else if (! this.storageDirectory.canWrite()) {
+            throw new IOException("Storage directory path '" 
+                    + this.storageDirectory.getAbsolutePath() + "' is not writable.");
         }
         
-        File path = new File(this.indexPath);
-        if (!path.isDirectory()) {
-            throw new IOException("Path '" + this.indexPath + "' is not a directory.");
-        } else if (!path.canWrite()) {
-            throw new IOException("Path '" + this.indexPath + "' is not writable.");
-        }
-        
-        return FSDirectory.getDirectory(path, eraseContents);
+        return FSDirectory.getDirectory(this.storageDirectory, eraseContents);
     }
     
     public long getIndexSizeInBytes() throws IOException {
         long length = 0;
-        File indexDir = new File(this.indexPath);
-        if (!indexDir.isDirectory()) 
-            throw new IOException("Index path is not a directory: '" +
-                                  this.indexPath + "'");
-
-        File[] contents = indexDir.listFiles();
+        File[] contents = this.storageDirectory.listFiles();
         for (int i=0; i<contents.length; i++) {
             if (contents[i].isFile()) length += contents[i].length();
         }
         return length;
+    }
+    
+    public File getStorageDirectory() {
+        return this.storageDirectory;
     }
 
 }

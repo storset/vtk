@@ -122,6 +122,6 @@ public class LuceneIndexStatus implements IndexStatus {
     }
     
     public String getSystemPath() {
-        return this.index.getIndexPath();
+        return this.index.getStorageDirectory().getAbsolutePath();
     }
 }

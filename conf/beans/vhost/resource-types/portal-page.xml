@@ -42,7 +42,7 @@
 
   <bean id="typeIsPortalPage" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="type" />    
     <property name="value" value="portal-page" />
     <property name="checkExistenceOnly" value="false" />

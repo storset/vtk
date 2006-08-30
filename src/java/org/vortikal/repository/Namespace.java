@@ -36,16 +36,16 @@ public class Namespace {
     /**
      * @deprecated this namespace will be removed
      */
-    private final static String CUSTOM_NAMESPACE_URI = 
+    private static final String CUSTOM_NAMESPACE_URI = 
         "http://www.uio.no/vortex/custom-properties";
 
-    public final static Namespace DEFAULT_NAMESPACE = 
+    public static final Namespace DEFAULT_NAMESPACE = 
         new Namespace(null, null);
     
     /**
      * @deprecated this namespace will be removed
      */
-    public final static Namespace CUSTOM_NAMESPACE = 
+    public static final Namespace CUSTOM_NAMESPACE = 
         new Namespace("custom", CUSTOM_NAMESPACE_URI);
     
     private String prefix;

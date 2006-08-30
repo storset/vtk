@@ -531,7 +531,6 @@
       Breadcrumb provider that generates links to the WebDAV service
     </description>
     <property name="service" ref="webdavService"/>
-    <property name="titleOverrideProperties" ref="defaultBreadcrumbTitlePropertyList" />
   </bean>
 
   <bean id="webdavCollectionListingProvider"

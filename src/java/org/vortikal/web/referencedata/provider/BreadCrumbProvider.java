@@ -46,6 +46,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
@@ -76,12 +77,10 @@ import org.vortikal.web.service.Service;
  *   to skip URL generation. That is, {@link BreadcrumbElement#getURL}
  *   will return <code>null</code> for the resources included in this
  *   list.
- *   <li><code>ignoreProperty</code> - a resource property specified
- *   as <code>namespace:name</code> specifying whether to not include
- *   a given resource in the breadcrumb data model. Resources are
- *   ignored when the property exists.
- *   <li><code>titleOverrideProperties</code> - a {@link String} array
- *   of fully qualified property names (<code>namespace:name</code>)
+ *   <li><code>ignoreProperty</code> - a resource property definition specifying
+ *   whether to not include a given resource in the breadcrumb data model. 
+ *   Resources are ignored when the property exists.
+ *   <li><code>titleOverrideProperties</code> - a {@link PropertyTypeDefinition} array
  *   specifying properties that override the names of the resources in
  *   the breadcrumb when present. If such a property is present on a
  *   resource, the value of that property is used as the {@link
@@ -105,22 +104,12 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private Service service = null;
     private String breadcrumbName = "breadcrumb";
     private boolean useDisplayNames = false;
-    private String ignoreProperty = null;
-    private String ignorePropertyNamespace = null;
-    private String ignorePropertyName = null;
-    private Namespace ignorePropertyNS = null;
-    private String[] titleOverrideProperties = null;
-    private String[] titleOverrideNamespaces = null;
-    private String[] titleOverrideNames = null;
+    private PropertyTypeDefinition ignoreProperty = null;
+    private PropertyTypeDefinition[] titleOverrideProperties = null;
     private String[] skippedURLs = null;
     private Set skippedURLSet = null;
     
     
-    public final Repository getRepository() {
-        return this.repository;
-    }
-
-
     public final void setRepository(final Repository newRepository) {
         this.repository = newRepository;
     }
@@ -141,12 +130,12 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
     
 
-    public void setIgnoreProperty(String ignoreProperty) {
+    public void setIgnoreProperty(PropertyTypeDefinition ignoreProperty) {
         this.ignoreProperty = ignoreProperty;
     }
 
 
-    public void setTitleOverrideProperties(String[] titleOverrideProperties) {
+    public void setTitleOverrideProperties(PropertyTypeDefinition[] titleOverrideProperties) {
         this.titleOverrideProperties = titleOverrideProperties;
     }
     
@@ -168,27 +157,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         if (this.breadcrumbName == null) {
             throw new BeanInitializationException(
                 "Property 'breadcrumbName' cannot be null");
-        }
-        if (this.ignoreProperty != null) {
-            if (this.ignoreProperty.indexOf(":") == -1) {
-                throw new BeanInitializationException(
-                    "Bad property name: " + this.ignoreProperty);
-            }
-            this.ignorePropertyNamespace = this.ignoreProperty.substring(
-                0, this.ignoreProperty.lastIndexOf(":"));
-            this.ignorePropertyName = this.ignoreProperty.substring(
-                this.ignoreProperty.lastIndexOf(":") + 1);
-            this.ignorePropertyNS = Namespace.getNamespace(this.ignorePropertyNamespace);
-        }
-        if (this.titleOverrideProperties != null) {
-            for (int i = 0; i < this.titleOverrideProperties.length; i++) {
-                if (this.titleOverrideProperties[i].indexOf("") == -1) {
-                    throw new BeanInitializationException(
-                        "Title override property " + this.titleOverrideProperties[i]
-                        + "is not a fully qualified property name");
-                }
-            }
-            initTitleOverrideProperties();
         }
 
         if (this.skippedURLs != null) {
@@ -243,8 +211,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
     private boolean checkIgnore(Resource resource) {
         if (this.ignoreProperty != null) {
-            Property p = resource.getProperty(this.ignorePropertyNS,
-                                              this.ignorePropertyName);
+            Property p = resource.getProperty(this.ignoreProperty.getNamespace(),
+                                              this.ignoreProperty.getName());
             if (p != null) {
                 return true;
             }
@@ -260,8 +228,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             // Check titleOverrideProperties in correct order
             for (int i = 0; i < this.titleOverrideProperties.length; i++) {
 
-                Namespace namespace = Namespace.getNamespace(this.titleOverrideNamespaces[i]);
-                String name = this.titleOverrideNames[i];
+                Namespace namespace = this.titleOverrideProperties[i].getNamespace();
+                String name = this.titleOverrideProperties[i].getName();
                 
                 Property property = resource.getProperty(namespace, name);
                 if (property != null && property.getStringValue() != null) {
@@ -269,27 +237,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 }
             }
         }
-        return (this.useDisplayNames) ?
-            resource.getDisplayName() : resource.getName();
-    }
-    
-
-    private void initTitleOverrideProperties() {
-
-        this.titleOverrideNamespaces = new String[this.titleOverrideProperties.length];
-        this.titleOverrideNames = new String[this.titleOverrideProperties.length];
-
+        if (this.useDisplayNames) return resource.getDisplayName();
         
-        for (int i = 0; i < this.titleOverrideProperties.length; i++) {
-
-            String namespace = this.titleOverrideProperties[i].substring(
-                    0, this.titleOverrideProperties[i].lastIndexOf(":"));
-            String name = this.titleOverrideProperties[i].substring(
-                this.titleOverrideProperties[i].lastIndexOf(":") + 1);
-
-            this.titleOverrideNamespaces[i] = namespace;
-            this.titleOverrideNames[i] = name;
-        }
+        if (resource.getName().equals("/")) return repository.getId();
+        
+        return resource.getName();
     }
     
     public String toString() {

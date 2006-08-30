@@ -208,15 +208,6 @@
 
   <!-- Model data providers -->
 
-    <bean id="defaultBreadcrumbTitlePropertyList" class="java.util.ArrayList">
-      <constructor-arg>
-        <list>
-          <value>http://www.uio.no/vortex/custom-properties:title</value>
-        </list>
-      </constructor-arg>
-    </bean>
-
-
   <bean id="resourceTitleProvider"
         class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
         parent="requestLocalRepositoryAware">
@@ -431,25 +422,12 @@
       Breadcrumb provider that generates links to the view service
     </description>
     <property name="service" ref="viewService"/>
-    <property name="ignoreProperty"
-              value="http://www.uio.no/vortex/custom-properties:collection-skip-in-path" />
+    <property name="ignoreProperty" ref="skipInPathPropDef"/>
     <property name="titleOverrideProperties">
       <list>
-        <value>http://www.uio.no/vortex/custom-properties:collection-name-in-path</value>
-        <value>http://www.uio.no/vortex/custom-properties:title</value>
+        <ref bean="titlePropDef" />
       </list>
     </property>
-  </bean>
-
-  <bean id="manageBreadCrumbProvider" 
-        class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
-        parent="requestLocalRepositoryAware">
-    <description>
-      Breadcrumb provider that generates links to the manage service
-    </description>
-    <property name="breadcrumbName" value="manageBreadCrumb" />
-    <property name="service" ref="manageService"/>
-    <property name="titleOverrideProperties" ref="defaultBreadcrumbTitlePropertyList" />
   </bean>
 
  <!-- Config for view technologies -->

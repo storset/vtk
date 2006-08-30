@@ -23,9 +23,6 @@
 <@vrtx.msg code="breadcrumb.locationTitle" default="You are here"/>:
   <#list crumbs as elem>
     <#assign name = elem.title/>
-    <#if name == '/'>
-      <#assign name = vrtx.getMsg("breadcrumb.top", "Top")/>
-    </#if>
     <#if elem.URL?exists>
       <a href="${elem.URL?html}">${name}</a> &gt;
     <#else>

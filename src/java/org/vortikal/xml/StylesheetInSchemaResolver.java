@@ -71,6 +71,9 @@ public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
     
 
 
+    /** 
+     * @see org.vortikal.xml.StylesheetReferenceResolver#getStylesheetIdentifier(org.vortikal.repository.PropertySet, org.jdom.Document)
+     */
     public String getStylesheetIdentifier(PropertySet resource, Document document) {
 
         String docType = document.getRootElement().getAttributeValue(

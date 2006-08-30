@@ -164,8 +164,6 @@
       Breadcrumb provider that generates links to the browse service
     </description>
     <property name="service" ref="browseService"/>
-    <property name="titleOverrideProperties" 
-              ref="defaultBreadcrumbTitlePropertyList" />
   </bean>
 
 

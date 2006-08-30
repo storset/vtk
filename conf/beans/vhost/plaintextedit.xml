@@ -24,7 +24,7 @@
         <ref bean="actionParameterEqualsPlaintextEdit" />
 
         <ref bean="resourceTypeIsText" />
-        <ref bean="resourceTypeIsNotXml" />
+        <ref bean="resourceTypeIsNotManagedXml" />
       </list>
     </property>
     <property name="handler">
@@ -37,7 +37,7 @@
       <list>
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="actionParameterEqualsPlaintextEdit" />
-        <ref bean="resourceTypeIsXml" />
+        <ref bean="resourceTypeIsManagedXml" />
         <ref bean="plaintextEditPropertyIsSet" />
       </list>
     </property>
@@ -47,17 +47,17 @@
     <property name="resourceTypeDefinition" ref="textResourceTypeDefinition" />
   </bean>
 
-  <bean id="resourceTypeIsXml" class="org.vortikal.web.service.ResourceTypeAssertion">
+  <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="managedXmlResource" />
   </bean>
 
-  <bean id="resourceTypeIsNotXml" parent="resourceTypeIsXml">
+  <bean id="resourceTypeIsNotManagedXml" parent="resourceTypeIsManagedXml">
     <property name="invert" value="true" />
   </bean>
 
   <bean id="plaintextEditPropertyIsSet"
         class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" ref="CUSTOM_NAMESPACE" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="plaintext-edit" />
     <property name="checkExistenceOnly" value="true" />
   </bean>

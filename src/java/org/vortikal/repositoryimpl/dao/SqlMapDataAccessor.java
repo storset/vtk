@@ -616,7 +616,8 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     }
     
     
-    public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
+    public void copy(ResourceImpl resource, ResourceImpl dest,
+                     String destURI, boolean copyACLs,
                      PropertySet fixedProperties) throws IOException {
         try {
             this.sqlMapClient.startTransaction();
@@ -692,6 +693,10 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             this.sqlMapClient.update(sqlMap, parameters);
 
             this.contentStore.copy(resource.getURI(), destURI);
+
+            parameters = getResourceAsMap(dest);
+            sqlMap = getSqlMap("updateResource");
+            this.sqlMapClient.update(sqlMap, parameters);
 
             this.sqlMapClient.commitTransaction();
         } catch (SQLException e) {

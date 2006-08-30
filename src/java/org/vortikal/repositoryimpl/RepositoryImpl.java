@@ -248,7 +248,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         if (dest == null) {
             overwrite = false;
         } else if (!overwrite) {
-            throw new ResourceOverwriteException();
+            throw new ResourceOverwriteException(
+                "Copy: cannot overwrite resource " + destUri);
         } 
         
         String destParentUri = URIUtil.getParentURI(destUri);
@@ -268,15 +269,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             PropertySet fixedProps = this.propertyManager.getFixedCopyProperties(
                 src, principal, destUri);
-            this.dao.copy(src, destUri, preserveACL, fixedProps);
+            destParent = this.propertyManager.getDestinationCopyResource(destParent, principal);
+            this.dao.copy(src, destParent, destUri, preserveACL, fixedProps);
+
 // XXX: file extension of destination resource may have changed,
 // might need re-evaluation.
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
 
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " +
-                "clone() resource: " + destUri);
+            throw new IOException("An internal error occurred: unable to clone()");
         }
 
         this.context.publishEvent(new ResourceCreationEvent(this, dest));
@@ -329,20 +331,20 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         this.authorizationManager.authorizeMove(srcUri, destUri, principal, overwrite);
 
-        // Performing move operation
+        // Performing delete operation
         if (dest != null) {
             this.dao.delete(dest);
             this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
                     dest.isCollection()));
         }
         
-        this.dao.copy(src, destUri, true, null);
-
         try {
+            destParent = this.propertyManager.getDestinationCopyResource(destParent, principal);
+            this.dao.copy(src, destParent, destUri, true, null);
+
             dest = (ResourceImpl) this.dao.load(destUri).clone();
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " +
-                "clone() resource: " + destUri);
+            throw new IOException("clone() operation failed");
         }
         this.context.publishEvent(new ResourceCreationEvent(this, dest));
 

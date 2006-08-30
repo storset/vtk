@@ -63,7 +63,10 @@ public interface RepositoryPropertyHelper {
             Principal principal);
 
     public PropertySet getFixedCopyProperties(Resource resource,
-            Principal principal, String destUri)
-            throws CloneNotSupportedException;
+           Principal principal, String destUri) throws CloneNotSupportedException;
 
+    public ResourceImpl getDestinationCopyResource(ResourceImpl dest,
+           Principal principal) throws CloneNotSupportedException;
+    
+           
 }

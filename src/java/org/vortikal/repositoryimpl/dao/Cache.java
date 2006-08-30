@@ -367,15 +367,15 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public void copy(ResourceImpl r, String destURI, boolean copyACLs,
+    public void copy(ResourceImpl r, ResourceImpl dest, String destURI, boolean copyACLs,
                      PropertySet fixedProperties) throws IOException {
         
         List uris = new ArrayList();
         uris.add(r.getURI());
         uris.add(destURI);
 
-        String destParentURI = URIUtil.getParentURI(destURI);
-        if ((destParentURI != null) && this.items.containsURI(destParentURI)) {
+        String destParentURI = dest.getURI();
+        if (this.items.containsURI(destParentURI)) {
             uris.add(destParentURI);
         }
 
@@ -388,7 +388,7 @@ public class Cache implements DataAccessor, InitializingBean {
         this.lockManager.lock(uris);
 
         try {
-            this.wrappedAccessor.copy(r, destURI, copyACLs, fixedProperties);
+            this.wrappedAccessor.copy(r, dest, destURI, copyACLs, fixedProperties);
 
             if (this.items.containsURI(destParentURI)) {
                 this.items.remove(destParentURI);

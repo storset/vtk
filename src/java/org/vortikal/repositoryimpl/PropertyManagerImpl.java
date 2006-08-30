@@ -924,17 +924,32 @@ public class PropertyManagerImpl implements PropertyManager,
     
 
 
+    public ResourceImpl getDestinationCopyResource(ResourceImpl dest, Principal principal)
+        throws CloneNotSupportedException {
+
+        java.util.Date now = new java.util.Date();
+        ResourceImpl copy = (ResourceImpl) dest.clone();
+        Property lastModified = copy.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME);
+        lastModified.setDateValue(now);
+        Property contentLastModified = (Property) copy.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
+        contentLastModified.setDateValue(now);
+
+        return copy;
+    }
+    
+
     public PropertySet getFixedCopyProperties(Resource resource, Principal principal, String destUri)
         throws CloneNotSupportedException {
         PropertySetImpl fixedProps = new PropertySetImpl(destUri);
-
         java.util.Date now = new java.util.Date();
 
         Property owner = (Property) resource.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME).clone();
         owner.setPrincipalValue(principal);
         fixedProps.addProperty(owner);
-        
+            
         Property lastModified = (Property) resource.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME).clone();
         lastModified.setDateValue(now);

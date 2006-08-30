@@ -128,13 +128,16 @@ public interface DataAccessor {
     /**
      * Atomically copies a resource to a new destination.
      * @param resource the resource to copy from
+     * @param dest the resource to copy intto (becomes the parent of
+     * the copied resource after the copy operation)
      * @param destURI the destination path
      * @param copyACLs whether to copy ACLs from the existing
      * resource, or to inherit from the new parent resource
      * @param fixedProperties a set of properties to set on the new
      * resource(s) instead of copying from the existing
      */
-    public void copy(ResourceImpl resource, String destURI, boolean copyACLs,
+    public void copy(ResourceImpl resource, ResourceImpl dest,
+                     String destURI, boolean copyACLs,
                      PropertySet fixedProperties) throws IOException;
 
 

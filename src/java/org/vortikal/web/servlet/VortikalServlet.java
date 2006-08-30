@@ -55,6 +55,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
+
+import org.vortikal.context.BaseContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -130,6 +132,8 @@ public class VortikalServlet extends DispatcherServlet {
     private static final String SECURITY_INITIALIZER_BEAN_NAME = "securityInitializer";
     private static final String REQUEST_CONTEXT_INITIALIZER_BEAN_NAME = "requestContextInitializer";
     private static final String REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME = "repositoryContextInitializer";
+    
+    public static final String INDEX_FILE_REQUEST_ATTRIBUTE = VortikalServlet.class.getName() + ".index_file_request";
     
     
     private Log logger = LogFactory.getLog(this.getClass().getName());
@@ -318,6 +322,11 @@ public class VortikalServlet extends DispatcherServlet {
     protected void service(HttpServletRequest request,
                                  HttpServletResponse response) 
         throws ServletException, IOException {
+
+        BaseContext.pushContext();
+
+        System.out.println("__attr: " + request.getAttribute(INDEX_FILE_REQUEST_ATTRIBUTE));
+        
         
         StatusAwareResponseWrapper responseWrapper = new StatusAwareResponseWrapper(response);
 
@@ -426,22 +435,23 @@ public class VortikalServlet extends DispatcherServlet {
 
             long processingTime = System.currentTimeMillis() - startTime;
 
-            logRequest(request, responseWrapper, processingTime, !proceedService);
-
-            getWebApplicationContext().publishEvent(
+            if (request.getAttribute(INDEX_FILE_REQUEST_ATTRIBUTE) == null) {
+                logRequest(request, responseWrapper, processingTime, !proceedService);
+                getWebApplicationContext().publishEvent(
                     new RequestHandledEvent(this, request.getRequestURI(),
-                            processingTime, request.getRemoteAddr(), request
-                                    .getMethod(), getServletConfig()
-                                    .getServletName(), WebUtils
-                                    .getSessionId(request),
+                                            processingTime, request.getRemoteAddr(), request
+                                            .getMethod(), getServletConfig()
+                                            .getServletName(), WebUtils
+                                            .getSessionId(request),
+                                            getUsernameForRequest(request), failureCause));
 
-                            getUsernameForRequest(request), failureCause));
+            }
 
             this.securityInitializer.destroyContext();
             this.requestContextInitializer.destroyContext();
             Thread.currentThread().setName(threadName);
+            BaseContext.popContext();
         }
-        
     }
 
         

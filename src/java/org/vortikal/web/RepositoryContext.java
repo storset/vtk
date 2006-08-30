@@ -34,11 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.context.BaseContext;
 
 
 public class RepositoryContext {
 
-    private static ThreadLocal threadLocal = new ThreadLocal();
     private Map tokenMap = new HashMap();
 
     private static final String KEY_FOR_PROCESSING_HITS = "forProcessingHits";
@@ -49,12 +49,16 @@ public class RepositoryContext {
     
 
     public static void setRepositoryContext(RepositoryContext repositoryContext) {
-        threadLocal.set(repositoryContext);
+        BaseContext ctx = BaseContext.getContext();
+        ctx.setAttribute(RepositoryContext.class.getName(), repositoryContext);
     }
     
 
     public static RepositoryContext getRepositoryContext() {
-        return (RepositoryContext) threadLocal.get();
+        BaseContext ctx = BaseContext.getContext();
+        RepositoryContext repositoryContext = (RepositoryContext)
+            ctx.getAttribute(RepositoryContext.class.getName());
+        return repositoryContext;
     }
     
     
@@ -131,6 +135,5 @@ public class RepositoryContext {
         Map notForProcessingMisses = (Map) tokenMap.get(KEY_NOT_FOR_PROCESSING_MISSES);
         return (Throwable) notForProcessingMisses.get(uri);
     }
-
     
 }

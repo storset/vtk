@@ -32,6 +32,7 @@ package org.vortikal.web;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.context.BaseContext;
 import org.vortikal.web.service.Service;
 
 
@@ -46,8 +47,6 @@ import org.vortikal.web.service.Service;
  */
 public class RequestContext {
 
-    private static ThreadLocal threadLocal = new ThreadLocal();
-    
     private final HttpServletRequest servletRequest;
     private final Service service;
     private final String resourceURI;
@@ -61,11 +60,15 @@ public class RequestContext {
     }
     
     public static void setRequestContext(RequestContext requestContext) {
-        threadLocal.set(requestContext);
+        BaseContext ctx = BaseContext.getContext();
+        ctx.setAttribute(RequestContext.class.getName(), requestContext);
     }
     
     public static RequestContext getRequestContext() {
-        return (RequestContext) threadLocal.get();
+        BaseContext ctx = BaseContext.getContext();
+        RequestContext requestContext = (RequestContext)
+            ctx.getAttribute(RequestContext.class.getName());
+        return requestContext;
     }
     
 
@@ -101,7 +104,6 @@ public class RequestContext {
         return this.resourceURI;
     }
     
-
     
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getName());

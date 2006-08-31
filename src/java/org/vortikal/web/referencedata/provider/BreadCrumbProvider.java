@@ -30,14 +30,14 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -53,6 +53,7 @@ import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.servlet.VortikalServlet;
 
 
 /**
@@ -94,7 +95,7 @@ import org.vortikal.web.service.Service;
  * <li><code>breadcrumb</code> (or, if the property
  * <code>breadcrumbName</code> is specified, the value of that
  * property): a {@link BreadcrumbElement} array constituting the
- * breadcrumb.
+ * breadcrumb trail.
  * </ul>
  */
 public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBean {
@@ -181,7 +182,12 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         
         List breadCrumb = new ArrayList();
 
-        for (int i = 0; i < path.length - 1; i++) {
+        int length = path.length;
+        if (request.getAttribute(VortikalServlet.INDEX_FILE_REQUEST_ATTRIBUTE) != null) {
+            length--;
+        }
+
+        for (int i = 0; i < length - 1; i++) {
             try {
                 Resource r = this.repository.retrieve(token, incrementalPath[i], true);
 

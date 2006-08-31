@@ -1140,7 +1140,7 @@
         parent="requestLocalRepositoryAware">
     <property name="service" ref="collectionListingService" />
     <property name="viewName" value="previewIframe"/>
-    <!--property name="childNames" ref="indexFileList" /-->
+    <property name="childNames" ref="indexFileList" />
   </bean>
 
   <bean id="previewIndexHtmlHandler" 

@@ -208,28 +208,32 @@
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
+
+    <!-- new xalan and xerces deps -->
     <dependency>
-      <id>xerces</id>
+      <id>xercesImpl</id>
       <groupId>xerces</groupId>
-      <version>2.4.0</version>
+      <version>2.8.0</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>xml-apis</id>
-      <version>2.0.2</version>
+      <groupId>xerces</groupId>
+      <version>from.xalan.2.7.0.tgz</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
     <dependency>
       <id>xalan</id>
-      <version>2.5.1</version>
+      <version>2.7.0</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
     </dependency>
+
     <dependency>
       <id>jmock</id>
       <version>1.0.1</version>

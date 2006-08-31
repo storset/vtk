@@ -133,8 +133,13 @@ public class VortikalServlet extends DispatcherServlet {
     private static final String REQUEST_CONTEXT_INITIALIZER_BEAN_NAME = "requestContextInitializer";
     private static final String REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME = "repositoryContextInitializer";
     
-    public static final String INDEX_FILE_REQUEST_ATTRIBUTE = VortikalServlet.class.getName() + ".index_file_request";
+    public static final String INDEX_FILE_REQUEST_ATTRIBUTE =
+        VortikalServlet.class.getName() + ".index_file_request";
     
+    public static final String SERVLET_NAME_SERVLET_CONTEXT_ATTRIBUTE =
+        VortikalServlet.class.getName() + ".name_context_attribute";
+    
+
     
     private Log logger = LogFactory.getLog(this.getClass().getName());
     private Log requestLogger = LogFactory.getLog(this.getClass().getName() + ".Request");
@@ -161,6 +166,8 @@ public class VortikalServlet extends DispatcherServlet {
             Thread.currentThread().setName(config.getServletName());
             this.logger.info(getServletInfo());
             super.init(config);
+            getServletContext().setAttribute(SERVLET_NAME_SERVLET_CONTEXT_ATTRIBUTE,
+                                             config.getServletName());
         } finally {
             Thread.currentThread().setName(threadName);
         }

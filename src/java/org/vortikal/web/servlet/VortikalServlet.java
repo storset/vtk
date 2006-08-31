@@ -323,13 +323,7 @@ public class VortikalServlet extends DispatcherServlet {
                                  HttpServletResponse response) 
         throws ServletException, IOException {
 
-        BaseContext.pushContext();
-
-        System.out.println("__attr: " + request.getAttribute(INDEX_FILE_REQUEST_ATTRIBUTE));
-        
-        
         StatusAwareResponseWrapper responseWrapper = new StatusAwareResponseWrapper(response);
-
         long startTime = System.currentTimeMillis();
         Throwable failureCause = null;
 
@@ -345,6 +339,7 @@ public class VortikalServlet extends DispatcherServlet {
 
         try {
 
+            BaseContext.pushContext();
             Thread.currentThread().setName(
                     this.getServletName() + "." + String.valueOf(number));
 

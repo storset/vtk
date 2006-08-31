@@ -60,8 +60,10 @@ public class ServiceAttributeComparator implements Comparator {
 
     public int compare(Object o1, Object o2) {
       
-        Object a1 = (o1 instanceof Service ? ((Service) o1).getAttribute(this.attributeName) : null);
-        Object a2 = (o2 instanceof Service ? ((Service) o2).getAttribute(this.attributeName) : null);
+        Object a1 = (o1 instanceof Service ?
+                     ((Service) o1).getAttribute(this.attributeName) : null);
+        Object a2 = (o2 instanceof Service ?
+                     ((Service) o2).getAttribute(this.attributeName) : null);
 
         if (a1 == null) {
             throw new IllegalArgumentException(
@@ -88,6 +90,12 @@ public class ServiceAttributeComparator implements Comparator {
             return -1;
         }
         return 1;
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": serviceAttribute = ").append(this.attributeName);
+        return sb.toString();
     }
     
 }

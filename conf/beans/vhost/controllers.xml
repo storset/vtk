@@ -31,6 +31,13 @@
     <property name="displayProcessed" value="true" />
   </bean>
   
+  <bean id="displayIndexFileHandler" class="org.vortikal.web.controller.IndexFileController"
+        parent="requestLocalRepositoryAware">
+    <property name="indexFiles" ref="indexFileList" />
+    <property name="servletName" value="vortikal" />
+  </bean>
+
+
   <bean id="collectionListingAsFeedHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">

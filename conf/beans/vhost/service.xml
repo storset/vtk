@@ -175,10 +175,9 @@
       </list>
     </property>
     <property name="handler" ref="collectionListingHandler" />
-
     <property name="services">
       <list>
-        <ref bean="displayIndexHtmlFileService" />
+        <ref bean="displayIndexFileService" />
       </list>    
     </property>
   </bean>
@@ -194,30 +193,24 @@
   </bean>
 
 
-  <bean id="displayIndexHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
+
+  <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <bean id="hasIndexHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index.html" />
-        </bean>
+        <ref bean="hasIndexFileAssertion" />
       </list>
     </property>
-    <property name="handler" ref="displayIndexHtmlHandler" />
-  </bean>                
+    <property name="handler" ref="displayIndexFileHandler" />
+  </bean>
 
+  <bean id="hasIndexFileAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
+    <property name="childNames" ref="indexFileList"/>
+  </bean>
 
-
-  <bean id="displayIndexEngHtmlFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListingService" />
-    <property name="assertions">
-      <list>
-        <bean id="hasIndexEngHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index-eng.html" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayIndexEngHtmlHandler" />
-  </bean>                
+  <bean id="indexFileList" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList"
+              value="index.xml,index.html,index-eng.xml,index-eng.html,index.htm,index-eng.htm" />
+  </bean>
 
 
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">

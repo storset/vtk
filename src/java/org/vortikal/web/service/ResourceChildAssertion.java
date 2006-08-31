@@ -30,8 +30,12 @@
  */
 package org.vortikal.web.service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -54,13 +58,66 @@ import org.vortikal.security.Principal;
  *   <li><code>trustedToken</code> - required if childAssertion is set.
  * </ul>
  */
-public class ResourceChildAssertion extends AbstractRepositoryAssertion implements InitializingBean  {
+public class ResourceChildAssertion extends AbstractRepositoryAssertion
+  implements InitializingBean  {
 
     private String childName;
+    private String[] childNames;
+    private Set childNameSet = new HashSet();
     private Assertion[] childResourceAssertions;
     private Repository repository;
     private String trustedToken;
     
+    public void setChildName(String childName) {
+        if (childName == null) throw new IllegalArgumentException(
+            "Property 'childName' cannot be null");
+        this.childName = childName;
+    }
+    
+    public void setChildNames(String[] childNames) {
+        if (childNames == null) throw new IllegalArgumentException(
+            "Property 'childNames' cannot be null");
+        this.childNames = childNames;
+    }
+    
+    public boolean conflicts(Assertion assertion) {
+        return false;
+    }
+
+    public void setChildResourceAssertions(Assertion[] childResourceAssertions) {
+        this.childResourceAssertions = childResourceAssertions;
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
+    }
+
+
+    public void afterPropertiesSet() throws Exception {
+        if (this.childName == null && this.childNames == null) 
+            throw new BeanInitializationException(
+                "One of JavaBean properties 'childName' or 'childNames' must be specified");
+        if (this.childResourceAssertions != null && this.repository == null) 
+            throw new BeanInitializationException(
+                "JavaBean Property 'repository' required when property 'childResourceAssertions' is set");
+        if (this.childResourceAssertions != null && this.trustedToken == null) 
+            throw new BeanInitializationException(
+                "JavaBean Property 'trustedToken' required when property 'childResourceAssertions' is set");
+        if (this.childName != null) {
+            this.childNameSet.add(this.childName);
+        }
+        if (this.childNames != null) {
+            for (int i = 0; i < this.childNames.length; i++) {
+                this.childNameSet.add(this.childNames[i]);    
+            }
+        }
+    }
+
+
     public boolean matches(Resource resource, Principal principal) {
         if (resource == null || !resource.isCollection()) {
             return false;
@@ -71,7 +128,7 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
         
         for (int i = 0; i < childURIs.length; i++) {
             String childURI = childURIs[i];
-            if (childURI.substring(childURI.lastIndexOf("/") + 1).equals(this.childName)) {
+            if (this.childNameSet.contains(childURI.substring(childURI.lastIndexOf("/") + 1))) {
                 if (this.childResourceAssertions == null) return true;
                 
                 try {
@@ -88,26 +145,14 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
                 }
             }
         }
-        
         return false;
     }
-
-    public void setChildName(String childName) {
-        if (childName == null) throw new IllegalArgumentException(
-            "Property 'childName' cannot be null");
-        this.childName = childName;
-    }
-    
-    public boolean conflicts(Assertion assertion) {
-        return false;
-    }
-
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
         
         sb.append(super.toString());
-        sb.append("; childName = ").append(this.childName);
+        sb.append("; childNames = ").append(this.childNameSet);
         if (this.childResourceAssertions != null) {
             sb.append("; childResourceAssertions = ");
             sb.append(java.util.Arrays.asList(this.childResourceAssertions));
@@ -115,29 +160,6 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion implemen
         return sb.toString();
     }
 
-    public void setChildResourceAssertions(Assertion[] childResourceAssertions) {
-        this.childResourceAssertions = childResourceAssertions;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.childName == null) 
-            throw new BeanInitializationException(
-                "Required property 'childName' not set");
-        if (this.childResourceAssertions != null && this.repository == null) 
-            throw new BeanInitializationException(
-                "Property 'repository' required when property 'childResourceAssertions' is set");
-        if (this.childResourceAssertions != null && this.trustedToken == null) 
-            throw new BeanInitializationException(
-                "Property 'trustedToken' required when property 'childResourceAssertions' is set");
-    }
-
-    public void setTrustedToken(String trustedToken) {
-        this.trustedToken = trustedToken;
-    }
     
     
     

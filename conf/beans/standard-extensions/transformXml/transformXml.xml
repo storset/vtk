@@ -4,53 +4,6 @@
 <beans>
 
 
-  <bean id="indexHtmlIsXmlService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="displayIndexHtmlFileService" />
-
-    <property name="assertions">
-      <list>
-        <bean id="indexHtmlIsXmlAssertion"
-              class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index.html" />
-          <property name="trustedToken" ref="trustedToken" />
-          <property name="repository" ref="repository" />
-          <property name="childResourceAssertions">
-            <list>
-              <ref bean="resourceIsManagedXml" />
-              <!-- XXX: temporarily removed: -->
-              <!--ref bean="viewXslPropSet" /-->
-            </list>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayIndexHtmlAsXmlHandler" />
-  </bean>
-
-
-  <bean id="indexEngHtmlIsXmlService" class="org.vortikal.web.service.ServiceImpl">
-
-    <property name="parent" ref="displayIndexEngHtmlFileService" />
-
-    <property name="assertions">
-      <list>
-        <bean id="indexEngHtmlIsXmlAssertion"
-              class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index-eng.html" />
-          <property name="trustedToken" ref="trustedToken" />
-          <property name="repository" ref="repository" />
-          <property name="childResourceAssertions">
-            <list>
-              <ref bean="resourceIsManagedXml" />
-              <!-- XXX: temporarily removed: -->
-              <!--ref bean="viewXslPropSet" /-->
-            </list>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayIndexEngHtmlAsXmlHandler" />
-  </bean>
 
 
 
@@ -109,70 +62,6 @@
   </bean>
 
 
-  <bean id="previewTransformIndexXmlFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="previewCollectionListingService" />
-    <property name="order" value="0" />
-
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName">
-            <value>index.xml</value>
-          </property>
-          <property name="repository" ref="repository" />
-          <property name="trustedToken" ref="trustedToken" />
-          <property name="childResourceAssertions">
-            <list>
-              <ref bean="resourceIsManagedXml" />
-              <!-- XXX: temporarily removed: -->
-              <!--ref bean="viewXslPropSet" /-->
-            </list>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="previewCollectionListingServiceInterceptor" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="previewIndexXmlHandler" />
-    </property>
-  </bean>                
-
-  <bean id="previewTransformIndexEngXmlFileService"
-        class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="previewCollectionListingService" />
-    <property name="order" value="1" />
-
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName">
-            <value>index-eng.xml</value>
-          </property>
-          <property name="repository" ref="repository" />
-          <property name="trustedToken" ref="trustedToken" />
-          <property name="childResourceAssertions">
-            <list>
-              <ref bean="resourceIsManagedXml" />
-              <!-- XXX: temporarily removed: -->
-              <!--ref bean="viewXslPropSet" /-->
-            </list>
-          </property>
-        </bean>
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="previewCollectionListingServiceInterceptor" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="previewIndexEngXmlHandler" />
-    </property>
-  </bean>                
 
 
   <bean id="resourceIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
@@ -261,76 +150,6 @@
   </bean>
 
 
-
-  <bean id="transformIndexXmlFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListingService" />
-    <property name="order" value="0" />
-
-    <property name="assertions">
-      <list>
-        <bean id="hasIndexXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index.xml" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayIndexXmlHandler" />
-    <property name="services">
-      <list>
-        <bean id="indexXmlIsHtmlService" class="org.vortikal.web.service.ServiceImpl">
-          <property name="assertions">
-            <list>
-              <bean id="indexXmlIsHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-                <property name="childName" value="index.xml" />
-                <property name="trustedToken" ref="trustedToken" />
-                <property name="repository" ref="repository" />
-                <property name="childResourceAssertions">
-                  <list>
-                    <ref bean="contentTypeMatchesHtml" />
-                  </list>
-                </property>
-              </bean>
-            </list>
-          </property>
-          <property name="handler" ref="displayIndexXmlAsHtmlHandler" />
-        </bean>
-      </list>
-    </property>
-  </bean>                
-
-  <bean id="transformIndexEngXmlFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListingService" />
-    <property name="order" value="10" />
-
-    <property name="assertions">
-      <list>
-        <bean id="hasIndexEngXmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-          <property name="childName" value="index-eng.xml" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="displayIndexEngXmlHandler" />
-    <property name="services">
-      <list>
-        <bean id="indexEngXmlIsHtmlService" class="org.vortikal.web.service.ServiceImpl">
-          <property name="assertions">
-            <list>
-              <bean id="indexEngXmlIsHtmlAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-                <property name="childName" value="index-eng.xml" />
-                <property name="trustedToken" ref="trustedToken" />
-                <property name="repository" ref="repository" />
-                <property name="childResourceAssertions">
-                  <list>
-                    <ref bean="contentTypeMatchesHtml" />
-                  </list>
-                </property>
-              </bean>
-            </list>
-          </property>
-          <property name="handler" ref="displayIndexEngXmlAsHtmlHandler" />
-        </bean>
-      </list>
-    </property>
-  </bean>                
 
 
   <!-- Add the XSL provider to the central list: -->
@@ -520,70 +339,6 @@
 
 
    
-  <bean id="displayIndexXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="handleLastModified" value="false" />
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index.xml" />
-  </bean>
-
-  <bean id="displayIndexXmlAsHtmlHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="displayProcessed" value="true" />
-    <property name="childName" value="index.xml" />
-    <property name="viewName" value="displayHTMLResource" />
-  </bean>
-
-  <bean id="displayIndexEngXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="handleLastModified" value="false" />
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index-eng.xml" />
-  </bean>
-
-  <bean id="displayIndexEngXmlAsHtmlHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="displayProcessed" value="true" />
-    <property name="childName" value="index-eng.xml" />
-    <property name="viewName" value="displayHTMLResource" />
-  </bean>
-
-
-
-  <bean id="displayIndexHtmlAsXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index.html" />
-  </bean>
-
-  <bean id="displayIndexEngHtmlAsXmlHandler" 
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
-        parent="requestLocalRepositoryAware">
-    <property name="transformerManager" ref="transformerManager" />
-    <property name="childName" value="index-eng.html" />
-  </bean>
-
-
-  <bean id="previewIndexXmlHandler" 
-        class="org.vortikal.web.controller.ResourceServiceURLController"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="collectionListingService" />
-    <property name="viewName" value="previewIframe"/>
-    <property name="childName" value="index.xml" />
-  </bean>
-
-  <bean id="previewIndexEngXmlHandler" 
-        class="org.vortikal.web.controller.ResourceServiceURLController"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="collectionListingService" />
-    <property name="viewName" value="previewIframe"/>
-    <property name="childName" value="index-eng.xml" />
-  </bean>
 
   <bean id="previewXmlResourceHandler" 
     class="org.vortikal.web.controller.ResourceServiceURLController"

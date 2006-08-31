@@ -209,7 +209,7 @@
 
   <bean id="indexFileList" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList"
-              value="index.xml,index.html,index-eng.xml,index-eng.html,index.htm,index-eng.htm" />
+              value="${indexFiles}" />
   </bean>
 
 

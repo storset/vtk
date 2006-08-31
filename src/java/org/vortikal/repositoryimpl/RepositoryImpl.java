@@ -269,7 +269,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         try {
             PropertySet fixedProps = this.propertyManager.getFixedCopyProperties(
                 src, principal, destUri);
-            destParent = this.propertyManager.getDestinationCopyResource(destParent, principal);
+
+            destParent = this.propertyManager.collectionContentModification(destParent, principal);
+
             this.dao.copy(src, destParent, destUri, preserveACL, fixedProps);
 
 // XXX: file extension of destination resource may have changed,
@@ -339,7 +341,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
         
         try {
-            destParent = this.propertyManager.getDestinationCopyResource(destParent, principal);
+            destParent = this.propertyManager.collectionContentModification(destParent, principal);
             this.dao.copy(src, destParent, destUri, true, null);
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();

@@ -257,6 +257,11 @@ public class BufferedResponse implements HttpServletResponse {
         this.statusMessage = statusMessage;
     }
 
+    public Map getHeaders() {
+        return this.headers;
+    }
+    
+
     private void applyHeaderSideEffects(String header, String value) {
 
         if ("Content-Type".equals(header)) {
@@ -265,7 +270,8 @@ public class BufferedResponse implements HttpServletResponse {
 
         } else if ("Content-Length".equals(header)) {
             try {
-                this.contentLength = Integer.parseInt(value);
+                int intValue = Integer.parseInt(value);
+                this.contentLength = intValue;
             } catch (Exception e) {
                 
             }
@@ -289,9 +295,10 @@ public class BufferedResponse implements HttpServletResponse {
             }
             this.contentType = contentType;
             this.characterEncoding = characterEncoding;
-
+            this.headers.put("Content-Type", contentType);
         } else {
             this.contentType = value;
+            this.headers.put("Content-Type", value);
         }
     }
     

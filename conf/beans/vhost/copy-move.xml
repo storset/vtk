@@ -62,6 +62,11 @@
         <value>resourceMenu</value>
       </set>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuOrder"><value type="java.lang.Integer">200</value></entry>
+      </map>
+    </property>
     <property name="assertions">
       <list>
         <ref bean="writePermissionAssertion" />
@@ -97,6 +102,12 @@
         <value>resourceMenu</value>
       </set>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuOrder"><value type="java.lang.Integer">200</value></entry>
+      </map>
+    </property>
+
     <property name="assertions">
       <list>
         <ref bean="writePermissionAssertion" />

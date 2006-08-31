@@ -12,6 +12,11 @@
         <value>resourceMenu</value>
       </set>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuOrder"><value type="java.lang.Integer">1000</value></entry>
+      </map>
+    </property>
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestMethodAssertion">

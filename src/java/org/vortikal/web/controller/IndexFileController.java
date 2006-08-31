@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.controller;
 
-
-
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -71,13 +70,15 @@ import org.vortikal.web.servlet.VortikalServlet;
  * </ul>
  */
 public class IndexFileController
-  implements Controller, LastModified, ServletContextAware, InitializingBean {
+  implements Controller, LastModified,
+             ApplicationContextAware, ServletContextAware, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private String[] indexFiles;
     private Repository repository;
     private ServletContext servletContext;
-    private String servletName = "vortikal";
+    private String servletName;
+    private ApplicationContext applicationContext;
     
 
     public void setIndexFiles(String[] indexFiles) {
@@ -96,6 +97,11 @@ public class IndexFileController
         this.servletName = servletName;
     }
     
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+    
+
 
     public void afterPropertiesSet() {
         if (this.indexFiles == null) {
@@ -111,8 +117,17 @@ public class IndexFileController
                 "JavaBean property 'servletContext' not set");
         }
         if (this.servletName == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'servletName' not set");
+            // Attempt to look up the servlet name of the
+            // VortikalServlet from the servlet context:
+
+            this.servletName = (String) this.servletContext.getAttribute(
+                VortikalServlet.SERVLET_NAME_SERVLET_CONTEXT_ATTRIBUTE);
+            
+            if (this.servletName == null) {
+                throw new BeanInitializationException(
+                    "JavaBean property 'servletName' not set");
+            
+            }
         }
     }
     

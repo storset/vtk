@@ -30,8 +30,6 @@
  */
 package org.vortikal.webdav;
 
-
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -41,13 +39,16 @@ import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
 import org.springframework.web.servlet.ModelAndView;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;

@@ -92,8 +92,8 @@ public class HeadController extends AbstractWebdavController {
                     throw new ResourceNotModifiedException(uri);
                 }
             }
-            
             model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE, resource);
+            model.put("resource", resource);
             return new ModelAndView("HEAD", model);
             
         } catch (ResourceNotFoundException e) {

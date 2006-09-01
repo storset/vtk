@@ -426,8 +426,6 @@
 
 
 
-
-
   <!-- View resolver -->
 
   
@@ -535,7 +533,7 @@
     <property name="webdavService" ref="webdavService"/>
   </bean>
 
-  <bean id="HEAD" class="org.vortikal.webdav.HeadView"/>
+  <bean id="HEAD" class="org.vortikal.web.view.DisplayResourceView" />
 
   <bean id="LOCK" class="org.vortikal.webdav.LockView"/>
 

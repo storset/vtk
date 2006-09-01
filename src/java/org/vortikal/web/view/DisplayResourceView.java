@@ -30,18 +30,19 @@
  */
 package org.vortikal.web.view;
 
-
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.view.AbstractView;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
@@ -113,9 +114,25 @@ public class DisplayResourceView extends AbstractView
                                         HttpServletResponse response) throws Exception {
 
         Resource resource = getResource(model, request, response);
-        InputStream resourceStream = getResourceStream(resource, model, request, response);
 
         setHeaders(resource, model, request, response);
+
+        if ("HEAD".equals(request.getMethod())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Request is HEAD, not writing content");
+            }
+            response.flushBuffer();
+            InputStream resourceStream = getResourceStream(resource, model, request, response);
+            if (resourceStream != null) {
+                resourceStream.close();
+            }
+            return;
+        }
+        InputStream resourceStream = getResourceStream(resource, model, request, response);
+        if (resourceStream == null) {
+            throw new InvalidModelException("Unable to write response for resoure " + resource
+                                            + ": missing InputStream in model ");
+        }
         writeResponse(resource, resourceStream, model, request, response);
     }
     
@@ -150,11 +167,6 @@ public class DisplayResourceView extends AbstractView
                                    HttpServletRequest request,
                                    HttpServletResponse response) throws Exception {
         Object o = model.get("resourceStream");
-        if (o == null || ! (o instanceof InputStream)) {
-            throw new InvalidModelException(
-                "Missing InputStream in model " +
-                "(expected an InputStream object having key 'resourceStream')");
-        }
         return (InputStream) o;
     }
     
@@ -175,20 +187,12 @@ public class DisplayResourceView extends AbstractView
         OutputStream out = null;
         int bytesWritten = 0;
         try {
-            if ("HEAD".equals(request.getMethod())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Request is HEAD, not writing content");
-                }
-                response.flushBuffer();
-            } else {
-
-                out = response.getOutputStream();
-                byte[] buffer = new byte[this.streamBufferSize];
-                int n = 0;
-                while (((n = resourceStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
-                    out.write(buffer, 0, n);
-                    bytesWritten += n;
-                }
+            out = response.getOutputStream();
+            byte[] buffer = new byte[this.streamBufferSize];
+            int n = 0;
+            while (((n = resourceStream.read(buffer, 0, this.streamBufferSize)) > 0)) {
+                out.write(buffer, 0, n);
+                bytesWritten += n;
             }
 
         } finally {

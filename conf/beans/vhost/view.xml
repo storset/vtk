@@ -105,6 +105,11 @@
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="encoding" value="utf-8" />
     <property name="debug" value="${freemarkerDebug}" />
+    <property name="attributesMap">
+      <map>
+        <entry key="webmaster" value="${webmaster}" />
+      </map>
+    </property>
   </bean>
 
   <bean id="collectionRedirectView" 

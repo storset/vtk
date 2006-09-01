@@ -150,7 +150,7 @@
       </action>
     </release>
 
-    <release version="0.2.1" date="In SVN" description="Release 0.2.1">
+    <release version="0.2.1" date="2006-01-31" description="Release 0.2.1">
 
       <action dev="storset" type="add">
         Added validation of document before saving in xml

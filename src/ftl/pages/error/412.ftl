@@ -5,22 +5,15 @@
   <link href="http://www.uio.no/visuell-profil/css/uio.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-<DIV CLASS="navmarginbrod" ID="brodtekst">
 
-<H2>412 - precondition failed</H2>
+<h1>412 - precondition failed</H1>
 
+<#if debug>
+<hr style="width: 98%;">
+<#include "/lib/error-detail.ftl" />
+</#if>
 
-<HR STYLE="width: 98%;">
+<p>Server-administrator: <a href="mailto:${webmaster}">${webmaster}</a></p>
 
-<H2>412 - precondition failed</H2>
-
-</div>
-
-<div CLASS="navmarginline" ID="bunnnav">
-  <a href="http://www.uio.no/hjelp/kontakt.htm">Kontakt&nbsp;UiO</a>
-
-  &nbsp;&nbsp;&nbsp;<A HREF="http://www.uio.no/hjelp/">Hjelp</a>
-  <p>Server-administrator: <A HREF="mailto:webmaster@uio.no">webmaster@uio.no</A></p>
-</div>
 </body>
 </html>

@@ -107,6 +107,7 @@
 
 
   <bean id="errorViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="order" value="0" />
     <property name="views">
       <map>
         <entry key="resourceNotFoundError" value-ref="resourceNotFoundErrorView" />

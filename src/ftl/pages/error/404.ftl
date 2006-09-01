@@ -2,61 +2,25 @@
 <html>
 <head>
  <title>404 - Not Found</title>
-  <link href="http://www.uio.no/visuell-profil/css/uio.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-
-<DIV CLASS="navmarginbrod" ID="brodtekst">
-
-<H2>404 - Siden finnes ikke</H2>
-<P>
-Siden <STRONG>${resourceContext.currentURI?if_exists}</STRONG> finnes
-ikke blant UiOs nettsider. Det kan hende at pekeren på siden du kom
-fra er feil eller siden kan være utdatert eller flyttet.
-</P>
-<P>
-Du kan bruke søkefeltet oppe til høyre for å finne det du leter
-etter. Du kan også prøve å finne fram ved å bruke navigasjonsmenyen
-øverst på siden som utgangspunkt.
-</P>
-<P>
-Har du fulgt en peker fra en annen nettside, kan du bruke
-&#148;tilbake/back&#148;-knappen og gjøre den ansvarlige for siden
-oppmerksom på at pekeren er feil.
-</P>
-<P>
-Finner du ikke det du leter etter på annen måte, kan du se <A
-HREF="http://www.uio.no/hjelp/kontakt.htm">"Kven svarar ved UiO?"</A>.
-</P>
-
- <HR STYLE="width: 98%;">
-
- <H2>404 - Page does not exist</H2>
-<P>
-The web page <STRONG>${resourceContext.currentURI?if_exists}</STRONG>
-that you seek cannot be found in the University of Oslo's web
-site. Either the link that you have used is wrong, or the page is
-outdated or moved to another location.
-</P>
-<P>You can use the search tool located in the upper right-hand corner of
-this page to find what you are looking for, or you can use the
-navigation menu at the top of this page to start a search.
-</P>
-<P>If you have followed a link from another web site, you can use the
+<h1>404 - Page does not exist</H1>
+<p>
+The web page <strong>${resourceContext.currentURI?if_exists}</strong>
+that you seek cannot be found on this web site. Either the link that
+you have used is wrong, or the page is outdated or moved to another
+location.
+</p>
+<p>If you have followed a link from another web site, you can use the
 &#148;back&#148; button on your web browser and inform the webmaster
 of the referring site that the link does not work.
-</P>
-<P>In the event that you still cannot find the information you are
-looking for, you can check <A
-HREF="http://www.uio.no/english/contact.html">"Who do I contact for
-more information and how?"</A>.
-</P>
-</DIV>
+</p>
 
-<DIV CLASS="navmarginline" ID="bunnnav"><BR>
-<A HREF="http://www.uio.no/hjelp/kontakt.htm">Kontakt&nbsp;UiO</A>
-&nbsp;&nbsp;&nbsp;<A HREF="http://www.uio.no/hjelp/">Hjelp</A>
-<P>Server-administrator: <A HREF="mailto:webmaster@uio.no">webmaster@uio.no</A></P>
-</DIV>
-</BODY>
-</HTML>
+<p>Server-administrator: <a href="mailto:${webmaster}">${webmaster}</a></p>
+
+<#if debug>
+<hr style="width: 98%;">
+<#include "/lib/error-detail.ftl" />
+</#if>
+</body>
+</html>

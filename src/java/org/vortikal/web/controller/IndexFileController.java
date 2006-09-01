@@ -35,12 +35,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -58,28 +57,25 @@ import org.vortikal.web.servlet.VortikalServlet;
  * resource that matches any of the names in that list. If the current
  * resource is not a collection, this controller will fail.
  *
+ * <p>The controller gets the name of the servlet to
+ *   dispatch requests to (a
+ *   <code>ServletContext.getNamedDispatcher()</code> from a required request attribute
+ *   with id <code>VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE</code>.
+ *
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>indexFiles</code> - the list of index file names.
  *   <li><code>repository</code> - the content {@link Repository repository}
- *   <li><code>servletName</code> - the name of the servlet to
- *   dispatch requests to (a
- *   <code>ServletContext.getNamedDispatcher()</code> is called with
- *   this name as parameter in order to obtain the request
- *   dispatcher).
  * </ul>
  */
 public class IndexFileController
-  implements Controller, LastModified,
-             ApplicationContextAware, ServletContextAware, InitializingBean {
+  implements Controller, LastModified, InitializingBean, ServletContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private String[] indexFiles;
     private Repository repository;
-    private ServletContext servletContext;
     private String servletName;
-    private ApplicationContext applicationContext;
-    
+    private ServletContext servletContext;
 
     public void setIndexFiles(String[] indexFiles) {
         this.indexFiles = indexFiles;
@@ -89,19 +85,11 @@ public class IndexFileController
         this.repository = repository;
     }
     
+
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
+      
     }
-    
-    public void setServletName(String servletName) {
-        this.servletName = servletName;
-    }
-    
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-    
-
 
     public void afterPropertiesSet() {
         if (this.indexFiles == null) {
@@ -115,19 +103,6 @@ public class IndexFileController
         if (this.servletContext == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'servletContext' not set");
-        }
-        if (this.servletName == null) {
-            // Attempt to look up the servlet name of the
-            // VortikalServlet from the servlet context:
-
-            this.servletName = (String) this.servletContext.getAttribute(
-                VortikalServlet.SERVLET_NAME_SERVLET_CONTEXT_ATTRIBUTE);
-            
-            if (this.servletName == null) {
-                throw new BeanInitializationException(
-                    "JavaBean property 'servletName' not set");
-            
-            }
         }
     }
     
@@ -169,7 +144,10 @@ public class IndexFileController
 
         RequestWrapper requestWrapper = new RequestWrapper(request, indexFile.getURI(),
                                                            collectionLastMod);
-        RequestDispatcher rd = this.servletContext.getNamedDispatcher(this.servletName);
+        String servletName = (String)request.getAttribute(
+                VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
+
+        RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
         
         if (rd == null) {
             throw new RuntimeException(

@@ -136,8 +136,8 @@ public class VortikalServlet extends DispatcherServlet {
     public static final String INDEX_FILE_REQUEST_ATTRIBUTE =
         VortikalServlet.class.getName() + ".index_file_request";
     
-    public static final String SERVLET_NAME_SERVLET_CONTEXT_ATTRIBUTE =
-        VortikalServlet.class.getName() + ".name_context_attribute";
+    public static final String SERVLET_NAME_REQUEST_ATTRIBUTE =
+        VortikalServlet.class.getName() + ".servlet_name";
     
 
     
@@ -166,8 +166,6 @@ public class VortikalServlet extends DispatcherServlet {
             Thread.currentThread().setName(config.getServletName());
             this.logger.info(getServletInfo());
             super.init(config);
-            getServletContext().setAttribute(SERVLET_NAME_SERVLET_CONTEXT_ATTRIBUTE,
-                                             config.getServletName());
         } finally {
             Thread.currentThread().setName(threadName);
         }
@@ -328,7 +326,7 @@ public class VortikalServlet extends DispatcherServlet {
      */
     protected void service(HttpServletRequest request,
                                  HttpServletResponse response) 
-        throws ServletException, IOException {
+        throws ServletException {
 
         StatusAwareResponseWrapper responseWrapper = new StatusAwareResponseWrapper(response);
         long startTime = System.currentTimeMillis();
@@ -346,6 +344,8 @@ public class VortikalServlet extends DispatcherServlet {
 
         try {
 
+            request.setAttribute(SERVLET_NAME_REQUEST_ATTRIBUTE, getServletName());
+            
             BaseContext.pushContext();
             Thread.currentThread().setName(
                     this.getServletName() + "." + String.valueOf(number));

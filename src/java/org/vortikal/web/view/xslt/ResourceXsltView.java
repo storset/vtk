@@ -36,12 +36,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
@@ -51,21 +51,21 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractView;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
+
 import org.vortikal.repository.Resource;
 import org.vortikal.util.repository.LocaleHelper;
-import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ExtendableReferenceDataProviding;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
@@ -73,6 +73,7 @@ import org.vortikal.web.view.LinkConstructor;
 import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
+
 
 
 
@@ -110,10 +111,6 @@ import org.vortikal.xml.TransformerManager;
  *   HTTP header <code>Content-Language</code> based on the content
  *   language of the transformed resource. Default is
  *   <code>false</code>.
- *   <li><code>handleExpiresProperty</code> - whether to set the
- *   <code>Expires</code> header according to the value of the
- *   <code>expires-sec</code> resource property. Default to
- *   <code>false</code>.
  * </ul>
  *
  * <p>Sets the following HTTP headers:
@@ -121,14 +118,6 @@ import org.vortikal.xml.TransformerManager;
  *   <li><code>Content-Type</code>
  *   <li><code>Content-Language</code> (if
  *   <code>includeContentLanguageHeader</code> is specified)
- *   <li><code>Expires</code> (if the resource has the property
- *   <code>expires-sec</code> to a numerical value (meaning the number
- *   of seconds to cache the resource). The namespace of this property
- *   is {@link Property#LOCAL_NAMESPACE}. (Only set if the
- *   <code>handleExpiresProperty</code> config property is also set on
- *   this class.)
- *   <li><code>Cache-Control: no-cache</code> if the
- *   <code>expires-sec</code> property is not set.
  * </ul>
  * 
  */
@@ -145,7 +134,6 @@ public class ResourceXsltView extends AbstractView
     private ReferenceDataProvider[] referenceDataProviders;
     
     private boolean includeContentLanguageHeader = false;
-    private boolean handleExpiresProperty = false;
     
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
@@ -180,11 +168,6 @@ public class ResourceXsltView extends AbstractView
 
     public void setIncludeContentLanguageHeader(boolean includeContentLanguageHeader) {
         this.includeContentLanguageHeader = includeContentLanguageHeader;
-    }
-    
-
-    public void setHandleExpiresProperty(boolean handleExpiresProperty) {
-        this.handleExpiresProperty = handleExpiresProperty;
     }
     
 
@@ -223,14 +206,12 @@ public class ResourceXsltView extends AbstractView
                     "(expected an InputStream object having key 'resourceStream')");
             }
 
-            // Build a JDOM tree of the input stream:
             try {
-                
+                // Build a JDOM tree of the input stream:
                 SAXBuilder builder = new SAXBuilder();
                 document = builder.build(inStream);
             
             } catch (Exception e) {            
-                // FIXME: error handling
                 throw new InvalidModelException(
                     "Unable to build JDOM document from input stream", e);
             }            
@@ -245,7 +226,7 @@ public class ResourceXsltView extends AbstractView
         setParameters(model, transformer);
         transformer.setParameter(
             PARAMETER_NAMESPACE + "RequestContext",
-            new RequestContext(request));
+            new org.springframework.web.servlet.support.RequestContext(request));
 
         if (this.linkConstructor != null)
             transformer.setParameter(
@@ -253,7 +234,7 @@ public class ResourceXsltView extends AbstractView
                     this.linkConstructor);
 
         
-        // do the transformation
+        // Do the transformation
         JDOMSource source = new JDOMSource(document);
         source.setSystemId(AbstractPathBasedURIResolver.PROTOCOL_PREFIX 
                 + document.getBaseURI());
@@ -284,37 +265,6 @@ public class ResourceXsltView extends AbstractView
                     response.setHeader("Content-Language", contentLanguage);
                 }
             }
-
-            Property expiresProperty = resource.getProperty(
-                    Namespace.CUSTOM_NAMESPACE, "expires-sec");
-            if (this.handleExpiresProperty &&
-                expiresProperty != null && expiresProperty.getValue() != null) {
-
-                try {
-                    long expiresMilliseconds = new Long(
-                        expiresProperty.getStringValue().trim()).longValue() * 1000;
-                    Date expires = new Date(new Date().getTime() + expiresMilliseconds);
-                    response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Setting header Expires: " + 
-                                     HttpUtil.getHttpDateString(expires));
-                    }
-
-                } catch (NumberFormatException e) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(
-                            "Resource " + resource + "has malformed " +
-                            "\"expires-sec\" property: " + expiresProperty.getValue()
-                            + ". No Expires header set.");
-                    }
-                }
-
-            } else {
-
-                response.setHeader("Cache-Control", "no-cache");
-            }
-
             out = response.getOutputStream();
             byte[] buffer = new byte[5000];
             int n = 0;
@@ -434,8 +384,6 @@ public class ResourceXsltView extends AbstractView
         throws IOException {
         Format format = Format.getPrettyFormat();
         format.setEncoding("utf-8");
-        //format.setLineSeparator("\r\n");
-        //format.setIndent("");
 
         XMLOutputter xmlOutputter = new XMLOutputter(format);
         String xml = xmlOutputter.outputString(document);

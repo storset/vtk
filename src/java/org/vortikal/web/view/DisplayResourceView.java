@@ -30,21 +30,23 @@
  */
 package org.vortikal.web.view;
 
+
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.view.AbstractView;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
@@ -60,17 +62,6 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  * <p><a name="config">Configurable properties</a>
  * (and those defined by {@link AbstractView superclass}):
  * <ul>
- *   <li><code>includeLastModifiedHeader</code> - boolean deciding
- *   whether to set the <code>Last-Modified</code> response
- *   header. Default value is <code>true</code>.
- *   <li><code>includeExpiresHeader</code> - boolean deciding whether
- *   to attempt to set the <code>Expires</code> HTTP header
- *   <li><code>includeContentLanguageHeader</code> - whether or not to
- *   to attempt to set the <code>Content-Language</code> HTTP header
- *   to that of the resource (default <code>true</code>.)
- *   <li><code>includeEtagHeader</code> - boolean deciding whether
- *   to attempt to set the <code>Etag</code> HTTP header. 
- *   The default value is <code>true</code>.
  *   <li><code>streamBufferSize</code> - (int) the size of the buffer
  *   used when executing the (read from resource, write to response)
  *   loop. The default value is <code>5000</code>.
@@ -88,28 +79,6 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  * <ul>
  *   <li><code>Content-Type</code>
  *   <li><code>Content-Length</code>
- *   <li><code>Last-Modified</code> if the configuration property
- *   <code>includeLastModifiedHeader</code> is set to
- *   <code>true</code> (the default).
- *   <li><code>Expires</code> if the configuration property
- *   <code>includeExpiresHeader</code> is set to
- *   <code>true</code>, and the resource has a property
- *   <code>http://www.uio.no/vortex/custom-properties:expires-sec</code>
- *   set to an integer. The value of the header is the
- *   value of the property.
- *   <li><code>Cache-Control: no-cache</code> if the configuration
- *   property <code>includeExpiresHeader</code> is <code>false</code>,
- *   or it is set, but the <code>expires-sec</code> resource property
- *   (see above) is not set or is not an integer.
- *   <li><code>Content-Language</code> if the configuration property
- *   <code>includeContentLanguageHeader</code> is <code>true</code>
- *   and the resource has a content locale defined. (Note: a
- *   limitation in the Spring framework (<code>setLocale()</code> is
- *   always called on every response with the value of the resolved
- *   request locale) causes this view to always set this header. In
- *   cases where the resource has no content locale set, or this view
- *   is not configured to include the header, the value of the header
- *   is empty.
  * </ul>
  *
  */
@@ -120,13 +89,9 @@ public class DisplayResourceView extends AbstractView
     
     private int streamBufferSize = 5000;
 
-    private boolean includeLastModifiedHeader = true;
-    private boolean includeExpiresHeader = true;
-    private boolean includeContentLanguageHeader = true;
-    private boolean includeEtagHeader = false;
-    private boolean includeNoCacheHeader = false;
     private ReferenceDataProvider[] referenceDataProviders;
     
+
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return this.referenceDataProviders;
     }
@@ -134,7 +99,6 @@ public class DisplayResourceView extends AbstractView
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }
-
 
     public void setStreamBufferSize(int streamBufferSize) {
         if (streamBufferSize <= 0) {
@@ -144,28 +108,6 @@ public class DisplayResourceView extends AbstractView
         this.streamBufferSize = streamBufferSize;
     }
     
-
-    public void setIncludeLastModifiedHeader(boolean includeLastModifiedHeader) {
-        this.includeLastModifiedHeader = includeLastModifiedHeader;
-    }
-
-
-    public void setIncludeExpiresHeader(boolean includeExpiresHeader) {
-        this.includeExpiresHeader = includeExpiresHeader;
-    }
-    
-
-    public void setIncludeContentLanguageHeader(boolean includeContentLanguageHeader) {
-        this.includeContentLanguageHeader = includeContentLanguageHeader;
-    }
-    
-    public void setIncludeEtagHeader(boolean includeEtagHeader) {
-        this.includeEtagHeader = includeEtagHeader;
-    }
-    
-    public void setIncludeNoCacheHeader(boolean includeNoCacheHeader) {
-        this.includeNoCacheHeader = includeNoCacheHeader;
-    }
 
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
@@ -221,12 +163,7 @@ public class DisplayResourceView extends AbstractView
                               HttpServletResponse response) throws Exception {
 
         setContentTypeHeader(resource, model, request, response);
-        setContentLanguageHeader(resource, model, request, response);
         setContentLengthHeader(resource, model, request, response);
-        setExpiresHeader(resource, model, request, response);
-        setLastModifiedHeader(resource, model, request, response);
-        setEtagHeader(resource, model, request, response);
-        setCacheControlHeader(resource, model, request, response);
         response.setStatus(HttpServletResponse.SC_OK);
     }
     
@@ -297,24 +234,6 @@ public class DisplayResourceView extends AbstractView
     }
     
 
-    protected void setContentLanguageHeader(Resource resource, Map model,
-                                            HttpServletRequest request,
-                                            HttpServletResponse response) throws Exception {
-        // Fix for Spring's DispatcherServlet's behavior (always sets
-        // the response's locale to that of the request).
-        response.setHeader("Content-Language", "");
-
-        if (this.includeContentLanguageHeader) {
-            Locale locale = LocaleHelper.getLocale(resource.getContentLanguage());
-            if (locale != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting header Content-Language: " + locale.getLanguage());
-                }
-                response.setHeader("Content-Language", locale.getLanguage());
-            }
-        }
-    }
-    
     protected void setContentLengthHeader(Resource resource, Map model,
                                           HttpServletRequest request,
                                           HttpServletResponse response) throws Exception {
@@ -324,76 +243,9 @@ public class DisplayResourceView extends AbstractView
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
     }
     
-    protected void setEtagHeader(Resource resource, Map model, HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        if (this.includeEtagHeader) {
-            String etag = resource.getEtag();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting header Etag: " + etag);
-            }
-            response.setHeader("ETag", etag);
-        }
-    }
-    
-    protected void setCacheControlHeader(Resource resource, Map model, HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        if (this.includeNoCacheHeader) {
-            response.setHeader("Cache-Control", "no-cache");
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting header Cache-Control: no-cache");
-            }
-        }
-    }
     
     
-    protected void setExpiresHeader(Resource resource, Map model, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception {
-        if (this.includeExpiresHeader) {
-            
-            Property expiresProperty = resource.getProperty(
-                Namespace.CUSTOM_NAMESPACE, "expires-sec");
-            if (expiresProperty != null && expiresProperty.getValue() != null) {
-
-                try {
-                    long expiresMilliseconds = new Long(
-                        expiresProperty.getStringValue().trim()).longValue() * 1000;
-                    Date expires = new Date(new Date().getTime() + expiresMilliseconds);
-                    response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Setting header Expires: " + 
-                                     HttpUtil.getHttpDateString(expires));
-                    }
-
-                } catch (NumberFormatException e) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(
-                            "Resource " + resource + "has malformed " +
-                            "\"expires-sec\" property: " + expiresProperty.getValue()
-                            + ". No Expires header set.");
-                    }
-                }
-            }
-        }
-    }
     
     
-    protected void setLastModifiedHeader(Resource resource, Map model,
-                                         HttpServletRequest request,
-                                         HttpServletResponse response) throws Exception {
-        
-        if (this.includeLastModifiedHeader) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting header Last-Modified: "
-                             + HttpUtil.getHttpDateString(resource.getLastModified()));
-            }
-            response.setHeader("Last-Modified", 
-                               HttpUtil.getHttpDateString(resource.getLastModified()));
-        }
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Setting HTTP status code: " + HttpServletResponse.SC_OK);
-        }
-    }
 
 }

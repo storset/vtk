@@ -127,6 +127,11 @@
         </bean>
       </list>
     </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="webdavDisplayResourceHandlerInterceptor" />
+      </list>
+    </property>
     <property name="handler" ref="webdavGetHandler" />
   </bean>
 
@@ -488,11 +493,22 @@
 
   <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
 
-
-  <bean id="webdavDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" >
+  <bean id="webdavDisplayResourceHandlerInterceptor"
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="${webdavSupportETags}" />
-    <property name="includeNoCacheHeader" value="true" />
+    <!-- Because of a bug in Resin (does not distinguish between GET
+         and PUT?), set a bunch of cache-preventing headers here: -->
+    <property name="staticHeaders">
+      <map>
+        <entry key="Cache-Control" value="no-cache, no-store, must-revalidate, max-age=0" />
+        <entry key="Expires" value="0" />
+        <entry key="Pragma" value="no-cache" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="webdavDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" >
   </bean>
 
 

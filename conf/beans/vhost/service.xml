@@ -213,8 +213,20 @@
   </bean>
 
 
+  <bean id="displayResourceHandlerInterceptor"
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+    <property name="includeLastModifiedHeader" value="true" />
+    <property name="includeEtagHeader" value="false" />
+    <property name="expiresHeaderProperty" ref="expiresSecPropDef" />
+  </bean>
+
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="handler" ref="displayResourceHandler" />
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="displayResourceHandlerInterceptor" />
+      </list>
+    </property>
     <property name="services">
       <list>
         <ref bean="displayHTMLResourceService" />

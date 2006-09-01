@@ -133,6 +133,13 @@
     </property>
   </bean>
 
+  <bean id="kupuGetSourceHandlerInterceptor"
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+    <property name="includeLastModifiedHeader" value="false" />
+    <property name="includeEtagHeader" value="false" />
+  </bean>
+
+
   <bean id="kupuGetSourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
@@ -140,6 +147,11 @@
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
           <property name="method" value="GET" />
         </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="kupuGetSourceHandlerInterceptor" />
       </list>
     </property>
     <property name="handler">
@@ -150,8 +162,6 @@
           <bean class="org.vortikal.web.view.wrapper.WrappingView">
             <property name="view">
               <bean class="org.vortikal.web.view.DisplayResourceView">
-                <property name="includeLastModifiedHeader" value="false" />
-                <property name="includeEtagHeader" value="false" />
               </bean>
             </property>
             <property name="viewWrapper">

@@ -185,7 +185,13 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver, Orde
                     provider.referenceData(model, request);
                 }
             }
-            RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
+            String method = request.getMethod();
+            
+            if (!"GET".equals(method) && !"HEAD".equals(method)) {
+                method = "GET";
+            }
+
+            RequestWrapper requestWrapper = new RequestWrapper(request, method);
             
             if (this.viewWrapper != null) {
                 this.viewWrapper.renderView(this.view, model, requestWrapper, response);

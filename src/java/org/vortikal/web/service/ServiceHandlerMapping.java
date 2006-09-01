@@ -32,16 +32,16 @@ package org.vortikal.web.service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+
 import org.vortikal.web.RequestContext;
-
-
-
 
 /**
  * A {@link HandlerMapping} that uses a {@link Service service tree}
@@ -52,6 +52,8 @@ import org.vortikal.web.RequestContext;
  * the correct handler based on the current service.
  */
 public class ServiceHandlerMapping implements HandlerMapping {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     /**
      * Look up a handler for the given request, falling back to the default
@@ -77,8 +79,13 @@ public class ServiceHandlerMapping implements HandlerMapping {
         Object handler = getController(service);
 
         if (handler == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable resolve handler: "
+                             + " requestContext: " + requestContext);
+            }
             return null;
         }
+
 
         List handlerInterceptorsList = getHandlerInterceptors(service);
         HandlerInterceptor[] handlerInterceptors;
@@ -90,6 +97,13 @@ public class ServiceHandlerMapping implements HandlerMapping {
                 (HandlerInterceptor[]) handlerInterceptorsList.toArray(
                     new HandlerInterceptor[handlerInterceptorsList.size()]);
         }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Mapped request to handler " + handler
+                         + " with handlerInterceptors: " + handlerInterceptorsList
+                         + " [ requestContext: " + requestContext + " ]");
+        }
+
         return new HandlerExecutionChain(handler, handlerInterceptors);
 
     }

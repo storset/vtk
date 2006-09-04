@@ -359,7 +359,7 @@ public abstract class AbstractXmlEditController implements Controller {
         }
 
         /* get required schemaURL */
-        Property schemaProp = resource.getProperty(schemaNamespace, schemaName); 
+        Property schemaProp = resource.getProperty(this.schemaNamespace, this.schemaName); 
         if (schemaProp == null)
             throw new XMLEditException(
                     "XML document is uneditable, schema reference is missing");

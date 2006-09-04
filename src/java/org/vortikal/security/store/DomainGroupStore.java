@@ -82,7 +82,7 @@ public class DomainGroupStore implements GroupStore {
      */
     public Set getMemberGroups(Principal principal) {
         Set groups = new HashSet();
-        for (Iterator iter = knownGroups.iterator(); iter.hasNext();) {
+        for (Iterator iter = this.knownGroups.iterator(); iter.hasNext();) {
             Principal group = (Principal) iter.next();
             if (isMember(principal, group))
                 groups.add(group);

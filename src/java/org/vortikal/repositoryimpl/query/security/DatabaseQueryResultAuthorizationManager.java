@@ -104,7 +104,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
             principalNames.add(principal.getQualifiedName());
             
             // Get principal's groups
-            Set memberGroups = principalManager.getMemberGroups(principal);
+            Set memberGroups = this.principalManager.getMemberGroups(principal);
             for (Iterator i = memberGroups.iterator(); i.hasNext();) {
                 Principal group = (Principal)i.next();
                 principalNames.add(group.getQualifiedName());

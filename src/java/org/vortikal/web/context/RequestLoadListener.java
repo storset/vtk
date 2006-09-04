@@ -53,7 +53,6 @@ public class RequestLoadListener implements ApplicationListener {
     
 
     private void shift() {
-        int prev = currentIndex;
         int cur = (this.currentIndex + 1 == this.seconds) 
             ? 0 : this.currentIndex + 1;
         this.history[cur] = 0;

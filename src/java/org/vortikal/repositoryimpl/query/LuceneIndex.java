@@ -328,7 +328,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
 
             this.fsIndex.createNewIndex();
             
-            this.currentReadOnlyReader = fsIndex.getNewReadOnlyIndexReader();
+            this.currentReadOnlyReader = this.fsIndex.getNewReadOnlyIndexReader();
             this.currentReadOnlyReaderOutdated = false;
         }
         
@@ -344,7 +344,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
 
             this.fsIndex.reinitialize();
             
-            this.currentReadOnlyReader = fsIndex.getNewReadOnlyIndexReader();
+            this.currentReadOnlyReader = this.fsIndex.getNewReadOnlyIndexReader();
             this.currentReadOnlyReaderOutdated = false;
         }
         
@@ -565,7 +565,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public String getStorageId() {
-        return storageId;
+        return this.storageId;
     }
 
     public void setStorageId(String storageId) {
@@ -573,7 +573,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     }
 
     public String getStorageRootPath() {
-        return storageRootPath;
+        return this.storageRootPath;
     }
 
     public void setStorageRootPath(String storageRootPath) {

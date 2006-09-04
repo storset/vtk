@@ -77,9 +77,9 @@ public class InvertAssertion extends AbstractAssertion implements InitializingBe
     
     
     public void afterPropertiesSet() throws Exception {
-        if (assertion == null) 
+        if (this.assertion == null) 
             throw new BeanInitializationException("Property 'assertion' required");
-        else if (repository == null) 
+        else if (this.repository == null) 
             throw new BeanInitializationException("Property 'repository' required");
     }
     

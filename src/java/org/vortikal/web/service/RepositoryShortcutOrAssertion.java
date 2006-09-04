@@ -70,15 +70,15 @@ public class RepositoryShortcutOrAssertion
         for (Iterator assertionIter = this.assertions.iterator(); assertionIter.hasNext();) {
             RepositoryAssertion assertion = (RepositoryAssertion) assertionIter.next();
             if (assertion.matches(resource, principal)) {
-                if (!andHack)
+                if (!this.andHack)
                     return true;
             } else {
-                if (andHack)
+                if (this.andHack)
                     return false;
             }
         }
         
-        return andHack;
+        return this.andHack;
     }
     
     public void setAssertions(List assertions) {

@@ -123,7 +123,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex
     }
 
     public File getStorageDirectory() {
-        return storageDirectory;
+        return this.storageDirectory;
     }
 
     public void setStorageId(String storageId) {

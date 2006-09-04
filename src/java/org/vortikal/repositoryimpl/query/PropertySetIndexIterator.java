@@ -76,17 +76,17 @@ class PropertySetIndexIterator implements Iterator {
     }
     
     private void init() throws IOException {
-        tenum = reader.terms(new Term(iterationFieldName, iterationFieldStartValue));
-        tdocs = reader.termDocs();
+        this.tenum = this.reader.terms(new Term(this.iterationFieldName, this.iterationFieldStartValue));
+        this.tdocs = this.reader.termDocs();
         
-        currentDoc = -1;
-        if (tenum.term() != null 
-             && tenum.term().field() == iterationFieldName) {
+        this.currentDoc = -1;
+        if (this.tenum.term() != null 
+             && this.tenum.term().field() == this.iterationFieldName) {
             
-            tdocs.seek(tenum);
+            this.tdocs.seek(this.tenum);
             
-            if (tdocs.next()) {
-                currentDoc = tdocs.doc();
+            if (this.tdocs.next()) {
+                this.currentDoc = this.tdocs.doc();
             } 
         }
     }
@@ -95,7 +95,7 @@ class PropertySetIndexIterator implements Iterator {
      * @see java.util.Iterator#hasNext()
      */
     public boolean hasNext() {
-        return (currentDoc != -1);
+        return (this.currentDoc != -1);
     }
 
     /* (non-Javadoc)
@@ -108,36 +108,36 @@ class PropertySetIndexIterator implements Iterator {
      
         PropertySet propSet = null;
         try {
-            Document doc = reader.document(currentDoc);
-            propSet = mapper.getPropertySet(doc);
+            Document doc = this.reader.document(this.currentDoc);
+            propSet = this.mapper.getPropertySet(doc);
             
-            currentDoc = -1;
-            if (! tdocs.next()) {
-                if (tenum.next()) {
-                    if (tenum.term() != null
-                          && tenum.term().field() == iterationFieldName) {
-                        tdocs.seek(tenum);
+            this.currentDoc = -1;
+            if (! this.tdocs.next()) {
+                if (this.tenum.next()) {
+                    if (this.tenum.term() != null
+                          && this.tenum.term().field() == this.iterationFieldName) {
+                        this.tdocs.seek(this.tenum);
                         
-                        if (tdocs.next()) {
-                            currentDoc = tdocs.doc();
+                        if (this.tdocs.next()) {
+                            this.currentDoc = this.tdocs.doc();
                         }
                     } 
                 } 
             } else {
-                currentDoc = tdocs.doc();
+                this.currentDoc = this.tdocs.doc();
             }
         } catch (IOException io) {
             logger.warn("IOException during property set index iteration", io);
-            currentDoc = -1;
+            this.currentDoc = -1;
         }
         
         return propSet;
     }
     
     public void close() throws IOException {
-        tenum.close();
-        tdocs.close();
-        index.releaseReadOnlyIndexReader(reader);
+        this.tenum.close();
+        this.tdocs.close();
+        this.index.releaseReadOnlyIndexReader(this.reader);
     }
 
     /* (non-Javadoc)

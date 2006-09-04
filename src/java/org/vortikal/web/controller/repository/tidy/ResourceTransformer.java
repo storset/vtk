@@ -57,8 +57,8 @@ public class ResourceTransformer implements Controller, InitializingBean {
     
     // Private non-configurable variables
     private static final String JTIDY_TRANSFORMER = "JTidyTransformer";
-    private final String HTML_TO_XHTML = "htmlToXhtml";
-    private final String KUPU_EXTENSION = "-webredigerbar.html";
+    private static final String HTML_TO_XHTML = "htmlToXhtml";
+    private static final String KUPU_EXTENSION = "-webredigerbar.html";
     
     private Transformer transformer;
         
@@ -95,25 +95,25 @@ public class ResourceTransformer implements Controller, InitializingBean {
         Map model = new HashMap();
         String uri = RequestContext.getRequestContext().getResourceURI();
         
-        String token = trustedToken;
+        String token = this.trustedToken;
         if (token == null)
             token = SecurityContext.getSecurityContext().getToken();
                 
-        transformer = createTransformer(transformerType);
+        this.transformer = createTransformer(this.transformerType);
                 
         // JTidyTransformation:
         
-        if ( HTML_TO_XHTML.equals(transformation) ) {
+        if ( HTML_TO_XHTML.equals(this.transformation) ) {
             
             logger.debug("transformer == JTIDY_TRANSFORMER");
             
             String newUri = jtidyHelper(model, uri);
             if (newUri == null) {
                 // error message is created by jtidyHelper()
-                return new ModelAndView(errorView, model);
+                return new ModelAndView(this.errorView, model);
             }
             
-            boolean exists = repository.exists(token, newUri);
+            boolean exists = this.repository.exists(token, newUri);
 
             if (exists) {
                 /**
@@ -122,13 +122,13 @@ public class ResourceTransformer implements Controller, InitializingBean {
                  * FIXME: i18n for feilmelding! 
                  */
                 model.put("createErrorMessage", "resource.alreadyKupufied");
-                return new ModelAndView(errorView, model);
+                return new ModelAndView(this.errorView, model);
             }
             
-            InputStream is = repository.getInputStream(trustedToken, uri, true);
+            InputStream is = this.repository.getInputStream(this.trustedToken, uri, true);
             
-            repository.copy(token, uri, newUri, "0", false, true);
-            repository.storeContent( token, newUri, transformer.transform(is, transformation) );
+            this.repository.copy(token, uri, newUri, "0", false, true);
+            this.repository.storeContent( token, newUri, this.transformer.transform(is, this.transformation) );
                         
             
             // Setter heller redirect til parent (dvs mappen som ressursene ligger i)
@@ -136,7 +136,7 @@ public class ResourceTransformer implements Controller, InitializingBean {
             //model.put("resource", newResource);
                         
             String parentCollectionURI = URIUtil.getParentURI(uri);
-            Resource parentCollection = this.repository.retrieve(trustedToken, parentCollectionURI, true);
+            Resource parentCollection = this.repository.retrieve(this.trustedToken, parentCollectionURI, true);
             
             /**
              * FIXME: Virker ikke hvis man bruker redirect view da det kun tar med ressursen, ikke messages
@@ -147,10 +147,10 @@ public class ResourceTransformer implements Controller, InitializingBean {
             model.put("resource", parentCollection);
             
         } else {
-            return new ModelAndView(errorView, model);
+            return new ModelAndView(this.errorView, model);
         }
         
-        return new ModelAndView(successView, model);        
+        return new ModelAndView(this.successView, model);        
     }
 
 
@@ -177,7 +177,7 @@ public class ResourceTransformer implements Controller, InitializingBean {
     
     
     public void afterPropertiesSet() throws Exception {
-        if (repository == null) 
+        if (this.repository == null) 
             throw new BeanInitializationException("Property 'repository' required");
     }
 

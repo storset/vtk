@@ -12,6 +12,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action dev="gormap" type="add">
+        Refactored cache-related header setting in DisplayResourceView
+        and ResourceXSLTView (now done by a handler interceptor).
+      </action>
+
+      <action dev="gormap" type="add">
         Added a simple request load listener (for request load monitoring).
       </action>
 

@@ -48,7 +48,7 @@ public class JTidyTransformerTest extends TestCase {
     
     protected void setUp() throws Exception {
         super.setUp();
-        jti = new JTidyTransformerImpl();
+        this.jti = new JTidyTransformerImpl();
     }
 
     
@@ -118,7 +118,7 @@ public class JTidyTransformerTest extends TestCase {
     private boolean parserTest(InputStream isOriginal) 
         throws FileNotFoundException, IOException {
 
-        InputStream isParsed = jti.htmlToXhtml(isOriginal); 
+        InputStream isParsed = this.jti.htmlToXhtml(isOriginal); 
         // throws FileNotFoundException for invalid input streams!
         
         if (isParsed == null) {

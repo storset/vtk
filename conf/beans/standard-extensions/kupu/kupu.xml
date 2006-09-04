@@ -73,6 +73,9 @@
               <!-- Camino -->
               <value>Mozilla/5\.0.*Gecko.*Camino/.*</value>
 
+	      <!-- Opera 9.01 (linux) not working 
+	      <value>Mozilla/4\.0 \(compatible; .*\) Opera 9\.01</value>
+	      -->
             </list>
           </property>
         </bean>

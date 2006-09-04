@@ -32,6 +32,8 @@ package org.vortikal.repository;
 
 import java.util.List;
 
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+
 public interface PropertySet {
 
    public String getURI();
@@ -44,6 +46,8 @@ public interface PropertySet {
 
    public Property getProperty(Namespace namespace, String name);
 
+   public Property getProperty(PropertyTypeDefinition type);
+   
    public List getProperties(Namespace namespace);
 
 }

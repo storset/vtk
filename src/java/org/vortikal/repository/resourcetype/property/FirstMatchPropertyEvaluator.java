@@ -91,10 +91,8 @@ public class FirstMatchPropertyEvaluator
         throws PropertyEvaluationException {
 
         for (int i = 0; i < this.propertyDefinitions.length; i++) {
-            Namespace namespace = this.propertyDefinitions[i].getNamespace();
-            String name = this.propertyDefinitions[i].getName();
 
-            Property prop = ancestorPropertySet.getProperty(namespace, name);
+            Property prop = ancestorPropertySet.getProperty(this.propertyDefinitions[i]);
             if (prop != null) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Found match for property definition '"

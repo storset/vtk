@@ -35,12 +35,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
-import org.springframework.web.servlet.ModelAndView;
-import org.vortikal.web.RequestContext;
 
 
 
@@ -50,16 +47,12 @@ import org.vortikal.web.RequestContext;
  * the document.
  *
  */
-public class NewElementAtController extends AbstractXmlEditController {
+public class NewElementAtController implements ActionHandler {
 
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document,
+            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
-
-    protected ModelAndView handleRequestInternal(
-        HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
-
-        String uri = RequestContext.getRequestContext().getResourceURI();
-        
         Map model = new HashMap();
         
         String mode = document.getDocumentMode();
@@ -73,8 +66,8 @@ public class NewElementAtController extends AbstractXmlEditController {
             String path = request.getParameter("at");
 
             if (path == null) {
-                setXsltParameter(model,"ERRORMESSAGE", "NEW_ELEMENT_AT_MISSING_PATH_PARAMETER");
-                return new ModelAndView(this.viewName, model);
+                XmlEditController.setXsltParameter(model,"ERRORMESSAGE", "NEW_ELEMENT_AT_MISSING_PATH_PARAMETER");
+                return model;
             }
 
             Element element = new Element(elementName);
@@ -85,35 +78,30 @@ public class NewElementAtController extends AbstractXmlEditController {
             document.setEditingElement(element);
 
             document.setDocumentMode("newElementAt");
-            return new ModelAndView(this.viewName, model);
+            return model;
         } else if (mode.equals("newElement") && !"true".equals(con)) {
             document.setDocumentMode("default");
             document.setNewElementName(null);
             document.setEditingElement(null);
-            return new ModelAndView(this.viewName, model);
+            return model;
         } else if (mode.equals("newElementAt")) {
             if ("true".equals(con)) {
 
                 /* Add input values to element and save: */
                 document.addContentsToElement(document.getEditingElement(),
-                        getRequestParameterMap(request), documentDefinition);
+                        XmlEditController.getRequestParameterMap(request), documentDefinition);
                 document.setDocumentMode("default");
                 document.resetEditingElement();
                 
-                document.save(this.repository);
+                document.save();
 
             } else {
                 /* Cancel; remove the new element from the document */
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Cancelled, removing newly inserted " + "element "
-                                 + document.getEditingElement().getName()
-                                 + " from document " + uri);
-                }
                 document.setDocumentMode("default");
                 document.getEditingElement().detach();
                 document.setEditingElement(null);
             }
-            return new ModelAndView(this.viewName, model);
+            return model;
         }
         return null;
     }

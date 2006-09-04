@@ -34,26 +34,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.ModelAndView;
 
 
 
 /**
  * Controller for requests that have no specified editing action.
  */
-public class DefaultController extends AbstractXmlEditController {
+public class DefaultController implements ActionHandler {
     
     /**
      * Just returns a ModelAndView with no regard to what mode the
      * edited document is currently in.
      */
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, 
-                                                 HttpServletResponse response, 
+    public Map handleRequestInternal(HttpServletRequest request, 
                                                  EditDocument document, 
                                                  SchemaDocumentDefinition documentDefinition) {
-        Map model = new HashMap();
-        return new ModelAndView(this.viewName, model);
+        return new HashMap();
     }
 }

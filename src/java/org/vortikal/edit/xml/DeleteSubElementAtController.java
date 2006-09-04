@@ -34,22 +34,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
-import org.springframework.web.servlet.ModelAndView;
 
-public class DeleteSubElementAtController extends AbstractXmlEditController {
+public class DeleteSubElementAtController implements ActionHandler {
     
-    /**
-     * @see org.vortikal.edit.xml.AbstractXmlEditController#handleRequestInternal(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse,
-     *      org.vortikal.edit.xml.EditDocument,
-     *      org.vortikal.edit.xml.SchemaDocumentDefinition)
-     */
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response, EditDocument document, SchemaDocumentDefinition documentDefinition) {
-        
-        Map model = new HashMap();
+    public Map handleRequestInternal(HttpServletRequest request, 
+            EditDocument document, SchemaDocumentDefinition documentDefinition) {
         
         String mode = document.getDocumentMode();
 
@@ -58,14 +49,14 @@ public class DeleteSubElementAtController extends AbstractXmlEditController {
             String path = request.getParameter("path");
 
             document.addContentsToElement(document.getEditingElement(),
-                    getRequestParameterMap(request), documentDefinition);
+                    XmlEditController.getRequestParameterMap(request), documentDefinition);
             documentDefinition.translateToEditingElement(
                     document.getEditingElement());
 
             Element element = document.findElementByPath(path);
             element.detach();
 
-            return new ModelAndView(this.viewName, model);
+            return new HashMap();
         }
         return null;
     }

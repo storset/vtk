@@ -39,6 +39,7 @@ import java.util.Map;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 /**
  * Implementation of {@link org.vortikal.repository.PropertySet}.
@@ -143,6 +144,10 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         if (map != null) {
             map.remove(name);
         }
+    }
+    
+    public Property getProperty(PropertyTypeDefinition type) {
+        return getProperty(type.getNamespace(), type.getName());
     }
     
     public Property getProperty(Namespace namespace, String name) {

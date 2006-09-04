@@ -34,26 +34,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.ModelAndView;
+public class NewElementController implements ActionHandler {
 
-public class NewElementController extends AbstractXmlEditController {
-
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response, EditDocument document, SchemaDocumentDefinition documentDefinition) {
-       Map model = new HashMap();
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document, SchemaDocumentDefinition documentDefinition)
+    throws XMLEditException {
 
        String mode = document.getDocumentMode();
 
-        if (mode.equals("default")) {
-            String elementName = request.getParameter("name");
-            document.setNewElementName(elementName);
-            document.setDocumentMode("newElement");
+        if (!mode.equals("default"))
+            return null;
+
+        String elementName = request.getParameter("name");
+        document.setNewElementName(elementName);
+        document.setDocumentMode("newElement");
             
             
-            return new ModelAndView(this.viewName, model);
-        }
-        return null;
+        return new HashMap();
     }
     
 

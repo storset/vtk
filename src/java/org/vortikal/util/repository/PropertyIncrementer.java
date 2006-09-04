@@ -84,6 +84,7 @@ public class PropertyIncrementer implements InitializingBean {
 
     /**
      * TODO write javadoc
+     * XXX: Should be rewritten
      * @throws IOException
      */
     synchronized public String incrementProperty()

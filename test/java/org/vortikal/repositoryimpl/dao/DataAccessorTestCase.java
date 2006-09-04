@@ -139,7 +139,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         
         // Set the propertiesLastModified property to a future date:
         Date futureDate = new Date(System.currentTimeMillis() + 10000000);
-        Property propertiesLastModified = (Property) collection.getProperty(
+        Property propertiesLastModified = collection.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
         propertiesLastModified.setDateValue(futureDate);
         dao.store(collection);

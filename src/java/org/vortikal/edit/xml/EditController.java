@@ -34,11 +34,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
-import org.springframework.web.servlet.ModelAndView;
 
 
 
@@ -46,17 +44,12 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Controller that prepares ("expands") an element for editing.
  *
- * @version $Id$
  */
-public class EditController extends AbstractXmlEditController {
+public class EditController implements ActionHandler {
 
-
-
-    protected ModelAndView handleRequestInternal(
-        HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) {
-        
-        Map model = new HashMap();
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document,
+            SchemaDocumentDefinition documentDefinition) throws XMLEditException {
         
         String mode = document.getDocumentMode();
 
@@ -70,14 +63,11 @@ public class EditController extends AbstractXmlEditController {
             document.setClone((Element)element.clone());
             
             document.setDocumentMode("edit");
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Expanding focused element: " + path);
-            }
             
             element.addContent(new ProcessingInstruction("expanded", "true"));
             documentDefinition.translateToEditingElement(element);
             
-            return new ModelAndView(this.viewName, model);
+            return new HashMap();
 
         }
         return null;

@@ -71,6 +71,8 @@ public class EditDocument extends Document {
 
     private static Log logger = LogFactory.getLog(EditDocument.class);
 
+    private Repository repository;
+    
     private ProcessingInstruction pi = null;
 
     private String uri = null;
@@ -85,9 +87,10 @@ public class EditDocument extends Document {
 
     private Resource resource;
 
-    EditDocument(Element root, DocType docType, Resource resource) {
+    EditDocument(Element root, DocType docType, Resource resource, Repository repository) {
         super(root, docType);
         this.resource = resource;
+        this.repository = repository;
         this.uri = resource.getURI();
         this.setBaseURI(resource.getURI());
     }
@@ -124,7 +127,7 @@ public class EditDocument extends Document {
 
         Element root = document.getRootElement();
         root.detach();
-        return new EditDocument(root, document.getDocType(), resource);
+        return new EditDocument(root, document.getDocType(), resource, repository);
     }
 
 
@@ -142,7 +145,7 @@ public class EditDocument extends Document {
 
 
 
-    public void save(Repository repository) throws XMLEditException, IOException {
+    public void save() throws XMLEditException, IOException {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -186,7 +189,7 @@ public class EditDocument extends Document {
 
 
 
-    public void finish(Repository repository) throws IOException {
+    public void finish() throws IOException {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         

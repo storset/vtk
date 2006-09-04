@@ -77,7 +77,8 @@ public class EditDocumentTest extends MockObjectTestCase {
             mockResource.expects(atLeastOnce()).method("getURI").withNoArguments().will(
                 returnValue("/foo.xml"));
             // XXX: will tests run without a resource?
-            this.testDocument = new EditDocument(root, d.getDocType(), (Resource) mockResource.proxy());
+            this.testDocument = new EditDocument(root, d.getDocType(), 
+                    (Resource) mockResource.proxy(), null);
 
             URL testXSD = 
                 this.getClass().getClassLoader().getResource(TEST_XSD);

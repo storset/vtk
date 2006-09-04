@@ -212,8 +212,7 @@ public class PropertyEditController extends SimpleFormController
             if (isFocusedProperty(this.propertyTypeDefinitions[i], request)) {
                 definition = this.propertyTypeDefinitions[i];
 
-                Property property = resource.getProperty(
-                    definition.getNamespace(), definition.getName());
+                Property property = resource.getProperty(definition);
 
                 if (property != null) {
                     if (definition.isMultiple()) {
@@ -291,7 +290,7 @@ public class PropertyEditController extends SimpleFormController
             PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
             if (isFocusedProperty(def, propertyCommand.getNamespace(),
                                   propertyCommand.getName())) {
-                Property property = resource.getProperty(def.getNamespace(), def.getName());
+                Property property = resource.getProperty(def);
 
                 String stringValue = propertyCommand.getValue();
 
@@ -435,7 +434,7 @@ public class PropertyEditController extends SimpleFormController
                 continue;
             }
 
-            Property property = resource.getProperty(def.getNamespace(), def.getName());
+            Property property = resource.getProperty(def);
             String editURL = null;
             String format = null;
             String toggleURL = null;

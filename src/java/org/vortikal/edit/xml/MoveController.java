@@ -40,27 +40,20 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
-import org.springframework.web.servlet.ModelAndView;
-
-
 
 
 /**
  * Controller that marks elements for moving, based on request input.
  *
- * @version $Id$
  */
-public class MoveController extends AbstractXmlEditController {
+public class MoveController implements ActionHandler {
 
-
-
-    protected ModelAndView handleRequestInternal(
-        HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) {
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document,
+            SchemaDocumentDefinition documentDefinition) throws XMLEditException {
 
         Map model = new HashMap();
         String mode = document.getDocumentMode();
@@ -72,7 +65,6 @@ public class MoveController extends AbstractXmlEditController {
                 String s = (String) enumeration.nextElement();
                 if (s.matches("\\d+(\\.\\d+)*")) {
                     v.add(s);
-                    this.logger.debug("Marking element " + s + " for moving");
                 }
             }
             Object[] array = v.toArray();
@@ -89,9 +81,9 @@ public class MoveController extends AbstractXmlEditController {
                 document.setDocumentMode("move");
                 document.setElements(v);
             } else {
-                setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_TO_MOVE");
+                XmlEditController.setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_TO_MOVE");
             }
-            return new ModelAndView(this.viewName, model);
+            return model;
         }
         return null;
     }

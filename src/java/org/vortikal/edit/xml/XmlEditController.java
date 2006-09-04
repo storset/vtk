@@ -46,14 +46,15 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.JDOMException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -75,113 +76,70 @@ import org.vortikal.xml.TransformerManager;
  *   number of seconds to lock the resource when editing it. The
  *   default is <code>1800</code> (30 minutes).
  *   <li><code>viewName</code> - the view name to return.
+ *   <li>++++++
  * </ul>
  */
-public abstract class AbstractXmlEditController implements Controller {
+public class XmlEditController implements Controller, InitializingBean {
 
-    private Namespace schemaNamespace = Namespace.DEFAULT_NAMESPACE;
-    private String schemaName = "schema";
-    
-    private Service editElementService;
-    private Service editElementDoneService;
-    
-    private Service newElementAtService;
+    private static Log logger = LogFactory.getLog(XmlEditController.class);
 
-    private Service editService;
-    private Service browseService;
-
-    private Service moveElementService;
-    private Service moveElementDoneService;
-    private Service deleteElementService;
-    private Service newElementService;
-
-    private Service newSubElementAtService;
-    private Service deleteSubElementAtService;
-    private Service finishEditingService;
-    
-    private int lockTimeoutSeconds = 30 * 60;
-
-    protected String viewName = "edit";
-
-    protected Log logger = LogFactory.getLog(this.getClass());
-    
-
-    protected Repository repository;
+    private Repository repository;
     private TransformerManager transformerManager;
+    private PropertyTypeDefinition schemaPropDef;
+    private Service browseService;
+    private int lockTimeoutSeconds = 30 * 60;
+    private String viewName;
+    private String finishViewName;
 
 
-    public void setDeleteSubElementAtService(Service deleteSubElementAtService) {
-        this.deleteSubElementAtService = deleteSubElementAtService;
-    }
+    private static String ACTION_PARAMETER_NAME = "action";
 
-    public void setNewElementService(Service newElementService) {
-        this.newElementService = newElementService;
-    }
+    private static String EDIT_ACTION = "edit";
+    private static String EDIT_DONE_ACTION = "editDone";
+    private static String DELETE_ELEMENT_ACTION = "deleteElement";
+    private static String MOVE_ACTION = "moveElement";
+    private static String MOVE_DONE_ACTION = "moveElementDone";
+    private static String NEW_ACTION = "newElement";
+    private static String NEW_AT_ACTION = "newElementAt";
+    private static String DELETE_SUB_ELEMENT_AT_ACTION = "deleteSubElementAt";
+    private static String NEW_SUB_ELEMENT_AT_ACTION = "newSubElementAt";
+    private static String FINISH_ACTION = "finish";
+    
+    private ActionHandler defaultActionHandler = new DefaultController();
+    private ActionHandler editActionHandler = new EditController();
+    private ActionHandler editElementDoneActionHandler = new EditDoneController();
+    private ActionHandler newElementAtActionHandler = new NewElementAtController();
+    private ActionHandler moveElementActionHandler = new MoveController();
+    private ActionHandler moveElementDoneActionHandler = new MoveItController();
+    private ActionHandler deleteElementActionHandler = new DeleteController();
+    private ActionHandler newElementActionHandler = new NewElementController();
+    private ActionHandler newSubElementAtActionHandler = new NewSubElementAtController();
+    private ActionHandler deleteSubElementAtActionHandler = new DeleteSubElementAtController();
+    private ActionHandler finishEditingActionHandler = new FinishController();
+    
+    private Map actionMapping = new HashMap();
 
-    public void setNewSubElementAtService(Service newSubElementAtService) {
-        this.newSubElementAtService = newSubElementAtService;
-    }
+    public void afterPropertiesSet() throws Exception {
+        this.actionMapping.put(EDIT_ACTION, editActionHandler);
+        this.actionMapping.put(EDIT_DONE_ACTION, editElementDoneActionHandler);
+        this.actionMapping.put(NEW_AT_ACTION, newElementAtActionHandler);
+        this.actionMapping.put(MOVE_ACTION, moveElementActionHandler);
+        this.actionMapping.put(MOVE_DONE_ACTION, moveElementDoneActionHandler);
+        this.actionMapping.put(DELETE_ELEMENT_ACTION, deleteElementActionHandler);
+        this.actionMapping.put(NEW_ACTION, newElementActionHandler);
+        this.actionMapping.put(NEW_SUB_ELEMENT_AT_ACTION, newSubElementAtActionHandler);
+        this.actionMapping.put(DELETE_SUB_ELEMENT_AT_ACTION, deleteSubElementAtActionHandler);
+        this.actionMapping.put(FINISH_ACTION, finishEditingActionHandler);
 
-    public void setEditElementService(Service editElementService) {
-        this.editElementService = editElementService;
-    }
-
-    public void setEditService(Service editService) {
-        this.editService = editService;
-    }
-
-    public void setBrowseService(Service browseService) {
-        this.browseService = browseService;
     }
     
-    public void setTransformerManager(TransformerManager transformerManager) {
-        this.transformerManager = transformerManager;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
-    public void setDeleteElementService(Service deleteElementService) {
-        this.deleteElementService = deleteElementService;
-    }
-
-    public void setMoveElementService(Service moveElementService) {
-        this.moveElementService = moveElementService;
-    }
-
-    public void setNewElementAtService(Service newElementAtService) {
-        this.newElementAtService = newElementAtService;
-    }
-
-    public void setEditElementDoneService(Service editElementDoneService) {
-        this.editElementDoneService = editElementDoneService;
-    }
-
-    public void setLockTimeoutSeconds(int lockTimeoutSeconds) {
-        this.lockTimeoutSeconds = lockTimeoutSeconds;
-    }
-
-    public void setViewName(final String viewName){
-	this.viewName = viewName;
-    }
-
-    public void setMoveElementDoneService(Service moveElementDoneService) {
-        this.moveElementDoneService = moveElementDoneService;
-    }
-
-    public void setFinishEditingService(Service finishEditingService) {
-        this.finishEditingService = finishEditingService;
-    }
-
-
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) 
         throws Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
-        String sessionID = AbstractXmlEditController.class.getName() + ":" + uri; 
+        String sessionID = XmlEditController.class.getName() + ":" + uri; 
         
         Map sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
 
@@ -193,9 +151,9 @@ public abstract class AbstractXmlEditController implements Controller {
             Resource resource = this.repository.retrieve(token, uri, false);
             Lock lock = resource.getLock();
             if (lock == null || (!lock.getPrincipal().equals(principal))) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Stored xml edit session data is out of date.");
-                }
+                if (logger.isDebugEnabled())
+                    logger.debug("Stored xml edit session data is out of date.");
+
                 request.getSession(true).removeAttribute(sessionID);
                 sessionMap = null;
             }
@@ -212,19 +170,31 @@ public abstract class AbstractXmlEditController implements Controller {
         SchemaDocumentDefinition documentDefinition = (SchemaDocumentDefinition)
             sessionMap.get(SchemaDocumentDefinition.class.getName());
         
-        ModelAndView mov = handleRequestInternal(request, response, document, documentDefinition);
+        return handleRequestInternal(request, document, documentDefinition);
         
-        if (mov == null) {
-            mov = handleModeError(document, request);
-        }
-        
-        Map model = mov.getModel();
-        model.put("resource", document.getResource());
-        model.put("jdomDocument", document);
+    }
+    
+    private ModelAndView handleRequestInternal(HttpServletRequest request, 
+            EditDocument document, SchemaDocumentDefinition documentDefinition)
+    throws IOException {
 
+        String action = request.getParameter(ACTION_PARAMETER_NAME);
+        ActionHandler handler = (ActionHandler)this.actionMapping.get(action);
+
+        if (handler == null) 
+            handler = this.defaultActionHandler;
+
+        Map model = handler.handleRequestInternal(request, document, documentDefinition);
+
+        if (model == null)
+            model = handleModeError(document, request);
+        
         referenceData(model, document);
 
-        return mov;
+        if (handler == finishEditingActionHandler) 
+            return new ModelAndView(this.finishViewName, model);
+        
+        return new ModelAndView(this.viewName, model);
     }
     
     private void referenceData(Map model, EditDocument document) 
@@ -234,8 +204,8 @@ public abstract class AbstractXmlEditController implements Controller {
 
         String token = SecurityContext.getSecurityContext().getToken();
 
-//        setXsltParameter(model, "RESOURCESURL", null);
-//        setXsltParameter(model, "BROWSEURL", null);
+        model.put("resource", document.getResource());
+        model.put("jdomDocument", document);
 
         setXsltParameter(model, "pageTitle", "Du redigerer: " + resource.getName());
         setXsltParameter(model, "DAY", date("dd"));
@@ -262,29 +232,43 @@ public abstract class AbstractXmlEditController implements Controller {
                 // No browse available for this resource
             }
         }
+        Service service = RequestContext.getRequestContext().getService();
 
+        Map actionParam = new HashMap();
+
+        // XXX: Remove first one?
         setXsltParameter(model, "editServiceURL", 
-                this.editService.constructLink(resource, principal));
-        setXsltParameter(model, "editElementServiceURL", this.editElementService
-                .constructLink(resource, principal));
-        setXsltParameter(model, "editElementDoneServiceURL", this.editElementDoneService
-                .constructLink(resource, principal));
-        setXsltParameter(model, "moveElementServiceURL", this.moveElementService
-                .constructLink(resource, principal));
-        setXsltParameter(model, "moveElementDoneServiceURL", this.moveElementDoneService
-                .constructLink(resource, principal));
-        setXsltParameter(model, "deleteElementServiceURL", this.deleteElementService
-                .constructLink(resource, principal));
-        setXsltParameter(model, "newElementAtServiceURL", this.newElementAtService
-                .constructLink(resource, principal));
-        setXsltParameter(model, "newElementServiceURL", this.newElementService
-                .constructLink(resource, principal));
+                service.constructLink(resource, principal));
+        actionParam.put(ACTION_PARAMETER_NAME, EDIT_ACTION);
+        setXsltParameter(model, "editElementServiceURL", service
+                .constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, EDIT_DONE_ACTION);
+        setXsltParameter(model, "editElementDoneServiceURL", service
+                .constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, MOVE_ACTION);
+        setXsltParameter(model, "moveElementServiceURL", service
+                .constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, MOVE_DONE_ACTION);
+        setXsltParameter(model, "moveElementDoneServiceURL", service
+                .constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, DELETE_ELEMENT_ACTION);
+        setXsltParameter(model, "deleteElementServiceURL", service
+                .constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, NEW_AT_ACTION);
+        setXsltParameter(model, "newElementAtServiceURL", service
+                .constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, NEW_ACTION);
+        setXsltParameter(model, "newElementServiceURL", service
+                .constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, NEW_SUB_ELEMENT_AT_ACTION);
         setXsltParameter(model, "newSubElementAtServiceURL",
-                this.newSubElementAtService.constructLink(resource, principal));
+                service.constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, DELETE_SUB_ELEMENT_AT_ACTION);
         setXsltParameter(model, "deleteSubElementAtServiceURL",
-                this.deleteSubElementAtService.constructLink(resource, principal));
+                service.constructLink(resource, principal, actionParam));
+        actionParam.put(ACTION_PARAMETER_NAME, FINISH_ACTION);
         setXsltParameter(model, "finishEditingServiceURL",
-                this.finishEditingService.constructLink(resource, principal));
+                service.constructLink(resource, principal, actionParam));
 
     }
 
@@ -294,8 +278,7 @@ public abstract class AbstractXmlEditController implements Controller {
         return formatter.format(today);
     }
 
-    private ModelAndView handleModeError(EditDocument document, HttpServletRequest request) {
-        Map model = new HashMap();
+    private Map handleModeError(EditDocument document, HttpServletRequest request) {
         
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -311,28 +294,13 @@ public abstract class AbstractXmlEditController implements Controller {
         sb.append("remote host: [").append(request.getRemoteHost()).append("]");
         sb.append("Current document state:\n").append(document.toStringDetail());
 
-        this.logger.warn(sb.toString());
+        logger.warn(sb.toString());
         
+        Map model = new HashMap();
         setXsltParameter(model, "ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
-        return new ModelAndView("edit", model);
+        return model;
     }
     
-
-    /**
-     * Internal request handler method. Gets called after editing
-     * session initialization (i.e. making sure there an editing
-     * session actually exists, that the document is locked,
-     * etc.). Subclasses must implement this method.
-     * 
-     * @param request the servlet request
-     * @param response the servlet response
-     * @return a model and view
-     */
-    protected abstract ModelAndView handleRequestInternal(
-            HttpServletRequest request, 
-            HttpServletResponse response,
-            EditDocument document,
-            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException;
 
 
     private void initEditSession(HttpServletRequest request) throws Exception {
@@ -343,7 +311,7 @@ public abstract class AbstractXmlEditController implements Controller {
         String token = securityContext.getToken();
         
         // FIXME: possible multiple repositories at once!
-        String sessionID = AbstractXmlEditController.class.getName() + ":" + uri; 
+        String sessionID = XmlEditController.class.getName() + ":" + uri; 
         
         Resource resource = this.repository.retrieve(token, uri, false);
         
@@ -359,7 +327,7 @@ public abstract class AbstractXmlEditController implements Controller {
         }
 
         /* get required schemaURL */
-        Property schemaProp = resource.getProperty(this.schemaNamespace, this.schemaName); 
+        Property schemaProp = resource.getProperty(this.schemaPropDef); 
         if (schemaProp == null)
             throw new XMLEditException(
                     "XML document is uneditable, schema reference is missing");
@@ -422,15 +390,7 @@ public abstract class AbstractXmlEditController implements Controller {
     
 
 
-    protected Object getXsltParameter(Map model, String key) {
-        Map parameters = (Map)model.get("xsltParameters");
-        if (parameters != null) {
-            return parameters.get(key);
-        }
-        return null;
-    }
-    
-    protected Map getRequestParameterMap(HttpServletRequest request) {
+    public static Map getRequestParameterMap(HttpServletRequest request) {
         Map parameterMap = new HashMap();
         for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
             String key = (String) e.nextElement();
@@ -441,7 +401,7 @@ public abstract class AbstractXmlEditController implements Controller {
 
     }
 
-    protected final void setXsltParameter(Map model, String key, Object value) {
+    public final static void setXsltParameter(Map model, String key, Object value) {
         Map parameters = (Map)model.get("xsltParameters");
         if (parameters == null) {
             parameters = new HashMap();
@@ -449,4 +409,34 @@ public abstract class AbstractXmlEditController implements Controller {
         }
         parameters.put(key, value);
     }
+
+
+    public void setBrowseService(Service browseService) {
+        this.browseService = browseService;
+    }
+    
+    public void setTransformerManager(TransformerManager transformerManager) {
+        this.transformerManager = transformerManager;
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setLockTimeoutSeconds(int lockTimeoutSeconds) {
+        this.lockTimeoutSeconds = lockTimeoutSeconds;
+    }
+
+    public void setViewName(final String viewName){
+        this.viewName = viewName;
+    }
+
+    public void setSchemaPropDef(PropertyTypeDefinition schemaPropDef) {
+        this.schemaPropDef = schemaPropDef;
+    }
+
+    public void setFinishViewName(String finishViewName) {
+        this.finishViewName = finishViewName;
+    }
+
 }

@@ -28,20 +28,12 @@
       <list>
         <ref local="resourceNotRootAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>vrtx</value>
-          </property>
-          <property name="parameterValue">
-            <value>admin</value>
-          </property>
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="admin" />
         </bean>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>delete</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="delete" />
         </bean>
         <ref local="deleteResourcePermissionAssertion" />
       </list>

@@ -217,8 +217,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
     private boolean checkIgnore(Resource resource) {
         if (this.ignoreProperty != null) {
-            Property p = resource.getProperty(this.ignoreProperty.getNamespace(),
-                                              this.ignoreProperty.getName());
+            Property p = resource.getProperty(this.ignoreProperty);
             if (p != null) {
                 return true;
             }
@@ -234,10 +233,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             // Check titleOverrideProperties in correct order
             for (int i = 0; i < this.titleOverrideProperties.length; i++) {
 
-                Namespace namespace = this.titleOverrideProperties[i].getNamespace();
-                String name = this.titleOverrideProperties[i].getName();
-                
-                Property property = resource.getProperty(namespace, name);
+                Property property = resource.getProperty(this.titleOverrideProperties[i]);
                 if (property != null && property.getStringValue() != null) {
                     return property.getStringValue();
                 }

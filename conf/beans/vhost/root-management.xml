@@ -8,7 +8,7 @@
   <bean id="repositoryManageService" 
         class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
-    <property name="order" value="-9600" />
+    <property name="order" value="350" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
@@ -20,7 +20,7 @@
         </bean>      
       </list>
     </property>
-  </bean>        
+  </bean>
 
   <bean id="repositoryManageDefaultService"
         class="org.vortikal.web.service.ServiceImpl">

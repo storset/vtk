@@ -31,43 +31,35 @@
 package org.vortikal.edit.xml;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.web.RequestContext;
 
 
 
-public class FinishController extends AbstractXmlEditController {
+public class FinishController implements ActionHandler {
 
-    private String viewName = "redirect";
-
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-    
-
-    protected ModelAndView handleRequestInternal(
-        HttpServletRequest request, HttpServletResponse response,
-        EditDocument document,
-        SchemaDocumentDefinition documentDefinition) {
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document,
+            SchemaDocumentDefinition documentDefinition) throws XMLEditException {
         
         String uri = RequestContext.getRequestContext().getResourceURI();
         
         try {
-            document.finish(this.repository);
+            document.finish();
         } catch (IOException e) {
-            // FIXME: what?
+            // XXX: what?
         }
             
         // FIXME: possible multiple repositories at once!
-        String sessionID = AbstractXmlEditController.class.getName() + ":" + uri; 
+        String sessionID = XmlEditController.class.getName() + ":" + uri; 
 
         request.getSession(true).removeAttribute(sessionID);
 
-        return new ModelAndView(this.viewName);
+        return new HashMap();
     }
     
 

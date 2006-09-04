@@ -40,116 +40,105 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
-import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.util.Xml;
 
-
-
-
 /**
- * Controller that moves elements marked for moving to a new location
- * based on request input.
- *
- * @version $Id$
+ * Controller that moves elements marked for moving to a new location based on
+ * request input.
  */
-public class MoveItController extends AbstractXmlEditController {
-    
+public class MoveItController implements ActionHandler {
 
-
-    protected ModelAndView handleRequestInternal(
-        HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document, SchemaDocumentDefinition documentDefinition)
+            throws IOException, XMLEditException {
 
         Map model = new HashMap();
         String mode = document.getDocumentMode();
 
-        if (mode.equals("move")) {
-            String con = request.getParameter("cont");
-            if ("true".equals(con)) {
+        if (!mode.equals("move"))
+            return null;
 
-                /* find out where the elements should go: */
-                String path = request.getParameter("to");
+        String con = request.getParameter("cont");
+        if ("true".equals(con)) {
 
-                this.logger.debug("Moving element(s) to " + path);
+            /* find out where the elements should go: */
+            String path = request.getParameter("to");
 
-                if (path == null) {
-                    setXsltParameter(model,"ERRORMESSAGE", "MOVE_IT_MISSING_PATH_PARAMETER");
-                    return new ModelAndView(this.viewName, model);
+            if (path == null) {
+                XmlEditController.setXsltParameter(model,
+                        "ERRORMESSAGE", "MOVE_IT_MISSING_PATH_PARAMETER");
+                return model;
+            }
+
+            /* prepare insertion in the new location: */
+            String currentPath = path;
+            if (currentPath.indexOf(".") >= 0) {
+                // Strip away the leading '1.' (root element)
+                currentPath = currentPath.substring(2, currentPath.length());
+            }
+
+            int index = 0;
+            Element currentElement = document.getRootElement();
+            while (true) {
+                if (currentPath.indexOf(".") == -1) {
+                    /* found the parent element */
+                    index = Integer.parseInt(currentPath);
+                    break;
                 }
+                index = Integer.parseInt(currentPath.substring(0, currentPath
+                        .indexOf(".")));
+                currentElement = (Element) currentElement.getChildren().get(
+                        index - 1);
+                currentPath = currentPath.substring(
+                        currentPath.indexOf(".") + 1, currentPath.length());
+            }
 
-                /* prepare insertion in the new location: */
-                String currentPath = path;
-                if (currentPath.indexOf(".") >= 0) {
-                    // Strip away the leading '1.' (root element)
-                    currentPath = currentPath.substring(2, currentPath.length());
-                }
+            /* actually insert the elements: */
+            Enumeration enumeration = document.getElements().elements();
+            List turnedElements = new ArrayList();
 
-                int index = 0;
-                Element currentElement = document.getRootElement();
-                while (true) {
-                    if (currentPath.indexOf(".") == -1) {
-                        /* found the parent element */
-                        index = Integer.parseInt(currentPath);
-                        break;
-                    }
-                    index = Integer.parseInt(currentPath.substring(0,
-                            currentPath.indexOf(".")));
-                    currentElement = (Element) currentElement.getChildren()
-                            .get(index - 1);
-                    currentPath = currentPath.substring(currentPath
-                            .indexOf(".") + 1, currentPath.length());
-                }
+            /* Flip the elements (must be reversed) */
+            while (enumeration.hasMoreElements()) {
+                turnedElements.add(0, enumeration.nextElement());
+            }
 
-                /* actually insert the elements: */
-                Enumeration enumeration = document.getElements().elements();
-                List turnedElements = new ArrayList();
+            List l = currentElement.getChildren();
 
-                /* Flip the elements (must be reversed) */
-                while (enumeration.hasMoreElements()) {
-                    turnedElements.add(0, enumeration.nextElement());
-                }
-                  
-                List l =   currentElement.getChildren();
+            for (Iterator it = turnedElements.iterator(); it.hasNext();) {
+                Element elem = (Element) it.next();
 
-                for (Iterator it = turnedElements.iterator(); it.hasNext();) {
-                    Element elem = (Element)it.next();
+                Element clone = (Element) elem.clone();
+                l.add(index, clone);
+                Xml.removeProcessingInstruction(clone, "marked");
+                document.resetElements(new Vector(clone.getChildren()));
+            }
 
-                    Element clone = (Element)elem.clone();
-                    l.add(index, clone);
-                    Xml.removeProcessingInstruction(clone, "marked");
-                    document.resetElements(new Vector(clone.getChildren()));
-                }
+            enumeration = document.getElements().elements();
+            while (enumeration.hasMoreElements()) {
+                Element elem = (Element) enumeration.nextElement();
+                elem.detach();
+                l.remove(elem);
+            }
 
-                enumeration = document.getElements().elements();
-                while (enumeration.hasMoreElements()) {
-                    Element elem = (Element)enumeration.nextElement();
-                    elem.detach();
-                    l.remove(elem);
-                }
+            ArrayList newChildren = new ArrayList();
+            for (Iterator i = l.iterator(); i.hasNext();) {
+                Element e = (Element) i.next();
+                newChildren.add(e.clone());
+            }
+            currentElement.removeContent();
+            currentElement.setContent(newChildren);
+            document.setDocumentMode("default");
+            document.resetElements();
 
-                ArrayList newChildren = new ArrayList();
-                for (Iterator i = l.iterator(); i.hasNext();) {
-                    Element e = (Element)i.next();
-                    this.logger.debug("Inserting element " + e.getName() +
-                                 " at " + path);
-                    newChildren.add(e.clone());
-                }
-                currentElement.removeContent();
-                currentElement.setContent(newChildren);
-                document.setDocumentMode("default");
-                document.resetElements();
-                
-                document.save(this.repository);
-            } else  {
-                document.setDocumentMode("default");
-                document.resetElements();
-            } 
-            return new ModelAndView(this.viewName, model);
+            document.save();
+        } else {
+            document.setDocumentMode("default");
+            document.resetElements();
         }
-        return null;
+        
+        return model;
     }
 
 }

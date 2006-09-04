@@ -199,8 +199,7 @@ public class HeaderControlHandlerInterceptor
         if (this.expiresHeaderProperty != null) {
             
             Property expiresProperty = resource.getProperty(
-                this.expiresHeaderProperty.getNamespace(),
-                this.expiresHeaderProperty.getName());
+                this.expiresHeaderProperty);
 
             if (expiresProperty != null && expiresProperty.getValue() != null) {
 

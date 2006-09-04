@@ -932,7 +932,7 @@ public class PropertyManagerImpl implements PropertyManager,
         Property lastModified = copy.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME);
         lastModified.setDateValue(now);
-        Property contentLastModified = (Property) copy.getProperty(
+        Property contentLastModified = copy.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
         contentLastModified.setDateValue(now);
 

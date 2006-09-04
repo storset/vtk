@@ -37,28 +37,19 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
- * @author storset
  * 
  * if mode is 'default', finds the elements marked for deletion. if mode is
  * 'delete', and cont is set to true, delete selected elements
  */
-public class DeleteController extends AbstractXmlEditController {
+public class DeleteController implements ActionHandler {
 
-    /**
-     * @see org.vortikal.edit.xml.AbstractXmlEditController#handleRequestInternal(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse,
-     *      org.vortikal.edit.xml.EditDocument,
-     *      org.vortikal.edit.xml.SchemaDocumentDefinition)
-     */
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response, EditDocument document,
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
         String mode = document.getDocumentMode();
@@ -72,9 +63,6 @@ public class DeleteController extends AbstractXmlEditController {
             while (enumeration.hasMoreElements()) {
                 String param = (String) enumeration.nextElement();
                 if (param.matches("\\d+(\\.\\d+)*")) {
-                    if (this.logger.isDebugEnabled())
-                        this.logger.debug("Marking element " + param
-                                + " for deletion");
                     Element e = document.findElementByPath(param);
                     e.addContent(new ProcessingInstruction("marked", "true"));
                     v.add(e);
@@ -83,11 +71,11 @@ public class DeleteController extends AbstractXmlEditController {
             if (v.size() > 0) {
                 document.setDocumentMode("delete");
                 document.setElements(v);
-                return new ModelAndView(this.viewName, model);
-            }
-            
-            setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_FOR_DELETION");
-            return new ModelAndView(this.viewName, model);
+            } else
+                XmlEditController.setXsltParameter(
+                        model,"ERRORMESSAGE", "MISSING_ELEMENTS_FOR_DELETION");
+
+            return model;
         
         } else if (mode.equals("delete")) {
             String con = request.getParameter("cont");
@@ -102,12 +90,12 @@ public class DeleteController extends AbstractXmlEditController {
 
                 document.setDocumentMode("default");
                 document.resetElements();
-                document.save(this.repository);
+                document.save();
             } else {
                 document.setDocumentMode("default");
                 document.resetElements();
             }
-            return new ModelAndView(this.viewName, model);
+            return model;
         }
         return null;
     }

@@ -36,6 +36,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 /**
+ * XXX: Rewrite to use propTypeDef instead!
  * Assertion for matching on whether the current resource has a
  * property with a given name, namespace and value.
  *

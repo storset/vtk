@@ -35,31 +35,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
-import org.springframework.web.servlet.ModelAndView;
-
-
 
 
 /**
  * Controller that inserts input from the request into the focused
  * element and saves the document.
  *
- * @version $Id$
  */
-public class EditDoneController extends AbstractXmlEditController {
+public class EditDoneController implements ActionHandler {
 
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document,
+            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
-
-
-    protected ModelAndView handleRequestInternal(
-        HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
-
-        Map model = new HashMap();
-        
         String mode = document.getDocumentMode();
 
         if (mode.equals("edit")) {
@@ -70,11 +60,11 @@ public class EditDoneController extends AbstractXmlEditController {
                 document.setDocumentMode("default");
 
                 document.addContentsToElement(document.getEditingElement(),
-                        getRequestParameterMap(request), documentDefinition);
+                        XmlEditController.getRequestParameterMap(request), documentDefinition);
                 document.resetEditingElement();
                 document.setClone(null);
 
-                document.save(this.repository);
+                document.save();
 
             } else {
                 Element element = document.getEditingElement();
@@ -88,7 +78,7 @@ public class EditDoneController extends AbstractXmlEditController {
                 document.setEditingElement(null);
                 document.setDocumentMode("default");
             }
-            return new ModelAndView(this.viewName, model);
+            return new HashMap();
         }
         return null;
     }

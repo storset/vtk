@@ -39,7 +39,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 /**
- *
+ * XXX: Rewrite to use propTypeDef instead!
  */
 public class ResourcePropertyRegexpAssertion
   extends AbstractRepositoryAssertion {

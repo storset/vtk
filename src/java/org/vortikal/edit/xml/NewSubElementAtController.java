@@ -34,26 +34,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.Element;
-import org.springframework.web.servlet.ModelAndView;
-
-
 
 
 /**
  * Controller that adds a new subelement to an already expanded
  * element.
- *
- * @version $Id$
  */
-public class NewSubElementAtController extends AbstractXmlEditController {
+public class NewSubElementAtController implements ActionHandler {
 
-    
-    protected ModelAndView handleRequestInternal(
-        HttpServletRequest request, HttpServletResponse response,
-        EditDocument document, SchemaDocumentDefinition documentDefinition) {
+    public Map handleRequestInternal(HttpServletRequest request,
+            EditDocument document,
+            SchemaDocumentDefinition documentDefinition) throws XMLEditException {
 
         Map model = new HashMap();
         String mode = document.getDocumentMode();
@@ -65,7 +58,7 @@ public class NewSubElementAtController extends AbstractXmlEditController {
 
             document.addContentsToElement(
                 document.getEditingElement(),
-                getRequestParameterMap(request),
+                XmlEditController.getRequestParameterMap(request),
                 documentDefinition);
 
             documentDefinition.translateToEditingElement(
@@ -74,9 +67,10 @@ public class NewSubElementAtController extends AbstractXmlEditController {
             Element element = new Element(elementName);
             document.putElementByPath(path, element);
             documentDefinition.buildElement(element);
-            return new ModelAndView(this.viewName, model);
+            return model;
 
         }
+        
         return null;
     }
 

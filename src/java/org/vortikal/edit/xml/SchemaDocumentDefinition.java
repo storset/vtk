@@ -65,6 +65,9 @@ import org.vortikal.util.text.StructuredText;
  */
 public class SchemaDocumentDefinition {
 
+    private static final Namespace XSD_NAMESPACE = Namespace.getNamespace("xsd",
+    "http://www.w3.org/2001/XMLSchema");
+
     /* The types of elements that can exist */
     /* element is a single data-element (handles only string for now) */
     final static public String REQUIRED_STRING_ELEMENT = "REQUIRED_STRING_ELEMENT";
@@ -93,8 +96,6 @@ public class SchemaDocumentDefinition {
     /* The root element ( <code> xsd:schema </code> ) element of this schema */
     protected Element schema = null;
     
-    protected final Namespace XSD_NAMESPACE = Namespace.getNamespace("xsd",
-            "http://www.w3.org/2001/XMLSchema");
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -181,14 +182,14 @@ public class SchemaDocumentDefinition {
 
             for (int i = 0; i < includedElements.length; i++) {
                 List li = included.getRootElement().getChildren(
-                        includedElements[i], this.XSD_NAMESPACE);
+                        includedElements[i], XSD_NAMESPACE);
                 for (Iterator lIter = li.iterator(); lIter.hasNext();) {
                     Element e = (Element) lIter.next();
 
                     String schemaElementType = includedElements[i];
                     String schemaElementName = e.getAttributeValue("name");
                     List currentSchemaExistingChildren = currentSchema
-                            .getChildren(schemaElementType, this.XSD_NAMESPACE);
+                            .getChildren(schemaElementType, XSD_NAMESPACE);
 
                     if (findInElementList(schemaElementName, currentSchemaExistingChildren) != null) { 
                         throw new XMLEditException("The included schema " + includeURL + 
@@ -207,9 +208,9 @@ public class SchemaDocumentDefinition {
 
 
     public String getStructuredTextClassName(Element e) {
-        e = e.getChild("annotation", this.XSD_NAMESPACE);
+        e = e.getChild("annotation", XSD_NAMESPACE);
         if (e == null) return null;
-        e = e.getChild("appinfo", this.XSD_NAMESPACE);
+        e = e.getChild("appinfo", XSD_NAMESPACE);
         if (e == null) return null;
         e = e.getChild("structuredText");
 
@@ -535,8 +536,8 @@ public class SchemaDocumentDefinition {
         Element elementDef = null;
         Element e = null;
 
-        if (element.getDocument() == null) { throw new IllegalArgumentException(
-                "Element is not in document"); }
+        if (element.getDocument() == null) 
+            throw new IllegalArgumentException("Element is not in document");
 
         elementDef = findElementDefinition(element);
 
@@ -544,17 +545,18 @@ public class SchemaDocumentDefinition {
         if (SEQUENCE_ELEMENT.equals(type)) {
             String typeName = elementDef.getAttributeValue("type");
 
-            if (typeName == null) { throw new XMLEditException(
+            if (typeName == null) 
+                throw new XMLEditException(
                     "The definition of element " + element.getName()
                             + " is illegal. The element definition "
                             + elementDef + " with name attribute "
                             + elementDef.getAttributeValue("name")
-                            + " is missing required type attribute"); }
+                            + " is missing required type attribute");
 
             e = findInElementList(typeName, this.schema.getChildren("complexType",
-                    this.XSD_NAMESPACE));
+                    XSD_NAMESPACE));
 
-            e = e.getChild("sequence", this.XSD_NAMESPACE);
+            e = e.getChild("sequence", XSD_NAMESPACE);
             for (Iterator i = e.getChildren().iterator(); i.hasNext();) {
                 Element childDef = (Element) i.next();
                 Element child = new Element(childDef.getAttributeValue("name"));

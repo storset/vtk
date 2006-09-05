@@ -59,58 +59,53 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.xml.TransformerManager;
 
 /**
- * Controller that fetches an XML resource from the repository and puts it in the model.
+ * Controller that fetches an XML resource from the repository and
+ * puts it in the model.
  * 
- * <p>
- * Configurable JavaBean properties:
+ * <p>Configurable JavaBean properties:
  * <ul>
- * <li><code>repository</code> - the content {@link Repository repository}
- * <li><code>transformerManager</code> - the XSLT {@link TransformerManager transformer manager}
- * <li><code>viewName</code> - the name used for the submodel provided. The default name is
- * <code>transformXmlResource</code>.
- * <li><code>childName</code> - if this optional property is set, it is appended to the current
- * resource URI when retrieving the resource to display. This is typically used when displaying
- * index resources (i.e. <code>childName = 'index.xml'</code>, for instance).
- * <li><code>handleLastModified</code> - whether to return the real last modified value of the
- * resource, or <code>-1</code> (the default)
- * <li><code>ignoreXMLErrors</code> - whether or not to catch document build failures. Default is
- * <code>false</code>.
+ *   <li><code>repository</code> - the content {@link Repository
+ *   repository}
+ *   <li><code>transformerManager</code> - the XSLT {@link
+ *   TransformerManager transformer manager}
+ *   <li><code>viewName</code> - the name used for the submodel
+ *   provided. The default name is <code>transformXmlResource</code>.
+ *   <li><code>childName</code> - if this optional property is set, it
+ *   is appended to the current resource URI when retrieving the
+ *   resource to display. This is typically used when displaying
+ *   index resources (i.e. <code>childName = 'index.xml'</code>, for
+ *   instance).
+ *   <li><code>handleLastModified</code> - whether to return the real
+ *   last modified value of the resource, or <code>-1</code> (the
+ *   default)
+ *   <li><code>ignoreXMLErrors</code> - whether or not to catch
+ *   document build failures. Default is <code>false</code>.
  * </ul>
- * 
- * <p>
- * Model data provided:
+ *
+ * <p>Model data provided:
  * <ul>
- * <li><code>resource</code> - the {@link Resource} being displayed
- * <li><code>jdomDocument</code> - the {@link org.jdom.Document} representation of the resource.
- * If <code>ignoreXMLErrors</code> is <code>true</code> and there is an error building the
- * document, this entry will NOT get placed in the model.
+ *   <li><code>resource</code> - the {@link Resource} being displayed
+ *   <li><code>jdomDocument</code> - the {@link org.jdom.Document}
+ *   representation of the resource. If <code>ignoreXMLErrors</code>
+ *   is <code>true</code> and there is an error building the document,
+ *   this entry will NOT get placed in the model.
  * </ul>
- * 
+ *
  */
-public class DisplayXmlResourceController implements Controller, LastModified, InitializingBean {
+public class DisplayXmlResourceController
+  implements Controller, LastModified, InitializingBean {
 
     private static Log logger = LogFactory.getLog(DisplayXmlResourceController.class);
 
     public static final String DEFAULT_VIEW_NAME = "transformXmlResource";
-
-    private String schemaPropertyName = "schema";
-
     private Repository repository;
-
     private TransformerManager transformerManager;
-
     private String childName;
-
     private String viewName = DEFAULT_VIEW_NAME;
-
     private boolean handleLastModified = false;
-
-    private boolean ignoreXMLErrors = false;
-
-    private List schemasForHandleLastModified;
-
-    private boolean handleLastModifiedForSchemasInList = true;
-
+    private boolean ignoreXMLErrors = false;    
+    private LastModifiedEvaluator lastModifiedEvaluator;
+    
     public void setChildName(String childName) {
         this.childName = childName;
     }
@@ -134,26 +129,25 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
     public void setIgnoreXMLErrors(boolean ignoreXMLErrors) {
         this.ignoreXMLErrors = ignoreXMLErrors;
     }
-
-    public void setHandleLastModifiedForSchemasInList(boolean handleLastModifiedForSchemasInList) {
-        this.handleLastModifiedForSchemasInList = handleLastModifiedForSchemasInList;
-    }
-
-    public void setSchemasForHandleLastModified(List schemasForHandleLastModified) {
-        this.schemasForHandleLastModified = schemasForHandleLastModified;
+    
+    public void setLastModifiedEvaluator(LastModifiedEvaluator lastModifiedEvaluator) {
+        this.lastModifiedEvaluator = lastModifiedEvaluator;
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException("JavaBean property 'repository' not set");
+        if (repository == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'repository' not set");
         }
-        if (this.transformerManager == null) {
-            throw new BeanInitializationException("JavaBean property 'transformerManager' not set");
+        if (transformerManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'transformerManager' not set");
         }
     }
 
-    public long getLastModified(HttpServletRequest request) {
 
+    public long getLastModified(HttpServletRequest request) {
+        
         if (!this.handleLastModified) {
             return -1;
         }
@@ -170,7 +164,9 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
         Resource resource = null;
 
         try {
-            resource = this.repository.retrieve(securityContext.getToken(), uri, true);
+            resource = repository.retrieve(
+                securityContext.getToken(), uri, true);
+                         
         } catch (RepositoryException e) {
             // These exceptions are expected
             return -1;
@@ -190,38 +186,24 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
             return -1;
         }
 
-        if (this.schemasForHandleLastModified != null && this.schemasForHandleLastModified.size() > 0) {
-            Property schemaProp = resource.getProperty(
-                    Namespace.CUSTOM_NAMESPACE, this.schemaPropertyName);
-            String schema = schemaProp.getStringValue();
-            Iterator schemaIterator = this.schemasForHandleLastModified.iterator();
-            boolean schemaIsInList = false;
-            while (schemaIterator.hasNext()) {
-                String schemaFromList = (String) schemaIterator.next();
-                if (schemaFromList.equals(schema)) {
-                    schemaIsInList = true;
-                    break;
-                }
-            }
-            if ((schemaIsInList && !this.handleLastModifiedForSchemasInList)
-                    || (!schemaIsInList && this.handleLastModifiedForSchemasInList)) {
-                return -1;
-            }
+        if (lastModifiedEvaluator != null && !lastModifiedEvaluator.reportLastModified(resource)) {
+            return -1;
         }
-        return resource.getLastModified().getTime();
+        
+        return resource.getLastModified().getTime();        
     }
+    
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-
+    public ModelAndView handleRequest(HttpServletRequest request,
+                                      HttpServletResponse response) throws Exception {
+		
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
 
         String uri = requestContext.getResourceURI();
 
-        if (this.childName != null) {
-            uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
-        }
+        if (childName != null) 
+            uri += (uri.equals("/")) ? childName : "/" + childName;
         
         String token = securityContext.getToken();
 
@@ -230,13 +212,9 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
         Resource resource = this.repository.retrieve(token, uri, true);
 
         if (resource.isCollection()) {
-            throw new IllegalStateException("Unable to display collections");
+            throw new IllegalStateException(
+                "Unable to display collections");
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Putting resource " + resource + " in model");
-        }
-
-
         model.put("resource", resource);
 
         InputStream stream = this.repository.getInputStream(token, uri, true);
@@ -244,7 +222,7 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
         // Build a JDOM tree of the input stream:
         Document document = null;
         try {
-
+                
             SAXBuilder builder = new SAXBuilder();
             document = builder.build(stream);
             document.setBaseURI(uri);
@@ -253,10 +231,8 @@ public class DisplayXmlResourceController implements Controller, LastModified, I
             if (logger.isDebugEnabled()) {
                 logger.debug("Failed to build JDOM document of resource " + resource, t);
             }
-            if (!this.ignoreXMLErrors) {
-                
+            if (!this.ignoreXMLErrors)
                 throw new RuntimeException(t.fillInStackTrace());
-            }
         }
 
         if (document != null) {

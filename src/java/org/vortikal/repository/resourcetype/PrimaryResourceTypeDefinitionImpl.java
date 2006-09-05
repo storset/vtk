@@ -56,4 +56,23 @@ public class PrimaryResourceTypeDefinitionImpl
     }
 
  
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append("[ namespace = ").append(getNamespace());
+        sb.append(", name = '").append(getName());
+        sb.append(", parentTypeDefinition = ");
+        if (this.parentTypeDefinition == null) {
+            sb.append("null");
+        } else {
+            sb.append(this.parentTypeDefinition.getName());
+        }
+        if (this.assertions == null) {
+            sb.append(", assertions = null");
+        } else {
+            sb.append(", assertions = " + java.util.Arrays.asList(this.assertions));
+        }
+        sb.append("']");
+        return sb.toString();
+    }
+    
 }

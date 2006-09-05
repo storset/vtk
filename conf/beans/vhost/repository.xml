@@ -124,7 +124,6 @@
     <property name="roleManager" ref="roleManager" />
     <property name="valueFactory" ref="valueFactory"/>
     <property name="contentStore" ref="repository.contentStore"/>
-    <property name="rootResourceTypeDefinition" ref="abstractResourceResourceTypeDefinition"/>
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
   </bean>
 

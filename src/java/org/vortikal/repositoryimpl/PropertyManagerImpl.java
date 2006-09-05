@@ -149,9 +149,6 @@ public class PropertyManagerImpl implements PropertyManager,
         if (this.authorizationManager == null) {
             throw new BeanInitializationException("Property 'authorizationManager' not set.");
         }
-        if (this.rootResourceTypeDefinition == null) {
-            throw new BeanInitializationException("Property 'rootResourceTypeDefinition' not set.");
-        }
         if (this.valueFactory == null) {
             throw new BeanInitializationException("Property 'valueFactory' not set.");
         }
@@ -165,17 +162,39 @@ public class PropertyManagerImpl implements PropertyManager,
         init();
     }
 
-    private synchronized void init() {
-        if (this.init) return;
-
+    private  void init() {
         Collection resourceTypeDefinitionBeans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     PrimaryResourceTypeDefinition.class, false, false).values();
 
+        PrimaryResourceTypeDefinition rootDefinition = null;
+        for (Iterator i = resourceTypeDefinitionBeans.iterator(); i.hasNext();) {
+            PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
+            if (def.getParentTypeDefinition() == null) {
+                if (rootDefinition != null) {
+                    throw new IllegalStateException(
+                        "Only one PrimaryResourceTypeDefinition having "
+                        + "parentTypeDefinition = null may be defined");
+                }
+                rootDefinition = def;
+            }
+        }
+        if (rootDefinition == null) {
+                    throw new IllegalStateException(
+                        "A PrimaryResourceTypeDefinition having "
+                        + "parentTypeDefinition = null must be defined");
+        }
+        this.rootResourceTypeDefinition = rootDefinition;
+        
         for (Iterator i = resourceTypeDefinitionBeans.iterator(); i.hasNext();) {
             PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
             
             this.resourceTypeNameMap.put(def.getName(), def);
+            if (def.getNamespace() == null) {
+                throw new BeanInitializationException(
+                    "Definition's namespace is null: " + def
+                    + " (already initialized resourceTypes = " + this.resourceTypeNameMap + ")");
+            }
 
             addNamespacesAndProperties(def);
             
@@ -214,8 +233,6 @@ public class PropertyManagerImpl implements PropertyManager,
         }
 
         this.logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
-
-        this.init = true;
     }
     
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
@@ -1189,10 +1206,10 @@ public class PropertyManagerImpl implements PropertyManager,
         this.roleManager = roleManager;
     }
 
-    public void setRootResourceTypeDefinition(
-            PrimaryResourceTypeDefinition rootResourceTypeDefinition) {
-        this.rootResourceTypeDefinition = rootResourceTypeDefinition;
-    }
+//     public void setRootResourceTypeDefinition(
+//             PrimaryResourceTypeDefinition rootResourceTypeDefinition) {
+//         this.rootResourceTypeDefinition = rootResourceTypeDefinition;
+//     }
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;

@@ -3,14 +3,19 @@
 
 <beans>
 
+  <!-- CONSTANTS -->
+  <import resource="namespaces.xml" />
+  <import resource="protection-levels.xml" />
+  <import resource="property-types.xml" />
+
   <!-- RESOURCE TYPE DEFINITIONS -->
   <import resource="resource.xml" />
   <import resource="file.xml" />
   <import resource="collection.xml"/>
   <import resource="text.xml" />
   <import resource="html.xml" />
-  <!-- import resource="xhtml10.xml" / -->
   <import resource="xhtml10trans.xml" />
+  <!-- import resource="xhtml10.xml" / -->
   <import resource="xml.xml" />
   <import resource="managed-xml.xml" />
   <import resource="emne.xml" />
@@ -18,23 +23,14 @@
   <import resource="emnegruppe.xml" />
   <import resource="studieprogram.xml" />
   <import resource="studieretning.xml" />
-
   <import resource="sakskart.xml" />
-
   <import resource="image.xml" />
   <import resource="audio.xml" />
   <import resource="video.xml" />
-
   <import resource="portal-page.xml" />
-
   <import resource="mixins/header-control.xml" />
   <import resource="mixins/ssi.xml" />
   <import resource="mixins/visual-profile.xml" />
   <import resource="mixins/content-description.xml" />
-
-  <!-- CONSTANTS -->
-  <import resource="namespaces.xml" />
-  <import resource="protection-levels.xml" />
-  <import resource="property-types.xml" />
 
 </beans>

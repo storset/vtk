@@ -13,44 +13,27 @@
   </description>
 
   <import resource="query.xml" />
-
   <import resource="security.xml" />
   <import resource="resource-types/main.xml" />
   <import resource="actions.xml" />
   <import resource="repository.xml" />
-  <!--import resource="in-memory-repository.xml" /-->
-
   <import resource="changelog.xml" />
-
   <import resource="schema-registry.xml" />
-
   <import resource="vortex.xml" />
-
   <import resource="view.xml" />
   <import resource="controllers.xml" />
   <import resource="service.xml" />
   <import resource="manage.xml" />
   <import resource="root-management.xml" />
   <import resource="browse.xml" />
-  <!--import resource="xml-edit.xml" /-->
   <import resource="webdav.xml" />
   <import resource="windows-webdav-explorer.xml" />
   <import resource="plaintextedit.xml" />
-  <!--import resource="visualprofileedit.xml" /-->
   <import resource="copy-move.xml" />
   <import resource="errorhandlers.xml" />
-  <!--import resource="php.xml" /-->
-  <!--import resource="shell.xml" /-->
   <import resource="management.xml" />
-  <!--import resource="subtree-https.xml" /-->
   <import resource="static-resources.xml" />
-  <!--import resource="extras.xml" /-->
-
-
-  <!-- Indexing configuration files -->
-
   <import resource="index.xml" />
-
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml"/>

@@ -48,9 +48,9 @@ import org.jdom.ProcessingInstruction;
  */
 public class DeleteController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
-            EditDocument document,
-            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
+    public Map handle(HttpServletRequest request,
+            EditDocument document, SchemaDocumentDefinition documentDefinition)
+    throws IOException, XMLEditException {
 
         String mode = document.getDocumentMode();
 
@@ -72,7 +72,7 @@ public class DeleteController implements ActionHandler {
                 document.setDocumentMode("delete");
                 document.setElements(v);
             } else
-                XmlEditController.setXsltParameter(
+                Util.setXsltParameter(
                         model,"ERRORMESSAGE", "MISSING_ELEMENTS_FOR_DELETION");
 
             return model;

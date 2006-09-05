@@ -44,7 +44,7 @@ import org.jdom.Element;
  */
 public class NewSubElementAtController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
+    public Map handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws XMLEditException {
 
@@ -58,7 +58,7 @@ public class NewSubElementAtController implements ActionHandler {
 
             document.addContentsToElement(
                 document.getEditingElement(),
-                XmlEditController.getRequestParameterMap(request),
+                Util.getRequestParameterMap(request),
                 documentDefinition);
 
             documentDefinition.translateToEditingElement(

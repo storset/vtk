@@ -47,29 +47,26 @@ import org.jdom.ProcessingInstruction;
  */
 public class EditController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
+    public Map handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws XMLEditException {
         
-        String mode = document.getDocumentMode();
+        if (!"default".equals(document.getDocumentMode()))
+            return null;
 
-        if (mode.equals("default")) {
+        String path = request.getParameter("path");
+        
+        Element element = document.findElementByPath(path);
+        document.setEditingElement(element);
+        
+        document.setClone((Element)element.clone());
+        
+        document.setDocumentMode("edit");
+        
+        element.addContent(new ProcessingInstruction("expanded", "true"));
+        documentDefinition.translateToEditingElement(element);
+        
+        return new HashMap();
 
-            String path = request.getParameter("path");
-
-            Element element = document.findElementByPath(path);
-            document.setEditingElement(element);
-         
-            document.setClone((Element)element.clone());
-            
-            document.setDocumentMode("edit");
-            
-            element.addContent(new ProcessingInstruction("expanded", "true"));
-            documentDefinition.translateToEditingElement(element);
-            
-            return new HashMap();
-
-        }
-        return null;
     }
 }

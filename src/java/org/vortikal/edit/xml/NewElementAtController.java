@@ -40,8 +40,6 @@ import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
 
 
-
-
 /**
  * Controller that inserts a new element at a specified location in
  * the document.
@@ -49,7 +47,7 @@ import org.jdom.ProcessingInstruction;
  */
 public class NewElementAtController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
+    public Map handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
@@ -66,7 +64,8 @@ public class NewElementAtController implements ActionHandler {
             String path = request.getParameter("at");
 
             if (path == null) {
-                XmlEditController.setXsltParameter(model,"ERRORMESSAGE", "NEW_ELEMENT_AT_MISSING_PATH_PARAMETER");
+                Util.setXsltParameter(model,"ERRORMESSAGE", 
+                        "NEW_ELEMENT_AT_MISSING_PATH_PARAMETER");
                 return model;
             }
 
@@ -89,7 +88,7 @@ public class NewElementAtController implements ActionHandler {
 
                 /* Add input values to element and save: */
                 document.addContentsToElement(document.getEditingElement(),
-                        XmlEditController.getRequestParameterMap(request), documentDefinition);
+                        Util.getRequestParameterMap(request), documentDefinition);
                 document.setDocumentMode("default");
                 document.resetEditingElement();
                 

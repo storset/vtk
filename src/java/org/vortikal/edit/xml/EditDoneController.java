@@ -46,41 +46,42 @@ import org.jdom.Element;
  */
 public class EditDoneController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
+    public Map handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
         String mode = document.getDocumentMode();
 
-        if (mode.equals("edit")) {
-            String con = request.getParameter("cont");
-            if ("true".equals(con)) {
+        if (!mode.equals("edit")) 
+            return null;
+            
+        String con = request.getParameter("cont");
+        if ("true".equals(con)) {
 
                 /* Add element values */
-                document.setDocumentMode("default");
+            document.setDocumentMode("default");
 
-                document.addContentsToElement(document.getEditingElement(),
-                        XmlEditController.getRequestParameterMap(request), documentDefinition);
-                document.resetEditingElement();
-                document.setClone(null);
+            document.addContentsToElement(document.getEditingElement(),
+                    Util.getRequestParameterMap(request),
+                    documentDefinition);
+            document.resetEditingElement();
+            document.setClone(null);
 
-                document.save();
+            document.save();
 
-            } else {
-                Element element = document.getEditingElement();
-                Element clone = document.getClone();
-                Element parent = (Element) element.getParent();
-                int childIndex = parent.indexOf(element);
-                element.detach();
-                parent.addContent(childIndex, clone);
+        } else {
+            Element element = document.getEditingElement();
+            Element clone = document.getClone();
+            Element parent = (Element) element.getParent();
+            int childIndex = parent.indexOf(element);
+            element.detach();
+            parent.addContent(childIndex, clone);
 
-                document.setClone(null);
-                document.setEditingElement(null);
-                document.setDocumentMode("default");
-            }
-            return new HashMap();
+            document.setClone(null);
+            document.setEditingElement(null);
+            document.setDocumentMode("default");
         }
-        return null;
+        return new HashMap();
     }
 
 }

@@ -51,7 +51,7 @@ import org.jdom.ProcessingInstruction;
  */
 public class MoveController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
+    public Map handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws XMLEditException {
 
@@ -81,7 +81,7 @@ public class MoveController implements ActionHandler {
                 document.setDocumentMode("move");
                 document.setElements(v);
             } else {
-                XmlEditController.setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_TO_MOVE");
+                Util.setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_TO_MOVE");
             }
             return model;
         }

@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class NewElementController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
+    public Map handle(HttpServletRequest request,
             EditDocument document, SchemaDocumentDefinition documentDefinition)
     throws XMLEditException {
 

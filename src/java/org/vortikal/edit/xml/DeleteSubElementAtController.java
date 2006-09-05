@@ -39,7 +39,7 @@ import org.jdom.Element;
 
 public class DeleteSubElementAtController implements ActionHandler {
     
-    public Map handleRequestInternal(HttpServletRequest request, 
+    public Map handle(HttpServletRequest request, 
             EditDocument document, SchemaDocumentDefinition documentDefinition) {
         
         String mode = document.getDocumentMode();
@@ -49,7 +49,7 @@ public class DeleteSubElementAtController implements ActionHandler {
             String path = request.getParameter("path");
 
             document.addContentsToElement(document.getEditingElement(),
-                    XmlEditController.getRequestParameterMap(request), documentDefinition);
+                    Util.getRequestParameterMap(request), documentDefinition);
             documentDefinition.translateToEditingElement(
                     document.getEditingElement());
 

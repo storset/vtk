@@ -35,13 +35,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +68,7 @@ import org.vortikal.xml.TransformerManager;
 
 
 /**
- * Abstract superclass for the XML edit controllers.
+ * The XML edit controller.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
@@ -76,7 +76,8 @@ import org.vortikal.xml.TransformerManager;
  *   number of seconds to lock the resource when editing it. The
  *   default is <code>1800</code> (30 minutes).
  *   <li><code>viewName</code> - the view name to return.
- *   <li>++++++
+ *   <li>+
+ *   <li>+++++
  * </ul>
  */
 public class XmlEditController implements Controller, InitializingBean {
@@ -91,8 +92,9 @@ public class XmlEditController implements Controller, InitializingBean {
     private String viewName;
     private String finishViewName;
 
-
     private static String ACTION_PARAMETER_NAME = "action";
+
+    private static String FINISH_ACTION = "finish";
 
     private static String EDIT_ACTION = "edit";
     private static String EDIT_DONE_ACTION = "editDone";
@@ -103,9 +105,7 @@ public class XmlEditController implements Controller, InitializingBean {
     private static String NEW_AT_ACTION = "newElementAt";
     private static String DELETE_SUB_ELEMENT_AT_ACTION = "deleteSubElementAt";
     private static String NEW_SUB_ELEMENT_AT_ACTION = "newSubElementAt";
-    private static String FINISH_ACTION = "finish";
     
-    private ActionHandler defaultActionHandler = new DefaultController();
     private ActionHandler editActionHandler = new EditController();
     private ActionHandler editElementDoneActionHandler = new EditDoneController();
     private ActionHandler newElementAtActionHandler = new NewElementAtController();
@@ -115,7 +115,6 @@ public class XmlEditController implements Controller, InitializingBean {
     private ActionHandler newElementActionHandler = new NewElementController();
     private ActionHandler newSubElementAtActionHandler = new NewSubElementAtController();
     private ActionHandler deleteSubElementAtActionHandler = new DeleteSubElementAtController();
-    private ActionHandler finishEditingActionHandler = new FinishController();
     
     private Map actionMapping = new HashMap();
 
@@ -129,40 +128,20 @@ public class XmlEditController implements Controller, InitializingBean {
         this.actionMapping.put(NEW_ACTION, newElementActionHandler);
         this.actionMapping.put(NEW_SUB_ELEMENT_AT_ACTION, newSubElementAtActionHandler);
         this.actionMapping.put(DELETE_SUB_ELEMENT_AT_ACTION, deleteSubElementAtActionHandler);
-        this.actionMapping.put(FINISH_ACTION, finishEditingActionHandler);
 
     }
     
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) 
-        throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, 
+            HttpServletResponse response) throws IOException, TransformerException {
         
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        String action = request.getParameter(ACTION_PARAMETER_NAME);
 
-        String sessionID = XmlEditController.class.getName() + ":" + uri; 
-        
-        Map sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
+        Map sessionMap = getSessionMap(request);
 
-        /* Check that sessionmap isn't stale (the lock has been released) */
-        /* a user can access the same (locked) resource from different clients */
-        if (sessionMap != null) {
-            String token = SecurityContext.getSecurityContext().getToken();
-            Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-            Resource resource = this.repository.retrieve(token, uri, false);
-            Lock lock = resource.getLock();
-            if (lock == null || (!lock.getPrincipal().equals(principal))) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Stored xml edit session data is out of date.");
-
-                request.getSession(true).removeAttribute(sessionID);
-                sessionMap = null;
-            }
-        }
         
         /* "Validate" and create web-editable resource session */
         if (sessionMap == null) {
-            initEditSession(request);
-            sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
+            sessionMap = initEditSession(request);
         } 
         
         EditDocument document = (EditDocument) 
@@ -170,31 +149,64 @@ public class XmlEditController implements Controller, InitializingBean {
         SchemaDocumentDefinition documentDefinition = (SchemaDocumentDefinition)
             sessionMap.get(SchemaDocumentDefinition.class.getName());
         
-        return handleRequestInternal(request, document, documentDefinition);
+        if (FINISH_ACTION.equals(action)) {
+            finish(request, document);
+            return new ModelAndView(this.finishViewName);
+        }
+
+        ActionHandler handler = (ActionHandler) this.actionMapping.get(action);
+        Map model = new HashMap();
         
-    }
-    
-    private ModelAndView handleRequestInternal(HttpServletRequest request, 
-            EditDocument document, SchemaDocumentDefinition documentDefinition)
-    throws IOException {
-
-        String action = request.getParameter(ACTION_PARAMETER_NAME);
-        ActionHandler handler = (ActionHandler)this.actionMapping.get(action);
-
-        if (handler == null) 
-            handler = this.defaultActionHandler;
-
-        Map model = handler.handleRequestInternal(request, document, documentDefinition);
+        if (handler != null) 
+            model = handler.handle(request, document, documentDefinition);
 
         if (model == null)
             model = handleModeError(document, request);
         
         referenceData(model, document);
 
-        if (handler == finishEditingActionHandler) 
-            return new ModelAndView(this.finishViewName, model);
-        
         return new ModelAndView(this.viewName, model);
+        
+    }
+    
+    private void finish(HttpServletRequest request, EditDocument document)
+    throws IOException {
+        document.finish();
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        String sessionID = XmlEditController.class.getName() + ":" + uri; 
+        request.getSession(true).removeAttribute(sessionID);
+    }
+    
+    private Map getSessionMap(HttpServletRequest request) throws IOException {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String uri = requestContext.getResourceURI();
+
+        String sessionID = XmlEditController.class.getName() + ":" + uri; 
+        Map sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
+
+        /* Check that sessionmap isn't stale (the lock has been released) */
+        /* a user can access the same (locked) resource from different clients */
+        if (sessionMap != null) {
+            String token = SecurityContext.getSecurityContext().getToken();
+            Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+            Lock lock = this.repository.retrieve(token, uri, false).getLock();
+
+            if (lock == null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Stored xml edit session data is out of date.");
+
+                request.getSession(true).removeAttribute(sessionID);
+                sessionMap = null;
+            } else if (!lock.getPrincipal().equals(principal)) {
+                // Should do something else
+                if (logger.isDebugEnabled())
+                    logger.debug("Resource locked by another user.");
+                request.getSession(true).removeAttribute(sessionID);
+                sessionMap = null;
+            }
+
+        }
+        return sessionMap;
     }
     
     private void referenceData(Map model, EditDocument document) 
@@ -207,22 +219,22 @@ public class XmlEditController implements Controller, InitializingBean {
         model.put("resource", document.getResource());
         model.put("jdomDocument", document);
 
-        setXsltParameter(model, "pageTitle", "Du redigerer: " + resource.getName());
-        setXsltParameter(model, "DAY", date("dd"));
-        setXsltParameter(model, "MONTH", date("MM"));
-        setXsltParameter(model, "YEAR", date("yyyy"));
-        setXsltParameter(model, "TIMESTAMP", date("yyMMddHHmmss"));
-        setXsltParameter(model, "CMSURL", resource.getURI());
-        setXsltParameter(model,"applicationMode", "edit");
+        Util.setXsltParameter(model, "pageTitle", "Du redigerer: " + resource.getName());
+        Util.setXsltParameter(model, "DAY", date("dd"));
+        Util.setXsltParameter(model, "MONTH", date("MM"));
+        Util.setXsltParameter(model, "YEAR", date("yyyy"));
+        Util.setXsltParameter(model, "TIMESTAMP", date("yyMMddHHmmss"));
+        Util.setXsltParameter(model, "CMSURL", resource.getURI());
+        Util.setXsltParameter(model,"applicationMode", "edit");
         if (principal != null)
-            setXsltParameter(model, "USERNAME", principal.getName());
+            Util.setXsltParameter(model, "USERNAME", principal.getName());
 
         // The Browse service is optional, must javadoc this
         if (this.browseService != null) {
             try {
                 Resource parentResource = this.repository.retrieve(token, resource
                         .getParent(), false);
-                setXsltParameter(model, "BROWSEURL", this.browseService
+                Util.setXsltParameter(model, "BROWSEURL", this.browseService
                         .constructLink(parentResource, principal));
             } catch (AuthorizationException e) {
                 // No browse available for this resource
@@ -232,42 +244,39 @@ public class XmlEditController implements Controller, InitializingBean {
                 // No browse available for this resource
             }
         }
-        Service service = RequestContext.getRequestContext().getService();
 
+        Service service = RequestContext.getRequestContext().getService();
         Map actionParam = new HashMap();
 
-        // XXX: Remove first one?
-        setXsltParameter(model, "editServiceURL", 
-                service.constructLink(resource, principal));
         actionParam.put(ACTION_PARAMETER_NAME, EDIT_ACTION);
-        setXsltParameter(model, "editElementServiceURL", service
-                .constructLink(resource, principal, actionParam));
+        Util.setXsltParameter(model, "editElementServiceURL", 
+                service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, EDIT_DONE_ACTION);
-        setXsltParameter(model, "editElementDoneServiceURL", service
-                .constructLink(resource, principal, actionParam));
+        Util.setXsltParameter(model, "editElementDoneServiceURL", 
+                service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, MOVE_ACTION);
-        setXsltParameter(model, "moveElementServiceURL", service
-                .constructLink(resource, principal, actionParam));
+        Util.setXsltParameter(model, "moveElementServiceURL", 
+                service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, MOVE_DONE_ACTION);
-        setXsltParameter(model, "moveElementDoneServiceURL", service
-                .constructLink(resource, principal, actionParam));
+        Util.setXsltParameter(model, "moveElementDoneServiceURL", 
+                service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, DELETE_ELEMENT_ACTION);
-        setXsltParameter(model, "deleteElementServiceURL", service
-                .constructLink(resource, principal, actionParam));
+        Util.setXsltParameter(model, "deleteElementServiceURL", 
+                service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, NEW_AT_ACTION);
-        setXsltParameter(model, "newElementAtServiceURL", service
-                .constructLink(resource, principal, actionParam));
+        Util.setXsltParameter(model, "newElementAtServiceURL", 
+                service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, NEW_ACTION);
-        setXsltParameter(model, "newElementServiceURL", service
-                .constructLink(resource, principal, actionParam));
+        Util.setXsltParameter(model, "newElementServiceURL", 
+                service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, NEW_SUB_ELEMENT_AT_ACTION);
-        setXsltParameter(model, "newSubElementAtServiceURL",
+        Util.setXsltParameter(model, "newSubElementAtServiceURL",
                 service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, DELETE_SUB_ELEMENT_AT_ACTION);
-        setXsltParameter(model, "deleteSubElementAtServiceURL",
+        Util.setXsltParameter(model, "deleteSubElementAtServiceURL",
                 service.constructLink(resource, principal, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, FINISH_ACTION);
-        setXsltParameter(model, "finishEditingServiceURL",
+        Util.setXsltParameter(model, "finishEditingServiceURL",
                 service.constructLink(resource, principal, actionParam));
 
     }
@@ -297,20 +306,20 @@ public class XmlEditController implements Controller, InitializingBean {
         logger.warn(sb.toString());
         
         Map model = new HashMap();
-        setXsltParameter(model, "ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
+        Util.setXsltParameter(model, "ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
         return model;
     }
     
 
 
-    private void initEditSession(HttpServletRequest request) throws Exception {
+    private Map initEditSession(HttpServletRequest request) 
+    throws IOException, TransformerException {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         
-        // FIXME: possible multiple repositories at once!
         String sessionID = XmlEditController.class.getName() + ":" + uri; 
         
         Resource resource = this.repository.retrieve(token, uri, false);
@@ -385,31 +394,8 @@ public class XmlEditController implements Controller, InitializingBean {
         sessionMap.put(EditDocument.class.getName(), document);
         sessionMap.put(SchemaDocumentDefinition.class.getName(), documentDefinition);
         request.getSession(true).setAttribute(sessionID, sessionMap);
+        return sessionMap;
     } 
-
-    
-
-
-    public static Map getRequestParameterMap(HttpServletRequest request) {
-        Map parameterMap = new HashMap();
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
-            String key = (String) e.nextElement();
-
-            parameterMap.put(key, request.getParameter(key));
-        }
-        return parameterMap;
-
-    }
-
-    public final static void setXsltParameter(Map model, String key, Object value) {
-        Map parameters = (Map)model.get("xsltParameters");
-        if (parameters == null) {
-            parameters = new HashMap();
-            model.put("xsltParameters", parameters);
-        }
-        parameters.put(key, value);
-    }
-
 
     public void setBrowseService(Service browseService) {
         this.browseService = browseService;

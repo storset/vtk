@@ -50,7 +50,7 @@ import org.vortikal.util.Xml;
  */
 public class MoveItController implements ActionHandler {
 
-    public Map handleRequestInternal(HttpServletRequest request,
+    public Map handle(HttpServletRequest request,
             EditDocument document, SchemaDocumentDefinition documentDefinition)
             throws IOException, XMLEditException {
 
@@ -67,7 +67,7 @@ public class MoveItController implements ActionHandler {
             String path = request.getParameter("to");
 
             if (path == null) {
-                XmlEditController.setXsltParameter(model,
+                Util.setXsltParameter(model,
                         "ERRORMESSAGE", "MOVE_IT_MISSING_PATH_PARAMETER");
                 return model;
             }

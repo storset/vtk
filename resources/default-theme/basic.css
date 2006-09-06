@@ -63,6 +63,7 @@ div#main {
 
 ul.listMenu {
         list-style-type: none;
+        white-space: nowrap; 
 }
 
 ul.listMenu li {

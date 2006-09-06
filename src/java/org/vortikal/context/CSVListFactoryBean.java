@@ -39,13 +39,27 @@ public class CSVListFactoryBean extends AbstractFactoryBean {
 
     private String csvList;
 
+    private boolean trim = true;
+
     private List list = new ArrayList();
     
+    public void setTrim(boolean trim) {
+        this.trim = trim;
+    }
+    
+
     public void setCsvList(String csvList) {
         this.csvList = csvList;
         if (csvList != null) {
             String[] array = csvList.split(",");
-            this.list = java.util.Arrays.asList(array);
+            for (int i = 0; i < array.length; i++) {
+                if (this.trim) {
+                    this.list.add(array[i].trim());
+                } else {
+                    this.list.add(array[i]);
+
+                }
+            }
         }
     }
 

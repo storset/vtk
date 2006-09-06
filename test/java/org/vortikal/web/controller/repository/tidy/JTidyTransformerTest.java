@@ -39,16 +39,16 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 
 /**
- * Test case for <code>org.vortikal.web.controller.repository.tidy.JTidyTransformerImpl</code> 
+ * Test case for <code>org.vortikal.web.controller.repository.tidy.JTidyTransformer</code> 
  */
 public class JTidyTransformerTest extends TestCase {
 
-    private JTidyTransformerImpl jti; 
+    private JTidyTransformer jti; 
     
     
     protected void setUp() throws Exception {
         super.setUp();
-        this.jti = new JTidyTransformerImpl();
+        this.jti = new JTidyTransformer();
     }
 
     
@@ -118,7 +118,7 @@ public class JTidyTransformerTest extends TestCase {
     private boolean parserTest(InputStream isOriginal) 
         throws FileNotFoundException, IOException {
 
-        InputStream isParsed = this.jti.htmlToXhtml(isOriginal); 
+        InputStream isParsed = this.jti.transform(isOriginal); 
         // throws FileNotFoundException for invalid input streams!
         
         if (isParsed == null) {

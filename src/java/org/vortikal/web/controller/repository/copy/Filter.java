@@ -29,23 +29,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.web.controller.repository.tidy;
+package org.vortikal.web.controller.repository.copy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.InputStream;
 
-
-public class TransformerFactory {
+public interface Filter {
     
-    private static Log logger = LogFactory.getLog(TransformerFactory.class);
-    
-    TransformerFactory() {
-        logger.debug("Instantiating TransformerFactory");
-    }
-    
-    public Transformer createJTidyTransformer() {
-        JTidyTransformerImpl jtidyTransformer = new JTidyTransformerImpl();
-        return jtidyTransformer;
-    }
+    public InputStream transform(InputStream instream)
+            throws Exception;
     
 }

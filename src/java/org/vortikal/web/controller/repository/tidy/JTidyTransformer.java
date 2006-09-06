@@ -31,21 +31,20 @@
 
 package org.vortikal.web.controller.repository.tidy;
 
-import groovy.util.ResourceException;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.web.controller.repository.copy.Filter;
 import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
-public class JTidyTransformerImpl implements Transformer { 
+public class JTidyTransformer implements Filter { 
     
-    private static Log logger = LogFactory.getLog(JTidyTransformerImpl.class);
+    private static Log logger = LogFactory.getLog(JTidyTransformer.class);
 
     private static boolean tidyMark = false;
     private static boolean makeClean = true;
@@ -54,33 +53,13 @@ public class JTidyTransformerImpl implements Transformer {
     private static boolean quiet = true;
     private static boolean xhtml = true;
     
-    
-    public JTidyTransformerImpl() {
-        logger.debug("Instantiating new JTidyTransformerImpl object");
-    }
-
-    public InputStream transform(InputStream instream, String transformation)
-            throws FileNotFoundException, ResourceException {
+    public InputStream transform(InputStream inStream) {
         
-        if (transformation.equals("htmlToXhtml")) {
-            logger.debug("Performing HTML to XHTML transformation on resource");
-            return htmlToXhtml(instream);
-        //else if (transformation.equals("TRANSFORMATION")) {
-        } else {
-            logger.warn("Unable to perform JTidy transformation on " +
-                        "current resource");
-            throw new ResourceException(
-                    "Could not transform contents of current resource");
-        }
-    }
-
-    public InputStream htmlToXhtml(InputStream is)
-            throws FileNotFoundException {
         try {
             Tidy tidy = new Tidy();
             
             // Setting up Tidy (default) output
-            tidy.setInputStreamName(is.getClass().getName());
+            tidy.setInputStreamName(inStream.getClass().getName());
             tidy.setTidyMark(tidyMark);
             tidy.setMakeClean(makeClean);
             tidy.setShowWarnings(showWarnings);
@@ -94,7 +73,7 @@ public class JTidyTransformerImpl implements Transformer {
                         
             ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
             
-            tidy.parse(is, outBuffer);
+            tidy.parse(inStream, outBuffer);
             
             byte[] byteArrayBuffer = outBuffer.toByteArray();
             ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
@@ -104,8 +83,8 @@ public class JTidyTransformerImpl implements Transformer {
 
             return bais;
 
-        } catch (Exception e) {
-            logger.error("Error: " + e.getMessage());
+        } catch (IOException e) {
+            logger.error("Caught exception", e);
             return new ByteArrayInputStream(null);
         }
     }

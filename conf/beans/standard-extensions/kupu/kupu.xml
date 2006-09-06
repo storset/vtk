@@ -752,13 +752,12 @@
   <bean id="kupuEditHandler"
         class="org.vortikal.edit.kupu.KupuEditController"
         parent="requestLocalRepositoryAware">
-    <property name="formView"><value>kupuEdit</value></property>
-    <property name="successView"><value>kupuEdit</value></property>
-    <property name="cancelView"><value>redirectToManage</value></property>
-    <property name="commandName"><value>kupuEditForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.edit.kupu.KupuEditCommand</value>
-    </property>
+    <property name="formView" value="kupuEdit" />
+    <property name="successView" value="kupuEdit" />
+    <property name="cancelView" value="redirectToManage" />
+    <property name="commandName" value="kupuEditForm" />
+    <property name="commandClass" 
+              value="org.vortikal.edit.kupu.KupuEditCommand" />
   </bean>
 
 </beans>

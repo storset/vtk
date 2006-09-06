@@ -28,18 +28,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.vortikal.web.controller.repository.copy;
 
-package org.vortikal.web.controller.repository.tidy;
 
-import groovy.util.ResourceException;
+import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
-public interface Transformer {
-    
-    // String "transformation" denotes which type of transformation to be made
-    public InputStream transform(InputStream instream, String transformation)
-            throws FileNotFoundException, ResourceException;
-    
+public class CopyCommand extends AbstractSaveCancelCommand {
+
+    private String name;
+
+    public CopyCommand(String name, String submitURL) {
+        super(submitURL);
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name)  {
+        this.name = name;
+    }
 }
+

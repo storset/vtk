@@ -288,7 +288,7 @@ public class ResourceXsltView extends AbstractView
      * transformed result based on output properties of the
      * transformer.
      *
-     * @param transformer a <code>Transformer</code> value
+     * @param transformer a <code>Filter</code> value
      * @return a <code>String</code>
      */
     private String getTransformedContentType(Transformer transformer) {

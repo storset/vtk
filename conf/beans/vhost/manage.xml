@@ -618,7 +618,7 @@
   
   <bean id="transformHtmlToXhtmlService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" /> 
-    <property name="order"><value>-997</value></property>
+    <property name="order" value="-997" />
     <property name="categories">
       <set>
         <value>resourceMenu</value>
@@ -632,12 +632,8 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>html-to-xhtml</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="html-to-xhtml" />
         </bean>
         <ref bean="resourceTypeIsHtml" /> 
         <ref bean="resourceTypeIsNotXhtmlTrans" /> 
@@ -656,12 +652,28 @@
   </bean>
 
   <bean id="htmlToXhtmlHandler" 
-        class="org.vortikal.web.controller.repository.tidy.ResourceTransformer"
+        class="org.vortikal.web.controller.repository.copy.CopyController"
         parent="requestLocalRepositoryAware">
-    <property name="transformerType" value="JTidyTransformer" />
-    <property name="transformation" value="htmlToXhtml" />
+    <property name="extension" value="-webredigerbar.html" />
+    <property name="parentViewOnSuccess" value="true" />
+    <property name="copyAction" ref="tidyCopyAction" />
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirectToManage" />
+    <property name="cancelView" value="redirectToManage" />
+    <property name="commandClass" value="org.vortikal.web.controller.repository.copy.CopyCommand" />
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
+        parent="requestLocalRepositoryAware" />
+    </property>
   </bean>
   
+  <bean id="tidyCopyAction" 
+        class="org.vortikal.web.controller.repository.copy.SimpleFilteringCopyAction"
+        parent="requestLocalRepositoryAware">
+    <property name="filter">
+      <bean class="org.vortikal.web.controller.repository.tidy.JTidyTransformer" />
+    </property>
+  </bean>
 
   <!-- preview services -->
   

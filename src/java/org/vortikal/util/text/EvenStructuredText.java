@@ -736,11 +736,11 @@ public final class EvenStructuredText implements StructuredText {
     
     protected int parseSub(String text, int pos, Element parent) {
         int startPos = pos + this.SUB_START.length();
-        int endPos = startPos+1; 
+        int endPos = startPos; 
         
         do {
             // contine searching for the real SUB_END
-            endPos = text.indexOf(this.SUB_END, ++endPos);
+            endPos = text.indexOf(this.SUB_END, endPos);
         } while ( text.charAt(endPos-1) == this.ESCAPE );
         
         StringBuffer substring = removeEscapeChars(text, startPos, endPos);
@@ -756,12 +756,12 @@ public final class EvenStructuredText implements StructuredText {
       
     protected int parseSuper(String text, int pos, Element parent) {
         int startPos = pos + this.SUPER_START.length();
-        int endPos = startPos+1; 
+        int endPos = startPos; 
         
         do {
             // contine searching for the real SUPER_END
-            endPos = text.indexOf(this.SUPER_END, ++endPos);
-        } while ( text.charAt(endPos-1) == this.ESCAPE );
+            endPos = text.indexOf(this.SUPER_END, endPos);
+        } while (text.charAt(endPos-1) == this.ESCAPE );
         
         StringBuffer substring = removeEscapeChars(text, startPos, endPos);
         String supertext = substring.toString();

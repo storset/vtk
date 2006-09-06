@@ -967,6 +967,11 @@ public class PropertyManagerImpl implements PropertyManager,
         owner.setPrincipalValue(principal);
         fixedProps.addProperty(owner);
             
+        Property creationTime = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME).clone();
+        creationTime.setDateValue(now);
+        fixedProps.addProperty(creationTime);
+
         Property lastModified = (Property) resource.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME).clone();
         lastModified.setDateValue(now);
@@ -981,6 +986,11 @@ public class PropertyManagerImpl implements PropertyManager,
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME).clone();
         propertiesLastModified.setDateValue(now);
         fixedProps.addProperty(propertiesLastModified);
+
+        Property createdBy = (Property) resource.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME).clone();
+        createdBy.setPrincipalValue(principal);
+        fixedProps.addProperty(createdBy);
 
         Property modifiedBy = (Property) resource.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME).clone();

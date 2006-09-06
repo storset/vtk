@@ -10,7 +10,7 @@
 <P>The web page <STRONG>${resourceContext.currentURI?if_exists}</STRONG>
 is restricted to a specific set of users.</P> 
 
-<#if debug>
+<#if debugErrors?exists && debugErrors>
 <HR STYLE="width: 98%;">
 <#include "/lib/error-detail.ftl" />
 </#if>

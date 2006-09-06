@@ -8,7 +8,7 @@
 
 <h1>412 - precondition failed</H1>
 
-<#if debug>
+<#if debugErrors?exists && debugErrors>
 <hr style="width: 98%;">
 <#include "/lib/error-detail.ftl" />
 </#if>

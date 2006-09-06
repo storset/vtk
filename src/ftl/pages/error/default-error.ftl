@@ -16,13 +16,14 @@ cannot be displayed due to an error.</p>
 
 <P>The error message is: ${error.exception.message?default('No message')?html}
 
-<#if debug>
+<p>Server-administrator: <a href="mailto:${webmaster}">${webmaster}</a></p>
+
+</div>
+
+<#if debugErrors?exists && debugErrors>
 <hr style="width: 98%;">
 <#include "/lib/error-detail.ftl" />
 </#if>
 
-<p>Server-administrator: <a href="mailto:${webmaster}">${webmaster}</a></p>
-
-</div>
 </body>
 </html>

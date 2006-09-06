@@ -18,7 +18,7 @@ of the referring site that the link does not work.
 
 <p>Server-administrator: <a href="mailto:${webmaster}">${webmaster}</a></p>
 
-<#if debug>
+<#if debugErrors?exists && debugErrors>
 <hr style="width: 98%;">
 <#include "/lib/error-detail.ftl" />
 </#if>

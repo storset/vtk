@@ -108,8 +108,13 @@
     <property name="attributesMap">
       <map>
         <entry key="webmaster" value="${webmaster}" />
+        <entry key="debugErrors" value-ref="debugErrorsBooleanValue" />
       </map>
     </property>
+  </bean>
+
+  <bean id="debugErrorsBooleanValue" class="java.lang.Boolean">
+    <constructor-arg type="boolean" value="${debugErrors}" />
   </bean>
 
   <bean id="collectionRedirectView" 

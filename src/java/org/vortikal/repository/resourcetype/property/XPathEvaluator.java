@@ -76,7 +76,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
     public void afterPropertiesSet() {
         if (this.xPath == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'xPath' not specified");
+                "JavaBean property 'expression' not specified");
         }
     }
     

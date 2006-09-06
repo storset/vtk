@@ -431,7 +431,7 @@ public class VortikalServlet extends DispatcherServlet {
 
         } catch (Throwable t) {
             logError(request, t);
-            throw new ServletException(t.fillInStackTrace());
+            throw new ServletException(t);
 
         } finally {
 

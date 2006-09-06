@@ -26,6 +26,7 @@
         </bean>
         <ref bean="resourceTypeIsManagedXml" />
         <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="editXslStylesheetAvailable" />
       </list>
     </property>
     <property name="handlerInterceptors">
@@ -35,6 +36,14 @@
     </property>
     <property name="handler" ref="xmlEditHandler" />
   </bean>
+
+  <bean id="editXslStylesheetAvailable"
+        class="org.vortikal.web.service.XmlSchemaXPathAssertion">
+    <property name="schemaRegistry" ref="schemaRegistry" />
+    <property name="schemaPropertyDefinition" ref="schemaPropDef" />
+    <property name="xpath" value="${editXslTransformationSchemaXPath}" />
+  </bean>
+
 
   <!-- XML edit handler -->
 
@@ -129,7 +138,7 @@
       <list>
         <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
           <property name="schemaRegistry" ref="schemaRegistry"/>
-          <property name="elementXPath" value="/xsd:schema/xsd:annotation/xsd:appinfo/edit/xsl" />
+          <property name="elementXPath" value="${editXslTransformationSchemaXPath}" />
          </bean>
       </list>
     </constructor-arg>

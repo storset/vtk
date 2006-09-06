@@ -3,16 +3,13 @@
 
 <beans>
 
-
-
-
-
   <bean id="rssTransformService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="displayResourceService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesXml" />
         <ref bean="rssParameterSetAssertion" />
+        <ref bean="rssXslStylesheetAvailable" />
       </list>
     </property>
     <property name="handler">
@@ -20,6 +17,13 @@
     </property>
   </bean>
   
+  <bean id="rssXslStylesheetAvailable"
+        class="org.vortikal.web.service.XmlSchemaXPathAssertion">
+    <property name="schemaRegistry" ref="schemaRegistry" />
+    <property name="schemaPropertyDefinition" ref="schemaPropDef" />
+    <property name="xpath" value="${rssXslTransformationSchemaXPath}" />
+  </bean>
+
 
   <bean id="transformXmlViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
     <property name="views">
@@ -39,21 +43,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsManagedXml" />
-        <!-- XXX: temporarily removed: -->
-        <!--ref bean="viewXslPropSet" /-->
-
-        <!--
-        <ref bean="contentTypeMatchesXml" />
-        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace" ref="CUSTOM_NAMESPACE" />
-          <property name="name">
-            <value>transform-view</value>
-          </property>
-          <property name="value">
-            <value>yes</value>
-          </property>
-        </bean>
-        -->
+        <ref bean="viewXslStylesheetAvailable" />
       </list>
     </property>
     <property name="handler">
@@ -68,6 +58,13 @@
     <property name="resourceTypeDefinition" ref="managedXmlResource" />
   </bean>
 
+  <bean id="viewXslStylesheetAvailable"
+        class="org.vortikal.web.service.XmlSchemaXPathAssertion">
+    <property name="schemaRegistry" ref="schemaRegistry" />
+    <property name="schemaPropertyDefinition" ref="schemaPropDef" />
+    <property name="xpath" value="${viewXslTransformationSchemaXPath}" />
+  </bean>
+
   <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
 
     <property name="parent" ref="displayResourceService" />
@@ -76,20 +73,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsManagedXml" />
-        <!-- XXX: temporarily removed: -->
-        <!--ref bean="viewXslPropSet" /-->
-        <!--
-        <ref bean="contentTypeMatchesXml" />
-        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
-          <property name="namespace" ref="CUSTOM_NAMESPACE" />
-          <property name="name">
-            <value>transform-view</value>
-          </property>
-          <property name="value">
-            <value>yes</value>
-          </property>
-        </bean>
-        -->
+        <ref bean="viewXslStylesheetAvailable" />
       </list>
     </property>
     <property name="handler">
@@ -192,15 +176,13 @@
   </bean>
 
 
-
-
-
-
   <bean id="xmlStylesheetInDocumentResolver"
         class="org.vortikal.xml.StylesheetInDocumentResolver" />
 
   <bean id="xmlStylesheetInSchemaResolver" class="org.vortikal.xml.StylesheetInSchemaResolver">
     <property name="schemaRegistry" ref="schemaRegistry"/>
+    <property name="elementXPath" value="${viewXslTransformationSchemaXPath}" />
+
   </bean>
 
 
@@ -229,17 +211,8 @@
     <property name="refreshTimestampOnGet" value="false" />
   </bean>
 
-  <bean id="mappingIdentifiers" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <value>/vrtx/mapping/mapping-emne.xml</value>
-        <value>/vrtx/mapping/mapping-kurs.xml</value>
-        <value>/vrtx/mapping/mapping-emnegruppe.xml</value>
-        <value>/vrtx/mapping/mapping-studieprogram.xml</value>
-        <value>/vrtx/mapping/mapping-studieretning.xml</value>
-        <value>/vrtx/mapping/UB-mapping.xml</value>
-      </list>
-    </constructor-arg>
+  <bean id="mappingIdentifiers" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${xslDocumentCachedResources}" />
   </bean>
 
   <bean id="standardXslStylesheetResolvers" class="java.util.ArrayList">
@@ -323,8 +296,7 @@
        <list>
          <bean class="org.vortikal.xml.StylesheetInSchemaResolver">
            <property name="schemaRegistry" ref="schemaRegistry" />
-           <property name="elementXPath" 
-                     value="/xsd:schema/xsd:annotation/xsd:appinfo/rss/xsl" />
+           <property name="elementXPath" value="${rssXslTransformationSchemaXPath}" />
          </bean>
        </list>
      </property>

@@ -3,13 +3,27 @@
 
 <beans>
 
+  <bean id="transformXmlHandlerInterceptor"
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+    <property name="includeLastModifiedHeader" value="false" />
+    <property name="includeEtagHeader" value="false" />
+    <property name="expiresHeaderProperty" ref="expiresSecPropDef" />
+  </bean>
+
+
   <bean id="rssTransformService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="displayResourceService" />
+    <!--property name="parent" ref="displayResourceService" /-->
+    <property name="parent" ref="viewService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesXml" />
         <ref bean="rssParameterSetAssertion" />
         <ref bean="rssXslStylesheetAvailable" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="transformXmlHandlerInterceptor" />
       </list>
     </property>
     <property name="handler">
@@ -67,13 +81,19 @@
 
   <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
 
-    <property name="parent" ref="displayResourceService" />
-    <property name="order" value="100" />
+    <!--property name="parent" ref="displayResourceService" /-->
+    <property name="parent" ref="viewService" />
+    <property name="order" value="0" />
 
     <property name="assertions">
       <list>
         <ref bean="resourceIsManagedXml" />
         <ref bean="viewXslStylesheetAvailable" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="transformXmlHandlerInterceptor" />
       </list>
     </property>
     <property name="handler">
@@ -88,7 +108,6 @@
     <property name="transformerManager" ref="transformerManager" />
     <property name="includeContentLanguageHeader" value="true" />
     <property name="referenceDataProviders" ref="referenceDataProvidersForTransformXmlView" />
-
   </bean>
 
   <bean id="transformRssView" class="org.vortikal.web.view.xslt.ResourceXsltView">
@@ -315,11 +334,13 @@
   <bean id="previewXmlResourceHandler" 
     class="org.vortikal.web.controller.ResourceServiceURLController"
     parent="requestLocalRepositoryAware">
+    <!--property name="service" ref="displayResourceService" /-->
     <property name="service" ref="displayResourceService" />
     <property name="viewName" value="previewIframe" />
   </bean>
 
 
+  <!--
   <bean id="displayXmlResourceHandler" 
     class="org.vortikal.web.controller.DisplayXmlResourceController"
     parent="requestLocalRepositoryAware">
@@ -327,6 +348,33 @@
     <property name="transformerManager" ref="transformerManager" />
     <property name="viewName" value="transformXmlResource"/>
   </bean>
+  -->
+
+  <bean id="displayXmlResourceHandler"
+        class="org.vortikal.web.controller.DisplayXmlResourceController"
+        parent="requestLocalRepositoryAware">
+    <description>This is used as parent for all similar handlers</description>
+    <property name="transformerManager" ref="transformerManager" />
+    <property name="viewName" value="transformXmlResource"/>
+    <property name="handleLastModified" value="true" />
+    <property name="lastModifiedEvaluator" ref="displayXmlHandlerLastModifiedEvaluator" />
+  </bean> 
+
+  <bean id="displayXmlHandlerLastModifiedEvaluator"
+        class="org.vortikal.web.controller.LastModifiedEvaluatorImpl">
+    <property name="propertyDefinition" ref="schemaPropDef" />
+    <property name="handleLastModifiedForValuesInList" value="true" />
+    <property name="lookupList" ref="displayXmlHandleLastModifiedList" />
+  </bean> 
+
+  <bean id="displayXmlHandleLastModifiedList" class="org.vortikal.context.CSVListFactoryBean">
+    <description>
+      Only handle (or do not handle) last-modified for xml-dokuments
+      with the schemas in this list
+    </description>
+    <property name="csvList" value="${xsltHandleLastModifiedSchemas}" />
+  </bean>
+
 
   <bean id="displayRssResourceHandler" 
     class="org.vortikal.web.controller.DisplayXmlResourceController"

@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller.repository.copy;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +45,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.util.repository.URIUtil;
 
 
 public class CopyController extends SimpleFormController 
@@ -113,9 +113,10 @@ public class CopyController extends SimpleFormController
             return new ModelAndView(this.cancelView);
         }
 
-
-        String copyToCollection = uri.substring(0, uri.lastIndexOf("/"));
-        String copyUri = copyToCollection + "/" + copyCommand.getName();
+        String copyToCollection = URIUtil.getParentURI(uri);
+        String baseUri = copyToCollection;
+        if (!baseUri.endsWith("/")) baseUri += "/";
+        String copyUri = baseUri + copyCommand.getName();
 
         copyAction.process(uri, copyUri);
         

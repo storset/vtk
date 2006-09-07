@@ -4,10 +4,8 @@
 
   <#if command?exists && !command.done>
 
-  <#-- Need this div coz of IEs sucky boxmodel implementation -->
-  <!-- div style="clear:both;"></div -->
-  <form name="form" class="action-bar collectionMenu" action="${command.submitURL?html}" method="POST">
-    <h3 class="nonul"><@vrtx.msg code="lcms.publish.title"
+  <form name="form" class="globalmenu" action="${command.submitURL?html}" method="POST">
+    <h3 class="nonul"><@vrtx.msg code="actions.transformHtmlToXhtmlService"
     default="Make webeditable copy"/>:</h3>
     <@spring.bind "command.name" /> 
       <#if spring.status.errorMessages?size &gt; 0>
@@ -17,9 +15,11 @@
           </#list>
 	</ul>
       </#if>
-    <div><input type="text" name="${spring.status.expression}" value="${spring.status.value?if_exists}"></div>
-    <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>">
-    <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>">
+    <div><input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}"></div>
+    <div id="submitButtons">
+      <input type="submit" name="save" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.save" default="Create"/>">
+      <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.cancel" default="Cancel"/>">
+    </div>
   </form>
   <script language="JavaScript" type="text/javascript">
   <!--          

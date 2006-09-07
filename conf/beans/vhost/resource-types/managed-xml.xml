@@ -9,6 +9,11 @@
     <property name="name" value="managed-xml"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="xmlResource" />
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="visualProfileMixinResourceTypeDef" />
+      </list>
+    </property>    
     <property name="assertions">
       <list>
         <ref bean="schemaPropSet" />

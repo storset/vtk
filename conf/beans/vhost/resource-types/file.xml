@@ -10,11 +10,6 @@
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
 
-    <property name="mixinTypeDefinitions">
-      <list>
-        <ref bean="visualProfileMixinResourceTypeDef" />
-      </list>
-    </property>    
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="contentTypePropDef" />

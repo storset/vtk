@@ -17,6 +17,7 @@
     <property name="mixinTypeDefinitions">
       <list>
         <ref bean="ssiMixinResourceTypeDef" />
+        <ref bean="visualProfileMixinResourceTypeDef" />
       </list>
     </property>    
     <property name="propertyTypeDefinitions">

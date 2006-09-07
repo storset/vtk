@@ -157,18 +157,18 @@ public class EditDocument extends Document {
         xmlOutputter.output(this, outputStream);
         
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
-        repository.storeContent(token, uri, stream);
+        this.resource = repository.storeContent(token, uri, stream);
 
-        // Fix character encoding if it is something other than UTF-8:
+        // Remove user specified character encoding if it is something
+        // other than UTF-8:
         if (this.resource.getCharacterEncoding() != null) {
             String encoding = this.resource.getCharacterEncoding().toLowerCase();
             if (!"utf-8".equals(encoding)) {
-                this.resource.setUserSpecifiedCharacterEncoding("utf-8");
-                repository.store(token, this.resource);
+                this.resource.setUserSpecifiedCharacterEncoding(null);
+                this.resource = repository.store(token, this.resource);
             }
         }
 
-        this.resource = repository.retrieve(token, uri, false);
         if (logger.isDebugEnabled())
             logger.debug("saved document '" + uri + "'");
     }

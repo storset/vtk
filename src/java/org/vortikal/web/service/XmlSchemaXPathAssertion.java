@@ -77,8 +77,8 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
             this.xpath = XPath.newInstance(value);
             
         } catch (JDOMException e) {
-            throw new IllegalArgumentException("Illegal XPath expression: '"
-                                               + value + "'", e);
+            throw new IllegalArgumentException("Illegal XPath expression '"
+                    + value + "': " +  e.getMessage());
         }
     }
     

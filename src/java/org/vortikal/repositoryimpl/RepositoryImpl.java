@@ -524,7 +524,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     /**
      * Requests that an InputStream be written to a resource.
      */
-    public void storeContent(String token, String uri, InputStream byteStream)
+    public Resource storeContent(String token, String uri, InputStream byteStream)
         throws AuthorizationException, AuthenticationException, 
             ResourceNotFoundException, ResourceLockedException, 
             IllegalOperationException, ReadOnlyException, IOException {
@@ -562,6 +562,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 this, (Resource) r.clone(), original);
 
             this.context.publishEvent(event);
+
+            return r;
+
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " +
                 "clone() resource: " + r);

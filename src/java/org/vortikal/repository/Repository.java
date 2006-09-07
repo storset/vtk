@@ -140,6 +140,7 @@ public interface Repository {
      * @param uri the resource identifier
      * @param byteStream a <code>java.io.InputStream</code> representing the
      * byte stream to be read from
+     * @return the modified resource object
      * @exception ResourceNotFoundException if the URI does not identify
      * an existing resource
      * @exception AuthorizationException if an authenticated user
@@ -151,7 +152,7 @@ public interface Repository {
      * the repository is in read-only mode
      * @exception IOException if an I/O error occurs
      */
-    public void storeContent(String token, String uri, InputStream byteStream)
+    public Resource storeContent(String token, String uri, InputStream byteStream)
         throws AuthorizationException, AuthenticationException, 
             ResourceNotFoundException, ResourceLockedException, 
             IllegalOperationException, ReadOnlyException, IOException;

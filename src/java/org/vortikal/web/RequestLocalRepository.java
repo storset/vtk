@@ -138,7 +138,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return this.repository.store(token, resource);
     }
 
-    public void storeContent(String token, String uri, InputStream byteStream)
+    public Resource storeContent(String token, String uri, InputStream byteStream)
         throws AuthorizationException, AuthenticationException, 
         ResourceNotFoundException, ResourceLockedException, 
         IllegalOperationException, ReadOnlyException, IOException {
@@ -147,7 +147,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (ctx != null) {
             ctx.clear();
         }
-        this.repository.storeContent(token, uri, byteStream);
+        return this.repository.storeContent(token, uri, byteStream);
     }
 
     public InputStream getInputStream(String token, String uri,

@@ -53,6 +53,7 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
@@ -133,7 +134,7 @@ public class XmlEditController implements Controller, InitializingBean {
     
     public ModelAndView handleRequest(HttpServletRequest request, 
             HttpServletResponse response) throws IOException, TransformerException {
-        
+try {        
         String action = request.getParameter(ACTION_PARAMETER_NAME);
 
         Map sessionMap = getSessionMap(request);
@@ -166,7 +167,10 @@ public class XmlEditController implements Controller, InitializingBean {
         referenceData(model, document);
 
         return new ModelAndView(this.viewName, model);
-        
+}catch (RepositoryException e) {
+    logger.error("Rethrowing repo exception", e);
+    throw e;
+}   
     }
     
     private void finish(HttpServletRequest request, EditDocument document)

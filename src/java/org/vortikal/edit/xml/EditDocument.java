@@ -67,31 +67,26 @@ import org.vortikal.web.RequestContext;
  */
 public class EditDocument extends Document {
 
+    private static final String MODE_PI_NAME = "mode";
+
     private static final long serialVersionUID = 3256719598073361459L;
 
     private static Log logger = LogFactory.getLog(EditDocument.class);
 
     private Repository repository;
-    
-    private ProcessingInstruction pi = null;
-
-    private String uri = null;
-
-    private Element element = null;
-
-    private Element clone = null;
-
-    private String newElementName = null;
-
-    private Vector elements = null;
-
     private Resource resource;
+
+    // State variables
+    private ProcessingInstruction pi;
+    private Element element = null;
+    private Element clone = null;
+    private String newElementName = null;
+    private Vector elements = null;
 
     EditDocument(Element root, DocType docType, Resource resource, Repository repository) {
         super(root, docType);
         this.resource = resource;
         this.repository = repository;
-        this.uri = resource.getURI();
         this.setBaseURI(resource.getURI());
     }
 
@@ -130,28 +125,19 @@ public class EditDocument extends Document {
         return new EditDocument(root, document.getDocType(), resource, repository);
     }
 
-
-
-    protected boolean hasProcessingInstruction(String target) {
-        for (Iterator i = getContent().iterator(); i.hasNext();) {
-            Object o = i.next();
-            if (o instanceof ProcessingInstruction) {
-                ProcessingInstruction p = (ProcessingInstruction) o;
-                if (p.getTarget().equals(target)) { return true; }
-            }
-        }
-        return false;
-    }
-
-
-
-    public void save() throws XMLEditException, IOException {
-
+    public void finish() throws IOException {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        RequestContext requestContext = RequestContext.getRequestContext();
         
         String token = securityContext.getToken();
-        String uri = requestContext.getResourceURI();
+
+        repository.unlock(token, this.resource.getURI(), null);
+    }
+
+    public void save() throws XMLEditException, IOException {
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+
+        String uri = this.resource.getURI();
+        String token = securityContext.getToken();
         
         if (logger.isDebugEnabled())
                 logger.debug("Saving document '" + uri + "'");
@@ -187,20 +173,10 @@ public class EditDocument extends Document {
             logger.debug("saved document '" + uri + "'");
     }
 
-
-
-    public void finish() throws IOException {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        RequestContext requestContext = RequestContext.getRequestContext();
-        
-        String token = securityContext.getToken();
-        String uri = requestContext.getResourceURI();
-
-        repository.unlock(token, uri, null);
-    }
-
     public String getDocumentMode() {
-        ProcessingInstruction pi = Xml.findProcessingInstruction(getRootElement(), "mode");
+        ProcessingInstruction pi = 
+            Xml.findProcessingInstruction(getRootElement(), MODE_PI_NAME);
+        
         if (pi != null)
             return pi.getData(); 
 
@@ -209,12 +185,12 @@ public class EditDocument extends Document {
 
     public void setDocumentMode(String mode) {
         Element rootElement = getRootElement();
-        ProcessingInstruction pi = Xml.findProcessingInstruction(rootElement, "mode");
+        ProcessingInstruction pi = Xml.findProcessingInstruction(rootElement, MODE_PI_NAME);
         if (pi != null) {
             rootElement.removeContent(pi);
         }
         if (!"default".equals(mode)) {
-            rootElement.addContent(new ProcessingInstruction("mode", mode));
+            rootElement.addContent(new ProcessingInstruction(MODE_PI_NAME, mode));
         }
     }
 
@@ -388,7 +364,7 @@ public class EditDocument extends Document {
                 if (e == null)
                     throw new EditException(
                         "The document does not contain an element with path "
-                        + elementPath, this.uri);
+                        + elementPath, this.resource.getURI());
                 e.setAttribute(attributeName, (String) parameters.get(key));
             }
         }

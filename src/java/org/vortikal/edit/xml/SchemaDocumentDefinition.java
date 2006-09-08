@@ -563,6 +563,7 @@ public class SchemaDocumentDefinition {
                 element.addContent(child);
                 buildElement(child);
             }
+            buildAttributes(element);
 
         } else if (OPTIONAL_STRING_ELEMENT.equals(type)
                 || REQUIRED_STRING_ELEMENT.equals(type)
@@ -573,6 +574,7 @@ public class SchemaDocumentDefinition {
             throw new XMLEditException("element " + element.getName()
                     + " doesn't have the required xsd:appinfo definition");
         }
+
     }
 
 
@@ -606,8 +608,7 @@ public class SchemaDocumentDefinition {
 
         while (i.hasNext()) {
             Element a = (Element) i.next();
-            element
-                    .setAttribute(new Attribute(a.getAttributeValue("name"), ""));
+            element.setAttribute(new Attribute(a.getAttributeValue("name"), ""));
         }
     }
 

@@ -90,10 +90,10 @@ public final class EvenStructuredText implements StructuredText {
     protected String REF_START = "[";
     protected String REF_ATTRIBUTE = ":";
     protected String REF_CLOSE = "]";
-    protected String SUB_START = "sub:\"";
-    protected String SUB_END = "\"";
-    protected String SUPER_START = "super:\"";
-    protected String SUPER_END = "\"";
+    protected String SUB_START = "[sub:";
+    protected String SUB_END = "]";
+    protected String SUPER_START = "[super:";
+    protected String SUPER_END = "]";
     protected char NEWLINE = '\n';
     protected char ESCAPE = '\\';
 
@@ -736,11 +736,11 @@ public final class EvenStructuredText implements StructuredText {
     
     protected int parseSub(String text, int pos, Element parent) {
         int startPos = pos + this.SUB_START.length();
-        int endPos = startPos; 
+        int endPos = startPos-1; 
         
         do {
             // contine searching for the real SUB_END
-            endPos = text.indexOf(this.SUB_END, endPos);
+            endPos = text.indexOf(this.SUB_END, ++endPos);
         } while ( text.charAt(endPos-1) == this.ESCAPE );
         
         StringBuffer substring = removeEscapeChars(text, startPos, endPos);
@@ -756,11 +756,11 @@ public final class EvenStructuredText implements StructuredText {
       
     protected int parseSuper(String text, int pos, Element parent) {
         int startPos = pos + this.SUPER_START.length();
-        int endPos = startPos; 
+        int endPos = startPos-1; 
         
         do {
             // contine searching for the real SUPER_END
-            endPos = text.indexOf(this.SUPER_END, endPos);
+            endPos = text.indexOf(this.SUPER_END, ++endPos);
         } while (text.charAt(endPos-1) == this.ESCAPE );
         
         StringBuffer substring = removeEscapeChars(text, startPos, endPos);

@@ -62,7 +62,7 @@ public class EvenStructuredTextTestCase extends TestCase {
     public void testSuperWithOneCharString() {
         Element parent = new Element("parent");
         try {
-            this.est.parseSuper("super:\"1\"", 0, parent);
+            this.est.parseSuper("[super:1]", 0, parent);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -72,7 +72,7 @@ public class EvenStructuredTextTestCase extends TestCase {
     public void testSuperWithEmptyString() {
         Element parent = new Element("parent");
         try {
-            this.est.parseSuper("super:\"\"", 0, parent);
+            this.est.parseSuper("[super:]", 0, parent);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -82,7 +82,7 @@ public class EvenStructuredTextTestCase extends TestCase {
     public void testSubWithOneCharString() {
         Element parent = new Element("parent");
         try {
-            this.est.parseSub("sub:\"1\"", 0, parent);
+            this.est.parseSub("[sub:1]", 0, parent);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -92,20 +92,45 @@ public class EvenStructuredTextTestCase extends TestCase {
     public void testSubWithEmptyString() {
         Element parent = new Element("parent");
         try {
-            this.est.parseSub("sub:\"\"", 0, parent);
+            this.est.parseSub("[sub:]", 0, parent);
         } catch (Exception e) {
             fail(e.getMessage());
         }
         assertEquals("", parent.getChildText("sub"));
     }
 
+    public void testNewLine() {
+        String s = "la\nla\nla";
+        Element parsed = this.est.parseStructuredText(s);
+        String reparsed = this.est.parseElement(parsed);
+        assertEquals(s, reparsed);
+    }
+
+    public void testListsWithSingleNewLine() {
+        String s = "\n# ol";
+        Element parsed = this.est.parseStructuredText(s);
+        System.out.println(parsed.getChildren());
+        String reparsed = this.est.parseElement(parsed);
+        assertEquals(s, reparsed);
+    }
+
+    public void testComplexStructure() {
+        String complex = "[sub:subscript] og [super:superscript]\\\n" +
+        "escaped newline\n*fet \\* stjerne* og _kursiv \\_ " +
+        "underscore_";
+        Element parsed = this.est.parseStructuredText(complex);
+        String reparsed = this.est.parseElement(parsed);
+        assertEquals(complex, reparsed);
+    }
+
     public void testSubWithEscapedQuote() {
         Element parent = new Element("parent");
         try {
-            this.est.parseSub("sub:\"\\\"\"", 0, parent);
+            this.est.parseSub("[sub:\\]]", 0, parent);
         } catch (Exception e) {
             fail(e.getMessage());
         }
-        assertEquals("\\\"", parent.getChildText("sub"));
+        assertEquals("]", parent.getChildText("sub"));
     }
+
 }

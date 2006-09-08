@@ -591,14 +591,16 @@ public final class EvenStructuredText implements StructuredText {
             nextPos = parseBold(basicText, pos, parent);
         } else if (italicAtPos(basicText, pos)) {
             nextPos = parseItalic(basicText, pos, parent);
-        } else if (refrenceAtPos(basicText, pos)) {
-            nextPos = parseRefrence(basicText, pos, parent);
         } else if (linkAtPos(basicText, pos)) {
             nextPos = parseLink(basicText, pos, parent);
         } else if (subAtPos(basicText, pos)) {
             nextPos = parseSub(basicText, pos, parent);
         } else if (superAtPos(basicText, pos)) {
             nextPos = parseSuper(basicText, pos, parent);
+        // 'reference' MUST be parsed after 'sub' and 'super'
+        // as the syntax used is special cases of reference
+        } else if (refrenceAtPos(basicText, pos)) {
+            nextPos = parseRefrence(basicText, pos, parent);
         } else if (newlineAtPos(basicText, pos)) {
             nextPos = parseNewline(basicText, pos, parent);
         } else {

@@ -131,6 +131,7 @@ public class IndexFileController
             String indexURI = currentURI + "/" + this.indexFiles[i];
             try {
                 indexFile = this.repository.retrieve(token, indexURI, true);
+                break;
             } catch (Exception e) {
                 continue;
             }

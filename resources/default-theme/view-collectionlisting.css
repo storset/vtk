@@ -1,7 +1,31 @@
 div#titleContainer { 
-    padding-bottom: 0.4em;
+    padding-bottom: 0.5em;
 }
 
 div.breadcrumb {
     background: #FFFFFF;
+    padding-left: 0px;
+}
+
+div.navmarginbrod { 
+    padding-top: 0px;
+    margin-top: 0px;
+    padding-left: 0px;
+    margin-left: 20px;
+}
+
+div.body { 
+    padding-left: 29px;
+}
+
+span.signatur {  
+    margin-left: 29px;
+}
+
+hr { 
+    margin-left: 29px;
+}
+
+div.manageLink { 
+    padding-right: 20px;
 }

@@ -116,7 +116,8 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  *   specified by <code>modelNames</code>, or <code>null</code> if the
  *   property does not exist.
  * </ul>
- * 
+ *
+ * XXX: This class should be converted to use the new properties API
  */
 public class ResourcePropertiesValueProvider 
   implements ReferenceDataProvider, InitializingBean {

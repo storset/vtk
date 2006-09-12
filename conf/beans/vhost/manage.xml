@@ -40,7 +40,7 @@
     </property>  
     <property name="handlerInterceptors">
       <list>
-        <ref bean="manageServiceNoCacheHandlerInterceptor" />
+        <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>
     <property name="handler">
@@ -62,7 +62,7 @@
     </property>
     <property name="handlerInterceptors">
       <list>
-        <ref bean="manageServiceNoCacheHandlerInterceptor" />
+        <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>
     <property name="services">
@@ -80,17 +80,6 @@
         <ref bean="previewService"/>
       </list>
     </property>        
-  </bean>
-
-  <bean id="manageServiceNoCacheHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
-    <property name="staticHeaders">
-      <map>
-        <entry key="Cache-Control" value="no-cache, no-store, must-revalidate, max-age=0" />
-        <entry key="Expires" value="0" />
-        <entry key="Pragma" value="no-cache" />
-      </map>
-    </property>
   </bean>
 
   <bean id="setNorwegianNBLocaleService"

@@ -250,7 +250,7 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
+        <ref bean="bindPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName">
             <value>action</value>

@@ -25,9 +25,16 @@
 
 
 <div id="titleContainer" class="clear">
+
   <div class="resource-title ${resourceContext.currentResource.resourceType}">  
     <h1> 
-      <#if (resourceTitle.title)?exists>${resourceTitle.title}<#else>${resourceContext.currentResource.name}</#if>
+      <#if resourceContext.currentResource.URI = '/'>
+        ${resourceContext.repositoryId}
+      <#elseif (resourceTitle.title)?exists>
+        ${resourceTitle.title}
+      <#else>
+        ${resourceContext.currentResource.name}
+      </#if>
     </h1>
 <#if globalMenu?exists>
     <@listMenu.listMenu menu=globalMenu displayForms=true prepend="(&nbsp;" append="&nbsp;)"/>

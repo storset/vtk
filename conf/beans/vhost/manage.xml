@@ -643,7 +643,7 @@
   <bean id="htmlToXhtmlHandler" 
         class="org.vortikal.web.controller.repository.copy.CopyController"
         parent="requestLocalRepositoryAware">
-    <property name="extension" value="-webredigerbar.html" />
+    <property name="extension" value="-kopi.html" />
     <property name="parentViewOnSuccess" value="true" />
     <property name="copyAction" ref="tidyCopyAction" />
     <property name="formView" value="admin" />

@@ -65,7 +65,7 @@ public class RequestPortAssertion
             if ("*".equals(portsArray[i])) {
                 this.ports[i] = PORT_ANY;
             } else {
-                this.ports[i] = Integer.parseInt(port);
+                this.ports[i] = Integer.parseInt(portsArray[i]);
                 if (this.ports[i] <= 0) throw new IllegalArgumentException(
                     "Server port number must be a positive integer");
             }

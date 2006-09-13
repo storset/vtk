@@ -86,8 +86,12 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
             return false;
             //encoding = this.defaultEncoding;
         }
-        Charset.forName(encoding);
-        property.setStringValue(encoding);
+        try {
+            Charset.forName(encoding);
+            property.setStringValue(encoding);
+        } catch (Exception e) {
+            property.setStringValue(this.defaultEncoding);
+        }
         return true;
     }
 

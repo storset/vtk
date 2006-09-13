@@ -101,6 +101,10 @@ public class ResultSetIteratorImpl implements Iterator {
             if (!this.hasNext) throw new IllegalStateException("No more objects");
 
             String uri = this.rs.getString("uri");
+            if (logger.isDebugEnabled()) {
+                logger.debug("next(): uri = '" + uri + "'");
+            }
+
             this.currentURI = uri;
 
             PropertySetImpl propertySet = new PropertySetImpl(this.currentURI);

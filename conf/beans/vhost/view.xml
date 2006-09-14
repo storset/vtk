@@ -435,6 +435,7 @@
         <ref bean="titlePropDef" />
       </list>
     </property>
+    <property name="skipCurrentResource" value="true" />
   </bean>
 
  <!-- Config for view technologies -->

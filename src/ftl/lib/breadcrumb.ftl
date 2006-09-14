@@ -24,12 +24,11 @@
   <#list crumbs as elem>
     <#assign name = elem.title/>
     <#if elem.URL?exists>
-      <a href="${elem.URL?html}">${name}</a> &gt;
+      <a href="${elem.URL?html}">${name?html}</a> ${elem.delimiter?if_exists?html}
     <#else>
-      ${name} &gt;
+      ${name?html} ${elem.delimiter?if_exists?html}
     </#if>
   </#list>
-    ${resourceContext.currentResource.name?html}
 </div>
 </#if>
 

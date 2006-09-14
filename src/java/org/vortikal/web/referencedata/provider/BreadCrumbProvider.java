@@ -109,6 +109,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private PropertyTypeDefinition[] titleOverrideProperties = null;
     private String[] skippedURLs = null;
     private Set skippedURLSet = null;
+    private boolean skipCurrentResource = false;
+    private String delimiter = ">";
     
     
     public final void setRepository(final Repository newRepository) {
@@ -143,6 +145,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     
     public void setSkippedURLs(String[] skippedURLs) {
         this.skippedURLs = skippedURLs;
+    }
+    
+
+    public void setSkipCurrentResource(boolean skipCurrentResource) {
+        this.skipCurrentResource = skipCurrentResource;
     }
     
 
@@ -186,8 +193,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         if (request.getAttribute(VortikalServlet.INDEX_FILE_REQUEST_ATTRIBUTE) != null) {
             length--;
         }
+        if (this.skipCurrentResource) {
+            length--;
+        }
 
-        for (int i = 0; i < length - 1; i++) {
+        for (int i = 0; i < length; i++) {
             try {
                 Resource r = this.repository.retrieve(token, incrementalPath[i], true);
 
@@ -196,22 +206,29 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 }
                 String title = getTitle(r);
                 String url = null;
-                if (this.skippedURLSet == null
-                    || !this.skippedURLSet.contains(incrementalPath[i])) {
+                if ((this.skippedURLSet == null
+                     || !this.skippedURLSet.contains(incrementalPath[i]))
+                    && (i < length - 1 || this.skipCurrentResource)) {
                     url = this.service.constructLink(r, principal, false);
                 }
-                breadCrumb.add(new BreadcrumbElement(url, title));
+
+                if (i == length - 1 && !this.skipCurrentResource) {
+                    breadCrumb.add(new BreadcrumbElement(url, title, null));
+                } else {
+                    breadCrumb.add(new BreadcrumbElement(url, title));
+                }
             } catch (Exception e) {
                 breadCrumb.add(new BreadcrumbElement(null, path[i]));
                 logger.warn("Unable to generate breadcrumb path element " + incrementalPath[i], e);
             }
         }
 
+
         if (logger.isDebugEnabled()) {
             logger.debug("Generated breadcrumb path: " + breadCrumb);
         }
 
-        model.put(this.breadcrumbName, breadCrumb.toArray((new BreadcrumbElement[0])));
+        model.put(this.breadcrumbName, breadCrumb.toArray((new BreadcrumbElement[breadCrumb.size()])));
     }
 
 

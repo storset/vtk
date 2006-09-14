@@ -75,21 +75,22 @@ public class HostNameDelegatingServlet extends HttpServletBean {
             }
 
             String hostName = mappings[i].substring(0, mappings[i].indexOf("=")).trim();
-            String primaryMapping = hostName;
-            String secondaryMapping = null;
+            String hostMapping = hostName;
+            //String secondaryMapping = null;
 
             if (hostName.indexOf(":") == -1) {
-                primaryMapping = hostName + ":80";
-                secondaryMapping = hostName + ":443";
+                //hostMapping = hostName + ":80";
+                //secondaryMapping = hostName + ":443";
+                hostMapping = hostName;
             }
 
             String servletName = mappings[i].substring(mappings[i].lastIndexOf("=") + 1).trim();
-            this.logger.info("Adding mapping: " + primaryMapping + " --> " + servletName);
-            this.hostMap.put(primaryMapping, servletName);
-            if (secondaryMapping != null) {
-                this.logger.info("Adding mapping: " + secondaryMapping + " --> " + servletName);
-                this.hostMap.put(secondaryMapping, servletName);
-            }
+            this.logger.info("Adding mapping: " + hostMapping + " --> " + servletName);
+            this.hostMap.put(hostMapping, servletName);
+//             if (secondaryMapping != null) {
+//                 this.logger.info("Adding mapping: " + secondaryMapping + " --> " + servletName);
+//                 this.hostMap.put(secondaryMapping, servletName);
+//             }
         }
     }
 
@@ -97,8 +98,13 @@ public class HostNameDelegatingServlet extends HttpServletBean {
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         String hostName = request.getServerName();
-        String key = hostName + ":" + request.getServerPort();
+        String key = hostName;
         String servletName = (String) this.hostMap.get(key);
+
+        if (servletName == null) {
+            key = hostName + ":" + request.getServerPort();
+            servletName = (String) this.hostMap.get(key);
+        }
         
         if (servletName == null) {
             throw new ServletException(

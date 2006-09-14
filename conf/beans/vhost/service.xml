@@ -4,6 +4,17 @@
 <beans>
 
 
+  <bean id="webServiceAssertion" class="org.vortikal.web.service.AndAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="webPortAssertion" />
+        <ref bean="webHostNameAssertion" />
+        <ref bean="webProtocolAssertion" />
+      </list>
+    </property>
+  </bean>
+
+
   <!-- ************************** -->
   <!-- THE WEB SERVICE TREE       -->
   <!-- Web browser based services -->
@@ -13,9 +24,7 @@
     <property name="order" value="0" />
     <property name="assertions">
       <list>
-        <ref bean="webHostNameAssertion" />
-        <ref bean="webProtocolAssertion" />
-        <ref bean="webPortAssertion" />
+        <ref bean="webServiceAssertion" />
       </list>
     </property>
 
@@ -121,6 +130,9 @@
   </bean>
   
 
+  <bean id="isAuthenticatedAssertion" class="org.vortikal.web.service.IsAuthenticatedAssertion">
+    <property name="requiresAuthentication" value="true" />
+  </bean>
 
 
   <bean id="httpOptionsService" class="org.vortikal.web.service.ServiceImpl">

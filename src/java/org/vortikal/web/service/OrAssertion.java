@@ -30,8 +30,8 @@
  */
 package org.vortikal.web.service;
 
-
 import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
@@ -54,13 +54,9 @@ public class OrAssertion implements Assertion {
                 request = context.getServletRequest();
             }
         }
-
         for (int i = 0; i < this.assertions.length; i++) {
-            if (match) {
-                if (this.assertions[i].matches(request, resource, principal)) {
-                    this.assertions[i].processURL(url, resource, principal, match);
-                    return true;
-                }
+            if (this.assertions[i].processURL(url, resource, principal, match)) {
+                return true;
             }
         }
         return false;

@@ -62,17 +62,9 @@ public class AndAssertion implements Assertion {
         }
 
         for (int i = 0; i < this.assertions.length; i++) {
-//             if (match) {
-//                 if (!this.assertions[i].matches(request, resource, principal)) {
-//                     if (logger.isDebugEnabled()) {
-//                         logger.debug("Assertion " + this.assertions[i]
-//                                      + " did not match, will not continue to construct URL");
-//                     }
-//                     return false;
-//                 }
-
-//         }
-            this.assertions[i].processURL(url, resource, principal, match);
+            if (!this.assertions[i].processURL(url, resource, principal, match)) {
+                return false;
+            }
         }
         return true;
     }

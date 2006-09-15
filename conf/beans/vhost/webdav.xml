@@ -371,7 +371,7 @@
   <bean id="webdavCollectionListingHeadHandler"
         class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
         parent="requestLocalRepositoryAware" >
-    <property name="viewName" value="webdavCollectionListingView" />
+    <property name="viewName" value="webdavCollectionListingView" /> 
   </bean>
 
   <bean id="webdavOptionsHandler" class="org.vortikal.webdav.OptionsController"
@@ -465,11 +465,26 @@
         <entry key="webdavCollectionListingView" value-ref="webdavCollectionListingView" />
       </map>
     </property>
+    <property name="viewWrapper" ref="webdavCollectionListingViewWrapper" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="webdavCollectionListingHtmlTitleProvider" />
         <ref bean="manageLinkProvider" />
         <ref bean="webdavCollectionListingMessageProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <!-- lagt inn -->
+  <bean id="webdavCollectionListingViewWrapper" 
+        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+    <property name="propagateExceptions" value="true" />
+    <property name="contentFilters">
+      <list>
+        <ref bean="collectionListingHeadContentFilter" />
+        <ref bean="collectionListingHeaderContentFilter" />
+        <ref bean="collectionListingFooterContentFilter" />
+        <ref bean="adminURLFooterContentFilter" />
       </list>
     </property>
   </bean>
@@ -551,7 +566,9 @@
       Breadcrumb provider that generates links to the WebDAV service
     </description>
     <property name="service" ref="webdavService"/>
+    <property name="skipCurrentResource" value="true" />
   </bean>
+
 
   <bean id="webdavCollectionListingProvider"
         class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 

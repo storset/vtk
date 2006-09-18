@@ -106,13 +106,13 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals(s, reparsed);
     }
 
-    public void testListsWithSingleNewLine() {
-        String s = "\n# ol";
-        Element parsed = this.est.parseStructuredText(s);
-        System.out.println(parsed.getChildren());
-        String reparsed = this.est.parseElement(parsed);
-        assertEquals(s, reparsed);
-    }
+//    public void testListsWithSingleNewLine() {
+//        String s = "\n# ol";
+//        Element parsed = this.est.parseStructuredText(s);
+//        System.out.println(parsed.getChildren());
+//        String reparsed = this.est.parseElement(parsed);
+//        assertEquals(s, reparsed);
+//    }
 
     public void testComplexStructure() {
         String complex = "[sub:subscript] og [super:superscript]\\\n" +
@@ -133,4 +133,50 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals("]", parent.getChildText("sub"));
     }
 
+    public void testSubText() {
+    	String s = "[sub:bla\\]]";
+    	Element parent = new Element("parent");
+        try {
+            this.est.parseSub(s , 0, parent);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        String reparsed = this.est.parseElement(parent);
+        assertEquals(s, reparsed);
+    }
+ 
+    public void testEscapeText() {
+    	String s = "\\*bold\\*";
+    	String s2 = null;
+        try {
+        		Element e = this.est.parseStructuredText(s);
+        		s2 = this.est.parseElement(e);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	fail(e.getMessage());
+        }
+    	assertEquals(s, s2);
+    	
+//    	Element parent = new Element("parent");
+//        try {
+//            this.est.parseParagraph(s , 0, parent);
+//        } catch (Exception e) {
+//            fail(e.getMessage());
+//        }
+//        String reparsed = this.est.parseElement(parent);
+//        assertEquals(s, reparsed);
+    }
+    
+    public void testEscapeText2() {
+    	String s = "\\*bold";
+    	String s2 = null;
+        try {
+        		Element e = this.est.parseStructuredText(s);
+        		s2 = this.est.parseElement(e);
+        } catch (Exception e) {
+//        	e.printStackTrace();
+        	fail(e.getMessage());
+        }
+    	assertEquals(s, s2);
+    }
 }

@@ -115,12 +115,17 @@ public class EvenStructuredTextTestCase extends TestCase {
 //    }
 
     public void testComplexStructure() {
-        String complex = "[sub:subscript] og [super:superscript]\\\n" +
-        "escaped newline\n*fet \\* stjerne* og _kursiv \\_ " +
-        "underscore_";
-        Element parsed = this.est.parseStructuredText(complex);
-        String reparsed = this.est.parseElement(parsed);
-        assertEquals(complex, reparsed);
+        try {
+            String complex = "[sub:subscript] og [super:superscript]\\\n" +
+            "escaped newline\n*fet \\* stjerne* og _kursiv \\_ " +
+            "underscore_";
+            Element parsed = this.est.parseStructuredText(complex);
+            String reparsed = this.est.parseElement(parsed);
+            assertEquals(complex, reparsed);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 
     public void testSubWithEscapedQuote() {
@@ -134,7 +139,7 @@ public class EvenStructuredTextTestCase extends TestCase {
     }
 
     public void testSubText() {
-    	String s = "[sub:bla\\]]";
+    	String s = "[sub:bla\\]_]";
     	Element parent = new Element("parent");
         try {
             this.est.parseSub(s , 0, parent);
@@ -144,6 +149,7 @@ public class EvenStructuredTextTestCase extends TestCase {
         String reparsed = this.est.parseElement(parent);
         assertEquals(s, reparsed);
     }
+    
  
     public void testEscapeText() {
     	String s = "\\*bold\\*";
@@ -156,27 +162,26 @@ public class EvenStructuredTextTestCase extends TestCase {
         	fail(e.getMessage());
         }
     	assertEquals(s, s2);
-    	
-//    	Element parent = new Element("parent");
-//        try {
-//            this.est.parseParagraph(s , 0, parent);
-//        } catch (Exception e) {
-//            fail(e.getMessage());
-//        }
-//        String reparsed = this.est.parseElement(parent);
-//        assertEquals(s, reparsed);
     }
     
+    
     public void testEscapeText2() {
-    	String s = "\\*bold";
+    	String s = "\\*bold*";
     	String s2 = null;
         try {
         		Element e = this.est.parseStructuredText(s);
         		s2 = this.est.parseElement(e);
         } catch (Exception e) {
-//        	e.printStackTrace();
+        	e.printStackTrace();
         	fail(e.getMessage());
         }
     	assertEquals(s, s2);
     }
+    
+    /*
+    public void testEscapingsInLinks() {
+        fail("Har ikke testet ulike escape-situasjoner for lenker, heller ikke skrevet kode for testing av dette i EvenStructuredText.java. Men det er kanskje ikke meningen at det skal bli mulig med escapes her (siden det er lite relevant bruk i praksis...)");
+    }
+    */
+    
 }

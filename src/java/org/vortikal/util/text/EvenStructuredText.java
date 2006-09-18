@@ -170,18 +170,23 @@ public final class EvenStructuredText implements StructuredText {
             return false;
         int endPos = text.indexOf(this.BOLD_CLOSE, pos + this.BOLD_START.length());
 
+        endPos = findTrueEndPos(text, endPos, this.BOLD_CLOSE);
+        
         if (endPos > 0)
             return !(endOfBlockLevelElement(text, pos + this.BOLD_START.length(),
                     endPos));
 
         return false;
     }
+
     
     
     protected boolean italicAtPos(String text, int pos) {
         if (text.indexOf(this.ITALIC_START, pos) != pos)
             return false;
         int endPos = text.indexOf(this.ITALIC_CLOSE, pos + this.ITALIC_START.length());
+        
+        endPos = findTrueEndPos(text, endPos, this.ITALIC_CLOSE);
 
         if (endPos > 0)
             return !endOfBlockLevelElement(text, pos + this.ITALIC_START.length(),
@@ -250,6 +255,8 @@ public final class EvenStructuredText implements StructuredText {
             return false;
 
         int endPos = text.indexOf(this.REF_CLOSE, pos + this.REF_START.length());
+        
+        endPos = findTrueEndPos(text, endPos, this.REF_CLOSE);
 
         if (endPos > 0)
             return !(endOfBlockLevelElement(text, pos + this.REF_START.length(),
@@ -279,31 +286,34 @@ public final class EvenStructuredText implements StructuredText {
     
     
     protected boolean subAtPos(String text, int pos) {
-        // sub is given on the form: sub:"text"
+        // sub is given on the form: [sub:text]
 
         int startPos = text.indexOf(this.SUB_START, pos);
 
         if (startPos != pos) {
             return false;
         }
-
+        
         int endPos = text.indexOf(this.SUB_END, pos + this.SUB_START.length());
-
-        String subtext = text.substring(startPos, endPos);
-
+        
+        endPos = findTrueEndPos(text, endPos, this.SUB_END);
+        
         if (endPos < 0) {
             return false;
-        } else if (subtext.indexOf(this.LINE_SEPARATOR) != -1 
+        } 
+        
+        String subtext = text.substring(startPos, endPos);
+        if (subtext.indexOf(this.LINE_SEPARATOR) != -1 
                 && subtext.charAt( subtext.indexOf(this.LINE_SEPARATOR) -1 ) != this.ESCAPE ) {
             return false;
-        } else {
-            return true;
         }   
+        
+        return true;
     }
     
     
     protected boolean superAtPos(String text, int pos) {
-        // super is given on the form: super:"text"
+        // super is given on the form: [super:text]
 
         int startPos = text.indexOf(this.SUPER_START, pos);
 
@@ -312,18 +322,48 @@ public final class EvenStructuredText implements StructuredText {
         }
 
         int endPos = text.indexOf(this.SUPER_END, pos + this.SUPER_START.length());
-
-        String supertext = text.substring(startPos, endPos);
-
+        
+        endPos = findTrueEndPos(text, endPos, this.SUPER_END);
+        
         if (endPos < 0) {
             return false;
-        } else if (supertext.indexOf(this.LINE_SEPARATOR) != -1 
+        } 
+        
+        String supertext = text.substring(startPos, endPos);
+        if (supertext.indexOf(this.LINE_SEPARATOR) != -1 
                 && supertext.charAt( supertext.indexOf(this.LINE_SEPARATOR) -1 ) != this.ESCAPE ) {
             return false;
+        }
+        
+        return true;
+    }
+
+    
+    /**
+     * Helper method when parsing text paragraphs and checkin for formatted substrings
+     * <br/>Returns index of unescaped ending character (i.e. true endPos)
+     * <br/>Returns -1 if not found (i.e. this substring is actually escaped)
+     * @param text
+     * @param endPos
+     * @param closingCharacter
+     * @return index of end-character of formatted substring
+     */
+    private int findTrueEndPos(String text, int endPos, String closingCharacter) {
+        // if endPos is already last position 
+        if (endPos == -1) {
+            return -1;
         } else {
-            return true;
+            do {
+                // contine searching for the real endPos (i.e. not escaped end character)
+                endPos = text.indexOf(closingCharacter, ++endPos);
+                if( endPos == -1 )
+                    return -1;
+            } while ( text.charAt(endPos-1) == this.ESCAPE );
+            return endPos;
         }
     }
+
+    
     
     
     public Element parseStructuredText(String text) {
@@ -627,12 +667,13 @@ public final class EvenStructuredText implements StructuredText {
     protected int parseBold(String text, int pos, Element element) {
         int startPos = pos + this.BOLD_START.length();
         //int endPos = text.indexOf(BOLD_CLOSE, startPos);
-        int endPos = startPos+1; 
+        int endPos = startPos-1; 
         
         do {
             // contine searching for the real BOLD_CLOSE
             endPos = text.indexOf(this.BOLD_CLOSE, ++endPos);
         } while ( text.charAt(endPos-1) == this.ESCAPE );
+        
                 
         StringBuffer substring = removeEscapeChars(text, startPos, endPos);
         String boldText = substring.toString();
@@ -881,12 +922,12 @@ public final class EvenStructuredText implements StructuredText {
                 } else if (tagName.equals("sub")) {
                     buffer.append(this.SUB_START);
                     //buffer.append(generateStructuredText(child));
-                    buffer.append(addEscapeChar(escapeQuotes(child.getText())));
+                    buffer.append(addEscapeChar(escapeBrackets(child.getText())));
                     buffer.append(this.SUB_END);
                 } else if (tagName.equals("sup")) {
                     buffer.append(this.SUPER_START);
                     //buffer.append(generateStructuredText(child));
-                    buffer.append(addEscapeChar(escapeQuotes(child.getText())));
+                    buffer.append(addEscapeChar(escapeBrackets(child.getText())));
                     buffer.append(this.SUPER_END);
                 } else { // plaintextelement
                     throw new StructuredTextException(
@@ -927,6 +968,10 @@ public final class EvenStructuredText implements StructuredText {
         return contents.replaceAll("\"", "\\\\\"");
     }
     
+    private String escapeBrackets(String contents) {
+        return contents.replaceAll("]", "\\\\]");
+    }
+    
     
     /* 
      * ESCAPE char must be added for:
@@ -943,8 +988,9 @@ public final class EvenStructuredText implements StructuredText {
         // BUT: If the XML is edited as text og in external editor, the 
         // element is interpreted as consecutive string
         // HENCE: Will have to test for both posibilities!
-        if ( contents.equals( String.valueOf(this.ESCAPE) )
-                || contents.equals( String.valueOf(this.NEWLINE) )
+        //if ( contents.equals( String.valueOf(this.ESCAPE) )
+        //        || contents.equals( String.valueOf(this.NEWLINE) )
+        if ( contents.equals( String.valueOf(this.LISTITEM_MARKER) )
                 || contents.equals(this.LISTITEM_MARKER)
                 || contents.startsWith(this.LISTITEM_MARKER+this.SPACE)
                 || contents.equals(this.NUMLISTITEM_MARKER)
@@ -1019,7 +1065,7 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
-    // brukes for � printe xml til strucured text
+    // brukes for å skrive xml'en ut til strucured text
     public static void dumpXML(Element element, PrintStream out) {
         try {
             Format format = Format.getPrettyFormat();

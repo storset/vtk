@@ -261,9 +261,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         sb.append(":").append(this.name);
         if (this.propertyTypeDefinition != null && this.propertyTypeDefinition.isMultiple()) {
             sb.append(" = {");
-            for (int i=0; i<this.values.length; i++) {
+            for (int i=0; values != null && i<this.values.length; i++) {
                 sb.append("'").append(this.values[i]).append("'");
-                if (i < this.values.length-1) sb.append(",");
+                if (i < this.values.length-1) 
+                    sb.append(",");
             }
             sb.append("}");
         } else {

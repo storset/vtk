@@ -36,6 +36,8 @@ import org.vortikal.web.service.RepositoryAssertion;
 public class PrimaryResourceTypeDefinitionImpl
   extends AbstractResourceTypeDefinitionImpl implements PrimaryResourceTypeDefinition {
 
+    private MixinResourceTypeDefinition[] mixinTypeDefinitions;
+
     private PrimaryResourceTypeDefinition parentTypeDefinition;
     private RepositoryAssertion[] assertions;
 
@@ -53,6 +55,17 @@ public class PrimaryResourceTypeDefinitionImpl
 
     public void setAssertions(RepositoryAssertion[] assertions) {
         this.assertions = assertions;
+    }
+
+    public MixinResourceTypeDefinition[] getMixinTypeDefinitions() {
+        if (this.mixinTypeDefinitions == null) {
+            return super.EMPTY_MIXIN_TYPE_LIST;
+        }
+        return this.mixinTypeDefinitions;
+    }
+
+    public void setMixinTypeDefinitions(MixinResourceTypeDefinition[] mixinTypeDefinitions) {
+        this.mixinTypeDefinitions = mixinTypeDefinitions;
     }
 
  

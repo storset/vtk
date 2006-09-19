@@ -34,15 +34,21 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 
+/**
+ * XXX: We should consider re-modelling some of this wrt. to mixins and regular
+ *      resource types (with the current model, implementations of 
+ *      MixinResourceTypeDefinitoin are required to implement getMixinTypeDefinitions, 
+ *      but that does not really make sense, since mixins should not have their
+ *      own mixin types) 
+ */
 public abstract class AbstractResourceTypeDefinitionImpl
   implements ResourceTypeDefinition, InitializingBean {
 
-    private final static MixinResourceTypeDefinition[] EMPTY_MIXIN_TYPE_LIST =
+    protected final static MixinResourceTypeDefinition[] EMPTY_MIXIN_TYPE_LIST =
         new MixinResourceTypeDefinition[0];
     
     private String name;
     private Namespace namespace;
-    private MixinResourceTypeDefinition[] mixinTypeDefinitions;
     private PropertyTypeDefinition[] propertyTypeDefinitions = new PropertyTypeDefinitionImpl[0];
     
     public void afterPropertiesSet() {
@@ -75,17 +81,6 @@ public abstract class AbstractResourceTypeDefinitionImpl
 
     public void setNamespace(Namespace namespace) {
         this.namespace = namespace;
-    }
-
-    public MixinResourceTypeDefinition[] getMixinTypeDefinitions() {
-        if (this.mixinTypeDefinitions == null) {
-            return EMPTY_MIXIN_TYPE_LIST;
-        }
-        return this.mixinTypeDefinitions;
-    }
-
-    public void setMixinTypeDefinitions(MixinResourceTypeDefinition[] mixinTypeDefinitions) {
-        this.mixinTypeDefinitions = mixinTypeDefinitions;
     }
 
     public PropertyTypeDefinition[] getPropertyTypeDefinitions() {

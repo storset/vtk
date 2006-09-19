@@ -42,13 +42,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
@@ -1252,7 +1250,7 @@ public class PropertyManagerImpl implements PropertyManager,
     }
 
     /**
-     * Return flat list of property definitions.
+     * Return flat list of all registered property type definitions.
      * XXX: equivalent methods for resource-types, mixin-types, etc ?
      * @return
      */
@@ -1295,7 +1293,43 @@ public class PropertyManagerImpl implements PropertyManager,
         
         return childList;
     }
+    
+    /**
+     * Search upwards in resource type tree, collect property type definitions
+     * from all encountered resource type definitions including mixin resource types.
+     * Assuming that mixin types can never have other mixin types attached.
+     * 
+     * @param def The <code>ResourceTypeDefinition</code> 
+     * @return A <code>List</code> of <code>PropertyTypeDefinition</code> instances.
+     */
+    public List getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+                                                    ResourceTypeDefinition def) {
+        ArrayList propDefs = new ArrayList();
+        
+        if (def instanceof MixinResourceTypeDefinition) {
+            MixinResourceTypeDefinition mixinDef = (MixinResourceTypeDefinition)def;
+            propDefs.addAll(Arrays.asList(mixinDef.getPropertyTypeDefinitions()));
+        } else {
+            // Assuming instanceof PrimaryResourceTypeDefinition
+            PrimaryResourceTypeDefinition primaryDef = (PrimaryResourceTypeDefinition)def; 
 
+            while (primaryDef != null) {
+                propDefs.addAll(Arrays.asList(primaryDef.getPropertyTypeDefinitions()));
+                
+                // Add any mixin resource types' property type defs
+                MixinResourceTypeDefinition[] mixinDefs = primaryDef.getMixinTypeDefinitions();
+                for (int i=0; i<mixinDefs.length; i++) {
+                    propDefs.addAll(Arrays.asList(mixinDefs[i].getPropertyTypeDefinitions()));
+                }
+
+                primaryDef = primaryDef.getParentTypeDefinition();
+            }
+        } 
+
+        return propDefs;
+    }
+    
+    
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
         ResourceTypeDefinition type = (ResourceTypeDefinition)
             this.resourceTypeNameMap.get(name);

@@ -30,18 +30,19 @@
  */
 package org.vortikal.web.referencedata.provider;
 
-
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -197,32 +198,33 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             length--;
         }
 
-        for (int i = 0; i < length; i++) {
-            try {
-                Resource r = this.repository.retrieve(token, incrementalPath[i], true);
+        if (!"/".equals(uri)) {
+            for (int i = 0; i < length; i++) {
+                try {
+                    Resource r = this.repository.retrieve(token, incrementalPath[i], true);
 
-                if (checkIgnore(r)) {
-                    continue;
-                }
-                String title = getTitle(r);
-                String url = null;
-                if ((this.skippedURLSet == null
-                     || !this.skippedURLSet.contains(incrementalPath[i]))
-                    && (i < length - 1 || this.skipCurrentResource)) {
-                    url = this.service.constructLink(r, principal, false);
-                }
+                    if (checkIgnore(r)) {
+                        continue;
+                    }
+                    String title = getTitle(r);
+                    String url = null;
+                    if ((this.skippedURLSet == null
+                         || !this.skippedURLSet.contains(incrementalPath[i]))
+                        && (i < length - 1 || this.skipCurrentResource)) {
+                        url = this.service.constructLink(r, principal, false);
+                    }
 
-                if (i == length - 1 && !this.skipCurrentResource) {
-                    breadCrumb.add(new BreadcrumbElement(url, title, null));
-                } else {
-                    breadCrumb.add(new BreadcrumbElement(url, title));
+                    if (i == length - 1 && !this.skipCurrentResource) {
+                        breadCrumb.add(new BreadcrumbElement(url, title, null));
+                    } else {
+                        breadCrumb.add(new BreadcrumbElement(url, title));
+                    }
+                } catch (Exception e) {
+                    breadCrumb.add(new BreadcrumbElement(null, path[i]));
+                    logger.warn("Unable to generate breadcrumb path element " + incrementalPath[i], e);
                 }
-            } catch (Exception e) {
-                breadCrumb.add(new BreadcrumbElement(null, path[i]));
-                logger.warn("Unable to generate breadcrumb path element " + incrementalPath[i], e);
             }
         }
-
 
         if (logger.isDebugEnabled()) {
             logger.debug("Generated breadcrumb path: " + breadCrumb);

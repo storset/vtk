@@ -64,7 +64,7 @@
         <#if collectionListing.childLinks[child_index]['view']?has_content>
         <uri>${collectionListing.childLinks[child_index]['view']?html}</uri>
         </#if>
-        <#if child.contentType?starts_with("image")>
+        <#if child.contentType?exists && child.contentType?starts_with("image")>
           <icon>${cssBaseURL}/image2.png</icon>
         <#else>
           <icon>${cssBaseURL}/file2.gif</icon>

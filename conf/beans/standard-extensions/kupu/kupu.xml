@@ -720,7 +720,12 @@
         <entry key="view" value-ref="viewService" />
       </map>
     </property>
-    <property name="contentTypeRegexpFilter" value="(application/x-vortex-collection|image/.*)" />
+    <property name="matchingResourceTypes">
+      <list>
+        <ref bean="collectionResourceTypeDefinition" />
+        <ref bean="imageResourceTypeDefinition" />
+      </list>
+    </property>
     <property name="retrieveForProcessing" value="true" />
   </bean>
 

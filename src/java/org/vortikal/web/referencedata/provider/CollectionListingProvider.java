@@ -38,8 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +45,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -72,16 +71,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  possible operations for each child, e.g. delete,
  *  <li><code>browsingService</code> - the service used for linking to
  *  the children and the parent collection
- *  <li><code>contentTypeFilter</code> - an optional {@link Set} of
- *  content types that specify the resource types that are included in
- *  the listing. The special content type for collections is
- *  <code>application/x-vortex-collection</code>. Default is
- *  <code>null</code> (all resources are included).
- *  <li><code>contentTypeRegexpFilter</code> - an optional regular
- *  expression denoting content types that specify the resource types
- *  that are included in the listing. Default is <code>null</code>
- *  (all resources are included). This setting is incompatible with
- *  the <code>contentTypeFilter</code> setting.
+ *  <li><code>matchingResourceTypes</code> - list of resource types to filter with.
  *  <li><code>childInfoItems</code> - list of info items to be
  *      displayed for the children. Valid items are <code>name</code>,
  *      <code>size</code>, <code>locked</code>,
@@ -141,9 +131,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     private Map linkedServices = new HashMap();
     private Service browsingService;
     private boolean retrieveForProcessing = false;
-    private Set contentTypeFilter;
-    private Pattern contentTypeRegexpFilter;
-    
+    private ResourceTypeDefinition[] matchingResourceTypes = null;
 
     public void setBrowsingService(Service browsingService) {
         this.browsingService = browsingService;
@@ -170,16 +158,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     }
 
 
-    public void setContentTypeFilter(Set contentTypeFilter) {
-        this.contentTypeFilter = contentTypeFilter;
-    }
-    
-    public void setContentTypeRegexpFilter(String contentTypeRegexpFilter) {
-        if (contentTypeRegexpFilter != null) {
-            this.contentTypeRegexpFilter = Pattern.compile(contentTypeRegexpFilter);
-        }
-    }
-    
     public void afterPropertiesSet() {
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -189,12 +167,6 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         if (this.browsingService == null) {
             throw new BeanInitializationException(
                     "JavaBean Property 'browsingService' must be set");    
-        }
-
-        if (this.contentTypeRegexpFilter != null && this.contentTypeFilter != null) {
-            throw new BeanInitializationException(
-                "JavaBean properties 'contentTypeRegexpFilter' and "
-                + "'contentTypeFilter' cannot both be specified");
         }
 
         for (int i = 0; i < this.childInfoItems.length; i++) {
@@ -314,25 +286,18 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
     private Resource[] filterChildren(Resource[] children) {
 
-        if (this.contentTypeFilter == null && this.contentTypeRegexpFilter == null) {
+        if (this.matchingResourceTypes == null) {
             return children;
         }
         
         List filteredChildren = new ArrayList();
         for (int i = 0; i < children.length; i++) {
-                
-            if (this.contentTypeFilter != null) {
-                if (this.contentTypeFilter.contains(children[i].getContentType())) {
+            for (int j = 0; j < this.matchingResourceTypes.length; j++) {
+                if (children[i].isOfType(this.matchingResourceTypes[j]))
                     filteredChildren.add(children[i]);
-                }
-            } else {
-                Matcher m = this.contentTypeRegexpFilter.matcher(
-                    children[i].getContentType());
-                if (m.matches()) {
-                    filteredChildren.add(children[i]);
-                }
             }
         }
+            
         return (Resource[]) filteredChildren.toArray(
             new Resource[filteredChildren.size()]);
     }
@@ -358,6 +323,11 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         }
         
         ResourceSorter.sort(children, order, invert);
+    }
+
+    public void setMatchingResourceTypes(
+            ResourceTypeDefinition[] matchingResourceTypes) {
+        this.matchingResourceTypes = matchingResourceTypes;
     }
 
 

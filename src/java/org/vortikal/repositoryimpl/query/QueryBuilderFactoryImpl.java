@@ -224,6 +224,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     }
 
     /* Build map of resource type names to names of all descendants */
+    /* XXX: mixin types */
     private Map buildResourceTypeDescendantsMap() {
         List definitions = this.propertyManager.getPrimaryResourceTypeDefinitions();
         

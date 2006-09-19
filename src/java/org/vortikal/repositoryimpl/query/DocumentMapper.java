@@ -47,6 +47,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repositoryimpl.PropertyManager;
@@ -152,10 +153,28 @@ public class DocumentMapper implements InitializingBean {
                 ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
         doc.add(aclField);
         
-        // Add all other properties except dead ones.
-        for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
-            Property property = (Property)i.next();
-            if (property.getDefinition() == null) continue; // Skip dead props
+        ResourceTypeDefinition resourceDef = 
+                propertyManager.getResourceTypeDefinitionByName(
+                                                    propSet.getResourceType());
+        
+        // XXX: This adds extra work in time critical indexing code ...
+        //      Should consider caching resourceTypeName->List<PropertyTypeDefintions> map
+        //      Perhaps better to wait until we get a proper query interface for various aspects
+        //      of the resource type tree and its properties. Caching would be done there, instead,
+        //      obviously.
+        List propDefs = 
+            propertyManager.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+                    resourceDef);
+        
+        // Index only properties that satisfy the following two conditions:
+        // 1) Belongs to the resource type's definition
+        // 2) Exists in the property set.
+        for (Iterator i = propDefs.iterator(); i.hasNext();) {
+            PropertyTypeDefinition propDef = (PropertyTypeDefinition)i.next();
+            
+            Property property = propSet.getProperty(propDef);
+            
+            if (property == null) continue;
            
             // The field used for searching on the property
             Field indexedField = getIndexedFieldFromProperty(property);

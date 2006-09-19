@@ -56,7 +56,8 @@ import org.vortikal.repositoryimpl.query.security.QueryResultAuthorizationManage
 /**
  * @author oyviste
  *
- *  TODO: Integrate ACL filtering in search, index relevant parts of ACL lists.
+ *  TODO: Integrate ACL filtering in search, don't do it post-search, 
+ *        index relevant parts of ACL lists.
  *  TODO: Define behaviour when results are removed because of permissions
  *        wrt. to expected number of maxResults, etc.
  *        

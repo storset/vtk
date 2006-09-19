@@ -138,17 +138,7 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals("]", parent.getChildText("sub"));
     }
 
-    public void testSubText() {
-    	String s = "[sub:bla\\]_]";
-    	Element parent = new Element("parent");
-        try {
-            this.est.parseSub(s , 0, parent);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-        String reparsed = this.est.parseElement(parent);
-        assertEquals(s, reparsed);
-    }
+
     
  
     public void testEscapeText() {
@@ -165,29 +155,18 @@ public class EvenStructuredTextTestCase extends TestCase {
     }
     
     
-    public void testEscapeText2() {
-    	String s = "\\*bold*";
-    	String s2 = null;
-        try {
-        		Element e = this.est.parseStructuredText(s);
-        		s2 = this.est.parseElement(e);
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	fail(e.getMessage());
-        }
-    	assertEquals(s, s2);
-    }
 
     
  // Roundtrip tests for testing escape
     
     public void testBoldText() {
-    	String s = "Bla bla *\"bold_text\" \\** \\* bla * bla";
-    	String sback = "Bla bla *\"bold_text\" \\** \\* bla \\* bla";
+        String s = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla * bla _";
+    	String sback = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla \\* bla \\_";
     	String s2 = null;
         try {
-        		Element e = this.est.parseStructuredText(s);
-        		s2 = this.est.parseElement(e);
+            Element e = this.est.parseStructuredText(s);
+            est.dumpXML(e, System.out);
+            s2 = this.est.parseElement(e);
         } catch (Exception e) {
 //        	e.printStackTrace();
         	fail(e.getMessage());
@@ -201,13 +180,27 @@ public void testItalicText() {
 	String s2 = null;
     try {
     		Element e = this.est.parseStructuredText(s);
+                est.dumpXML(e, System.out);
     		s2 = this.est.parseElement(e);
     } catch (Exception e) {
 //    	e.printStackTrace();
     	fail(e.getMessage());
     }
-	assertEquals(sback, s2);
-	
+	assertEquals(sback, s2);	
+}
+
+public void testSubText() {
+        String s = "[sub:subtext\\]_]";
+        String sback = "[sub:subtext\\]_]";
+        String sreparsed = null;
+    try {
+        Element e = this.est.parseStructuredText(s);
+        est.dumpXML(e, System.out);
+        sreparsed = this.est.parseElement(e);
+    } catch (Exception e) {
+        fail(e.getMessage());
+    }
+    assertEquals(sback, sreparsed);
 }
 
 public void testLinkText() {
@@ -216,6 +209,7 @@ public void testLinkText() {
 	String s2 = null;
     try {
     		Element e = this.est.parseStructuredText(s);
+                //est.dumpXML(e, System.out);
     		s2 = this.est.parseElement(e);
     } catch (Exception e) {
 //    	e.printStackTrace();
@@ -225,11 +219,12 @@ public void testLinkText() {
 }
 
 public void testParagraphText() {
-	String s = "Bla * _bla_ [ bla \n\\ -";
-	String sback = "Bla \\* _bla_ \\[ bla \n\\ -";
+        String s = "Paragraphtext * _bla_ [ bla \n\\ -";
+	String sback = "Paragraphtext \\* _bla_ \\[ bla \n\\ -";
 	String s2 = null;
     try {
     		Element e = this.est.parseStructuredText(s);
+                est.dumpXML(e, System.out);
     		s2 = this.est.parseElement(e);
     } catch (Exception e) {
 //    	e.printStackTrace();

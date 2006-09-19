@@ -42,11 +42,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
@@ -709,6 +711,14 @@ public class PropertyManagerImpl implements PropertyManager,
                 resource, null, new Date(), this.rootResourceTypeDefinition);
         
         newResource.setResourceType(rt.getName());
+        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
+            Property prop = (Property) i.next();
+
+            // Preserve dead properties:
+            if (prop.getDefinition() == null) {
+                newResource.addProperty(prop);
+            }
+        }
         
         return newResource;
     }

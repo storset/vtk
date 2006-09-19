@@ -177,11 +177,79 @@ public class EvenStructuredTextTestCase extends TestCase {
         }
     	assertEquals(s, s2);
     }
+
     
-    /*
-    public void testEscapingsInLinks() {
-        fail("Har ikke testet ulike escape-situasjoner for lenker, heller ikke skrevet kode for testing av dette i EvenStructuredText.java. Men det er kanskje ikke meningen at det skal bli mulig med escapes her (siden det er lite relevant bruk i praksis...)");
+ // Roundtrip tests for testing escape
+    
+    public void testBoldText() {
+    	String s = "Bla bla *\"bold_text\" \\** \\* bla * bla";
+    	String sback = "Bla bla *\"bold_text\" \\** \\* bla \\* bla";
+    	String s2 = null;
+        try {
+        		Element e = this.est.parseStructuredText(s);
+        		s2 = this.est.parseElement(e);
+        } catch (Exception e) {
+//        	e.printStackTrace();
+        	fail(e.getMessage());
+        }
+    	assertEquals(sback, s2);
     }
-    */
-    
+
+public void testItalicText() {
+	String s = "Bla \\_bla _\"italic*text\" \\__ \\_ bla _ bla";
+	String sback = "Bla \\_bla _\"italic*text\" \\__ \\_ bla \\_ bla";
+	String s2 = null;
+    try {
+    		Element e = this.est.parseStructuredText(s);
+    		s2 = this.est.parseElement(e);
+    } catch (Exception e) {
+//    	e.printStackTrace();
+    	fail(e.getMessage());
+    }
+	assertEquals(sback, s2);
+	
+}
+
+public void testLinkText() {
+	String s = "Bla \\\"bla \"link*_text\":bla_bla bla_bla";
+	String sback = "Bla \\\"bla \"link*_text\":bla_bla bla\\_bla";
+	String s2 = null;
+    try {
+    		Element e = this.est.parseStructuredText(s);
+    		s2 = this.est.parseElement(e);
+    } catch (Exception e) {
+//    	e.printStackTrace();
+    	fail(e.getMessage());
+    }
+	assertEquals(sback, s2);
+}
+
+public void testParagraphText() {
+	String s = "Bla * _bla_ [ bla \n\\ -";
+	String sback = "Bla \\* _bla_ \\[ bla \n\\ -";
+	String s2 = null;
+    try {
+    		Element e = this.est.parseStructuredText(s);
+    		s2 = this.est.parseElement(e);
+    } catch (Exception e) {
+//    	e.printStackTrace();
+    	fail(e.getMessage());
+    }
+	assertEquals(sback, s2);
+}
+
+public void testListText() {
+	String s = "- Bla * _bla_ [ bla \n\\ -";
+	String sback = "- Bla \\* _bla_ \\[ bla \n\\ -";
+	String s2 = null;
+    try {
+    		Element e = this.est.parseStructuredText(s);
+    		s2 = this.est.parseElement(e);
+    } catch (Exception e) {
+//    	e.printStackTrace();
+    	fail(e.getMessage());
+    }
+	assertEquals(sback, s2);
+}
+
 }

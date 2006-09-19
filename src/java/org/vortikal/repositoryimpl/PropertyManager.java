@@ -121,6 +121,17 @@ public interface PropertyManager {
 
 
     /**
+     * Get all property type definitions bound to a resource type definition 
+     * including all ancestor- and mixin types.
+     * 
+     * @param def The <code>ResourceTypeDefinition</code> 
+     * @return A <code>List</code> of <code>PropertyTypeDefinition</code> instances.
+     */
+    public List getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+                                                    ResourceTypeDefinition def);
+
+    
+    /**
      * Gets a resource type definition object by name.
      * @param name the name of the resource type
      * @return the resource type definition

@@ -128,7 +128,13 @@ public class IndexFileController
         
         Resource indexFile = null;
         for (int i = 0; i < this.indexFiles.length; i++) {
-            String indexURI = currentURI + "/" + this.indexFiles[i];
+            String indexURI;
+            if ("/".equals(currentURI)) {
+                indexURI = currentURI + this.indexFiles[i];
+            } else {
+                indexURI = currentURI + "/" + this.indexFiles[i];                
+            }
+
             try {
                 indexFile = this.repository.retrieve(token, indexURI, true);
                 break;

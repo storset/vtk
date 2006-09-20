@@ -142,10 +142,14 @@ public final class EvenStructuredText implements StructuredText {
     // test that current char is NEWLINE which i NOT followed
     // by another NEWLINE (as newline + newline = paragraph)
     protected boolean newlineAtPos(String text, int pos) {
+        /**
+         * FIXME
+         * Hvis vi skal ha mulighet for escaping av newline skal sjekk for escape legges inn igjen
+         */
         if (pos < text.length() - 1
                 && text.charAt(pos) == this.NEWLINE
-                && text.charAt(pos + 1) != this.NEWLINE
-                && (pos > 0 && text.charAt(pos-1) != this.ESCAPE)) 
+                && text.charAt(pos + 1) != this.NEWLINE )
+                //&& (pos > 0 && text.charAt(pos-1) != this.ESCAPE)) 
             return true;
         return false;
     }

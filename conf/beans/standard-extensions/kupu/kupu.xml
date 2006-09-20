@@ -757,6 +757,7 @@
   <bean id="kupuEditHandler"
         class="org.vortikal.edit.kupu.KupuEditController"
         parent="requestLocalRepositoryAware">
+    <property name="lockTimeoutSeconds" value="1800" />
     <property name="formView" value="kupuEdit" />
     <property name="successView" value="kupuEdit" />
     <property name="cancelView" value="redirectToManage" />

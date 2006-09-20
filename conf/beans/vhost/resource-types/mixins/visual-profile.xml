@@ -115,12 +115,22 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>sadm</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>sta</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
             <value>usit</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>oepa</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
@@ -186,16 +196,6 @@
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
             <value>ulleval</value>
-          </constructor-arg>
-        </bean>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="java.lang.String">
-            <value>sadm</value>
-          </constructor-arg>
-        </bean>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="java.lang.String">
-            <value>oepa</value>
           </constructor-arg>
         </bean>
       </list>

@@ -52,6 +52,8 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 /**
+ * EvenStructuredText *sigh...*
+ * 
  * @author Even Halvorsen & Kristian Syversen
  *         (based on guru Gorm A. Paulsen's previous version
  *         DefaultStructuredText.java)
@@ -235,35 +237,10 @@ public final class EvenStructuredText implements StructuredText {
         
         middlePos = findTrueEndPos(text, middlePos, this.LINK_MIDDLE);
 
-        if (middlePos > 0) {
-            /*
-            // Check that the " at pos is the closest one to ":
-            // (unless the " character is escaped; such are ignored)
-            
-            int testPos = pos + this.LINK_START.length();
-            
-            do {
-                // contine searching for the real closing "
-                testPos = text.indexOf(this.LINK_START, ++testPos);
-            } while ( text.charAt(testPos-1) == this.ESCAPE );
-            
-            if (testPos != middlePos)
-                return false;
-            
-
-            // Check that no LINE_SEPERATOR come before LINK_MIDDLE 
-            // (except when escaped)
-            int lineSepPos = text.indexOf(this.LINE_SEPARATOR, pos
-                    + this.LINK_START.length());
-            if ((lineSepPos > 0) && (lineSepPos < middlePos) 
-                    && text.charAt(lineSepPos-1) != this.ESCAPE)
-                return false;
-            */
-            
+        if (middlePos > 0) {            
             // Check that no PARAGRAPH_START or LIST_START come before
             // LINK_MIDDLE
-            if (endOfBlockLevelElement(text, pos + this.LINK_START.length(),
-                    middlePos))
+            if (endOfBlockLevelElement(text, pos + this.LINK_START.length(), middlePos))
                 return false;
 
             // Check that middlePos is not at the end of the text
@@ -273,14 +250,12 @@ public final class EvenStructuredText implements StructuredText {
             // Check that LINE_SEPARATOR or whitespace is not righT after
             // LINK_MIDDLE
             if ((text.charAt(middlePos + this.LINK_MIDDLE.length()) == ' ')
-                    || (text
-                            .indexOf(this.LINE_SEPARATOR, pos + this.LINK_MIDDLE.length()) == pos
+                    || (text.indexOf(this.LINE_SEPARATOR, pos + this.LINK_MIDDLE.length()) == pos
                             + this.LINK_MIDDLE.length()))
                 return false;
 
             return true;
         }
-
         return false;
     }
     
@@ -340,13 +315,7 @@ public final class EvenStructuredText implements StructuredText {
         
         if (endPos < 0) {
             return false;
-        } 
-        
-        //String subtext = text.substring(startPos, endPos);
-        //if (subtext.indexOf(this.LINE_SEPARATOR) != -1 
-        //        && subtext.charAt( subtext.indexOf(this.LINE_SEPARATOR) -1 ) != this.ESCAPE ) {
-        //    return false;
-        //}
+        }
         
         if (endPos > 0)
             return !endOfBlockLevelElement(text, pos + this.SUB_START.length(),
@@ -373,13 +342,7 @@ public final class EvenStructuredText implements StructuredText {
         
         if (endPos < 0) {
             return false;
-        } 
-        
-        //String supertext = text.substring(startPos, endPos);
-        //if (supertext.indexOf(this.LINE_SEPARATOR) != -1 
-        //        && supertext.charAt( supertext.indexOf(this.LINE_SEPARATOR) -1 ) != this.ESCAPE ) {
-        //    return false;
-        //}
+        }
         
         if (endPos > 0)
             return !endOfBlockLevelElement(text, pos + this.SUPER_START.length(),
@@ -412,7 +375,7 @@ public final class EvenStructuredText implements StructuredText {
         String structureText = unifyNewlines(text);
         structureText = removeStartingAndTrailingNewlines(structureText);
                 
-        // All structuretext m� inn i avsnitt eller liste
+        // All structuretext skal inn i avsnitt eller liste
         if ((!structureText.startsWith(this.PARAGRAPH_START))
                 || (!structureText.startsWith(this.LIST_START))
                 || (!structureText.startsWith(this.NUMLIST_START))) {
@@ -444,6 +407,7 @@ public final class EvenStructuredText implements StructuredText {
         }
         return root;
     }
+    
     
     /**
      * FIXME: Javadoc
@@ -691,8 +655,6 @@ public final class EvenStructuredText implements StructuredText {
 
         int nextPos = pos;
         
-        //if ( escapeAtPos(basicText, pos) ) {
-        //    nextPos = parseEscape(basicText, pos, parent);
         if (boldAtPos(basicText, pos)) {
             nextPos = parseBold(basicText, pos, parent);
         } else if (italicAtPos(basicText, pos)) {
@@ -794,7 +756,8 @@ public final class EvenStructuredText implements StructuredText {
             typeAttributeValue = removeEscapeReferenceMiddle(typeAttributeValue);
             typeAttributeValue = removeEscapeRightBracket(typeAttributeValue);
             
-            String elementValue = referenceText.substring(attributePos + this.REF_ATTRIBUTE.length(), referenceText.length());
+            String elementValue = referenceText.substring(attributePos 
+                    + this.REF_ATTRIBUTE.length(), referenceText.length());
             elementValue = removeEscapeRightBracket(elementValue);
 
             Attribute typeAttribute = new Attribute(
@@ -856,15 +819,6 @@ public final class EvenStructuredText implements StructuredText {
         int startPos = pos + this.SUB_START.length();
         int endPos = text.indexOf(this.SUB_END, startPos);
         
-        /*
-        int endPos = startPos-1; 
-        
-        do {
-            // contine searching for the real SUB_END
-            endPos = text.indexOf(this.SUB_END, ++endPos);
-        } while ( text.charAt(endPos-1) == this.ESCAPE );
-        */
-        
         endPos = findTrueEndPos(text, endPos, this.SUB_END);
         
         String subText = text.substring(startPos, endPos);
@@ -882,15 +836,6 @@ public final class EvenStructuredText implements StructuredText {
     protected int parseSuper(String text, int pos, Element parent) {
         int startPos = pos + this.SUPER_START.length();
         int endPos = text.indexOf(this.SUPER_END, startPos);
-        
-        /*
-        int endPos = startPos-1; 
-        
-        do {
-            // contine searching for the real SUPER_END
-            endPos = text.indexOf(this.SUPER_END, ++endPos);
-        } while (text.charAt(endPos-1) == this.ESCAPE );
-        */
         
         endPos = findTrueEndPos(text, endPos, this.SUPER_END);
         
@@ -913,8 +858,7 @@ public final class EvenStructuredText implements StructuredText {
         while (pos < text.length()) {
             pos++; // first position is already examined
                         
-            if ( //escapeAtPos(text, pos)
-                    paragraphAtPos(text, pos) 
+            if ( paragraphAtPos(text, pos) 
                     || listAtPos(text, pos)
                     || boldAtPos(text, pos) 
                     || refrenceAtPos(text, pos)
@@ -1060,9 +1004,7 @@ public final class EvenStructuredText implements StructuredText {
                     content = addEscapeLeftBracket(content); // for SUB, SUP and REFERENCE 
                     content = addEscapeListItem(content); 
                     content = addEscapeNumListItem(content);
-                    
-                    //content = addEscapeChar(content);
-                                        
+                                                            
                     buffer.append( content );
                 }
             }
@@ -1081,6 +1023,7 @@ public final class EvenStructuredText implements StructuredText {
         return content.replaceAll("\\*", "\\\\*"); 
         // NB! 4x '\' because replaceAll() does regexp-type replacent of literals here as well 
     }
+    // ESCAPE+BOLD_START replaced by BOLD_START 
     private String removeEscapeBold(String content) {
         return content.replaceAll("\\\\\\*", "\\*");
     }
@@ -1089,33 +1032,38 @@ public final class EvenStructuredText implements StructuredText {
     private String addEscapeItalic(String content) {
         return content.replaceAll("\\_", "\\\\_"); 
     }
+    // ESCAPE+ITALIC_START replaced by ITALIC_START 
     private String removeEscapeItalic(String content) {
         return content.replaceAll("\\\\\\_", "\\_");
     }
     
-    // ESCAPE+LINK_START replaced by LINK_START
+    // LINK_START replaced by ESCAPE+LINK_START
     private String addEscapeQuotes(String content) {
         return content.replaceAll("\"", "\\\"");
     }
+    // ESCAPE+LINK_START replaced by LINK_START
     private String removeEscapeQuotes(String content) {
         return content.replaceAll("\\\"", "\"");
     }
     
-    // ESCAPE+REFERENCE+SUB+SUPER_START replaced by REFERENCE+SUB+SUPER_START    
+    // REFERENCE+SUB+SUPER_START replaced by ESCAPE+REFERENCE+SUB+SUPER_START    
     private String addEscapeLeftBracket(String content) {
         return content.replaceAll("\\[", "\\\\[");
     }
+    // ESCAPE+REFERENCE+SUB+SUPER_START replaced by REFERENCE+SUB+SUPER_START
     private String removeEscapeLeftBracket(String content) {
         return content.replaceAll("\\\\\\[", "\\[");
     }
+    // REFERENCE+SUB+SUPER_END replaced by ESCAPE+REFERENCE+SUB+SUPER_END
     private String addEscapeRightBracket(String content) {
         return content.replaceAll("\\]", "\\\\]");
     }
+    // ESCAPE+REFERENCE+SUB+SUPER_END replaced by REFERENCE+SUB+SUPER_END
     private String removeEscapeRightBracket(String content) {
         return content.replaceAll("\\\\\\]", "\\]");
     }
     
-    // ESCAPE+NEWLINE replaced by NEWLINE
+    // NEWLINE replaced by ESCAPE+NEWLINE
     private String addEscapeNewline(String content) {
         /**
          * FIXME
@@ -1123,6 +1071,7 @@ public final class EvenStructuredText implements StructuredText {
         return content;
         //return content.replaceAll("\n", "\\\\\n");
     }
+    // ESCAPE+NEWLINE replaced by NEWLINE
     private String removeEscapeNewline(String content) {
         /**
          * FIXME
@@ -1141,80 +1090,41 @@ public final class EvenStructuredText implements StructuredText {
 //        return contentBuffer.toString();
     }
     
-    // ESCAPE+LIST_ITEM_START replaced by LIST_ITEM
+    // LIST_ITEM_START replaced by ESCAPE+LIST_ITEM
     private String addEscapeListItem(String content) {
-        //System.out.println("before: " + content );
-        //System.out.println("after: " + content.replaceAll("- ", "\\- ") );
         return content.replaceAll("^- ", "\\\\- ");
     }
+    // ESCAPE+LIST_ITEM_START replaced by LIST_ITEM
     private String removeEscapeListItem(String content) {
         return content.replaceAll("^\\\\- ", "- ");
     }
     
-    // ESCAPE+NUMLIST_ITEM_START replaced by NUMLIST_ITEM_START
+    // NUMLIST_ITEM_START replaced by ESCAPE+NUMLIST_ITEM_START
     private String addEscapeNumListItem(String content) {
         return content.replaceAll("^# ", "\\\\# ");
     }
+    // ESCAPE+NUMLIST_ITEM_START replaced by NUMLIST_ITEM_START
     private String removeEscapeNumListItem(String content) {
         return content.replaceAll("^\\\\# ", "# ");
     }    
     
-    // ESCAPE+NUMLIST_ITEM_START replaced by NUMLIST_ITEM_START
+    // LINK_MIDDLE replaced by ESCAPE+LINK_MIDDLE
     private String addEscapeLinkMiddle(String content) {
         return content.replaceAll("\":", "\\\\\":");
     }
+    // ESCAPE+LINK_MIDDLE replaced by LINK_MIDDLE
     private String removeEscapeLinkMiddle(String content) {
         return content.replaceAll("\\\\\"\\:", "\":");
     }
     
-    // ESCAPE+NUMLIST_ITEM_START replaced by NUMLIST_ITEM_START
+    // REFERENCE_MIDDLE replaced by ESCAPE+REFERENCE_MIDDLE
     private String addEscapeReferenceMiddle(String content) {
         return content.replaceAll(":", "\\\\:");
     }
+    // ESCAPE+REFERENCE_MIDDLE replaced by REFERENCE_MIDDLE
     private String removeEscapeReferenceMiddle(String content) {
         return content.replaceAll("\\\\:", ":");
     }
-    
-    /* OLD STUFF:
-    content = content.replaceAll("\\\\\\*", "\\*"); // ESCAPE+BOLD_START replaced by BOLD_START
-    content = content.replaceAll("\\\\_", "_"); // ESCAPE+ITALIC_START replaced by ITALIC_START
-    content = content.replaceAll("\\\\\n", "\n"); // ESCAPE+NEWLINE replaced by NEWLINE
-    content = content.replaceAll("\\\\\"", "\""); // ESCAPE+LINK_START replaced by LINK_START
-    content = content.replaceAll("\\\\\\[", "["); // ESCAPE+REFERENCE+SUB+SUPER_START replaced by REFERENCE+SUB+SUPER_START 
-    content = content.replaceAll("\\\\- ", "- "); // ESCAPE+LIST_ITEM_START replaced by LISTREFERENCE_START
-    content = content.replaceAll("\\\\# ", "# "); // ESCAPE+NUMLIST_ITEM_START replaced by NUMLISTITEM_START
-    description = description.replaceAll("\\\\\"", "\"");
-    */      
-    
-    /* 
-     * ESCAPE char must be added for:
-     * - "\" (escaped backslash)
-     * - "\\n" (escaped newline)
-     * - "\n-" ('-' as first char in paragraph or after newline, which when 
-     *         escaped and parsed to XML will actually be its own element)
-     * - "\n#" ('#' as first char in paragraph or after newline)
-     */
-    
-    protected String addEscapeChar(String content) {        
-        content = unifyNewlines(content);        
-        // When being parsed from structured text, an escaped listitem-marker
-        // will be added as a separate DOM element.
-        // BUT: If the XML is edited as text og in external editor, the 
-        // element is interpreted as consecutive string
-        // HENCE: Will have to test for both posibilities!
-        //if ( content.equals( String.valueOf(this.ESCAPE) )
-        //        || content.equals( String.valueOf(this.NEWLINE) )
-        if ( content.equals( String.valueOf(this.LISTITEM_MARKER) )
-                || content.equals(this.LISTITEM_MARKER)
-                || content.startsWith(this.LISTITEM_MARKER+this.SPACE)
-                || content.equals(this.NUMLISTITEM_MARKER)
-                || content.startsWith(this.NUMLISTITEM_MARKER+this.SPACE)
-                ) {
-            return String.valueOf(this.ESCAPE).concat(content);
-        }
-        return content.replaceAll("([\\n])", "\\\\$1"); // ??
-    }
-    
     
     
     public String parseElement(Element root) {

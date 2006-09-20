@@ -27,7 +27,7 @@
         <ref bean="webServiceAssertion" />
       </list>
     </property>
-
+    <property name="urlPostProcessors" ref="webServiceUrlPostProcessors" />
     <property name="handlerInterceptors">
       <list>
         <bean id="webServiceInterceptor"
@@ -72,6 +72,13 @@
   <bean name="webAuthenticationChallenge"
         parent="httpDigestAuthenticationHandler" />
   -->
+
+  <bean id="webServiceUrlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+      </list>
+    </property>
+  </bean>
 
   <!-- Collection redirect service -->
 

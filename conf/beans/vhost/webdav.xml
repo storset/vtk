@@ -9,7 +9,6 @@
         <ref bean="webdavPortAssertion" />
         <ref bean="webdavHostNameAssertion" />
         <ref bean="webdavProtocolAssertion" />
-        <ref bean="isAuthenticatedAssertion" />
       </list>
     </property>
   </bean>
@@ -22,6 +21,7 @@
         <ref bean="webdavServiceAssertion" />
       </list>
     </property>
+    <property name="urlPostProcessors" ref="webdavServiceUrlPostProcessors" />
     <property name="services">
       <list>
         <ref bean="webdavCollectionListingService" />
@@ -32,11 +32,18 @@
     <property name="authenticationChallenge" ref="${webdavAuthenticationChallenge}" />
   </bean>
   
+  <bean id="webdavServiceUrlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+      </list>
+    </property>
+  </bean>
 
   <bean id="realWebdavClientService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
         <ref bean="emptyQueryStringAssertion" />
+        <ref bean="isAuthenticatedAssertion" />
       </list>
     </property>
     <property name="services">

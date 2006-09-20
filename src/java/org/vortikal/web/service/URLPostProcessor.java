@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,11 @@
  */
 package org.vortikal.web.service;
 
-/**
- * Exception indicating that URL cannot be constructed for a service
- * under the current assertion configuration.
- *
- */
-public class ServiceUnlinkableException extends RuntimeException {
+import org.vortikal.repository.Resource;
 
-    private static final long serialVersionUID = 4121133632317896496L;
 
-    public ServiceUnlinkableException() {
-        super();
-    }
+public interface URLPostProcessor {
 
-    public ServiceUnlinkableException(String message) {
-        super(message);
-    }
-
-    public ServiceUnlinkableException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    public void processURL(Resource resource, URL url) throws Exception;
 
 }

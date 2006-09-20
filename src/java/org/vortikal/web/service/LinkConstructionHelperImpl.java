@@ -56,7 +56,7 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
 
     public String construct(Resource resource, Principal principal,
                             Map parameters, List assertions, Service service,
-                            boolean matchAssertions) {
+                            boolean matchAssertions, List urlPostProcessors) {
 
         String path = resource.getURI();
         if (resource.isCollection()) {
@@ -93,6 +93,18 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
             }
         }
         
+        if (urlPostProcessors != null) {
+            for (Iterator i = urlPostProcessors.iterator(); i.hasNext();) {
+                URLPostProcessor urlProcessor = (URLPostProcessor) i.next();
+                try {
+                    urlProcessor.processURL(resource, urlObject);
+                } catch (Exception e) {
+                    throw new ServiceUnlinkableException("URL Post processor " + urlProcessor
+                                                         + " threw exception", e);
+                }
+            }
+        }
+
         String url = urlObject.toString();
 
         if (logger.isDebugEnabled()) {

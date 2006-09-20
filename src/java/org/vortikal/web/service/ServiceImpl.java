@@ -90,6 +90,8 @@ public class ServiceImpl
     private int order = 0;
     private Set categories = null;
     private ApplicationContext applicationContext;
+    private List urlPostProcessors = new ArrayList();
+    private List accumulatedUrlPostProcessors = null;
     
 
 
@@ -146,10 +148,15 @@ public class ServiceImpl
     }
     
 
-    /**
-     * Mapping the tree
-     */
+    public void setUrlPostProcessors(List urlPostProcessors) {
+        this.urlPostProcessors = urlPostProcessors;
+    }
+    
+
     public void setParent(Service parent) {
+        /**
+         * Mapping the service tree:
+         */
         if (this.parent != null && this.parent != parent) 
             throw new BeanInitializationException(
                 "Service '" + getName() +  "' has at least two parents ('"
@@ -176,6 +183,24 @@ public class ServiceImpl
     }
 
     
+    private List getAllURLPostProcessors() {
+        if (this.accumulatedUrlPostProcessors != null) {
+            return this.accumulatedUrlPostProcessors;
+        }
+
+        List allPostProcessors = new ArrayList();
+        Service s = this;
+        while (s != null) {
+            if ((s instanceof ServiceImpl) && ((ServiceImpl) s).urlPostProcessors != null) {
+                allPostProcessors.addAll(((ServiceImpl) s).urlPostProcessors);
+            }
+            s = (ServiceImpl) s.getParent();
+        }
+        this.accumulatedUrlPostProcessors = allPostProcessors;
+        return allPostProcessors;
+    }
+    
+
     public String getName() {
         return this.name;
     }
@@ -223,15 +248,17 @@ public class ServiceImpl
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters) {
         List assertions = getAllAssertions(this);
+        List urlPostProcessors = getAllURLPostProcessors();
         return this.linkConstructor.construct(resource, principal, parameters, assertions,
-                                         this, true);
+                                              this, true, urlPostProcessors);
     }
 
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters, boolean matchAssertions) {
         List assertions = getAllAssertions(this);
+        List urlPostProcessors = getAllURLPostProcessors();
         return this.linkConstructor.construct(resource, principal, parameters, assertions, this,
-                                         matchAssertions);
+                                              matchAssertions, urlPostProcessors);
     }
 	
     
@@ -271,6 +298,10 @@ public class ServiceImpl
 
         // Sort all children:
         Collections.sort(this.services, new OrderComparator());
+
+        
+        
+
     }
 
     

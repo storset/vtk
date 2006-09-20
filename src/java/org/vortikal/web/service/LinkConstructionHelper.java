@@ -43,6 +43,6 @@ import org.vortikal.security.Principal;
 public interface LinkConstructionHelper {
 
     public String construct(Resource resource, Principal principal,
-                                     Map parameters, List assertions, Service service,
-                                     boolean matchAssertions);
+                            Map parameters, List assertions, Service service,
+                            boolean matchAssertions, List urlPostProcessors);
 }

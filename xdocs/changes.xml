@@ -6,6 +6,7 @@
     </title>
   </properties>
   <body>
+
     <release version="0.3-SNAPSHOT" date="In SVN" description="Release 0.3">
 
       <!-- add 'action' entries here, newest on top: -->
@@ -25,29 +26,9 @@
         transformations.
       </action>
 
-      <action dev="gormap" type="update">
-        Switched to using iBATIS for the default JDBC-based backend
-        implementation.
-      </action>
-
       <action dev="gormap" type="remove">
         Removed lock types (as the only supported locks are exclusive
         write locks).
-      </action>
-
-      <action dev="oyviste" type="add">
-        Added support for storing/retrieving special property 'contentLength'
-        in database. Also added storing/retrieving of meta-property 
-        'resourceType'.
-      </action>
-
-      <action dev="oyviste" type="add">
-        Added support for multi-valued properties and property-value typing.
-      </action>
-
-      <action dev="gormap" type="update">
-        Now storing effective ACL inheritance node in resource table
-        (repositoryimpl).
       </action>
 
       <action dev="oyviste" type="add">
@@ -60,27 +41,8 @@
       </action>
 
       <action dev="gormap" type="add">
-        Integrated the Kupu client-side HTML editor as an extension
-        (http://kupu.oscom.org).
-      </action>
-
-      <action dev="gormap" type="add">
         Added option to use name based view resolving in error
         handlers instead of having to supply a view object directly.
-      </action>
-
-      <action dev="gormap" type="add">
-        Added default theme (css, images, etc.)
-      </action>
-
-      <action dev="gormap" type="add">
-        Added support for indexing (from the Vortex project at the
-        University of Oslo):
-        http://www.usit.uio.no/it/vortex/dokumentasjon/DMS/
-      </action>
-
-      <action dev="gormap" type="add">
-        Added default set of bean configuration files
       </action>
 
       <action dev="gormap" type="add">
@@ -123,14 +85,68 @@
         having the stores specified directly.
       </action>
 
+      <action dev="oyviste" type="add">
+        Added support for storing/retrieving special property 'contentLength'
+        in database. Also added storing/retrieving of meta-property 
+        'resourceType'.
+      </action>
+
+      <action type="add">
+        Integrated the Kupu client-side HTML editor as an extension
+        (http://kupu.oscom.org).
+      </action>
+
+      <action dev="gormap" type="add">
+        Added default theme (css, images, etc.)
+      </action>
+
       <action dev="gormap" type="update">
-        Updgraded to Spring 1.2.6
+        Updgraded to Spring 1.2.7
       </action>
 
       <action dev="gormap" type="fix">
         Removed ACL validating when moving resources that caused the
         move operation to fail on ACLs containing invalid principals.
       </action>
+
+      <action dev="gormap" type="add">
+        Added default set of Spring bean configuration files.
+      </action>
+
+      <action dev="gormap" type="update">
+        Now storing effective ACL inheritance node in resource table
+        (repositoryimpl).
+      </action>
+
+      <action type="add">
+        Introduced a new hierarchical resource type regime. A resource
+        is put through a rule-based classification process on
+        modification, and its resource type is determined based on the
+        set of criteria that matches. 
+
+        A resource type may have a set of properties associated with
+        it. Properties are either fully user-defined ("dead"), in the
+        sense that no definition exists for a property, or "managed",
+        which means that they belong to a resource type. These managed
+        properties are either user editable or "live" (fully
+        server-maintained, evaluated on resource modification).
+      </action>
+
+      <action type="add">
+        All managed properties are now indexed using Lucene
+        (http://lucene.apache.org/), and a new query API is defined on
+        top of the indexing system.
+      </action>
+
+      <action dev="oyviste" type="add">
+        Added support for multi-valued properties and property-value typing.
+      </action>
+
+      <action dev="gormap" type="update">
+        Switched to using iBATIS (http://ibatis.apache.org/) for the
+        default JDBC-based backend implementation.
+      </action>
+
     </release>
 
 

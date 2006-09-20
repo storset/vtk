@@ -259,8 +259,8 @@ public void testEscapingLink() {
             s2 = this.est.parseElement(e);
             est.dumpXML(e, System.out);
         } catch (Exception e) {
-//      e.printStackTrace();
-        fail(e.getMessage());
+            //e.printStackTrace();
+            fail(e.getMessage());
         }
         assertEquals(s, s2);
 }
@@ -270,9 +270,9 @@ public void testEscapingLink() {
  * Reference tests
  */
 public void testNormalReferences() {
-    String s1 = "reference-test 1 [attributt:referanse]";
+    String s1 = "reference-test 1 [attribute:reference]";
     String s1parsed = null;
-    String s2 = "reference-test 2 [uten_attributt]";
+    String s2 = "reference-test 2 [without_attribute]";
     String s2parsed = null;
     try {
         Element e;
@@ -289,7 +289,7 @@ public void testNormalReferences() {
 }
 
 public void testEscapedReferences() {
-    String s = "reference-test med escape [attributt\\:referanse] [attr:ref\\]]";
+    String s = "reference-test with escape [attribute\\:reference] [attr:ref\\]]";
     String sParsed = null;
     try {
         Element e;
@@ -302,6 +302,22 @@ public void testEscapedReferences() {
     }
         assertEquals(s, sParsed);
 }
+
+public void testEmptyAttribute() {
+    String s = "reference-test empty attribute [:reference] [attr\\:ref]";
+    String sParsed = null;
+    try {
+        Element e;
+        e = this.est.parseStructuredText(s);
+        //est.dumpXML(e, System.out);
+        sParsed = this.est.parseElement(e);
+    } catch (Exception e) {
+        e.printStackTrace();
+        fail(e.getMessage());
+    }
+        assertEquals(s, sParsed);
+}
+
 
 /**
  * List items tests

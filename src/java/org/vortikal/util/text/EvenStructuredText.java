@@ -362,7 +362,7 @@ public final class EvenStructuredText implements StructuredText {
      * @return index of end-character of formatted substring
      */
     private int findTrueEndPos(String text, int endPos, String closingCharacter) {
-        while (endPos != -1 && text.charAt(endPos-1) == this.ESCAPE) {
+        while (endPos > 0 && text.charAt(endPos-1) == this.ESCAPE) {
                 endPos = text.indexOf(closingCharacter, ++endPos);
         }
         return endPos;

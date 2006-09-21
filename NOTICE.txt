@@ -11,6 +11,6 @@ specifically a derivative work of webdav.header.IfHeader.java
 
 VortikalIfHeader is licensed under the Apache License, Version 2.0
 
-Vortikal links to VortikalIfHeader, but is not a derivative work og VortikalIfHeader.
+Vortikal links to VortikalIfHeader, but is not a derivative work of VortikalIfHeader.
 
 

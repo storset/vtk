@@ -7,10 +7,15 @@
   </properties>
   <body>
 
-    <release version="0.3-SNAPSHOT" date="In SVN" description="Release 0.3">
+
+
+    <release version="0.3-SNAPSHOT" date="In SVN" description="Release 0.4">
 
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.3" date="2006-09-21" description="Release 0.3">
 
       <action dev="gormap" type="add">
         Refactored cache-related header setting in DisplayResourceView

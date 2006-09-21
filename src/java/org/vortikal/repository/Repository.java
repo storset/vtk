@@ -391,7 +391,10 @@ public interface Repository {
      * obtained, otherwise it is interpreted as a lock refresh request
      * (the resource must be locked by the same principal and the lock
      * token must match the existing one).
+     * 
+     * XXX: This return value description is wrong:
      * @return a string representing the lock token obtained
+     * 
      * @exception ResourceNotFoundException if the resource identified
      * by <code>uri</code> does not exists
      * @exception AuthorizationException if an authenticated user

@@ -76,21 +76,14 @@ public class HostNameDelegatingServlet extends HttpServletBean {
 
             String hostName = mappings[i].substring(0, mappings[i].indexOf("=")).trim();
             String hostMapping = hostName;
-            //String secondaryMapping = null;
 
             if (hostName.indexOf(":") == -1) {
-                //hostMapping = hostName + ":80";
-                //secondaryMapping = hostName + ":443";
                 hostMapping = hostName;
             }
 
             String servletName = mappings[i].substring(mappings[i].lastIndexOf("=") + 1).trim();
             this.logger.info("Adding mapping: " + hostMapping + " --> " + servletName);
             this.hostMap.put(hostMapping, servletName);
-//             if (secondaryMapping != null) {
-//                 this.logger.info("Adding mapping: " + secondaryMapping + " --> " + servletName);
-//                 this.hostMap.put(secondaryMapping, servletName);
-//             }
         }
     }
 

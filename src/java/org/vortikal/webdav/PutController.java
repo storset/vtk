@@ -135,7 +135,16 @@ public class PutController extends AbstractWebdavController {
                 this.ifHeader = new IfHeaderImpl(request);
 
                 if (this.supportIfHeaders) {
-                	verifyIfHeader(resource, true);
+                    String userAgent = request.getHeader("User-Agent");
+                    if (userAgent != null && userAgent.startsWith("Contribute")) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Contribute client detected, will not verify If-headers");
+                        }
+                        // Contribute does not send if-header if already locked, don't require it.
+                        verifyIfHeader(resource, false);
+                    } else {
+                        verifyIfHeader(resource, true);
+                    }
                 }
                 
                 /* if lock-null resource, act as if it did not exist.. */

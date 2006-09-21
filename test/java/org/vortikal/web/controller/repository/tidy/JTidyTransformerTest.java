@@ -111,6 +111,40 @@ public class JTidyTransformerTest extends TestCase {
     }
     
     
+    // This test will fail if doctype is not set to "transitional"/"loose"
+    public void testStrict() {
+        try {
+            InputStream is = 
+                this.getClass().getResourceAsStream("strict.html");
+            if (is == null) {
+                fail("InputStream containing invalid HTML was not found");
+            }
+            
+            assertTrue( parserTest(is) );
+            
+        } catch (FileNotFoundException fnfe) {
+            fail(fnfe.getMessage());
+        } catch (IOException ioe) {
+            fail(ioe.getMessage());
+        }
+    }
+    public void testLoose() {
+        try {
+            InputStream is = 
+                this.getClass().getResourceAsStream("loose.html");
+            if (is == null) {
+                fail("InputStream containing invalid HTML was not found");
+            }
+                        
+            assertTrue( parserTest(is) );
+            
+        } catch (FileNotFoundException fnfe) {
+            fail(fnfe.getMessage());
+        } catch (IOException ioe) {
+            fail(ioe.getMessage());
+        }
+    }
+    
     
     /*
      * Helper methods

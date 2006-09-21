@@ -52,12 +52,13 @@ public class JTidyTransformer implements Filter {
     private static boolean showWarnings = false;
     private static boolean quiet = true;
     private static boolean xhtml = true;
+    private static String doctype = "transitional"; // "loose" will also be equivalent
     
     public InputStream transform(InputStream inStream) {
         
         try {
             Tidy tidy = new Tidy();
-            
+                        
             // Setting up Tidy (default) output
             tidy.setInputStreamName(inStream.getClass().getName());
             tidy.setTidyMark(tidyMark);
@@ -69,6 +70,7 @@ public class JTidyTransformer implements Filter {
                                                // content is written)
             tidy.setQuiet(quiet);
             tidy.setXHTML(xhtml);
+            tidy.setDocType(doctype); 
             tidy.setCharEncoding(Configuration.UTF8);
                         
             ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();

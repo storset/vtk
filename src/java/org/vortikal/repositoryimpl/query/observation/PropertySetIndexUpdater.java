@@ -158,7 +158,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             for (Iterator i = deletes.iterator(); i.hasNext();) {
                 ResourceDeletion deletion = (ResourceDeletion)i.next();
                 
-                // Delete by resource ID, this info is should be provided in the event
+                // Delete by resource ID, this info should be provided in the event
                 if (deletion.isCollection()) {
                     this.index.deletePropertySetTreeByUUID(deletion.getResourceId());
                 } else {
@@ -199,7 +199,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 try {
                     this.indexDataAccessor.close(propSetIterator);
                 } catch (IOException io) {
-                    this.logger.warn("Exception while closing ResultSetIterator");
+                    this.logger.warn("Exception while closing result set iterator");
                 }
             }
         }

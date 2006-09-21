@@ -1,0 +1,21 @@
+VortikalIfHeader
+
+This product is derived from Apache Jackrabbit jcr-server 1.0,
+specifically from webdav.header.IfHeader.java, which has been split into:
+  IfHeaderImpl.java     IfListEntryToken.java 
+  IfHeader.java         IfList.java 
+  IfHeaderMap.java      StateEntryListImpl.java
+  IfListEntryEtag.java  StateEntryList.java
+  IfListEntry.java      
+
+Modifications:
+Copyright 2006 University of Oslo, Norway
+
+From the Apache Jackrabbit jcr-server NOTICE.txt file:
+
+Apache Jackrabbit
+Copyright 2006 The Apache Software Foundation
+
+  This product includes software developed at
+  The Apache Software Foundation (http://www.apache.org/).
+

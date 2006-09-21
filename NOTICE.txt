@@ -1,0 +1,16 @@
+Vortikal
+
+Vortikal is distributed under a modified BSD license, please see the LICENSE.txt file in the
+same directory as this file.
+
+The vortikal source code tree contains the product VortikalIfHeader in
+org.vortikal.webdav.ifheader
+
+VortikalIfHeader is a derivative work of Apache Jackrabbit jcr-server 1.0, 
+specifically a derivative work of webdav.header.IfHeader.java
+
+VortikalIfHeader is licensed under the Apache License, Version 2.0
+
+Vortikal links to VortikalIfHeader, but is not a derivative work og VortikalIfHeader.
+
+

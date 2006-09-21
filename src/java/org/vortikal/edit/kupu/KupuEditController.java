@@ -108,7 +108,7 @@ public class KupuEditController extends SimpleFormController
      *
      * @param lockTimeoutSeconds an <code>int</code> value
      */
-    public void setLockTimeoutMinutes(int lockTimeoutSeconds) {
+    public void setLockTimeoutSeconds(int lockTimeoutSeconds) {
         this.lockTimeoutSeconds = lockTimeoutSeconds;
     }
     

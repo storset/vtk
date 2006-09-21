@@ -184,7 +184,7 @@ public class EvenStructuredTextTestCase extends TestCase {
         String s2 = null;
         try {
             Element e = this.est.parseStructuredText(s);
-            // est.dumpXML(e, System.out);
+            //est.dumpXML(e, System.out);
             s2 = this.est.parseElement(e);
         } catch (Exception e) {
             // e.printStackTrace();
@@ -193,7 +193,7 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals(sback, s2);
     }
 
-    public void testEscapingLink() {
+    public void testEscapingInsideLink() {
         String s = "normal link \"uio\":http://www.uio.no escaping in link \"\"bla\\\":bla\":http://www.vg.no end";
         String s2 = null;
         try {
@@ -206,6 +206,22 @@ public class EvenStructuredTextTestCase extends TestCase {
         }
         assertEquals(s, s2);
     }
+
+    public void testLinkWithQuotationMarks() {
+        String s = "link: dette er \"ikke lenke\", men \"\\\"det\\\":te er\\\"\":http://vg.no også bla";
+        String s2 = null;
+        try {
+            Element e = this.est.parseStructuredText(s);
+            s2 = this.est.parseElement(e);
+            //est.dumpXML(e, System.out);
+        } catch (Exception e) {
+            // e.printStackTrace();
+            fail(e.getMessage());
+        }
+        assertEquals(s, s2);
+    }
+
+    
     
     public void testEmptyLinks() {
         String s = "\"\":www.uio.no \"uio\": end";
@@ -358,7 +374,7 @@ public void testNewLine() {
 public void testSimpleEscapedNewline() {
     String s = "line\\\nnewline";
     Element e = this.est.parseStructuredText(s);
-    est.dumpXML(e, System.out);
+    //est.dumpXML(e, System.out);
     String reparsed = this.est.parseElement(e);
     assertEquals(s, reparsed);
 }

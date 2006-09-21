@@ -59,6 +59,8 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
 /**
  * Handler for LOCK requests.
  * 
+ * XXX: Controller missing supportIfHeaders true/false flag
+ * 
  */
 public class LockController extends AbstractWebdavController {
 
@@ -104,8 +106,20 @@ public class LockController extends AbstractWebdavController {
             if (exists) {
                 resource = this.repository.retrieve(token, uri, false);
                 this.ifHeader = new IfHeaderImpl(request);
-                verifyIfHeader(resource, true);           
-
+                
+                // XXX: Requiring if-header if already locked breaks Adobe/Contributt (yes, butt)
+                // XXX: Should handle special cases in a more elegant way than this (only an emergency quick-fix)
+                String userAgent = request.getHeader("User-Agent");
+                if (userAgent != null && userAgent.startsWith("Contribute")) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Contribute client detected, will not verify If-headers");
+                    }
+                    // Contribute does not send if-header if already locked, don't require it.
+                    verifyIfHeader(resource, false);
+                } else {
+                    verifyIfHeader(resource, true);
+                }
+                
                 if (request.getContentLength() <= 0) { // -1 if not known
                     //If contentLength <= 0 we assume we want to refresh a lock
                     // If-header has already been verified in verifyIfHeader so we don't need to
@@ -119,16 +133,22 @@ public class LockController extends AbstractWebdavController {
                         ownerInfo = suppliedOwnerInfo;
                     }
                 }
-            }
-
-
-            if (!exists) {
+            } else {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Creating null resource");
                 }
                 this.repository.createDocument(token, uri);
+                
+                // Should get real lockOwnerInfo, even if resource don't exist when locked
+                if (request.getContentLength() > 0) {
+                    Document requestBody = parseRequestBody(request);
+                    validateRequest(requestBody);
+                    String suppliedOwnerInfo = getLockOwner(requestBody);
+                    if (suppliedOwnerInfo != null) {
+                        ownerInfo = suppliedOwnerInfo;
+                    }
+                }
             }
-            
 
 
             if (this.logger.isDebugEnabled()) {

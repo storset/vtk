@@ -135,6 +135,7 @@ public class PutController extends AbstractWebdavController {
                 this.ifHeader = new IfHeaderImpl(request);
 
                 if (this.supportIfHeaders) {
+                    // XXX: Special compatibility cases and workarounds should be handled in a more elegent way. 
                     String userAgent = request.getHeader("User-Agent");
                     if (userAgent != null && userAgent.startsWith("Contribute")) {
                         if (logger.isDebugEnabled()) {

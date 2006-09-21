@@ -411,6 +411,7 @@
   <bean id="webdavPutHandler" class="org.vortikal.webdav.PutController"
     parent="requestLocalRepositoryAware" >
     <property name="maxUploadSize" value="-1" />
+    <property name="supportIfHeaders" value="${webdavSupportIfHeaders}"/>
   </bean>
 
   <bean id="webdavMkColHandler" class="org.vortikal.webdav.MkColController"

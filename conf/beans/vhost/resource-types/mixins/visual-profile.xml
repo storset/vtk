@@ -140,6 +140,21 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>iakh</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>ifikk</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>geo</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>helseledelse</value>
           </constructor-arg>
         </bean>
@@ -150,7 +165,32 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>ikos</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>iln</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>ils</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>imk</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>basalmed</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>imv</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
@@ -171,6 +211,16 @@
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
             <value>ish</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>ima</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>econ</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">

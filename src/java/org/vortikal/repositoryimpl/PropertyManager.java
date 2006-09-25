@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl;
 
 
 import java.util.List;
-import java.util.Set;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;

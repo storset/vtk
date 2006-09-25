@@ -34,21 +34,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
@@ -1289,36 +1290,55 @@ public class PropertyManagerImpl implements PropertyManager,
      * from all encountered resource type definitions including mixin resource types.
      * Assuming that mixin types can never have other mixin types attached.
      * 
+     * If there are more than one occurence of the same property type definition
+     * for the given resource type, only the first occurence in the resource type
+     * tree is added to the returned list (upward direction).
+     * 
      * @param def The <code>ResourceTypeDefinition</code> 
-     * @return A <code>List</code> of <code>PropertyTypeDefinition</code> instances.
+     * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
      */
     public List getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
                                                     ResourceTypeDefinition def) {
-        ArrayList propDefs = new ArrayList();
+        Set encounteredIds = new HashSet();
+        List propertyTypes = new ArrayList();
         
         if (def instanceof MixinResourceTypeDefinition) {
             MixinResourceTypeDefinition mixinDef = (MixinResourceTypeDefinition)def;
-            propDefs.addAll(Arrays.asList(mixinDef.getPropertyTypeDefinitions()));
+            
+            PropertyTypeDefinition[] propDefs = mixinDef.getPropertyTypeDefinitions();
+            addPropertyTypeDefinitions(encounteredIds, propertyTypes, propDefs);
         } else {
             // Assuming instanceof PrimaryResourceTypeDefinition
             PrimaryResourceTypeDefinition primaryDef = (PrimaryResourceTypeDefinition)def; 
 
             while (primaryDef != null) {
-                propDefs.addAll(Arrays.asList(primaryDef.getPropertyTypeDefinitions()));
+                PropertyTypeDefinition[] propDefs = primaryDef.getPropertyTypeDefinitions();
+                addPropertyTypeDefinitions(encounteredIds, propertyTypes, propDefs);
                 
                 // Add any mixin resource types' property type defs
                 MixinResourceTypeDefinition[] mixinDefs = primaryDef.getMixinTypeDefinitions();
                 for (int i=0; i<mixinDefs.length; i++) {
-                    propDefs.addAll(Arrays.asList(mixinDefs[i].getPropertyTypeDefinitions()));
+                    addPropertyTypeDefinitions(encounteredIds, propertyTypes, mixinDefs[i].getPropertyTypeDefinitions());
                 }
 
                 primaryDef = primaryDef.getParentTypeDefinition();
             }
-        } 
-
-        return propDefs;
+        }
+        
+        return propertyTypes;
     }
     
+    private void addPropertyTypeDefinitions(Set encounteredIds, 
+                                            List propertyTypes, 
+                                            PropertyTypeDefinition[] propDefs) {
+        for (int i = 0; i < propDefs.length; i++) {
+            String id = propDefs[i].getNamespace().getUri() + ":" + propDefs[i].getName();
+            // Add only _first_ occurence of property type definition
+            if (encounteredIds.add(id)) {
+                propertyTypes.add(propDefs[i]);
+            }
+        }
+    }
     
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
         ResourceTypeDefinition type = (ResourceTypeDefinition)

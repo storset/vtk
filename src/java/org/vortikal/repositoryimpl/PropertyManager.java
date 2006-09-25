@@ -32,9 +32,12 @@ package org.vortikal.repositoryimpl;
 
 
 import java.util.List;
+import java.util.Set;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
@@ -124,8 +127,12 @@ public interface PropertyManager {
      * Get all property type definitions bound to a resource type definition 
      * including all ancestor- and mixin types.
      * 
+     * If there are multiple instances of the same property type definition
+     * for the given resource type, only the first and deepest occurence should
+     * be included in the returned list.
+     * 
      * @param def The <code>ResourceTypeDefinition</code> 
-     * @return A <code>List</code> of <code>PropertyTypeDefinition</code> instances.
+     * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
      */
     public List getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
                                                     ResourceTypeDefinition def);

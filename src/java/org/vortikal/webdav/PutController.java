@@ -135,7 +135,7 @@ public class PutController extends AbstractWebdavController {
                 this.ifHeader = new IfHeaderImpl(request);
 
                 if (this.supportIfHeaders) {
-                    // XXX: Special compatibility cases and workarounds should be handled in a more elegent way. 
+                    // XXX: Special compatibility cases and workarounds should be handled in a more elegant way. 
                     String userAgent = request.getHeader("User-Agent");
                     if (userAgent != null && userAgent.startsWith("Contribute")) {
                         if (logger.isDebugEnabled()) {
@@ -160,7 +160,7 @@ public class PutController extends AbstractWebdavController {
                         this.logger.debug("PUT to collection: CONFLICT");
                     }
                     throw new WebdavConflictException(
-                        "Trying to PUT to collection resource `" + uri + "'");
+                        "Trying to PUT to collection resource '" + uri + "'");
                 }
 
             } else {
@@ -185,7 +185,7 @@ public class PutController extends AbstractWebdavController {
                     }
                     throw new WebdavConflictException(
                         "Trying to PUT to non-existing resource. PUT URI was `" +
-                        uri + "', parent resource `" + parentURI + "' does not exist.");
+                        uri + "', parent resource '" + parentURI + "' does not exist.");
                 }
 
                 if (this.logger.isDebugEnabled()) {

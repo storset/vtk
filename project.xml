@@ -167,7 +167,7 @@
     <dependency>
       <id>jug</id>
       <version>1.1.2</version>
-      <url>http://www.doomdark.org/doomdark/proj/jug/</url>
+      <url>http://jug.safehaus.org/</url>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>

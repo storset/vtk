@@ -440,10 +440,16 @@ public class ProppatchController extends AbstractWebdavController  {
         if (propElement.getNamespace().equals(WebdavConstants.DAV_NAMESPACE)) {
             return; 
         }
-
+        String elementNamespaceURI = propElement.getNamespace().getURI();
         String propertyName = propElement.getName();
-        Namespace namespace = Namespace.getNamespace(propElement.getNamespace().getURI());
-        resource.removeProperty(namespace, propertyName);
+        Namespace propertyNamespace;
+        if (elementNamespaceURI.toUpperCase().equals(
+                WebdavConstants.DEFAULT_NAMESPACE.getURI().toUpperCase())) {
+            propertyNamespace = Namespace.DEFAULT_NAMESPACE;
+        } else {
+            propertyNamespace = Namespace.getNamespace(elementNamespaceURI);
+        }
+        resource.removeProperty(propertyNamespace, propertyName);
     }
     
 

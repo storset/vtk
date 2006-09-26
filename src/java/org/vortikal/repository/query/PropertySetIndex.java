@@ -147,7 +147,7 @@ public interface PropertySetIndex {
      * in index.
      * 
      * The iteration is ordered by URI lexicographically. Any duplicates are included, 
-     * and should <em>directly</em> follow each other.
+     * and should <em>directly</em> follow each other because of the sorting.
      * 
      * @return
      * @throws IndexException
@@ -159,7 +159,7 @@ public interface PropertySetIndex {
      * in the sub-tree given by the root URI.
      * 
      * The iteration is ordered by URI lexicographically. Any duplicates are included
-     * and should <em>directly</em> follow each other.
+     * and should <em>directly</em> follow each other because of the sorting.
      * 
      * @param rootUri
      * @return
@@ -177,7 +177,7 @@ public interface PropertySetIndex {
     public void close(Iterator iterator) throws IndexException;
     
     /**
-     * Clear contents of index.
+     * Clear all contents of index.
      * 
      * @throws IndexException
      */
@@ -243,7 +243,7 @@ public interface PropertySetIndex {
     public void commit() throws IndexException;
     
     /**
-     * Return an ID for the index.
+     * Return a runtime ID for the index instance.
      */
     public String getId();
     

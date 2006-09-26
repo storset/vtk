@@ -82,11 +82,18 @@
   <bean id="servletStatsGroup" class="java.util.HashMap">
     <constructor-arg>
       <map>
-        <entry key="Average requests per second">
-          <value>context.getBean("requestMonitorListener").getAvgRequestsPerSecond()</value>
+        <entry key="Request load (avg reqs per second)">
+          <value>
+            java.text.DecimalFormat df = new java.text.DecimalFormat("0.00");
+            listener = context.getBean("requestLoadListener");
+
+            df.format((float) listener.getLoad(30)/60) + " (1m), " +
+            df.format((float) listener.getLoad(600)/600) + " (10m), " +
+            df.format((float) listener.getLoad(3600)/3600) + " (1h)";
+          </value>
         </entry>
         <entry key="Total requests">
-          <value>context.getBean("requestMonitorListener").getTotalRequests()</value>
+          <value>context.getBean("requestLoadListener").getTotalRequests()</value>
         </entry>
       </map>
     </constructor-arg>
@@ -113,7 +120,10 @@
   </bean>
   
 
-  <bean id="requestMonitorListener" class="org.vortikal.web.context.RequestMonitorListener" />
+  <bean id="requestLoadListener"
+        class="org.vortikal.web.context.RequestLoadListener">
+    <property name="historySeconds" value="3600" />
+  </bean>
 
 
   <bean id="beanShellEvaluator" class="org.vortikal.shell.BeanShellConsole">

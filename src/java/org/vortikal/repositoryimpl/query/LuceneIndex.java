@@ -46,7 +46,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import EDU.oswego.cs.dl.util.concurrent.FIFOSemaphore;
+import EDU.oswego.cs.dl.util.concurrent.Mutex;
 
 /**
  * Class for low-level index access.
@@ -91,13 +91,9 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     private int maxLockAcquireTimeOnShutdown = 30; // 30 seconds max to wait for lock when shutting down
     private boolean eraseExistingIndex = false;
     private boolean forceUnlock = false;
-    
-    /** This is our FIFO write lock on this index. Operations requiring write-access
-     *  will need to acquire this before doing the operation. This includes all 
-     *  operations using an IndexWriter and all operations using an IndexReader 
-     *  for document deletion.
-     */
-    private FIFOSemaphore lock = new FIFOSemaphore(1);
+
+    /* Internal mutex write lock backing the public locking functions if this class. */
+    private Mutex lock = new Mutex();
     
     public void afterPropertiesSet() throws BeanInitializationException {
         
@@ -404,12 +400,15 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
     public void destroy() throws Exception {
-       logger.info("Graceful index shutdown, waiting for write lock ..");
+       logger.info("Graceful index shutdown, waiting for write lock on index '" 
+               + this.storageId + "' ..");
        if (writeLockAttempt(this.maxLockAcquireTimeOnShutdown * 1000)) {
-           logger.info("Got write lock, closing down.");
+           logger.info("Got write lock on index '" + this.storageId 
+                   + "', closing down.");
            this.fsIndex.close();
        } else {
-           logger.warn("Failed to acquire the write lock within "
+           logger.warn("Failed to acquire the write lock on index '" 
+              + this.storageId + "' within "
               + " the time limit of " + this.maxLockAcquireTimeOnShutdown 
               + " seconds, index might be corrupted.");
        }
@@ -428,7 +427,8 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         
         if (logger.isDebugEnabled()) {
             logger.debug("Thread '" + Thread.currentThread().getName() + 
-                         "' got index lock.");
+                         "' got write lock on index '" 
+                    + this.storageId + "'.");
         }
         
         return true;
@@ -444,11 +444,12 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             if (logger.isDebugEnabled()) {
                 if (acquired) {
                     logger.debug("Thread '" + Thread.currentThread().getName() + 
-                    "' got index lock.");
+                    "' got write lock on index '" + this.storageId + "'.");
                 } else {
                     logger.debug("Thread '" + Thread.currentThread().getName() + 
-                      "' failed to acquire lock after waiting for " + timeout + " ms");
-                    
+                      "' failed to acquire write lock on index '" 
+                            + this.storageId 
+                            + "' after waiting for " + timeout + " ms");
                 }
             }
             
@@ -467,7 +468,8 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
         
         if (logger.isDebugEnabled()) {
             logger.debug("Thread '" + Thread.currentThread().getName() + 
-                         "' released index lock.");
+                         "' released write lock on index '" 
+                    + this.storageId + "'.");
         }
         
     }

@@ -370,8 +370,10 @@ public class ResourceXsltView extends AbstractView
 
             // Check that xslt parameter is not NULL
             if (value == null) {
-                logger.info("Supplied XSLT parameter '" + key.toString() + 
-                        "' has NULL value, won't add.");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Supplied XSLT parameter '" + key.toString() + 
+                                 "' has NULL value, will not add.");
+                }
                 continue;
             }
             if (logger.isDebugEnabled()) {

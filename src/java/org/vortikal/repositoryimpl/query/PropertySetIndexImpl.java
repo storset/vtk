@@ -47,7 +47,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.PropertySet;
@@ -57,11 +56,11 @@ import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 
 /**
+ * <code>PropertySet</code> index using Lucene. 
  * 
  * @author oyviste
  */
-public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean, 
-                                             BeanNameAware {
+public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean {
 
     Log logger = LogFactory.getLog(PropertySetIndexImpl.class);
     
@@ -69,7 +68,6 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean,
     private DocumentMapper documentMapper;
     private PropertyManager propertyManager;
     private Analyzer analyzer;
-    private String id;
 
     public void afterPropertiesSet() throws BeanInitializationException {
         if (this.indexAccessor == null) {
@@ -446,12 +444,9 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean,
         this.propertyManager = propertyManager;
     }
     
-    public void setBeanName(String beanName) {
-        this.id = beanName;
-    }
-    
     public String getId() {
-        return this.id;
+        // Delegate to using accessor storage ID
+        return this.indexAccessor.getStorageId();
     }
 
 }

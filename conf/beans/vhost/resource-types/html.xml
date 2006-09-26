@@ -51,12 +51,37 @@
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
-    <property name="defaultValue" ref="defaultTextResourceEncoding" />
+    <property name="defaultValue" ref="defaultHtmlResourceCharacterEncoding" />
   </bean>
 
   <bean id="htmlGuessedCharacterEncodingEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator">
-    <property name="defaultEncoding" value="iso-8859-1" />
+        class="org.vortikal.repository.resourcetype.property.ChainedPropertyEvaluator">
+    <property name="propertyEvaluators">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
+        <bean class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
+          <property name="defaultEncoding" ref="defaultHtmlResourceCharacterEncodingString" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="defaultHtmlResourceCharacterEncoding"
+    class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="valueFactory" />
+    <property name="targetMethod" value="createValue" />
+    <property name="arguments">
+      <list>
+        <ref bean="defaultHtmlResourceCharacterEncodingString" />
+        <ref bean="TYPE_STRING" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="defaultHtmlResourceCharacterEncodingString" class="java.lang.String">
+    <constructor-arg value="${defaultHtmlResourceCharacterEncoding}" />
   </bean>
 
 
@@ -66,7 +91,7 @@
     <property name="name" value="characterEncoding" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="characterEncodingEvaluator" />
+    <property name="createEvaluator" ref="htmlCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="htmlCharacterEncodingEvaluator" />
     <property name="propertiesModificationEvaluator" ref="htmlCharacterEncodingEvaluator" />
   </bean>

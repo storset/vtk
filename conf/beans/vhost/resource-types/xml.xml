@@ -45,38 +45,36 @@
   <!-- Overrides 'guessedCharacterEncodingPropDef' in 'abstractTextResource' resource type -->
   <bean id="xmlGuessedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-
     <property name="name" value="guessedCharacterEncoding" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
-<!--
-    <property name="defaultValue">
-      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="valueFactory" />
-        <property name="targetMethod" value="createValue" />
-        <property name="arguments">
-          <list>
-            <value>utf-8</value>
-            <ref bean="TYPE_STRING" />
-          </list>
-        </property>
-      </bean>
+    <!--property name="defaultValue" ref="defaultXmlResourceCharacterEncoding" /-->
+  </bean>
+
+  <bean id="defaultXmlResourceCharacterEncoding"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="valueFactory" />
+    <property name="targetMethod" value="createValue" />
+    <property name="arguments">
+      <list>
+        <ref bean="defaultXmlResourceCharacterEncodingString" />
+        <ref bean="TYPE_STRING" />
+      </list>
     </property>
--->
   </bean>
 
 
 
-  <bean id="defaultXmlCharacterEncoding" class="java.lang.String">
-    <constructor-arg><value>utf-8</value></constructor-arg>
+  <bean id="defaultXmlResourceCharacterEncodingString" class="java.lang.String">
+    <constructor-arg><value>${defaultXmllResourceCharacterEncoding}</value></constructor-arg>
   </bean>
 
   <bean id="xmlGuessedCharacterEncodingEvaluator" 
         class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
-    <property name="defaultEncoding" ref="defaultXmlCharacterEncoding" />
+    <property name="defaultEncoding" ref="defaultXmlResourceCharacterEncodingString" />
   </bean>
 
 
@@ -86,7 +84,7 @@
     <property name="name" value="characterEncoding" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="characterEncodingEvaluator" />
+    <property name="createEvaluator" ref="xmlCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
     <property name="propertiesModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
   </bean>

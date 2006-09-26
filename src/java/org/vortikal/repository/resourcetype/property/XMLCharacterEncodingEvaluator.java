@@ -92,7 +92,7 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
 
     public boolean create(Principal principal, Property property, 
             PropertySet ancestorPropertySet, boolean isCollection, Date time)
-    throws PropertyEvaluationException {
+        throws PropertyEvaluationException {
         if (this.defaultEncoding != null) {
             property.setStringValue(this.defaultEncoding);
             return true;
@@ -123,16 +123,16 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         Matcher m = CHARSET_PATTERN.matcher(xmlContent);
 
         if (m.matches()) {
-            if (this.logger.isDebugEnabled())
-                this.logger.debug("Regexp match in XML declaration for pattern "
+            if (logger.isDebugEnabled())
+                logger.debug("Regexp match in XML declaration for pattern "
                              + CHARSET_PATTERN.pattern());
             characterEncoding = m.group(1);
             
             try {
                 Charset.forName(characterEncoding);
             } catch (Exception e) {
-                if (this.logger.isDebugEnabled())
-                    this.logger.debug(
+                if (logger.isDebugEnabled())
+                    logger.debug(
                         "Invalid character encoding '" + characterEncoding
                         + "' for XML document <string>, using default encoding");
                 characterEncoding = null;

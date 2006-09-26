@@ -55,14 +55,18 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
 
     public static final String DEFAULT_ENCODING = "ISO-8859-1";
 
-    private String defaultEncoding = DEFAULT_ENCODING;
+    private String defaultEncoding = null;
     
 
     public boolean create(Principal principal, Property property, 
-            PropertySet ancestorPropertySet, boolean isCollection, Date time)
-    throws PropertyEvaluationException {
-        property.setStringValue(this.defaultEncoding);
-        return true;
+                          PropertySet ancestorPropertySet, boolean isCollection, Date time)
+        throws PropertyEvaluationException {
+        if (this.defaultEncoding != null) {
+            property.setStringValue(this.defaultEncoding);
+            return true;
+
+        }
+        return false;
     }
     
     public boolean contentModification(Principal principal, Property property,
@@ -82,10 +86,12 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         }
 
         String encoding = findEncodingFromMetaElement(doc);
-        if (encoding == null) {
+        if (encoding == null && this.defaultEncoding != null) {
+            encoding = this.defaultEncoding;
+        } else if (encoding == null) {
             return false;
-            //encoding = this.defaultEncoding;
         }
+
         try {
             Charset.forName(encoding);
             property.setStringValue(encoding);

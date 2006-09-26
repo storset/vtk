@@ -86,8 +86,6 @@ public class RequestLoadListener implements ApplicationListener {
     }
     
 
-    
-
     public int getLoad(int lastSeconds) {
         if (lastSeconds <= 0) throw new IllegalArgumentException(
             "Arument must be a positive integer < " + this.seconds);
@@ -104,6 +102,10 @@ public class RequestLoadListener implements ApplicationListener {
     }
     
 
+    public long getTotalRequests() {
+        return this.totalRequests;
+    }
+    
 
 
     public void onApplicationEvent(ApplicationEvent event) {

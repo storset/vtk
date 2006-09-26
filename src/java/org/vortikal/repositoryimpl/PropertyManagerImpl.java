@@ -1317,7 +1317,8 @@ public class PropertyManagerImpl implements PropertyManager,
                 // Add any mixin resource types' property type defs
                 MixinResourceTypeDefinition[] mixinDefs = primaryDef.getMixinTypeDefinitions();
                 for (int i=0; i<mixinDefs.length; i++) {
-                    addPropertyTypeDefinitions(encounteredIds, propertyTypes, mixinDefs[i].getPropertyTypeDefinitions());
+                    addPropertyTypeDefinitions(encounteredIds, propertyTypes, 
+                                                mixinDefs[i].getPropertyTypeDefinitions());
                 }
 
                 primaryDef = primaryDef.getParentTypeDefinition();

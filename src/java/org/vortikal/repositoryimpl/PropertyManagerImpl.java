@@ -316,7 +316,8 @@ public class PropertyManagerImpl implements PropertyManager,
             if (evaluator != null && evaluator.create(principal, prop, newResource,
                                                       isCollection, time)) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
+                    logger.debug("Property evaluated for creation [" + rt.getName() + "]: "
+                                 + prop + " using evaluator " + evaluator);
                 
             }
 
@@ -649,7 +650,9 @@ public class PropertyManagerImpl implements PropertyManager,
                 if (evaluator.propertiesModification(principal, prop, newResource, time)) {
                     addProperty = true;
                     if (logger.isDebugEnabled())
-                        logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
+                        logger.debug("Property evaluated for properties modification ["
+                                     + rt.getName() + "]: " + prop
+                                     + " using evaluator " + evaluator);
                 } else if (propertyDef.isMandatory()) {
                     Value defaultValue = propertyDef.getDefaultValue();
                     if (defaultValue == null)
@@ -814,7 +817,9 @@ public class PropertyManagerImpl implements PropertyManager,
 
                 if (evaluator.contentModification(principal, prop, newResource, content, time)) {
                     if (logger.isDebugEnabled())
-                        logger.debug("Property evaluated [" + rt.getName() + "]: " + prop);
+                        logger.debug("Property evaluated for content modification ["
+                                     + rt.getName() + "]: " + prop + " using evaluator "
+                                     + evaluator);
                     newProps.add(prop);
                 } 
             } else if (prop != null) 
@@ -838,6 +843,9 @@ public class PropertyManagerImpl implements PropertyManager,
                              + def.getDefaultValue());
 
             prop.setValue(def.getDefaultValue());
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Created property: " + prop + " from definition: " + def);
         }
 
         return prop;

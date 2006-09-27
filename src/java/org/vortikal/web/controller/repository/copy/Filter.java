@@ -33,9 +33,11 @@ package org.vortikal.web.controller.repository.copy;
 
 import java.io.InputStream;
 
+import org.vortikal.repository.Resource;
+
 public interface Filter {
     
-    public InputStream transform(InputStream instream)
+    public InputStream transform(InputStream instream, Resource resource)
             throws Exception;
     
 }

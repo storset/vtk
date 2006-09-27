@@ -35,6 +35,7 @@ import java.io.InputStream;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 
 public class SimpleFilteringCopyAction implements CopyAction, InitializingBean {
@@ -45,14 +46,25 @@ public class SimpleFilteringCopyAction implements CopyAction, InitializingBean {
     public void process(String originalUri, String copyUri) throws Exception{
         String token = SecurityContext.getSecurityContext().getToken();
 
-        InputStream is = this.repository.getInputStream(token, originalUri, true);
-
         this.repository.copy(token, originalUri, copyUri, "0", false, true);
+
         if (this.filter != null) {
-            is = this.filter.transform(is);
-            this.repository.storeContent(token, copyUri, is);
-        } else {
-            is.close();
+            try {
+                Resource resource = this.repository.retrieve(token, copyUri, false);
+                InputStream is = this.repository.getInputStream(token, originalUri, false);
+                is = this.filter.transform(is, resource);
+
+                this.repository.store(token, resource);
+                this.repository.storeContent(token, copyUri, is);
+            } catch (Exception e) {
+                try {
+                    this.repository.delete(token, copyUri);
+                } catch (Exception ex) {
+                    // XXX: should log
+                    // Can't do much, hope it's okay
+                }
+                throw e;
+            }
         }
     }
 

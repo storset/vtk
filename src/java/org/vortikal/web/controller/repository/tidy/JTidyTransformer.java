@@ -35,9 +35,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Resource;
 import org.vortikal.web.controller.repository.copy.Filter;
 import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
@@ -54,7 +56,7 @@ public class JTidyTransformer implements Filter {
     private static boolean xhtml = true;
     private static String doctype = "transitional"; // "loose" will also be equivalent
     
-    public InputStream transform(InputStream inStream) {
+    public InputStream transform(InputStream inStream, Resource resource) {
         
         try {
             Tidy tidy = new Tidy();
@@ -71,8 +73,20 @@ public class JTidyTransformer implements Filter {
             tidy.setQuiet(quiet);
             tidy.setXHTML(xhtml);
             tidy.setDocType(doctype); 
+
+            // XXX: evaluate this handling
+            // Default to utf-8
             tidy.setCharEncoding(Configuration.UTF8);
-                        
+            // Trying to change to iso-8859-1 if relevant, and delete user set char encoding
+            try {
+                String encoding = resource.getCharacterEncoding();
+                if (Charset.forName("ISO-8859-1").equals(Charset.forName(encoding)))
+                        tidy.setCharEncoding(Configuration.LATIN1);
+                resource.setUserSpecifiedCharacterEncoding(null);
+            } catch (Exception e) {
+                // XXX: Ignore for now...
+            }
+            
             ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
             
             tidy.parse(inStream, outBuffer);

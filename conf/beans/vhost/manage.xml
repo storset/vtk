@@ -626,6 +626,7 @@
         </bean>
         <ref bean="resourceTypeIsHtml" /> 
         <ref bean="resourceTypeIsNotXhtmlTrans" /> 
+        <ref bean="bindPermissionAssertion" />
       </list>
     </property>
     <property name="handler" ref="htmlToXhtmlHandler" />

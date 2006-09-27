@@ -208,6 +208,7 @@ public abstract class AbstractPathBasedURIResolver
                         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                         Document doc = builder.parse(inStream);
                         source = new DOMSource(doc);
+                        this.simpleCache.put(path, source);
                     } catch (SAXException e) {
                         throw new TransformerException("Unable to build DOM reprsentation of resource '"
                                 + path + "'", e);
@@ -215,9 +216,6 @@ public abstract class AbstractPathBasedURIResolver
                         throw new TransformerException("Unable to build DOM reprsentation of resource '"
                                 + path + "'", e);
                     }
-                    
-                    this.simpleCache.put(path, source);
-
                 } else {
                     source = new StreamSource(inStream);
                 }

@@ -98,7 +98,6 @@ public abstract class AbstractWebdavController implements Controller {
     static {
         MAPPED_DAV_PROPERTIES = new HashMap();
         MAPPED_DAV_PROPERTIES.put("creationdate", PropertyType.CREATIONTIME_PROP_NAME);
-        MAPPED_DAV_PROPERTIES.put("displayname", PropertyType.DISPLAYNAME_PROP_NAME);
         MAPPED_DAV_PROPERTIES.put("getcontentlanguage", PropertyType.CONTENTLOCALE_PROP_NAME);
         MAPPED_DAV_PROPERTIES.put("getcontentlength", PropertyType.CONTENTLENGTH_PROP_NAME);
         MAPPED_DAV_PROPERTIES.put("getcontenttype", PropertyType.CONTENTTYPE_PROP_NAME);
@@ -108,6 +107,7 @@ public abstract class AbstractWebdavController implements Controller {
         SPECIAL_DAV_PROPERTIES.add("getetag");
         SPECIAL_DAV_PROPERTIES.add("lockdiscovery");
         SPECIAL_DAV_PROPERTIES.add("resourcetype");
+        SPECIAL_DAV_PROPERTIES.add("displayname");
         SPECIAL_DAV_PROPERTIES.add("source");
         SPECIAL_DAV_PROPERTIES.add("supportedlock");
 

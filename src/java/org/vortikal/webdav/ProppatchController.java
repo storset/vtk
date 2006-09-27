@@ -350,11 +350,7 @@ public class ProppatchController extends AbstractWebdavController  {
         if (nameSpace.toUpperCase().equals(WebdavConstants.DAV_NAMESPACE.getURI())) {
 
             if (propertyName.equals("displayname")) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("setting property 'displayname' to '"
-                                 + propertyElement.getText() + "'");
-                }
-                resource.setDisplayName(propertyElement.getText());
+                throw new AuthorizationException("Setting property 'displayname' not permitted");
                 
             } else if (propertyName.equals("getcontentlanguage")) {
                 if (this.logger.isDebugEnabled()) {

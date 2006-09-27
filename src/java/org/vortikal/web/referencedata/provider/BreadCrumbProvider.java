@@ -71,10 +71,6 @@ import org.vortikal.web.servlet.VortikalServlet;
  *   <li><code>service</code> - the service for which to construct breadcrumb URLs
  *   <li><code>breadcrumbName</code> - the name to publish the
  *   breadcrumb under (default <code>breadcrumb</code>
- *   <li><code>useDisplayNames</code> - a boolean indicating whether
- *   to use the resource's <code>displayname</code> property (rather
- *   than the default <code>name</code>) as breadcrumb element
- *   titles. Default is <code>false</code>
  *   <li><code>skippedURLs</code> - a list of resource URIs for which
  *   to skip URL generation. That is, {@link BreadcrumbElement#getURL}
  *   will return <code>null</code> for the resources included in this
@@ -87,8 +83,7 @@ import org.vortikal.web.servlet.VortikalServlet;
  *   the breadcrumb when present. If such a property is present on a
  *   resource, the value of that property is used as the {@link
  *   BreadcrumbElement#getTitle title} of the breadcrumb
- *   element. Note: this setting overrides the
- *   <code>useDisplayNames</code> property.
+ *   element. 
  * </ul>
  *
  * <p>Model data published:
@@ -105,7 +100,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private Repository repository = null;
     private Service service = null;
     private String breadcrumbName = "breadcrumb";
-    private boolean useDisplayNames = false;
     private PropertyTypeDefinition ignoreProperty = null;
     private PropertyTypeDefinition[] titleOverrideProperties = null;
     private String[] skippedURLs = null;
@@ -126,11 +120,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
     public void setBreadcrumbName(String breadcrumbName) {
         this.breadcrumbName = breadcrumbName;
-    }
-    
-
-    public void setUseDisplayNames(boolean useDisplayNames) {
-        this.useDisplayNames = useDisplayNames;
     }
     
 
@@ -258,8 +247,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 }
             }
         }
-        if (this.useDisplayNames) return resource.getDisplayName();
-        
         if (resource.getName().equals("/")) return this.repository.getId();
         
         return resource.getName();

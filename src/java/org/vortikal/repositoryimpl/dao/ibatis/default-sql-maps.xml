@@ -16,7 +16,6 @@
     <result property="propertiesModifiedBy" column="properties_modified_by" />
     <result property="modifiedBy" column="modified_by" />
     <result property="owner" column="resource_owner" />
-    <result property="displayName" column="display_name" />
     <result property="contentLanguage" column="content_language" />
     <result property="contentType" column="content_type" />
     <result property="contentLength" column="content_length" javaType="long" />
@@ -101,7 +100,6 @@
     <result property="propertiesModifiedBy" column="properties_modified_by" />
     <result property="modifiedBy" column="modified_by" />
     <result property="owner" column="resource_owner" />
-    <result property="displayName" column="display_name" />
     <result property="contentLanguage" column="content_language" />
     <result property="contentType" column="content_type" />
     <result property="contentLength" column="content_length" javaType="long" />
@@ -138,7 +136,6 @@
     <result property="propertiesModifiedBy" column="properties_modified_by" />
     <result property="modifiedBy" column="modified_by" />
     <result property="owner" column="resource_owner" />
-    <result property="displayName" column="display_name" />
     <result property="contentLanguage" column="content_language" />
     <result property="contentType" column="content_type" />
     <result property="contentLength" column="content_length" javaType="long" />
@@ -219,7 +216,6 @@
       content_modified_by = #contentModifiedBy#,
       properties_modified_by = #propertiesModifiedBy#,
       resource_owner = #owner#,
-      display_name = #displayName#,
       content_language = #contentLanguage#,
       content_type = #contentType#,
       character_encoding = #characterEncoding#,
@@ -248,7 +244,6 @@
        content_modified_by,
        properties_modified_by,
        resource_owner,
-       display_name,
        content_language,
        content_type,
        character_encoding,
@@ -272,7 +267,6 @@
        #contentModifiedBy#,
        #propertiesModifiedBy#,
        #owner#,
-       #displayName#,
        #contentLanguage#, 
        #contentType#,
        #characterEncoding#,
@@ -301,7 +295,6 @@
        content_modified_by,
        properties_modified_by,
        resource_owner,
-       display_name,
        content_language,
        content_type,
        character_encoding,
@@ -332,8 +325,6 @@
       <isNotPropertyAvailable property="propertiesModifiedBy">properties_modified_by,</isNotPropertyAvailable>
       <isPropertyAvailable property="owner">#owner#,</isPropertyAvailable>
       <isNotPropertyAvailable property="owner">resource_owner,</isNotPropertyAvailable>
-      <isPropertyAvailable property="displayName">#displayName#,</isPropertyAvailable>
-      <isNotPropertyAvailable property="displayName">display_name,</isNotPropertyAvailable>
       <isPropertyAvailable property="contentLanguage">#contentLanguage#,</isPropertyAvailable>
       <isNotPropertyAvailable property="contentLanguage">content_language,</isNotPropertyAvailable>
       <isPropertyAvailable property="contentType">#contentType#,</isPropertyAvailable>

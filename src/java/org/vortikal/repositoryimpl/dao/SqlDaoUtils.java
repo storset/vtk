@@ -93,16 +93,7 @@ class SqlDaoUtils {
             principal);
         propertySet.addProperty(prop);
 
-        String string = rs.getString("display_name");
-        if (string != null) {
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.DISPLAYNAME_PROP_NAME,
-                string);
-            propertySet.addProperty(prop);
-        }
-        
-        string = rs.getString("content_type");
+        String string = rs.getString("content_type");
         if (string != null) {
             prop = propertyManager.createProperty(
                 Namespace.DEFAULT_NAMESPACE, 

@@ -187,10 +187,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         return getDatePropValue(PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
     }
 
-    public String getDisplayName() {
-        return getPropValue(PropertyType.DISPLAYNAME_PROP_NAME);
-    }
-
     public String getContentType() {
         return getPropValue(PropertyType.CONTENTTYPE_PROP_NAME);
     }
@@ -256,11 +252,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
         Property prop = getProperty(Namespace.DEFAULT_NAMESPACE, 
                 PropertyType.OWNER_PROP_NAME);
         prop.setPrincipalValue(principal);
-    }
-
-    public void setDisplayName(String text) {
-        setProperty(Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.DISPLAYNAME_PROP_NAME, text);
     }
 
     public Object clone() throws CloneNotSupportedException {

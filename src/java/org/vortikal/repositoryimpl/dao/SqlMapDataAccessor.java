@@ -1186,16 +1186,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             principal);
         propertySet.addProperty(prop);
 
-        String string = (String) resourceMap.get("displayName");
-        if (string != null) {
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.DISPLAYNAME_PROP_NAME,
-                string);
-            propertySet.addProperty(prop);
-        }
-        
-        string = (String) resourceMap.get("contentType");
+        String string = (String) resourceMap.get("contentType");
         if (string != null) {
             prop = propertyManager.createProperty(
                 Namespace.DEFAULT_NAMESPACE, 
@@ -1310,7 +1301,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         map.put("owner", r.getOwner().getQualifiedName());
         map.put("creationTime", r.getCreationTime());
         map.put("createdBy", r.getCreatedBy().getQualifiedName());
-        map.put("displayName", r.getDisplayName());
         map.put("contentType", r.getContentType());
         map.put("characterEncoding", r.getCharacterEncoding());
         map.put("userSpecifiedCharacterEncoding", r.getUserSpecifiedCharacterEncoding());

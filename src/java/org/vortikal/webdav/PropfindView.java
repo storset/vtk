@@ -326,8 +326,7 @@ public class PropfindView implements View, InitializingBean {
                                        resource.getCreationTime()));
             
             } else if (propertyName.equals("displayname")) {
-                String name = resource.getDisplayName();
-                if (name == null || name.equals("")) return null;
+                String name = resource.getName();
                 element.addContent(name);
 
             } else if (propertyName.equals("getcontentlanguage")) {

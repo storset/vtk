@@ -27,7 +27,6 @@ CREATE TABLE vortex_resource
     properties_modified_by VARCHAR (64) NOT NULL,
     modified_by VARCHAR (64) NOT NULL,
     resource_owner VARCHAR (64) NOT NULL,
-    display_name VARCHAR (128) NULL,
     content_language VARCHAR (64) NULL,
     content_type VARCHAR (64) NULL,
     content_length bigint NULL, -- NULL for collections.
@@ -292,7 +291,6 @@ INSERT INTO VORTEX_RESOURCE (
     properties_modified_by,
     modified_by,
     resource_owner,
-    display_name,
     content_language,
     content_type,
     character_encoding,
@@ -314,7 +312,6 @@ VALUES (
     'vortex@localhost',
     'vortex@localhost',
     'vortex@localhost',
-    '/',
     NULL,
     'application/x-vortex-collection',
     NULL,

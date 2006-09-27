@@ -95,7 +95,6 @@ public final class PropertyType {
     public static final String OWNER_PROP_NAME = "owner";
     public static final String CREATIONTIME_PROP_NAME = "creationTime";
     public static final String CREATEDBY_PROP_NAME = "createdBy";
-    public static final String DISPLAYNAME_PROP_NAME = "displayName";
     public static final String CONTENTTYPE_PROP_NAME = "contentType";
     public static final String CHARACTERENCODING_PROP_NAME = "characterEncoding";
     public static final String CHARACTERENCODING_USER_SPECIFIED_PROP_NAME = "userSpecifiedCharacterEncoding";
@@ -114,7 +113,6 @@ public final class PropertyType {
         OWNER_PROP_NAME, 
         CREATIONTIME_PROP_NAME,
         CREATEDBY_PROP_NAME,
-        DISPLAYNAME_PROP_NAME,
         CONTENTTYPE_PROP_NAME,
         CHARACTERENCODING_PROP_NAME,
         CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,

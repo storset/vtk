@@ -83,7 +83,6 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  *         <li><code>contentModifiedBy</code> - {@link Resource#getContentModifiedBy}
  *         <li><code>contentType</code> - {@link Resource#getContentType}
  *         <li><code>creationTime</code> - {@link Resource#getCreationTime}
- *         <li><code>displayName</code> - {@link Resource#getDisplayName}
  *         <li><code>lastModified</code> - {@link Resource#getLastModified}
  *         <li><code>name</code> - {@link Resource#getName}
  *         <li><code>propertiesLastModified</code> - {@link Resource#getPropertiesLastModified}
@@ -102,11 +101,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  *      regular value in the model, a localized message with the
  *      specified key and the value as parameter (with the default
  *      being the value itself) is looked up and provided in the
- *      model.  For example, if the mapping <code>(displayName,
- *      foo.bar)</code> is specified, the value provided in the model
- *      will be (in pseudo-code):
- *      <code>getLocalizedMessage(resource.getProperty("displayName").getValue(),
- *      value)</code>.
+ *      model.
  * </ul>
  * 
  * <p>Model data provided:
@@ -307,9 +302,6 @@ public class ResourcePropertiesValueProvider
             
         } else if ("creationTime".equals(propertyName)) {
             return resource.getCreationTime();
-            
-        } else if ("displayName".equals(propertyName)) {
-            return resource.getDisplayName();
             
         } else if ("lastModified".equals(propertyName)) {
             return resource.getLastModified();

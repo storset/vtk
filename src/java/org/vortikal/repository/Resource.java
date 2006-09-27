@@ -211,13 +211,6 @@ public interface Resource extends PropertySet {
     public String getContentLanguage();
 
     /**
-     * Gets this resource's display name.
-     *
-     * @return the display name
-     */
-    public String getDisplayName();
-
-    /**
      * Gets a resource's content (MIME) type.
      *
      * @return the content type
@@ -296,10 +289,4 @@ public interface Resource extends PropertySet {
      */
     public void setOwner(Principal principal);
 
-    /**
-     * Sets the display name of this resource.
-     *
-     */
-    public void setDisplayName(String displayName);
-    
 }

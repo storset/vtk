@@ -69,8 +69,7 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
     private int maxBytes = 10000000;
 
     private static Pattern CHARSET_PATTERN = Pattern.compile(
-        "^\\s*<\\?xml\\s+[^>]*\\s+encoding=[\"']"
-        + "([A-Za-z0-9._\\-]+)[\"'][^>]*\\?>.*",
+        "\\s*<\\?xml\\s+[^>]*\\s+encoding=[\"']([A-Za-z0-9._\\-]+)[\"'][^>]*\\?>.*",
         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 
@@ -122,7 +121,7 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
 
         Matcher m = CHARSET_PATTERN.matcher(xmlContent);
 
-        if (m.matches()) {
+        if (m.find()) {
             if (logger.isDebugEnabled())
                 logger.debug("Regexp match in XML declaration for pattern "
                              + CHARSET_PATTERN.pattern());
@@ -140,10 +139,20 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         }
             
         if (characterEncoding == null && this.defaultEncoding != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                    "Unable to find encoding using regexp pattern '" + CHARSET_PATTERN.pattern()
+                    + "' for XML document <string>, using default encoding: " + this.defaultEncoding);
+            }
             characterEncoding = this.defaultEncoding;
         }
 
         if (characterEncoding == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                    "Unable to find encoding using regexp pattern '" + CHARSET_PATTERN.pattern()
+                    + "' for XML document <string>");
+            }
             return false;
         }
 

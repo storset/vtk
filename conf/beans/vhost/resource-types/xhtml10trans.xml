@@ -5,9 +5,10 @@
 
   <!-- XHTML 1.0 resource -->
 
-  <bean id="xhtml10TransResourceTypeDefinition"
+
+  <bean id="abstractXhtml10TransResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="xhtml10trans"/>
+    <property name="name" value="abstractXhtml10trans"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="htmlResourceTypeDefinition" />
     <property name="assertions">
@@ -18,6 +19,18 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="xhtml10TransGuessedCharacterEncodingPropDef" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="xhtml10TransResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="xhtml10trans"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="abstractXhtml10TransResourceTypeDefinition" />
+    <property name="propertyTypeDefinitions">
+      <list>
         <ref bean="xhtml10TransCharacterEncodingPropDef" />
       </list>
     </property>
@@ -52,10 +65,28 @@
 
 
   <bean id="xhtml10TransGuessedCharacterEncodingEvaluator" 
+        class="org.vortikal.repository.resourcetype.property.ChainedPropertyEvaluator">
+    <property name="propertyEvaluators">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
+        <bean class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
+          <property name="defaultEncoding" ref="defaultXHtml10TransitionalResourceCharacterEncodingString" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="defaultXHtml10TransitionalResourceCharacterEncodingString" class="java.lang.String">
+    <constructor-arg value="${defaultXHtml10TransitionalResourceCharacterEncoding}" />
+  </bean>
+
+<!--
+
+  <bean id="xhtml10TransGuessedCharacterEncodingEvaluator" 
         class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
     <property name="defaultEncoding" value="utf-8" />
   </bean>
-
+-->
 
   <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->
   <bean id="xhtml10TransCharacterEncodingPropDef"

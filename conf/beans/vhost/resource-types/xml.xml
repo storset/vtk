@@ -5,8 +5,8 @@
 
   <!-- XML resource -->
 
-  <bean id="xmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="xml-resource"/>
+  <bean id="abstractXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="abstractXmlResource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
@@ -17,6 +17,18 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="xmlGuessedCharacterEncodingPropDef" />
+      </list>
+    </property>
+  </bean>
+
+
+
+  <bean id="xmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="xml-resource"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="abstractXmlResource" />
+    <property name="propertyTypeDefinitions">
+      <list>
         <ref bean="xmlCharacterEncodingPropDef" />
         <ref bean="schemaPropDef" />
       </list>
@@ -65,7 +77,6 @@
       </list>
     </property>
   </bean>
-
 
 
   <bean id="defaultXmlResourceCharacterEncodingString" class="java.lang.String">

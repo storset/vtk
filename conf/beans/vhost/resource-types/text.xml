@@ -65,7 +65,7 @@
     <property name="targetMethod" value="createValue" />
     <property name="arguments">
       <list>
-        <value>utf-8</value>
+        <value>${defaultTextResourceCharacterEncoding}</value>
         <ref bean="TYPE_STRING" />
       </list>
     </property>

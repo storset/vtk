@@ -99,6 +99,11 @@ public class ChainedPropertyEvaluator
         for (int i = 0; i < this.createEvaluators.length; i++) {
             if (this.createEvaluators[i].create(principal, property,
                                                 ancestorPropertySet, isCollection, time)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found match for property evaluator '"
+                                 + this.createEvaluators[i] + "', "
+                                 + "property set: " + property);
+                }
                 return true;
             }
         }
@@ -112,6 +117,12 @@ public class ChainedPropertyEvaluator
         for (int i = 0; i < this.propertiesModificationEvaluators.length; i++) {
             if (this.propertiesModificationEvaluators[i].propertiesModification(
                     principal, property, ancestorPropertySet, time)) {
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found match for property evaluator '"
+                                 + this.propertiesModificationEvaluators[i] + "', "
+                                 + "property set: " + property);
+                }
                 return true;
             }
         }
@@ -125,14 +136,15 @@ public class ChainedPropertyEvaluator
         for (int i = 0; i < this.contentModificationEvaluators.length; i++) {
             if (this.contentModificationEvaluators[i].contentModification(
                     principal, property, ancestorPropertySet, content, time)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found match for property evaluator '"
+                                 + this.contentModificationEvaluators[i] + "', "
+                                 + "property set: " + property);
+                }
                 return true;
             }
         }
         return false;
     }
-    
-
-
-
 
 }

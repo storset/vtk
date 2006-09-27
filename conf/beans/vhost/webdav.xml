@@ -412,6 +412,7 @@
     parent="requestLocalRepositoryAware" >
     <property name="maxUploadSize" value="-1" />
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}"/>
+    <property name="obeyClientCharacterEncoding" value="false" />
   </bean>
 
   <bean id="webdavMkColHandler" class="org.vortikal.webdav.MkColController"

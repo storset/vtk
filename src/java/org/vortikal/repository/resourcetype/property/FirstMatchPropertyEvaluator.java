@@ -94,21 +94,21 @@ public class FirstMatchPropertyEvaluator
 
             Property prop = ancestorPropertySet.getProperty(this.propertyDefinitions[i]);
             if (prop != null) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Found match for property definition '"
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found match for property definition '"
                                  + this.propertyDefinitions[i] + "', "
                                  + "setting value: " + prop.getValue());
                 }
                 property.setValue(prop.getValue());
                 return true;
             }
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("No match for property definition '"
+            if (logger.isDebugEnabled()) {
+                logger.debug("No match for property definition '"
                              + this.propertyDefinitions[i] + "'");
             }
         }
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("No match for any property definitions");
+        if (logger.isDebugEnabled()) {
+            logger.debug("No match for any property definitions");
         }
         return false;
     }

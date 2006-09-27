@@ -15,6 +15,12 @@
 
     </release>
 
+    <release version="0.3.1-SNAPSHOT" date="In SVN" description="Release 0.3.1">
+      <action dev="gormap" type="update">
+        Fixed evaluation of character encoding for XML, HTML and XHTML resources.
+      </action>
+    </release>
+
     <release version="0.3" date="2006-09-21" description="Release 0.3">
 
       <action dev="gormap" type="add">

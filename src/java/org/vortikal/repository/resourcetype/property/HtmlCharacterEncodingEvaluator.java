@@ -35,6 +35,9 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
@@ -52,6 +55,8 @@ import org.w3c.dom.NodeList;
 
 public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         ContentModificationPropertyEvaluator {
+
+    private Log logger = LogFactory.getLog(this.getClass());
 
     public static final String DEFAULT_ENCODING = "ISO-8859-1";
 
@@ -78,11 +83,14 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         try {
             doc = (Document) content.getContentRepresentation(Document.class);
         } catch (Exception e) {
-            throw new PropertyEvaluationException(
-                "Unable to get DOM representation of content", e);
-        }
-        if (doc == null) {
-            throw new PropertyEvaluationException("Unable to get DOM representation of content");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to get DOM representation of content", e);
+            }
+            if (this.defaultEncoding == null) {
+                return false;
+            }
+            property.setStringValue(this.defaultEncoding);
+            return true;
         }
 
         String encoding = findEncodingFromMetaElement(doc);
@@ -94,10 +102,17 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
 
         try {
             Charset.forName(encoding);
-            property.setStringValue(encoding);
         } catch (Exception e) {
-            property.setStringValue(this.defaultEncoding);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unknown character encoding " + encoding
+                             + ", using default value: " + this.defaultEncoding, e);
+            }
+            encoding = this.defaultEncoding;
         }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting property value: " + encoding);
+        }
+        property.setStringValue(encoding);
         return true;
     }
 

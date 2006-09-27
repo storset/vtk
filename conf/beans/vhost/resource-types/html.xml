@@ -5,8 +5,8 @@
 
   <!-- Html resource -->
 
-  <bean id="htmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="html"/>
+  <bean id="abstractHtmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="abstractHtmlResource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
@@ -14,6 +14,18 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="htmlGuessedCharacterEncodingPropDef" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="htmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="html"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="abstractHtmlResourceTypeDefinition" />
     <property name="mixinTypeDefinitions">
       <list>
         <ref bean="ssiMixinResourceTypeDef" />
@@ -23,7 +35,6 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="htmlDocTypePropDef" />
-        <ref bean="htmlGuessedCharacterEncodingPropDef" />
         <ref bean="htmlCharacterEncodingPropDef" />
       </list>
     </property>
@@ -53,6 +64,7 @@
     <property name="contentModificationEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue" ref="defaultHtmlResourceCharacterEncoding" />
   </bean>
+
 
   <bean id="htmlGuessedCharacterEncodingEvaluator" 
         class="org.vortikal.repository.resourcetype.property.ChainedPropertyEvaluator">
@@ -96,6 +108,8 @@
     <property name="propertiesModificationEvaluator" ref="htmlCharacterEncodingEvaluator" />
   </bean>
 
+
+
   <bean id="htmlCharacterEncodingEvaluator"
         class="org.vortikal.repository.resourcetype.property.FirstMatchPropertyEvaluator">
     <property name="propertyDefinitions">
@@ -105,5 +119,7 @@
       </list>
     </property>
   </bean>
-  
+
+
+
 </beans>

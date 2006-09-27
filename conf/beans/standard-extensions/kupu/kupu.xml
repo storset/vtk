@@ -205,6 +205,7 @@
             parent="requestLocalRepositoryAware">
         <property name="maxUploadSize" value="1000000" />
         <property name="supportIfHeaders" value="false" />
+        <property name="obeyClientCharacterEncoding" value="false" />
         <property name="requestFilters">
           <list>
             <bean class="org.vortikal.web.filter.ForcedRequestHeaderValuesFilter">

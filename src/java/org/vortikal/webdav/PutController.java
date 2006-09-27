@@ -76,6 +76,7 @@ public class PutController extends AbstractWebdavController {
     private long maxUploadSize = -1;
     private String viewName = "PUT";
     private RequestFilter[] requestFilters;
+    private boolean obeyClientCharacterEncoding = true;
 
     public void setMaxUploadSize(long maxUploadSize) {
         if (maxUploadSize == 0) {
@@ -97,9 +98,14 @@ public class PutController extends AbstractWebdavController {
         this.requestFilters = requestFilters;
     }
     
-	public void setSupportIfHeaders(boolean supportIfHeaders) {
-		this.supportIfHeaders = supportIfHeaders;
-	}
+    public void setSupportIfHeaders(boolean supportIfHeaders) {
+        this.supportIfHeaders = supportIfHeaders;
+    }
+
+    public void setObeyClientCharacterEncoding(boolean obeyClientCharacterEncoding) {
+        this.obeyClientCharacterEncoding = obeyClientCharacterEncoding;
+    }
+    
 
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
@@ -209,14 +215,17 @@ public class PutController extends AbstractWebdavController {
                 store = true;
             }
 
-            String characterEncoding = request.getCharacterEncoding();
-            if (characterEncoding != null) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Setting character encoding: " + characterEncoding);
+            if (this.obeyClientCharacterEncoding) {
+                String characterEncoding = request.getCharacterEncoding();
+                if (characterEncoding != null) {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("Setting character encoding: " + characterEncoding);
+                    }
+                    resource.setUserSpecifiedCharacterEncoding(characterEncoding);
+                    store = true;
                 }
-                resource.setUserSpecifiedCharacterEncoding(characterEncoding);
-                store = true;
             }
+
 
             if (store) {
                 resource = this.repository.store(token, resource);

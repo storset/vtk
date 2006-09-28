@@ -82,7 +82,8 @@ public class JTidyTransformer implements Filter {
                 String encoding = resource.getCharacterEncoding();
                 if (Charset.forName("ISO-8859-1").equals(Charset.forName(encoding)))
                         tidy.setCharEncoding(Configuration.LATIN1);
-                resource.setUserSpecifiedCharacterEncoding(null);
+                else if (!Charset.forName("UTF-8").equals(Charset.forName(encoding)))
+                    resource.setUserSpecifiedCharacterEncoding(null);
             } catch (Exception e) {
                 // XXX: Ignore for now...
             }

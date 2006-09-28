@@ -1026,7 +1026,6 @@ public class PropertyManagerImpl implements PropertyManager,
     }
     
 
-    // TODO: print mixin types as well
     public String getResourceTypeTreeAsString() {
         StringBuffer sb = new StringBuffer();
         printResourceTypes(sb, 0, this.rootResourceTypeDefinition);

@@ -34,20 +34,6 @@
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="xhtml10GuessedCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="xhtml10GuessedCharacterEncodingEvaluator" />
-<!--
-    <property name="defaultValue">
-      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="valueFactory" />
-        <property name="targetMethod" value="createValue" />
-        <property name="arguments">
-          <list>
-            <value>utf-8</value>
-            <ref bean="TYPE_STRING" />
-          </list>
-        </property>
-      </bean>
-    </property>
--->
   </bean>
 
 

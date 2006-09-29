@@ -16,6 +16,19 @@
     </release>
 
     <release version="0.3.1-SNAPSHOT" date="In SVN" description="Release 0.3.1">
+      <action dev="gormap" type="fix">
+        Editing properties on text-based documents caused
+        guessedCharacterEncoding to revert to default value due to
+        misconfiguration.
+      </action>
+      <action dev="gormap" type="fix">
+        Updated JtityTransformer ("make web-editable") to properly
+        convert document to UTF-8 encoding.
+      </action>
+      <action dev="gormap" type="fix">
+        Fix index file handling when index file not readable for
+        everyone (either return status 401 or 403).
+      </action>
       <action dev="gormap" type="remove">
         Remove "displayName" managed resource property.
       </action>

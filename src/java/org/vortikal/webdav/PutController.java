@@ -77,6 +77,8 @@ public class PutController extends AbstractWebdavController {
     private String viewName = "PUT";
     private RequestFilter[] requestFilters;
     private boolean obeyClientCharacterEncoding = true;
+    private boolean removeUserSpecifiedCharacterEncoding = false;
+    
 
     public void setMaxUploadSize(long maxUploadSize) {
         if (maxUploadSize == 0) {
@@ -104,6 +106,10 @@ public class PutController extends AbstractWebdavController {
 
     public void setObeyClientCharacterEncoding(boolean obeyClientCharacterEncoding) {
         this.obeyClientCharacterEncoding = obeyClientCharacterEncoding;
+    }
+    
+    public void setRemoveUserSpecifiedCharacterEncoding(boolean removeUserSpecifiedCharacterEncoding) {
+        this.removeUserSpecifiedCharacterEncoding = removeUserSpecifiedCharacterEncoding;
     }
     
 
@@ -215,6 +221,8 @@ public class PutController extends AbstractWebdavController {
                 store = true;
             }
 
+            // XXX: userSpecifiedCharacterEncoding is a separate issue
+
             if (this.obeyClientCharacterEncoding) {
                 String characterEncoding = request.getCharacterEncoding();
                 if (characterEncoding != null) {
@@ -224,8 +232,10 @@ public class PutController extends AbstractWebdavController {
                     resource.setUserSpecifiedCharacterEncoding(characterEncoding);
                     store = true;
                 }
+            } else if (this.removeUserSpecifiedCharacterEncoding) {
+                resource.setUserSpecifiedCharacterEncoding(null);
+                store = true;
             }
-
 
             if (store) {
                 resource = this.repository.store(token, resource);

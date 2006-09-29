@@ -131,12 +131,13 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
                 if (httpEquivAttr != null) {
                     String httpEquiv = httpEquivAttr.getNodeValue();
 
-                    if ("Content-Type".equals(httpEquiv)) {
+                    if (httpEquiv!= null && "Content-Type".toLowerCase().equals(httpEquiv.toLowerCase())) {
                         Node contentAttr = attrMap.getNamedItem("content");
 
                         if (contentAttr != null) {
                             String content = contentAttr.getNodeValue();
                             if (content != null) {
+                                content = content.toLowerCase();
                                 encoding = TextUtils.extractField(content, "charset", ";");
                                 if (encoding != null) {
                                     break;

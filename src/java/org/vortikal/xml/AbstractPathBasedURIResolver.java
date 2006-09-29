@@ -183,10 +183,15 @@ public abstract class AbstractPathBasedURIResolver
             }
         }
 
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Resolved URI '" + path + "' from [href = '" +
+                              href + "', base = '" + base + "']");
+        }
+
         try {
             Source source = null;
 
-            if (this.simpleCache != null) {
+            if (this.simpleCache != null && this.cacheIdentifiers.contains(path)) {
                 source = (Source) this.simpleCache.get(path);
 
                 if (source != null) {
@@ -194,34 +199,15 @@ public abstract class AbstractPathBasedURIResolver
                         this.logger.debug("Using cached source for resource: " + path);
                     return source;
                 }
+                return cacheSource(path);
             }
 
             InputStream inStream = getInputStream(path);
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Resolved URI '" + path + "' from [href = '" +
-                             href + "', base = '" + base + "']");
-            }
-            
-            if (inStream != null) {
-                if (this.simpleCache != null && this.cacheIdentifiers.contains(path)) {
-                    try {
-                        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                        Document doc = builder.parse(inStream);
-                        source = new DOMSource(doc);
-                        this.simpleCache.put(path, source);
-                    } catch (SAXException e) {
-                        throw new TransformerException("Unable to build DOM reprsentation of resource '"
-                                + path + "'", e);
-                    } catch (ParserConfigurationException e) {
-                        throw new TransformerException("Unable to build DOM reprsentation of resource '"
-                                + path + "'", e);
-                    }
-                } else {
-                    source = new StreamSource(inStream);
-                }
-            } else 
+
+            if (inStream != null)
+                source = new StreamSource(inStream);
+            else
                 source = new StreamSource();
-            
             source.setSystemId(PROTOCOL_PREFIX + path);
             return source;
                 
@@ -231,6 +217,31 @@ public abstract class AbstractPathBasedURIResolver
                 base + "']", e);
         }
     }
+
+    private synchronized Source cacheSource(String path) throws IOException, TransformerException {
+        
+        Source source = (Source) this.simpleCache.get(path);
+        if (source != null) {
+            return source;
+        }
+        InputStream inStream = getInputStream(path);
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(inStream);
+            source = new DOMSource(doc);
+            this.simpleCache.put(path, source);
+            source.setSystemId(PROTOCOL_PREFIX + path);
+            return source;
+                    
+        } catch (SAXException e) {
+            throw new TransformerException("Unable to build DOM reprsentation of resource '"
+                                           + path + "'", e);
+        } catch (ParserConfigurationException e) {
+            throw new TransformerException("Unable to build DOM reprsentation of resource '"
+                                           + path + "'", e);
+        }
+    }
+    
 
     private String getAbsolutePath(String href, String base) {
 

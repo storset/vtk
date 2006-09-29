@@ -99,16 +99,18 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
         throws IOException {
         String token = this.token;
         if (token == null) {
-            if (SecurityContext.getSecurityContext() != null) {
-                token = SecurityContext.getSecurityContext().getToken();
-            }
+            try {
+                SecurityContext context = SecurityContext.getSecurityContext();
+                if (context != null) {
+                    token = SecurityContext.getSecurityContext().getToken();
+                }
+            } catch (Throwable t) { }
         }
 
         try {
             Resource r = this.repository.retrieve(token, path,
-                                             this.retrieveForProcessing);
+                                                  this.retrieveForProcessing);
             return r.getLastModified();
-
         } catch (ResourceNotFoundException e) {
             throw new IOException(
                 "Resource '" + path + "' does not exist");

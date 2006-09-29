@@ -141,6 +141,7 @@ public class JTidyTransformer implements Filter {
 
             Document document = tidy.parseDOM(newStream, null);
             alterContentTypeMetaElement(document);
+            resource.setUserSpecifiedCharacterEncoding(null);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             tidy.pprint(document, outputStream);
@@ -150,6 +151,7 @@ public class JTidyTransformer implements Filter {
             
             outputStream.close();
             bais.reset(); // must reset buffer pointer to [0]
+            
 
             return bais;
 
@@ -181,7 +183,7 @@ public class JTidyTransformer implements Filter {
                     String httpEquiv = httpEquivAttr.getNodeValue();
 
                     if (httpEquiv!= null && "Content-Type".toLowerCase().equals(httpEquiv.toLowerCase())) {
-                        remove = doc.removeChild(meta);
+                        remove = meta;
                         break;
                     }
                 }

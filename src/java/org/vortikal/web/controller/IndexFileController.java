@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.controller;
 
+import java.nio.charset.Charset;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -48,10 +49,11 @@ import org.springframework.web.servlet.mvc.LastModified;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.VortikalServlet;
-import org.vortikal.repository.ResourceNotFoundException;
 
 
 /**
@@ -79,6 +81,8 @@ public class IndexFileController
     private Repository repository;
     private String servletName;
     private ServletContext servletContext;
+    private String uriCharacterEncoding = "utf-8";
+    
 
     public void setIndexFiles(String[] indexFiles) {
         this.indexFiles = indexFiles;
@@ -94,6 +98,12 @@ public class IndexFileController
       
     }
 
+    public void setUriCharacterEncoding(String uriCharacterEncoding) {
+        Charset.forName(uriCharacterEncoding);
+        this.uriCharacterEncoding = uriCharacterEncoding;
+    }
+    
+
     public void afterPropertiesSet() {
         if (this.indexFiles == null) {
             throw new BeanInitializationException(
@@ -106,6 +116,10 @@ public class IndexFileController
         if (this.servletContext == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'servletContext' not set");
+        }
+        if (this.uriCharacterEncoding == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'uriCharacterEncoding' not set");
         }
     }
     
@@ -152,7 +166,8 @@ public class IndexFileController
 
         long collectionLastMod = res.getLastModified().getTime();
 
-        RequestWrapper requestWrapper = new RequestWrapper(request, indexFile.getURI(),
+        String encodedURI = URLUtil.urlEncode(indexFile.getURI(), this.uriCharacterEncoding);
+        RequestWrapper requestWrapper = new RequestWrapper(request, encodedURI,
                                                            collectionLastMod);
         String servletName = (String)request.getAttribute(
                 VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);

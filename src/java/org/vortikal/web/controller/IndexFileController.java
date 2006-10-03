@@ -166,7 +166,9 @@ public class IndexFileController
 
         long collectionLastMod = res.getLastModified().getTime();
 
-        String encodedURI = URLUtil.urlEncode(indexFile.getURI(), this.uriCharacterEncoding);
+        String encodedURI = new String(indexFile.getURI().getBytes("utf-8"),
+                                       this.uriCharacterEncoding);
+
         RequestWrapper requestWrapper = new RequestWrapper(request, encodedURI,
                                                            collectionLastMod);
         String servletName = (String)request.getAttribute(

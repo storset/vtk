@@ -49,6 +49,7 @@
   <bean id="displayIndexFileHandler" class="org.vortikal.web.controller.IndexFileController"
         parent="requestLocalRepositoryAware">
     <property name="indexFiles" ref="indexFileList" />
+    <property name="uriCharacterEncoding" value="${indexFileHandlerURIEncoding}" />
   </bean>
 
 

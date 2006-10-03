@@ -5,19 +5,9 @@
 <beans>
   
 
-  <!--
-  <bean id="extensionsLoader" class="org.vortikal.beans.factory.PropertyBeanDefinitionLoader">
-    <property name="location" value="classpath:vortikal-custom.properties" />
-    <property name="propertyName" value="standardExtensions" />
-    <property name="ignoreResourceNotFound" value="true" />
-  </bean>
-  -->
-
   <import resource="classpath:/vortikal/beans/vhost/main.xml" />
 
   <import resource="extensions.xml" />
-
-
 
    <bean id="propertyConfigurer"
          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -30,44 +20,23 @@
      </property>
    </bean>
 
-   <!--
-   <bean id="propertyConfigurer"
-         class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
-     <property name="ignoreResourceNotFound" value="true" />
-     <property name="locations">
-       <list>
-         <value>WEB-INF/beans/vortikal.properties</value>
-         <value>classpath:vortikal-custom.properties</value>
-       </list>
-     </property>
-   </bean>
-   -->
-
-  <!-- #if ( $srunPort != '' ) -->
 
    <!-- Fix for resin 3.0 -->
-   <bean id="stdReqFilterResin3" class="org.vortikal.web.filter.StandardRequestFilter">
+
+   <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter">
      <property name="order" value="0" />
    </bean>
-   <bean id="reqURIEncodingTranslatorResin3" class="org.vortikal.web.filter.RequestURIEncodingTranslator">
+
+   <bean id="reqURIEncodingTranslator"
+         class="org.vortikal.web.filter.RequestURIEncodingTranslator">
      <property name="order" value="10" />
      <property name="fromEncoding" value="iso-8859-1" />
      <property name="toEncoding" value="utf-8" />
    </bean>
-   <!-- #end -->
 
-
-
-  <!-- #if ( $srunPort == '' ) -->
-  <bean id="stdReqFilterResin2" class="org.vortikal.web.filter.StandardRequestFilter">
-    <property name="order" value="0" />
-  </bean>
-  <bean id="reqURLDecoderResin2" class="org.vortikal.web.filter.RequestURLDecoder">
-    <property name="order" value="10" />
-    <property name="characterEncoding" value="utf-8" />
-  </bean>
-   <!-- #end -->
-
-
+   <bean id="reqURLDecoder" class="org.vortikal.web.filter.RequestURLDecoder">
+     <property name="order" value="10" />
+     <property name="characterEncoding" value="utf-8" />
+   </bean>
 
 </beans>

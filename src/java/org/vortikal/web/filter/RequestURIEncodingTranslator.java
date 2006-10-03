@@ -31,12 +31,15 @@
 package org.vortikal.web.filter;
 
 import java.nio.charset.Charset;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.util.web.URLUtil;
 
 
@@ -54,6 +57,8 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
 
     private String fromEncoding;
     private String toEncoding;
+    private static Log logger = LogFactory.getLog(RequestURIEncodingTranslator.class);
+    
 
     private int order = Integer.MAX_VALUE;
     
@@ -108,6 +113,7 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
         public String getRequestURI() {
             
             String uri = this.request.getRequestURI();
+            String uriBefore = uri;
             boolean appendSlash = false;
             if (uri == null || (uri.endsWith("/") && ! "/".equals(uri))) {
                 appendSlash = true;
@@ -117,11 +123,18 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
 
                 uri = URLUtil.urlEncode(uri, this.fromEncoding);
                 uri = URLUtil.urlDecode(uri, this.toEncoding);
+
             } catch (Exception e) {
                 
             }
             if (appendSlash) {
                 uri += "/";
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Translated uri: from '" + uriBefore + "' to '" + uri
+                             + "' using encoding '" + this.toEncoding + "' (from '"
+                             + this.fromEncoding + "')");
             }
 
             return uri;

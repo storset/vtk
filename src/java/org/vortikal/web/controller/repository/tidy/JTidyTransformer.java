@@ -64,57 +64,12 @@ public class JTidyTransformer implements Filter {
     private static boolean quiet = true;
     private static boolean xhtml = true;
     private static String doctype = "transitional"; // "loose" will also be equivalent
+    private String generatedContentType = "text/html";
     
-
-
-    public InputStream transformOLD(InputStream inStream, Resource resource) {
-        
-        try {
-            Tidy tidy = new Tidy();
-                        
-            // Setting up Tidy (default) output
-            tidy.setInputStreamName(inStream.getClass().getName());
-            tidy.setTidyMark(tidyMark);
-            tidy.setMakeClean(makeClean);
-            tidy.setShowWarnings(showWarnings);
-            // tidy.setOnlyErrors(onlyErrors); // If set TRUE, then only error
-                                               // messages are written to the
-                                               // OutputStream (i.e. no file
-                                               // content is written)
-            tidy.setQuiet(quiet);
-            tidy.setXHTML(xhtml);
-            tidy.setDocType(doctype); 
-
-            // XXX: evaluate this handling
-            // Default to utf-8
-            tidy.setCharEncoding(Configuration.UTF8);
-            // Trying to change to iso-8859-1 if relevant, and delete user set char encoding
-            try {
-                String encoding = resource.getCharacterEncoding();
-                if (Charset.forName("ISO-8859-1").equals(Charset.forName(encoding)))
-                        tidy.setCharEncoding(Configuration.LATIN1);
-                else if (!Charset.forName("UTF-8").equals(Charset.forName(encoding)))
-                    resource.setUserSpecifiedCharacterEncoding(null);
-            } catch (Exception e) {
-                // XXX: Ignore for now...
-            }
-            
-            ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
-            
-            tidy.parse(inStream, outBuffer);
-            byte[] byteArrayBuffer = outBuffer.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
-            
-            outBuffer.close();
-            bais.reset(); // must reset buffer pointer to [0]
-
-            return bais;
-
-        } catch (IOException e) {
-            logger.error("Caught exception", e);
-            return new ByteArrayInputStream(null);
-        }
+    public void setGeneratedContentType(String generatedContentType) {
+        this.generatedContentType = generatedContentType;
     }
+    
 
     public InputStream transform(InputStream inStream, Resource resource) {
         
@@ -193,7 +148,7 @@ public class JTidyTransformer implements Filter {
             remove.getParentNode().removeChild(remove);
         }
         Element meta = doc.createElement("meta");
-        meta.setAttribute("http-equiv", "Content-Type;charset=utf-8");
+        meta.setAttribute("http-equiv", "Content-Type: " + this.generatedContentType + ";charset=utf-8");
         head.appendChild(meta);
     }
 

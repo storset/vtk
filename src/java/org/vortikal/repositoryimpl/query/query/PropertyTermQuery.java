@@ -66,7 +66,10 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
         PropertyTypeDefinition def = getPropertyDefinition();
         
         buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
-        buf.append("', name = '").append(def.getName()).append("', term = '").append(this.term).append("'\n");
+        buf.append("', name = '").append(def.getName()).append("'");
+        buf.append(", term = '").append(this.term).append("'");
+        buf.append(", operator = '").append(this.operator.toString()).append("'");
+        buf.append("\n");
         
         return buf.toString();
     }

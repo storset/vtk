@@ -123,7 +123,6 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
         Document doc = null;
-        // XXX: Ugly casting to obtain implementation specific details.
         
         // NOTE: Write-locking must be done above this level.
         //       This is needed to ensure the possibility of efficiently batching 

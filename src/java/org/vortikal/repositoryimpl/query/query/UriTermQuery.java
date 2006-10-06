@@ -49,7 +49,7 @@ public class UriTermQuery implements UriQuery {
     }
 
     public String dump(String prefix) {
-        StringBuffer buf = new StringBuffer().append(prefix);
+        StringBuffer buf = new StringBuffer(prefix);
         buf.append(this.getClass().getName()).append("\n");
         
         buf.append(prefix).append("Operator = ").append(this.operator);

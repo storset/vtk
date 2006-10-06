@@ -28,25 +28,48 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.query;
+package org.vortikal.repositoryimpl.query.builders;
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.query.QueryBuilder;
+import org.vortikal.repositoryimpl.query.QueryBuilderException;
+import org.vortikal.repositoryimpl.query.query.TermOperator;
+import org.vortikal.repositoryimpl.query.query.UriDepthQuery;
 
 /**
- * XXX: This class is probably redundant, TermOperator is a good replacement. 
+ * Build URI depth Lucene query
+ * 
+ * @author oyviste
  *
  */
-public class UriOperator {
+public class UriDepthQueryBuilder implements QueryBuilder {
 
-    public static final UriOperator EQ = new UriOperator("EQ");
-    public static final UriOperator NE = new UriOperator("NE");
+    private UriDepthQuery query;
     
-    private String id;
-
-    private UriOperator(String id) {
-        this.id = id;
+    public UriDepthQueryBuilder(UriDepthQuery query) {
+        this.query = query;
     }
+    
+    public Query buildQuery() throws QueryBuilderException {
+        
+        Term uriDepthTerm = new Term(
+                DocumentMapper.URI_DEPTH_FIELD_NAME,
+                Integer.toString(query.getDepth()));
+        
+        // We only support EQ right now (should be sufficient for most common usage scenarios), 
+        // because depth is currently not indexed in a way which makes
+        // it suitable for sorting or doing range queries.
+        // Support for this will only be added on an as-needed basis.
+        if (query.getOperator() != TermOperator.EQ) {
+            throw new QueryBuilderException("Unsupported term operator: " 
+                    + query.getOperator());
+        }
+        
+        return new TermQuery(uriDepthTerm);
 
-    public String toString() {
-        return this.id;
     }
 
 }

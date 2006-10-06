@@ -31,22 +31,35 @@
 package org.vortikal.repositoryimpl.query.query;
 
 /**
- * XXX: This class is probably redundant, TermOperator is a good replacement. 
+ * Query for URI depth.
+ * 
+ * @author oyviste
  *
  */
-public class UriOperator {
+public class UriDepthQuery implements UriQuery {
 
-    public static final UriOperator EQ = new UriOperator("EQ");
-    public static final UriOperator NE = new UriOperator("NE");
+    private int depth;
+    private TermOperator operator;
     
-    private String id;
-
-    private UriOperator(String id) {
-        this.id = id;
+    public UriDepthQuery(int depth, TermOperator operator) {
+        this.depth = depth;
+        this.operator = operator;
     }
-
-    public String toString() {
-        return this.id;
+    
+    public int getDepth() {
+        return this.depth;
+    }
+    
+    public TermOperator getOperator() {
+        return this.operator;
+    }
+    
+    public String dump(String prefix) {
+        StringBuffer dump = new StringBuffer(prefix);
+        dump.append(this.getClass().getName()).append("\n");
+        dump.append(prefix).append("Operator = " + this.operator).append("\n");
+        dump.append(prefix).append("Depth = " + this.depth).append("\n");
+        return dump.toString();
     }
 
 }

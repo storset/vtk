@@ -59,6 +59,7 @@ import org.vortikal.repositoryimpl.query.builders.PropertyTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.PropertyWildcardQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.QueryTreeBuilder;
 import org.vortikal.repositoryimpl.query.builders.TypeTermQueryBuilder;
+import org.vortikal.repositoryimpl.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.UriTermQueryBuilder;
 import org.vortikal.repositoryimpl.query.query.AbstractMultipleQuery;
@@ -74,6 +75,7 @@ import org.vortikal.repositoryimpl.query.query.PropertyTermQuery;
 import org.vortikal.repositoryimpl.query.query.PropertyWildcardQuery;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
+import org.vortikal.repositoryimpl.query.query.UriDepthQuery;
 import org.vortikal.repositoryimpl.query.query.UriPrefixQuery;
 import org.vortikal.repositoryimpl.query.query.UriTermQuery;
 import org.vortikal.util.repository.URIUtil;
@@ -125,6 +127,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             String uri = ((UriPrefixQuery)query).getUri();
             Term idTerm = getPropertySetIdTermFromIndex(uri);
             builder =  new UriPrefixQueryBuilder(uri, idTerm);
+        }
+        
+        else if (query instanceof UriDepthQuery) {
+            builder = new UriDepthQueryBuilder((UriDepthQuery)query);
         }
 
         else if (query instanceof NameTermQuery) {

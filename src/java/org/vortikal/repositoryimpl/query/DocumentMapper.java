@@ -162,7 +162,6 @@ public class DocumentMapper implements InitializingBean {
         //      Perhaps better to wait until we get a proper query interface for various aspects
         //      of the resource type tree and its properties. Caching would be done there, instead,
         //      obviously.
-        
         List propDefs = 
             propertyManager.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
                     resourceDef);
@@ -217,7 +216,7 @@ public class DocumentMapper implements InitializingBean {
         //      doc.getField(ANCESTORIDS_FIELD_NAME)));
         
         // Loop through all stored binary fields and re-create properties with
-        // values. Multi-valued properties are stored as a sequence of fields
+        // values. Multi-valued properties are stored as a sequence of binary fields
         // (with the same name) in the index.
         Enumeration e = doc.fields();
         String currentName = null;

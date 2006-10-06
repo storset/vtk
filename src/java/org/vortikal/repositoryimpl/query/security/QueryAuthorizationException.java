@@ -40,37 +40,20 @@ public class QueryAuthorizationException extends QueryException {
 
     private static final long serialVersionUID = -7128162457480773200L;
 
-    /**
-     * 
-     */
     public QueryAuthorizationException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @param message
-     * @param cause
-     */
     public QueryAuthorizationException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @param message
-     */
     public QueryAuthorizationException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @param cause
-     */
     public QueryAuthorizationException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

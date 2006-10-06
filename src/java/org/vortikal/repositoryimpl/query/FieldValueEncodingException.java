@@ -42,22 +42,18 @@ public class FieldValueEncodingException extends FieldValueMappingException {
 
     public FieldValueEncodingException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public FieldValueEncodingException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     public FieldValueEncodingException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     public FieldValueEncodingException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

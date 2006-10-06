@@ -90,8 +90,9 @@ public class AclImpl implements Acl {
         
         if ((Privilege.ALL.equals(action) || Privilege.WRITE.equals(action)) 
                 && all.equals(p))
-                throw new IllegalArgumentException("Not allowed to add acl entry");
-        
+                throw new IllegalArgumentException(
+                    "Not allowed to add principal '" + p + "' to privilege '"
+                    + action + "'" );
         
         Set actionEntry = (Set) this.actionSets.get(action);
         if (actionEntry == null) {
@@ -103,7 +104,8 @@ public class AclImpl implements Acl {
 
     }
     
-    public void removeEntry(RepositoryAction action, Principal principal) throws IllegalArgumentException {
+    public void removeEntry(RepositoryAction action, Principal principal)
+        throws IllegalArgumentException {
 
         if (!Privilege.PRIVILEGES.contains(action))
             throw new IllegalArgumentException("Unknown acl privilege");

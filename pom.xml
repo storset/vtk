@@ -1,188 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project
  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-  <!--
-    - Starting point for a project descriptor for use with maven 2
-    - (incomplete).
-  -->
-
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.vortikal</groupId>
+  <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <packaging>jar</packaging>
-  <name>Vortikal</name>
-  <url>http://vortikal.berlios.de</url>
-  <version>0.2.1-SNAPSHOT</version>
+  <version>0.3-SNAPSHOT</version>
+  <name>The Vortikal Web Framework</name>
+  <organization>
+    <name>Vortikal Project</name>
+    <url>http://vortikal.berlios.de/</url>
+  </organization>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>src/main/ftl</directory>
+        <excludes>
+          <exclude>**/README</exclude>
+        </excludes>
+        <targetPath>vortikal/ftl</targetPath>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>no.uio.usit.mvn.plugins</groupId>
+        <artifactId>maven-velocity-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>merge</id>
+            <goals>
+              <goal>merge</goal>
+            </goals>
+            <configuration>
+	      <outputDirectory>target</outputDirectory>
+	      <templateDirectory>src/main/resources/velocity</templateDirectory>
+	      <propertyFiles>
+		<propertyFile>project.properties</propertyFile>
+		<propertyFile>build.properties</propertyFile>
+		<propertyFile>conf/beans/vortikal.properties</propertyFile>
+	      </propertyFiles>
+	      <properties>
+		<targetPath>${project.build.directory}</targetPath>
+		<logPath>${project.build.directory}/logs</logPath>
+		<!--
+		<srunPort>${srunPort}</srunPort>
+		-->
+		<webappDir>${maven.war.webapp.dir}</webappDir>
+		<beanConfigDir>${destination.beanconfig.dir}</beanConfigDir>
+	      </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>no.uio.usit.mvn.plugins</groupId>
+        <artifactId>maven-framework-version-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>touch</id>
+            <configuration>
+              <outputDirectory>classes/org/vortikal/util/</outputDirectory>
+            </configuration>
+            <goals>
+              <goal>touch</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>jjtree</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>jjtree</goal>
+            </goals>
+            <configuration>
+              <!--
+              <nodePackage>org.vortikal.repositoryimpl.queryparser</nodePackage>
+              -->
+              <sourceDirectory>src/main/java/org/vortikal/repositoryimpl/queryparser/</sourceDirectory>
+              <outputDirectory>src/main/generated-java/org/vortikal/repositoryimpl/queryparser</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>javacc</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>javacc</goal>
+            </goals>
+            <configuration>
+              <packageName>org.vortikal.repositoryimpl.queryparser</packageName>
+              <sourceDirectory>src/main/generated-java/</sourceDirectory>
+              <outputDirectory>src/main/generated-java</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>sandbox/src/java</source>
+                <source>src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
-<!-- 
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-
--->
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.2.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>jdbc</groupId>
-          <artifactId>jdbc</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xerces</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-<!--
-    <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.1</version>
-    </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.8</version>
-    </dependency>
--->
-    <dependency>
-      <groupId>springframework</groupId>
-      <artifactId>spring</artifactId>
-      <version>1.2.5</version>
+      <version>1.2.9</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
     </dependency>
-<!--
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.0</version>
-    </dependency>
--->
-
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.3</version>
-    </dependency>
-
-<!--
-    <dependency>
-      <groupId>aopalliance</groupId>
-      <artifactId>aopalliance</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <version>2.0.8</version>
-    </dependency>
--->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>jug</groupId>
-      <artifactId>jug</artifactId>
-      <version>1.1.2</version>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>1.2.6</version>
     </dependency>
     <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
       <version>1.0</version>
     </dependency>
-<!--
     <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-      <version>1.1-beta-4</version>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
     </dependency>
     <dependency>
-      <groupId>saxpath</groupId>
-      <artifactId>saxpath</artifactId>
-      <version>1.0-FCS</version>
+      <groupId>quartz</groupId>
+      <artifactId>quartz</artifactId>
+      <version>1.5.1</version>
     </dependency>
--->
     <dependency>
       <groupId>freemarker</groupId>
       <artifactId>freemarker</artifactId>
-      <version>2.3.3</version>
-    </dependency>
-<!--
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xerces</artifactId>
-      <version>2.4.0</version>
-      <exclusions>
-        <groupId>icu4j</groupId>
-        <artifactId>icu4j</artifactId>
-      </exclusions>
+      <version>2.3.4</version>
     </dependency>
     <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>2.0.2</version>
+      <groupId>jug</groupId>
+      <artifactId>jug</artifactId>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>2.5.1</version>
+      <groupId>lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>1.9.1</version>
     </dependency>
-
--->
     <dependency>
       <groupId>bsh</groupId>
       <artifactId>bsh</artifactId>
       <version>2.0b1</version>
     </dependency>
-
-    <dependency>
-      <groupId>groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>1.0-beta-10</version>
-    </dependency>
-<!--
-
-    <dependency>
-      <groupId>quartz</groupId>
-      <artifactId>quartz</artifactId>
-      <version>1.4.5</version>
-    </dependency>
--->
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
       <version>1.3.4</version>
     </dependency>
-<!--
-
     <dependency>
-      <groupId>lucene</groupId>
-      <artifactId>lucene</artifactId>
-      <version>1.4.3</version>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+      <version>0.8</version>
     </dependency>
-    -->
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>groovy</groupId>
+      <artifactId>groovy-all-1.0-jsr</artifactId>
+      <version>04</version>
+    </dependency>
+    <dependency>
+      <groupId>jtidy</groupId>
+      <artifactId>jtidy</artifactId>
+      <version>4aug2000r7-dev</version>
+    </dependency>
+    <dependency>
+      <groupId>opensymphony</groupId>
+      <artifactId>sitemesh</artifactId>
+      <version>2.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ibatis</groupId>
+      <artifactId>ibatis2-common</artifactId>
+      <version>2.1.6.589</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ibatis</groupId>
+      <artifactId>ibatis2-sqlmap</artifactId>
+      <version>2.1.6.589</version>
+    </dependency>
   </dependencies>
 </project>

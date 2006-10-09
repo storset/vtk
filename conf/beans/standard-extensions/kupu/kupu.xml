@@ -175,7 +175,7 @@
                   <list>
                     <bean class="org.vortikal.web.view.wrapper.TextReplaceContentFilter">
                       <property name="pattern">
-                        <value>&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
+                        <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
                       </property>
                       <property name="replacement">
                         <value>&lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt;</value>
@@ -219,7 +219,7 @@
             <bean class="org.vortikal.web.filter.TextReplaceInputStreamFilter">
 
               <property name="pattern">
-                <value>&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
+                <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
               </property>
               <property name="replacement">
                 <value>&lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt;</value>

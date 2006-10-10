@@ -56,12 +56,12 @@
           </execution>
         </executions>
       </plugin>
-<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
         <executions>
-          <execution>
+          <!--
+            <execution>
             <id>jjtree</id>
             <phase>generate-sources</phase>
             <goals>
@@ -72,21 +72,25 @@
               <outputDirectory>src/main/generated-java/org/vortikal/repositoryimpl/query/parser</outputDirectory>
             </configuration>
           </execution>
+  -->
           <execution>
             <id>javacc</id>
+            <!--
             <phase>generate-sources</phase>
+              -->
             <goals>
               <goal>javacc</goal>
             </goals>
             <configuration>
+<!--
               <packageName>org.vortikal.repositoryimpl.query.parser</packageName>
               <sourceDirectory>src/main/generated-java/</sourceDirectory>
               <outputDirectory>src/main/generated-java</outputDirectory>
+-->
             </configuration>
           </execution>
         </executions>
       </plugin>
-  -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>

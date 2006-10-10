@@ -12,7 +12,11 @@
 
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
-
+      
+     <action dev="gormap" type="remove">
+       Removed cache for XSLT document() calls, as it had no visible
+       effect and was buggy.
+     </action>
     </release>
 
     <release version="0.3.1" date="2006-09-29" description="Release 0.3.1"> 

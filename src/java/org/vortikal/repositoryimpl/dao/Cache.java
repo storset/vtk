@@ -493,6 +493,7 @@ public class Cache implements DataAccessor, InitializingBean {
     public void clear() {
         synchronized (this.items) {
             this.items.clear();
+            this.lockManager = new LockManager();
         }
     }
 

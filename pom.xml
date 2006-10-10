@@ -32,16 +32,14 @@
           <include>*-schema.sql</include>
         </includes>
       </resource>
-<!-- 
       <resource>
-        <directory>ext/kupu/v1.3.5</directory>
+        <directory>src/main/ext/kupu/v1.3.5</directory>
         <targetPath>vortikal/resources/kupu-resources</targetPath>
         <includes>
           <include>common/**</include>
           <include>i18n/**</include>
         </includes>
       </resource>
-  -->
     </resources>
 
     <plugins>

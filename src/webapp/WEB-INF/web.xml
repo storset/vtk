@@ -14,16 +14,6 @@
           <param-name>contextConfigLocation</param-name>
           <param-value>/WEB-INF/applicationContext.xml,classpath*:beans/vortexExtension.xml</param-value>
         </init-param>
-          <!--
-    	<init-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>/WEB-INF/beans/main.xml,classpath*:beans/vortexExtension.xml</param-value>
--->
-      <!--param-value>#foreach ( $name in ${beanConfigFileNames} )classpath:$name,#end classpath*:beans/vortexExtension.xml</param-value-->
-
-<!--
-    </init-param>
--->
   </servlet>  
   
   <servlet-mapping>

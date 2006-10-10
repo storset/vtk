@@ -220,19 +220,7 @@
        Added caching of mapping file documents:
      </description>
      
-     <property name="simpleCache" ref="mappingCache" />
-     <property name="cacheIdentifiers" ref="mappingIdentifiers" />
    </bean>
-
-  <bean id="mappingCache"
-        class="org.vortikal.util.cache.SimpleCacheImpl">
-    <property name="timeoutSeconds" value="600" />
-    <property name="refreshTimestampOnGet" value="false" />
-  </bean>
-
-  <bean id="mappingIdentifiers" class="org.vortikal.context.CSVListFactoryBean">
-    <property name="csvList" value="${xslDocumentCachedResources}" />
-  </bean>
 
   <bean id="standardXslStylesheetResolvers" class="java.util.ArrayList">
     <constructor-arg>

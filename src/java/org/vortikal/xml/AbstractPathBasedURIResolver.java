@@ -46,9 +46,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.repository.URIUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -63,10 +60,6 @@ import org.xml.sax.SAXException;
  * Configurable properties:
  * <ul>
  *  <li><code>prefix</code> - the prefix to prepend to all paths
- *  <li><code>simpleCache</code> - a cache for source ids contained in
- *      <code>cacheIdentifiers</code>
- *  <li><code>cacheIdentifiers</code> - a list of path ids to resources to be cached.
- *      required if simpleCache is specified.
  *  <!--li><code>pathRegexp</code> - regular expression denoting the
  *      legal values of stylesheet references. If this regexp does not
  *      match the value of the expanded repository URI, the resolver
@@ -74,41 +67,19 @@ import org.xml.sax.SAXException;
  *      <code>.*</code>.-->
  * </ul>
  */
-public abstract class AbstractPathBasedURIResolver
-  implements StylesheetURIResolver, InitializingBean {
+public abstract class AbstractPathBasedURIResolver implements StylesheetURIResolver {
 
     public static final String PROTOCOL_PREFIX = "path://";
-
 
     protected Log logger = LogFactory.getLog(this.getClass());
     
 
     private String prefix = null;
 
-    private List cacheIdentifiers;
-    private SimpleCache simpleCache;
-
-    public void setSimpleCache(SimpleCache simpleCache) {
-        this.simpleCache = simpleCache;
-    }
-
-    public void setCacheIdentifiers(String[] cacheIdentifiers) {
-        this.cacheIdentifiers = Arrays.asList(cacheIdentifiers);
-    }
-
     public void setPrefix(String prefix)  {
         this.prefix = prefix;
     }
 
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.simpleCache != null && this.cacheIdentifiers == null) 
-            throw new BeanInitializationException(
-                "Java Bean property 'cacheIdentifiers' required when "
-                + "'simpleCahce' is specified");
-    }
-
-    
     /**
      * Gets an input stream for a path based resource. Subclasses must
      * implement this method.
@@ -189,18 +160,8 @@ public abstract class AbstractPathBasedURIResolver
         }
 
         try {
+
             Source source = null;
-
-            if (this.simpleCache != null && this.cacheIdentifiers.contains(path)) {
-                source = (Source) this.simpleCache.get(path);
-
-                if (source != null) {
-                    if (this.logger.isDebugEnabled())
-                        this.logger.debug("Using cached source for resource: " + path);
-                    return source;
-                }
-                return cacheSource(path);
-            }
 
             InputStream inStream = getInputStream(path);
 
@@ -210,7 +171,7 @@ public abstract class AbstractPathBasedURIResolver
                 source = new StreamSource();
             source.setSystemId(PROTOCOL_PREFIX + path);
             return source;
-                
+            
         } catch (IOException e) {
             throw new TransformerException(
                 "Unable to resolve URI [href = '" + href + "', base = '" +
@@ -218,30 +179,6 @@ public abstract class AbstractPathBasedURIResolver
         }
     }
 
-    private synchronized Source cacheSource(String path) throws IOException, TransformerException {
-        
-        Source source = (Source) this.simpleCache.get(path);
-        if (source != null) {
-            return source;
-        }
-        InputStream inStream = getInputStream(path);
-        try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = builder.parse(inStream);
-            source = new DOMSource(doc);
-            this.simpleCache.put(path, source);
-            source.setSystemId(PROTOCOL_PREFIX + path);
-            return source;
-                    
-        } catch (SAXException e) {
-            throw new TransformerException("Unable to build DOM reprsentation of resource '"
-                                           + path + "'", e);
-        } catch (ParserConfigurationException e) {
-            throw new TransformerException("Unable to build DOM reprsentation of resource '"
-                                           + path + "'", e);
-        }
-    }
-    
 
     private String getAbsolutePath(String href, String base) {
 
@@ -270,6 +207,7 @@ public abstract class AbstractPathBasedURIResolver
         }
         return uri;
     }
+
     
     private String addPrefix(String uri) {
         if (this.prefix == null) {

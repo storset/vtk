@@ -42,6 +42,10 @@
             <filtering>true</filtering>
             <directory>src/main/resin</directory>
           </resource>
+          <resource>
+            <filtering>true</filtering>
+            <directory>src/main/resources/filtered-resources</directory>
+          </resource>
         </resources>
       </build>
     </profile>
@@ -51,6 +55,9 @@
     <resources>
       <resource>
         <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>filtered-resources/</exclude>
+        </excludes>
       </resource>
       <resource>
         <directory>src/main/ftl</directory>

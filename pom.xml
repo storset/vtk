@@ -23,7 +23,7 @@
       <name>Gorm Paulsen</name>
     </developer>
     <developer>
-      <name>Øyvind Stegaard</name>
+      <name>Øyvind Stegard</name>
     </developer>
     <developer>
       <name>Eirik Meland</name>
@@ -38,8 +38,18 @@
   <ciManagement>
     <system>Continuum</system>
     <url>http://stirfry:8080/continuum/</url>
+    <!--
+      <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>vortex-core@usit.uio.no</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+      -->
   </ciManagement>
-   <scm>
+  <scm>
     <connection>scm:svn:svn://element.uio.no/svnroot/vortikal/branches/maven2</connection>
     <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal/branches/maven2</developerConnection>
     <url>svn://element.uio.no/svnroot/vortikal/branches/maven2</url>
@@ -47,7 +57,7 @@
   <licenses>
     <license>
       <url>/LICENSE.txt</url>
-     </license>
+    </license>
   </licenses>
   <distributionManagement>
     <site>
@@ -55,7 +65,7 @@
       <url>file:///usit/stirfry/www/var/virtual/no.uio.stirfry_80/htdocs/continuum/${pom.artifactId}</url>
     </site>
   </distributionManagement>
-
+  
   <pluginRepositories>
     <pluginRepository>
       <id>intra.usit.uio.no</id>
@@ -69,8 +79,45 @@
     <logPath>${project.build.directory}/logs</logPath>
     <webappDir>${project.build.directory}/${project.build.finalName}</webappDir>
   </properties>
-
+  
   <packaging>${packaging}</packaging>
+  
+  <profiles>
+    <profile>
+      <id>jar</id>
+      <activation>
+        <property>
+          <name>packaging</name>
+          <value>jar</value>
+        </property>
+      </activation>
+      <repositories>
+	<repository>
+          <id>deploy@intra.usit.uio.no</id>
+          <name>USIT intra</name>
+          <url>scpexe://saruman.uio.no/uio/caesar/no.uio.usit.intra_80/htdocs/web/maven2</url>
+	</repository>
+      </repositories>
+      <build>
+        <plugins>
+          
+	  <plugin>
+	    <artifactId>maven-one-plugin</artifactId>
+	    <executions>
+	      <execution>
+		<configuration>
+		  <remoteRepositoryUrl>scpexe://saruman.uio.no/uio/caesar/no.uio.usit.intra_80/htdocs/web/maven</remoteRepositoryUrl>
+		</configuration>
+		<goals>
+		  <goal>deploy-maven-one-repository</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	  </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   
   <build>
     <defaultGoal>package</defaultGoal>
@@ -124,7 +171,7 @@
         </includes>
       </resource>
     </resources>
-
+    
     <plugins>
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
@@ -135,7 +182,7 @@
 	    <exclude>**/JTidyTransformerTest.java</exclude>
  	  </excludes>
 	  <skip>true</skip>
-	    -->
+	  -->
 	</configuration>
       </plugin>
       <plugin>
@@ -163,11 +210,11 @@
               <goal>javacc</goal>
             </goals>
             <configuration>
-<!--
+	      <!--
               <packageName>org.vortikal.repositoryimpl.query.parser</packageName>
               <sourceDirectory>src/main/generated-java/</sourceDirectory>
               <outputDirectory>src/main/generated-java</outputDirectory>
--->
+	      -->
             </configuration>
           </execution>
         </executions>
@@ -193,7 +240,7 @@
       </plugin>
     </plugins>
   </build>
-
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

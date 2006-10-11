@@ -7,7 +7,9 @@
 
   <!-- Import files from standard-extensions (if any): -->
   <!-- #foreach( $ext in $standardExtensionFiles.iterator()) -->
+  <!--
   <import resource="${ext}"/>
+  -->
   <!-- #end -->
 
 

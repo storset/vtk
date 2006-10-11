@@ -30,9 +30,6 @@
       <build>
         <resources>
           <resource>
-            <directory>src/main/webapp</directory>
-          </resource>
-          <resource>
             <directory>src/main/log4j</directory>
           </resource>
           <resource>

@@ -5,27 +5,42 @@ are necessary:
    'src/sql/postgresql-schema.sql' (currently only PostgreSQL is
    supported, but HSQLDB has also been known to work in the past).
 
-2. Create a 'build.properties' file in this directory containing (at a
-   minimum) these properties:
+2. Modify your ~/.m2/settings.xml:
 
-   jdbcUsername = <your JDBC user>
-   jdbcPassword = <your JDBC password>
-   databaseURL = <your JDBC URL, e.g. jdbc:postgresql:my-user>
-   repositoryDataDirectory = <an empty directory for storing files>
-   systemIndexPath = <an empty directory for storing indexes>
+  <settings xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <profiles>
+      <profile>
+        <id>default</id>
+        <properties>
+  	<!-- vortikal -->
+  	<vortikal.indexStorageRootPath>[an empty directory for storing indices]</vortikal.indexStorageRootPath>
+  	<vortikal.jdbcUsername>[your JDBC user]</vortikal.jdbcUsername>
+  	<vortikal.jdbcPassword>[your JDBC password]</vortikal.jdbcPassword>
+  	<vortikal.repositoryDataDirectory>[an empty directory for storing files]</vortikal.repositoryDataDirectory>
+  	<vortikal.databaseURL>[your JDBC URL, e.g. jdbc:postgresql:my-user>]</vortikal.databaseURL>
+        </properties>
+        <repositories>
+          <repository>
+            <id>intra.usit.uio.no</id>
+            <name>USIT Intra</name>
+            <url>http://intra.usit.uio.no/web/maven2/</url>
+          </repository>
+        </repositories>
+      </profile>
+    </profiles>
+  </settings>
 
-3. Run the command 'maven war:webapp' (standing in the project
+3. Run the command 'maven clean package -Dpackaging=war (standing in the project
    directory).
 
-4. Start resin2 using the configuration file in
-   'target/resin.conf'. If you want to run with resin3 a the following
-   property to build.properties before running 'maven war:webapp':
-
-   resin3 = true
+4. Start resin2 using the script in project-root:
+   'sh resin-start.sh'
 
 5. You should now be able to access the web service on
    http:localhost:9322/ and the WebDAV service on
    http://localhost:9321/. Log in as 'root@localhost:fish'.
 
-6. See the default configuration file 'conf/beans/vortikal.properties'
-   for descriptions of the various configuration settings.
+6. See the default configuration file
+   'src/main/resources/vortikal/beans/vortikal.properties' for
+   descriptions of the various configuration settings.

@@ -72,39 +72,20 @@
 
   <packaging>${packaging}</packaging>
   
-  <profiles>
-    <profile>
-      <id>war</id>
-      <activation>
-        <property>
-          <name>packaging</name>
-          <value>war</value>
-        </property>
-      </activation>
-      <build>
-        <filters>
-          <filter>src/main/resources/vortikal/beans/vortikal.properties</filter>
-        </filters>
-        <resources>
-          <resource>
-            <directory>src/main/log4j</directory>
-          </resource>
-          <resource>
-            <filtering>true</filtering>
-            <directory>src/main/resin</directory>
-          </resource>
-          <resource>
-            <filtering>true</filtering>
-            <directory>src/main/resources/filtered-resources</directory>
-          </resource>
-        </resources>
-      </build>
-    </profile>
-  </profiles>
-  
   <build>
     <defaultGoal>package</defaultGoal>
+    <filters>
+      <filter>src/main/resources/vortikal/beans/vortikal.properties</filter>
+    </filters>
     <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resin</directory>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources/filtered-resources</directory>
+      </resource>
       <resource>
         <directory>src/main/resources</directory>
         <excludes>

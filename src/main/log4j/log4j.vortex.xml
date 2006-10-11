@@ -9,20 +9,6 @@
     </layout>
   </appender>
 
-  <!-- #if ( $reportErrorsToMailAddress != '' ) -->
-  <!-- SMTPAppender depends on the JavaMail API and javax.activation -->
-  <appender name="errorMail" class="org.apache.log4j.net.SMTPAppender">
-    <param name="SMTPHost" value="localhost" />
-    <!--param name="BufferSize" value="100" /-->
-    <param name="To" value="${reportErrorsToMailAddress}" />
-    <param name="Subject" value="Application error" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <!--param name="ConversionPattern" value="[%d{ISO8601}]%n%n%-5p%n%n%c%n%n%m%n%n" /-->
-      <param name="ConversionPattern" value="%d %p [%c{2} %t]%x - %m\r\n"/>
-    </layout>
-  </appender>
-  <!-- #end -->
-
   <appender name="error" class="org.apache.log4j.RollingFileAppender">
     <param name="maxBackupIndex" value="10" />
     <param name="maxFileSize" value="2MB" />
@@ -36,9 +22,6 @@
   <logger name="org.vortikal.web.servlet.VortikalServlet.Error" additivity="false">
     <level value="warn" />
     <appender-ref ref="stdout"/>
-    <!-- #if ( $reportErrorsToMailAddress != '' ) -->
-    <appender-ref ref="errorMail"/>
-    <!-- #end -->
   </logger>
 
   <logger name="org.vortikal.web.servlet.VortikalServlet.Request" additivity="false">

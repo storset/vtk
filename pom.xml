@@ -11,9 +11,33 @@
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
   </organization>
-  <packaging>jar</packaging>
-  <build>
 
+  <properties>
+    <packaging>jar</packaging>
+  </properties>
+
+  <packaging>${packaging}</packaging>
+  
+  <profiles>
+    <profile>
+      <id>war</id>
+      <activation>
+        <property>
+          <name>packaging</name>
+          <value>war</value>
+        </property>
+      </activation>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/webapp</directory>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+  </profiles>
+  
+  <build>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -40,6 +64,7 @@
           <include>i18n/**</include>
         </includes>
       </resource>
+      
     </resources>
 
     <plugins>

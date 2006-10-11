@@ -278,6 +278,24 @@
       <artifactId>sitemesh</artifactId>
       <version>2.2.1</version>
     </dependency>
+
+    <!-- runtime dependencies -->
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.1</version>
+    </dependency>
+    
     <!--
     <dependency>
       <groupId>com.ibatis</groupId>

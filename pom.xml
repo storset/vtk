@@ -13,7 +13,7 @@
   </organization>
 
   <properties>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
   </properties>
 
   <packaging>${packaging}</packaging>

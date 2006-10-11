@@ -78,6 +78,7 @@
       <filter>src/main/resources/vortikal/beans/vortikal.properties</filter>
     </filters>
     <resources>
+      <!-- Magic start -->
       <resource>
         <filtering>true</filtering>
         <directory>src/main/resources/${packaging}/resin</directory>
@@ -86,10 +87,10 @@
         <filtering>true</filtering>
         <directory>src/main/resources/${packaging}/filtered-resources</directory>
       </resource>
+      <!-- magic end -->
       <resource>
         <directory>src/main/resources</directory>
         <excludes>
-          <exclude>filtered-resources/</exclude>
           <exclude>war/</exclude>
         </excludes>
       </resource>

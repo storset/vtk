@@ -32,6 +32,12 @@
           <resource>
             <directory>src/main/webapp</directory>
           </resource>
+          <resource>
+            <directory>src/main/log4j</directory>
+          </resource>
+          <resource>
+            <directory>src/main/resin</directory>
+          </resource>
         </resources>
       </build>
     </profile>

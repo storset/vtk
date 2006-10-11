@@ -12,6 +12,12 @@
     <url>http://vortikal.berlios.de/</url>
   </organization>
 
+  <licenses>
+    <license>
+      <url>/LICENSE.txt</url>
+     </license>
+  </licenses>
+  
   <properties>
     <packaging>war</packaging>
     <targetPath>${project.build.directory}</targetPath>
@@ -117,24 +123,8 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
         <executions>
-          <!--
-            <execution>
-            <id>jjtree</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>jjtree</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>src/main/java/org/vortikal/repositoryimpl/query/parser/</sourceDirectory>
-              <outputDirectory>src/main/generated-java/org/vortikal/repositoryimpl/query/parser</outputDirectory>
-            </configuration>
-          </execution>
-  -->
           <execution>
             <id>javacc</id>
-            <!--
-            <phase>generate-sources</phase>
-              -->
             <goals>
               <goal>javacc</goal>
             </goals>
@@ -169,6 +159,7 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

@@ -64,7 +64,13 @@
           <include>i18n/**</include>
         </includes>
       </resource>
-      
+      <resource>
+        <directory>src/main/xdocs</directory>
+        <targetPath>vortikal-changes</targetPath>
+        <includes>
+          <include>changes.xml</include>
+        </includes>
+      </resource>
     </resources>
 
     <plugins>

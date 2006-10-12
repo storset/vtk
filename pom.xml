@@ -177,14 +177,24 @@
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-surefire-plugin</artifactId>
 	<configuration>
-	  <!--
- 	  <excludes>
-	    <exclude>**/JTidyTransformerTest.java</exclude>
- 	  </excludes>
+	  <excludes>
+	    <exclude>**/Abstract*.java</exclude>
+	    <!-- not working -->
+	    <exclude>**/SimpleMethodInvokingTriggerBeanTestCase.java</exclude>
+	    <exclude>**/SimpleDateFormatCacheTestCase.java</exclude>
+	    <exclude>**/SimpleFileSystemContentStoreTestCase.java</exclude>
+	    <exclude>**/MemoryContentStoreTestCase.java</exclude>
+	  </excludes>
+	  <includes>
+	    <include>**/*Test.java</include>
+	    <include>**/*TestSuite.java</include>
+	    <include>**/*TestCase.java</include>
+	  </includes>
+<!--
 	  <skip>true</skip>
-	  -->
+  -->
 	</configuration>
-      </plugin>
+	</plugin>
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
         <artifactId>maven-framework-version-plugin</artifactId>
@@ -271,7 +281,13 @@
       <artifactId>miyagi</artifactId>
       <version>0.2-SNAPSHOT</version>
       <scope>test</scope>
-    </dependency>  
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.1</version>
+      <scope>test</scope>
+    </dependency>
     
     <dependency>
       <groupId>commons-logging</groupId>

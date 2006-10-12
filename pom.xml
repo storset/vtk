@@ -93,7 +93,7 @@
       </activation>
       <repositories>
 	<repository>
-          <id>deploy@intra.usit.uio.no</id>
+          <id>maven2-repo@intra.usit.uio.no</id>
           <name>USIT intra</name>
           <url>scpexe://saruman.uio.no/uio/caesar/no.uio.usit.intra_80/htdocs/web/maven2</url>
 	</repository>
@@ -231,8 +231,8 @@
             </goals>
             <configuration>
               <sources>
-                <source>src/main/java-sandbox</source>
                 <source>src/main/java</source>
+                <source>src/main/java-sandbox/src/java</source>
               </sources>
             </configuration>
           </execution>

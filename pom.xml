@@ -64,11 +64,6 @@
       <id>stirfry</id>
       <url>file:///usit/stirfry/www/var/virtual/no.uio.stirfry_80/htdocs/continuum/${pom.artifactId}</url>
     </site>
-    <repository>
-      <id>xml.uio.no</id>
-      <name>Maven repository on xml.uio.no</name>
-      <url>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
-    </repository>
   </distributionManagement>
   
   <pluginRepositories>
@@ -98,9 +93,9 @@
       </activation>
       <repositories>
 	<repository>
-          <id>maven2-repo@intra.usit.uio.no</id>
-          <name>USIT intra</name>
-          <url>scpexe://saruman.uio.no/uio/caesar/no.uio.usit.intra_80/htdocs/web/maven2</url>
+	  <id>xml.uio.no</id>
+	  <name>Maven repository on xml.uio.no</name>
+	  <url>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
 	</repository>
       </repositories>
       <build>

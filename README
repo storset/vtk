@@ -5,35 +5,51 @@ are necessary:
    'src/sql/postgresql-schema.sql' (currently only PostgreSQL is
    supported, but HSQLDB has also been known to work in the past).
 
-2. Create/Modify your ~/.m2/settings.xml:
+2. Set up the configuration. Configuration can be placed either in the
+   ~/.m2/settings.xml, or in a properties file ~/vrtx.properties. 
 
-<?xml version="1.0" encoding="utf-8" ?>
-  <settings xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <profiles>
-      <profile>
-        <id>default</id>
-        <properties>
-  	<!-- vortikal -->
-  	<vortikal.indexStorageRootPath>[an empty directory for storing indices]</vortikal.indexStorageRootPath>
-  	<vortikal.jdbcUsername>[your JDBC user]</vortikal.jdbcUsername>
-  	<vortikal.jdbcPassword>[your JDBC password]</vortikal.jdbcPassword>
-  	<vortikal.repositoryDataDirectory>[an empty directory for storing files]</vortikal.repositoryDataDirectory>
-  	<vortikal.databaseURL>[your JDBC URL, e.g. jdbc:postgresql:my-user>]</vortikal.databaseURL>
-        </properties>
-        <repositories>
-          <repository>
-            <id>intra.usit.uio.no</id>
-            <name>USIT Intra</name>
-            <url>http://intra.usit.uio.no/web/maven2/</url>
-          </repository>
-        </repositories>
-      </profile>
-    </profiles>
-    <activeProfiles>
-      <activeProfile>default</activeProfile>
-    </activeProfiles>
-  </settings>
+  2.a Configuration using ~/.m2/settings.xml:
+
+  <?xml version="1.0" encoding="utf-8" ?>
+    <settings xmlns="http://maven.apache.org/POM/4.0.0"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <profiles>
+        <profile>
+          <id>default</id>
+          <properties>
+            <!-- maven -->
+            <maven.test.skip>true</maven.test.skip>
+
+  	    <!-- vortikal -->
+  	    <vortikal.indexStorageRootPath>[an empty directory for storing indices]</vortikal.indexStorageRootPath>
+  	    <vortikal.jdbcUsername>[your JDBC user]</vortikal.jdbcUsername>
+  	    <vortikal.jdbcPassword>[your JDBC password]</vortikal.jdbcPassword>
+  	    <vortikal.repositoryDataDirectory>[an empty directory for storing files]</vortikal.repositoryDataDirectory>
+  	    <vortikal.databaseURL>[your JDBC URL, e.g. jdbc:postgresql:my-user>]</vortikal.databaseURL>
+          </properties>
+          <repositories>
+            <repository>
+              <id>intra.usit.uio.no</id>
+              <name>USIT Intra</name>
+              <url>http://intra.usit.uio.no/web/maven2/</url>
+            </repository>
+          </repositories>
+        </profile>
+      </profiles>
+      <activeProfiles>
+        <activeProfile>default</activeProfile>
+      </activeProfiles>
+    </settings>
+
+  2.b Configuration using ~/vrtx.properties:
+
+  indexStorageRootPath = [an empty directory for storing indices]
+  jdbcUsername = [your JDBC user]
+  jdbcPassword = [your JDBC password]
+  repositoryDataDirectory = [an empty directory for storing files]
+  databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
+  
 
 3. Run the command 'mvn -U clean package -Dpackaging=war' (standing in the project
    directory).

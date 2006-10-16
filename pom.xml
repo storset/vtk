@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
- xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
@@ -64,6 +64,11 @@
       <id>stirfry</id>
       <url>file:///usit/stirfry/www/var/virtual/no.uio.stirfry_80/htdocs/continuum/${pom.artifactId}</url>
     </site>
+    <repository>
+      <id>xml.uio.no</id>
+      <name>Maven repository on xml.uio.no</name>
+      <url>scp://xml.uio.no//site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
+    </repository>
   </distributionManagement>
   
   <pluginRepositories>
@@ -105,7 +110,7 @@
 	    <executions>
 	      <execution>
 		<configuration>
-		  <remoteRepositoryUrl>scpexe://saruman.uio.no/uio/caesar/no.uio.usit.intra_80/htdocs/web/maven</remoteRepositoryUrl>
+		  <remoteRepositoryUrl>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven</remoteRepositoryUrl>
 		</configuration>
 		<goals>
 		  <goal>deploy-maven-one-repository</goal>

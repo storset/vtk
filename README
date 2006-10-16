@@ -51,8 +51,8 @@ are necessary:
   databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
   
 
-3. Run the command 'mvn -U clean package -Dpackaging=war' (standing in the project
-   directory).
+3. Run the command 'mvn clean package' (standing in the project
+   directory). If you run into trouble try 'mvn -U clean package'.
 
 4. Start resin2 using the script in project-root:
    'sh resin-start.sh' (RESIN_HOME has to be set for this script to work)

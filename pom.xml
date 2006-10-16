@@ -100,7 +100,6 @@
       </repositories>
       <build>
         <plugins>
-          
 	  <plugin>
 	    <artifactId>maven-one-plugin</artifactId>
 	    <executions>
@@ -200,11 +199,9 @@
 	      -->
 	    <include>**/*TestCase.java</include>
 	  </includes>
-<!--
 	  <skip>true</skip>
-  -->
 	</configuration>
-	</plugin>
+      </plugin>
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
         <artifactId>maven-framework-version-plugin</artifactId>
@@ -239,27 +236,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/main/java</source>
-                <source>src/main/java-sandbox/src/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
     </plugins>
   </build>
   
@@ -388,9 +364,8 @@
     </dependency>
     <dependency>
       <groupId>groovy</groupId>
-      <!-- this is not the same as in project.xml -->
-      <artifactId>groovy-all-1.0-jsr</artifactId>
-      <version>04</version>
+      <artifactId>groovy-all</artifactId>
+      <version>1.0-jsr-04</version>
     </dependency>
     <dependency>
       <groupId>com.ibatis</groupId>
@@ -406,6 +381,11 @@
       <groupId>opensymphony</groupId>
       <artifactId>sitemesh</artifactId>
       <version>2.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.0</version>
     </dependency>
 
     <!-- runtime dependencies -->
@@ -469,16 +449,15 @@
   
   <reporting>
     <plugins>
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <configLocation>src/main/checkstyle/checkstyle.xml</configLocation>
-          <!--
-          <headerLocation>whizbang/LICENSE.txt</headerLocation>
-            -->
         </configuration>
       </plugin>
+      -->
       <!--
         <plugin>
         <groupId>org.apache.maven.plugins</groupId>

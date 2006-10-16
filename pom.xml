@@ -67,7 +67,7 @@
     <repository>
       <id>xml.uio.no</id>
       <name>Maven repository on xml.uio.no</name>
-      <url>scp://xml.uio.no//site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
+      <url>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
     </repository>
   </distributionManagement>
   

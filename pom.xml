@@ -64,13 +64,6 @@
       <id>stirfry</id>
       <url>file:///usit/stirfry/www/var/virtual/no.uio.stirfry_80/htdocs/continuum/${pom.artifactId}</url>
     </site>
-    <!--
-    <repository>
-      <id>xml.uio.no</id>
-      <name>Maven repository on xml.uio.no</name>
-      <url>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
-    </repository>
-      -->
   </distributionManagement>
    
   <pluginRepositories>
@@ -79,6 +72,13 @@
       <url>http://xml.uio.no/vortex/maven2</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <repositories>
+    <repository>
+      <id>xml.uio.no</id>
+      <url>http://xml.uio.no/vortex/maven2</url>
+    </repository>
+  </repositories>
   
   <properties>
     <packaging>war</packaging>
@@ -309,6 +309,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.3</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jdom</groupId>

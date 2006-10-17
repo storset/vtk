@@ -502,10 +502,4 @@
       -->
     </plugins>
   </reporting>
-
-  <scm>
-    <connection>scm:svn:svn://element.uio.no/svnroot/vortikal/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal/trunk</developerConnection>
-    <url>svn://element.uio.no/svnroot/vortikal/trunk</url>
-  </scm>
 </project>

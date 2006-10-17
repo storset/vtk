@@ -194,6 +194,16 @@
     </property>
   </bean>
 
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="transformRssView" />
+    <property name="targetMethod" value="addReferenceDataProvider" />
+    <property name="arguments">
+      <list>
+        <ref bean="xsltSearchProvider" />
+      </list>
+    </property>
+  </bean>
+
 
   <bean id="xmlStylesheetInDocumentResolver"
         class="org.vortikal.xml.StylesheetInDocumentResolver" />

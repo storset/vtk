@@ -14,6 +14,12 @@
         <ref bean="studieprogramProgramkodePropDef" />
         <ref bean="studieprogramProgramnavnPropDef" />
         <ref bean="studieprogramProgramtypePropDef" />
+        <ref bean="studieprogramAntallaarPropDef" />
+        <ref bean="studieprogramStudiepoengPropDef" />
+        <ref bean="studieprogramOmfangoppgavePropDef" />
+        <ref bean="studieprogramSoknadsfristPropDef" />
+        <ref bean="studieprogramStudieplasserPropDef" />
+        <ref bean="studieprogramSokodePropDef" />
       </list>
     </property>
     <property name="assertions">
@@ -77,5 +83,76 @@
     <property name="expression" value="/studieprogram-hjemmeside/programtype" />
   </bean>
 
+  <bean id="studieprogramAntallaarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="antallaar" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramAntallaarEvaluator" />
+  </bean>
+
+  <bean id="studieprogramAntallaarEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/antall-aar" />
+  </bean>
+
+  <bean id="studieprogramStudiepoengPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="studiepoeng" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramStudiepoengEvaluator" />
+  </bean>
+
+  <bean id="studieprogramStudiepoengEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/studiepoeng" />
+  </bean>
+
+  <bean id="studieprogramOmfangoppgavePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="omfangoppgave" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramOmfangoppgaveEvaluator" />
+  </bean>
+
+  <bean id="studieprogramOmfangoppgaveEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/omfang-oppgave" />
+  </bean>
+
+  <bean id="studieprogramSoknadsfristPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="soknadsfrist" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramSoknadsfristEvaluator" />
+  </bean>
+
+  <bean id="studieprogramSoknadsfristEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/soknadsfrist" />
+  </bean>
+
+  <bean id="studieprogramStudieplasserPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="studieplasser" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramStudieplasserEvaluator" />
+  </bean>
+
+  <bean id="studieprogramStudieplasserEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/studieplasser" />
+  </bean>
+
+  <bean id="studieprogramSokodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="sokode" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="studieprogramSokodeEvaluator" />
+  </bean>
+
+  <bean id="studieprogramSokodeEvaluator" parent="abstractXPathEvaluator">
+    <property name="expression" value="/studieprogram-hjemmeside/faktaboks/so-kode" />
+  </bean>
 
 </beans>

@@ -56,6 +56,9 @@ import org.vortikal.security.Principal;
  *   <li><code>valueFactory</code> - an optional {@link ValueFactory}
  *   to apply to the extracted value(s). If not specified, all
  *   extracted values are treated as string values.
+ *   <li><code>trimValues</code> - whether or not to trim (remove
+ *   leading and trailing whitespace) from (textual) evaluated
+ *   values. Default is <code>true</code>.
  * </ul>
  *
  */
@@ -63,6 +66,8 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
 
     private ValueFactory valueFactory;
     private XPath xPath;
+    private boolean trimValues = true;
+    
 
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
@@ -73,6 +78,11 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
         this.xPath = XPath.newInstance(value);
     }
     
+    public void setTrimValues(boolean trimValues) {
+        this.trimValues = trimValues;
+    }
+    
+
     public void afterPropertiesSet() {
         if (this.xPath == null) {
             throw new BeanInitializationException(
@@ -99,18 +109,28 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
                 Value[] values = new Value[list.size()];
                 for (int i = 0; i < list.size(); i++) {
                     org.jdom.Content c = (org.jdom.Content) list.get(i);
+                    String stringValue = c.getValue();
                     Value value = null;
+
+                    if (this.trimValues && stringValue != null) {
+                        stringValue = stringValue.trim();
+                    }
+
                     if (this.valueFactory != null) {
                         int type = property.getDefinition().getType();
-                        value = this.valueFactory.createValue(c.getValue(), type);
+                        value = this.valueFactory.createValue(stringValue, type);
                     } else {
-                        value = new Value(c.getValue());
+                        value = new Value(stringValue);
                     }
                     values[i] = value;
                 }
                 property.setValues(values);
             } else {
                 String stringVal = this.xPath.valueOf(doc);
+                if (this.trimValues && stringVal != null) {
+                    stringVal = stringVal.trim();
+                }
+
                 Value value = null;
                 if (this.valueFactory != null) {
                     int type = property.getDefinition().getType();

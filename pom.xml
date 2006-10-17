@@ -7,9 +7,10 @@
   <artifactId>vortikal</artifactId>
   <version>0.3.2-SNAPSHOT</version>
   <name>The Vortikal Web Framework</name>
+  <url>http://vortikal.berlios.de</url>
   <organization>
     <name>Vortikal Project</name>
-    <url>http://vortikal.berlios.de/</url>
+    <url>http://vortikal.berlios.de</url>
   </organization>
   <issueManagement>
     <system>Jira</system>
@@ -189,7 +190,7 @@
         </includes>
       </resource>
       <resource>
-        <directory>src/main/xdocs</directory>
+        <directory>src/changes</directory>
         <targetPath>vortikal-changes</targetPath>
         <includes>
           <include>changes.xml</include>
@@ -469,6 +470,18 @@
   
   <reporting>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+
       <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

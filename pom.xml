@@ -112,6 +112,7 @@
 	    <executions>
 	      <execution>
 		<configuration>
+		  <remoteRepositoryId>maven1-repo@xml.uio.no</remoteRepositoryId>
 		  <remoteRepositoryUrl>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven</remoteRepositoryUrl>
 		</configuration>
 		<goals>

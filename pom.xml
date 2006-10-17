@@ -50,9 +50,9 @@
       -->
   </ciManagement>
   <scm>
-    <connection>scm:svn:svn://element.uio.no/svnroot/vortikal/branches/maven2</connection>
-    <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal/branches/maven2</developerConnection>
-    <url>svn://element.uio.no/svnroot/vortikal/branches/maven2</url>
+    <connection>scm:svn:svn://element.uio.no/svnroot/vortikal/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <url>svn://element.uio.no/svnroot/vortikal/trunk</url>
   </scm>
   <licenses>
     <license>
@@ -107,6 +107,14 @@
       </distributionManagement>
       <build>
         <plugins>
+          <plugin>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <tagBase>
+                svn+ssh://element.uio.no/svnroot/vortikal/tags
+              </tagBase>
+            </configuration>
+          </plugin>
 	  <plugin>
 	    <artifactId>maven-one-plugin</artifactId>
 	    <executions>

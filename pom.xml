@@ -41,6 +41,10 @@
     <notifiers>
       <notifier>
         <type>mail</type>
+        <sendOnSuccess>false</sendOnSuccess>
+        <sendOnWarning>false</sendOnWarning>
+        <sendOnError>true</sendOnError>
+        <sendOnFailure>true</sendOnFailure>
         <configuration>
           <address>vortex-core@usit.uio.no</address>
         </configuration>

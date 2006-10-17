@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
- xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
@@ -11,11 +11,147 @@
     <name>Vortikal Project</name>
     <url>http://vortikal.berlios.de/</url>
   </organization>
-  <packaging>jar</packaging>
+  <issueManagement>
+    <system>Jira</system>
+    <url>http://www.usit.uio.no/jira/browse/VTK</url>
+  </issueManagement>
+  <developers>
+    <developer>
+      <name>Jo Størset</name>
+    </developer>
+    <developer>
+      <name>Gorm Paulsen</name>
+    </developer>
+    <developer>
+      <name>Øyvind Stegard</name>
+    </developer>
+    <developer>
+      <name>Eirik Meland</name>
+    </developer>
+  </developers>  
+  <mailingLists>
+    <mailingList>
+      <name>vortex-core</name>
+      <post>vortex-core@usit.uio.no</post>
+    </mailingList>
+  </mailingLists>
+  <ciManagement>
+    <system>Continuum</system>
+    <url>http://stirfry:8080/continuum/</url>
+    <!--
+      <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>vortex-core@usit.uio.no</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+      -->
+  </ciManagement>
+  <scm>
+    <connection>scm:svn:svn://element.uio.no/svnroot/vortikal/branches/maven2</connection>
+    <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal/branches/maven2</developerConnection>
+    <url>svn://element.uio.no/svnroot/vortikal/branches/maven2</url>
+  </scm>
+  <licenses>
+    <license>
+      <url>/LICENSE.txt</url>
+    </license>
+  </licenses>
+  <distributionManagement>
+    <site>
+      <id>stirfry</id>
+      <url>file:///usit/stirfry/www/var/virtual/no.uio.stirfry_80/htdocs/continuum/${pom.artifactId}</url>
+    </site>
+    <repository>
+      <id>xml.uio.no</id>
+      <name>Maven repository on xml.uio.no</name>
+      <url>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
+    </repository>
+  </distributionManagement>
+  
+  <pluginRepositories>
+    <pluginRepository>
+      <id>intra.usit.uio.no</id>
+      <url>http://intra.usit.uio.no/web/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  <properties>
+    <packaging>war</packaging>
+    <targetPath>${project.build.directory}</targetPath>
+    <logPath>${project.build.directory}/logs</logPath>
+    <webappDir>${project.build.directory}/${project.build.finalName}</webappDir>
+  </properties>
+  
+  <packaging>${packaging}</packaging>
+  
+  <profiles>
+    <profile>
+      <id>jar</id>
+      <activation>
+        <property>
+          <name>packaging</name>
+          <value>jar</value>
+        </property>
+      </activation>
+      <repositories>
+	<repository>
+	  <id>xml.uio.no</id>
+	  <name>Maven repository on xml.uio.no</name>
+	  <url>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven2</url>
+	</repository>
+      </repositories>
+      <build>
+        <plugins>
+	  <plugin>
+	    <artifactId>maven-one-plugin</artifactId>
+	    <executions>
+	      <execution>
+		<configuration>
+		  <remoteRepositoryUrl>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven</remoteRepositoryUrl>
+		</configuration>
+		<goals>
+		  <goal>deploy-maven-one-repository</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	  </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <source>1.4</source>
+              <target>1.4</target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  
   <build>
+    <defaultGoal>package</defaultGoal>
+    <filters>
+      <filter>src/main/resources/vortikal/beans/vortikal.properties</filter>
+    </filters>
     <resources>
+      <!-- Magic start -->
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources/${packaging}/resin</directory>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources/${packaging}/filtered-resources</directory>
+      </resource>
+      <!-- magic end -->
       <resource>
         <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>war/</exclude>
+        </excludes>
       </resource>
       <resource>
         <directory>src/main/ftl</directory>
@@ -25,7 +161,14 @@
         <targetPath>vortikal/ftl</targetPath>
       </resource>
       <resource>
-        <directory>ext/kupu/v1.3.5</directory>
+        <directory>src/main/sql/</directory>
+        <targetPath>vortikal/sql/</targetPath>
+        <includes>
+          <include>*-schema.sql</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/ext/kupu/v1.3.5</directory>
         <targetPath>vortikal/resources/kupu-resources</targetPath>
         <includes>
           <include>common/**</include>
@@ -33,14 +176,37 @@
         </includes>
       </resource>
       <resource>
-        <directory>src/sql/</directory>
-        <targetPath>vortikal/sql/</targetPath>
+        <directory>src/main/xdocs</directory>
+        <targetPath>vortikal-changes</targetPath>
         <includes>
-          <include>*-schema.sql</include>
+          <include>changes.xml</include>
         </includes>
       </resource>
     </resources>
+    
     <plugins>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<configuration>
+	  <excludes>
+	    <exclude>**/Abstract*.java</exclude>
+	    <!-- Threaded tests -->
+	    <exclude>**/SimpleDateFormatCacheTestCase.java</exclude>
+	    <exclude>**/SimpleMethodInvokingTriggerBeanTestCase.java</exclude>
+	    <exclude>**/SimpleFileSystemContentStoreTestCase.java</exclude>
+	    <exclude>**/MemoryContentStoreTestCase.java</exclude>
+	  </excludes>
+	  <includes>
+	    <include>**/*Test.java</include>
+	    <!--
+	    <include>**/*TestSuite.java</include>
+	      -->
+	    <include>**/*TestCase.java</include>
+	  </includes>
+	  <skip>true</skip>
+	</configuration>
+      </plugin>
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
         <artifactId>maven-framework-version-plugin</artifactId>
@@ -60,58 +226,24 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
         <executions>
-          <!--
-            <execution>
-            <id>jjtree</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>jjtree</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>src/main/java/org/vortikal/repositoryimpl/query/parser/</sourceDirectory>
-              <outputDirectory>src/main/generated-java/org/vortikal/repositoryimpl/query/parser</outputDirectory>
-            </configuration>
-          </execution>
-  -->
           <execution>
             <id>javacc</id>
-            <!--
-            <phase>generate-sources</phase>
-              -->
             <goals>
               <goal>javacc</goal>
             </goals>
             <configuration>
-<!--
+	      <!--
               <packageName>org.vortikal.repositoryimpl.query.parser</packageName>
               <sourceDirectory>src/main/generated-java/</sourceDirectory>
               <outputDirectory>src/main/generated-java</outputDirectory>
--->
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>sandbox/src/java</source>
-                <source>src/main/java</source>
-              </sources>
+	      -->
             </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -119,11 +251,56 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-mock</artifactId>
+      <version>1.2.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <version>1.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock-cglib</artifactId>
+      <version>1.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>no.uio.usit.miyagi</groupId>
+      <artifactId>miyagi</artifactId>
+      <version>0.2-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>logkit</groupId>
+          <artifactId>logkit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>avalon-framework</groupId>
+          <artifactId>avalon-framework</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -181,11 +358,6 @@
       <version>1.5.1</version>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.13</version>
-    </dependency>
-    <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.3</version>
@@ -197,9 +369,8 @@
     </dependency>
     <dependency>
       <groupId>groovy</groupId>
-      <!-- this is not the same as in project.xml -->
-      <artifactId>groovy-all-1.0-jsr</artifactId>
-      <version>04</version>
+      <artifactId>groovy-all</artifactId>
+      <version>1.0-jsr-04</version>
     </dependency>
     <dependency>
       <groupId>com.ibatis</groupId>
@@ -216,6 +387,62 @@
       <artifactId>sitemesh</artifactId>
       <version>2.2.1</version>
     </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.0</version>
+    </dependency>
+
+    <!-- runtime dependencies -->
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.2</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.1</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1-beta-7</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+        </exclusion>        
+        <exclusion>
+          <groupId>xom</groupId>
+          <artifactId>xom</artifactId>
+        </exclusion>        
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>7.4.1-jdbc3</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    
     <!--
     <dependency>
       <groupId>com.ibatis</groupId>
@@ -224,4 +451,44 @@
     </dependency>
     -->
   </dependencies>
+  
+  <reporting>
+    <plugins>
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>src/main/checkstyle/checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
+      -->
+      <!--
+        <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jdepend-maven-plugin</artifactId>
+      </plugin>
+        <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>1.0-beta-1</version>
+        </plugin>
+      -->
+    </plugins>
+  </reporting>
 </project>

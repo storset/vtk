@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+  "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+
+  <import resource="classpath:/vortikal/beans/vhost/main.xml" />
+
+  <import resource="extensions.xml" />
+
+   <bean id="propertyConfigurer"
+         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+     <property name="ignoreResourceNotFound" value="true" />
+     <property name="locations">
+       <list>
+         <value>classpath:/vortikal/beans/vortikal.properties</value>
+         <value>classpath:vortikal-custom.properties</value>
+         <value>file://${user.home}/vrtx.properties</value>
+       </list>
+     </property>
+   </bean>
+
+
+   <!-- Fix for resin 3.0 -->
+
+   <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter">
+     <property name="order" value="0" />
+   </bean>
+
+   <bean id="reqURIEncodingTranslator"
+         class="org.vortikal.web.filter.RequestURIEncodingTranslator">
+     <property name="order" value="10" />
+     <property name="fromEncoding" value="iso-8859-1" />
+     <property name="toEncoding" value="utf-8" />
+   </bean>
+
+   <bean id="reqURLDecoder" class="org.vortikal.web.filter.RequestURLDecoder">
+     <property name="order" value="10" />
+     <property name="characterEncoding" value="utf-8" />
+   </bean>
+
+</beans>

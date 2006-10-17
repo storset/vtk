@@ -82,14 +82,14 @@
     </repository>
   </repositories>
   
+  <packaging>${packaging}</packaging>
+  
   <properties>
     <packaging>war</packaging>
     <targetPath>${project.build.directory}</targetPath>
     <logPath>${project.build.directory}/logs</logPath>
     <webappDir>${project.build.directory}/${project.build.finalName}</webappDir>
   </properties>
-  
-  <packaging>${packaging}</packaging>
   
   <profiles>
     <profile>

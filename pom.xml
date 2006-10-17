@@ -15,6 +15,18 @@
     <system>Jira</system>
     <url>http://www.usit.uio.no/jira/browse/VTK</url>
   </issueManagement>
+  <ciManagement>
+    <system>Continuum</system>
+    <url>http://stirfry.uio.no:8080/continuum</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>vortex-core@usit.uio.no</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+  </ciManagement>
   <developers>
     <developer>
       <name>Jo Størset</name>
@@ -504,4 +516,10 @@
       -->
     </plugins>
   </reporting>
+
+  <scm>
+    <connection>scm:svn:svn://element.uio.no/svnroot/vortikal/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <url>svn://element.uio.no/svnroot/vortikal/trunk</url>
+  </scm>
 </project>

@@ -30,13 +30,11 @@
  */
 package org.vortikal.util;
 
-
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-
-
+import java.util.SimpleTimeZone;
 
 /**
  * Class providing information on the current version of the
@@ -84,6 +82,7 @@ public class Version {
             String dateStr = props.getProperty("build.date");
             try {
                 SimpleDateFormat df = new SimpleDateFormat(BUILD_DATE_PARSE_FORMAT);
+                df.setTimeZone(new SimpleTimeZone(0, "UTC"));
                 buildDate = df.parse(dateStr);
             } catch (java.text.ParseException e) {
                 System.out.println(

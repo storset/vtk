@@ -35,6 +35,7 @@ import java.util.Set;
 
 /**
  * Create a <code>java.util.Set</code> from a CSV list.
+ * TODO: Consider creating property editor instead (org.springframework.beans.propertyeditors)
  *
  */
 public class CSVSetFactoryBean extends AbstractCSVFactoryBean {

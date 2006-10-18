@@ -226,8 +226,6 @@
        Although one could specify a file path URI resolver here, it
        would make no sense in most cases, as document() calls works
        with documents located preferably in the repository.
-
-       Added caching of mapping file documents:
      </description>
      
    </bean>

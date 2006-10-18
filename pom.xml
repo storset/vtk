@@ -213,9 +213,6 @@
 	  </excludes>
 	  <includes>
 	    <include>**/*Test.java</include>
-	    <!--
-	    <include>**/*TestSuite.java</include>
-	      -->
 	    <include>**/*TestCase.java</include>
 	  </includes>
 	  <skip>true</skip>

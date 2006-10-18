@@ -1,14 +1,17 @@
 To set up a minimal version of the Vortikal server the following steps
 are necessary:
 
-1. Create a database using the DDL in the
+1. Download and install Maven 2 (2.0.4)
+   ( http://maven.apache.org/download.html )
+
+2. Create a database using the DDL in the
    'src/sql/postgresql-schema.sql' (currently only PostgreSQL is
    supported, but HSQLDB has also been known to work in the past).
 
-2. Set up the configuration. Configuration can be placed either in the
+3. Set up the configuration. Configuration can be placed either in the
    ~/.m2/settings.xml, or in a properties file ~/vrtx.properties. 
 
-  2.a Configuration using ~/.m2/settings.xml:
+  3.a Configuration using ~/.m2/settings.xml:
 
   <?xml version="1.0" encoding="utf-8" ?>
     <settings xmlns="http://maven.apache.org/POM/4.0.0"
@@ -44,7 +47,7 @@ are necessary:
       </activeProfiles>
     </settings>
 
-  2.b Configuration using ~/vrtx.properties:
+  3.b Configuration using ~/vrtx.properties:
 
   indexStorageRootPath = [an empty directory for storing indices]
   jdbcUsername = [your JDBC user]
@@ -53,16 +56,16 @@ are necessary:
   databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
   
 
-3. Run the command 'mvn clean package' (standing in the project
+4. Run the command 'mvn clean package' (standing in the project
    directory). If you run into trouble try 'mvn -U clean package'.
 
-4. Start resin2 using the script in project-root:
+5. Start resin2 using the script in project-root:
    'sh resin-start.sh' (RESIN_HOME has to be set for this script to work)
 
-5. You should now be able to access the web service on
+6. You should now be able to access the web service on
    http:localhost:9322/ and the WebDAV service on
    http://localhost:9321/. Log in as 'root@localhost:fish'.
 
-6. See the default configuration file
+7. See the default configuration file
    'src/main/resources/vortikal/beans/vortikal.properties' for
    descriptions of the various configuration settings.

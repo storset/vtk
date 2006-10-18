@@ -95,6 +95,9 @@
         <entry key="Total requests">
           <value>context.getBean("requestLoadListener").getTotalRequests()</value>
         </entry>
+        <entry key="Application startup">
+          <value>new java.util.Date(context.getStartupDate());</value>
+        </entry>
       </map>
     </constructor-arg>
   </bean>

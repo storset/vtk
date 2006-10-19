@@ -148,7 +148,8 @@ public class JTidyTransformer implements Filter {
             remove.getParentNode().removeChild(remove);
         }
         Element meta = doc.createElement("meta");
-        meta.setAttribute("http-equiv", "Content-Type: " + this.generatedContentType + ";charset=utf-8");
+        meta.setAttribute("http-equiv", "Content-Type");
+        meta.setAttribute("content", this.generatedContentType + ";charset=utf-8");
         head.appendChild(meta);
     }
 

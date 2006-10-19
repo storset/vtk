@@ -50,9 +50,9 @@
     </notifiers>
   </ciManagement>
   <scm>
-    <connection>scm:svn:svn://element.uio.no/svnroot/vortikal/tags/release-0.3.2</connection>
-    <developerConnection>scm:svn:svn+ssh://element.uio.no/svnroot/vortikal/tags/release-0.3.2</developerConnection>
-    <url>svn://element.uio.no/svnroot/vortikal/tags/release-0.3.2</url>
+    <connection>scm:svn:svn://xml.uio.no/svnroot/vortikal/tags/release-0.3.2</connection>
+    <developerConnection>scm:svn:svn+ssh://xml.uio.no/svnroot/vortikal/tags/release-0.3.2</developerConnection>
+    <url>svn://xml.uio.no/svnroot/vortikal/tags/release-0.3.2</url>
   </scm>
   <licenses>
     <license>
@@ -111,7 +111,7 @@
             <artifactId>maven-release-plugin</artifactId>
             <configuration>
               <tagBase>
-                svn+ssh://element.uio.no/svnroot/vortikal/tags
+                svn+ssh://xml.uio.no/svnroot/vortikal/tags
               </tagBase>
             </configuration>
           </plugin>

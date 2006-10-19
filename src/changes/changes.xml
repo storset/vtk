@@ -5,13 +5,15 @@
     <title>Vortikal Change Log
     </title>
   </properties>
+
   <body>
 
-
-    <release version="0.3.2" date="2006-10-19" description="Release 0.3.2">
-
+    <release version="0.3.3" date="In SVN" description="Release 0.3.3">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.3.2" date="2006-10-19" description="Release 0.3.2">
       
      <action type="update">
        Updated to Maven 2 for building the project.

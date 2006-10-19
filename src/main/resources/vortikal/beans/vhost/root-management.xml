@@ -87,7 +87,7 @@
             java.text.DecimalFormat df = new java.text.DecimalFormat("0.00");
             listener = context.getBean("requestLoadListener");
 
-            df.format((float) listener.getLoad(30)/60) + " (1m), " +
+            df.format((float) listener.getLoad(60)/60) + " (1m), " +
             df.format((float) listener.getLoad(600)/600) + " (10m), " +
             df.format((float) listener.getLoad(3600)/3600) + " (1h)";
           </value>

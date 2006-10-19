@@ -221,7 +221,7 @@
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
         <artifactId>maven-framework-version-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <id>touch</id>
@@ -284,7 +284,7 @@
     <dependency>
       <groupId>no.uio.usit.miyagi</groupId>
       <artifactId>miyagi</artifactId>
-      <version>0.2-SNAPSHOT</version>
+      <version>0.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

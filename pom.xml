@@ -209,10 +209,16 @@
 	    <exclude>**/MemoryContentStoreTestCase.java</exclude>
 	  </excludes>
 	  <includes>
+	    <!--
 	    <include>**/*Test.java</include>
+	    -->
 	    <include>**/*TestCase.java</include>
 	  </includes>
+	  <forkMode>pertest</forkMode>
+	  <useFile>false</useFile>
+	  <!--
 	  <skip>true</skip>
+	  -->
 	</configuration>
       </plugin>
       <plugin>
@@ -476,6 +482,10 @@
         </reportSets>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
       <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -486,10 +496,6 @@
       </plugin>
       -->
       <!--
-        <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-      </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>

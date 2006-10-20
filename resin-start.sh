@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CONF=target/vortikal-0.3.2-SNAPSHOT/WEB-INF/classes/resin.conf
+CONF=`ls -d target/vortikal-*/`WEB-INF/classes/resin.conf
 
 # check if RESIN_HOME is set
 if test -z $RESIN_HOME; then

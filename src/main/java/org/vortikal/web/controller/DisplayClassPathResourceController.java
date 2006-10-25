@@ -30,10 +30,14 @@
  */
 package org.vortikal.web.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,18 +45,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
 
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.StaticResourceLocation;
+
 
 
 /**
@@ -60,20 +69,6 @@ import org.vortikal.web.RequestContext;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>basePath</code> - the base class path. This base path
- *   is prepended to every class path resource retrieval.
- *   <li><code>uriPrefix</code> - the URI prefix is stripped off the
- *   request URI before prepending the base class path (optional).
- *   <lI><code>resourceInModelName</code> - if specified, instead of
- *   writing the response directly, this controller will put the class
- *   path resource in the model under this name, and the rendering
- *   must be handled by a view.
- *   <li><code>resourceTransformer</code> (used in conjunction with
- *   <code>resourceInModelName</code>) - a {@link ResourceTransformer},
- *   which, if specified, causes the result of a transformation to be
- *   placed in the model instead of the resource directly.
- *   <lI><code>viewName</code> - optional viewName, used with
- *   <code>resourceInModelName</code>
  *   <lI><code>expiresSeconds</code> - optional integer, will be sent
  *   as the <code>Expires</code> HTTP header 
  * </ul>
@@ -82,39 +77,13 @@ public class DisplayClassPathResourceController
   implements Controller, LastModified, InitializingBean, ApplicationContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
-    private String basePath;
-    private String uriPrefix;
+    private Map locationsMap;
     private ApplicationContext applicationContext;
 
     private int expiresSeconds = -1;
-    private String resourceInModelName;
-    private ResourceTransformer resourceTransformer;
-    private String viewName;
     
-    
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
-    }
-
-    public void setUriPrefix(String uriPrefix) {
-        this.uriPrefix = uriPrefix;
-    }
-
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-    
-
-    public void setResourceInModelName(String resourceInModelName) {
-        this.resourceInModelName = resourceInModelName;
-    }
-
-    public void setResourceTransformer(ResourceTransformer resourceTransformer) {
-        this.resourceTransformer = resourceTransformer;
-    }
-
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
     }
     
     public void setExpiresSeconds(int expiresSeconds) {
@@ -123,16 +92,21 @@ public class DisplayClassPathResourceController
     
 
     public void afterPropertiesSet() throws Exception {
-        if (this.basePath == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'basePath' not specified");
+
+        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+            this.applicationContext, StaticResourceLocation.class, true, false);
+        Collection allLocations = matchingBeans.values();
+        this.locationsMap = new HashMap();
+
+        for (Iterator i = allLocations.iterator(); i.hasNext();) {
+            StaticResourceLocation location = (StaticResourceLocation) i.next();
+
+            String uri = location.getUriPrefix();
+            String resourceLocation = location.getResourceLocation();
+            this.locationsMap.put(uri, resourceLocation);
+            this.locationsMap.put(uri + "/", resourceLocation);
         }
 
-        if (this.resourceInModelName != null && this.viewName == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'viewName' must also be specified when property "
-                + "'resourceInModelName' is specified");
-        }
     }
 
 
@@ -144,52 +118,28 @@ public class DisplayClassPathResourceController
             return null;
         }
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
-        if (this.uriPrefix != null) {
-            uri = uri.substring(this.uriPrefix.length());
-        }
-
-        String path = this.basePath;
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
-        path += uri;
-
-        ClassPathResource resource = new ClassPathResource(path);
-        
+        Resource resource = resolveResource(request);
         if (!resource.exists()) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Unable to serve resource: " + resource
-                             + " from path: " + path + ": resource does not exist");
+                                  + " from " + resource.getDescription()
+                                  + ": resource does not exist");
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
 
-
         InputStream inStream = null;
         OutputStream outStream = null;
 
         try {
-
-            if (this.resourceInModelName != null) {
-                Object modelObject = resource;
-                if (this.resourceTransformer != null) {
-                    modelObject = this.resourceTransformer.transformResource(resource);
-                    Map model = new HashMap();
-                    model.put(this.resourceInModelName, modelObject);
-                    return new ModelAndView(this.viewName, model);
-                }
-            } 
-
             if (this.expiresSeconds >= 0) {
                 long expiresMilliseconds = this.expiresSeconds * 1000;
                 Date expires = new Date(System.currentTimeMillis() + expiresMilliseconds);
                 response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
             }
 
-            response.setContentType(MimeHelper.map(uri));
+            response.setContentType(MimeHelper.map(request.getRequestURI()));
 
             if ("GET".equals(request.getMethod())) {
 
@@ -205,14 +155,14 @@ public class DisplayClassPathResourceController
             
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Successfully served resource: " + resource
-                             + " from path: " + path);
+                                  + " from " + resource.getDescription());
             }
 
         } catch (Exception e) {
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Unable to serve resource: " + resource
-                             + " from path: " + path, e);
+                                  + " from " + resource.getDescription(), e);
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
 
@@ -231,23 +181,59 @@ public class DisplayClassPathResourceController
             return -1;
         }
 
-        String uri = requestContext.getResourceURI();
-        if (this.uriPrefix != null) {
-            uri = uri.substring(this.uriPrefix.length());
+        Resource resource = resolveResource(request);
+        if (resource.exists()) {
+            try {
+                File f = resource.getFile();
+                return f.lastModified();
+            } catch (IOException e) {
+                return this.applicationContext.getStartupDate();
+            }
         }
 
-        String path = this.basePath;
+        return -1;
+    }
+
+
+    private Resource resolveResource(HttpServletRequest request) {
+        String[] incrementalPath = URLUtil.splitUriIncrementally(request.getRequestURI());
+        String uriPrefix = null;
+        String resourceLocation = null;
+        for (int i = incrementalPath.length - 1; i > 0; i--) {
+            if (this.locationsMap.containsKey(incrementalPath[i])) {
+                resourceLocation = (String) this.locationsMap.get(incrementalPath[i]);
+                uriPrefix = incrementalPath[i];
+            }
+        }
+        if (resourceLocation == null) {
+            return null;
+        }
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String uri = requestContext.getResourceURI();
+
+        if (uriPrefix != null) {
+            uri = uri.substring(uriPrefix.length());
+        }
+
+        String path = resourceLocation;
         if (path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);
         }
         path += uri;
 
-        ClassPathResource resource = new ClassPathResource(path);
-        if (resource.exists()) {
-            return this.applicationContext.getStartupDate();
-        }
-
-        return -1;
+        Resource resource = null;
+        if (path.startsWith("file://")) {
+            String actualPath = path.substring("file://".length());
+            resource = new FileSystemResource(actualPath);
+        } else if (path.startsWith("classpath://")) {
+            String actualPath = path.substring("classpath://".length());
+            resource = new ClassPathResource(actualPath);
+        } 
+        return resource;
     }
+
+    
+
 
 }

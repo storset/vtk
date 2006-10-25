@@ -8,10 +8,27 @@ are necessary:
    'src/sql/postgresql-schema.sql' (currently only PostgreSQL is
    supported, but HSQLDB has also been known to work in the past).
 
-3. Set up the configuration. Configuration can be placed either in the
-   ~/.m2/settings.xml, or in a properties file ~/vrtx.properties. 
+3. Set up the configuration. Configuration should be placed in the
+   file ~/vrtx.properties:
 
-  3.a Configuration using ~/.m2/settings.xml:
+  indexStorageRootPath = [an empty directory for storing indices]
+  jdbcUsername = [your JDBC user]
+  jdbcPassword = [your JDBC password]
+  repositoryDataDirectory = [an empty directory for storing files]
+  databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
+
+4. Run the command 'mvn jetty:run' (standing in the project
+   directory). 
+
+5. You should now be able to access the web service on
+   http:localhost:9322/ and the WebDAV service on
+   http://localhost:9321/. Log in as 'root@localhost:fish'.
+
+6. See the default configuration file
+   'src/main/resources/vortikal/beans/vortikal.properties' for
+   descriptions of the various configuration settings.
+
+7. Put the following in your ~/.m2/settings.xml:
 
   <?xml version="1.0" encoding="utf-8" ?>
     <settings xmlns="http://maven.apache.org/POM/4.0.0"
@@ -23,15 +40,6 @@ are necessary:
           <properties>
             <!-- maven -->
             <maven.test.skip>true</maven.test.skip>
-
-  	    <!-- vortikal -->
-  	    <vortikal.indexStorageRootPath>[an empty directory for storing indices]</vortikal.indexStorageRootPath>
-  	    <vortikal.jdbcUsername>[your JDBC user]</vortikal.jdbcUsername>
-  	    <vortikal.jdbcPassword>[your JDBC password]</vortikal.jdbcPassword>
-  	    <vortikal.repositoryDataDirectory>[an empty directory for storing files]</vortikal.repositoryDataDirectory>
-  	    <vortikal.databaseURL>[your JDBC URL, e.g. jdbc:postgresql:my-user>]</vortikal.databaseURL>
-	    <vortikal.webPort>[your web port e.g. 9322]</vortikal.webPort>
-	    <vortikal.webdavPort>[your webdav port e.g. 9321]</vortikal.webdavPort>
           </properties>
           <repositories>
             <repository>
@@ -47,25 +55,14 @@ are necessary:
       </activeProfiles>
     </settings>
 
-  3.b Configuration using ~/vrtx.properties:
+8. Custom bean definitions and overriding can be placed in the file
+   ~/vrtx-context.xml (loaded if it exists).
 
-  indexStorageRootPath = [an empty directory for storing indices]
-  jdbcUsername = [your JDBC user]
-  jdbcPassword = [your JDBC password]
-  repositoryDataDirectory = [an empty directory for storing files]
-  databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
-  
+9. Serving static resources from the file system: add an entry to the
+   ~/vrtx-context.xml file:
 
-4. Run the command 'mvn clean package' (standing in the project
-   directory). If you run into trouble try 'mvn -U clean package'.
+  <bean class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="/my/uri/prefix" />
+    <property name="resourceLocation" value="file:///my/file/path" />
+  </bean>
 
-5. Start resin2 using the script in project-root:
-   'sh resin-start.sh' (RESIN_HOME has to be set for this script to work)
-
-6. You should now be able to access the web service on
-   http:localhost:9322/ and the WebDAV service on
-   http://localhost:9321/. Log in as 'root@localhost:fish'.
-
-7. See the default configuration file
-   'src/main/resources/vortikal/beans/vortikal.properties' for
-   descriptions of the various configuration settings.

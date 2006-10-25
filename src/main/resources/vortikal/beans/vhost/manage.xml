@@ -1443,6 +1443,13 @@
     </property>
   </bean>
 
+  <!-- Static files for manage service: -->
+  <bean id="managetStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="${cssBaseURL}" />
+    <property name="resourceLocation" value="${cssResourceLocation}" />
+  </bean>
+
+
   <!-- Manage specific providers -->
 
   <bean id="adminCSSProvider"
@@ -1714,5 +1721,6 @@
   <bean id="defaultManageErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/default-manage-error.ftl" />
   </bean>
+
 
 </beans>

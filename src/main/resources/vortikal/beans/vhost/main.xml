@@ -32,7 +32,6 @@
   <import resource="copy-move.xml" />
   <import resource="errorhandlers.xml" />
   <import resource="management.xml" />
-  <import resource="static-resources.xml" />
   <import resource="index.xml" />
 
   <!-- OperationLog interceptor for Repository -->

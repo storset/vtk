@@ -4,6 +4,17 @@
 
 <beans>
   
+  <bean id="kupuDistStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="${kupuBase}" />
+    <property name="resourceLocation" value="classpath:///vortikal/resources/kupu-resources" />
+  </bean>
+
+  <bean id="kupuLocalStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="${kupuLocalBase}" />
+    <property name="resourceLocation" value="classpath:///vortikal/resources/kupu-resources" />
+  </bean>
+
+<!--
   <bean id="kupuDistStaticResourceService" class="org.vortikal.web.service.ServiceImpl">
     <description>
       Serving of static Kupu resources from the classpath.
@@ -24,7 +35,6 @@
       </bean>
     </property>
   </bean>
-
   <bean id="kupuLocalStaticResourceService" class="org.vortikal.web.service.ServiceImpl">
     <description>
       Serving of static Kupu resources from the classpath.
@@ -45,6 +55,8 @@
       </bean>
     </property>
   </bean>
+
+-->
 
   <bean id="kupuService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />

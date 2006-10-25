@@ -3,6 +3,23 @@
 
 <beans>
 
+  <bean id="staticResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-97000" />
+    
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.StaticResourceLocationsAssertion" />
+      </list>
+    </property>
+
+    <property name="handler" ref="displayClassPathResourceHandler" />
+  </bean>
+
+  <bean id="displayClassPathResourceHandler"
+        class="org.vortikal.web.controller.DisplayClassPathResourceController">
+    <property name="expiresSeconds" value="${staticResourcesCacheSeconds}" />
+  </bean>
+
 
   <bean id="webServiceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">

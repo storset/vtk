@@ -264,10 +264,8 @@
 	  </includes>
 	  <forkMode>pertest</forkMode>
 	  <useFile>false</useFile>
-	  <!--
 	  <skip>true</skip>
-	  -->
-	</configuration>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    
+    <!-- Proveforelesning XML resource -->
+    
+    <bean id="proveforelesningXmlResource"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+        <property name="name" value="proveforelesning"/>
+        <property name="namespace" ref="PROVEFORELESNING_NAMESPACE" />
+        <property name="parentTypeDefinition" ref="managedXmlResource" />
+        <property name="propertyTypeDefinitions">
+            <list>
+                <ref bean="proveforelesningDoktorandPropDef" />
+                <ref bean="proveforelesningTilhorighetPropDef" />
+                <ref bean="proveforelesningEmnePropDef" />
+                <ref bean="proveforelesningStarttidspunktPropDef" />
+                <ref bean="proveforelesningSluttidspunktPropDef" />
+                <ref bean="proveforelesningStedPropDef" />
+            </list>
+        </property>
+        <property name="assertions">
+            <list>
+                <ref bean="schemaIsProveforelesning" />
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="PROVEFORELESNING_NAMESPACE" class="org.vortikal.repository.Namespace">
+        <constructor-arg value="proveforelesning" />
+        <constructor-arg value="http://www.uio.no/xsd/universitetsstyret/sakskart" />
+    </bean>
+    
+    <bean id="schemaIsProveforelesning" 
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+        <property name="namespace" ref="DEFAULT_NAMESPACE" />
+        <property name="name" value="schema" />
+        <property name="pattern" value="http://www.uio.no/xsd/uio/proveforelesning/v00.*" />
+    </bean>
+    
+    
+    <bean id="proveforelesningDoktorandPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandEvaluator" />
+    </bean>
+    
+    <bean id="proveforelesningDoktorandEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/proveforelesning/doktorand" />
+    </bean>
+    
+    
+    <bean id="proveforelesningTilhorighetPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tilhorighet" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningTilhorighetEvaluator" />
+    </bean>
+    
+    <bean id="proveforelesningTilhorighetEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/proveforelesning/tilhorighet" />
+    </bean>
+    
+    
+    <bean id="proveforelesningEmnePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="emne" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningEmneEvaluator" />
+    </bean>
+    
+    <bean id="proveforelesningEmneEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/proveforelesning/emne/text()" />
+    </bean>
+    
+    
+    <bean id="proveforelesningStarttidspunktPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.start" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningStarttidspunktEvaluator" />
+    </bean>
+    
+    <bean id="proveforelesningStarttidspunktEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="concat(/proveforelesning/tid-og-sted/start/dag, '.', /proveforelesning/tid-og-sted/start/maaned, '.', /proveforelesning/tid-og-sted/start/aar, ' ', /proveforelesning/tid-og-sted/start/time, ':', /proveforelesning/tid-og-sted/start/minutt)"  />
+    </bean>
+    
+    
+    <bean id="proveforelesningSluttidspunktPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.slutt" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningSluttidspunktEvaluator" />
+    </bean>
+    
+    <bean id="proveforelesningSluttidspunktEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="concat(/proveforelesning/tid-og-sted/slutt/dag, '.', /proveforelesning/tid-og-sted/slutt/maaned, '.', /proveforelesning/tid-og-sted/slutt/aar, ' ', /proveforelesning/tid-og-sted/slutt/time, ':', /proveforelesning/tid-og-sted/slutt/minutt)"  />
+    </bean>
+    
+    
+    <bean id="proveforelesningStedPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.sted" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningStedEvaluator" />
+    </bean>
+    
+    <bean id="proveforelesningStedEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/proveforelesning/tid-og-sted/sted"  />
+    </bean>
+    
+</beans>

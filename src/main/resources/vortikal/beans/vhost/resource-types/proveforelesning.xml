@@ -29,7 +29,7 @@
     
     <bean id="PROVEFORELESNING_NAMESPACE" class="org.vortikal.repository.Namespace">
         <constructor-arg value="proveforelesning" />
-        <constructor-arg value="http://www.uio.no/xsd/universitetsstyret/sakskart" />
+        <constructor-arg value="http://www.uio.no/xsd/uio/proveforelesning" />
     </bean>
     
     <bean id="schemaIsProveforelesning" 

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    
+    <!-- Disputas XML resource -->
+    
+    <bean id="disputasXmlResource"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+        <property name="name" value="disputas"/>
+        <property name="namespace" ref="DISPUTAS_NAMESPACE" />
+        <property name="parentTypeDefinition" ref="managedXmlResource" />
+        <property name="propertyTypeDefinitions">
+            <list>
+                <ref bean="disputasDoktorandPropDef" />
+                <ref bean="disputasTilhorighetPropDef" />
+                <ref bean="disputasOppgavetittelPropDef" />
+                <ref bean="disputasStarttidspunktPropDef" />
+                <ref bean="disputasSluttidspunktPropDef" />
+                <ref bean="disputasStedPropDef" />
+            </list>
+        </property>
+        <property name="assertions">
+            <list>
+                <ref bean="schemaIsDisputas" />
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="DISPUTAS_NAMESPACE" class="org.vortikal.repository.Namespace">
+        <constructor-arg value="disputas" />
+        <constructor-arg value="http://www.uio.no/xsd/uio/disputas" />
+    </bean>
+    
+    <bean id="schemaIsDisputas" 
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+        <property name="namespace" ref="DEFAULT_NAMESPACE" />
+        <property name="name" value="schema" />
+        <property name="pattern" value="http://www.uio.no/xsd/uio/disputas/v00.*" />
+    </bean>
+    
+        
+    <bean id="disputasDoktorandPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasDoktorandEvaluator" />
+    </bean>
+        
+    <bean id="disputasDoktorandEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/disputas/doktorand" />
+    </bean>
+    
+    
+    <bean id="disputasTilhorighetPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tilhorighet" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasTilhorighetEvaluator" />
+    </bean>
+    
+    <bean id="disputasTilhorighetEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/disputas/tilhorighet" />
+    </bean>
+
+    <bean id="disputasOppgavetittelPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="oppgavetittel" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasOppgavetittelEvaluator" />
+    </bean>
+    
+    <bean id="disputasOppgavetittelEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/disputas/oppgavetittel" />
+    </bean>
+
+    <bean id="disputasStarttidspunktPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.start" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasStarttidspunktEvaluator" />
+    </bean>
+    
+    <bean id="disputasStarttidspunktEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="concat(/disputas/tid-og-sted/start/dag, '.', /disputas/tid-og-sted/start/maaned, '.', /disputas/tid-og-sted/start/aar, ' ', /disputas/tid-og-sted/start/time, ':', /disputas/tid-og-sted/start/minutt)"  />
+    </bean>
+    
+    <bean id="disputasSluttidspunktPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.slutt" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasSluttidspunktEvaluator" />
+    </bean>
+
+    <bean id="disputasSluttidspunktEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="concat(/disputas/tid-og-sted/slutt/dag, '.', /disputas/tid-og-sted/slutt/maaned, '.', /disputas/tid-og-sted/slutt/aar, ' ', /disputas/tid-og-sted/slutt/time, ':', /disputas/tid-og-sted/slutt/minutt)"  />
+    </bean>
+
+    <bean id="disputasStedPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.sted" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasStedEvaluator" />
+    </bean>
+    
+    <bean id="disputasStedEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/disputas/tid-og-sted/sted"  />
+    </bean>
+    
+</beans>

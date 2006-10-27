@@ -89,23 +89,7 @@
 
   <build>
     <defaultGoal>package</defaultGoal>
-    <filters>
-      <filter>src/main/resources/vortikal/beans/vortikal.properties</filter>
-    </filters>
     <resources>
-      <!-- Magic start -->
-      <!--
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources/${packaging}/resin</directory>
-      </resource>
-
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources/${packaging}/filtered-resources</directory>
-      </resource>
-      -->
-      <!-- magic end -->
       <resource>
         <directory>src/main/resources</directory>
         <excludes>
@@ -250,6 +234,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>src/main/resources/war/resin</directory>
+              <filtering>true</filtering>
+            </resource>
+          </webResources>
+        </configuration>
+
       </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>

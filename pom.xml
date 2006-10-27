@@ -86,62 +86,7 @@
   </repositories>
   
   <packaging>jar</packaging>
-  
-<!--
-  <properties>
-    <packaging>war</packaging>
-    <targetPath>${project.build.directory}</targetPath>
-    <logPath>${project.build.directory}/logs</logPath>
-    <webappDir>${project.build.directory}/${project.build.finalName}</webappDir>
-  </properties>
--->  
 
-  <profiles>
-    <profile>
-      <id>jar</id>
-      <activation>
-        <property>
-          <name>packaging</name>
-          <value>jar</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-release-plugin</artifactId>
-            <configuration>
-              <tagBase>
-                svn+ssh://xml.uio.no/svnroot/vortikal/tags
-              </tagBase>
-            </configuration>
-          </plugin>
-	  <plugin>
-	    <artifactId>maven-one-plugin</artifactId>
-	    <executions>
-	      <execution>
-		<configuration>
-		  <remoteRepositoryId>maven1-repo@xml.uio.no</remoteRepositoryId>
-		  <remoteRepositoryUrl>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven</remoteRepositoryUrl>
-		</configuration>
-		<goals>
-		  <goal>deploy-maven-one-repository</goal>
-		</goals>
-	      </execution>
-	    </executions>
-	  </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <source>1.4</source>
-              <target>1.4</target>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-  
   <build>
     <defaultGoal>package</defaultGoal>
     <filters>
@@ -222,13 +167,13 @@
             </systemProperty>
             <systemProperty>
               <name>log4j.configuration</name>
-              <value>log4j.vortex.xml</value>            
+              <value>log4j.vortex.xml</value>
             </systemProperty>
+            <!--
+                See URL:
+                http://forum.java.sun.com/thread.jspa?threadID=592490&messageID=3100651
+            -->
             <systemProperty>
-              <!--
-                  See URL:
-                  http://forum.java.sun.com/thread.jspa?threadID=592490&messageID=3100651
-              -->
               <name>javax.xml.parsers.SAXParserFactory</name>
               <value>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</value>
             </systemProperty>
@@ -305,6 +250,36 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>
+            svn+ssh://xml.uio.no/svnroot/vortikal/tags
+          </tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-one-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <remoteRepositoryId>maven1-repo@xml.uio.no</remoteRepositoryId>
+              <remoteRepositoryUrl>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven</remoteRepositoryUrl>
+            </configuration>
+            <goals>
+              <goal>deploy-maven-one-repository</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -453,14 +428,6 @@
       <artifactId>sitemesh</artifactId>
       <version>2.2.1</version>
     </dependency>
-
-<!--
-    <dependency>
-      <artifactId>xml-apis</artifactId>
-      <groupId>xerces</groupId>
-      <version>from.xalan.2.7.0.tgz</version>
-    </dependency>
--->
     <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
@@ -517,13 +484,6 @@
       <scope>runtime</scope>
     </dependency>
     
-    <!--
-    <dependency>
-      <groupId>com.ibatis</groupId>
-      <artifactId>ibatis2-common</artifactId>
-      <version>2.1.6.589</version>
-    </dependency>
-    -->
   </dependencies>
   
   <reporting>

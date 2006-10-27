@@ -65,7 +65,8 @@
     <bean id="disputasTilhorighetEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/disputas/tilhorighet" />
     </bean>
-
+    
+    
     <bean id="disputasOppgavetittelPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="oppgavetittel" />
@@ -78,7 +79,8 @@
     <bean id="disputasOppgavetittelEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/disputas/oppgavetittel" />
     </bean>
-
+    
+    
     <bean id="disputasStarttidspunktPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.start" />
@@ -92,6 +94,7 @@
         <property name="expression" value="concat(/disputas/tid-og-sted/start/dag, '.', /disputas/tid-og-sted/start/maaned, '.', /disputas/tid-og-sted/start/aar, ' ', /disputas/tid-og-sted/start/time, ':', /disputas/tid-og-sted/start/minutt)"  />
     </bean>
     
+    
     <bean id="disputasSluttidspunktPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.slutt" />
@@ -104,7 +107,8 @@
     <bean id="disputasSluttidspunktEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="concat(/disputas/tid-og-sted/slutt/dag, '.', /disputas/tid-og-sted/slutt/maaned, '.', /disputas/tid-og-sted/slutt/aar, ' ', /disputas/tid-og-sted/slutt/time, ':', /disputas/tid-og-sted/slutt/minutt)"  />
     </bean>
-
+    
+    
     <bean id="disputasStedPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.sted" />

@@ -34,7 +34,7 @@
   <import resource="mixins/content-description.xml" />
   
   <!-- Tavle 2  - :) -->
-  <!-- <import resource="proveforelesning.xml"/> -->
   <import resource="disputas.xml"/>
-
+  <import resource="proveforelesning.xml"/>
+  
 </beans>

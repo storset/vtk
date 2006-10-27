@@ -256,13 +256,6 @@
      <property name="prefix" value="${xslFilePath}" />
    </bean>
 
-  <!-- Static files for manage service: -->
-  <bean id="xslStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="${xslRepositoryPath}" />
-    <property name="resourceLocation" value="file://${xslFilePath}" />
-  </bean>
-   
-
    <bean id="xsltCompilationRepositoryURIResolver"
          class="org.vortikal.xml.RepositoryURIResolver"
          parent="requestLocalRepositoryAware">

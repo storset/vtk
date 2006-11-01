@@ -35,7 +35,7 @@ import java.util.Iterator;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.query.IndexException;
 import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessor;
-import org.vortikal.repositoryimpl.query.consistency.StorageCorruptionException;
+import org.vortikal.repositoryimpl.query.StorageCorruptionException;
 
 /**
  * <p>Defines an interface for modifying and inspecting the contents of 

@@ -162,21 +162,12 @@ public class ResultSetIteratorImpl implements Iterator {
 
         this.hasNext = false;
 
-//         Statement stmt = null;
-//         Connection conn = null;
-
         try {
-//             stmt = this.rs.getStatement();
-//             if (stmt != null) {
-//                 conn = stmt.getConnection();
-//             }
-            //if (logger.isDebugEnabled()) logger.debug("Closing result set " + this.rs);
             this.rs.close();
         } catch (SQLException e) {
             throw new IOException(e.getMessage());
         } finally {
             try {
-                //if (logger.isDebugEnabled()) logger.debug("Closing statement " + this.stmt);
                 if (this.stmt != null) {
                     this.stmt.close();
                 }
@@ -185,7 +176,6 @@ public class ResultSetIteratorImpl implements Iterator {
                 throw new IOException(e.getMessage());
             } finally {
                 try {
-                    //if (logger.isDebugEnabled()) logger.debug("Closing connection " + this.conn);
                     if (this.conn != null) {
                         this.conn.commit();
                         this.conn.close();

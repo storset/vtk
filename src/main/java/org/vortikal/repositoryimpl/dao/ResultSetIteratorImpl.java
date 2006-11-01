@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -98,7 +99,7 @@ public class ResultSetIteratorImpl implements Iterator {
 
         try {
 
-            if (!this.hasNext) throw new IllegalStateException("No more objects");
+            if (!this.hasNext) throw new NoSuchElementException("No more objects");
 
             String uri = this.rs.getString("uri");
             if (logger.isDebugEnabled()) {

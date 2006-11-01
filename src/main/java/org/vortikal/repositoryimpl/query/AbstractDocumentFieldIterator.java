@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,7 +110,7 @@ abstract class AbstractDocumentFieldIterator implements CloseableIterator {
      */
     public Object next() {
         if (next == -1) {
-            throw new IllegalStateException("No more elements");
+            throw new NoSuchElementException("No more elements");
         }
         
         Object retVal = null;

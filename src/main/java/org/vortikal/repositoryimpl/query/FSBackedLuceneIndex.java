@@ -33,10 +33,13 @@ package org.vortikal.repositoryimpl.query;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -65,7 +68,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
         super.initialize();
         
     }
-
+    
     /**
      * Create fs directory. One instance of this is created at startup
      * and whenever an index is re-initialized or re-created.
@@ -85,6 +88,9 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
         return FSDirectory.getDirectory(this.storageDirectory, eraseContents);
     }
     
+    /**
+     * Return total physical size of index on disk in bytes.
+     */
     public long getIndexSizeInBytes() throws IOException {
         long length = 0;
         File[] contents = this.storageDirectory.listFiles();
@@ -94,6 +100,27 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
         return length;
     }
     
+    /**
+     * Do a simple test for index corruption. This method will re-initialize the index and
+     * iterate over all existing documents.
+     * 
+     * An <code>IOException</code> is thrown if corruption is detected.
+     * 
+     * @throws IOException if corruption is detected.
+     */
+    public void corruptionTest() throws IOException {
+        reinitialize();
+        
+        IndexReader reader = getIndexReader();
+        
+        for (int i=0; i<reader.maxDoc(); i++) {
+            if (reader.isDeleted(i)) continue;
+            reader.document(i);
+        }
+        
+        commit(); // Close reader
+    }
+
     public File getStorageDirectory() {
         return this.storageDirectory;
     }

@@ -64,6 +64,8 @@ import EDU.oswego.cs.dl.util.concurrent.Mutex;
  * used to prevent other threads from modifying the index (it assures
  * mutually exclusive write access to index between threads).
  * 
+ * TODO: Design a more elegant locking API
+ * 
  * @author oyviste
  */
 public class LuceneIndex implements InitializingBean, DisposableBean {
@@ -75,7 +77,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     private boolean currentReadOnlyReaderOutdated = false;
     private int currentReadOnlyReaderRefCount = 0;
     private IndexReaderRefCountMap outdatedReadOnlyReaders = 
-                    new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_READERS + 2);
+                                        new IndexReaderRefCountMap(MAX_OUTDATED_SEARCH_READERS + 2);
     private IndexReader currentReadOnlyReader;
     private Object readOnlyReaderManagementLock = new Object();
     
@@ -92,7 +94,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     private boolean eraseExistingIndex = false;
     private boolean forceUnlock = false;
 
-    /* Internal mutex write lock backing the public locking functions if this class. */
+    /* Internal mutex write lock backing the public locking functions of this class. */
     private Mutex lock = new Mutex();
     
     public void afterPropertiesSet() throws BeanInitializationException {
@@ -103,11 +105,12 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             throw new BeanInitializationException("Property 'storageId' not set.");
         }
         
-        
         try {
+            // Initialization of physical storage directory
             File storageDirectory = initializeStorageDirectory(this.storageRootPath, 
                                                                this.storageId);
             
+            // Initialization of file-system backed Lucene index
             this.fsIndex = new FSBackedLuceneIndex(storageDirectory, 
                                                    new KeywordAnalyzer(),
                                                    this.eraseExistingIndex,
@@ -117,6 +120,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             this.fsIndex.setMergeFactor(this.mergeFactor);
             this.fsIndex.setMaxBufferedDocs(this.maxBufferedDocs);
             
+            // Open an initial read-only index reader
             this.currentReadOnlyReader = this.fsIndex.getNewReadOnlyIndexReader();
             
         } catch (IOException io) {
@@ -154,7 +158,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
     
     /**
      * Removes and closes all outdated read-only index readers 
-     * regardless of reference count.
+     * regardless of their reference count.
      */
     protected void cleanupOutdatedReadOnlyReaders() {
         synchronized(this.readOnlyReaderManagementLock) {
@@ -244,8 +248,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             ++this.currentReadOnlyReaderRefCount;
             
             if (logger.isDebugEnabled()) {
-                logger.debug("Index reader ref-count increased to " 
-                        + this.currentReadOnlyReaderRefCount);
+                logger.debug("Index reader ref-count increased to " + this.currentReadOnlyReaderRefCount);
             }
             
             // Return new searcher on the reader
@@ -302,6 +305,7 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
                 }
             }
         }
+        
     }
 
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
@@ -390,11 +394,13 @@ public class LuceneIndex implements InitializingBean, DisposableBean {
             }
             
             this.currentReadOnlyReaderOutdated = ! this.currentReadOnlyReader.isCurrent();
-            
-        }        
+        }
     }
     
-    
+    // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
+    protected void corruptionTest() throws IOException {
+        this.fsIndex.corruptionTest();
+    }
     
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.DisposableBean#destroy()

@@ -343,6 +343,15 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         return accessor;
     }
     
+    public Iterator propertySetIterator() throws IndexException {
+        try {
+            return new PropertySetIndexUnorderedIterator(this.indexAccessor.getIndexReader(), 
+                                                         this.documentMapper);
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
+    
     public Iterator orderedPropertySetIterator() throws IndexException {
         try {
             return new PropertySetIndexIterator(this.indexAccessor.getIndexReader(), 

@@ -137,7 +137,7 @@ public interface PropertySetIndex {
     /**
      * Get an {@link java.util.Iterator} over all existing URIs in index. 
      * 
-     * The iteration is ordered by URI lexicographically. 
+     * The iteration is ordered by URI lexicographically. Any URI-duplicates are included. 
      * 
      * @return
      * @throws IndexException
@@ -145,10 +145,19 @@ public interface PropertySetIndex {
     public Iterator orderedUriIterator() throws IndexException;
     
     /**
+     * Get an un-ordered <code>Iterator</code> over all <code>PropertySet</code> instances
+     * in index. Any URI-duplicates are included.
+     * 
+     * @return
+     * @throws IndexException
+     */
+    public Iterator propertySetIterator() throws IndexException;
+    
+    /**
      * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
      * in index.
      * 
-     * The iteration is ordered by URI lexicographically. Any duplicates are included, 
+     * The iteration is ordered by URI lexicographically. Any URI-duplicates are included, 
      * and should <em>directly</em> follow each other because of the sorting.
      * 
      * @return

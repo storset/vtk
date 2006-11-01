@@ -50,7 +50,6 @@ abstract class AbstractDocumentFieldPrefixIterator implements CloseableIterator 
 
     private Log logger = LogFactory.getLog(AbstractDocumentFieldPrefixIterator.class);
     
-    
     private IndexReader reader;
     private String iterationFieldName;
     private String prefix;

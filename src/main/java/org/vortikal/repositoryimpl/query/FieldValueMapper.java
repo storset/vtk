@@ -157,9 +157,11 @@ public final class FieldValueMapper {
         return values;
     }
     
-    // Used for generating ancestor ids field. We don't bother to encode
-    // it because of its system-specific nature, and that it should never
-    // be used as a sane sorting key or in range queries.
+    /**
+     * Used for generating ancestor ids field. We don't bother to encode
+     * it because of its system-specific nature, and that it should never
+     * be used as a sane sorting key or in range queries.
+     */
     public static Field getUnencodedMultiValueFieldFromIntegers(String name, 
                                                                 int[] integers) {
         StringBuffer fieldValue = new StringBuffer();

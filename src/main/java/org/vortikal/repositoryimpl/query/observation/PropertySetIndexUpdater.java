@@ -58,7 +58,7 @@ import org.vortikal.repositoryimpl.index.observation.ResourceDeletion;
 public class PropertySetIndexUpdater implements BeanNameAware, 
                                         ResourceChangeObserver, InitializingBean {
 
-    Log logger = LogFactory.getLog(PropertySetIndexUpdater.class);
+    private static final Log logger = LogFactory.getLog(PropertySetIndexUpdater.class);
     
     private PropertySetIndex index;
     private String beanName;
@@ -179,7 +179,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 }
                 
                 // Get iterator over property sets that need updating
-                propSetIterator = this.indexDataAccessor.getPropertySetIteratorForURIs(updateUris);
+                propSetIterator = this.indexDataAccessor.getPropertySetIteratorForUris(updateUris);
                 
                 while (propSetIterator.hasNext()) {
                     PropertySet propSet = (PropertySet)propSetIterator.next();

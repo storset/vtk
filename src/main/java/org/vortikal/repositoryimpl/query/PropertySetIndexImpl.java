@@ -54,6 +54,7 @@ import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.query.consistency.StorageCorruptionException;
 
 /**
  * <code>PropertySet</code> index using Lucene. 
@@ -288,36 +289,31 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
             throw new IndexException(io);
         }
     }
-
-    public PropertySet getPropertySet(String uri) throws IndexException {
-        TermDocs td = null;
+    
+    public int countAllInstances() throws IndexException {
+        TermEnum te = null;
+        int count = 0;
+        
         try {
             IndexReader reader = this.indexAccessor.getIndexReader();
-            PropertySet propSet = null;
-            td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            Term start = new Term(DocumentMapper.URI_FIELD_NAME, "");
+            String field = start.field();
+            te = reader.terms(start);
             
-            if (td.next()) {
-                Document doc = reader.document(td.doc()); 
-                propSet = this.documentMapper.getPropertySet(doc);
-            } else {
-                throw new IndexException("Could not find any property set at URI '" + uri + "'");
-            }
-          
-            if (td.next()) {
-                logger.warn("Consistency warning: Multiple property sets"
-                        + " exist in index for URI '" + uri + "'");
+            while (te.term() != null && te.term().field() == field) {
+                ++count;
+                te.next();
             }
             
-            return propSet;
         } catch (IOException io) {
             throw new IndexException(io);
         } finally {
-            if (td != null) {
-                try {
-                    td.close();
-                } catch (IOException io) {}
+            if (te != null) {
+                try { te.close(); } catch (IOException io) {}
             }
         }
+        
+        return count;
     }
 
     public void clearContents() throws IndexException {
@@ -328,22 +324,40 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         }
     }
     
-    public Iterator orderedIterator() throws IndexException {
+    public PropertySetIndexRandomAccessor randomAccessor() throws IndexException {
+        PropertySetIndexRandomAccessor accessor = null;
+        
         try {
-            return new PropertySetIndexIterator(this.indexAccessor, 
-                                            this.documentMapper,
-                                            DocumentMapper.URI_FIELD_NAME,
-                                            "");
+            accessor = new PropertySetIndexRandomAccessorImpl(this.indexAccessor.getIndexReader(), 
+                                                              this.documentMapper);
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+        
+        return accessor;
+    }
+    
+    public Iterator orderedPropertySetIterator() throws IndexException {
+        try {
+            return new PropertySetIndexIterator(this.indexAccessor.getIndexReader(), 
+                                                                this.documentMapper);
         } catch (IOException io) {
             throw new IndexException(io);
         }
     }
     
-    public Iterator orderedSubtreeIterator(String rootUri) throws IndexException {
+    public Iterator orderedSubtreePropertySetIterator(String rootUri) throws IndexException {
         try {
-            return new PropertySetIndexSubtreeIterator(this.indexAccessor, 
-                                            this.documentMapper,
-                                            rootUri);
+            return new PropertySetIndexSubtreeIterator(this.indexAccessor.getIndexReader(), 
+                                                                    this.documentMapper, rootUri);
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
+    
+    public Iterator orderedUriIterator() throws IndexException {
+        try {
+            return new PropertySetIndexUriIterator(this.indexAccessor.getIndexReader());
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -352,17 +366,14 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public void close(Iterator iterator) throws IndexException {
         try {
             
-            if ((iterator instanceof PropertySetIndexIterator)) {
-                ((PropertySetIndexIterator)iterator).close();
-            } else if (iterator instanceof PropertySetIndexSubtreeIterator) {
-                ((PropertySetIndexSubtreeIterator)iterator).close();
+            if ((iterator instanceof CloseableIterator)) {
+                ((CloseableIterator)iterator).close();
             } else {
-                throw new IllegalArgumentException("Illegal Iterator type");
+                throw new IllegalArgumentException("Not a closeable iterator type");
             }
-        
             
-        } catch (IOException io) {
-            throw new IndexException(io);
+        } catch (Exception e) {
+            throw new IndexException(e);
         }
     }
 
@@ -416,7 +427,18 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         } catch (IOException io) {
             throw new IndexException(io);
         }
-        
+    }
+    
+    public void validateStorageFacility() throws StorageCorruptionException {
+        try {
+            this.indexAccessor.corruptionTest();
+        } catch (IOException io) {
+            String storagePath = this.indexAccessor.getStorageRootPath() 
+                                       + "/" + this.indexAccessor.getStorageId();
+            
+            throw new StorageCorruptionException("Possible Lucene index corruption detected (storage path = '"
+                    + storagePath + "'): ", io);
+        }
     }
 
     public boolean lock() {

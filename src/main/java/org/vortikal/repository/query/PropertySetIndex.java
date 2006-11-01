@@ -34,10 +34,12 @@ import java.util.Iterator;
 
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.query.IndexException;
+import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessor;
+import org.vortikal.repositoryimpl.query.consistency.StorageCorruptionException;
 
 /**
  * <p>Defines an interface for modifying and inspecting the contents of 
- * an index of <code>PropertySet</code>s.</p>
+ * an index of <code>PropertySet</code> instances.</p>
  * 
  * <p>
  * Each <code>PropertySet</code> is primarily identified by its URI. In addition, 
@@ -57,8 +59,8 @@ import org.vortikal.repositoryimpl.query.IndexException;
  * (collection). This relationship, however, is only reflected in the URIs themselves.
  * The index does not need to strictly enforce that any given node
  * has an existing parent. In addition to this, the implmementation does not 
- * have to ensure that there are no duplicates for a given URI. This is for the sake
- * of efficiency.
+ * have to ensure that there isn't multiple property sets for a given URI. 
+ * This is for the sake of efficiency.
  * </p>
  * 
  * <p>
@@ -69,7 +71,6 @@ import org.vortikal.repositoryimpl.query.IndexException;
  * other index users before {@link commit()} has been called.
  * </p>
  *
- * 
  * @author oyviste
  */
 public interface PropertySetIndex {
@@ -83,8 +84,8 @@ public interface PropertySetIndex {
     
     /**
      * Delete any <code>PropertySet</code> with the given URI. If there
-     * are multiple property sets with the same URI, then they should all be
-     * deleted.
+     * are multiple property sets with the same URI, then <em>they should all be
+     * deleted</em>.
      * 
      * @param uri
      * @return The number of instances deleted.
@@ -97,16 +98,14 @@ public interface PropertySetIndex {
      * Optional.
      * 
      * @param uuid
-     * 
      * @return The number of instances deleted.
-     * 
      * @throws IndexException
      */
     public int deletePropertySetByUUID(String uuid) throws IndexException;
     
     /**
      * Delete the <code>PropertySet</code> at the given root URI and all its
-     * descendants. This method should also delete URI duplicates in the tree, 
+     * descendants. This method should <em>also delete URI duplicates in the tree</em>, 
      * if there are any.
      * 
      * @param rootUri
@@ -122,7 +121,6 @@ public interface PropertySetIndex {
      * descendants.
      * Optional.
      * 
-     * 
      * @param rootUuid
      * @return
      * @throws IndexException
@@ -130,17 +128,21 @@ public interface PropertySetIndex {
     public int deletePropertySetTreeByUUID(String rootUuid) throws IndexException;
     
     /**
-     * Get the <code>PropertySet</code> at the given.
-     * 
-     * If multiple <code>PropertySet</code> instances have been added for the URI, 
-     * it is undefined which of them is returned using this method. The 
-     * {@link #iterator} method should be used to detect such anomalies.
-     * 
-     * @param uri
+     * Get a {@link PropertySetIndexRandomAccessor} instances for this index.
      * @return
-     * @throws IndexException If no <code>PropertySet</code> was found in the index
+     * @throws IndexException
      */
-    public PropertySet getPropertySet(String uri) throws IndexException;
+    public PropertySetIndexRandomAccessor randomAccessor() throws IndexException;
+    
+    /**
+     * Get an {@link java.util.Iterator} over all existing URIs in index. 
+     * 
+     * The iteration is ordered by URI lexicographically. 
+     * 
+     * @return
+     * @throws IndexException
+     */
+    public Iterator orderedUriIterator() throws IndexException;
     
     /**
      * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
@@ -152,7 +154,7 @@ public interface PropertySetIndex {
      * @return
      * @throws IndexException
      */
-    public Iterator orderedIterator() throws IndexException;
+    public Iterator orderedPropertySetIterator() throws IndexException;
     
     /**
      * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
@@ -165,11 +167,19 @@ public interface PropertySetIndex {
      * @return
      * @throws IndexException
      */
-    public Iterator orderedSubtreeIterator(String rootUri) throws IndexException;
+    public Iterator orderedSubtreePropertySetIterator(String rootUri) throws IndexException;
+
+    /**
+     * Count all property set instances currently in index. This number includes any multiples
+     * for a single URI.
+     *  
+     * @return
+     * @throws IndexException
+     */
+    public int countAllInstances() throws IndexException;
     
     /**
-     * Close an <code>Iterator</code> obtained with either 
-     * {@link #orderedIterator()} or {@link #orderedSubtreeIterator(String)} to free index resources.
+     * Close a previously obtained <code>java.util.Iterator</code> instance to free index resources.
      * 
      * @param iterator
      * @throws IndexException
@@ -241,6 +251,16 @@ public interface PropertySetIndex {
      * @throws IndexException
      */
     public void commit() throws IndexException;
+    
+    /**
+     * Request a low-level validation of the underlying physical storage facility (ie. a corruption test).
+     * You should obtain the index lock before doing this.
+     *  
+     * Implementations are free to ignore this, if it is not relevant or necessary.
+     * 
+     * @throws StorageCorruptionException if corruption is detected in the storage facility.
+     */
+    public void validateStorageFacility() throws StorageCorruptionException;
     
     /**
      * Return a runtime ID for the index instance.

@@ -11,6 +11,11 @@
     <release version="0.3.3" date="In SVN" description="Release 0.3.3">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+
+      <action dev="oyviste" type="add">
+        Add functionality for checking consistency of a property set index
+        and optionally repair any detected errors.
+      </action>
     </release>
 
     <release version="0.3.2" date="2006-10-19" description="Release 0.3.2">

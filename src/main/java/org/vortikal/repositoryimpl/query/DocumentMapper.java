@@ -147,15 +147,12 @@ public class DocumentMapper implements InitializingBean {
         doc.add(storedIdField);
         
         // ACL_INHERITED_FROM (index system field)
-        //Field aclField = FieldValueMapper.getStoredKeywordField(ACL_INHERITED_FROM_FIELD_NAME, 
-        //                                    propSet.getAclInheritedFrom());
         Field aclField = BinaryFieldValueMapper.getStoredBinaryIntegerField(
                 ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
         doc.add(aclField);
         
         ResourceTypeDefinition resourceDef = 
-                propertyManager.getResourceTypeDefinitionByName(
-                                                    propSet.getResourceType());
+                propertyManager.getResourceTypeDefinitionByName(propSet.getResourceType());
         
         // XXX: This adds extra work in time critical indexing code ...
         //      Should consider caching resourceTypeName->List<PropertyTypeDefintions> map
@@ -163,8 +160,7 @@ public class DocumentMapper implements InitializingBean {
         //      of the resource type tree and its properties. Caching would be done there, instead,
         //      obviously.
         List propDefs = 
-            propertyManager.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
-                    resourceDef);
+            propertyManager.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
         
         // Index only properties that satisfy the following two conditions:
         // 1) Belongs to the resource type's definition
@@ -207,13 +203,6 @@ public class DocumentMapper implements InitializingBean {
         propSet.setID(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
                 doc.getField(STORED_ID_FIELD_NAME)));
         propSet.setResourceType(doc.get(RESOURCETYPE_FIELD_NAME));
-        
-        // XXX: I don't think applications/clients are really interested in this
-        //      so we don't bother doing the expensive parse-work involved.
-        //      If we determine that this needs to be populated, we'll store a binary
-        //      version of the field instead.
-        //propSet.setAncestorIds(FieldValueMapper.getIntegersFromUnencodedMultiValueField(
-        //      doc.getField(ANCESTORIDS_FIELD_NAME)));
         
         // Loop through all stored binary fields and re-create properties with
         // values. Multi-valued properties are stored as a sequence of binary fields

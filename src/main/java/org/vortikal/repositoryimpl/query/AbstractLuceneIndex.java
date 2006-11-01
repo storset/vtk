@@ -157,11 +157,12 @@ public abstract class AbstractLuceneIndex {
     protected IndexReader getNewReadOnlyIndexReader() throws IOException {
         
         return IndexReader.open(this.directory);
+        
     }
 
     protected synchronized void commit() throws IOException {
         if (! IndexReader.isLocked(this.directory)) {
-            // No lock on index means there are no pending changes.
+            // If there is no lock on index, there are no pending changes.
             return;
         }
         
@@ -225,7 +226,7 @@ public abstract class AbstractLuceneIndex {
     }
 
     /**
-     * Clear existing index contents, and create a new one. This method will 
+     * Clear existing index directory contents, and create a new one. This method will 
      * automaticallly re-initialize index.
      * 
      * @throws IOException
@@ -245,8 +246,7 @@ public abstract class AbstractLuceneIndex {
             if (IndexReader.isLocked(this.directory)) {
                 IndexReader.unlock(this.directory);
             }
-            this.directory.close();
-            // Don't null directory here, for the same reason as explained above.
+            this.directory.close();  // Don't null directory here, for the same reason as explained above.
         }
         
         this.directory = createDirectory(true);
@@ -267,10 +267,10 @@ public abstract class AbstractLuceneIndex {
         if (! IndexReader.indexExists(directory)) {
             new IndexWriter(directory, this.analyzer, true).close();
             logger.info("Empty new index created.");
-        } 
+        }
     }
     
-    /** Check index lock, force-unlock if requested. */
+    /** Check index filesystem-lock, force-unlock if requested. */
     private void checkIndexLock(Directory directory) throws IOException {
         if (IndexReader.isLocked(directory)) {
             // See if we should try to force-unlock it

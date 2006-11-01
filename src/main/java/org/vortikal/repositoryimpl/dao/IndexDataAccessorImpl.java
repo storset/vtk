@@ -49,6 +49,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.security.ResultSecurityInfo;
 import org.vortikal.security.PrincipalFactory;
@@ -144,7 +145,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
     }
     
     
-    public PropertySet getPropertySetByURI(String uri) throws IOException {
+    public PropertySet getPropertySetByUri(String uri) throws IOException {
         Connection conn = null;
         try {
             conn = this.dataSource.getConnection();
@@ -444,12 +445,14 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
     }
     
     public void close(Iterator iterator) throws IOException {
-        if (iterator instanceof ResultSetIteratorImpl) {
-            ((ResultSetIteratorImpl)iterator).close();
-        } else if (iterator instanceof ResourceIDCachingResultSetIteratorImpl) {
-            ((ResourceIDCachingResultSetIteratorImpl)iterator).close();
+        if (iterator instanceof CloseableIterator) {
+            try {
+                ((CloseableIterator)iterator).close();
+            } catch (Exception e) {
+                throw new IOException(e.getMessage());
+            }
         } else {
-            throw new IllegalArgumentException("Unknown iterator implementation");
+            throw new IllegalArgumentException("Iterator not closeable");
         }
     }
     

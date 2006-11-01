@@ -60,11 +60,11 @@ public interface IndexDataAccessor {
      * URI. The URI order should be lexicographic.
      * Might be useful for incremental synchronization/re-indexing.
      * 
-     * @param startURI
+     * @param startUri
      * @return
      * @throws IOException
      */
-    public Iterator getOrderedPropertySetIterator(String startURI) throws IOException;
+    public Iterator getOrderedPropertySetIterator(String startUri) throws IOException;
     
     /**
      * Get iterator over all <code>PropertySet</code>s from URIs in the given 
@@ -83,7 +83,7 @@ public interface IndexDataAccessor {
      * @return A single <code>PropertySet</code> for the given ID, or <code>null</code> if not found.
      * @throws IOException
      */
-    public PropertySet getPropertySetByURI(String uri) throws IOException;
+    public PropertySet getPropertySetByUri(String uri) throws IOException;
 
     /**
      * Returns a single <code>PropertySet</code> for the given ID.

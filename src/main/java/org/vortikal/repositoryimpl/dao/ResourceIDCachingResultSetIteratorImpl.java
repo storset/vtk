@@ -45,6 +45,7 @@ import java.util.NoSuchElementException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
+import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.security.PrincipalFactory;
@@ -70,7 +71,7 @@ import org.vortikal.security.PrincipalFactory;
  * @author oyviste
  *
  */
-public class ResourceIDCachingResultSetIteratorImpl implements Iterator {
+public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator {
 
     Log logger = LogFactory.getLog(ResourceIDCachingResultSetIteratorImpl.class);
     

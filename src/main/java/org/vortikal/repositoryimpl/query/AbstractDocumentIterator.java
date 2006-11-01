@@ -36,6 +36,7 @@ import java.util.NoSuchElementException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repositoryimpl.CloseableIterator;
 
 /**
  * Abstract iterator in document order (can be considered unordered).

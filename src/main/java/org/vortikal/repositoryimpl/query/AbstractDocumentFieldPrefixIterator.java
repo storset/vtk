@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

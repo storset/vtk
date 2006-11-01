@@ -41,6 +41,7 @@ import org.vortikal.repositoryimpl.index.security.ResultSecurityFilterException;
 /**
  * Security features.
  * 
+ * @deprecated
  * @author oyviste
  */
 public abstract class AbstractSearcher implements Searcher, InitializingBean {

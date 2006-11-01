@@ -291,26 +291,33 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     }
     
     public int countAllInstances() throws IndexException {
-        TermEnum te = null;
+        TermEnum termEnum = null;
+        TermDocs termDocs = null;
         int count = 0;
         
         try {
             IndexReader reader = this.indexAccessor.getIndexReader();
             Term start = new Term(DocumentMapper.URI_FIELD_NAME, "");
-            String field = start.field();
-            te = reader.terms(start);
+            String enumField = start.field();
+            termEnum = reader.terms(start);
+            termDocs = reader.termDocs(start);
             
-            while (te.term() != null && te.term().field() == field) {
-                ++count;
-                te.next();
+            while (termEnum.term() != null && termEnum.term().field() == enumField) {
+                termDocs.seek(termEnum);
+                while (termDocs.next()) {
+                    if (! reader.isDeleted(termDocs.doc())) {
+                        ++count;
+                    }
+                }
+                termEnum.next();
             }
-            
         } catch (IOException io) {
             throw new IndexException(io);
         } finally {
-            if (te != null) {
-                try { te.close(); } catch (IOException io) {}
-            }
+            try {
+                termEnum.close();
+                termDocs.close();
+            } catch (IOException io) {}
         }
         
         return count;

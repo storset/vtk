@@ -38,7 +38,8 @@ import java.util.Set;
 import org.vortikal.repository.PropertySet;
 
 /**
- * 
+ * Repository data accessor for indexing system.
+ *  
  * @author oyviste
  *
  */
@@ -53,7 +54,7 @@ public interface IndexDataAccessor {
      * @throws IOException
      */
     public Iterator getOrderedPropertySetIterator() throws IOException;
-    
+
     /**
      * Get an ordered <code>PropertySet</code> iterator, starting from the given 
      * URI. The URI order should be lexicographic.
@@ -73,16 +74,25 @@ public interface IndexDataAccessor {
      * @return
      * @throws IOException
      */
-    public Iterator getPropertySetIteratorForURIs(List uris) throws IOException;
-    
+    public Iterator getPropertySetIteratorForUris(List uris) throws IOException;
+
     /**
      * Returns a single <code>PropertySet</code> for the given URI.
      * 
      * @param uri
-     * @return
+     * @return A single <code>PropertySet</code> for the given ID, or <code>null</code> if not found.
      * @throws IOException
      */
-    public PropertySet getPropertySetForURI(String uri) throws IOException;
+    public PropertySet getPropertySetByURI(String uri) throws IOException;
+
+    /**
+     * Returns a single <code>PropertySet</code> for the given ID.
+     * @param id The repository ID of the property set.
+     * @return A single <code>PropertySet</code> for the given ID, or <code>null</code> if not found.
+     * 
+     * @throws IOException
+     */
+    public PropertySet getPropertySetByID(int id) throws IOException;
     
     /**
      * Close an {@link java.util.Iterator} instance obtained with any of the
@@ -90,7 +100,7 @@ public interface IndexDataAccessor {
      * <ul>
      *  <li>{@link #getOrderedPropertySetIterator()}</li>
      *  <li>{@link #getOrderedPropertySetIterator(String)}</li>
-     *  <li>{@link #getPropertySetIteratorForURIs(List)}</li>
+     *  <li>{@link #getPropertySetIteratorForUris(List)}</li>
      * </ul>
      * 
      * This should always be done to free database resources.
@@ -99,7 +109,7 @@ public interface IndexDataAccessor {
      * @throws IOException
      */
     public void close(Iterator iterator) throws IOException;
-    
+
     /**
      * Process list of <code>ResultSecurityInfo</code> instances
      * against list of given user/group names.
@@ -109,7 +119,7 @@ public interface IndexDataAccessor {
      * @throws IOException
      */
     public void processQueryResultsAuthorization(Set principalNames, 
-                                                 List resultSecurityInfo)
-        throws IOException;
+                                                 List resultSecurityInfo) throws IOException;
 
+    
 }

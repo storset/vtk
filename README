@@ -28,37 +28,10 @@ are necessary:
    'src/main/resources/vortikal/beans/vortikal.properties' for
    descriptions of the various configuration settings.
 
-7. Put the following in your ~/.m2/settings.xml:
-
-  <?xml version="1.0" encoding="utf-8" ?>
-    <settings xmlns="http://maven.apache.org/POM/4.0.0"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-      <profiles>
-        <profile>
-          <id>default</id>
-          <properties>
-            <!-- maven -->
-            <maven.test.skip>true</maven.test.skip>
-          </properties>
-          <repositories>
-            <repository>
-              <id>intra.usit.uio.no</id>
-              <name>USIT Intra</name>
-              <url>http://intra.usit.uio.no/web/maven2/</url>
-            </repository>
-          </repositories>
-        </profile>
-      </profiles>
-      <activeProfiles>
-        <activeProfile>default</activeProfile>
-      </activeProfiles>
-    </settings>
-
-8. Custom bean definitions and overriding can be placed in the file
+7. Custom bean definitions and overriding can be placed in the file
    ~/vrtx-context.xml (loaded if it exists).
 
-9. Serving static resources from the file system: add an entry to the
+8. Serving static resources from the file system: add an entry to the
    ~/vrtx-context.xml file:
 
   <bean class="org.vortikal.web.StaticResourceLocation">

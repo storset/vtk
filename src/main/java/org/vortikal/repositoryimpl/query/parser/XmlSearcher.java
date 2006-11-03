@@ -129,6 +129,12 @@ public class XmlSearcher implements InitializingBean {
     public org.w3c.dom.NodeList executeQuery(String token, String query, 
                 String sort, String maxResults) throws QueryException {
         
+        Document doc = executeDocumentQuery(token, query, sort, maxResults);
+        return doc.getDocumentElement().getChildNodes();
+    }
+  
+    public Document executeDocumentQuery(String token, String query,
+                                         String sort, String maxResults) throws QueryException {
         Document doc = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -163,10 +169,10 @@ public class XmlSearcher implements InitializingBean {
             errorElement.appendChild(text);
 
         }
-        
-        return doc.getDocumentElement().getChildNodes();
+        return doc;
     }
-  
+    
+
     private void addResultSetToDocument(ResultSet rs, Document doc) {
         long start = System.currentTimeMillis();
         

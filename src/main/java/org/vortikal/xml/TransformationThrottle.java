@@ -64,7 +64,9 @@ public class TransformationThrottle {
         if (this.size > 0) {
             this.semaphore.up();
             int avail = this.size - this.semaphore.getValue();
-            System.out.println("Available transformers: " + avail);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Available transformers: " + avail);
+            }
         }
     }
 }

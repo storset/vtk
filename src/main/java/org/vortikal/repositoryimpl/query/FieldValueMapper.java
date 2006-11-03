@@ -30,7 +30,11 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.lucene.document.Field;
+
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
@@ -46,6 +50,12 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
  */
 public final class FieldValueMapper {
     
+    public static final SimpleDateFormat[] DATE_FORMATS = new SimpleDateFormat[] {
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"),
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
+        new SimpleDateFormat("yyyy-MM-dd HH:mm"),
+        new SimpleDateFormat("yyyy-MM-dd HH"),
+        new SimpleDateFormat("yyyy-MM-dd")};
 
     public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
     public static final char ESCAPE_CHAR = '\\';
@@ -265,10 +275,23 @@ public final class FieldValueMapper {
             try {
                 long l = Long.parseLong(stringValue);
                 return FieldValueEncoder.encodeDateValueToString(l);
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException("Unable to encode date string value to " 
-                        + "to index field value representation: " + nfe.getMessage());
+            } catch (NumberFormatException nfe) { }
+
+            Date d = null;
+            for (int i = 0; i < DATE_FORMATS.length; i++) {
+                try {
+                    d = DATE_FORMATS[i].parse(stringValue);
+                    break;
+                } catch (Exception e) { }
             }
+            if (d == null) {
+                throw new ValueFormatException(
+                    "Unable to encode date string value '" + stringValue
+                    + "' to index field value representation");
+            }
+            return FieldValueEncoder.encodeDateValueToString(d.getTime());
+
+
             
         case(PropertyType.TYPE_INT):
             try {

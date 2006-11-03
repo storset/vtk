@@ -38,6 +38,23 @@
     <property name="xpath" value="${rssXslTransformationSchemaXPath}" />
   </bean>
 
+  <bean id="rawXmlQueryService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="assertions">
+      <list>
+        <!--ref bean="contentTypeMatchesXml" /-->
+        <ref bean="xmlQueryParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="rawXmlQueryHandler" />
+    </property>
+  </bean>
+
+  <bean id="rawXmlQueryHandler" class="org.vortikal.web.controller.index.XmlQueryController">
+    <property name="xmlSearcher" ref="xmlSearcher" />
+  </bean>
+
 
   <bean id="transformXmlViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
     <property name="views">
@@ -78,6 +95,13 @@
     <property name="schemaPropertyDefinition" ref="schemaPropDef" />
     <property name="xpath" value="${viewXslTransformationSchemaXPath}" />
   </bean>
+
+  <bean id="xmlQueryParameterSetAssertion"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="xml-query" />
+  </bean>
+
 
   <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
 
@@ -153,23 +177,6 @@
   </bean>
 
 
-
-
-  <!-- Add the XSL provider to the central list: -->
-<!--
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="transformXmlView" />
-    <property name="targetMethod" value="addReferenceDataProvider" />
-    <property name="arguments">
-      <list>
-        <ref bean="dmsQueryXslProvider" />
-      </list>
-    </property>
-  </bean>
-
--->
-
-
   <bean id="xmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
     <property name="queryManager" ref="queryManager" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -202,6 +209,25 @@
         <ref bean="xsltSearchProvider" />
       </list>
     </property>
+  </bean>
+
+  <!-- Add the raw query URL provider to the central list: -->
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="editView" />
+    <property name="targetMethod" value="addReferenceDataProvider" />
+    <property name="arguments">
+      <list>
+        <ref bean="rawXmlQueryURLProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="rawXmlQueryURLProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelName" value="xsltParameters" />
+    <property name="urlName" value="rawXmlQueryURL" />
+    <property name="service" ref="rawXmlQueryService" />
   </bean>
 
 

@@ -59,7 +59,7 @@ import org.apache.lucene.analysis.Tokenizer;
 public final class EscapedMultiValueFieldTokenizer extends Tokenizer {
 
     public static final char ESCAPE_CHAR = '\\';
-    private static final int MAX_TOKEN_LEN = 2048;
+    public static final int MAX_TOKEN_LEN = 2048;
     
     private final char splitChar;
     private char[] tokenBuffer;

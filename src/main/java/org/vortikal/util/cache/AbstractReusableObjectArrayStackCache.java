@@ -43,8 +43,7 @@ package org.vortikal.util.cache;
  * 
  * @author oyviste
  */
-public abstract class AbstractReusableObjectArrayStackCache 
-                                                implements ReusableObjectCache {
+public abstract class AbstractReusableObjectArrayStackCache implements ReusableObjectCache {
 
     public static final int DEFAULT_CAPACITY = 10;
     

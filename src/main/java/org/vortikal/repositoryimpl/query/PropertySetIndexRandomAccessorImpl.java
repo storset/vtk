@@ -39,7 +39,7 @@ import org.vortikal.repository.PropertySet;
 
 /**
  * Random accessor for property set index.
- * Caches <code>TermDocs</code> instances.
+ * Caches internal <code>TermDocs</code> instances.
  * 
  * @author oyviste
  *

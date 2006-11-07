@@ -203,6 +203,7 @@ public class XmlSearcher implements InitializingBean {
         Element resultElement = doc.createElement("results");
         doc.appendChild(resultElement);
         resultElement.setAttribute("size", String.valueOf(rs.getSize()));
+        resultElement.setAttribute("totalHits", String.valueOf(rs.getTotalHits()));
         for (Iterator i = rs.iterator(); i.hasNext();) {
             PropertySet propSet = (PropertySet)i.next();
             addPropertySetToResults(doc, resultElement, propSet);
@@ -223,31 +224,6 @@ public class XmlSearcher implements InitializingBean {
         propertySetElement.setAttribute("name", propSet.getName());
         propertySetElement.setAttribute("type", propSet.getResourceType());
 
-//         Element uri = doc.createElement("property");
-//         uri.setAttribute("name", "uri");
-//         Element uriValue = doc.createElement("value");
-//         Text text = doc.createTextNode(propSet.getURI());
-//         uriValue.appendChild(text);
-//         uri.appendChild(uriValue);
-        
-//         Element name = doc.createElement("property");
-//         name.setAttribute("name", "name");
-//         Element nameValue = doc.createElement("value");
-//         text = doc.createTextNode(propSet.getName());
-//         nameValue.appendChild(text);
-//         name.appendChild(nameValue);
-        
-//         Element type = doc.createElement("property");
-//         type.setAttribute("name", "type");
-//         Element typeValue = doc.createElement("value");
-//         text = doc.createTextNode(propSet.getResourceType());
-//         typeValue.appendChild(text);
-//         type.appendChild(typeValue);
-        
-//         propertySetElement.appendChild(uri);
-//         propertySetElement.appendChild(name);
-//         propertySetElement.appendChild(type);
-        
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Property prop = (Property) i.next();
             addPropertyToPropertySetElement(doc, propertySetElement, prop);

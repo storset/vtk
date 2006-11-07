@@ -28,39 +28,45 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
+package org.vortikal.repositoryimpl.query.parser;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.TermOperator;
-import org.vortikal.repositoryimpl.query.query.UriDepthQuery;
+import javax.servlet.http.HttpServletRequest;
 
-/**
- * Build URI depth Lucene query
- * 
- * @author oyviste
- *
- */
-public class UriDepthQueryBuilder implements QueryBuilder {
+import junit.framework.TestCase;
 
-    private UriDepthQuery query;
-    
-    public UriDepthQueryBuilder(UriDepthQuery query) {
-        this.query = query;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.vortikal.context.BaseContext;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceImpl;
+
+public class CurrentDepthExpressionEvaluatorTestCase extends TestCase {
+
+    HttpServletRequest request = new MockHttpServletRequest();
+    Service service = new ServiceImpl();
+
+    CurrentDepthExpressionEvaluator evaluator = 
+        new CurrentDepthExpressionEvaluator();
+
+    public void testEvaluate() {
+        assertEquals(0, getDepth("/"));
+        
+        assertEquals(1, getDepth("/lala"));
+        
+        assertEquals(3, getDepth("/la/di/da"));
+        
     }
     
-    public Query buildQuery() throws QueryBuilderException {
-        
-        Term uriDepthTerm = new Term(
-                DocumentMapper.URI_DEPTH_FIELD_NAME,
-                Integer.toString(query.getDepth()));
-        
-        return new TermQuery(uriDepthTerm);
+    private int getDepth(String uri) {
 
+        BaseContext.pushContext();
+
+        RequestContext.setRequestContext(
+                new RequestContext(request, service, uri));
+        String s = evaluator.evaluate("currentDepth");
+
+        BaseContext.popContext();
+
+        return Integer.parseInt(s);
     }
-
 }

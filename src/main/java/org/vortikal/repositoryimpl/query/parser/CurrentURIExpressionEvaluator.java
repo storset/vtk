@@ -66,7 +66,7 @@ public class CurrentURIExpressionEvaluator implements ExpressionEvaluator {
 
 
         if (!this.variableName.equals(token)) {
-            throw new QueryException("Unknnow query token: '" + token + "'");
+            throw new QueryException("Unknown query token: '" + token + "'");
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();

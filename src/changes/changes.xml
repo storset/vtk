@@ -12,6 +12,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="storset" type="add">
+        Added functionality for depth query in query syntax. Includes
+        processor for ${currentDepth} variable substitution.
+      </action>
+
       <action dev="oyviste" type="add">
         Add functionality for checking consistency of a property set index
         and optionally repair any detected errors.

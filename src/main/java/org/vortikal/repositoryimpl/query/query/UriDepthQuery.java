@@ -32,32 +32,24 @@ package org.vortikal.repositoryimpl.query.query;
 
 /**
  * Query for URI depth.
+ * Only equals is supported, and therefore assumed
  * 
- * @author oyviste
- *
  */
 public class UriDepthQuery implements UriQuery {
 
     private int depth;
-    private TermOperator operator;
     
-    public UriDepthQuery(int depth, TermOperator operator) {
+    public UriDepthQuery(int depth) {
         this.depth = depth;
-        this.operator = operator;
     }
     
     public int getDepth() {
         return this.depth;
     }
     
-    public TermOperator getOperator() {
-        return this.operator;
-    }
-    
     public String dump(String prefix) {
         StringBuffer dump = new StringBuffer(prefix);
         dump.append(this.getClass().getName()).append("\n");
-        dump.append(prefix).append("Operator = " + this.operator).append("\n");
         dump.append(prefix).append("Depth = " + this.depth).append("\n");
         return dump.toString();
     }

@@ -20,6 +20,7 @@
     <property name="expressionEvaluators">
       <list>
         <bean class="org.vortikal.repositoryimpl.query.parser.CurrentDateExpressionEvaluator" />
+        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentDepthExpressionEvaluator" />
         <bean class="org.vortikal.repositoryimpl.query.parser.CurrentURIExpressionEvaluator"
               parent="requestLocalRepositoryAware" />
       </list>

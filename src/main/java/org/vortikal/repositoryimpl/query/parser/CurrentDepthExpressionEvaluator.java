@@ -28,39 +28,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
+package org.vortikal.repositoryimpl.query.parser;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.TermOperator;
-import org.vortikal.repositoryimpl.query.query.UriDepthQuery;
 
-/**
- * Build URI depth Lucene query
- * 
- * @author oyviste
- *
- */
-public class UriDepthQueryBuilder implements QueryBuilder {
+import org.vortikal.util.repository.URIUtil;
+import org.vortikal.web.RequestContext;
 
-    private UriDepthQuery query;
+
+public class CurrentDepthExpressionEvaluator implements ExpressionEvaluator {
     
-    public UriDepthQueryBuilder(UriDepthQuery query) {
-        this.query = query;
-    }
+    private String variableName = "currentDepth";
     
-    public Query buildQuery() throws QueryBuilderException {
-        
-        Term uriDepthTerm = new Term(
-                DocumentMapper.URI_DEPTH_FIELD_NAME,
-                Integer.toString(query.getDepth()));
-        
-        return new TermQuery(uriDepthTerm);
-
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
     }
 
+    public boolean matches(String token) {
+        return this.variableName.equals(token);
+    }
+    
+    public String evaluate(String token) throws QueryException {
+
+        if (!this.variableName.equals(token)) {
+            throw new QueryException("Unknown query token: '" + token + "'");
+        }
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String uri = requestContext.getResourceURI();
+
+        return "" + URIUtil.getUriDepth(uri);
+    }
 }
+

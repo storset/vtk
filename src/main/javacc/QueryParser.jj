@@ -94,6 +94,7 @@ TOKEN : {
     <URI: "uri">
         | <NAME: "name">
         | <TYPE: "type">
+        | <DEPTH: "depth">
 
         | <EQ: "="> : Value
         | <NE: "!="> : Value
@@ -197,7 +198,8 @@ Query SimpleQuery() :
         q=ClosedQuery() 
         | LOOKAHEAD(2) q=NameQuery() 
         | LOOKAHEAD(2) q=UriQuery() 
-        | LOOKAHEAD(2) q=TypeQuery() 
+        | LOOKAHEAD(2) q=TypeQuery()
+        | LOOKAHEAD(2) q=DepthQuery() 
         | q=PropertyQuery()
     )
         { return q; }
@@ -210,6 +212,24 @@ Query ClosedQuery() :
 {
     <LP> q=Query() <RP>
         { return q;}
+}
+
+Query DepthQuery() : 
+{
+    Token t;
+}
+{
+    <DEPTH> <EQ> t=<VALUE>
+        { 	
+        	// Should be validating this in the parser (?)
+        	int depth = -1;
+        	try {
+	        	depth = Integer.parseInt(t.image);
+        	} catch (NumberFormatException e) {
+	            throw new RuntimeException("depth value not a legal integer");
+        	}    	
+        	return new UriDepthQuery(depth); 
+        }
 }
 
 Query UriQuery() : 

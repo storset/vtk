@@ -18,8 +18,7 @@
       </action>
 
       <action dev="storset" type="add">
-        Added functionality for depth query in query syntax. Includes
-        processor for ${currentDepth} variable substitution.
+        Added functionality for depth query in query syntax.
       </action>
 
       <action dev="oyviste" type="add">

@@ -31,32 +31,63 @@
 package org.vortikal.repositoryimpl.query.parser;
 
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 
 
+/**
+ * Expression evaluator the token input to uri depth. 
+ * <p>The syntax accepted is '(currentDepth)([+-]\d+)?'.
+ * The depth is calculated based on the parents depth, '/' has depth 0.
+ *  
+ *  <p>Note: The current implementation can return a negative depth value.
+ */
 public class CurrentDepthExpressionEvaluator implements ExpressionEvaluator {
     
     private String variableName = "currentDepth";
+    private Pattern pattern = compilePattern();
+    
+    private Pattern compilePattern() {
+        return Pattern.compile(
+            this.variableName + "(([+-])(\\d+))?");
+    }
     
     public void setVariableName(String variableName) {
         this.variableName = variableName;
+        this.pattern = compilePattern();
     }
 
     public boolean matches(String token) {
-        return this.variableName.equals(token);
+        Matcher m = this.pattern.matcher(token);
+        return m.matches();
     }
     
     public String evaluate(String token) throws QueryException {
 
-        if (!this.variableName.equals(token)) {
-            throw new QueryException("Unknown query token: '" + token + "'");
+        Matcher m = this.pattern.matcher(token);
+        if (!m.matches()) {
+            throw new QueryException("Illegal query token: '" + token + "'");
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
-        return "" + URIUtil.getUriDepth(uri);
+        int depth = URIUtil.getUriDepth(uri) - 1;
+
+        if (m.group(1) != null) {
+            String operator = m.group(2);
+            int qty = Integer.parseInt(m.group(3));
+            
+            if (operator.equals("+"))
+                depth += qty;
+            else
+                depth -= qty;
+        }
+        
+        return "" + depth;
     }
 }
 

@@ -48,22 +48,39 @@ public class CurrentDepthExpressionEvaluatorTestCase extends TestCase {
     CurrentDepthExpressionEvaluator evaluator = 
         new CurrentDepthExpressionEvaluator();
 
-    public void testEvaluate() {
-        assertEquals(0, getDepth("/"));
+    public void testMatches() {
+        assertTrue(evaluator.matches("currentDepth"));
+        assertTrue(evaluator.matches("currentDepth+2"));
+        assertTrue(evaluator.matches("currentDepth-12"));
         
-        assertEquals(1, getDepth("/lala"));
-        
-        assertEquals(3, getDepth("/la/di/da"));
-        
+        assertFalse(evaluator.matches(" currentDepth"));
+        assertFalse(evaluator.matches("currentDepth+2 "));
+        assertFalse(evaluator.matches("currentDepth+ 2"));
+        assertFalse(evaluator.matches("currentDepth -12"));
     }
     
+    public void testSimpleEvaluation() {
+        assertEquals(-1, getDepth("/"));
+        assertEquals(0, getDepth("/lala"));
+        assertEquals(2, getDepth("/la/di/da"));
+    }
+    
+    public void testRelativeEvaluation() {
+        assertEquals(-1, getDepth("currentDepth-1", "/lala"));
+        assertEquals(12, getDepth("currentDepth+10", "/lala/al/la"));
+    }
+
     private int getDepth(String uri) {
+        return getDepth("currentDepth", uri);
+    }
+    
+    private int getDepth(String token, String uri) {
 
         BaseContext.pushContext();
 
         RequestContext.setRequestContext(
                 new RequestContext(request, service, uri));
-        String s = evaluator.evaluate("currentDepth");
+        String s = evaluator.evaluate(token);
 
         BaseContext.popContext();
 

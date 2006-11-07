@@ -103,4 +103,9 @@ public interface ResultSet {
      */
     public Iterator iterator();
     
+    /**
+     * Get total number of hits the actual query produced, regardless of the result set size or
+     * cursor+maxresults.
+     */
+    public int getTotalHits();
 }

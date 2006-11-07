@@ -48,10 +48,11 @@ import org.vortikal.repository.PropertySet;
 public class ResultSetImpl implements ResultSet {
 
     private List results;
+    private int totalHits;
     
     public ResultSetImpl() {
-        
         this.results = new ArrayList();
+        this.totalHits = 0;
     }
     
     public ResultSetImpl(int initialCapacity) {
@@ -86,6 +87,14 @@ public class ResultSetImpl implements ResultSet {
     
     public Iterator iterator() {
         return this.results.iterator();
+    }
+    
+    public int getTotalHits() {
+        return this.totalHits;
+    }
+    
+    public void setTotalHits(int totalHits) {
+        this.totalHits = totalHits;
     }
 
 }

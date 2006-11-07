@@ -213,8 +213,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
                 }
             }
             
-            ResultSet rs = buildResultSet(topDocs.scoreDocs, searcher.getIndexReader(), 
-                                          token, maxResults, cursor);
+            ResultSet rs = buildResultSet(topDocs.scoreDocs, topDocs.totalHits, 
+                                          searcher.getIndexReader(), token, maxResults, cursor);
             
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Total query time including result set building: " 
@@ -233,11 +233,12 @@ public class SearcherImpl implements Searcher, InitializingBean {
         }
     }
 
-    private ResultSetImpl buildResultSet(ScoreDoc[] docs, 
+    private ResultSetImpl buildResultSet(ScoreDoc[] docs, int totalHits,
             IndexReader reader, String token, int maxResults, int cursor)
             throws IOException {
 
         ResultSetImpl rs = new ResultSetImpl(docs.length);
+        rs.setTotalHits(totalHits);
 
         if (docs.length == 0 || cursor >= docs.length) {
             return rs; // Empty result set

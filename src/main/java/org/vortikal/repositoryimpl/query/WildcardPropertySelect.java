@@ -30,30 +30,22 @@
  */
 package org.vortikal.repositoryimpl.query;
 
-import java.io.IOException;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repositoryimpl.query.query.PropertySelect;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
 
 /**
- * Iterator over <code>PropertySet</code> instances by URI.
+ * Utility property select implementation that includes all
+ * properties.
  *
- * @author oyviste
  */
-class PropertySetIndexIterator extends AbstractDocumentFieldIterator {
+public class WildcardPropertySelect implements PropertySelect {
 
-    private DocumentMapper mapper;
+    public static final WildcardPropertySelect WILDCARD_PROPERTY_SELECT =
+        new WildcardPropertySelect();
     
-    public PropertySetIndexIterator(IndexReader reader, DocumentMapper mapper)
-            throws IOException {
-        
-        super(reader, DocumentMapper.URI_FIELD_NAME, null);
-        this.mapper = mapper;
-    }
 
-    protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(
-            document, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
+        return true;
     }
-
 }

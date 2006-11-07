@@ -51,7 +51,8 @@ public class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator 
     }
 
     protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(document);
+        return this.mapper.getPropertySet(
+            document, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
     }
 
 }

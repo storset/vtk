@@ -46,7 +46,7 @@ public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefi
     }
 
     protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc);
+        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
     }
 
 }

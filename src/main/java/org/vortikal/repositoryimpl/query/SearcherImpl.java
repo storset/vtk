@@ -36,18 +36,23 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.parser.QueryException;
 import org.vortikal.repositoryimpl.query.parser.ResultSet;
 import org.vortikal.repositoryimpl.query.parser.ResultSetImpl;
 import org.vortikal.repositoryimpl.query.parser.Searcher;
+import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.security.LuceneResultSecurityInfo;
@@ -85,8 +90,8 @@ import org.vortikal.repositoryimpl.query.security.QueryResultAuthorizationManage
  */
 public class SearcherImpl implements Searcher, InitializingBean {
 
-    Log logger = LogFactory.getLog(SearcherImpl.class);
-    
+    private static Log logger = LogFactory.getLog(SearcherImpl.class);
+
     private LuceneIndex indexAccessor;
     private DocumentMapper documentMapper;
     private QueryResultAuthorizationManager queryResultAuthorizationManager;
@@ -113,67 +118,85 @@ public class SearcherImpl implements Searcher, InitializingBean {
         }
         
         if (this.queryResultAuthorizationManager == null) {
-            this.logger.warn("No authorization manager configured, queries will not be filtered with regard to"
-                    + " permissions.");
+            this.logger.warn("No authorization manager configured, "
+                             + "queries will not be filtered with regard to"
+                             + " permissions.");
         }
     }
     
-    /* (non-Javadoc)
-     * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String, org.vortikal.repositoryimpl.query.query.Query)
-     */
     public ResultSet execute(String token, Query query) throws QueryException {
         
-        return executeQuery(token, query, null, this.maxAllowedHitsPerQuery, 0);
+        return executeQuery(token, query, null, this.maxAllowedHitsPerQuery, 0,
+                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
     }
 
-    /* (non-Javadoc)
-     * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String,
-     *                                  org.vortikal.repositoryimpl.query.query.Query,
-     *                                  int)
-     */
     public ResultSet execute(String token, Query query, int maxResults)
             throws QueryException {
         
-        return executeQuery(token, query, null, maxResults, 0);
+        return executeQuery(token, query, null, maxResults, 0,
+                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
     }
     
-    /* (non-Javadoc)
-     * @see org.vortikal.repositoryimpl.queryparser.Searcher#execute(java.lang.String, org.vortikal.repositoryimpl.query.query.Query, int, int)
-     */
     public ResultSet execute(String token, Query query, int maxResults, int cursor)
             throws QueryException {
         
-        return executeQuery(token, query, null, maxResults, cursor);
+        return executeQuery(token, query, null, maxResults, cursor,
+                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
     }
     
     public ResultSet execute(String token, Query query, Sorting sorting) 
         throws QueryException {
 
-        return executeQuery(token, query, sorting, this.maxAllowedHitsPerQuery, 0);
+        return executeQuery(token, query, sorting, this.maxAllowedHitsPerQuery, 0,
+                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
     }
 
     public ResultSet execute(String token, Query query, Sorting sorting,
         int maxResults) throws QueryException {
     
-        return executeQuery(token, query, sorting, maxResults, 0);
+        return executeQuery(token, query, sorting, maxResults, 0,
+                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
     }
+
+    public ResultSet execute(String token, Query query, Sorting sorting, 
+                             int maxResults,
+                             PropertySelect selectedProperties) throws QueryException {
+        return executeQuery(token, query, sorting, maxResults, 0, selectedProperties);
+    }
+    
 
     public ResultSet execute(String token, Query query, Sorting sorting,
         int maxResults, int cursor) throws QueryException {
     
-        return executeQuery(token, query, sorting, maxResults, cursor);
+        return executeQuery(token, query, sorting, maxResults, cursor,
+                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
     }
 
     
+    public ResultSet execute(String token, Query query, Sorting sorting,
+                             int maxResults, int cursor,
+                             PropertySelect selectedProperties) throws QueryException {
+        return executeQuery(token, query, sorting, maxResults, cursor,
+                            selectedProperties);
+    }
+    
+
     private ResultSet executeQuery(String token, Query query, Sorting sorting,
-                int maxResults, int cursor) throws QueryException {
+                                   int maxResults, int cursor,
+                                   PropertySelect selectedProperties)
+        throws QueryException {
         
+        if (selectedProperties == null) {
+            throw new IllegalArgumentException("Argument selectedProperties cannot be NULL");
+        }
+
+
         org.apache.lucene.search.Query q =
             this.queryBuilderFactory.getBuilder(query).buildQuery();
 
@@ -214,7 +237,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
             }
             
             ResultSet rs = buildResultSet(topDocs.scoreDocs, topDocs.totalHits, 
-                                          searcher.getIndexReader(), token, maxResults, cursor);
+                                          searcher.getIndexReader(), token, maxResults,
+                                          cursor, selectedProperties);
             
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Total query time including result set building: " 
@@ -234,8 +258,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
     }
 
     private ResultSetImpl buildResultSet(ScoreDoc[] docs, int totalHits,
-            IndexReader reader, String token, int maxResults, int cursor)
-            throws IOException {
+                                         IndexReader reader, String token, int maxResults,
+                                         int cursor, PropertySelect selectedProperties)
+        throws IOException {
 
         ResultSetImpl rs = new ResultSetImpl(docs.length);
         rs.setTotalHits(totalHits);
@@ -277,12 +302,14 @@ public class SearcherImpl implements Searcher, InitializingBean {
                 
                 if (rsi.isAuthorized()) {
                     // Only create property sets for authorized hits
-                    rs.addResult(this.documentMapper.getPropertySet(rsi.getDocument()));
+                    rs.addResult(this.documentMapper.getPropertySet(
+                                     rsi.getDocument(), selectedProperties));
                 } 
             }
         } else {
             for (int i = cursor; i < end; i++) {
-                rs.addResult(this.documentMapper.getPropertySet(reader.document(docs[i].doc)));
+                rs.addResult(this.documentMapper.getPropertySet(
+                                 reader.document(docs[i].doc), selectedProperties));
             }
         }
         
@@ -315,8 +342,11 @@ public class SearcherImpl implements Searcher, InitializingBean {
         return this.maxAllowedHitsPerQuery;
     }
 
-    public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager queryResultAuthorizationManager) {
+    public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager
+                                                   queryResultAuthorizationManager) {
         this.queryResultAuthorizationManager = queryResultAuthorizationManager;
     }
     
+    
+
 }

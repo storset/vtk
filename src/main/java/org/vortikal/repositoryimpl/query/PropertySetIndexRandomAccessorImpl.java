@@ -85,7 +85,9 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
             this.uriTermDocs.seek(new Term(DocumentMapper.URI_FIELD_NAME, uri));
             while (this.uriTermDocs.next()) {
                 if (! reader.isDeleted(this.uriTermDocs.doc())) {
-                    propSet = this.mapper.getPropertySet(this.reader.document(this.uriTermDocs.doc()));
+                    propSet = this.mapper.getPropertySet(
+                        this.reader.document(this.uriTermDocs.doc()),
+                        WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
                 }
             }
         } catch (IOException io) {
@@ -101,7 +103,9 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
             this.uuidTermDocs.seek(new Term(DocumentMapper.ID_FIELD_NAME, uuid));
             while (this.uuidTermDocs.next()) {
                 if (! reader.isDeleted(this.uuidTermDocs.doc())) {
-                    propSet = mapper.getPropertySet(reader.document(this.uuidTermDocs.doc()));
+                    propSet = mapper.getPropertySet(
+                        reader.document(this.uuidTermDocs.doc()),
+                        WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
                 }
             }
         } catch (IOException io) {

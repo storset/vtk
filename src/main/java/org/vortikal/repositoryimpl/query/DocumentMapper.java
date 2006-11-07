@@ -39,10 +39,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -52,6 +55,7 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.util.repository.URIUtil;
 
 /**
@@ -195,7 +199,7 @@ public class DocumentMapper implements InitializingBean {
      * @return
      * @throws DocumentMappingException
      */
-    public PropertySetImpl getPropertySet(Document doc) throws DocumentMappingException {
+    public PropertySetImpl getPropertySet(Document doc, PropertySelect select) throws DocumentMappingException {
         // XXX: Exception handling
         PropertySetImpl propSet = new PropertySetImpl(doc.get(URI_FIELD_NAME));
         propSet.setAclInheritedFrom(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
@@ -227,8 +231,11 @@ public class DocumentMapper implements InitializingBean {
             if (field.name().equals(currentName)) {
                 fields.add(field);
             } else {
-                propSet.addProperty(getPropertyFromStoredFieldValues(currentName,  
-                                                                     fields));
+                Property prop = getPropertyFromStoredFieldValues(currentName, fields,
+                                                                 select);
+                if (prop != null) {
+                    propSet.addProperty(prop);
+                }
 
                 fields = new ArrayList();
                 currentName = field.name();
@@ -238,8 +245,11 @@ public class DocumentMapper implements InitializingBean {
         
         // Make sure we don't forget the last field
         if (currentName != null && fields != null) {
-            propSet.addProperty(getPropertyFromStoredFieldValues(currentName,
-                    fields));        
+            Property prop = getPropertyFromStoredFieldValues(currentName,
+                                                             fields, select);
+            if (prop != null) {
+                propSet.addProperty(prop);        
+            }
         }
         
         return propSet;
@@ -252,7 +262,8 @@ public class DocumentMapper implements InitializingBean {
      * @throws FieldValueMappingException
      */
     private Property getPropertyFromStoredFieldValues(String fieldName, 
-                                                      List storedValueFields) 
+                                                      List storedValueFields,
+                                                      PropertySelect select) 
         throws FieldValueMappingException {
         
         int sfpLength = STORED_BINARY_FIELD_PREFIX.length();
@@ -269,6 +280,10 @@ public class DocumentMapper implements InitializingBean {
         } 
         
         PropertyTypeDefinition def = this.propertyManager.getPropertyDefinitionByPrefix(nsPrefix, name);
+        if (!select.isIncludedProperty(def)) {
+            return null;
+        }
+
         Namespace ns = def == null ? Namespace.getNamespaceFromPrefix(nsPrefix) : def.getNamespace();
         Property property = this.propertyManager.createProperty(ns, name);
         

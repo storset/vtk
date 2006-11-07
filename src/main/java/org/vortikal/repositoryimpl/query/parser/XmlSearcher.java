@@ -36,22 +36,24 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.query.parser.QueryException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.PropertyManager;
+import org.vortikal.repositoryimpl.query.WildcardPropertySelect;
+import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.repositoryimpl.query.query.PropertySortField;
 import org.vortikal.repositoryimpl.query.query.SimpleSortField;
 import org.vortikal.repositoryimpl.query.query.SortField;
@@ -61,9 +63,12 @@ import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.cache.ReusableObjectCache;
 import org.vortikal.util.text.SimpleDateFormatCache;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+
 
 
 /**
@@ -78,6 +83,7 @@ public class XmlSearcher implements InitializingBean {
     private QueryManager queryManager;
     private PropertyManager propertyManager;
     private SortParser sortParser = new SortParser();
+    private FieldsParser fieldsParser = new FieldsParser();
     private int maxResults = 1000;
     private ReusableObjectCache dateFormatCache = 
                             new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss z");
@@ -114,27 +120,36 @@ public class XmlSearcher implements InitializingBean {
     }
     
 
-    public org.w3c.dom.NodeList executeQuery(String query, String sort,
+    public NodeList executeQuery(String query, String sort,
                                              String maxResults) throws QueryException {
+        return executeQuery(query, sort, maxResults, null);
+    }
 
+
+    public NodeList executeQuery(String query, 
+                                 String sort, String maxResults, String fields) throws QueryException {
+        
         String token = null;
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         if (securityContext != null) {
             token = securityContext.getToken();
         }
-
-        return executeQuery(token, query, sort, maxResults);
-    }
-
-    public org.w3c.dom.NodeList executeQuery(String token, String query, 
-                String sort, String maxResults) throws QueryException {
-        
-        Document doc = executeDocumentQuery(token, query, sort, maxResults);
+        Document doc = executeDocumentQuery(token, query, sort, maxResults, fields);
         return doc.getDocumentElement().getChildNodes();
     }
   
+
     public Document executeDocumentQuery(String token, String query,
                                          String sort, String maxResults) throws QueryException {
+        return executeDocumentQuery(token, query, sort, maxResults, null);
+    }
+    
+
+
+    public Document executeDocumentQuery(String token, String query,
+                                         String sort, String maxResults, String fields) throws QueryException {
+        Set properties = null;
+
         Document doc = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -153,7 +168,16 @@ public class XmlSearcher implements InitializingBean {
         
         try {
             Sorting sorting = this.sortParser.parseSortString(sort);
-            ResultSet rs = this.queryManager.execute(token, query, sorting, limit);
+            PropertySelect select = this.fieldsParser.parseSelect(fields);
+            if (select == null) {
+                select = WildcardPropertySelect.WILDCARD_PROPERTY_SELECT;
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("About to execute query: " + query + ": sort = " + sorting
+                             + ", limit = " + limit + ", selected properties = " + select);
+            }
+
+            ResultSet rs = this.queryManager.execute(token, query, sorting, limit, select);
             
             addResultSetToDocument(rs, doc);
         } catch (Exception e) {
@@ -195,31 +219,34 @@ public class XmlSearcher implements InitializingBean {
         
         Element propertySetElement = doc.createElement("resource");
         resultsElement.appendChild(propertySetElement);
+        propertySetElement.setAttribute("uri", propSet.getURI());
+        propertySetElement.setAttribute("name", propSet.getName());
+        propertySetElement.setAttribute("type", propSet.getResourceType());
+
+//         Element uri = doc.createElement("property");
+//         uri.setAttribute("name", "uri");
+//         Element uriValue = doc.createElement("value");
+//         Text text = doc.createTextNode(propSet.getURI());
+//         uriValue.appendChild(text);
+//         uri.appendChild(uriValue);
         
-        Element uri = doc.createElement("property");
-        uri.setAttribute("name", "uri");
-        Element uriValue = doc.createElement("value");
-        Text text = doc.createTextNode(propSet.getURI());
-        uriValue.appendChild(text);
-        uri.appendChild(uriValue);
+//         Element name = doc.createElement("property");
+//         name.setAttribute("name", "name");
+//         Element nameValue = doc.createElement("value");
+//         text = doc.createTextNode(propSet.getName());
+//         nameValue.appendChild(text);
+//         name.appendChild(nameValue);
         
-        Element name = doc.createElement("property");
-        name.setAttribute("name", "name");
-        Element nameValue = doc.createElement("value");
-        text = doc.createTextNode(propSet.getName());
-        nameValue.appendChild(text);
-        name.appendChild(nameValue);
+//         Element type = doc.createElement("property");
+//         type.setAttribute("name", "type");
+//         Element typeValue = doc.createElement("value");
+//         text = doc.createTextNode(propSet.getResourceType());
+//         typeValue.appendChild(text);
+//         type.appendChild(typeValue);
         
-        Element type = doc.createElement("property");
-        type.setAttribute("name", "type");
-        Element typeValue = doc.createElement("value");
-        text = doc.createTextNode(propSet.getResourceType());
-        typeValue.appendChild(text);
-        type.appendChild(typeValue);
-        
-        propertySetElement.appendChild(uri);
-        propertySetElement.appendChild(name);
-        propertySetElement.appendChild(type);
+//         propertySetElement.appendChild(uri);
+//         propertySetElement.appendChild(name);
+//         propertySetElement.appendChild(type);
         
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Property prop = (Property) i.next();
@@ -284,6 +311,59 @@ public class XmlSearcher implements InitializingBean {
                 return value.toString();
         }
     }
+
+    private class HashSetPropertySelect implements PropertySelect {
+        private Set properties = new HashSet();
+        
+        public void addPropertyDefinition(PropertyTypeDefinition def) {
+            this.properties.add(def);
+        }
+
+        public boolean isIncludedProperty(PropertyTypeDefinition def) {
+            return this.properties.contains(def);
+        }
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(this.getClass().getName()).append(":");
+            sb.append("propertiess = ").append(this.properties);
+            return sb.toString();
+        }
+        
+    }
+    
+
+    private class FieldsParser {
+
+        public PropertySelect parseSelect(String fields) {
+            if (fields == null || "".equals(fields.trim())) {
+                return null;
+            }
+            String[] fieldsArray = fields.split(",");
+            HashSetPropertySelect select = new HashSetPropertySelect();
+            for (int i = 0; i < fieldsArray.length; i++) {
+                String fullyQualifiedName = fieldsArray[i];
+                if ("".equals(fullyQualifiedName.trim())) {
+                    continue;
+                }
+                String prefix = null;
+                String name = fullyQualifiedName.trim();
+                int separatorPos = fullyQualifiedName.indexOf(":");
+                if (separatorPos != -1) {
+                    prefix = fullyQualifiedName.substring(0, separatorPos).trim();
+                    name = fullyQualifiedName.substring(separatorPos + 1).trim();
+                }
+
+                PropertyTypeDefinition def = propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+                if (def != null) {
+                    select.addPropertyDefinition(def);
+                }
+            }
+
+            return select;
+        }
+    }
+    
 
     private class SortParser {
 

@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query.parser;
 
 import org.vortikal.repositoryimpl.query.parser.QueryException;
+import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.Sorting;
 
@@ -118,6 +119,7 @@ public interface Searcher {
     public ResultSet execute(String token, Query query, Sorting sorting)
         throws QueryException;
     
+
     /**
      * FIXME: javadoc
      * @param token
@@ -128,8 +130,22 @@ public interface Searcher {
      * @throws QueryException
      */
     public ResultSet execute(String token, Query query, Sorting sorting, 
-            int maxResults) throws QueryException;
+                             int maxResults) throws QueryException;
     
+    /**
+     * FIXME: javadoc
+     * @param token
+     * @param query
+     * @param sorting
+     * @param maxResults
+     * @param selectedProperties
+     * @return
+     * @throws QueryException
+     */
+    public ResultSet execute(String token, Query query, Sorting sorting, 
+                             int maxResults,
+                             PropertySelect selectedProperties) throws QueryException;
+
     /**
      * FIXME: javadoc
      * @param token
@@ -145,4 +161,19 @@ public interface Searcher {
 
     
 
+
+    /**
+     * FIXME: javadoc
+     * @param token
+     * @param query
+     * @param sorting
+     * @param maxResults
+     * @param cursor
+     * @param selectedProperties
+     * @return
+     * @throws QueryException
+     */
+    public ResultSet execute(String token, Query query, Sorting sorting,
+                             int maxResults, int cursor,
+                             PropertySelect selectedProperties) throws QueryException;
 }

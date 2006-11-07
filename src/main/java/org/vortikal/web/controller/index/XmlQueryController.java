@@ -65,6 +65,7 @@ public class XmlQueryController implements Controller, InitializingBean {
     private String limitParameterName = "limit";
     private String sortParameterName = "sort";
     private String invertParameterName = "invert";
+    private String fieldsParameterName = "fields";
     private int defaultMaxLimit = 500;
     private XmlSearcher xmlSearcher;
     
@@ -86,6 +87,10 @@ public class XmlQueryController implements Controller, InitializingBean {
 
     public void setInvertParameterName(String invertParameterName) {
         this.invertParameterName = invertParameterName;
+    }
+    
+    public void setFieldsParameterName(String fieldsParameterName) {
+        this.fieldsParameterName = fieldsParameterName;
     }
     
     public void setDefaultMaxLimit(int defaultMaxLimit) {
@@ -118,9 +123,16 @@ public class XmlQueryController implements Controller, InitializingBean {
             } catch (NumberFormatException e) { }
         }
         String sortStr = request.getParameter(this.sortParameterName);
-        Document result = this.xmlSearcher.executeDocumentQuery(token, query, sortStr, limitStr);
+        String fields = request.getParameter(this.fieldsParameterName);
+        Document result = null;
 
-        
+        if (fields != null) {
+            result = this.xmlSearcher.executeDocumentQuery(token, query, sortStr,
+                                                           limitStr, fields);
+        } else {
+            result = this.xmlSearcher.executeDocumentQuery(token, query, sortStr, limitStr);
+        }
+
         OutputStream outputStream = null;
         response.setContentType("text/xml");
         outputStream = response.getOutputStream();

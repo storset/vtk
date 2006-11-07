@@ -12,6 +12,11 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action dev="gormap" type="add">
+        Add ability to limit the set of properties that are returned
+        in search queries (optional feature).
+      </action>
+
       <action dev="storset" type="add">
         Added functionality for depth query in query syntax. Includes
         processor for ${currentDepth} variable substitution.

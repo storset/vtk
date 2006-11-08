@@ -227,7 +227,10 @@ Query DepthQuery() :
 	        	depth = Integer.parseInt(t.image);
         	} catch (NumberFormatException e) {
 	            throw new RuntimeException("depth value not a legal integer");
-        	}    	
+        	}   
+        	if (depth < 0)
+	            throw new RuntimeException("depth value cannot negative");
+        	 	
         	return new UriDepthQuery(depth); 
         }
 }

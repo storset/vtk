@@ -39,11 +39,11 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 
-public class CurrentURIExpressionEvaluator implements ExpressionEvaluator {
+public class CurrentFolderExpressionEvaluator implements ExpressionEvaluator {
     
     private Log logger = LogFactory.getLog(this.getClass());
     private Repository repository;
-    private String variableName = "currentURI";
+    private String variableName = "currentFolder";
     
     public void setVariableName(String variableName) {
         this.variableName = variableName;
@@ -73,15 +73,15 @@ public class CurrentURIExpressionEvaluator implements ExpressionEvaluator {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         if (requestContext != null && securityContext != null) {
 
+            String securityToken = securityContext.getToken();
+            String uri = requestContext.getResourceURI();
+
             try {
-                
-                String securityToken = securityContext.getToken();
-                String uri = requestContext.getResourceURI();
                 Resource resource = this.repository.retrieve(securityToken, uri, true);
-                if (!resource.isCollection()) {
-                    resource = this.repository.retrieve(
-                        securityToken, resource.getParent(), true);
-                }
+                
+                if (!resource.isCollection()) 
+                    return resource.getParent();
+                
                 return resource.getURI();
                 
             } catch (Throwable t) {

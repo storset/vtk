@@ -60,14 +60,14 @@ public class CurrentDepthExpressionEvaluatorTestCase extends TestCase {
     }
     
     public void testSimpleEvaluation() {
-        assertEquals(-1, getDepth("/"));
-        assertEquals(0, getDepth("/lala"));
-        assertEquals(2, getDepth("/la/di/da"));
+        assertEquals(0, getDepth("/"));
+        assertEquals(1, getDepth("/lala"));
+        assertEquals(3, getDepth("/la/di/da"));
     }
     
     public void testRelativeEvaluation() {
-        assertEquals(-1, getDepth("currentDepth-1", "/lala"));
-        assertEquals(12, getDepth("currentDepth+10", "/lala/al/la"));
+        assertEquals(0, getDepth("currentDepth-1", "/lala"));
+        assertEquals(13, getDepth("currentDepth+10", "/lala/al/la"));
     }
 
     private int getDepth(String uri) {

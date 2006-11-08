@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 
-public class CurrentDateExpressionEvaluator implements ExpressionEvaluator {
+public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
     
-    private String variableName = "currentDate";
+    private String variableName = "currentTime";
     private Pattern pattern = compilePattern();
     
     private Pattern compilePattern() {

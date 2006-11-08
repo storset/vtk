@@ -34,6 +34,8 @@ package org.vortikal.repositoryimpl.query.parser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 
@@ -46,6 +48,8 @@ import org.vortikal.web.RequestContext;
  *  <p>Note: The current implementation can return a negative depth value.
  */
 public class CurrentDepthExpressionEvaluator implements ExpressionEvaluator {
+    
+    private static Log logger = LogFactory.getLog(CurrentDepthExpressionEvaluator.class);
     
     private String variableName = "currentDepth";
     private Pattern pattern = compilePattern();
@@ -75,7 +79,7 @@ public class CurrentDepthExpressionEvaluator implements ExpressionEvaluator {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
-        int depth = URIUtil.getUriDepth(uri) - 1;
+        int depth = URIUtil.getUriDepth(uri);
 
         if (m.group(1) != null) {
             String operator = m.group(2);
@@ -86,6 +90,9 @@ public class CurrentDepthExpressionEvaluator implements ExpressionEvaluator {
             else
                 depth -= qty;
         }
+        
+        if (logger.isDebugEnabled())
+            logger.debug("Evaluated depth variable '" + token + "' to depth " + depth);
         
         return "" + depth;
     }

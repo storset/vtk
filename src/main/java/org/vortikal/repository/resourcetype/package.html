@@ -1,10 +1,11 @@
 <html>
-<head><title>Resource and property types</title>
-</head>
-<body>
-  <h1>Resource and property types</h1>
+  <head>
+    <title>Resource and property types</title>
+  </head>
+  <body>
+    <h1>Resource and property types</h1>
 
-  <h2>Resource types</h2>
+    <h2>Resource types</h2>
 
 <p>Every resource has a type. The repository is configured with a
 resource type tree, defining the possible resource types, their
@@ -55,5 +56,30 @@ identified property. Some of characteristics that can be controlled:</p>
 <li>Specify repository controlled live updating of the property</li>
 <li>Define property to be mandatory</li>
 </ul>
+
+<h3>Live properties evaluation</h3>
+
+<p>A resource can be manipulated in the following ways, affecting properties defined on it:</p>
+
+<ul>
+  <li>Created</li>
+  <li>Properties may be added, modified or deleted</li>
+  <li>Content may be modified</li>
+  <li>The special case of move/copy</li>
+
+<h4>Created</h4>
+<p>The repository methods createCollection()/createDocument().</p>
+
+  <h4>Properties may be added, modified or deleted</h4>
+
+  <p>Persisted with the method store()</p>
+
+  <h4>Content may be modified</h4>
+  <p>Persisted with the method storeContent()</p>
+
+<h4>The special case of move/copy</h4>
+
+<p>The corresponding repository methods move()/copy()</p>
+
 </body>
 </html>

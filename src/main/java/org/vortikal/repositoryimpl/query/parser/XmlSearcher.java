@@ -30,16 +30,19 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,6 +51,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -61,8 +66,7 @@ import org.vortikal.repositoryimpl.query.query.SortFieldDirection;
 import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.cache.ReusableObjectCache;
-import org.vortikal.util.text.SimpleDateFormatCache;
+import org.vortikal.web.RequestContext;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -70,10 +74,13 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 
-
 /**
  * Utility class for performing searches returning result sets wrapped
  * in an XML structure.
+ *
+ * XXX: move this class to another package (has org.vortikal.web.*
+ * dependencies among other things).
+ *
  */
 public class XmlSearcher implements InitializingBean {
 
@@ -82,11 +89,11 @@ public class XmlSearcher implements InitializingBean {
     private Searcher searcher;
     private QueryManager queryManager;
     private PropertyManager propertyManager;
-    private SortParser sortParser = new SortParser();
-    private FieldsParser fieldsParser = new FieldsParser();
     private int maxResults = 1000;
-    private ReusableObjectCache dateFormatCache = 
-                            new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss z");
+    private String defaultDateFormatKey;
+    private Map namedDateFormats = new HashMap();
+    private Repository repository;
+    
 
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
@@ -104,6 +111,20 @@ public class XmlSearcher implements InitializingBean {
         this.maxResults = maxResults;
     }
 
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setDefaultDateFormatKey(String defaultDateFormatKey) {
+        this.defaultDateFormatKey = defaultDateFormatKey;
+    }
+    
+
+    public void setNamedDateFormats(Map namedDateFormats) {
+        this.namedDateFormats = namedDateFormats;
+    }
+    
+
     public void afterPropertiesSet() {
         if (this.searcher == null) {
             throw new BeanInitializationException(
@@ -117,6 +138,40 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'propertyManager' not set");
         }
+        if (this.repository == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'repository' not set");
+        }
+        if (this.namedDateFormats == null || this.namedDateFormats.isEmpty()) {
+            throw new BeanInitializationException(
+                "JavaBean property 'namedDateFormats' not set");
+        }
+        
+        for (Iterator i = this.namedDateFormats.keySet().iterator(); i.hasNext();) {
+            Object key = i.next();
+            if (!(key instanceof String)) {
+                throw new BeanInitializationException(
+                    "All keys in the 'namedDateFormats' map must be of type java.lang.String"
+                    + "(found " + key.getClass().getName() + ")");
+            }
+            Object value = this.namedDateFormats.get(key);
+            if (!(value instanceof FastDateFormat)) {
+                throw new BeanInitializationException(
+                    "All values in the 'namedDateFormats' map must be of type "
+                    + FastDateFormat.class.getName()
+                    + "(found " + value.getClass().getName() + ")");
+            }
+        }
+
+        if (this.defaultDateFormatKey == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'defaultDateFormatKey' not set");
+        }
+        if (!this.namedDateFormats.containsKey(this.defaultDateFormatKey)) {
+            throw new BeanInitializationException(
+                "The map 'namedDateFormats' must contain an entry specified by the "
+                + "'defaultDateFormatKey' JavaBean property");
+        }
     }
     
 
@@ -126,8 +181,8 @@ public class XmlSearcher implements InitializingBean {
     }
 
 
-    public NodeList executeQuery(String query, 
-                                 String sort, String maxResults, String fields) throws QueryException {
+    public NodeList executeQuery(String query, String sort, String maxResults,
+                                 String fields) throws QueryException {
         
         String token = null;
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -147,7 +202,8 @@ public class XmlSearcher implements InitializingBean {
 
 
     public Document executeDocumentQuery(String token, String query,
-                                         String sort, String maxResults, String fields) throws QueryException {
+                                         String sort, String maxResults,
+                                         String fields) throws QueryException {
         Set properties = null;
 
         Document doc = null;
@@ -167,8 +223,11 @@ public class XmlSearcher implements InitializingBean {
         }
         
         try {
-            Sorting sorting = this.sortParser.parseSortString(sort);
-            PropertySelect select = this.fieldsParser.parseSelect(fields);
+            SearchEnvironment envir = new SearchEnvironment(sort, fields);
+
+            PropertySelect select = envir.getPropertySelect();
+            Sorting sorting = envir.getSorting();
+
             if (select == null) {
                 select = WildcardPropertySelect.WILDCARD_PROPERTY_SELECT;
             }
@@ -179,7 +238,7 @@ public class XmlSearcher implements InitializingBean {
 
             ResultSet rs = this.queryManager.execute(token, query, sorting, limit, select);
             
-            addResultSetToDocument(rs, doc);
+            addResultSetToDocument(rs, doc, envir);
         } catch (Exception e) {
             this.logger.warn("Error occurred while performing query: '" + query + "'", e);
             
@@ -197,7 +256,7 @@ public class XmlSearcher implements InitializingBean {
     }
     
 
-    private void addResultSetToDocument(ResultSet rs, Document doc) {
+    private void addResultSetToDocument(ResultSet rs, Document doc, SearchEnvironment envir) {
         long start = System.currentTimeMillis();
         
         Element resultElement = doc.createElement("results");
@@ -206,7 +265,7 @@ public class XmlSearcher implements InitializingBean {
         resultElement.setAttribute("totalHits", String.valueOf(rs.getTotalHits()));
         for (Iterator i = rs.iterator(); i.hasNext();) {
             PropertySet propSet = (PropertySet)i.next();
-            addPropertySetToResults(doc, resultElement, propSet);
+            addPropertySetToResults(doc, resultElement, propSet, envir);
         }
         
         if (this.logger.isDebugEnabled()) {
@@ -216,7 +275,7 @@ public class XmlSearcher implements InitializingBean {
     }
     
     private void addPropertySetToResults(Document doc, Element resultsElement, 
-                            PropertySet propSet) {
+                                         PropertySet propSet, SearchEnvironment envir) {
         
         Element propertySetElement = doc.createElement("resource");
         resultsElement.appendChild(propertySetElement);
@@ -226,13 +285,13 @@ public class XmlSearcher implements InitializingBean {
 
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Property prop = (Property) i.next();
-            addPropertyToPropertySetElement(doc, propertySetElement, prop);
+            addPropertyToPropertySetElement(doc, propertySetElement, prop, envir);
         }
         
     }
     
     private void addPropertyToPropertySetElement(Document doc, Element propSetElement,
-            Property prop) {
+                                                 Property prop, SearchEnvironment envir) {
         
         if (prop.getDefinition() == null) {
             return;
@@ -252,35 +311,77 @@ public class XmlSearcher implements InitializingBean {
             propertyElement.setAttribute("name", prop.getName());
         }
         
-        if (prop.getDefinition().isMultiple()) {
-            Element valuesElement = doc.createElement("values");
-            Value[] values = prop.getValues();
-            for (int i=0; i<values.length; i++) {
-                Element valueElement = doc.createElement("value");
-                Text text = doc.createTextNode(valueToString(values[i]));
-                valueElement.appendChild(text);
-                valuesElement.appendChild(valueElement);
-            }
-            propertyElement.appendChild(valuesElement);
-        } else {
-            Element valueElement = doc.createElement("value");
-            Value value = prop.getValue();
-            Text text = doc.createTextNode(valueToString(value));
-            valueElement.appendChild(text);
-            propertyElement.appendChild(valueElement);
+        Locale locale = envir.getLocale();
+
+        Set formatSet = envir.getFormats().getFormats(prop.getDefinition());
+        if (!formatSet.contains(null)) {
+            // Add default (null) format:
+            formatSet.add(null);
         }
-        
+
+        for (Iterator iter = formatSet.iterator(); iter.hasNext();) {
+            String format = (String) iter.next();
+            if (prop.getDefinition().isMultiple()) {
+                Element valuesElement = doc.createElement("values");
+                if (format != null) {
+                    valuesElement.setAttribute("format", format);
+                }
+                Value[] values = prop.getValues();
+                for (int i = 0; i < values.length; i++) {
+                    Element valueElement = valueElement(doc, values[i], format, locale);
+                    valuesElement.appendChild(valueElement);
+                }
+                propertyElement.appendChild(valuesElement);
+            } else {
+                Value value = prop.getValue();
+                Element valueElement = valueElement(doc, value, format, locale);
+                if (format != null) {
+                    valueElement.setAttribute("format", format);
+                }
+
+                propertyElement.appendChild(valueElement);
+            }
+        }
         propSetElement.appendChild(propertyElement);        
     }
+
     
-    private String valueToString(Value value) {
+    private Element valueElement(Document doc, Value value, String format, Locale locale) {
+            Element valueElement = doc.createElement("value");
+            Text text = doc.createTextNode(valueToString(value, format, locale));
+            valueElement.appendChild(text);
+            return valueElement;
+    }
+    
+
+    private String valueToString(Value value, String format, Locale locale) {
         switch (value.getType()) {
             case PropertyType.TYPE_DATE:
-                DateFormat f = (DateFormat)this.dateFormatCache.getInstance();
-                String formattedDate = f.format(value.getDateValue());
-                this.dateFormatCache.putInstance(f);
+                if (format == null) {
+                    format = this.defaultDateFormatKey;
+                }
+                FastDateFormat f = null;
+                    
+                // Check if format refers to any of the
+                // predefined (named) formats:
+                String key = format + "_" + locale.getLanguage();
 
-                return formattedDate;
+                f = (FastDateFormat) this.namedDateFormats.get(key);
+                if (f == null) {
+                    key = format;
+                    f = (FastDateFormat) this.namedDateFormats.get(key);
+                }
+                try {
+                    if (f == null) {
+                        // Parse the given format
+                        // XXX: formatter instances should be cached
+                        f = FastDateFormat.getInstance(format, locale);
+                    }
+                    return f.format(value.getDateValue());
+                } catch (Throwable t) {
+                    return "Error: " + t.getMessage();
+                }
+
             case PropertyType.TYPE_PRINCIPAL:
                 return value.getPrincipalValue().getName();
             default:
@@ -288,60 +389,74 @@ public class XmlSearcher implements InitializingBean {
         }
     }
 
-    private class HashSetPropertySelect implements PropertySelect {
-        private Set properties = new HashSet();
-        
-        public void addPropertyDefinition(PropertyTypeDefinition def) {
-            this.properties.add(def);
+    private class Formats {
+
+        private Map formats = new HashMap();
+
+        public void addFormat(PropertyTypeDefinition def, String format) {
+            Set s = (Set) this.formats.get(def);
+            if (s == null) {
+                s = new HashSet();
+                this.formats.put(def, s);
+            }
+            s.add(format);
         }
 
-        public boolean isIncludedProperty(PropertyTypeDefinition def) {
-            return this.properties.contains(def);
+        public Set getFormats(PropertyTypeDefinition def) {
+            Set set = (Set) this.formats.get(def);
+            if (set == null) {
+                set = new HashSet();
+            }
+            return set;
         }
+        
+        public String toString() {
+            StringBuffer sb = new StringBuffer(this.getClass().getName());
+            sb.append(": formats = ").append(this.formats);
+            return sb.toString();
+        }
+    }
+
+
+    private class SearchEnvironment {
+        
+        private HashSetPropertySelect select = null;
+        private Sorting sort;
+        private Formats formats = new Formats();
+        private Locale locale = Locale.getDefault();
+        
+        public SearchEnvironment(String sort, String fields) {
+            parseSortString(sort);
+            parseFields(fields);
+            resolveLocale();
+        }
+
+        public PropertySelect getPropertySelect() {
+            return this.select;
+        }
+
+        public Sorting getSorting() {
+            return this.sort;
+        }
+
+        public Formats getFormats() {
+            return this.formats;
+        }
+
+        public Locale getLocale() {
+            return this.locale;
+        }
+        
 
         public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append(this.getClass().getName()).append(":");
-            sb.append("propertiess = ").append(this.properties);
+            StringBuffer sb = new StringBuffer(this.getClass().getName());
+            sb.append(": select = ").append(this.select);
+            sb.append(", sort = ").append(this.sort);
+            sb.append(", formats = ").append(this.formats);
+            sb.append(", locale = ").append(this.locale);
             return sb.toString();
         }
         
-    }
-    
-
-    private class FieldsParser {
-
-        public PropertySelect parseSelect(String fields) {
-            if (fields == null || "".equals(fields.trim())) {
-                return null;
-            }
-            String[] fieldsArray = fields.split(",");
-            HashSetPropertySelect select = new HashSetPropertySelect();
-            for (int i = 0; i < fieldsArray.length; i++) {
-                String fullyQualifiedName = fieldsArray[i];
-                if ("".equals(fullyQualifiedName.trim())) {
-                    continue;
-                }
-                String prefix = null;
-                String name = fullyQualifiedName.trim();
-                int separatorPos = fullyQualifiedName.indexOf(":");
-                if (separatorPos != -1) {
-                    prefix = fullyQualifiedName.substring(0, separatorPos).trim();
-                    name = fullyQualifiedName.substring(separatorPos + 1).trim();
-                }
-
-                PropertyTypeDefinition def = propertyManager.getPropertyDefinitionByPrefix(prefix, name);
-                if (def != null) {
-                    select.addPropertyDefinition(def);
-                }
-            }
-
-            return select;
-        }
-    }
-    
-
-    private class SortParser {
 
         /**
          * Parses a sort specification of the syntax
@@ -352,9 +467,9 @@ public class XmlSearcher implements InitializingBean {
          * @return a sort object, or <code>null</code> if the string does
          * not contain any valid sort fields.
          */
-        public Sorting parseSortString(String sortString) {
+        public void parseSortString(String sortString) {
             if (sortString == null || "".equals(sortString.trim())) {
-                return null;
+                return;
             }
         
             String[] fields = sortString.split(",");
@@ -404,11 +519,134 @@ public class XmlSearcher implements InitializingBean {
                 result.add(sortField);
             }
 
-            if (result.isEmpty()) {
-                return null;
+            if (!result.isEmpty()) {
+                this.sort = new SortingImpl(result);
             }
-            return new SortingImpl(result);
         }
+
+
+        private void parseFields(String fields) {
+            if (fields == null || "".equals(fields.trim())) {
+                return;
+            }
+            String[] fieldsArray = splitFields(fields);
+
+            for (int i = 0; i < fieldsArray.length; i++) {
+                String fullyQualifiedName = fieldsArray[i];
+                if ("".equals(fullyQualifiedName.trim())) {
+                    continue;
+                }
+                fullyQualifiedName = fullyQualifiedName.replaceAll("\\,", ",");
+                String prefix = null;
+                String name = fullyQualifiedName.trim();
+                int separatorPos = fullyQualifiedName.indexOf(":");
+                if (separatorPos != -1) {
+                    prefix = fullyQualifiedName.substring(0, separatorPos).trim();
+                    name = fullyQualifiedName.substring(separatorPos + 1).trim();
+                }
+                
+                String format = null;
+
+                int bracketStartPos = name.indexOf("[");
+                if (bracketStartPos != -1) {
+                    int bracketEndPos = name.indexOf("]", bracketStartPos);
+                    if (bracketEndPos != -1) {
+                        format = name.substring(bracketStartPos + 1, bracketEndPos);
+                        name = name.substring(0, bracketStartPos);
+                    }
+                }
+                PropertyTypeDefinition def =
+                    propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+
+                if (def != null && format != null) {
+                    this.formats.addFormat(def, format);
+                }
+                if (def != null) {
+                    if (this.select == null) {
+                        this.select = new HashSetPropertySelect();
+                    }
+                    this.select.addPropertyDefinition(def);
+                }
+            }
+        }
+        
+
+        private void resolveLocale() {
+            try {
+                RequestContext requestContext = RequestContext.getRequestContext();
+                SecurityContext securityContext = SecurityContext.getSecurityContext();
+                String token = securityContext.getToken();
+                String uri = requestContext.getResourceURI();
+                Resource resource = repository.retrieve(token, uri, true);
+                String contentLanguage = resource.getContentLanguage();
+                if (contentLanguage != null) {
+                    String lang = contentLanguage;
+                    if (contentLanguage.indexOf("_") != -1) {
+                        lang = contentLanguage.substring(0, contentLanguage.indexOf("_"));
+                    }
+                    this.locale = new Locale(lang);
+                }
+                
+            } catch (Throwable t) { 
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Unable to resolve locale of resource", t);
+                }
+            }
+        }
+        
+
+        // Splits fields on ',' characters, allowing commas to appear
+        // within (non-nested) brackets.
+        private String[] splitFields(String fields) {
+            List l = new ArrayList();
+            String s = new String();
+            boolean insideBrackets = false;
+            for (int i = 0; i < fields.length(); i++) {
+                if (',' == fields.charAt(i) && !insideBrackets) {
+                    l.add(s);
+                    s = new String();
+                } else {
+
+                    if ('[' == fields.charAt(i)) {
+                        if (!insideBrackets) {
+                            insideBrackets = true;
+                        }
+
+                    } else if (']' == fields.charAt(i)) {
+                        if (insideBrackets) {
+                            insideBrackets = false;
+                        }
+                    }
+                    s += fields.charAt(i);
+                }
+
+            }
+            if (!"".equals(s)) {
+                l.add(s);
+            }
+            return (String[]) l.toArray(new String[l.size()]);
+        }
+    }
+
+
+    private class HashSetPropertySelect implements PropertySelect {
+        private Set properties = new HashSet();
+        
+        public void addPropertyDefinition(PropertyTypeDefinition def) {
+            this.properties.add(def);
+        }
+
+        public boolean isIncludedProperty(PropertyTypeDefinition def) {
+            return this.properties.contains(def);
+        }
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(this.getClass().getName()).append(":");
+            sb.append("propertiess = ").append(this.properties);
+            return sb.toString();
+        }
+        
     }
 
 }

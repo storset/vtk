@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="shortDateFormat"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">MMM d, yyyy</value>
+        <value type="java.util.Locale">en</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="shortDateFormat_no" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">d. MMM yyyy</value>
+        <value type="java.util.Locale">no</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="longDateFormat" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">MMM d, yyyy HH:mm</value>
+        <value type="java.util.Locale">en</value>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="longDateFormat_no" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">d. MMM yyyy HH:mm</value>
+        <value type="java.util.Locale">no</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="iso8601FullDateFormat"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">yyyy-MM-dd'THH:mm:ssZZ</value>
+        <value type="java.util.Locale">en</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="iso8601ShortDateFormat"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">yyyy-MM-dd</value>
+        <value type="java.util.Locale">en</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="rfc822DateFormat"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">EEE, dd MMM yyyy HH:mm:ss Z</value>
+        <value type="java.util.Locale">en</value>
+      </list>
+    </property>
+  </bean>
+
+</beans>

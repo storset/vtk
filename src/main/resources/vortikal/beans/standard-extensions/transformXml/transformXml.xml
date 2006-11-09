@@ -177,11 +177,31 @@
   </bean>
 
 
-  <bean id="xmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
+  <bean id="xmlSearcher"
+        class="org.vortikal.repositoryimpl.query.parser.XmlSearcher"
+        parent="requestLocalRepositoryAware">
     <property name="queryManager" ref="queryManager" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="propertyManager" ref="propertyManager" />
+    <property name="namedDateFormats" ref="xmlSearcherNamedDateformats" />
+    <property name="defaultDateFormatKey" value="long" />
   </bean>
+
+
+ <bean id="xmlSearcherNamedDateformats"
+       class="org.springframework.beans.factory.config.MapFactoryBean">
+   <property name="sourceMap">
+     <map>
+       <entry key="short" value-ref="shortDateFormat" />
+       <entry key="short_no" value-ref="shortDateFormat_no" />
+       <entry key="long" value-ref="longDateFormat" />
+       <entry key="long_no" value-ref="longDateFormat_no" />
+       <entry key="iso-8601" value-ref="iso8601FullDateFormat" />
+       <entry key="iso-8601-short" value-ref="iso8601ShortDateFormat" />
+       <entry key="rfc-822" value-ref="rfc822DateFormat" />
+     </map>
+   </property>
+ </bean>
 
   <bean id="xsltSearchProvider"
     class="org.vortikal.web.referencedata.provider.XsltSearchProvider">

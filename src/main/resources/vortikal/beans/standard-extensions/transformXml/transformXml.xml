@@ -185,6 +185,7 @@
     <property name="propertyManager" ref="propertyManager" />
     <property name="namedDateFormats" ref="xmlSearcherNamedDateformats" />
     <property name="defaultDateFormatKey" value="long" />
+    <property name="defaultLocale" value="${defaultLocale}" />
   </bean>
 
 

@@ -93,6 +93,7 @@ public class XmlSearcher implements InitializingBean {
     private String defaultDateFormatKey;
     private Map namedDateFormats = new HashMap();
     private Repository repository;
+    private String defaultLocale = Locale.getDefault().getLanguage();
     
 
     public void setSearcher(Searcher searcher) {
@@ -119,9 +120,12 @@ public class XmlSearcher implements InitializingBean {
         this.defaultDateFormatKey = defaultDateFormatKey;
     }
     
-
     public void setNamedDateFormats(Map namedDateFormats) {
         this.namedDateFormats = namedDateFormats;
+    }
+    
+    public void setDefaultLocale(String defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
     
 
@@ -171,6 +175,11 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "The map 'namedDateFormats' must contain an entry specified by the "
                 + "'defaultDateFormatKey' JavaBean property");
+        }
+
+        if (this.defaultLocale == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'defaultLocale' not set");
         }
     }
     
@@ -421,7 +430,7 @@ public class XmlSearcher implements InitializingBean {
         private HashSetPropertySelect select = null;
         private Sorting sort;
         private Formats formats = new Formats();
-        private Locale locale = Locale.getDefault();
+        private Locale locale = new Locale(defaultLocale);
         
         public SearchEnvironment(String sort, String fields) {
             parseSortString(sort);

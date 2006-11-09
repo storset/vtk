@@ -1,0 +1,59 @@
+<html>
+<head><title>Resource and property types</title>
+</head>
+<body>
+  <h1>Resource and property types</h1>
+
+  <h2>Resource types</h2>
+
+<p>Every resource has a type. The repository is configured with a
+resource type tree, defining the possible resource types, their
+respective characteristics and the constraints imposed for a resource
+to be considered of this type.</p>
+
+<h3>Resource type characteristics</h3>
+
+<p>Except for the root resource type, which all resources is considered
+to be of, all resource types must have a parent resource type and a
+(possibly empty) set of assertions which define what characteristics
+is required of a resource to be considered of this type.</p>
+
+<p>A resource type may define a set of repository controlled
+properties. These properties are explained below.</p>
+
+<p>In addition to the primary resource type parent, a resource type can
+identify a set of mixin resource types. Mixin resource types is
+limited resource types, only containing property definitions and mixin
+resource types. The properties defined in a mixin, is considered part
+of the resource type in the same way as locally defined proerties.</p>
+
+<h2>Property types</h2>
+
+<p>Resources can have a unlimited of properties attached to
+it. Properties is identified by the combination of a namespace and a
+name and the property value can be any string value.</p>
+
+<p>Property types defined in the resource type tree, adds repository
+controlled characteristics on the value of a specific namespace:name 
+identified property. Some of characteristics that can be controlled:</p>
+
+<ul>
+<li>All defined property types, will be indexed for resources of the specified type, 
+	and can be queried on and will be reported in query results</li>
+<li>The value can be of one of the types, either single or multivalue:
+  <ul>
+    <li>String</li>
+    <li>Integer</li>
+    <li>Long</li>
+    <li>Date</li>
+    <li>Boolean</li>
+    <li>Principal</li>
+  </ul>
+</li>
+<li>Specify who is allowed to edit the property</li>
+<li>Specify a controlled vocabulary of allowed values</li>
+<li>Specify repository controlled live updating of the property</li>
+<li>Define property to be mandatory</li>
+</ul>
+</body>
+</html>

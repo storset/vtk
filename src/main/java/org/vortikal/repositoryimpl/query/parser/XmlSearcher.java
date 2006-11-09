@@ -205,7 +205,6 @@ public class XmlSearcher implements InitializingBean {
                                          String sort, String maxResults,
                                          String fields) throws QueryException {
         Set properties = null;
-
         Document doc = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -224,7 +223,6 @@ public class XmlSearcher implements InitializingBean {
         
         try {
             SearchEnvironment envir = new SearchEnvironment(sort, fields);
-
             PropertySelect select = envir.getPropertySelect();
             Sorting sorting = envir.getSorting();
 
@@ -233,7 +231,7 @@ public class XmlSearcher implements InitializingBean {
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("About to execute query: " + query + ": sort = " + sorting
-                             + ", limit = " + limit + ", selected properties = " + select);
+                             + ", limit = " + limit + ", envir = " + envir);
             }
 
             ResultSet rs = this.queryManager.execute(token, query, sorting, limit, select);
@@ -539,22 +537,24 @@ public class XmlSearcher implements InitializingBean {
                 fullyQualifiedName = fullyQualifiedName.replaceAll("\\,", ",");
                 String prefix = null;
                 String name = fullyQualifiedName.trim();
-                int separatorPos = fullyQualifiedName.indexOf(":");
-                if (separatorPos != -1) {
-                    prefix = fullyQualifiedName.substring(0, separatorPos).trim();
-                    name = fullyQualifiedName.substring(separatorPos + 1).trim();
-                }
-                
-                String format = null;
 
+
+                String format = null;
                 int bracketStartPos = name.indexOf("[");
-                if (bracketStartPos != -1) {
+                if (bracketStartPos != -1 && bracketStartPos > 1) {
                     int bracketEndPos = name.indexOf("]", bracketStartPos);
                     if (bracketEndPos != -1) {
                         format = name.substring(bracketStartPos + 1, bracketEndPos);
                         name = name.substring(0, bracketStartPos);
                     }
                 }
+
+                int separatorPos = name.indexOf(":");
+                if (separatorPos != -1) {
+                    prefix = name.substring(0, separatorPos).trim();
+                    name = name.substring(separatorPos + 1).trim();
+                }
+                
                 PropertyTypeDefinition def =
                     propertyManager.getPropertyDefinitionByPrefix(prefix, name);
 

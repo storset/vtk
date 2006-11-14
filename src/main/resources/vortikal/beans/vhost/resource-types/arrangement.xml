@@ -13,8 +13,8 @@
         <property name="propertyTypeDefinitions">
             <list>
                 <ref bean="arrangementTittelPropDef" />
-                <ref bean="disputasStarttidspunktPropDef" />
-                <ref bean="disputasSluttidspunktPropDef" />
+                <ref bean="arrangementStarttidspunktPropDef" />
+                <ref bean="arrangementSluttidspunktPropDef" />
                 <ref bean="arrangementStedPropDef" />
             </list>
         </property>
@@ -74,7 +74,6 @@
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="arrangementSluttidspunktEvaluator" />
     </bean>
-
 
     <bean id="arrangementSluttidspunktEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="concat(/arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/dag, '.', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/maaned, '.', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/aar, ' ', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/time, ':', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/minutt)"  />

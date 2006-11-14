@@ -19,7 +19,7 @@
         </property>
         <property name="assertions">
             <list>
-                <ref bean="schemaIsDisputas" />
+                <ref bean="schemaIsNyhet" />
             </list>
         </property>
     </bean>
@@ -29,7 +29,7 @@
         <constructor-arg value="http://www.uio.no/xsd/uio/nyhet" />
     </bean>
     
-    <bean id="schemaIsDisputas" 
+    <bean id="schemaIsNyhet" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
         <property name="namespace" ref="DEFAULT_NAMESPACE" />
         <property name="name" value="schema" />

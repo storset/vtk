@@ -108,7 +108,7 @@
         <property name="expression" value="/disputas/oppgavetittel" />
     </bean>
     
-    
+
     <bean id="disputasStarttidspunktPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.start" />

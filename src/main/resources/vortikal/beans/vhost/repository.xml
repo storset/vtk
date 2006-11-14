@@ -12,7 +12,7 @@
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="dao" ref="${repositoryBackend}" />
     <property name="lockManager" ref="lockManager" />
-    <property name="propertyManager" ref="propertyManager" />
+    <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
   </bean>
 
   <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
@@ -122,15 +122,22 @@
   </bean>
 
   <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">
-    <property name="authorizationManager" ref="authorizationManager" />
-    <property name="principalManager" ref="principalManager" />
-    <property name="roleManager" ref="roleManager" />
     <property name="valueFactory" ref="valueFactory"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+
+  <bean id="repositoryResourceHelper"
+        class="org.vortikal.repositoryimpl.repositoryResourceHelperImpl">
+    <property name="authorizationManager" ref="authorizationManager" />
+    <property name="propertyManager" ref="propertyManager" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="contentStore" ref="repository.contentStore"/>
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
   </bean>
-
   
+  <bean id="resourceTypeTree"
+        class="org.vortikal.repositoryimpl.ResourceTypeTreeImpl" />
+
   <bean id="contentRepresentationRegistry"
         class="org.vortikal.repositoryimpl.content.ContentRepresentationRegistry" />
 

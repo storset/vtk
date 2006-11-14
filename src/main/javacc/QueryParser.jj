@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Iterator;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repositoryimpl.query.query.*;
 
 /**
@@ -27,11 +27,11 @@ import org.vortikal.repositoryimpl.query.query.*;
 */
 public class QueryParser implements Parser {
 
-    private PropertyManagerImpl propertyManager;
+    private ResourceTypeTree resourceTypeTree;
 
-    public QueryParser(PropertyManagerImpl propertyManager) {
+    public QueryParser(ResourceTypeTree resourceTypeTree) {
         this(new StringReader(""));
-        this.propertyManager = propertyManager;
+        this.resourceTypeTree = resourceTypeTree;
     }
 
     public Query parse(String query) {
@@ -47,7 +47,7 @@ public class QueryParser implements Parser {
 
     private Query getExistsQuery(String prefix, String name, boolean exists) {
         PropertyTypeDefinition def = 
-            propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+            resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
         if (def == null)
             throw new RuntimeException("Unknown property " + prefix + ":" + name);
 
@@ -57,7 +57,7 @@ public class QueryParser implements Parser {
     private Query getPropTermQuery(String prefix, String name, String value, 
                                    TermOperator operator) {
         PropertyTypeDefinition def = 
-            propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+            resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
         if (def == null)
             throw new RuntimeException("Unknown property " + prefix + ":" + name);
 
@@ -66,7 +66,7 @@ public class QueryParser implements Parser {
 
     private Query getPropPrefixQuery(String prefix, String name, String value) {
         PropertyTypeDefinition def = 
-            propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+            resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
         if (def == null)
             throw new RuntimeException("Unknown property " + prefix + ":" + name);
 

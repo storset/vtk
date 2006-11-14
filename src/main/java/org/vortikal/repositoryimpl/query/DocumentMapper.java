@@ -39,15 +39,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -103,15 +101,18 @@ public class DocumentMapper implements InitializingBean {
     public static final String FIELD_NAMESPACEPREFIX_NAME_SEPARATOR = ":";
     public static final String STORED_BINARY_FIELD_PREFIX = "_";
     
+    private ResourceTypeTree resourceTypeTree;
     private PropertyManager propertyManager;
     private ValueFactory valueFactory;
     
     public void afterPropertiesSet() {
         if (this.valueFactory == null) {
             throw new BeanInitializationException("Property 'valueFactory' not set.");
-        } else if (this.propertyManager == null) {
-            throw new BeanInitializationException("Proeprty 'propertyManager' not set.");
+        } 
+        if (this.propertyManager == null) {
+            throw new BeanInitializationException("Property 'propertyManager' not set.");
         }
+        this.resourceTypeTree = this.propertyManager.getResourceTypeTree();
     }
     
     public Document getDocument(PropertySetImpl propSet) throws DocumentMappingException {
@@ -156,7 +157,7 @@ public class DocumentMapper implements InitializingBean {
         doc.add(aclField);
         
         ResourceTypeDefinition resourceDef = 
-                propertyManager.getResourceTypeDefinitionByName(propSet.getResourceType());
+                this.resourceTypeTree.getResourceTypeDefinitionByName(propSet.getResourceType());
         
         // XXX: This adds extra work in time critical indexing code ...
         //      Should consider caching resourceTypeName->List<PropertyTypeDefintions> map
@@ -164,7 +165,7 @@ public class DocumentMapper implements InitializingBean {
         //      of the resource type tree and its properties. Caching would be done there, instead,
         //      obviously.
         List propDefs = 
-            propertyManager.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
+            this.resourceTypeTree.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
         
         // Index only properties that satisfy the following two conditions:
         // 1) Belongs to the resource type's definition
@@ -279,7 +280,7 @@ public class DocumentMapper implements InitializingBean {
             name = fieldName.substring(pos+1, fieldName.length());
         } 
         
-        PropertyTypeDefinition def = this.propertyManager.getPropertyDefinitionByPrefix(nsPrefix, name);
+        PropertyTypeDefinition def = this.resourceTypeTree.getPropertyDefinitionByPrefix(nsPrefix, name);
         if (!select.isIncludedProperty(def)) {
             return null;
         }
@@ -411,4 +412,5 @@ public class DocumentMapper implements InitializingBean {
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
+
 }

@@ -97,6 +97,10 @@ public interface AuthorizationManager {
      */
     public boolean authorizeAction(String uri, RepositoryAction action, Principal principal);
     
+    public void tmpAuthorizeForPropStore(RepositoryAction action, Principal principal,
+            String uri) throws AuthenticationException, AuthorizationException,
+            ResourceLockedException, IOException;
+    
     /**
      * <ul>
      *   <li>Privilege READ_PROCESSED, READ or ALL in ACL

@@ -31,14 +31,9 @@
 package org.vortikal.repositoryimpl;
 
 
-import java.util.List;
-
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
 public interface PropertyManager {
@@ -91,68 +86,6 @@ public interface PropertyManager {
             String[] stringValues, int type) throws ValueFormatException;
 
 
-    /**
-     * Gets a property type definition by prefix and name
-     *
-     * @param prefix the prefix of the property type
-     * @param name the name of the property
-     * @return a the property definition, or <code>null</code> if not found
-     */
-    public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix,
-            String name);
-
-    /**
-     * Return flat list of property definitions.
-     * XXX: equivalent methods for resource-types, mixin-types, etc ?
-     * @return
-     */
-    public List getPropertyTypeDefinitions();
-
-    /**
-     * Return flat list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
-     * @return list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
-     */
-    public List getPrimaryResourceTypeDefinitions();
-
-    /**
-     * Return a <code>List</code> of the immediate children of the given resource type.
-     * @param def
-     * @return
-     */
-    public List getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
-
-
-    /**
-     * Get all property type definitions bound to a resource type definition 
-     * including all ancestor- and mixin types.
-     * 
-     * If there are multiple instances of the same property type definition
-     * for the given resource type, only the first and deepest occurence should
-     * be included in the returned list.
-     * 
-     * @param def The <code>ResourceTypeDefinition</code> 
-     * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
-     */
-    public List getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
-                                                    ResourceTypeDefinition def);
-
+    public ResourceTypeTree getResourceTypeTree();
     
-    /**
-     * Gets a resource type definition object by name.
-     * @param name the name of the resource type
-     * @return the resource type definition
-     */
-    public ResourceTypeDefinition getResourceTypeDefinitionByName(String name);
-
-    /**
-     * Determines whether a named resource type is contained in another resource type
-     * @param def the resource type definition
-     * @param resourceTypeName the resource type to check for
-     * @return <code>true</code> if the named type exists and equals,
-     * or is a child of, or is a mixin of the given type definition,
-     * <code>false</code> otherwise
-     */
-    public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName);
-
-
 }

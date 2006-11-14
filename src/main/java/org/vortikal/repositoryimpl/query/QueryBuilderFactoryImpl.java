@@ -31,11 +31,6 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +40,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
@@ -93,18 +88,13 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     
     private PropertyManager propertyManager;
     private LuceneIndex indexAccessor;
-
-    /* Map resource type name to flat list of _all_ descendant resource type names.
-     * (Supports fast lookup for 'IN'-resource-type queries)
-     */
-    private Map resourceTypeDescendantNames;
+    private ResourceTypeTree resourceTypeTree;
     
     public void afterPropertiesSet() throws BeanInitializationException {
         if (this.propertyManager == null) {
             throw new BeanInitializationException("Property 'propertyManager' not set.");
         }
-    
-        this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
+        this.resourceTypeTree = this.propertyManager.getResourceTypeTree();
     }
     
     public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
@@ -150,7 +140,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         }
        
         else if (query instanceof TypeTermQuery) {
-            builder = new TypeTermQueryBuilder(this.resourceTypeDescendantNames, 
+            builder = new TypeTermQueryBuilder(this.resourceTypeTree, 
                                                (TypeTermQuery)query);
         }
        
@@ -229,53 +219,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         }
     }
 
-    /* Build map of resource type names to names of all descendants */
-    /* XXX: mixin types */
-    private Map buildResourceTypeDescendantsMap() {
-        List definitions = this.propertyManager.getPrimaryResourceTypeDefinitions();
-        
-        Map resourceTypeDescendantNames = new HashMap();
-        
-        for (Iterator i = definitions.iterator(); i.hasNext();) {
-            PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
-            List descendantNames = new LinkedList();
-            getAllDescendantNames(descendantNames, def);
-            resourceTypeDescendantNames.put(def.getName(), descendantNames);
-        }
-        
-        if (this.logger.isDebugEnabled()) {
-            for (Iterator i=resourceTypeDescendantNames.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry)i.next();
-                String name = (String)entry.getKey();
-                List descendantNames = (List)entry.getValue();
-                
-                StringBuffer buf = new StringBuffer("Descendant resource types of [" + name + "]: [");
-                for (Iterator u = descendantNames.iterator();u.hasNext();) {
-                    buf.append(u.next());
-                    if (u.hasNext()) {
-                        buf.append(", ");
-                    }
-                }
-                buf.append("]");
-                this.logger.debug(buf.toString());
-            }
-        }
-        
-        return resourceTypeDescendantNames;
-    }
     
-    /* Recursively get all descendant names for a given resource type */
-    private void getAllDescendantNames(List names, PrimaryResourceTypeDefinition def) {
-        List children = this.propertyManager.getResourceTypeDefinitionChildren(def);
-        
-        for (Iterator i=children.iterator();i.hasNext();) {
-            PrimaryResourceTypeDefinition child = 
-                (PrimaryResourceTypeDefinition)i.next();
-            names.add(child.getName());
-            getAllDescendantNames(names, child);
-        }
-    }
-
     public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
@@ -283,4 +227,5 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     public void setIndexAccessor(LuceneIndex indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
+
 }

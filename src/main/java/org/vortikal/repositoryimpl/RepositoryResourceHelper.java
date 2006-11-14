@@ -38,7 +38,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
-public interface RepositoryPropertyHelper {
+public interface RepositoryResourceHelper {
 
     public ResourceImpl create(Principal principal, String uri,
             boolean collection);

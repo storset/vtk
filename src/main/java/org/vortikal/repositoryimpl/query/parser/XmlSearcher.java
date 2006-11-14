@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,14 +46,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -67,7 +67,6 @@ import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -89,6 +88,7 @@ public class XmlSearcher implements InitializingBean {
     private Searcher searcher;
     private QueryManager queryManager;
     private PropertyManager propertyManager;
+    private ResourceTypeTree resourceTypeTree;
     private int maxResults = 1000;
     private String defaultDateFormatKey;
     private Map namedDateFormats = new HashMap();
@@ -181,6 +181,8 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'defaultLocale' not set");
         }
+
+        this.resourceTypeTree = this.propertyManager.getResourceTypeTree();
     }
     
 
@@ -499,8 +501,8 @@ public class XmlSearcher implements InitializingBean {
                     throw new QueryException("Invalid sort field: '" + specifier + "'");
                 }
                 SortField sortField = null;
+                sortField = new SimpleSortField(field, direction);
                 if ("uri".equals(field) || "type".equals(field) || "name".equals(field)) {
-                    sortField = new SimpleSortField(field, direction);
                 } else {
                     String prefix = null;
                     String name = null;
@@ -515,7 +517,7 @@ public class XmlSearcher implements InitializingBean {
                         throw new QueryException("Unknown sort field: '" + field + "'");
                     }
                     PropertyTypeDefinition def =
-                        XmlSearcher.this.propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+                        XmlSearcher.this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
                     sortField = new PropertySortField(def, direction);
                 }
                 if (referencedFields.contains(field)) {
@@ -565,7 +567,7 @@ public class XmlSearcher implements InitializingBean {
                 }
                 
                 PropertyTypeDefinition def =
-                    propertyManager.getPropertyDefinitionByPrefix(prefix, name);
+                    resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
 
                 if (def != null && format != null) {
                     this.formats.addFormat(def, format);

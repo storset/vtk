@@ -89,7 +89,29 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             throw new ReadOnlyException();
         }
     }
+
+    public void tmpAuthorizeForPropStore(RepositoryAction action, Principal principal,
+            String uri) throws AuthenticationException, AuthorizationException,
+            ResourceLockedException, IOException {
+
+        if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+            authorizePropertyEditAdminRole(uri, principal);
+        } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
+            authorizePropertyEditRootRole(uri, principal);
+        }
+        
+        if (!authorizeAction(uri, action, principal))
+            throw new AuthorizationException("Principal " + principal
+                    + " not authorized to perform " + " action " + action
+                    + " on resource " + uri);
+    }
+
     
+    /**
+     * XXX: This method is not safe, contains known bugs!!!!!!!!!!!!!!!!!
+     * XXX: should throw exception like the one above!
+     * @see org.vortikal.repository.AuthorizationManager#authorizeAction(java.lang.String, org.vortikal.repository.RepositoryAction, org.vortikal.security.Principal)
+     */
     public boolean authorizeAction(String uri, RepositoryAction action, Principal principal) {
         if (!AuthorizationManager.ACTION_AUTHORIZATION_SET.contains(action)) {
             throw new IllegalArgumentException(
@@ -97,6 +119,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                 + ": must be one of " + AuthorizationManager.ACTION_AUTHORIZATION_SET);
         }
 
+        
         try {
             if (RepositoryAction.READ_PROCESSED.equals(action)) {
                 authorizeReadProcessed(uri, principal);

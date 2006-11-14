@@ -67,12 +67,12 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
     }
 
     public ResourceTypeDefinition getResourceTypeDefinition() {
-        return this.propertyManager.getResourceTypeDefinitionByName(this.resourceType);
+        return this.propertyManager.getResourceTypeTree().getResourceTypeDefinitionByName(this.resourceType);
     }
     
 
     public boolean isOfType(ResourceTypeDefinition type) {
-        return this.propertyManager.isContainedType(type, this.resourceType);
+        return this.propertyManager.getResourceTypeTree().isContainedType(type, this.resourceType);
     }
     
 

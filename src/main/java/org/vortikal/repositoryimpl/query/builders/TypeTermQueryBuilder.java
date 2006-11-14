@@ -32,13 +32,13 @@ package org.vortikal.repositoryimpl.query.builders;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
@@ -53,11 +53,11 @@ import org.vortikal.repositoryimpl.query.query.TypeTermQuery;
 public class TypeTermQueryBuilder implements QueryBuilder {
 
     private TypeTermQuery ttq;
-    private Map typeDescendantNames;
+    private ResourceTypeTree resourceTypeTree;
     
-    public TypeTermQueryBuilder(Map typeDescendantNames, TypeTermQuery ttq) {
+    public TypeTermQueryBuilder(ResourceTypeTree resourceTypeTree, TypeTermQuery ttq) {
         this.ttq = ttq;
-        this.typeDescendantNames = typeDescendantNames; 
+        this.resourceTypeTree = resourceTypeTree; 
     }
 
     public Query buildQuery() {
@@ -70,7 +70,8 @@ public class TypeTermQueryBuilder implements QueryBuilder {
             BooleanQuery bq = new BooleanQuery(true);
             bq.add(new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm)),
                                 BooleanClause.Occur.SHOULD);
-            List descendantNames = (List)this.typeDescendantNames.get(typeTerm);
+
+            List descendantNames = this.resourceTypeTree.getResourceTypeDescendantNames(typeTerm);
             
             if (descendantNames != null) {
                 for (Iterator i = descendantNames.iterator();i.hasNext();) {

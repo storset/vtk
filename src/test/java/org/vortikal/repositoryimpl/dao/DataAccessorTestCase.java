@@ -37,8 +37,8 @@ import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repositoryimpl.PropertyManagerImpl;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.RepositoryResourceHelper;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
 
@@ -54,8 +54,8 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     }
 
 
-    private PropertyManagerImpl getPropertyManager() {
-        return (PropertyManagerImpl) getApplicationContext().getBean("propertyManager");
+    private RepositoryResourceHelper getRepositoryResourceHelper() {
+        return (RepositoryResourceHelper) getApplicationContext().getBean("repositoryResourceHelper");
     }
     
 
@@ -65,7 +65,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     
 
     public void testChangeAclInheritance() throws Exception {
-        PropertyManagerImpl propertyManager = getPropertyManager();
+        RepositoryResourceHelper resourceHelper = getRepositoryResourceHelper();
         DataAccessor dao = getDataAccessor();
         Principal rootPrincipal = getPrincipalFactory().getUserPrincipal("root@localhost");
 
@@ -73,14 +73,14 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
 
         // Create /parent with inherited ACL:
         String parentURI = "/parent";
-        ResourceImpl parent = propertyManager.create(rootPrincipal, parentURI, true);
+        ResourceImpl parent = resourceHelper.create(rootPrincipal, parentURI, true);
         dao.store(parent);
         parent = dao.load(parentURI);
         assertEquals(root.getID(), parent.getAclInheritedFrom());
         
         // Create /parent/child with inherited ACL:
         String childURI = parentURI + "/child";
-        ResourceImpl child = propertyManager.create(rootPrincipal, childURI, false);
+        ResourceImpl child = resourceHelper.create(rootPrincipal, childURI, false);
         dao.store(child);
         child = dao.load(childURI);
         assertTrue(child.isInheritedAcl());
@@ -106,7 +106,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
 
         // Create /parent/second-child with inherited ACL:
         String secondChildURI = parentURI + "/second-child";
-        ResourceImpl secondChild = propertyManager.create(rootPrincipal, secondChildURI, false);
+        ResourceImpl secondChild = resourceHelper.create(rootPrincipal, secondChildURI, false);
         dao.store(secondChild);        
         secondChild = dao.load(secondChildURI);
         assertEquals(parent.getID(), secondChild.getAclInheritedFrom());
@@ -123,7 +123,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     
 
     public void testSetLiveProperty() throws Exception {
-        PropertyManagerImpl propertyManager = getPropertyManager();
+        RepositoryResourceHelper resourceHelper = getRepositoryResourceHelper();
         DataAccessor dao = getDataAccessor();
         Principal rootPrincipal = getPrincipalFactory().getUserPrincipal("root@localhost");
 
@@ -131,7 +131,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
 
         // Create /property-collection:
         String collectionURI = "/property-collection";
-        ResourceImpl collection = propertyManager.create(rootPrincipal, collectionURI, true);
+        ResourceImpl collection = resourceHelper.create(rootPrincipal, collectionURI, true);
         Date lastModifiedBefore = collection.getLastModified();
         dao.store(collection);
         collection = dao.load(collectionURI);

@@ -86,7 +86,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
     private RoleManager roleManager;
     private TokenManager tokenManager;
     private LockManager lockManager;
-    private RepositoryPropertyHelper propertyManager;
+    private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
     private URIValidator uriValidator = new URIValidator();
     
@@ -267,10 +267,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
 
         try {
-            PropertySet fixedProps = this.propertyManager.getFixedCopyProperties(
+            PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(
                 src, principal, destUri);
 
-            destParent = this.propertyManager.collectionContentModification(destParent, principal);
+            destParent = this.resourceHelper.collectionContentModification(destParent, principal);
 
             this.dao.copy(src, destParent, destUri, preserveACL, fixedProps);
 
@@ -341,7 +341,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
         
         try {
-            destParent = this.propertyManager.collectionContentModification(destParent, principal);
+            destParent = this.resourceHelper.collectionContentModification(destParent, principal);
             this.dao.copy(src, destParent, destUri, true, null);
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
@@ -391,7 +391,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         ResourceImpl parentCollection = this.dao.load(parent);
 
-        parentCollection = this.propertyManager.collectionContentModification(
+        parentCollection = this.resourceHelper.collectionContentModification(
             parentCollection, principal);
         this.dao.store(parentCollection);
 
@@ -503,7 +503,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
             ResourceImpl newResource = 
-                this.propertyManager.storeProperties(original, principal, resource);
+                this.resourceHelper.storeProperties(original, principal, resource);
             this.dao.store(newResource);
 
             newResource = (ResourceImpl)this.dao.load(uri).clone();
@@ -554,7 +554,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.dao.storeContent(uri, new java.io.BufferedInputStream(
                                       new java.io.FileInputStream(tempFile)));
 
-            r = this.propertyManager.fileContentModification(r, principal);
+            r = this.resourceHelper.fileContentModification(r, principal);
             
             this.dao.store(r);
 
@@ -661,7 +661,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
         
         ResourceImpl newResource = 
-            this.propertyManager.create(principal, uri, collection);
+            this.resourceHelper.create(principal, uri, collection);
 
         try {
             Acl newAcl = (Acl) parent.getAcl().clone();
@@ -674,7 +674,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             newResource = this.dao.load(uri);
 
             parent.addChildURI(uri);
-            parent = this.propertyManager.collectionContentModification(parent, principal);
+            parent = this.resourceHelper.collectionContentModification(parent, principal);
             
             this.dao.store(parent);
 
@@ -754,8 +754,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         this.context = context;
     }
 
-    public void setPropertyManager(RepositoryPropertyHelper propertyManager) {
-        this.propertyManager = propertyManager;
+    public void setRepositoryResourceHelper(RepositoryResourceHelper resourceHelper) {
+        this.resourceHelper = resourceHelper;
     }
 
     public void afterPropertiesSet() {
@@ -779,9 +779,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new BeanInitializationException(
             "Bean property 'lockManager' must be set");
         }
-        if (this.propertyManager == null) {
+        if (this.resourceHelper == null) {
             throw new BeanInitializationException(
-            "Bean property 'propertyManager' must be set");
+            "Bean property 'resourceHelper' must be set");
         }
         if (this.authorizationManager == null) {
             throw new BeanInitializationException(

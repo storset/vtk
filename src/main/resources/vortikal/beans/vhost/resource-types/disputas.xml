@@ -12,8 +12,10 @@
         <property name="parentTypeDefinition" ref="managedXmlResource" />
         <property name="propertyTypeDefinitions">
             <list>
-                <ref bean="disputasDoktorandPropDef" />
-                <ref bean="disputasTilhorighetPropDef" />
+                <ref bean="disputasDoktorandTittelPropDef" />
+                <ref bean="disputasDoktorandFornavnPropDef" />
+                <ref bean="disputasDoktorandEtternavnPropDef" />
+                <!-- ref bean="disputasTilhorighetPropDef" / -->
                 <ref bean="disputasOppgavetittelPropDef" />
                 <ref bean="disputasStarttidspunktPropDef" />
                 <ref bean="disputasSluttidspunktPropDef" />
@@ -40,20 +42,46 @@
     </bean>
     
         
-    <bean id="disputasDoktorandPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="doktorand" />
+    <bean id="disputasDoktorandTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand.tittel" />
         <property name="type" ref="TYPE_STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasDoktorandEvaluator" />
+        <property name="contentModificationEvaluator" ref="disputasDoktorandTittelEvaluator" />
     </bean>
         
-    <bean id="disputasDoktorandEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/disputas/doktorand" />
+    <bean id="disputasDoktorandTittelEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/disputas/doktorand/tittel" />
+    </bean>
+
+
+    <bean id="disputasDoktorandFornavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand.fornavn" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasDoktorandFornavnEvaluator" />
+    </bean>
+        
+    <bean id="disputasDoktorandFornavnEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/disputas/doktorand/fornavn" />
+    </bean>
+
+
+    <bean id="disputasDoktorandEtternavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand.etternavn" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="disputasDoktorandEtternavnEvaluator" />
+    </bean>
+        
+    <bean id="disputasDoktorandEtternavnEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/disputas/doktorand/etternavn" />
     </bean>
     
     
-    <bean id="disputasTilhorighetPropDef"
+    <!-- bean id="disputasTilhorighetPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tilhorighet" />
         <property name="type" ref="TYPE_STRING" />
@@ -64,7 +92,7 @@
     
     <bean id="disputasTilhorighetEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/disputas/tilhorighet" />
-    </bean>
+    </bean -->
     
     
     <bean id="disputasOppgavetittelPropDef"
@@ -104,8 +132,9 @@
         <property name="contentModificationEvaluator" ref="disputasSluttidspunktEvaluator" />
     </bean>
 
+
     <bean id="disputasSluttidspunktEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="concat(/disputas/tid-og-sted/slutt/dag, '.', /disputas/tid-og-sted/slutt/maaned, '.', /disputas/tid-og-sted/slutt/aar, ' ', /disputas/tid-og-sted/slutt/time, ':', /disputas/tid-og-sted/slutt/minutt)"  />
+        <property name="expression" value="concat(/disputas/tid-og-sted[@slutt-tidspunkt='ja']/slutt/dag, '.', /disputas/tid-og-sted[@slutt-tidspunkt='ja']/slutt/maaned, '.', /disputas/tid-og-sted[@slutt-tidspunkt='ja']/slutt/aar, ' ', /disputas/tid-og-sted[@slutt-tidspunkt='ja']/slutt/time, ':', /disputas/tid-og-sted[@slutt-tidspunkt='ja']/slutt/minutt)"  />
     </bean>
     
     

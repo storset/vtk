@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    
+    <!-- Nyhet XML resource -->
+    
+    <bean id="nyhetXmlResource"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+        <property name="name" value="nyhet"/>
+        <property name="namespace" ref="NYHET_NAMESPACE" />
+        <property name="parentTypeDefinition" ref="managedXmlResource" />
+        <property name="propertyTypeDefinitions">
+            <list>
+                <ref bean="nyhetDatoPropDef" />
+                <ref bean="nyhetTittelPropDef" />
+                <ref bean="nyhetIngressPropDef" />
+            </list>
+        </property>
+        <property name="assertions">
+            <list>
+                <ref bean="schemaIsDisputas" />
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="NYHET_NAMESPACE" class="org.vortikal.repository.Namespace">
+        <constructor-arg value="nyhet" />
+        <constructor-arg value="http://www.uio.no/xsd/uio/nyhet" />
+    </bean>
+    
+    <bean id="schemaIsDisputas" 
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+        <property name="namespace" ref="DEFAULT_NAMESPACE" />
+        <property name="name" value="schema" />
+        <property name="pattern" value="http://www.uio.no/xsd/uio/nyhet/v00.*" />
+    </bean>
+    
+        
+    <bean id="nyhetDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="dato" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="nyhetDatoEvaluator" />
+    </bean>
+        
+    <bean id="nyhetDatoEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/nyhet/dato" />
+    </bean>
+
+    
+    <bean id="nyhetTittelPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tittel" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="nyhetTittelEvaluator" />
+    </bean>
+    
+    <bean id="nyhetTittelEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/nyhet/tittel" />
+    </bean>
+
+    
+    <bean id="nyhetIngressPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="ingress" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="nyhetIngressEvaluator" />
+    </bean>
+    
+    <bean id="nyhetIngressEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/nyhet/ingress" />
+    </bean>
+    
+</beans>

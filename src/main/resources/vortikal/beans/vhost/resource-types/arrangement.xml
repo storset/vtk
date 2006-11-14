@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    
+    <!-- Arrangement XML resource -->
+    
+    <bean id="arrangementXmlResource"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+        <property name="name" value="arrangement"/>
+        <property name="namespace" ref="ARRANGEMENT_NAMESPACE" />
+        <property name="parentTypeDefinition" ref="managedXmlResource" />
+        <property name="propertyTypeDefinitions">
+            <list>
+                <ref bean="arrangementTittelPropDef" />
+                <ref bean="disputasStarttidspunktPropDef" />
+                <ref bean="disputasSluttidspunktPropDef" />
+                <ref bean="arrangementStedPropDef" />
+            </list>
+        </property>
+        <property name="assertions">
+            <list>
+                <ref bean="schemaIsArrangement" />
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="ARRANGEMENT_NAMESPACE" class="org.vortikal.repository.Namespace">
+        <constructor-arg value="arrangement" />
+        <constructor-arg value="http://www.uio.no/xsd/uio/arrangement" />
+    </bean>
+    
+    <bean id="schemaIsArrangement" 
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+        <property name="namespace" ref="DEFAULT_NAMESPACE" />
+        <property name="name" value="schema" />
+        <property name="pattern" value="http://www.uio.no/xsd/uio/arrangement/v00.*" />
+    </bean>
+    
+    
+    <bean id="arrangementTittelPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tittel" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="arrangementTittelEvaluator" />
+    </bean>
+    
+    <bean id="arrangementTittelEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/arrangement/tittel" />
+    </bean>
+
+    
+    <bean id="arrangementStarttidspunktPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.start" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="arrangementStarttidspunktEvaluator" />
+    </bean>
+    
+    <bean id="arrangementStarttidspunktEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="concat(/arrangement/tid-og-sted/start/dag, '.', /arrangement/tid-og-sted/start/maaned, '.', /arrangement/tid-og-sted/start/aar, ' ', /arrangement/tid-og-sted/start/time, ':', /arrangement/tid-og-sted/start/minutt)"  />
+    </bean>
+    
+    
+    <bean id="arrangementSluttidspunktPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.slutt" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="arrangementSluttidspunktEvaluator" />
+    </bean>
+
+
+    <bean id="arrangementSluttidspunktEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="concat(/arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/dag, '.', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/maaned, '.', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/aar, ' ', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/time, ':', /arrangement/tid-og-sted[@slutt-tidspunkt='ja']/slutt/minutt)"  />
+    </bean>
+    
+    <bean id="arrangementStedPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="tid-og-sted.sted" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="arrangementStedEvaluator" />
+    </bean>
+    
+    <bean id="arrangementStedEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/arrangement/tid-og-sted/sted"  />
+    </bean>
+    
+</beans>

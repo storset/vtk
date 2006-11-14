@@ -12,7 +12,9 @@
         <property name="parentTypeDefinition" ref="managedXmlResource" />
         <property name="propertyTypeDefinitions">
             <list>
-                <ref bean="proveforelesningDoktorandPropDef" />
+                <ref bean="proveforelesningDoktorandTittelPropDef" />
+                <ref bean="proveforelesningDoktorandFornavnPropDef" />
+                <ref bean="proveforelesningDoktorandEtternavnPropDef" />
                 <ref bean="proveforelesningTilhorighetPropDef" />
                 <ref bean="proveforelesningEmnePropDef" />
                 <ref bean="proveforelesningStarttidspunktPropDef" />
@@ -39,19 +41,45 @@
         <property name="pattern" value="http://www.uio.no/xsd/uio/proveforelesning/v00.*" />
     </bean>
     
-    
-    <bean id="proveforelesningDoktorandPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="doktorand" />
+        
+    <bean id="proveforelesningDoktorandTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand.tittel" />
         <property name="type" ref="TYPE_STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandEvaluator" />
+        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandTittelEvaluator" />
     </bean>
-    
-    <bean id="proveforelesningDoktorandEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/proveforelesning/doktorand" />
+        
+    <bean id="proveforelesningDoktorandTittelEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/proveforelesning/doktorand/tittel" />
     </bean>
-    
+
+
+    <bean id="proveforelesningDoktorandFornavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand.fornavn" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandFornavnEvaluator" />
+    </bean>
+        
+    <bean id="proveforelesningDoktorandFornavnEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/proveforelesning/doktorand/fornavn" />
+    </bean>
+
+
+    <bean id="proveforelesningDoktorandEtternavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="doktorand.etternavn" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandEtternavnEvaluator" />
+    </bean>
+        
+    <bean id="proveforelesningDoktorandEtternavnEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/proveforelesning/doktorand/etternavn" />
+    </bean>
+
     
     <bean id="proveforelesningTilhorighetPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -103,9 +131,9 @@
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="proveforelesningSluttidspunktEvaluator" />
     </bean>
-    
+
     <bean id="proveforelesningSluttidspunktEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="concat(/proveforelesning/tid-og-sted/slutt/dag, '.', /proveforelesning/tid-og-sted/slutt/maaned, '.', /proveforelesning/tid-og-sted/slutt/aar, ' ', /proveforelesning/tid-og-sted/slutt/time, ':', /proveforelesning/tid-og-sted/slutt/minutt)"  />
+        <property name="expression" value="concat(/proveforelesning/tid-og-sted[@slutt-tidspunkt='ja']/slutt/dag, '.', /proveforelesning/tid-og-sted[@slutt-tidspunkt='ja']/slutt/maaned, '.', /proveforelesning/tid-og-sted[@slutt-tidspunkt='ja']/slutt/aar, ' ', /proveforelesning/tid-og-sted[@slutt-tidspunkt='ja']/slutt/time, ':', /proveforelesning/tid-og-sted[@slutt-tidspunkt='ja']/slutt/minutt)"  />
     </bean>
     
     

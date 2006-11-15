@@ -5,13 +5,12 @@
 
   <bean id="queryParser"
         class="org.vortikal.repositoryimpl.query.parser.QueryParser">
-    <constructor-arg ref="propertyManager" />
+    <constructor-arg ref="resourceTypeTree" />
   </bean>
 
   <bean id="queryManager" class="org.vortikal.repositoryimpl.query.parser.QueryManager">
     <property name="parser" ref="queryParser" />
     <property name="searcher" ref="systemIndexSearcher" />
-    <property name="propertyManager" ref="propertyManager" />
     <property name="queryStringProcessor" ref="queryStringProcessor" />
   </bean>
 

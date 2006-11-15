@@ -128,4 +128,15 @@ public final class PropertyType {
     };
     
     public static final Set SPECIAL_PROPERTIES_SET = new HashSet(Arrays.asList(SPECIAL_PROPERTIES));
+
+    public static final String[] NOT_REPRODUCABLE_CONTENT_PROPERTIES = {
+        LASTMODIFIED_PROP_NAME,
+        MODIFIEDBY_PROP_NAME,
+        CONTENTLASTMODIFIED_PROP_NAME,
+        CONTENTMODIFIEDBY_PROP_NAME,
+    };
+
+    public static final Set NOT_REPRODUCABLE_CONTENT_PROPERTIES_SET = 
+        new HashSet(Arrays.asList(NOT_REPRODUCABLE_CONTENT_PROPERTIES));
+
 }

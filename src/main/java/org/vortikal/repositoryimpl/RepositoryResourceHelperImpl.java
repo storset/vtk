@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,9 +51,7 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.Content;
@@ -79,8 +78,8 @@ import org.vortikal.web.service.RepositoryAssertion;
  * XXX: Validate all logic!
  * XXX: catch or declare evaluation and authorization exceptions on a reasonable level
  */
-public class RepositoryResourceHelperImpl implements 
-    RepositoryResourceHelper, InitializingBean {
+public class RepositoryResourceHelperImpl 
+    implements RepositoryResourceHelper, InitializingBean {
 
     private static Log logger = LogFactory.getLog(RepositoryResourceHelperImpl.class);
 
@@ -211,6 +210,7 @@ public class RepositoryResourceHelperImpl implements
         Map deletedProps = new HashMap();
         List deadProperties = new ArrayList();
         Map toEvaluateProps = new HashMap();
+
         // Looping over already existing properties
         for (Iterator iter = resource.getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
@@ -338,6 +338,11 @@ public class RepositoryResourceHelperImpl implements
                 newResource.addProperty(prop);
             }
         }
+       
+        // Check if resource has become a more specific or different branch of resource, requiring content evaluation
+        if (!resource.isOfType(rt)) {
+            newResource = doContentReevaluation(newResource, principal);
+        }
         
         if (logger.isDebugEnabled()) {
             logger.debug("Returning evaluated resource: " + newResource
@@ -347,7 +352,31 @@ public class RepositoryResourceHelperImpl implements
         return newResource;
     }
     
-
+    /**
+     * Wrapper for doing content evaluation during properties modification event.
+     * Maps out properties which MUST NOT be content evaluated.
+     * 
+     * This is an issue for "content evaluating" properties which are not based
+     * entirely on the content. We do not have any mechanisms to detect these,
+     * so currently the known list of top level properties is mapped out.
+     * 
+     * Beware when modelling properties :)
+     */
+    private ResourceImpl doContentReevaluation(ResourceImpl resource, Principal principal) {
+        
+        ResourceImpl newResource = contentModification(resource, principal);
+        
+        // Properties which cannot be contentEvaluated on a properties modification
+        Set specialProps = PropertyType.NOT_REPRODUCABLE_CONTENT_PROPERTIES_SET;
+        
+        for (Iterator iterator = specialProps.iterator(); iterator.hasNext();) {
+            String name = (String) iterator.next();
+            newResource.addProperty(resource.getProperty(Namespace.DEFAULT_NAMESPACE, name));
+        }
+        
+        return newResource;
+    } 
+    
     private PrimaryResourceTypeDefinition propertiesModification(
         Principal principal, ResourceImpl newResource, Map toEvaluateProps, 
         List evaluatedProps, Date time, Map alreadySetProperties, Map deletedProps, 
@@ -532,66 +561,116 @@ public class RepositoryResourceHelperImpl implements
         return newProps;
     }
     
-
-
-
-    public ResourceImpl collectionContentModification(ResourceImpl resource, 
+    public ResourceImpl contentModification(ResourceImpl resource,
             Principal principal) {
         
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this.propertyManager, this.authorizationManager);
-        newResource.setID(resource.getID());
-        newResource.setAcl(resource.getAcl());
-        newResource.setLock(resource.getLock());
-        ResourceTypeDefinition rt = contentModification(principal, newResource, 
-                resource, null, new Date(), this.resourceTypeTree.getRoot());
+        ResourceImpl newResource = newResource(resource);
+        ContentImpl content = null;
         
-        newResource.setResourceType(rt.getName());
-        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
-            Property prop = (Property) i.next();
+        if (!resource.isCollection())
+            content = new ContentImpl(resource.getURI(), this.contentStore,
+                    this.contentRepresentationRegistry);
 
-            // Preserve dead properties:
-            if (prop.getDefinition() == null) {
-                newResource.addProperty(prop);
-            }
-        }
-        
-        return newResource;
-    }
-
-
-    public ResourceImpl fileContentModification(ResourceImpl resource,
-                                                            Principal principal) {
-        
-        // XXX: What to do about swapping old resource with new?
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this.propertyManager, this.authorizationManager);
-        newResource.setID(resource.getID());
-        newResource.setAcl(resource.getAcl());
-        newResource.setLock(resource.getLock());
-        ResourceTypeDefinition rt = contentModification(
-            principal, newResource, resource,
-            new ContentImpl(resource.getURI(), this.contentStore,
-                            this.contentRepresentationRegistry),
-            new Date(), this.resourceTypeTree.getRoot());
+        ResourceTypeDefinition rt = contentModification(principal, newResource,
+                resource, content, new Date(), this.resourceTypeTree.getRoot());
         
         if (logger.isDebugEnabled())
             logger.debug("Setting new resource type: '" + rt.getName()
                          + "' on resource " + resource);
 
         newResource.setResourceType(rt.getName());
-        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
-            Property prop = (Property) i.next();
 
-            // Preserve dead properties:
-            if (prop.getDefinition() == null) {
-                newResource.addProperty(prop);
-            }
-        }
-        
+        preserveDeadAndZombieProperties(resource, newResource);
         return newResource;
         
     }
     
+    public PropertySet getFixedCopyProperties(Resource resource,
+            Principal principal, String destUri)
+            throws CloneNotSupportedException {
+        PropertySetImpl fixedProps = new PropertySetImpl(destUri);
+        java.util.Date now = new java.util.Date();
+
+        Property owner = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME)
+                .clone();
+        owner.setPrincipalValue(principal);
+        fixedProps.addProperty(owner);
+
+        Property creationTime = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE,
+                PropertyType.CREATIONTIME_PROP_NAME).clone();
+        creationTime.setDateValue(now);
+        fixedProps.addProperty(creationTime);
+
+        Property lastModified = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE,
+                PropertyType.LASTMODIFIED_PROP_NAME).clone();
+        lastModified.setDateValue(now);
+        fixedProps.addProperty(lastModified);
+
+        Property contentLastModified = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE,
+                PropertyType.CONTENTLASTMODIFIED_PROP_NAME).clone();
+        contentLastModified.setDateValue(now);
+        fixedProps.addProperty(contentLastModified);
+
+        Property propertiesLastModified = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE,
+                PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME).clone();
+        propertiesLastModified.setDateValue(now);
+        fixedProps.addProperty(propertiesLastModified);
+
+        Property createdBy = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME)
+                .clone();
+        createdBy.setPrincipalValue(principal);
+        fixedProps.addProperty(createdBy);
+
+        Property modifiedBy = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME)
+                .clone();
+        modifiedBy.setPrincipalValue(principal);
+        fixedProps.addProperty(modifiedBy);
+
+        Property contentModifiedBy = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE,
+                PropertyType.CONTENTMODIFIEDBY_PROP_NAME).clone();
+        contentModifiedBy.setPrincipalValue(principal);
+        fixedProps.addProperty(contentModifiedBy);
+
+        Property propertiesModifiedBy = (Property) resource.getProperty(
+                Namespace.DEFAULT_NAMESPACE,
+                PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME).clone();
+        propertiesModifiedBy.setPrincipalValue(principal);
+        fixedProps.addProperty(propertiesModifiedBy);
+
+        return fixedProps;
+    }
+
+    private ResourceImpl newResource(ResourceImpl resource) {
+        // XXX: What to do about swapping old resource with new?
+        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this.propertyManager, this.authorizationManager);
+        newResource.setID(resource.getID());
+        newResource.setAcl(resource.getAcl());
+        newResource.setLock(resource.getLock());
+        return newResource;
+
+    }
     
+    private void preserveDeadAndZombieProperties(ResourceImpl resource, ResourceImpl newResource) {
+        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
+            Property prop = (Property) i.next();
+
+            if (prop.getDefinition() == null) {
+                // Preserve dead properties
+                newResource.addProperty(prop);
+            } else if (newResource.getProperty(prop.getDefinition()) == null) {
+                // Preserve zombie properties
+                newResource.addProperty(prop);
+            }
+        }
+    }
     
 
     private ResourceTypeDefinition contentModification(
@@ -672,60 +751,10 @@ public class RepositoryResourceHelperImpl implements
     }
 
 
-    public PropertySet getFixedCopyProperties(Resource resource, Principal principal, String destUri)
-        throws CloneNotSupportedException {
-        PropertySetImpl fixedProps = new PropertySetImpl(destUri);
-        java.util.Date now = new java.util.Date();
 
-        Property owner = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME).clone();
-        owner.setPrincipalValue(principal);
-        fixedProps.addProperty(owner);
-            
-        Property creationTime = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME).clone();
-        creationTime.setDateValue(now);
-        fixedProps.addProperty(creationTime);
-
-        Property lastModified = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME).clone();
-        lastModified.setDateValue(now);
-        fixedProps.addProperty(lastModified);
-
-        Property contentLastModified = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME).clone();
-        contentLastModified.setDateValue(now);
-        fixedProps.addProperty(contentLastModified);
-
-        Property propertiesLastModified = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME).clone();
-        propertiesLastModified.setDateValue(now);
-        fixedProps.addProperty(propertiesLastModified);
-
-        Property createdBy = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME).clone();
-        createdBy.setPrincipalValue(principal);
-        fixedProps.addProperty(createdBy);
-
-        Property modifiedBy = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME).clone();
-        modifiedBy.setPrincipalValue(principal);
-        fixedProps.addProperty(modifiedBy);
-
-        Property contentModifiedBy = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME).clone();
-        contentModifiedBy.setPrincipalValue(principal);
-        fixedProps.addProperty(contentModifiedBy);
-
-        Property propertiesModifiedBy = (Property) resource.getProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME).clone();
-        propertiesModifiedBy.setPrincipalValue(principal);
-        fixedProps.addProperty(propertiesModifiedBy);
-
-        return fixedProps;
-    }
-
-
+    /** 
+     * Checking that all resource type assertions match for resource 
+     */
     private boolean checkAssertions(PrimaryResourceTypeDefinition rt,
                                     Resource resource, Principal principal) {
 
@@ -807,6 +836,11 @@ public class RepositoryResourceHelperImpl implements
 
     public ResourceTypeTree getResourceTypeTree() {
         return this.resourceTypeTree;
+    }
+
+
+    public void setPropertyManager(PropertyManager propertyManager) {
+        this.propertyManager = propertyManager;
     }
 
 }

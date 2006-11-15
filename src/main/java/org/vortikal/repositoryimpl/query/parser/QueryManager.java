@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.repositoryimpl.query.query.Query;
 import org.vortikal.repositoryimpl.query.query.Sorting;
@@ -48,7 +47,6 @@ public class QueryManager implements InitializingBean {
 
     private Parser parser;
     private Searcher searcher;
-    private PropertyManager propertyManager;
     private QueryStringProcessor queryStringProcessor;
     
 
@@ -60,10 +58,6 @@ public class QueryManager implements InitializingBean {
         this.searcher = searcher;
     }
     
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-
     public void setQueryStringProcessor(QueryStringProcessor queryStringProcessor)  {
         this.queryStringProcessor = queryStringProcessor;
     }
@@ -74,10 +68,6 @@ public class QueryManager implements InitializingBean {
         }
         if (this.searcher == null) {
             throw new BeanInitializationException("JavaBean property 'searcher' not set");
-        }
-        if (this.propertyManager == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'propertyManager' not set");
         }
         if (this.queryStringProcessor == null) {
             throw new BeanInitializationException(

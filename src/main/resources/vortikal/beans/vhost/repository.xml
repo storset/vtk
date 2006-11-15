@@ -127,7 +127,7 @@
   </bean>
 
   <bean id="repositoryResourceHelper"
-        class="org.vortikal.repositoryimpl.repositoryResourceHelperImpl">
+        class="org.vortikal.repositoryimpl.RepositoryResourceHelperImpl">
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />

@@ -56,10 +56,7 @@ public interface RepositoryResourceHelper {
             Principal principal, Resource dto) throws AuthenticationException,
             AuthorizationException, CloneNotSupportedException, IOException;
 
-    public ResourceImpl collectionContentModification(ResourceImpl resource,
-            Principal principal);
-
-    public ResourceImpl fileContentModification(ResourceImpl resource,
+    public ResourceImpl contentModification(ResourceImpl resource,
             Principal principal);
 
     public PropertySet getFixedCopyProperties(Resource resource,

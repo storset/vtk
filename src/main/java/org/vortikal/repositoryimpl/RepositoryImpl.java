@@ -270,7 +270,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(
                 src, principal, destUri);
 
-            destParent = this.resourceHelper.collectionContentModification(destParent, principal);
+            destParent = this.resourceHelper.contentModification(destParent, principal);
 
             this.dao.copy(src, destParent, destUri, preserveACL, fixedProps);
 
@@ -341,7 +341,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
         
         try {
-            destParent = this.resourceHelper.collectionContentModification(destParent, principal);
+            destParent = this.resourceHelper.contentModification(destParent, principal);
             this.dao.copy(src, destParent, destUri, true, null);
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
@@ -391,7 +391,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
         ResourceImpl parentCollection = this.dao.load(parent);
 
-        parentCollection = this.resourceHelper.collectionContentModification(
+        parentCollection = this.resourceHelper.contentModification(
             parentCollection, principal);
         this.dao.store(parentCollection);
 
@@ -554,7 +554,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             this.dao.storeContent(uri, new java.io.BufferedInputStream(
                                       new java.io.FileInputStream(tempFile)));
 
-            r = this.resourceHelper.fileContentModification(r, principal);
+            r = this.resourceHelper.contentModification(r, principal);
             
             this.dao.store(r);
 
@@ -674,7 +674,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             newResource = this.dao.load(uri);
 
             parent.addChildURI(uri);
-            parent = this.resourceHelper.collectionContentModification(parent, principal);
+            parent = this.resourceHelper.contentModification(parent, principal);
             
             this.dao.store(parent);
 

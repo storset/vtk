@@ -46,7 +46,7 @@
     </bean>
         
     <bean id="nyhetDatoEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/nyhet/dato" />
+      <property name="expression" value="concat(/nyhet/dato/dag, '.', /nyhet/dato/maaned, '.', /nyhet/dato/aar, ' ', /nyhet/dato/time, ':', /nyhet/dato/minutt)"  />
     </bean>
 
     

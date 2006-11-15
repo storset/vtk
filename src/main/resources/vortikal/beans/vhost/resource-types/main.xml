@@ -41,6 +41,9 @@
   <!-- Traktater -->
   <import resource="treaty.xml" />
 
+  <!-- Portal.xml - søkedokumentet -->
+  <import resource="portal.xml" />
+
   <!-- Portalen -->
   <import resource="portal-page.xml" />
 

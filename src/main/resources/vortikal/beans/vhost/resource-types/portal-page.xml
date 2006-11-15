@@ -7,7 +7,7 @@
   <bean id="portalPageResourceTypeDefinition"
     class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="portal-page"/>
-    <property name="namespace" ref="PORTAL_NAMESPACE"/>
+    <property name="namespace" ref="PORTALPAGE_NAMESPACE"/>
     <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="assertions">
       <list>
@@ -35,7 +35,7 @@
     </property>
   </bean>
 
-  <bean id="PORTAL_NAMESPACE" class="org.vortikal.repository.Namespace">
+  <bean id="PORTALPAGE_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="portal-page" />
     <constructor-arg value="http://www.uio.no/portal-page" />
   </bean>

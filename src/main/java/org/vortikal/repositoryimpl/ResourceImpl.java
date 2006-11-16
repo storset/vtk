@@ -256,6 +256,21 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     public Object clone() throws CloneNotSupportedException {
 
+        ResourceImpl clone = cloneWithoutProperties(); 
+        for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
+            Property prop = (Property) iter.next();
+            clone.addProperty((Property) prop.clone());
+        }
+
+        return clone;
+    }
+
+    /**
+     * Temp. way of getting a "clean" resource clone
+     */
+    public ResourceImpl cloneWithoutProperties() 
+        throws CloneNotSupportedException {
+
         LockImpl lock = null;
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
@@ -271,14 +286,9 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         clone.setLock(lock);
         clone.setChildURIs(this.childURIs);
         clone.setResourceType(super.resourceType);
-        for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
-            clone.addProperty((Property) prop.clone());
-        }
-
         return clone;
     }
-
+    
     private String getPropValue(String name) {
         Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
         if (prop == null) return null;

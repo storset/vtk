@@ -74,9 +74,6 @@ import org.vortikal.repository.Acl;
 
 
 /**
- * XXX: Legacy props do have problems...
- * XXX: Validate all logic!
- * XXX: catch or declare evaluation and authorization exceptions on a reasonable level
  */
 public class RepositoryResourceHelperImpl 
     implements RepositoryResourceHelper, InitializingBean {
@@ -658,19 +655,9 @@ public class RepositoryResourceHelperImpl
         return fixedProps;
     }
 
-    private Resource cloneResource(Resource resource) 
-        throws InternalRepositoryException {
-        try {
-            return (Resource) resource.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new InternalRepositoryException(
-                    "Unable to clone resource '" + resource.getURI() + "'", e);
-        }
-    }
-
     private ResourceImpl newResource(ResourceImpl resource) {
         try {
-            return (ResourceImpl) resource.clone();
+            return resource.cloneWithoutProperties();
         } catch (CloneNotSupportedException e) {
             throw new InternalRepositoryException(
                     "Unable to clone resource '" + resource.getURI() + "'", e);
@@ -864,7 +851,7 @@ public class RepositoryResourceHelperImpl
 
     
     
-    public Resource evaluateChange(Resource originalResource, Resource suppliedResource,
+    public Resource evaluateChange(ResourceImpl originalResource, ResourceImpl suppliedResource,
                                    Principal principal, boolean isContentChange, Date time) throws IOException {
 
         EvaluationContext ctx = new EvaluationContext(originalResource, suppliedResource, principal);
@@ -1047,25 +1034,21 @@ public class RepositoryResourceHelperImpl
         private Principal principal;
         private ResourceImpl newResource;
 
-        public EvaluationContext(Resource originalResource,
-                  Resource suppliedResource, Principal principal) throws InternalRepositoryException {
+        public EvaluationContext(ResourceImpl originalResource,
+                  ResourceImpl suppliedResource, Principal principal) throws InternalRepositoryException {
                 
             this.originalResource = originalResource;
             this.suppliedResource = suppliedResource;
             this.principal = principal;
 
             // Create empty new resource: XXX: how do we create empty resources?
-            newResource = new ResourceImpl(originalResource.getURI(),
-                                           propertyManager, authorizationManager);
             try {
-                newResource.setAcl((Acl) originalResource.getAcl().clone());
-                //newResource.setLock((Lock) originalResource.getLock().clone());
+                newResource = originalResource.cloneWithoutProperties();
             } catch (CloneNotSupportedException e) {
                 throw new InternalRepositoryException(
-                    "Unable to clone ACL " + originalResource.getAcl(), e);
+                        "Unable to clone resource '" + originalResource.getURI() + "'", e);
             }
         }
-
         public Resource getOriginalResource() {
             return this.originalResource;
         }

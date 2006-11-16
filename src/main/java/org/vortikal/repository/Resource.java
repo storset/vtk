@@ -36,7 +36,7 @@ import java.util.Date;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 
-public interface Resource extends PropertySet {
+public interface Resource extends PropertySet, Cloneable {
 
     public ResourceTypeDefinition getResourceTypeDefinition();
 
@@ -288,5 +288,7 @@ public interface Resource extends PropertySet {
      *
      */
     public void setOwner(Principal principal);
+
+    public Object clone() throws CloneNotSupportedException;
 
 }

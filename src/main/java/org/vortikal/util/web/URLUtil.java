@@ -100,9 +100,6 @@ public class URLUtil {
          return (String[]) list.toArray(new String[0]);
      }
 
-
-
-
     /**
      * Splits a URI into incremental path elements. For example, the
      * URI <code>/foo/bar/baaz</code> produce the result: 

@@ -222,9 +222,9 @@
               <goal>javacc</goal>
             </goals>
             <configuration>
-	      <!--
+
               <packageName>org.vortikal.repositoryimpl.query.parser</packageName>
-              <sourceDirectory>src/main/generated-java/</sourceDirectory>
+	      <!--              <sourceDirectory>src/main/generated-java/</sourceDirectory>
               <outputDirectory>src/main/generated-java</outputDirectory>
 	      -->
             </configuration>

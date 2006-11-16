@@ -100,14 +100,17 @@ public class URIUtil {
      * @return the expanded URI. If the provided URI is the root URI
      * <code>/</code>, <code>null</code> is returned.
      * @throws IllegalArgumentException if the provided URI does not
-     * start with a slash, or if it ends with a slash (and is not the
-     * root URI: <code>/</code>).
+     * start with a slash, or if it contains <code>//</code>.
      */
     public static String getParentURI(String uri) {
         if (uri == null || uri.trim().equals("") || !uri.startsWith("/")) {
             throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
         }
 
+        if (uri.indexOf("//") != -1) {
+            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
+        }
+        
         if ("/".equals(uri)) {
             return null;
         }
@@ -121,13 +124,29 @@ public class URIUtil {
             return "/";
         }
 
-        if (parentURI.startsWith("//") || parentURI.endsWith("/")) {
-            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
-        }
-
         return parentURI;
     }
     
+    public static String getResourceName(String uri) {
+        if (uri == null || uri.trim().equals("") || !uri.startsWith("/")) {
+            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
+        }
+
+        if (uri.indexOf("//") != -1) {
+            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
+        }
+        
+        if ("/".equals(uri)) {
+            return uri;
+        }
+
+        if (uri.endsWith("/")) {
+            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
+        }
+
+        return uri.substring(uri.lastIndexOf("/") + 1);
+    }
+
     
     /**
      * Finds the grandparent of a URI.

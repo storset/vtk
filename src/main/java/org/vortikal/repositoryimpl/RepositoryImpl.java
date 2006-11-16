@@ -61,6 +61,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.util.repository.URIUtil;
+import org.vortikal.util.web.URLUtil;
 
 
 
@@ -76,6 +77,12 @@ import org.vortikal.util.repository.URIUtil;
  * XXX: split dao into multiple daos
  * XXX: externalize caching
  * XXX: duplication of owner and inherited between resource and acl.
+ * 
+ * On copy/move, name of destination resource may change.
+ * This is not a problem until we have properties/content modification 
+ * dependent properties, using name to evaluate. Currently only 
+ * content type uses name, and only on creation. 
+ * 
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware,
         InitializingBean {
@@ -271,11 +278,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
                 src, principal, destUri);
 
             destParent = this.resourceHelper.contentModification(destParent, principal);
-
+            
             this.dao.copy(src, destParent, destUri, preserveACL, fixedProps);
-
-// XXX: file extension of destination resource may have changed,
-// might need re-evaluation.
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
 

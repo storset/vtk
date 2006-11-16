@@ -1145,8 +1145,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             
             Property property = this.propertyManager.createProperty(
                 prop.namespaceUri,
-                prop.name, (String[]) prop.values.toArray(new String[]{}),
-                prop.type);
+                prop.name, (String[]) prop.values.toArray(new String[]{}));
 
             ResourceImpl r = (ResourceImpl) resourceMap.get(
                     new Integer(prop.resourceId));

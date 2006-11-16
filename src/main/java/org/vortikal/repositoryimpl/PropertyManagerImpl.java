@@ -129,7 +129,7 @@ public class PropertyManagerImpl implements PropertyManager, InitializingBean {
     
 
     public Property createProperty(String namespaceUrl, String name, 
-                                   String[] stringValues, int type) 
+                                   String[] stringValues) 
         throws ValueFormatException {
         
         Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);        
@@ -139,6 +139,12 @@ public class PropertyManagerImpl implements PropertyManager, InitializingBean {
         
         PropertyTypeDefinition def = this.resourceTypeTree.findPropertyTypeDefinition(namespace, name);
         prop.setDefinition(def);
+        
+        // Default type for props is string:
+        int type = PropertyType.TYPE_STRING;
+
+        if (def != null)
+            type = def.getType();
         
         if (def != null && def.isMultiple()) {
             Value[] values = this.valueFactory.createValues(stringValues, type);
@@ -157,9 +163,6 @@ public class PropertyManagerImpl implements PropertyManager, InitializingBean {
                     + " to a single-value property"
                     + " for property " + prop);
             }
-            if (def == null)
-                // Dead, ensure value is interpreted as string:
-                type = PropertyType.TYPE_STRING;
             
             Value value = this.valueFactory.createValue(stringValues[0], type);
             prop.setValue(value);

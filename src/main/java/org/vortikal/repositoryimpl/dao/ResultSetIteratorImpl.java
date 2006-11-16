@@ -149,7 +149,7 @@ public class ResultSetIteratorImpl implements CloseableIterator {
                 SqlDaoUtils.PropHolder holder = (SqlDaoUtils.PropHolder) i.next();
                 Property property = this.propertyManager.createProperty(
                     holder.namespaceUri, holder.name, 
-                    (String[]) holder.values.toArray(new String[]{}), holder.type);
+                    (String[]) holder.values.toArray(new String[]{}));
                 propertySet.addProperty(property);
             }
             return propertySet;

@@ -77,13 +77,12 @@ public interface PropertyManager {
      *
      * @param namespace the namespace
      * @param name the name
-     * @param type the property type
      * @return a property instance
      * @throws ValueFormatException if the supplied values' type does
      * not match that of the property definition
      */
     public Property createProperty(String namespaceUrl, String name,
-            String[] stringValues, int type) throws ValueFormatException;
+            String[] stringValues) throws ValueFormatException;
 
 
     public ResourceTypeTree getResourceTypeTree();

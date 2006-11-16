@@ -44,10 +44,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
-import org.vortikal.repository.Lock;
+import org.vortikal.repository.InternalRepositoryException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -192,29 +191,48 @@ public class RepositoryResourceHelperImpl
      *   <li>user created/changed
      *   <li>deleted
      *   <li>to be evaluated
+     *   <li>zombie
      *
-     * @param resource a the original resource
-     * @param principal the principal performing the store operation
-     * @param dto the user-supplied resource
+     * @param originalResource - the original resource
+     * @param principal - the principal performing the store operation
+     * @param newResource - the user-supplied resource
      * @return the resulting resource after property evaluation
      */
-    public ResourceImpl storeProperties(ResourceImpl resource, Principal principal,
-                                        Resource dto)
+    public ResourceImpl storeProperties(ResourceImpl originalResource, Principal principal,
+                                        Resource newResource)
         throws AuthenticationException, AuthorizationException,
-        CloneNotSupportedException, IOException {
+        InternalRepositoryException, IOException {
 
-        String uri = resource.getURI();
+        String uri = originalResource.getURI();
         
         // For all properties, check if they are modified, deleted or created
+
+        // 1. Deleted property - if it exists in original, but not in new resource
+        //    - If dead, it will disappear
+        //    - If mandatory or principal not authorized, throw exception
+        //    - Otherwise mark as deleted prop
+        // 2. Changed prop value - if the values in original and new resource differs
+        //    - If dead, mark as dead prop
+        //    - If principal not authorized, throw exception
+        //    - Otherwise mark as allready set (not to be evaluated)
+        // 3. Unchanged value
+        //    - If dead, mark as dead
+        //    - Otherwise mark as to be evaluated
+        // 4. Added property
+        //    - If dead, mark as dead
+        //    - If principal not authorized, throw exception
+        //    - Otherwise mark as allready set (not to be evaluated)
+        
         Map alreadySetProperties = new HashMap();
         Map deletedProps = new HashMap();
         List deadProperties = new ArrayList();
         Map toEvaluateProps = new HashMap();
 
-        // Looping over already existing properties
-        for (Iterator iter = resource.getProperties().iterator(); iter.hasNext();) {
+        // Looping over already original resource properties
+
+        for (Iterator iter = originalResource.getProperties().iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
-            Property userProp = dto.getProperty(prop.getNamespace(), prop.getName());
+            Property userProp = newResource.getProperty(prop.getNamespace(), prop.getName());
 
             if (userProp == null) {
                 // Deleted
@@ -226,19 +244,12 @@ public class RepositoryResourceHelperImpl
                     this.authorizationManager.tmpAuthorizeForPropStore(prop.getDefinition().getProtectionLevel(), principal, uri);
                     // It will be removed
                     addToPropsMap(deletedProps, prop);
-                } else {
-                    // Dead - ok
-                    if (logger.isDebugEnabled())
-                        logger.debug("Property " + prop + " deleted by user "
-                                + "(dead property, no definition)");
-                }
+                } 
+                // Otherwise dead - ok
             } else if (!prop.equals(userProp)) {
                 // Changed value
                 if (prop.getDefinition() == null) {
                     // Dead
-                    if (logger.isDebugEnabled()) 
-                        logger.debug("Property " + prop + " changed value "
-                                     + "(dead property, no definition)");
                     deadProperties.add(userProp);
                 } else {
                     // check if allowed
@@ -254,62 +265,52 @@ public class RepositoryResourceHelperImpl
                 
         }
         
-        for (Iterator iter = dto.getProperties().iterator(); iter.hasNext();) {
+        // Looping over new resource properties - to find added props
+        
+        for (Iterator iter = newResource.getProperties().iterator(); iter.hasNext();) {
             Property userProp = (Property) iter.next();
-            Property prop = resource.getProperty(userProp.getNamespace(),
+            Property prop = originalResource.getProperty(userProp.getNamespace(),
                                                  userProp.getName());
             
             if (prop != null)
                 continue;
 
             // Otherwise added
+            if (!userProp.isValueInitialized())
+                throw new ConstraintViolationException(
+                        "Property " + userProp + " is not initialized");
+
             if (userProp.getDefinition() == null) {
                 // Dead
-                if (!userProp.isValueInitialized())
-                    throw new ConstraintViolationException(
-                            "Property " + userProp + " is not initialized");
-                if (logger.isDebugEnabled())
-                    logger.debug("Property " + prop + " added "
-                            + "(dead property, no definition)");
                 deadProperties.add(userProp);
             } else {
                 // check if allowed
                 this.authorizationManager.tmpAuthorizeForPropStore(userProp.getDefinition().getProtectionLevel(), principal, uri);
-                // XXX: is value initialized????
                 addToPropsMap(alreadySetProperties, userProp);
             }
         }
         
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this.propertyManager,
-                                                    this.authorizationManager);
-        newResource.setID(resource.getID());
-        newResource.setAcl(resource.getAcl() != null ? (Acl)resource.getAcl().clone() : null);
-
-        if (resource.getLock() != null)
-            newResource.setLock((Lock)resource.getLock().clone());
-        
         if (logger.isDebugEnabled()) {
-            logger.debug("About to evaluate resource type for resource " + dto
+            logger.debug("About to evaluate resource type for resource " + newResource
                          + ", alreadySetProps = " + alreadySetProperties
                          + ", deletedProps = " + deletedProps
                          + ", deadProps = " + deadProperties
-                         + ", toEvaluateProps = " + toEvaluateProps
-                         + ", suppliedProps = " + dto.getProperties());
+                         + ", toEvaluateProps = " + toEvaluateProps);
         }
 
         List evaluatedProps = new ArrayList();
+        ResourceImpl evaluatedResource = newResource(originalResource);
         
         // Evaluate resource tree, for all live props not overridden, evaluate
-        ResourceTypeDefinition rt = propertiesModification(principal, 
-                                                           newResource, 
-                                                           toEvaluateProps, 
-                                                           evaluatedProps,
-                                                           new Date(), 
-                                                           alreadySetProperties,
-                                                           deletedProps, 
-                                                           this.resourceTypeTree.getRoot());
+        propertiesModification(principal, 
+                evaluatedResource, 
+                toEvaluateProps, 
+                evaluatedProps,
+                new Date(), 
+                alreadySetProperties,
+                deletedProps, 
+                this.resourceTypeTree.getRoot());
 
-        newResource.setResourceType(rt.getName());
         
         // Remaining props are legacy props to be kept
         for (Iterator iter = toEvaluateProps.values().iterator(); iter.hasNext();) {
@@ -317,15 +318,15 @@ public class RepositoryResourceHelperImpl
             for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
                 Property prop = (Property) iterator.next();
                 if (!evaluatedProps.contains(prop))
-                    newResource.addProperty(prop);
+                    evaluatedResource.addProperty(prop);
             }
         }
         
         for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
             Property prop = (Property) iter.next();
             if (logger.isDebugEnabled()) 
-                logger.debug("Adding dead property " + prop + "to resource: " + newResource);
-            newResource.addProperty(prop);
+                logger.debug("Adding dead property " + prop + "to resource: " + evaluatedResource);
+            evaluatedResource.addProperty(prop);
         }
         
         for (Iterator iter = alreadySetProperties.values().iterator(); iter.hasNext();) {
@@ -334,22 +335,22 @@ public class RepositoryResourceHelperImpl
                 Property prop = (Property) iterator.next();
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Adding property " + prop + " to resource " + newResource);
-                newResource.addProperty(prop);
+                    logger.debug("Adding property " + prop + " to resource " + evaluatedResource);
+                evaluatedResource.addProperty(prop);
             }
         }
        
         // Check if resource has become a more specific or different branch of resource, requiring content evaluation
-        if (!resource.isOfType(rt)) {
-            newResource = doContentReevaluation(newResource, principal);
+        if (!originalResource.isOfType(evaluatedResource.getResourceTypeDefinition())) {
+            evaluatedResource = doContentReevaluation(evaluatedResource, principal);
         }
         
         if (logger.isDebugEnabled()) {
-            logger.debug("Returning evaluated resource: " + newResource
-                         + " having properties: " + newResource.getProperties());
+            logger.debug("Returning evaluated resource: " + evaluatedResource
+                         + " having properties: " + evaluatedResource.getProperties());
         }
 
-        return newResource;
+        return evaluatedResource;
     }
     
     /**
@@ -377,14 +378,16 @@ public class RepositoryResourceHelperImpl
         return newResource;
     } 
     
-    private PrimaryResourceTypeDefinition propertiesModification(
+    private boolean propertiesModification(
         Principal principal, ResourceImpl newResource, Map toEvaluateProps, 
         List evaluatedProps, Date time, Map alreadySetProperties, Map deletedProps, 
         PrimaryResourceTypeDefinition rt) {
 
         // Checking if resource type matches
         if (!checkAssertions(rt, newResource, principal)) 
-            return null;
+            return false;
+
+        newResource.setResourceType(rt.getName());
 
         // Evaluating primary resource type properties
         List propertiesToAdd = new ArrayList();
@@ -400,15 +403,16 @@ public class RepositoryResourceHelperImpl
 
         for (int i = 0; i < mixinTypes.length; i++) {
             PropertyTypeDefinition[] mixinDef = mixinTypes[i].getPropertyTypeDefinitions();
-            propertiesToAdd.addAll(evalPropertiesModification(principal, 
-                                                              newResource, 
-                                                              toEvaluateProps, 
-                                                              evaluatedProps,
-                                                              time,
-                                                              alreadySetProperties,
-                                                              deletedProps, 
-                                                              mixinTypes[i],
-                                                              mixinDef));
+            propertiesToAdd.addAll(
+                    evalPropertiesModification(principal, 
+                            newResource, 
+                            toEvaluateProps, 
+                            evaluatedProps,
+                            time,
+                            alreadySetProperties,
+                            deletedProps, 
+                            mixinTypes[i],
+                            mixinDef));
         }
 
         // Check validator...
@@ -429,7 +433,8 @@ public class RepositoryResourceHelperImpl
         List children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
         for (Iterator iterator = children.iterator(); iterator.hasNext();) {
             PrimaryResourceTypeDefinition child = (PrimaryResourceTypeDefinition) iterator.next();
-            PrimaryResourceTypeDefinition resourceType = 
+
+            boolean match = 
                 propertiesModification(principal, 
                                        newResource,
                                        toEvaluateProps,
@@ -438,11 +443,11 @@ public class RepositoryResourceHelperImpl
                                        alreadySetProperties,
                                        deletedProps,
                                        child);
-            if (resourceType != null)
-                return resourceType;
+            if (match)
+                break;
         }
 
-        return rt;
+        return true;
     }
     
 
@@ -585,6 +590,10 @@ public class RepositoryResourceHelperImpl
         
     }
     
+    /**
+     * XXX: This hard coded list must be replaced by standard prop handling methods..
+     * @see org.vortikal.repositoryimpl.RepositoryResourceHelper#getFixedCopyProperties(org.vortikal.repository.Resource, org.vortikal.security.Principal, java.lang.String)
+     */
     public PropertySet getFixedCopyProperties(Resource resource,
             Principal principal, String destUri)
             throws CloneNotSupportedException {
@@ -648,16 +657,25 @@ public class RepositoryResourceHelperImpl
         return fixedProps;
     }
 
-    private ResourceImpl newResource(ResourceImpl resource) {
-        // XXX: What to do about swapping old resource with new?
-        ResourceImpl newResource = new ResourceImpl(resource.getURI(), this.propertyManager, this.authorizationManager);
-        newResource.setID(resource.getID());
-        newResource.setAcl(resource.getAcl());
-        newResource.setLock(resource.getLock());
-        return newResource;
-
+    private Resource cloneResource(Resource resource) 
+        throws InternalRepositoryException {
+        try {
+            return (Resource) resource.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalRepositoryException(
+                    "Unable to clone resource '" + resource.getURI() + "'", e);
+        }
     }
-    
+
+    private ResourceImpl newResource(ResourceImpl resource) {
+        try {
+            return (ResourceImpl) resource.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalRepositoryException(
+                    "Unable to clone resource '" + resource.getURI() + "'", e);
+        }
+    }
+
     private void preserveDeadAndZombieProperties(ResourceImpl resource, ResourceImpl newResource) {
         for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
             Property prop = (Property) i.next();
@@ -838,9 +856,55 @@ public class RepositoryResourceHelperImpl
         return this.resourceTypeTree;
     }
 
-
     public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
 
+
+    
+    
+    public Resource evaluateChange(Resource originalResource, Resource newResource, boolean isContentChange) {
+
+        EvaluationContext ctx = new EvaluationContext(originalResource, newResource);
+        recursiveTreeEvaluation(ctx, isContentChange, this.resourceTypeTree.getRoot());
+        
+        // Check dead and zombie
+
+        return ctx.getNewResource();
+    }
+    
+    private void recursiveTreeEvaluation(EvaluationContext ctx, 
+            boolean isContentChange, ResourceTypeDefinition rt) {
+        // Check resource type assertions
+        // Set resource type
+        // For all prop defs, do evaluation
+        // Trigger child evaluation
+    }
+
+    
+    private class EvaluationContext {
+        private Resource originalResource;
+        private Resource suppliedResource; 
+        private Resource newResource;
+
+        public EvaluationContext(Resource originalResource,
+                Resource suppliedResource) {
+            this.originalResource = originalResource;
+            this.suppliedResource = suppliedResource;
+            newResource = cloneResource(originalResource);
+        }
+
+        public Resource getOriginalResource() {
+            return originalResource;
+        }
+
+        public Resource getSuppliedResource() {
+            return suppliedResource;
+        }
+
+        public Resource getNewResource() {
+            return newResource;
+        } 
+    }
+    
 }

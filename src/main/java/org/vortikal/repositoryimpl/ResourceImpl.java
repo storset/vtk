@@ -50,7 +50,7 @@ import org.vortikal.util.codec.MD5;
 import org.vortikal.util.repository.URIUtil;
 
 
-public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable {
+public class ResourceImpl extends PropertySetImpl implements Resource {
     
     private Acl acl;
     private Lock lock = null;
@@ -256,15 +256,16 @@ public class ResourceImpl extends PropertySetImpl implements Resource, Cloneable
 
     public Object clone() throws CloneNotSupportedException {
 
-        AclImpl acl = (AclImpl) this.acl.clone();
-        
         LockImpl lock = null;
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
 
         ResourceImpl clone = new ResourceImpl(this.uri, this.propertyManager, this.authorizationManager);
         clone.setID(this.id);
+
+        Acl acl = (Acl) this.acl.clone();
         clone.setAcl(acl);
+
         clone.setInheritedAcl(this.aclInherited);
         clone.setAclInheritedFrom(this.getAclInheritedFrom());
         clone.setLock(lock);

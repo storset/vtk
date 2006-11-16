@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -70,6 +70,7 @@ import org.vortikal.repositoryimpl.dao.ContentStore;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;
+import org.vortikal.repository.Acl;
 
 
 /**
@@ -863,48 +864,224 @@ public class RepositoryResourceHelperImpl
 
     
     
-    public Resource evaluateChange(Resource originalResource, Resource newResource, boolean isContentChange) {
+    public Resource evaluateChange(Resource originalResource, Resource suppliedResource,
+                                   Principal principal, boolean isContentChange, Date time) throws IOException {
 
-        EvaluationContext ctx = new EvaluationContext(originalResource, newResource);
-        recursiveTreeEvaluation(ctx, isContentChange, this.resourceTypeTree.getRoot());
+        EvaluationContext ctx = new EvaluationContext(originalResource, suppliedResource, principal);
+        recursiveTreeEvaluation(ctx, isContentChange, this.resourceTypeTree.getRoot(), time);
         
         // Check dead and zombie
-
+        ResourceImpl newResource = ctx.getNewResource();
+        for (Iterator i = suppliedResource.getProperties().iterator(); i.hasNext();) {
+            Property suppliedProp = (Property) i.next();
+            Property newProp = newResource.getProperty(suppliedProp.getNamespace(), suppliedProp.getName());
+            if (newProp == null) {
+                if (suppliedProp.getDefinition() == null) {
+                    // Dead property, preserve
+                    newResource.addProperty(suppliedProp);
+                } else if (newProp.getDefinition() != null) {
+                    // Check zombie prop:
+                }
+            }
+        }
         return ctx.getNewResource();
     }
     
-    private void recursiveTreeEvaluation(EvaluationContext ctx, 
-            boolean isContentChange, ResourceTypeDefinition rt) {
+    private boolean recursiveTreeEvaluation(EvaluationContext ctx, boolean isContentChange,
+                                            PrimaryResourceTypeDefinition rt, Date time) throws IOException {
+
         // Check resource type assertions
+        if (checkAssertions(rt, ctx.getNewResource(), ctx.getPrincipal())) {
+            return false;
+        }
+        
         // Set resource type
+        ctx.getNewResource().setResourceType(rt.getName());
+        
         // For all prop defs, do evaluation
+        PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
+        for (int i = 0; i < propertyDefinitions.length; i++) {
+            PropertyTypeDefinition def = propertyDefinitions[i];
+            evaluateManagedProperty(ctx, isContentChange, def, time);
+        }
+
+        // For all prop defs in mixin types, also do evaluation
+        MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
+        for (int i = 0; i < propertyDefinitions.length; i++) {
+            MixinResourceTypeDefinition mixinDef = mixinTypes[i];
+            PropertyTypeDefinition[] mixinPropDefs = mixinDef.getPropertyTypeDefinitions();
+            for (int j = 0; j < mixinPropDefs.length; j++) {
+                evaluateManagedProperty(ctx, isContentChange, mixinPropDefs[j], time);
+            }
+        }
+
         // Trigger child evaluation
+        List childTypes = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
+        for (Iterator i = childTypes.iterator(); i.hasNext();) {
+            PrimaryResourceTypeDefinition childDef = (PrimaryResourceTypeDefinition) i.next();
+            if (!recursiveTreeEvaluation(ctx, isContentChange, childDef, time)) {
+                continue;
+            }
+        }
+        return true;
+    }
+
+    
+
+
+    private void evaluateManagedProperty(EvaluationContext ctx, boolean isContentChange,
+                                         PropertyTypeDefinition propDef, Date time) throws IOException {
+        // For all properties, check if they are modified, deleted or created
+
+        // 1. Deleted property - if it exists in original, but not in new resource
+        //    - If dead, it will disappear
+        //    - If mandatory or principal not authorized, throw exception
+        //    - Otherwise mark as deleted prop
+        // 2. Changed prop value - if the values in original and new resource differs
+        //    - If dead, mark as dead prop
+        //    - If principal not authorized, throw exception
+        //    - Otherwise mark as allready set (not to be evaluated)
+        // 3. Unchanged value
+        //    - If dead, mark as dead
+        //    - Otherwise mark as to be evaluated
+        // 4. Added property
+        //    - If dead, mark as dead
+        //    - If principal not authorized, throw exception
+        //    - Otherwise mark as allready set (not to be evaluated)
+
+
+        ResourceImpl newResource = ctx.getNewResource();
+        Property suppliedProp = ctx.getSuppliedResource().getProperty(propDef);
+        Property originalProp = ctx.getOriginalResource().getProperty(propDef);
+
+        Property evaluatedProp = getEvaluatedProperty(ctx, isContentChange, propDef, time);
+        if (evaluatedProp != null) {
+            // Set any (content or property modification) evaluated properties first:
+            newResource.addProperty(evaluatedProp);
+        }
+
+        boolean includeProp = false;
+
+        // XXX: this is as far as I got, the stuff below is NOT sane:
+
+        if (originalProp != null && suppliedProp == null) {
+            // Deleted property, check if mandatory:
+            if (propDef.isMandatory()) {
+                throw new ConstraintViolationException("Property defined by " + propDef
+                                                       + " is mandatory for resource "
+                                                       + newResource);
+            }
+            this.authorizationManager.tmpAuthorizeForPropStore(
+                propDef.getProtectionLevel(), ctx.getPrincipal(), newResource.getURI());
+            includeProp = false;
+
+        } else if (originalProp == null && suppliedProp == null) {
+            // Never set
+            includeProp = false;
+
+        } else if (originalProp == null && suppliedProp != null) {
+            // Added
+            this.authorizationManager.tmpAuthorizeForPropStore(
+                propDef.getProtectionLevel(), ctx.getPrincipal(), newResource.getURI());
+            includeProp = true;
+
+        } else if (originalProp != null && suppliedProp != null && !originalProp.equals(suppliedProp)) {
+            // Changed prop value
+            this.authorizationManager.tmpAuthorizeForPropStore(
+                propDef.getProtectionLevel(), ctx.getPrincipal(), newResource.getURI());
+            includeProp = true;
+        }
+
+        if (includeProp) {
+            newResource.addProperty(suppliedProp);
+        }
+    }
+    
+
+
+    private Property getEvaluatedProperty(EvaluationContext ctx, boolean isContentChange,
+                                          PropertyTypeDefinition propDef, Date time) throws IOException {
+        Property evaluatedProp = null;
+        Resource suppliedResource = ctx.getSuppliedResource();
+        if (isContentChange) {
+            Content content = null;
+            ContentModificationPropertyEvaluator evaluator =
+                propDef.getContentModificationEvaluator();
+            if (evaluator != null) {
+                if (!ctx.getOriginalResource().isCollection()) {
+                    content = new ContentImpl(suppliedResource.getURI(), this.contentStore,
+                                              this.contentRepresentationRegistry);
+                }
+                evaluatedProp = this.propertyManager.createProperty(
+                    suppliedResource.getResourceTypeDefinition().getNamespace(), propDef.getName());
+            
+                boolean evaluated =
+                    evaluator.contentModification(ctx.getPrincipal(), evaluatedProp,
+                                                  suppliedResource, content, time);
+                if (!evaluated) {
+                    evaluatedProp = null;
+                }
+            }
+        } else {
+            PropertiesModificationPropertyEvaluator evaluator = 
+                propDef.getPropertiesModificationEvaluator();
+
+            if (evaluator != null) {
+                evaluatedProp = this.propertyManager.createProperty(
+                    suppliedResource.getResourceTypeDefinition().getNamespace(), propDef.getName());
+                boolean evaluated =
+                    evaluator.propertiesModification(ctx.getPrincipal(), evaluatedProp,
+                                                     suppliedResource, time);
+                if (!evaluated) {
+                    evaluatedProp = null;
+                }
+            }
+        }
+        return evaluatedProp;
     }
 
     
     private class EvaluationContext {
         private Resource originalResource;
         private Resource suppliedResource; 
-        private Resource newResource;
+        private Principal principal;
+        private ResourceImpl newResource;
 
         public EvaluationContext(Resource originalResource,
-                Resource suppliedResource) {
+                  Resource suppliedResource, Principal principal) throws InternalRepositoryException {
+                
             this.originalResource = originalResource;
             this.suppliedResource = suppliedResource;
-            newResource = cloneResource(originalResource);
+            this.principal = principal;
+
+            // Create empty new resource: XXX: how do we create empty resources?
+            newResource = new ResourceImpl(originalResource.getURI(),
+                                           propertyManager, authorizationManager);
+            try {
+                newResource.setAcl((Acl) originalResource.getAcl().clone());
+                //newResource.setLock((Lock) originalResource.getLock().clone());
+            } catch (CloneNotSupportedException e) {
+                throw new InternalRepositoryException(
+                    "Unable to clone ACL " + originalResource.getAcl(), e);
+            }
         }
 
         public Resource getOriginalResource() {
-            return originalResource;
+            return this.originalResource;
         }
 
         public Resource getSuppliedResource() {
-            return suppliedResource;
+            return this.suppliedResource;
         }
 
-        public Resource getNewResource() {
-            return newResource;
+        public ResourceImpl getNewResource() {
+            return this.newResource;
         } 
+        
+        public Principal getPrincipal() {
+            return this.principal;
+        }
+        
     }
     
 }

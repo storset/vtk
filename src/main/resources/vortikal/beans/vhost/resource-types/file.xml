@@ -71,7 +71,7 @@
     <property name="contentModificationEvaluator" ref="contentLengthEvaluator"/>
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
-        <constructor-arg type="java.lang.Long">
+        <constructor-arg type="long">
           <value>0</value>
         </constructor-arg>
       </bean>

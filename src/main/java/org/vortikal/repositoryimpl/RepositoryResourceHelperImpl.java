@@ -46,6 +46,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
+import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.InternalRepositoryException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -848,9 +849,6 @@ public class RepositoryResourceHelperImpl
         this.propertyManager = propertyManager;
     }
 
-
-    
-    
     public Resource evaluateChange(ResourceImpl originalResource, ResourceImpl suppliedResource,
                                    Principal principal, boolean isContentChange, Date time) throws IOException {
 
@@ -862,12 +860,31 @@ public class RepositoryResourceHelperImpl
         for (Iterator i = suppliedResource.getProperties().iterator(); i.hasNext();) {
             Property suppliedProp = (Property) i.next();
             Property newProp = newResource.getProperty(suppliedProp.getNamespace(), suppliedProp.getName());
-            if (newProp == null) {
-                if (suppliedProp.getDefinition() == null) {
+           
+            if (newProp != null) {
+                continue;
+            }
+
+            
+            
+            if (suppliedProp.getDefinition() == null) {
                     // Dead property, preserve
                     newResource.addProperty(suppliedProp);
-                } else if (newProp.getDefinition() != null) {
-                    // Check zombie prop:
+            } else {
+                ResourceTypeDefinition[] rts = 
+                    resourceTypeTree.getPrimaryResourceTypesForPropDef(suppliedProp.getDefinition());
+
+                boolean isOfType = false;
+                for (int j = 0; j < rts.length; j++) {
+                    ResourceTypeDefinition definition = rts[j];
+                    if (newResource.isOfType(definition)) {
+                        isOfType = true;
+                        break;
+                    }
+                }
+                if (!isOfType) {
+                    // Zombie prop, preserve
+                    newResource.addProperty(suppliedProp);
                 }
             }
         }
@@ -913,116 +930,81 @@ public class RepositoryResourceHelperImpl
         return true;
     }
 
-    
-
-
     private void evaluateManagedProperty(EvaluationContext ctx, boolean isContentChange,
-                                         PropertyTypeDefinition propDef, Date time) throws IOException {
-        // For all properties, check if they are modified, deleted or created
-
-        // 1. Deleted property - if it exists in original, but not in new resource
-        //    - If dead, it will disappear
-        //    - If mandatory or principal not authorized, throw exception
-        //    - Otherwise mark as deleted prop
-        // 2. Changed prop value - if the values in original and new resource differs
-        //    - If dead, mark as dead prop
-        //    - If principal not authorized, throw exception
-        //    - Otherwise mark as allready set (not to be evaluated)
-        // 3. Unchanged value
-        //    - If dead, mark as dead
-        //    - Otherwise mark as to be evaluated
-        // 4. Added property
-        //    - If dead, mark as dead
-        //    - If principal not authorized, throw exception
-        //    - Otherwise mark as allready set (not to be evaluated)
-
-
-        ResourceImpl newResource = ctx.getNewResource();
-        Property suppliedProp = ctx.getSuppliedResource().getProperty(propDef);
-        Property originalProp = ctx.getOriginalResource().getProperty(propDef);
+                                         PropertyTypeDefinition propDef, Date time) {
 
         Property evaluatedProp = getEvaluatedProperty(ctx, isContentChange, propDef, time);
         if (evaluatedProp != null) {
-            // Set any (content or property modification) evaluated properties first:
-            newResource.addProperty(evaluatedProp);
-        }
-
-        boolean includeProp = false;
-
-        // XXX: this is as far as I got, the stuff below is NOT sane:
-
-        if (originalProp != null && suppliedProp == null) {
-            // Deleted property, check if mandatory:
-            if (propDef.isMandatory()) {
-                throw new ConstraintViolationException("Property defined by " + propDef
-                                                       + " is mandatory for resource "
-                                                       + newResource);
-            }
-            this.authorizationManager.tmpAuthorizeForPropStore(
-                propDef.getProtectionLevel(), ctx.getPrincipal(), newResource.getURI());
-            includeProp = false;
-
-        } else if (originalProp == null && suppliedProp == null) {
-            // Never set
-            includeProp = false;
-
-        } else if (originalProp == null && suppliedProp != null) {
-            // Added
-            this.authorizationManager.tmpAuthorizeForPropStore(
-                propDef.getProtectionLevel(), ctx.getPrincipal(), newResource.getURI());
-            includeProp = true;
-
-        } else if (originalProp != null && suppliedProp != null && !originalProp.equals(suppliedProp)) {
-            // Changed prop value
-            this.authorizationManager.tmpAuthorizeForPropStore(
-                propDef.getProtectionLevel(), ctx.getPrincipal(), newResource.getURI());
-            includeProp = true;
-        }
-
-        if (includeProp) {
-            newResource.addProperty(suppliedProp);
+            ctx.getNewResource().addProperty(evaluatedProp);
+        } else if (propDef.isMandatory()) {
+            throw new InternalRepositoryException("Property " + propDef + "is " +
+                    "mandatory, but isn't set for resource '" + ctx.getSuppliedResource() + "'");
         }
     }
     
-
-
     private Property getEvaluatedProperty(EvaluationContext ctx, boolean isContentChange,
-                                          PropertyTypeDefinition propDef, Date time) throws IOException {
+                                          PropertyTypeDefinition propDef, Date time) {
+        Property evaluatedProp = null;
+        if (isContentChange) {
+            evaluatedProp = evaluateContentChange(ctx, propDef, time);
+        } else {
+            evaluatedProp = evaluatePropertiesChange(ctx, propDef, time);
+        }
+        return evaluatedProp;
+    }
+
+    private Property evaluateContentChange(EvaluationContext ctx, 
+            PropertyTypeDefinition propDef, Date time) {
         Property evaluatedProp = null;
         Resource suppliedResource = ctx.getSuppliedResource();
-        if (isContentChange) {
-            Content content = null;
-            ContentModificationPropertyEvaluator evaluator =
-                propDef.getContentModificationEvaluator();
-            if (evaluator != null) {
-                if (!ctx.getOriginalResource().isCollection()) {
-                    content = new ContentImpl(suppliedResource.getURI(), this.contentStore,
-                                              this.contentRepresentationRegistry);
-                }
-                evaluatedProp = this.propertyManager.createProperty(
-                    suppliedResource.getResourceTypeDefinition().getNamespace(), propDef.getName());
-            
-                boolean evaluated =
-                    evaluator.contentModification(ctx.getPrincipal(), evaluatedProp,
-                                                  suppliedResource, content, time);
-                if (!evaluated) {
-                    evaluatedProp = null;
-                }
-            }
-        } else {
-            PropertiesModificationPropertyEvaluator evaluator = 
-                propDef.getPropertiesModificationEvaluator();
+        Content content = null;
 
-            if (evaluator != null) {
-                evaluatedProp = this.propertyManager.createProperty(
-                    suppliedResource.getResourceTypeDefinition().getNamespace(), propDef.getName());
-                boolean evaluated =
-                    evaluator.propertiesModification(ctx.getPrincipal(), evaluatedProp,
-                                                     suppliedResource, time);
-                if (!evaluated) {
-                    evaluatedProp = null;
-                }
+        ContentModificationPropertyEvaluator evaluator =
+            propDef.getContentModificationEvaluator();
+        
+        if (evaluator != null) {
+            if (!ctx.getOriginalResource().isCollection()) {
+                content = new ContentImpl(suppliedResource.getURI(), this.contentStore,
+                                          this.contentRepresentationRegistry);
             }
+            // Use existing value if it exists..
+            evaluatedProp = this.propertyManager.createProperty(
+                    propDef.getNamespace(), propDef.getName());
+        
+            boolean evaluated =
+                evaluator.contentModification(ctx.getPrincipal(), evaluatedProp,
+                        suppliedResource, content, time);
+            if (!evaluated) {
+                evaluatedProp = null;
+            }
+        }
+        return evaluatedProp;
+    }
+
+    private Property evaluatePropertiesChange(EvaluationContext ctx, 
+            PropertyTypeDefinition propDef, Date time) {
+
+        // On propchange we have to do contentchange on all props not having a 
+        // previous value and not having a propchangeevaluator
+        // XXX: that's what fixes our immediate problems?
+        
+        Property evaluatedProp = null;
+        Resource suppliedResource = ctx.getSuppliedResource();
+        
+        PropertiesModificationPropertyEvaluator evaluator = 
+            propDef.getPropertiesModificationEvaluator();
+
+        if (evaluator != null) {
+            evaluatedProp = this.propertyManager.createProperty(
+                suppliedResource.getResourceTypeDefinition().getNamespace(), propDef.getName());
+            boolean evaluated =
+                evaluator.propertiesModification(ctx.getPrincipal(), evaluatedProp,
+                                                 suppliedResource, time);
+            if (!evaluated) {
+                evaluatedProp = null;
+            }
+        } else if (ctx.getOriginalResource().getProperty(propDef) == null) {
+            
         }
         return evaluatedProp;
     }
@@ -1041,7 +1023,6 @@ public class RepositoryResourceHelperImpl
             this.suppliedResource = suppliedResource;
             this.principal = principal;
 
-            // Create empty new resource: XXX: how do we create empty resources?
             try {
                 newResource = originalResource.cloneWithoutProperties();
             } catch (CloneNotSupportedException e) {

@@ -54,18 +54,4 @@ public class ContentTypeEvaluator implements CreatePropertyEvaluator {
         return true;
     }
 
-    
-//  if ((resource.getContentType() != null)
-//  && ContentTypeHelper.isTextContentType(resource.getContentType()) &&
-//  (dto.getCharacterEncoding() != null)) {
-//  try {
-//      /* Force checking of encoding */
-//      new String(new byte[0], dto.getCharacterEncoding());
-//
-//      resource.setCharacterEncoding(dto.getCharacterEncoding());
-//  } catch (java.io.UnsupportedEncodingException e) {
-//      // FIXME: Ignore unsupported character encodings?
-//  }
-//}
-
 }

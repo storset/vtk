@@ -111,4 +111,15 @@ public interface ResourceTypeTree {
     public List getResourceTypeDescendantNames(String resourceTypeName);
 
     public Namespace getNamespace(String namespaceUrl);
+
+    /** 
+     * Since a mixin might be included in several primary resource types, this
+     * method returns an array.
+     * 
+     * @return an array containing the <code>PrimaryResourceTypeDefinition</code>s that define
+     * this property, or an empty array if none 
+     */
+    public ResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
+            PropertyTypeDefinition definition);
+    
 }

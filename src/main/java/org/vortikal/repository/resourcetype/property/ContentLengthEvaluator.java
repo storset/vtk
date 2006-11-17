@@ -42,8 +42,7 @@ import org.vortikal.security.Principal;
 /**
  * Evaluate contentLength.
  */
-public class ContentLengthEvaluator implements CreatePropertyEvaluator, 
-                                       ContentModificationPropertyEvaluator {
+public class ContentLengthEvaluator implements ContentModificationPropertyEvaluator {
 
     public boolean contentModification(Principal principal, 
                                        Property property, 
@@ -68,21 +67,5 @@ public class ContentLengthEvaluator implements CreatePropertyEvaluator,
         
         return true;
     }
-
-    public boolean create(Principal principal, 
-                          Property property, 
-                          PropertySet ancestorPropertySet, 
-                          boolean isCollection, Date time)
-            throws PropertyEvaluationException {
-        
-        if (isCollection) {
-            throw new PropertyEvaluationException("Content length cannot be evaluated for collections.");
-        }
-        
-        property.setLongValue(0);
-        
-        return true;
-    }
-    
 
 }

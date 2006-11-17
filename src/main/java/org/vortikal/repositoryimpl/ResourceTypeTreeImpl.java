@@ -539,6 +539,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 return new PrimaryResourceTypeDefinition[0];
             return children;
     }
+
+    public ResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
+            PropertyTypeDefinition definition) {
+        throw new Error("To be implemented by GAP");
+    }
         
 
 }

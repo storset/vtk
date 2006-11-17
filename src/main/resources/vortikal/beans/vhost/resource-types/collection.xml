@@ -28,6 +28,7 @@
     </property>
   </bean>
   
+  <!-- XXX: No allowed values! -->
   <bean id="typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="type"/>
     <property name="type" ref="TYPE_STRING"/>

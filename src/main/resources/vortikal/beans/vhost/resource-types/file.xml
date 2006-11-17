@@ -67,9 +67,15 @@
     <property name="name" value="contentLength" />
     <property name="type" ref="TYPE_LONG" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="false" />
-    <property name="createEvaluator" ref="contentLengthEvaluator"/>
+    <property name="mandatory" value="true" />
     <property name="contentModificationEvaluator" ref="contentLengthEvaluator"/>
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.Long">
+          <value>0</value>
+        </constructor-arg>
+      </bean>
+    </property>
   </bean>
   
   <bean id="contentLengthEvaluator" class="org.vortikal.repository.resourcetype.property.ContentLengthEvaluator"/>

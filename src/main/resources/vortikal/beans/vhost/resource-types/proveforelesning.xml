@@ -15,7 +15,7 @@
                 <ref bean="proveforelesningDoktorandTittelPropDef" />
                 <ref bean="proveforelesningDoktorandFornavnPropDef" />
                 <ref bean="proveforelesningDoktorandEtternavnPropDef" />
-                <ref bean="proveforelesningTilhorighetPropDef" />
+                <!-- ref bean="proveforelesningTilhorighetPropDef" / -->
                 <ref bean="proveforelesningEmnePropDef" />
                 <ref bean="proveforelesningStarttidspunktPropDef" />
                 <ref bean="proveforelesningSluttidspunktPropDef" />
@@ -81,7 +81,7 @@
     </bean>
 
     
-    <bean id="proveforelesningTilhorighetPropDef"
+    <!-- bean id="proveforelesningTilhorighetPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tilhorighet" />
         <property name="type" ref="TYPE_STRING" />
@@ -92,7 +92,7 @@
     
     <bean id="proveforelesningTilhorighetEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/proveforelesning/tilhorighet" />
-    </bean>
+    </bean -->
     
     
     <bean id="proveforelesningEmnePropDef"

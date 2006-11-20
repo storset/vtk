@@ -12,9 +12,9 @@
         <property name="parentTypeDefinition" ref="managedXmlResource" />
         <property name="propertyTypeDefinitions">
             <list>
-                <ref bean="nyhetDatoPropDef" />
                 <ref bean="nyhetTittelPropDef" />
                 <ref bean="nyhetIngressPropDef" />
+                <ref bean="nyhetDatoPropDef" />
             </list>
         </property>
         <property name="assertions">
@@ -37,19 +37,6 @@
     </bean>
     
         
-    <bean id="nyhetDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="dato" />
-        <property name="type" ref="TYPE_DATE" />
-        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-        <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="nyhetDatoEvaluator" />
-    </bean>
-        
-    <bean id="nyhetDatoEvaluator" parent="abstractXPathEvaluator">
-      <property name="expression" value="concat(/nyhet/dato/dag, '.', /nyhet/dato/maaned, '.', /nyhet/dato/aar, ' ', /nyhet/dato/time, ':', /nyhet/dato/minutt)"  />
-    </bean>
-
-    
     <bean id="nyhetTittelPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tittel" />
@@ -75,6 +62,18 @@
     
     <bean id="nyhetIngressEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/nyhet/ingress" />
+    </bean>
+
+    <bean id="nyhetDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="dato" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="nyhetDatoEvaluator" />
+    </bean>
+        
+    <bean id="nyhetDatoEvaluator" parent="abstractXPathEvaluator">
+      <property name="expression" value="concat(/nyhet/dato/dag, '.', /nyhet/dato/maaned, '.', /nyhet/dato/aar, ' ', /nyhet/dato/time, ':', /nyhet/dato/minutt)"  />
     </bean>
     
 </beans>

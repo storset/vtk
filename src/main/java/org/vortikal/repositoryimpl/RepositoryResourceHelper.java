@@ -57,7 +57,7 @@ public interface RepositoryResourceHelper {
             AuthorizationException, CloneNotSupportedException, IOException;
 
     public ResourceImpl contentModification(ResourceImpl resource,
-            Principal principal);
+            Principal principal) throws IOException;
 
     public PropertySet getFixedCopyProperties(Resource resource,
            Principal principal, String destUri) throws CloneNotSupportedException;

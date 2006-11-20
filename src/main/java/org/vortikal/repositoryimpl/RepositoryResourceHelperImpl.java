@@ -35,18 +35,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.InternalRepositoryException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -62,7 +59,6 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.content.ContentImpl;
@@ -71,7 +67,6 @@ import org.vortikal.repositoryimpl.dao.ContentStore;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;
-import org.vortikal.repository.Acl;
 
 
 /**
@@ -92,35 +87,31 @@ public class RepositoryResourceHelperImpl
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
 
         ResourceImpl resource = new ResourceImpl(uri, this.propertyManager, this.authorizationManager);
-        PrimaryResourceTypeDefinition rt = create(principal, resource, 
+        create(principal, resource, 
                 new Date(), collection, this.resourceTypeTree.getRoot());
 
-        if (logger.isDebugEnabled())
-            logger.debug("Found resource type definition: " 
-                    + rt + " for resource created at '" + uri + "'");
-        
-        resource.setResourceType(rt.getName());
-        
         if (collection)
             resource.setChildURIs(new String[]{});
         
         return resource;
     }
 
-
-    private PrimaryResourceTypeDefinition create(Principal principal, 
+    private boolean create(Principal principal, 
             ResourceImpl newResource, Date time, boolean isCollection, 
             PrimaryResourceTypeDefinition rt) {
 
         // Checking if resource type matches
-        if (!checkAssertions(rt, newResource, principal)) return null;
+        if (!checkAssertions(rt, newResource, principal)) 
+            return false;
+        
+        newResource.setResourceType(rt.getName());
         
         List newProps = new ArrayList();
 
         // Evaluating resource type properties
         PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
         
-        evalCreate(principal, newResource, time, isCollection, rt, def, newProps);
+        evalCreateProperty(principal, newResource, time, isCollection, rt, def, newProps);
 
         // Evaluating mixin resource type properties
         MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
@@ -128,7 +119,7 @@ public class RepositoryResourceHelperImpl
         for (int i = 0; i < mixinTypes.length; i++) {
 
             PropertyTypeDefinition[] mixinDefs = mixinTypes[i].getPropertyTypeDefinitions();
-            evalCreate(principal, newResource, time, isCollection, mixinTypes[i],
+            evalCreateProperty(principal, newResource, time, isCollection, mixinTypes[i],
                        mixinDefs, newProps);
         }
 
@@ -143,17 +134,13 @@ public class RepositoryResourceHelperImpl
         List children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
         for (Iterator iterator = children.iterator(); iterator.hasNext();) {
             PrimaryResourceTypeDefinition child = (PrimaryResourceTypeDefinition) iterator.next();
-            PrimaryResourceTypeDefinition resourceType =
-                create(principal, newResource, time, isCollection, child);
-            if (resourceType != null) {
-                return resourceType;
-            }
+            if (create(principal, newResource, time, isCollection, child))
+                break;
         }
-
-        return rt;
+        return true;
     }
     
-    private void evalCreate(Principal principal, ResourceImpl newResource,
+    private void evalCreateProperty(Principal principal, ResourceImpl newResource,
                             Date time, boolean isCollection, ResourceTypeDefinition rt,
                             PropertyTypeDefinition[] definitions, List newProps) {
         for (int i = 0; i < definitions.length; i++) {
@@ -172,7 +159,7 @@ public class RepositoryResourceHelperImpl
             }
 
             if (propertyDef.isMandatory() && !((PropertyImpl) prop).isValueInitialized())
-                throw new Error("Property  " + prop + " not initialized");
+                throw new InternalRepositoryException("Property  " + prop + " not initialized");
 
             if (prop.isValueInitialized())
                 newProps.add(prop);
@@ -180,418 +167,25 @@ public class RepositoryResourceHelperImpl
     }
     
 
-    /**
-     * Evaluates and validates properties on a resource before
-     * storing.
-     * 
-     * <p>Properties are one of:
-     * <ul>
-     *   <li>dead
-     *   <li>user created/changed
-     *   <li>deleted
-     *   <li>to be evaluated
-     *   <li>zombie
-     *
-     * @param originalResource - the original resource
-     * @param principal - the principal performing the store operation
-     * @param newResource - the user-supplied resource
-     * @return the resulting resource after property evaluation
-     */
     public ResourceImpl storeProperties(ResourceImpl originalResource, Principal principal,
-                                        Resource newResource)
-        throws AuthenticationException, AuthorizationException,
-        InternalRepositoryException, IOException {
+            Resource suppliedResource)
+    throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
-        String uri = originalResource.getURI();
-        
-        // For all properties, check if they are modified, deleted or created
+        return (ResourceImpl) evaluateChange(originalResource, 
+                (ResourceImpl)suppliedResource, principal, false, new Date());
 
-        // 1. Deleted property - if it exists in original, but not in new resource
-        //    - If dead, it will disappear
-        //    - If mandatory or principal not authorized, throw exception
-        //    - Otherwise mark as deleted prop
-        // 2. Changed prop value - if the values in original and new resource differs
-        //    - If dead, mark as dead prop
-        //    - If principal not authorized, throw exception
-        //    - Otherwise mark as allready set (not to be evaluated)
-        // 3. Unchanged value
-        //    - If dead, mark as dead
-        //    - Otherwise mark as to be evaluated
-        // 4. Added property
-        //    - If dead, mark as dead
-        //    - If principal not authorized, throw exception
-        //    - Otherwise mark as allready set (not to be evaluated)
-        
-        Map alreadySetProperties = new HashMap();
-        Map deletedProps = new HashMap();
-        List deadProperties = new ArrayList();
-        Map toEvaluateProps = new HashMap();
-
-        // Looping over already original resource properties
-
-        for (Iterator iter = originalResource.getProperties().iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
-            Property userProp = newResource.getProperty(prop.getNamespace(), prop.getName());
-
-            if (userProp == null) {
-                // Deleted
-                if (prop.getDefinition() != null) {
-                    if (prop.getDefinition().isMandatory())
-                        throw new ConstraintViolationException(
-                            "Mandatory property deleted by user: " + prop);
-                    // check if allowed
-                    this.authorizationManager.tmpAuthorizeForPropStore(prop.getDefinition().getProtectionLevel(), principal, uri);
-                    // It will be removed
-                    addToPropsMap(deletedProps, prop);
-                } 
-                // Otherwise dead - ok
-            } else if (!prop.equals(userProp)) {
-                // Changed value
-                if (prop.getDefinition() == null) {
-                    // Dead
-                    deadProperties.add(userProp);
-                } else {
-                    // check if allowed
-                    this.authorizationManager.tmpAuthorizeForPropStore(prop.getDefinition().getProtectionLevel(), principal, uri);
-                    addToPropsMap(alreadySetProperties, userProp);
-                }
-            } else if (prop.getDefinition() == null) {
-                // Dead and un-changed.
-                deadProperties.add(userProp);
-            } else
-                // Otherwise unchanged - to be evaluated
-                addToPropsMap(toEvaluateProps, prop);
-                
-        }
-        
-        // Looping over new resource properties - to find added props
-        
-        for (Iterator iter = newResource.getProperties().iterator(); iter.hasNext();) {
-            Property userProp = (Property) iter.next();
-            Property prop = originalResource.getProperty(userProp.getNamespace(),
-                                                 userProp.getName());
-            
-            if (prop != null)
-                continue;
-
-            // Otherwise added
-            if (!userProp.isValueInitialized())
-                throw new ConstraintViolationException(
-                        "Property " + userProp + " is not initialized");
-
-            if (userProp.getDefinition() == null) {
-                // Dead
-                deadProperties.add(userProp);
-            } else {
-                // check if allowed
-                this.authorizationManager.tmpAuthorizeForPropStore(userProp.getDefinition().getProtectionLevel(), principal, uri);
-                addToPropsMap(alreadySetProperties, userProp);
-            }
-        }
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("About to evaluate resource type for resource " + newResource
-                         + ", alreadySetProps = " + alreadySetProperties
-                         + ", deletedProps = " + deletedProps
-                         + ", deadProps = " + deadProperties
-                         + ", toEvaluateProps = " + toEvaluateProps);
-        }
-
-        List evaluatedProps = new ArrayList();
-        ResourceImpl evaluatedResource = newResource(originalResource);
-        
-        // Evaluate resource tree, for all live props not overridden, evaluate
-        propertiesModification(principal, 
-                evaluatedResource, 
-                toEvaluateProps, 
-                evaluatedProps,
-                new Date(), 
-                alreadySetProperties,
-                deletedProps, 
-                this.resourceTypeTree.getRoot());
-
-        
-        // Remaining props are legacy props to be kept
-        for (Iterator iter = toEvaluateProps.values().iterator(); iter.hasNext();) {
-            Map map = (Map)iter.next();
-            for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
-                Property prop = (Property) iterator.next();
-                if (!evaluatedProps.contains(prop))
-                    evaluatedResource.addProperty(prop);
-            }
-        }
-        
-        for (Iterator iter = deadProperties.iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
-            if (logger.isDebugEnabled()) 
-                logger.debug("Adding dead property " + prop + "to resource: " + evaluatedResource);
-            evaluatedResource.addProperty(prop);
-        }
-        
-        for (Iterator iter = alreadySetProperties.values().iterator(); iter.hasNext();) {
-            Map map = (Map) iter.next();
-            for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
-                Property prop = (Property) iterator.next();
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Adding property " + prop + " to resource " + evaluatedResource);
-                evaluatedResource.addProperty(prop);
-            }
-        }
-       
-        // Check if resource has become a more specific or different branch of resource, requiring content evaluation
-        if (!originalResource.isOfType(evaluatedResource.getResourceTypeDefinition())) {
-            evaluatedResource = doContentReevaluation(evaluatedResource, principal);
-        }
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning evaluated resource: " + evaluatedResource
-                         + " having properties: " + evaluatedResource.getProperties());
-        }
-
-        return evaluatedResource;
-    }
-    
-    /**
-     * Wrapper for doing content evaluation during properties modification event.
-     * Maps out properties which MUST NOT be content evaluated.
-     * 
-     * This is an issue for "content evaluating" properties which are not based
-     * entirely on the content. We do not have any mechanisms to detect these,
-     * so currently the known list of top level properties is mapped out.
-     * 
-     * Beware when modelling properties :)
-     */
-    private ResourceImpl doContentReevaluation(ResourceImpl resource, Principal principal) {
-        
-        ResourceImpl newResource = contentModification(resource, principal);
-        
-        // Properties which cannot be contentEvaluated on a properties modification
-        Set specialProps = PropertyType.NOT_REPRODUCABLE_CONTENT_PROPERTIES_SET;
-        
-        for (Iterator iterator = specialProps.iterator(); iterator.hasNext();) {
-            String name = (String) iterator.next();
-            newResource.addProperty(resource.getProperty(Namespace.DEFAULT_NAMESPACE, name));
-        }
-        
-        return newResource;
-    } 
-    
-    private boolean propertiesModification(
-        Principal principal, ResourceImpl newResource, Map toEvaluateProps, 
-        List evaluatedProps, Date time, Map alreadySetProperties, Map deletedProps, 
-        PrimaryResourceTypeDefinition rt) {
-
-        // Checking if resource type matches
-        if (!checkAssertions(rt, newResource, principal)) 
-            return false;
-
-        newResource.setResourceType(rt.getName());
-
-        // Evaluating primary resource type properties
-        List propertiesToAdd = new ArrayList();
-        PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
-        propertiesToAdd.addAll(
-                evalPropertiesModification(principal, newResource, toEvaluateProps, evaluatedProps, 
-                        time, alreadySetProperties, deletedProps, rt, def));
-        
-        // Evaluating mixin resource type properties
-        MixinResourceTypeDefinition[] mixinTypes =
-            this.resourceTypeTree.getMixinTypes(rt);
-        
-
-        for (int i = 0; i < mixinTypes.length; i++) {
-            PropertyTypeDefinition[] mixinDef = mixinTypes[i].getPropertyTypeDefinitions();
-            propertiesToAdd.addAll(
-                    evalPropertiesModification(principal, 
-                            newResource, 
-                            toEvaluateProps, 
-                            evaluatedProps,
-                            time,
-                            alreadySetProperties,
-                            deletedProps, 
-                            mixinTypes[i],
-                            mixinDef));
-        }
-
-        // Check validator...
-//        for (Iterator iter = propertiesToAdd.iterator(); iter.hasNext();) {
-//            Property prop = (Property) iter.next();
-//            PropertyValidator validator = prop.getDefinition().getValidator();
-//            if (validator != null) {
-//                validator.validate(principal, newResource, prop);                
-//            }
-//        }
-        
-        for (Iterator iter = propertiesToAdd.iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
-            newResource.addProperty(prop);
-        }
-
-        // Checking child resource types by delegating
-        List children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
-        for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-            PrimaryResourceTypeDefinition child = (PrimaryResourceTypeDefinition) iterator.next();
-
-            boolean match = 
-                propertiesModification(principal, 
-                                       newResource,
-                                       toEvaluateProps,
-                                       evaluatedProps,
-                                       time,
-                                       alreadySetProperties,
-                                       deletedProps,
-                                       child);
-            if (match)
-                break;
-        }
-
-        return true;
-    }
-    
-
-    private List evalPropertiesModification(
-        Principal principal, ResourceImpl newResource, Map toEvaluateProps, List evaluatedProps,
-        Date time, Map alreadySetProperties, Map deletedProps, ResourceTypeDefinition rt,
-        PropertyTypeDefinition[] propertyDefs) {
-
-        List newProps = new ArrayList();
-        
-        if (logger.isDebugEnabled())
-            logger.debug("Evaluating properties modification for resource "
-                         + newResource + ", resource type " + rt);
-
-        for (int i = 0; i < propertyDefs.length; i++) {
-            if (logger.isDebugEnabled())
-                logger.debug("Evaluating properties modification for resource "
-                             + newResource + ", resource type " + rt
-                             + ", property " + propertyDefs[i]);
-
-            PropertyTypeDefinition propertyDef = propertyDefs[i];
-            PropertyValidator validator = propertyDef.getValidator();
-
-            // If property already set, don't evaluate
-            Map propsMap = (Map) alreadySetProperties.get(rt.getNamespace());
-            if (propsMap != null) {
-                Property p = (Property) propsMap.get(propertyDef.getName());
-                if (p != null) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Property " + p 
-                                + " already set, will not evaluate");
-                    
-                    // Validate 
-                    if (validator != null) 
-                        validator.validate(principal, newResource, p);
-                    
-                    newProps.add(p);
-                    propsMap.remove(propertyDef.getName());
-                    continue;
-                }
-            }
-            // If prop deleted, don't evaluate
-            propsMap = (Map) deletedProps.get(rt.getNamespace());
-            if (propsMap != null) {
-                Property p = (Property) propsMap.get(propertyDef.getName());
-                if (p != null) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Property " + p + " was deleted, will not evaluate");
-                    continue;
-                }
-            }
-
-            // Not user edited, evaluate
-            if (logger.isDebugEnabled())
-                logger.debug("Property " + propertyDef + " not user edited, evaluating");
-
-            Property prop = null;
-            propsMap = (Map) toEvaluateProps.get(rt.getNamespace());
-            if (propsMap != null) {
-                prop = (Property) propsMap.get(propertyDef.getName());
-                evaluatedProps.add(prop);
-            }
-            PropertiesModificationPropertyEvaluator evaluator =
-                propertyDef.getPropertiesModificationEvaluator();
-
-            boolean addProperty = false;
-
-            if (evaluator != null) {
-                if (prop == null) 
-                    prop = this.propertyManager.createProperty(rt.getNamespace(), propertyDef.getName());
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Created property " + prop + ", will evaluate using "
-                                 + evaluator);
-                
-                if (evaluator.propertiesModification(principal, prop, newResource, time)) {
-                    addProperty = true;
-                    if (logger.isDebugEnabled())
-                        logger.debug("Property evaluated for properties modification ["
-                                     + rt.getName() + "]: " + prop
-                                     + " using evaluator " + evaluator);
-                } else if (propertyDef.isMandatory()) {
-                    Value defaultValue = propertyDef.getDefaultValue();
-                    if (defaultValue == null)
-                        throw new Error("Property " + propertyDef + "is " +
-                                "mandatory, but evaluator returned false");
-                    addProperty = true;
-                    prop.setValue(defaultValue);
-
-                }
-                
-                // Validate
-                if (validator != null) {
-                    validator.validate(principal, newResource, prop);
-                }
-                
-            } else if (prop != null) {
-                if (logger.isDebugEnabled()) 
-                    logger.debug("No properties modification evaluator for property " + prop
-                                 + ", but it already existed on resource");
-                addProperty = true;
-            } else if (logger.isDebugEnabled())
-                logger.debug("No properties modification evaluator for property "
-                        + propertyDef + ", and it did not already exist, not adding");
-                
-
-            if (!addProperty && propertyDef.isMandatory())
-                throw new ConstraintViolationException(
-                    "Property defined by " + propertyDef
-                    + " is mandatory for resource type " + rt);
-            
-            if (addProperty)
-                newProps.add(prop);
-        }
-        
-        return newProps;
-    }
+    }    
     
     public ResourceImpl contentModification(ResourceImpl resource,
-            Principal principal) {
-        
-        ResourceImpl newResource = newResource(resource);
-        ContentImpl content = null;
-        
-        if (!resource.isCollection())
-            content = new ContentImpl(resource.getURI(), this.contentStore,
-                    this.contentRepresentationRegistry);
+            Principal principal) throws IOException {
 
-        ResourceTypeDefinition rt = contentModification(principal, newResource,
-                resource, content, new Date(), this.resourceTypeTree.getRoot());
-        
-        if (logger.isDebugEnabled())
-            logger.debug("Setting new resource type: '" + rt.getName()
-                         + "' on resource " + resource);
-
-        newResource.setResourceType(rt.getName());
-
-        preserveDeadAndZombieProperties(resource, newResource);
-        return newResource;
-        
+        return (ResourceImpl)  
+            evaluateChange(resource, null, principal, true, new Date());
+    
     }
     
     /**
      * XXX: This hard coded list must be replaced by standard prop handling methods..
-     * @see org.vortikal.repositoryimpl.RepositoryResourceHelper#getFixedCopyProperties(org.vortikal.repository.Resource, org.vortikal.security.Principal, java.lang.String)
      */
     public PropertySet getFixedCopyProperties(Resource resource,
             Principal principal, String destUri)
@@ -656,108 +250,261 @@ public class RepositoryResourceHelperImpl
         return fixedProps;
     }
 
-    private ResourceImpl newResource(ResourceImpl resource) {
+    private Resource evaluateChange(ResourceImpl originalResource, ResourceImpl suppliedResource,
+                                   Principal principal, boolean isContentChange, Date time) throws IOException {
+
+        EvaluationContext ctx = new EvaluationContext(originalResource, suppliedResource, principal);
+
+        recursiveTreeEvaluation(ctx, isContentChange, this.resourceTypeTree.getRoot(), time);
+        
+        checkForDeadAndZombieProperties(ctx);
+
+        return ctx.getNewResource();
+    }
+    
+    private void checkForDeadAndZombieProperties(EvaluationContext ctx) {
+        ResourceImpl newResource = ctx.getNewResource();
+
+        Resource resource = ctx.getSuppliedResource();
+        if (resource == null)
+            resource = ctx.getOriginalResource();
+        
+        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
+            Property suppliedProp = (Property) i.next();
+            PropertyTypeDefinition propDef = suppliedProp.getDefinition();
+            
+            if (propDef == null) {
+                // Dead property, preserve
+                newResource.addProperty(suppliedProp);
+            } else {
+                ResourceTypeDefinition[] rts = 
+                    resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);
+
+                boolean isOfType = false;
+                for (int j = 0; j < rts.length; j++) {
+                    ResourceTypeDefinition definition = rts[j];
+                    if (newResource.isOfType(definition)) {
+                        isOfType = true;
+                        break;
+                    }
+                }
+                if (!isOfType) {
+                    // Zombie prop, preserve
+                    newResource.addProperty(suppliedProp);
+                }
+            }
+        }
+
+    }
+    
+    private boolean recursiveTreeEvaluation(EvaluationContext ctx, boolean isContentChange,
+                                            PrimaryResourceTypeDefinition rt, Date time) throws IOException {
+
+        // Check resource type assertions
+        if (!checkAssertions(rt, ctx.getNewResource(), ctx.getPrincipal())) {
+            return false;
+        }
+        
+        // Set resource type
+        ctx.getNewResource().setResourceType(rt.getName());
+        
+        // For all prop defs, do evaluation
+        PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
+        for (int i = 0; i < propertyDefinitions.length; i++) {
+            PropertyTypeDefinition def = propertyDefinitions[i];
+            evaluateManagedProperty(ctx, isContentChange, def, time);
+        }
+
+        // For all prop defs in mixin types, also do evaluation
+        MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
+        for (int i = 0; i < mixinTypes.length; i++) {
+            MixinResourceTypeDefinition mixinDef = mixinTypes[i];
+            PropertyTypeDefinition[] mixinPropDefs = mixinDef.getPropertyTypeDefinitions();
+            for (int j = 0; j < mixinPropDefs.length; j++) {
+                evaluateManagedProperty(ctx, isContentChange, mixinPropDefs[j], time);
+            }
+        }
+
+        // Trigger child evaluation
+        List childTypes = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
+        for (Iterator i = childTypes.iterator(); i.hasNext();) {
+            PrimaryResourceTypeDefinition childDef = (PrimaryResourceTypeDefinition) i.next();
+            if (recursiveTreeEvaluation(ctx, isContentChange, childDef, time)) {
+                break;
+            }
+        }
+      
+        return true;
+    }
+
+    private void evaluateManagedProperty(EvaluationContext ctx, boolean isContentChange,
+                                         PropertyTypeDefinition propDef, Date time) {
+
+        Property evaluatedProp = null;
+        if (isContentChange) {
+            evaluatedProp = evaluateContentChange(ctx, propDef, time);
+        } else {
+            evaluatedProp = evaluatePropertiesChange(ctx, propDef, time);
+        }
+        
+        ResourceImpl newResource = ctx.getNewResource();
+
+        if (evaluatedProp != null) {
+            newResource.addProperty(evaluatedProp);
+        } else if (propDef.isMandatory()) {
+            throw new InternalRepositoryException("Property " + propDef + "is " +
+                    "mandatory, but isn't set for resource '" + newResource + "'");
+        }
+    }
+    
+    /**
+     * The evaluator will be given a clone of the original property as input if it 
+     * previously existed, or an uninitialized property otherwise.
+     * 
+     * @return the evaluated prop or null if a {@link ContentModificationPropertyEvaluator} 
+     * evaluator exists, depending of whether it evaluated to true or false. 
+     * Otherwise return the original property, if it exists.
+     */
+    private Property evaluateContentChange(EvaluationContext ctx, 
+            PropertyTypeDefinition propDef, Date time) {
+
+        Resource newResource = ctx.getNewResource();
+        Content content = null;
+
+        ContentModificationPropertyEvaluator evaluator =
+            propDef.getContentModificationEvaluator();
+        
+        Property prop = ctx.getOriginalResource().getProperty(propDef);
+        if (prop != null) {
+            try {
+                prop = (Property) ctx.getOriginalResource().getProperty(propDef).clone();
+            } catch (CloneNotSupportedException e) {
+                throw new InternalRepositoryException(
+                        "Couldn't clone property " + propDef + "on resource '"
+                                + newResource.getURI() + "'", e);
+            }
+        }
+        
+        if (evaluator != null) {
+            if (!ctx.getOriginalResource().isCollection()) {
+                content = new ContentImpl(newResource.getURI(), this.contentStore,
+                                          this.contentRepresentationRegistry);
+            }
+            // Initialize prop if necessary
+            if (prop == null)
+                prop = this.propertyManager.createProperty(
+                    propDef.getNamespace(), propDef.getName());
+        
+            boolean evaluated =
+                evaluator.contentModification(ctx.getPrincipal(), prop,
+                        newResource, content, time);
+            if (!evaluated) {
+                prop = null;
+            } else if (!prop.isValueInitialized()) {
+                throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
+                        + newResource.getURI() + "' returned not value initialized property " + 
+                        propDef);
+            }
+        } 
+        
+        return prop;
+    }
+
+    private Property evaluatePropertiesChange(EvaluationContext ctx, 
+            PropertyTypeDefinition propDef, Date time) {
+
+        // Check for user change or addition
+        Property property = checkForUserAdditionOrChange(ctx, propDef);
+        if (property != null)
+            return property;
+        
+        // Check for user deletion
+        if (checkForUserDeletion(ctx, propDef))
+            return null;
+        
+        Resource newResource = ctx.getNewResource();
         try {
-            return resource.cloneWithoutProperties();
+            property = ctx.getOriginalResource().getProperty(propDef);
+            if (property != null)
+                property = (Property) property.clone();
         } catch (CloneNotSupportedException e) {
             throw new InternalRepositoryException(
-                    "Unable to clone resource '" + resource.getURI() + "'", e);
+                    "Couldn't clone property " + property + "on resource '"
+                    + ctx.getNewResource().getURI() + "'", e);
         }
+
+        PropertiesModificationPropertyEvaluator evaluator = 
+            propDef.getPropertiesModificationEvaluator();
+
+        if (evaluator != null) {
+            if (property == null)
+                property = this.propertyManager.createProperty(
+                        propDef.getNamespace(), propDef.getName());
+
+            boolean evaluated = evaluator.propertiesModification(
+                    ctx.getPrincipal(), property, newResource, time);
+
+            if (!evaluated) {
+                if (propDef.isMandatory()) {
+                    Value defaultValue = propDef.getDefaultValue();
+                    if (defaultValue == null)
+                        throw new InternalRepositoryException("Property " + propDef + "is " +
+                                "mandatory and evaluator returned false, but no default value is set.");
+
+                    property.setValue(defaultValue);
+                } else {
+                    property = null;
+                }
+            } else if (!property.isValueInitialized()) {
+                throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
+                        + newResource.getURI() + "' returned not value initialized property " + 
+                        propDef);
+            } 
+        } else if (property == null) {
+            // On propchange we have to do contentchange on all props not having a 
+            // previous value and not having a propchangeevaluator.
+            property = evaluateContentChange(ctx, propDef, time);
+        }
+
+        return property;
     }
 
-    private void preserveDeadAndZombieProperties(ResourceImpl resource, ResourceImpl newResource) {
-        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
-            Property prop = (Property) i.next();
-
-            if (prop.getDefinition() == null) {
-                // Preserve dead properties
-                newResource.addProperty(prop);
-            } else if (newResource.getProperty(prop.getDefinition()) == null) {
-                // Preserve zombie properties
-                newResource.addProperty(prop);
-            }
-        }
-    }
-    
-
-    private ResourceTypeDefinition contentModification(
-        Principal principal, ResourceImpl newResource, Resource original,
-        Content content, Date time, PrimaryResourceTypeDefinition rt) {
-
-        // Checking if resource type matches
-        if (!checkAssertions(rt, newResource, principal)) return null;
-
-        List newProps = new ArrayList();
-
-        // Evaluating primary resource type properties
-        PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
-
-        evalContentModification(principal, newResource, original, content,
-                                time, rt, def, newProps);
+    private boolean checkForUserDeletion(EvaluationContext ctx,
+            PropertyTypeDefinition propDef) throws ConstraintViolationException {
+        Property originalProp = ctx.getOriginalResource().getProperty(propDef);
+        Property suppliedProp = ctx.getSuppliedResource().getProperty(propDef);
         
-        // Evaluating mixin resource type properties
-        MixinResourceTypeDefinition[] mixinTypes =
-            this.resourceTypeTree.getMixinTypes(rt);
-        for (int i = 0; i < mixinTypes.length; i++) {
-
-            PropertyTypeDefinition[] mixinDef = mixinTypes[i].getPropertyTypeDefinitions();
-
-            evalContentModification(principal, newResource, original, content,
-                                    time, mixinTypes[i], mixinDef, newProps);
+        if (originalProp != null && suppliedProp == null) {
+            return true;
         }
+        
+        return false;
+    }
 
 
-        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
-            newResource.addProperty(prop);
-        }
+    private Property checkForUserAdditionOrChange(EvaluationContext ctx, PropertyTypeDefinition propDef) {
+        Property originalProp = ctx.getOriginalResource().getProperty(propDef);
+        Property suppliedProp = ctx.getSuppliedResource().getProperty(propDef);
+     
+        try {
+            // Added
+            if (originalProp == null && suppliedProp != null)
+                return (Property) suppliedProp.clone();
 
-        // Checking child resource types by delegating
-        List children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
-        for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-            PrimaryResourceTypeDefinition child = (PrimaryResourceTypeDefinition) iterator.next();
-
-            ResourceTypeDefinition resourceType = 
-                contentModification(principal, newResource,
-                                    original, content, time, child); // Recursive call
-            if (resourceType != null) {
-                return resourceType;
+            // Changed
+            if (originalProp != null && suppliedProp != null
+                    && !originalProp.equals(suppliedProp)) {
+                return (Property) suppliedProp.clone();
             }
+            return null;
+
+        } catch (CloneNotSupportedException e) {
+            throw new InternalRepositoryException(
+                    "Couldn't clone property " + suppliedProp + "on resource '"
+                            + ctx.getNewResource().getURI() + "'", e);
         }
-
-        return rt;
     }
-
     
-    private void evalContentModification(Principal principal, ResourceImpl newResource,
-                                         Resource original, Content content, Date time,
-                                         ResourceTypeDefinition rt,
-                                         PropertyTypeDefinition[] definitions, List newProps) {
-
-        for (int i = 0; i < definitions.length; i++) {
-            PropertyTypeDefinition propertyDef = definitions[i];
-            
-            Property prop = original.getProperty(rt.getNamespace(), propertyDef.getName());
-            ContentModificationPropertyEvaluator evaluator =
-                propertyDef.getContentModificationEvaluator();
-
-            if (evaluator != null) {
-                if (prop == null) 
-                    prop = this.propertyManager.createProperty(rt.getNamespace(), propertyDef.getName());
-
-                if (evaluator.contentModification(principal, prop, newResource, content, time)) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Property evaluated for content modification ["
-                                     + rt.getName() + "]: " + prop + " using evaluator "
-                                     + evaluator);
-                    newProps.add(prop);
-                } 
-            } else if (prop != null) 
-                newProps.add(prop);
-        }
-    }
-
-
 
     /** 
      * Checking that all resource type assertions match for resource 
@@ -794,23 +541,11 @@ public class RepositoryResourceHelperImpl
         return true;
     }
 
-    private void addToPropsMap(Map parent, Property property) {
-        Map map = (Map) parent.get(property.getNamespace());
-        if (map == null) {
-            map = new HashMap();
-            parent.put(property.getNamespace(), map);
-        }
-        map.put(property.getName(), property);
-
-    }
     
     public void afterPropertiesSet() throws Exception {
         if (this.propertyManager == null) {
             throw new BeanInitializationException("Property 'propertyManager' not set.");
         } 
-        if (this.authorizationManager == null) {
-            throw new BeanInitializationException("Property 'authorizationManager' not set.");
-        }
         if (this.contentStore == null) {
             throw new BeanInitializationException("Property 'contentStore' not set.");
         }
@@ -820,14 +555,13 @@ public class RepositoryResourceHelperImpl
         if (this.resourceTypeTree == null) {
             throw new BeanInitializationException("Property 'resourceTypeTree' not set.");
         }
+        if (this.authorizationManager == null) {
+            throw new BeanInitializationException("Property 'authorizationManager' not set.");
+        }
         
     }
 
     
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
-    }
-
     public void setContentStore(ContentStore contentStore) {
         this.contentStore = contentStore;
     }
@@ -849,167 +583,11 @@ public class RepositoryResourceHelperImpl
         this.propertyManager = propertyManager;
     }
 
-    public Resource evaluateChange(ResourceImpl originalResource, ResourceImpl suppliedResource,
-                                   Principal principal, boolean isContentChange, Date time) throws IOException {
-
-        EvaluationContext ctx = new EvaluationContext(originalResource, suppliedResource, principal);
-        recursiveTreeEvaluation(ctx, isContentChange, this.resourceTypeTree.getRoot(), time);
-        
-        // Check dead and zombie
-        ResourceImpl newResource = ctx.getNewResource();
-        for (Iterator i = suppliedResource.getProperties().iterator(); i.hasNext();) {
-            Property suppliedProp = (Property) i.next();
-            Property newProp = newResource.getProperty(suppliedProp.getNamespace(), suppliedProp.getName());
-           
-            if (newProp != null) {
-                continue;
-            }
-
-            
-            
-            if (suppliedProp.getDefinition() == null) {
-                    // Dead property, preserve
-                    newResource.addProperty(suppliedProp);
-            } else {
-                ResourceTypeDefinition[] rts = 
-                    resourceTypeTree.getPrimaryResourceTypesForPropDef(suppliedProp.getDefinition());
-
-                boolean isOfType = false;
-                for (int j = 0; j < rts.length; j++) {
-                    ResourceTypeDefinition definition = rts[j];
-                    if (newResource.isOfType(definition)) {
-                        isOfType = true;
-                        break;
-                    }
-                }
-                if (!isOfType) {
-                    // Zombie prop, preserve
-                    newResource.addProperty(suppliedProp);
-                }
-            }
-        }
-        return ctx.getNewResource();
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
     }
     
-    private boolean recursiveTreeEvaluation(EvaluationContext ctx, boolean isContentChange,
-                                            PrimaryResourceTypeDefinition rt, Date time) throws IOException {
 
-        // Check resource type assertions
-        if (checkAssertions(rt, ctx.getNewResource(), ctx.getPrincipal())) {
-            return false;
-        }
-        
-        // Set resource type
-        ctx.getNewResource().setResourceType(rt.getName());
-        
-        // For all prop defs, do evaluation
-        PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
-        for (int i = 0; i < propertyDefinitions.length; i++) {
-            PropertyTypeDefinition def = propertyDefinitions[i];
-            evaluateManagedProperty(ctx, isContentChange, def, time);
-        }
-
-        // For all prop defs in mixin types, also do evaluation
-        MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
-        for (int i = 0; i < propertyDefinitions.length; i++) {
-            MixinResourceTypeDefinition mixinDef = mixinTypes[i];
-            PropertyTypeDefinition[] mixinPropDefs = mixinDef.getPropertyTypeDefinitions();
-            for (int j = 0; j < mixinPropDefs.length; j++) {
-                evaluateManagedProperty(ctx, isContentChange, mixinPropDefs[j], time);
-            }
-        }
-
-        // Trigger child evaluation
-        List childTypes = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
-        for (Iterator i = childTypes.iterator(); i.hasNext();) {
-            PrimaryResourceTypeDefinition childDef = (PrimaryResourceTypeDefinition) i.next();
-            if (!recursiveTreeEvaluation(ctx, isContentChange, childDef, time)) {
-                continue;
-            }
-        }
-        return true;
-    }
-
-    private void evaluateManagedProperty(EvaluationContext ctx, boolean isContentChange,
-                                         PropertyTypeDefinition propDef, Date time) {
-
-        Property evaluatedProp = getEvaluatedProperty(ctx, isContentChange, propDef, time);
-        if (evaluatedProp != null) {
-            ctx.getNewResource().addProperty(evaluatedProp);
-        } else if (propDef.isMandatory()) {
-            throw new InternalRepositoryException("Property " + propDef + "is " +
-                    "mandatory, but isn't set for resource '" + ctx.getSuppliedResource() + "'");
-        }
-    }
-    
-    private Property getEvaluatedProperty(EvaluationContext ctx, boolean isContentChange,
-                                          PropertyTypeDefinition propDef, Date time) {
-        Property evaluatedProp = null;
-        if (isContentChange) {
-            evaluatedProp = evaluateContentChange(ctx, propDef, time);
-        } else {
-            evaluatedProp = evaluatePropertiesChange(ctx, propDef, time);
-        }
-        return evaluatedProp;
-    }
-
-    private Property evaluateContentChange(EvaluationContext ctx, 
-            PropertyTypeDefinition propDef, Date time) {
-        Property evaluatedProp = null;
-        Resource suppliedResource = ctx.getSuppliedResource();
-        Content content = null;
-
-        ContentModificationPropertyEvaluator evaluator =
-            propDef.getContentModificationEvaluator();
-        
-        if (evaluator != null) {
-            if (!ctx.getOriginalResource().isCollection()) {
-                content = new ContentImpl(suppliedResource.getURI(), this.contentStore,
-                                          this.contentRepresentationRegistry);
-            }
-            // Use existing value if it exists..
-            evaluatedProp = this.propertyManager.createProperty(
-                    propDef.getNamespace(), propDef.getName());
-        
-            boolean evaluated =
-                evaluator.contentModification(ctx.getPrincipal(), evaluatedProp,
-                        suppliedResource, content, time);
-            if (!evaluated) {
-                evaluatedProp = null;
-            }
-        }
-        return evaluatedProp;
-    }
-
-    private Property evaluatePropertiesChange(EvaluationContext ctx, 
-            PropertyTypeDefinition propDef, Date time) {
-
-        // On propchange we have to do contentchange on all props not having a 
-        // previous value and not having a propchangeevaluator
-        // XXX: that's what fixes our immediate problems?
-        
-        Property evaluatedProp = null;
-        Resource suppliedResource = ctx.getSuppliedResource();
-        
-        PropertiesModificationPropertyEvaluator evaluator = 
-            propDef.getPropertiesModificationEvaluator();
-
-        if (evaluator != null) {
-            evaluatedProp = this.propertyManager.createProperty(
-                suppliedResource.getResourceTypeDefinition().getNamespace(), propDef.getName());
-            boolean evaluated =
-                evaluator.propertiesModification(ctx.getPrincipal(), evaluatedProp,
-                                                 suppliedResource, time);
-            if (!evaluated) {
-                evaluatedProp = null;
-            }
-        } else if (ctx.getOriginalResource().getProperty(propDef) == null) {
-            
-        }
-        return evaluatedProp;
-    }
-
-    
     private class EvaluationContext {
         private Resource originalResource;
         private Resource suppliedResource; 
@@ -1047,5 +625,6 @@ public class RepositoryResourceHelperImpl
         }
         
     }
-    
+
+
 }

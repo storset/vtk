@@ -183,7 +183,7 @@
   <bean id="emneEksamensSemesterBestemteSemestrePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="eksamenssemester.bestemte" />
-    <property name="type" ref="TYPE_STRING" /> <!-- egentlig liste -->
+    <property name="type" ref="TYPE_STRING" /> 
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />

@@ -43,7 +43,7 @@
   <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="skipInPath"/>
     <property name="type" ref="TYPE_BOOLEAN"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
     <property name="allowedValues">
       <list>
@@ -59,7 +59,7 @@
   <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="title"/>
     <property name="type" ref="TYPE_STRING"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
   </bean>
 

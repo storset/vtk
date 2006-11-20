@@ -55,12 +55,10 @@
 
   <bean id="htmlGuessedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-
     <property name="name" value="guessedCharacterEncoding" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue" ref="defaultHtmlResourceCharacterEncoding" />
   </bean>
@@ -79,18 +77,12 @@
   </bean>
 
 
-  <bean id="defaultHtmlResourceCharacterEncoding"
-    class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="valueFactory" />
-    <property name="targetMethod" value="createValue" />
-    <property name="arguments">
-      <list>
-        <ref bean="defaultHtmlResourceCharacterEncodingString" />
-        <ref bean="TYPE_STRING" />
-      </list>
-    </property>
-  </bean>
 
+  <bean id="defaultHtmlResourceCharacterEncoding" class="org.vortikal.repository.resourcetype.Value">
+    <constructor-arg type="java.lang.String">
+      <ref bean="defaultHtmlResourceCharacterEncodingString" />
+    </constructor-arg>
+  </bean>
 
   <bean id="defaultHtmlResourceCharacterEncodingString" class="java.lang.String">
     <constructor-arg value="${defaultHtmlResourceCharacterEncoding}" />

@@ -34,8 +34,11 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
 
 
-
-
+/**
+ * if (isMandatory() && hasDefaultValue() && evaluator.returnsFalse()) {
+ *   propValue = default
+ * }
+ */
 public interface PropertyTypeDefinition {
     
     public Namespace getNamespace();

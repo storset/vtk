@@ -30,6 +30,10 @@
  */
 package org.vortikal.repository;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public final class RepositoryAction {
     
     public final static RepositoryAction READ_PROCESSED = new RepositoryAction("read-processed");
@@ -61,6 +65,32 @@ public final class RepositoryAction {
     public final static RepositoryAction REPOSITORY_ROOT_ROLE_ACTION =
         new RepositoryAction("property-edit-root-role");
 
+    
+    
+    public final static RepositoryAction[] REPOSITORY_ACTIONS = 
+        new RepositoryAction[] {
+        RepositoryAction.READ_PROCESSED,
+        RepositoryAction.READ,
+        RepositoryAction.CREATE,
+        RepositoryAction.WRITE,
+        RepositoryAction.WRITE_ACL,
+        RepositoryAction.UNLOCK, 
+        RepositoryAction.DELETE,
+        RepositoryAction.COPY,
+        RepositoryAction.MOVE,
+        RepositoryAction.ALL,
+        RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION,
+        RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION,
+        RepositoryAction.UNEDITABLE_ACTION};
+    
+    /**
+     * The list of defined repository actions
+     */
+    public final static Set REPOSITORY_ACTION_SET = 
+        new HashSet(Arrays.asList(REPOSITORY_ACTIONS));
+    
+
+    
     private String name;
     
     private RepositoryAction(String name) {

@@ -43,30 +43,6 @@ import org.vortikal.security.AuthenticationException;
  */
 public interface AuthorizationManager {
 
-    
-    
-    /**
-     * The list of defined authorization levels
-     */
-    public final static RepositoryAction[] ACTION_AUTHORIZATIONS = 
-        new RepositoryAction[] {
-        RepositoryAction.READ_PROCESSED,
-        RepositoryAction.READ,
-        RepositoryAction.CREATE,
-        RepositoryAction.WRITE,
-        RepositoryAction.WRITE_ACL,
-        RepositoryAction.UNLOCK, 
-        RepositoryAction.DELETE,
-        RepositoryAction.COPY,
-        RepositoryAction.MOVE,
-        RepositoryAction.ALL,
-        RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION,
-        RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION,
-        RepositoryAction.UNEDITABLE_ACTION};
-    
-    public final static Set ACTION_AUTHORIZATION_SET = 
-        new HashSet(Arrays.asList(ACTION_AUTHORIZATIONS));
-    
 
     public boolean isReadOnly();
     
@@ -92,14 +68,9 @@ public interface AuthorizationManager {
      * @param action the action to perform. One of the action types
      * defined in {@link #ACTION_AUTHORIZATIONS}.
      * @param principal the principal performing the action
-     * @return <code>true</code> if the principal is authorized to
-     * perform the action, <code>false</code> otherwise.
      */
-    public boolean authorizeAction(String uri, RepositoryAction action, Principal principal);
-    
-    public void tmpAuthorizeForPropStore(RepositoryAction action, Principal principal,
-            String uri) throws AuthenticationException, AuthorizationException,
-            ResourceLockedException, IOException;
+    public void authorizeAction(String uri, RepositoryAction action, Principal principal)
+    throws AuthorizationException, AuthenticationException, ResourceLockedException, IOException;
     
     /**
      * <ul>
@@ -161,7 +132,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeWriteAcl(String uri, Principal principal)
+    public void authorizeAll(String uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
     

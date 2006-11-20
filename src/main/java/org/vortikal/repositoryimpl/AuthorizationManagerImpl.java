@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
@@ -53,11 +51,7 @@ import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
 
 
-/**
- */
 public class AuthorizationManagerImpl implements AuthorizationManager {
-
-    private Log logger = LogFactory.getLog(this.getClass());    
 
     private RoleManager roleManager;
     private PrincipalManager principalManager;
@@ -90,77 +84,41 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         }
     }
 
-    public void tmpAuthorizeForPropStore(RepositoryAction action, Principal principal,
-            String uri) throws AuthenticationException, AuthorizationException,
+    public void authorizeAction(String uri, RepositoryAction action, 
+            Principal principal) throws AuthenticationException, AuthorizationException,
             ResourceLockedException, IOException {
 
-        if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+        if (!RepositoryAction.REPOSITORY_ACTION_SET.contains(action)
+                || RepositoryAction.COPY.equals(action)
+                || RepositoryAction.MOVE.equals(action)) {
+            throw new IllegalArgumentException(
+                "Unable to authorize for action " + action
+                + ": must be one of (except COPY/MOVE) " + RepositoryAction.REPOSITORY_ACTION_SET);
+        }
+
+        if (RepositoryAction.UNEDITABLE_ACTION.equals(action)) {
+            throw new AuthorizationException("Uneditable");
+        } else if (RepositoryAction.READ_PROCESSED.equals(action)) {
+            authorizeReadProcessed(uri, principal);
+        } else if (RepositoryAction.READ.equals(action)) {
+            authorizeRead(uri, principal);
+        } else if (RepositoryAction.CREATE.equals(action)) {
+            authorizeCreate(uri, principal);
+        } else if (RepositoryAction.WRITE.equals(action)) {
+            authorizeWrite(uri, principal);
+        } else if (RepositoryAction.WRITE_ACL.equals(action) ||
+                RepositoryAction.ALL.equals(action)) {
+            authorizeAll(uri, principal);
+        } else if (RepositoryAction.UNLOCK.equals(action)) {
+            authorizeUnlock(uri, principal);
+        } else if (RepositoryAction.DELETE.equals(action)) {
+            authorizeDelete(uri, principal);
+        } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
             authorizePropertyEditAdminRole(uri, principal);
         } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
             authorizePropertyEditRootRole(uri, principal);
         }
         
-        if (!authorizeAction(uri, action, principal))
-            throw new AuthorizationException("Principal " + principal
-                    + " not authorized to perform " + " action " + action
-                    + " on resource " + uri);
-    }
-
-    
-    /**
-     * XXX: This method is not safe, contains known bugs!!!!!!!!!!!!!!!!!
-     * XXX: should throw exception like the one above!
-     * @see org.vortikal.repository.AuthorizationManager#authorizeAction(java.lang.String, org.vortikal.repository.RepositoryAction, org.vortikal.security.Principal)
-     */
-    public boolean authorizeAction(String uri, RepositoryAction action, Principal principal) {
-        if (!AuthorizationManager.ACTION_AUTHORIZATION_SET.contains(action)) {
-            throw new IllegalArgumentException(
-                "Unable to authorize for action " + action
-                + ": must be one of " + AuthorizationManager.ACTION_AUTHORIZATION_SET);
-        }
-
-        
-        try {
-            if (RepositoryAction.READ_PROCESSED.equals(action)) {
-                authorizeReadProcessed(uri, principal);
-            } else if (RepositoryAction.READ.equals(action)) {
-                authorizeRead(uri, principal);
-            } else if (RepositoryAction.CREATE.equals(action)) {
-                authorizeCreate(uri, principal);
-            } else if (RepositoryAction.WRITE.equals(action)) {
-                authorizeWrite(uri, principal);
-            } else if (RepositoryAction.WRITE_ACL.equals(action)) {
-                authorizeWriteAcl(uri, principal);
-            } else if (RepositoryAction.UNLOCK.equals(action)) {
-                authorizeUnlock(uri, principal);
-            } else if (RepositoryAction.DELETE.equals(action)) {
-                authorizeDelete(uri, principal);
-            } else if (RepositoryAction.ALL.equals(action)) {
-                authorizePropertyEditAdminRole(uri, principal);
-            } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
-                authorizePropertyEditRootRole(uri, principal);
-            } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
-                authorizePropertyEditRootRole(uri, principal);
-            } else {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("authorization: false for uri = " + uri + ", action = "
-                                 + action + ", principal = " + principal);
-                }
-                return false;
-            }
-        
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("authorization: true for uri = " + uri + ", action = "
-                             + action + ", principal = " + principal);
-            }
-            return true;
-        } catch (Exception e) { }
-        
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("authorization: false for uri = " + uri + ", action = "
-                         + action + ", principal = " + principal);
-        }
-        return false;
     }
     
     
@@ -176,8 +134,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @throws IOException
      */
     public void authorizeReadProcessed(String uri, Principal principal) 
-        throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException {
+        throws AuthenticationException, AuthorizationException, IOException {
         ResourceImpl resource = this.dao.load(uri);
 
         if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
@@ -273,7 +230,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
     
 
-    private static final RepositoryAction[] WRITE_ACL_AUTH_PRIVILEGES = 
+    private static final RepositoryAction[] ALL_AUTH_PRIVILEGES = 
         new RepositoryAction[] {Privilege.ALL};
 
 
@@ -286,7 +243,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeWriteAcl(String uri, Principal principal)
+    public void authorizeAll(String uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -299,10 +256,12 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        aclAuthorize(principal, resource, WRITE_ACL_AUTH_PRIVILEGES);
+        aclAuthorize(principal, resource, ALL_AUTH_PRIVILEGES);
     }
     
 
+
+    
     private static final RepositoryAction[] UNLOCK_AUTH_PRIVILEGES = 
         new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
 

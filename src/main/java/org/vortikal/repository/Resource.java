@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -61,7 +62,7 @@ public interface Resource extends PropertySet, Cloneable {
      * @return <code>true</code> if the principal is authorized,
      * <code>false</code> otherwise.
      */
-    public boolean isAuthorized(RepositoryAction privilege, Principal principal);
+    public boolean isAuthorized(RepositoryAction privilege, Principal principal) throws IOException;
 
 
     /**

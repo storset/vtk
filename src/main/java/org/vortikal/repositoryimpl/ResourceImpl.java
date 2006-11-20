@@ -30,6 +30,7 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,11 +41,13 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
 import org.vortikal.util.repository.URIUtil;
@@ -76,8 +79,16 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
     
 
-    public boolean isAuthorized(RepositoryAction action, Principal principal) {
-        return this.authorizationManager.authorizeAction(this.uri, action, principal);
+    public boolean isAuthorized(RepositoryAction action, Principal principal) 
+    throws IOException {
+        try {
+            this.authorizationManager.authorizeAction(this.uri, action, principal);
+            return true;
+        } catch (AuthenticationException e) {
+            return false;
+        } catch (RepositoryException e) {
+            return false;
+        }
     }
 
     public Property createProperty(Namespace namespace, String name) {

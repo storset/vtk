@@ -348,7 +348,6 @@
         abstract="true">
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
-    <property name="authorizationManager" ref="authorizationManager" />
     <property name="repository" ref="repository" />
     <property name="trustedToken" ref="trustedToken" />
   </bean>

@@ -31,12 +31,12 @@
 package org.vortikal.web.service;
 
 
+import java.io.IOException;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -99,7 +99,6 @@ public class ResourcePrincipalPermissionAssertion
     private RoleManager roleManager = null;
     private Repository repository = null;
     private String trustedToken = null;
-    private AuthorizationManager authorizationManager;
     
     Set rootPrincipals;
     Set readPrincipals;
@@ -134,12 +133,6 @@ public class ResourcePrincipalPermissionAssertion
     }
     
     public void afterPropertiesSet() throws Exception {
-        if (this.permission == null || 
-                !AuthorizationManager.ACTION_AUTHORIZATION_SET.contains(this.permission)) {
-                throw new BeanInitializationException(
-                "Property 'permission' must "
-                + "be set to one of; AuthorizationManager.ACTION_AUTHORIZATIONS");
-        }
         if (this.principalManager == null) {
             throw new BeanInitializationException(
                 "Property 'principalManager' must be set");
@@ -193,20 +186,13 @@ public class ResourcePrincipalPermissionAssertion
             throw new AuthenticationException();
         }
         
-        // XXX: missing resource validation
-        String uri = resource.getURI();
-
-        boolean match = this.authorizationManager.authorizeAction(uri, this.permission, principal);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Unauthorized: uri: " + uri + ", permission: " + this.permission
-                         + ", principal: " + principal + " [match = false]");
+        try {
+            return resource.isAuthorized(this.permission, principal);
+            
+        } catch (IOException e) {
+            logger.error("Got exception during assertion evaluation", e);
+            return false;
         }
-        return match;
-    }
-
-
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
     }
     
 }

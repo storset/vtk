@@ -603,7 +603,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("The root resource cannot have an inherited ACL");
         }
 
-        this.authorizationManager.authorizeWriteAcl(resource.getURI(), principal);
+        this.authorizationManager.authorizeAll(resource.getURI(), principal);
         
         try {
 

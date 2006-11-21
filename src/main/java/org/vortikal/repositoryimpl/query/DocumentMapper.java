@@ -57,10 +57,8 @@ import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.util.repository.URIUtil;
 
 /**
- * Simple mapping from Lucene 
- * {@link org.apache.lucene.document.Document} to 
- * {@link org.vortikal.repository.PropertySet} 
- * objects and vice-versa.
+ * Simple mapping from Lucene {@link org.apache.lucene.document.Document} to
+ * {@link org.vortikal.repository.PropertySet} objects and vice-versa.
  * 
  * TODO: Optimize even more the time critical code that maps from <code>Document</code>s to
  * <code>PropertySet</code>s used when building result sets.

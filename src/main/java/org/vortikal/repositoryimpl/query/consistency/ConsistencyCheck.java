@@ -68,7 +68,7 @@ public class ConsistencyCheck {
      * @param indexDataAccessor
      */
     private ConsistencyCheck(PropertySetIndex index,
-            IndexDataAccessor indexDataAccessor) {
+                                        IndexDataAccessor indexDataAccessor) {
         this.indexDataAccessor = indexDataAccessor;
         this.index = index;
     }
@@ -133,7 +133,7 @@ public class ConsistencyCheck {
                 if (indexUriIterator != null) this.index.close(indexUriIterator);
                 if (randomIndexAccessor != null) randomIndexAccessor.close();
             } catch (IOException io) {
-                LOG.warn("IOException while freeing index or dao resources", io);
+                LOG.warn("IOException while freeing index or dao resources: " + io.getMessage());
             }
         }
 
@@ -195,7 +195,8 @@ public class ConsistencyCheck {
         throws IOException, IndexException {
     
         try {
-            PropertySetImpl indexPropSet = (PropertySetImpl)randomIndexAccessor.getPropertySetByURI(indexUri);
+            PropertySetImpl indexPropSet = 
+                                (PropertySetImpl)randomIndexAccessor.getPropertySetByURI(indexUri);
             
             // If we get here, the index document has been successfully mapped to a property set instance
             int indexUUID = indexPropSet.getID();
@@ -369,16 +370,19 @@ public class ConsistencyCheck {
             try {
               if (error.canRepair()) {
                   error.repair(this.index);
-              } 
+              } else {
+                  LOG.warn("Error cannot be repaired: '" + error.getDescription() + "'");
+              }
             } catch (IndexException ie) {
                 if (abortOnFailure) {
-                    LOG.warn("Aborting error repairing");
+                    LOG.warn("Aborting error repairing, exception '" + ie.getMessage() 
+                            + "' while repairing error with description '" 
+                            + error.getDescription() + "'");
                     throw ie;
                 }
             }
             
         }
-
     }
 
     public List getErrors() {

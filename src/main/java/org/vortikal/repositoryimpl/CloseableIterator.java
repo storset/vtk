@@ -34,7 +34,7 @@ package org.vortikal.repositoryimpl;
 /**
  * Closeable {@link java.util.Iterator} interface.
  * 
- * Typically provided by data accessors when resources must be freed after iteration
+ * Typically used by data accessors when resources must be freed after iteration
  * is completed.
  * 
  * @author oyviste

@@ -52,15 +52,6 @@ import org.vortikal.util.text.SimpleDateFormatCache;
  */
 public final class FieldValueMapper {
 
-    // XXX: This is not thread safe, date formats can't handle multiple
-    // threads in parse()...
-//    public static final SimpleDateFormat[] DATE_FORMATS = new SimpleDateFormat[] {
-//            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"),
-//            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
-//            new SimpleDateFormat("yyyy-MM-dd HH:mm"),
-//            new SimpleDateFormat("yyyy-MM-dd HH"),
-//            new SimpleDateFormat("yyyy-MM-dd") };
-
     public static final ReusableObjectCache[] CACHED_DATE_FORMATS = new SimpleDateFormatCache[] {
             new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss Z", 5),
             new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss", 5),
@@ -234,16 +225,13 @@ public final class FieldValueMapper {
             // representation already present in index.
 
         case (PropertyType.TYPE_DATE):
-            return Long.toString(FieldValueEncoder
-                    .decodeDateValueFromString(fieldValue));
+            return Long.toString(FieldValueEncoder.decodeDateValueFromString(fieldValue));
 
         case (PropertyType.TYPE_INT):
-            return Integer.toString(FieldValueEncoder
-                    .decodeIntegerFromString(fieldValue));
+            return Integer.toString(FieldValueEncoder.decodeIntegerFromString(fieldValue));
 
         case (PropertyType.TYPE_LONG):
-            return Long.toString(FieldValueEncoder
-                    .decodeLongFromString(fieldValue));
+            return Long.toString(FieldValueEncoder.decodeLongFromString(fieldValue));
 
         default:
             throw new FieldValueEncodingException("Unknown type " + type);
@@ -261,8 +249,7 @@ public final class FieldValueMapper {
             return value.getNativeStringRepresentation();
 
         case (PropertyType.TYPE_DATE):
-            return FieldValueEncoder.encodeDateValueToString(value
-                    .getDateValue().getTime());
+            return FieldValueEncoder.encodeDateValueToString(value.getDateValue().getTime());
 
         case (PropertyType.TYPE_INT):
             return FieldValueEncoder.encodeIntegerToString(value.getIntValue());
@@ -271,8 +258,7 @@ public final class FieldValueMapper {
             return FieldValueEncoder.encodeLongToString(value.getLongValue());
 
         default:
-            throw new FieldValueEncodingException("Unknown type: "
-                    + value.getType());
+            throw new FieldValueEncodingException("Unknown type: " + value.getType());
 
         }
 
@@ -305,7 +291,6 @@ public final class FieldValueMapper {
             for (int i = 0; i < CACHED_DATE_FORMATS.length; i++) {
                 SimpleDateFormat formatter = (SimpleDateFormat)CACHED_DATE_FORMATS[i].getInstance();
                 try {
-                    //d = DATE_FORMATS[i].parse(stringValue);
                     d = formatter.parse(stringValue);
                     break;
                 } catch (Exception e) {}
@@ -318,6 +303,7 @@ public final class FieldValueMapper {
                         "Unable to encode date string value '" + stringValue
                                 + "' to index field value representation");
             }
+            
             return FieldValueEncoder.encodeDateValueToString(d.getTime());
 
         case (PropertyType.TYPE_INT):

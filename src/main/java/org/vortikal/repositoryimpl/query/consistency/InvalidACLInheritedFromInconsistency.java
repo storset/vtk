@@ -38,8 +38,7 @@ import org.vortikal.repositoryimpl.PropertySetImpl;
  * @author oyviste
  *
  */
-public class InvalidACLInheritedFromInconsistency extends
-        InvalidDataInconsistency {
+public class InvalidACLInheritedFromInconsistency extends InvalidDataInconsistency {
 
     private int indexACL = -1;
     private int daoACL = -1;

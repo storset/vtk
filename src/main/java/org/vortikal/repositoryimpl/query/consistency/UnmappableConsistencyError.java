@@ -38,8 +38,8 @@ import org.vortikal.repositoryimpl.query.IndexException;
 
 /**
  * Consistency error representing an index document which could not be mapped to a
- * <code>PropertySet</code> instance. This is usually caused by property type configuration 
- * problems. 
+ * <code>PropertySet</code> instance. This is usually caused by property/resource type configuration 
+ * problems.
  * 
  * @author oyviste
  *

@@ -429,33 +429,33 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
-    /**
-     * FIXME: Javadoc
-     * @param text
-     * @return
-     */
     protected String unifyNewlines( String text ) {
         text = text.replaceAll("\r\n", "\n");
         text = text.replaceAll("\r", "\n");
         return text;
     }
-    
+
     
     private String removeStartingAndTrailingNewlines(String structureText) {
         // Strip newlines at start of structuredText 
         // (will else incorrectly be saved as <newline/> 
-        int startpos = 0;
+        int startPos = 0;
         try {
-            while (this.NEWLINE == structureText.charAt(startpos) ) {
-                ++startpos;
+            while (this.NEWLINE == structureText.charAt(startPos) ) {
+                ++startPos;
             }
+            if (startPos > 0)
+                structureText = structureText.substring(startPos); 
             // Strip newlines at end of structuredText 
             // (will else incorrectly be displayed as '\'
-            while (this.NEWLINE == structureText.charAt(structureText.length()-1) ) {
-                structureText = structureText.substring(startpos, 
-                        structureText.length()-1);
+            int endPos = structureText.length();
+            while (this.NEWLINE == structureText.charAt(endPos -1) ) {
+                --endPos;
             }
+            if (endPos < structureText.length())
+                structureText = structureText.substring(0, endPos);
                     
+            // XXX: Why is this?
             // Remove trailing ESCAPE
             // (if text has trailing NEWLINE, an ESCAPE character may be added 
             // when converting from XML to structured text)
@@ -464,13 +464,14 @@ public final class EvenStructuredText implements StructuredText {
                 structureText = structureText.substring(0, structureText.length()-1);
             }
         } catch (Exception e) {
+            // XXX: This should not happen, and should therefore throw serious exception!
             this.logger.warn(
                     "Attempting to parse invalid or empty StructuredText string");
         }
                 
         return structureText;
     }
-        
+
     
     protected int parseParagraph(String text, int startPos, Element root) {
 
@@ -1144,11 +1145,13 @@ public final class EvenStructuredText implements StructuredText {
 
     
     public String parseElement(Element root) {
-        String text = generateStructuredText(root);
-        text = removeStartingAndTrailingNewlines(text);
-        
         if (root.getChildren().size() == 0)
             return "";
+
+        String text = generateStructuredText(root);
+        // Why is this done on both in and out?
+        //        text = removeStartingAndTrailingNewlines(text);
+        
 
         Element child = (Element) root.getChildren().get(0);
 

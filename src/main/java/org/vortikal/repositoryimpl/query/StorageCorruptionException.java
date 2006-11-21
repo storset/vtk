@@ -32,7 +32,7 @@ package org.vortikal.repositoryimpl.query;
 
 
 /**
- * Exception thrown in cases where index storage has been corrupted.
+ * Exception thrown in cases where low-level index storage corruption is detected.
  * 
  * @author oyviste
  *

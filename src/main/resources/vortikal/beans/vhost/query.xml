@@ -53,6 +53,24 @@
     <property name="propertyManager" ref="propertyManager"/>
   </bean>
 
+  <!-- Secondary property set index instance (tuned for batch indexing) -->
+  <bean id="secondarySystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
+    <property name="indexAccessor">
+      <!-- This accessor is anonymous, it doesn't need to be referenced from any other beans -->
+      <bean class="org.vortikal.repositoryimpl.query.LuceneIndex">
+        <property name="storageRootPath" value="${indexStorageRootPath}"/>
+        <property name="storageId" value="property_index.secondary"/>
+        <property name="maxBufferedDocs" value="100"/>
+        <property name="mergeFactor" value="100"/>
+        <property name="maxMergeDocs" value="15000"/>
+        <property name="forceUnlock" value="true"/>
+        <property name="maxLockAcquireTimeOnShutdown" value="30"/>
+      </bean>
+    </property>
+    <property name="documentMapper" ref="documentMapper"/>
+    <property name="propertyManager" ref="propertyManager"/>
+  </bean>
+  
   <!-- Factory for building Lucene queries. -->
   <bean id="queryBuilderFactory"
         class="org.vortikal.repositoryimpl.query.QueryBuilderFactoryImpl">
@@ -94,33 +112,4 @@
     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
   </bean>
   
-  <!-- Simple re-indexer for propety set index 'systemIndex' -->
-  <bean id="systemIndexReindexer" class="org.vortikal.repositoryimpl.query.PropertySetIndexReindexer">
-    <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
-
-    <!-- Primary index -->
-    <property name="primaryIndex" ref="systemIndex"/>
-
-    <!-- Auxiliary secondary index used by re-indexer (with settings
-        tuned for batch indexing) -->
-    <property name="secondaryIndex">
-      <bean id="secondarySystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
-        <property name="indexAccessor">
-          <!-- This accessor is anonymous, it doesn't need to be referenced from any other beans -->
-          <bean class="org.vortikal.repositoryimpl.query.LuceneIndex">
-            <property name="storageRootPath" value="${indexStorageRootPath}"/>
-            <property name="storageId" value="property_index.secondary"/>
-            <property name="maxBufferedDocs" value="100"/>
-            <property name="mergeFactor" value="100"/>
-            <property name="maxMergeDocs" value="15000"/>
-            <property name="forceUnlock" value="true"/>
-            <property name="maxLockAcquireTimeOnShutdown" value="30"/>
-          </bean>
-        </property>
-        <property name="documentMapper" ref="documentMapper"/>
-        <property name="propertyManager" ref="propertyManager"/>
-      </bean>
-    </property>
-  </bean>
-
 </beans>

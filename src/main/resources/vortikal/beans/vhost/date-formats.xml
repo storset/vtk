@@ -54,7 +54,7 @@
     <property name="targetMethod" value="getInstance" />
     <property name="arguments">
       <list>
-        <value type="java.lang.String">yyyy-MM-dd'THH:mm:ssZZ</value>
+        <value type="java.lang.String">yyyy-MM-dd'T'HH:mm:ssZZ</value>
         <value type="java.util.Locale">en</value>
       </list>
     </property>

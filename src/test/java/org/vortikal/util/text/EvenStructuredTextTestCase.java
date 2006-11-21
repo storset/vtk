@@ -31,32 +31,50 @@
 package org.vortikal.util.text;
 
 
+import java.io.File;
+import java.net.URL;
+
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 import junit.framework.TestCase;
 
 public class EvenStructuredTextTestCase extends TestCase {
 
+    private static final String TEST_XML = 
+        "src/test/resources/org/vortikal/util/text/nyhet.xml";
+ 
     private EvenStructuredText est; 
+
+    Document testDocument;
     
     protected void setUp() throws Exception {
         super.setUp();
         this.est = new EvenStructuredText();
+
+        SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");
+
+        try {
+            File testXML = new File(TEST_XML);
+            this.testDocument = builder.build(testXML);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Couldn't instantiate test schema " + e.getMessage());
+        }
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
 
+    public void testEmptyParagraph() {
+        String s = "Avsnitt1\n";
+        Element fritekst = this.testDocument.getRootElement().getChild("fritekst");
 
-//    public void testListsWithSingleNewLine() {
-//        String s = "\n# ol";
-//        Element parsed = this.est.parseStructuredText(s);
-//        System.out.println(parsed.getChildren());
-//        String reparsed = this.est.parseElement(parsed);
-//        assertEquals(s, reparsed);
-//    }
-
+        assertEquals(s, this.est.parseElement(fritekst));
+    }
+    
     public void testComplexStructure() {
         try {
             String complex = "[sub:subscript] og [super:superscript]\\\n" +
@@ -97,8 +115,6 @@ public class EvenStructuredTextTestCase extends TestCase {
     	assertEquals(s, s2);
     }
     
-    
-
     
  // Roundtrip tests for testing escape
     

@@ -64,7 +64,6 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
         this.storageDirectory = storageDirectory;
         
         super.initialize();
-        
     }
     
     /**
@@ -109,14 +108,14 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
     public void corruptionTest() throws IOException {
         reinitialize();
         
-        IndexReader reader = getIndexReader();
+        IndexReader reader = super.getIndexReader();
         
         for (int i=0; i<reader.maxDoc(); i++) {
             if (reader.isDeleted(i)) continue;
             reader.document(i);
         }
         
-        commit(); // Close reader
+        super.commit(); // Close reader
     }
 
     public File getStorageDirectory() {

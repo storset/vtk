@@ -381,7 +381,6 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     public void close(Iterator iterator) throws IndexException {
         try {
-            
             if ((iterator instanceof CloseableIterator)) {
                 ((CloseableIterator)iterator).close();
             } else {
@@ -391,6 +390,10 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         } catch (Exception e) {
             throw new IndexException(e);
         }
+    }
+    
+    public boolean isClosed() {
+        return this.indexAccessor.isClosed();
     }
 
     public void commit() throws IndexException {
@@ -403,8 +406,8 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     public void close() throws IndexException {
         try {
+            logger.info("Closing index ..");
             this.indexAccessor.close();
-            logger.info("Closed index");
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -412,8 +415,8 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     public void reinitialize() throws IndexException {
         try {
+            logger.info("Re-initializing index ..");
             this.indexAccessor.reinitialize();
-            logger.info("Re-initialized index");
         } catch (IOException io) {
             throw new IndexException(io);
         }

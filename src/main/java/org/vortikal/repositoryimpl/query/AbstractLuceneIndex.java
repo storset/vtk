@@ -32,6 +32,8 @@
 package org.vortikal.repositoryimpl.query;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,18 +44,19 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 
 
+
 /**
+ * TODO: This JavaDoc description is outdated.
  * Some common Lucene index functionality. This class does not handle locking explicitly, 
  * but returns IndexWriter/IndexReader instances in a mutually exclusive fashion, 
  * automatically closing one or the other. It is, by itself, synchronized, and
  * thus should be thread safe.
- * 
- * TODO: JavaDoc
+ *
  * @author oyviste
  */
 public abstract class AbstractLuceneIndex {
     
-    private static Log logger = LogFactory.getLog(AbstractLuceneIndex.class.getName());
+    private final Log LOG = LogFactory.getLog(AbstractLuceneIndex.class);
     
     /* Lucene tunables */
     private int mergeFactor = 10;
@@ -61,27 +64,39 @@ public abstract class AbstractLuceneIndex {
     private int maxMergeDocs = 10000;
     
     /** Specifies if any existing index should be forcibly unlocked, if it was
-     *  locked at init-time.  */
+     *  locked at init-time.
+     **/
     private boolean forceUnlock = false;
     
+    /** Erase existing index upon first initialization */
     private boolean eraseExistingIndex = false;
     
-    /** <code>IndexWriter</code> instance. */
-    private IndexWriter writer;
+    /** Main <code>IndexWriter</code> instance. */
+    private IndexWriter writer = null;
     
-    /** <code>IndexReader</code> instance. */
-    private IndexReader reader;
+    /** Main <code>IndexReader</code> instance. */
+    private IndexReader reader = null;
     
-    /** Lucene <code>Directory</code> implementation.
+    /** Main <code>Directory</code> implementation.
      *  Index is considered closed if this is null. */
-    private Directory directory;
+    private Directory directory = null;
     
     /** Default Lucene <code>Analyzer</code> implementation used. */
-    private Analyzer analyzer;
+    private Analyzer analyzer = null;
+    
+    /** Maximum number of outdated but in-use read-only index readers to keep before
+     * forcefully closing them. 
+     */
+    private static final int MAX_DIRTY_READONLY_READERS = 10;
+    
+    private LinkedList dirtyReadOnlyReaders = new LinkedList();
+    private ReadOnlyIndexReader roReader = null;
+    
+    private boolean roReaderDirty = false;  // Flags if the read-only reader instance is dirty
     
     /**
      * Constructor with some sensible defaults.
-     * @throws IOException
+     * 
      */
     public AbstractLuceneIndex() {
         this(new KeywordAnalyzer(), false, false);
@@ -94,14 +109,12 @@ public abstract class AbstractLuceneIndex {
      * @param analyzer
      * @param eraseExistingIndex
      * @param forceUnlock
-     * @throws IOException
      */
     public AbstractLuceneIndex(Analyzer analyzer, boolean eraseExistingIndex, 
                                                   boolean forceUnlock) {
         this.analyzer = analyzer;
         this.forceUnlock = forceUnlock;
         this.eraseExistingIndex = eraseExistingIndex;
-        
     }
 
     /**
@@ -113,17 +126,21 @@ public abstract class AbstractLuceneIndex {
         if (this.directory == null) {
             throw new IOException("Directory provided by subclass was null");
         }
-        initializeIndex(this.directory);
+        
+        initializeIndexDirectory(this.directory);
     }
     
     /**
-     * Must be implemented by subclasses to provide a directory implementation.
+     * This method must be implemented by subclasses to provide a 
+     * {@link org.apache.lucene.store.Directory} implementation.
      */
-    protected abstract Directory createDirectory(boolean eraseContents) 
-        throws IOException;
-
+    protected abstract Directory createDirectory(boolean eraseContents) throws IOException;
     
     protected synchronized IndexWriter getIndexWriter() throws IOException {
+        if (this.directory == null) {
+            throw new IOException("Index is closed");
+        }
+        
         // Check if we are already providing a reader, close it if so.
         if (this.reader != null) {
             this.reader.close();
@@ -142,6 +159,10 @@ public abstract class AbstractLuceneIndex {
     }
     
     protected synchronized IndexReader getIndexReader() throws IOException {
+        if (this.directory == null) {
+            throw new IOException("Index is closed");
+        }
+        
         if (this.writer != null) {
             this.writer.close();
             this.writer = null;
@@ -154,16 +175,77 @@ public abstract class AbstractLuceneIndex {
         return this.reader;
     }
     
-    protected IndexReader getNewReadOnlyIndexReader() throws IOException {
+    protected synchronized IndexReader getReadOnlyIndexReader() throws IOException {
+        if (this.directory == null) {
+            throw new IOException("Index is closed");
+        }
         
-        return IndexReader.open(this.directory);
+        if (this.roReader == null) {
+            // No read-only reader has been instantiated yet, create new.
+            this.roReader = new ReadOnlyIndexReader(IndexReader.open(this.directory));
+            this.roReaderDirty = false;
+        } else if (this.roReaderDirty) {
+            
+            if (!this.roReader.closeOnZeroReferences()) {
+                this.dirtyReadOnlyReaders.addFirst(this.roReader);
+            }
+            
+            if (this.dirtyReadOnlyReaders.size() > MAX_DIRTY_READONLY_READERS) {
+                ReadOnlyIndexReader oldest = 
+                                (ReadOnlyIndexReader)this.dirtyReadOnlyReaders.removeLast();
+                if (oldest.getReferenceCount() > 0) {
+                    LOG.warn("Forcefully closing an old read-only index reader with ref count " 
+                            + oldest.getReferenceCount());
+                    oldest.close();
+                }
+            }
+
+            this.roReader = new ReadOnlyIndexReader(IndexReader.open(this.directory));
+            this.roReaderDirty = false;
+        }
+        
+        this.roReader.increaseReferenceCount();
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getReadOnlyIndexReader(): current read-only reader ref count increased to " 
+                    + this.roReader.getReferenceCount());
+        }
+        
+        return this.roReader;
+    }
+    
+    protected synchronized void releaseReadOnlyIndexReader(IndexReader readOnlyReader) 
+        throws IOException {
+        
+        if (readOnlyReader == null) return;
+        
+        if (! (readOnlyReader instanceof ReadOnlyIndexReader)) {
+            throw new IllegalArgumentException("Only instances obtained with "
+                    + " getReadOnlyIndexReader() should be released with this method");
+        }
+        
+        ((ReadOnlyIndexReader)readOnlyReader).decreaseReferenceCount();
+
+        if (LOG.isDebugEnabled() && this.roReader != null) {
+            LOG.debug("releaseReadOnlyIndexReader(): current read-only reader ref count is " 
+                    + this.roReader.getReferenceCount());
+        }
         
     }
-
+    
+    /**
+     * Commits any changes, but does not close index or directory.
+     * It is necessary to call commit for the read-only reader instance to be flagged as dirty. 
+     * 
+     * @throws IOException
+     */
     protected synchronized void commit() throws IOException {
+        if (this.directory == null) {
+            throw new IOException("Index is closed");
+        }
+        
         if (! IndexReader.isLocked(this.directory)) {
-            // If there is no lock on index, there are no pending changes.
-            return;
+            return; // If there is no lock on index, there are no pending changes.
         }
         
         if (this.reader != null) {
@@ -175,12 +257,22 @@ public abstract class AbstractLuceneIndex {
             this.writer.close();
             this.writer = null;
         }
+        
+        // Flag read-only reader dirty if necessary
+        if (this.roReader != null) {
+            this.roReaderDirty = !this.roReader.isCurrent();
+            if (LOG.isDebugEnabled() && this.roReaderDirty) {
+                LOG.debug("Read-only index reader dirty after index commit");
+            }
+        }
     }
     
-    /* TODO: Enforce closed status, or remove "close-semantics" altogether. Need to
-    *       review Lucene code, to understand how resources are freed when directory
-    *       is closed (I think they're reference-counting and freeing upon GC/finalize()).
-    */ 
+    /**
+     * Close down the managed Lucene index.
+     * 
+     * This will also forcefully close all active read-only readers. 
+     * 
+     **/ 
     protected synchronized void close() throws IOException {
         if (this.reader != null) {
             this.reader.close();
@@ -194,14 +286,39 @@ public abstract class AbstractLuceneIndex {
 
         if (this.directory != null) {
             this.directory.close();
+            this.directory = null;
         }
+        
+        if (this.roReader != null) {
+            if (this.roReader.getReferenceCount() > 0) {
+                LOG.warn("Closing current read-only index reader, but reference count is still " 
+                        + this.roReader.getReferenceCount());
+            }
+            this.roReader.close();
+            this.roReader = null;
+        }
+        
+        // Also clean up any outdated read-only readers
+        cleanupDirtyReadOnlyIndexReaders();
+        
+        LOG.info("Index closed");
     }
 
+    protected synchronized boolean isClosed() {
+        return (this.directory == null);
+    }
+    
     /**
-     * Re-initializes index directory. 
+     * Re-initialize index resources.
+     * 
+     * Current read-only reader instance is only flagged dirty. 
+     * This is to prevent on-going searches from being interrupted.
+     * 
+     * 
      * @throws IOException
      */
     protected synchronized void reinitialize() throws IOException {
+        
         if (this.reader != null) {
             this.reader.close();
             this.reader = null;
@@ -214,24 +331,29 @@ public abstract class AbstractLuceneIndex {
         
         if (this.directory != null) {
             this.directory.close();
-            // Don't null directory here. This closes a small race between this
-            // method and getNewReadOnlyIndexReader(). If we don't
-            // null here, they might get the old closed instance, and might throw an IOException, 
-            // but that's much better than a null-pointer exception.
-            // The read-only/searcher methods are not synchronized for performance reasons.
+            this.directory = null;
         }
         
         this.directory = createDirectory(false);
-        initializeIndex(this.directory);
-    }
+        initializeIndexDirectory(this.directory);
 
+        this.roReaderDirty = true;
+
+        LOG.info("Re-initialized index at directory '" + this.directory + "'");
+        LOG.info("Current read-only reader marked dirty");
+    }
+    
     /**
      * Clear existing index directory contents, and create a new one. This method will 
-     * automaticallly re-initialize index.
+     * automaticallly re-initialize and re-open index.
+     * 
+     * Current read-only reader instance is only flagged dirty. 
+     * This is to prevent on-going searches from being interrupted.
      * 
      * @throws IOException
      */
     protected synchronized void createNewIndex() throws IOException {
+        
         if (this.reader != null) {
             this.reader.close();
             this.reader = null;
@@ -243,30 +365,54 @@ public abstract class AbstractLuceneIndex {
         }
 
         if (this.directory != null) {
-            if (IndexReader.isLocked(this.directory)) {
-                IndexReader.unlock(this.directory);
-            }
-            this.directory.close();  // Don't null directory here, for the same reason as explained above.
+            this.directory.close();
+            this.directory = null;
         }
         
         this.directory = createDirectory(true);
-        initializeIndex(this.directory);
+        initializeIndexDirectory(this.directory);
+
+        this.roReaderDirty = true;
+        
+        LOG.info("Created new index at directory '" + this.directory + "'");
+        LOG.info("Current read-only reader marked dirty");
     }
 
+    /** Force close all outdated read-only index readers in close-on-last-reference state */
+    private void cleanupDirtyReadOnlyIndexReaders() {
+        for (Iterator i = this.dirtyReadOnlyReaders.iterator(); i.hasNext();) {
+            ReadOnlyIndexReader readOnlyReader = (ReadOnlyIndexReader)i.next();
+            if (readOnlyReader.getReferenceCount() > 0) {
+                LOG.warn("Forcefully closing old read-only index reader with ref count "
+                        + readOnlyReader.getReferenceCount());
+                try {
+                    readOnlyReader.close();
+                } catch (IOException io) {
+                    LOG.warn("IOException while closing outdated read-only index reader: " 
+                            + io.getMessage());
+                }
+            }
+
+            i.remove();
+        }
+    }
+    
     /** Initialize Lucene index */
-    private void initializeIndex(Directory directory) throws IOException {
+    private void initializeIndexDirectory(Directory directory) throws IOException {
         // Check index lock, no matter if a valid index exists in directory
-        // or not. The index locks are stored in /tmp, and as such, not
+        // or not. The index locks are typically stored in /tmp, and as such, not
         // dependent upon index directory contents.
         // If contents of an index has been cleared manually, but locks still
         // remain in /tmp, we are in trouble if we don't clear them here,
         // and try to create a new index.
+        
+        // Check for any index locks, remove them if requested.
         checkIndexLock(directory);
         
-        // Check status on index, create new if necessary
+        // Check status of index directory, create new index if necessary
         if (! IndexReader.indexExists(directory)) {
             new IndexWriter(directory, this.analyzer, true).close();
-            logger.info("Empty new index created.");
+            LOG.info("Empty new index created in directory '" + directory + "'");
         }
     }
     
@@ -275,18 +421,15 @@ public abstract class AbstractLuceneIndex {
         if (IndexReader.isLocked(directory)) {
             // See if we should try to force-unlock it
             if (this.forceUnlock) {
-                logger.warn("Index was locked, forcibly releasing lock.");
+                LOG.warn("Index directory is locked, forcibly releasing lock.");
                 IndexReader.unlock(directory);
             } else {
-                logger.warn("Index was locked and 'forceUnlock' is set to false.");
+                throw new IOException("Index directory '" 
+                        + directory + "' is locked and 'forceUnlock' is set to false.");
             }
         }
     }
 
-    protected synchronized Directory getDirectory() {
-        return this.directory;
-    }
-    
     public int getMergeFactor() {
         return this.mergeFactor;
     }

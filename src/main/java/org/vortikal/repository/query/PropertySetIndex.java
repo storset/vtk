@@ -39,7 +39,9 @@ import org.vortikal.repositoryimpl.query.StorageCorruptionException;
 
 /**
  * <p>Defines an interface for modifying and inspecting the contents of 
- * an index of <code>PropertySet</code> instances.</p>
+ * an index of <code>PropertySet</code> instances.
+ * 
+ * <p>Note that this interface cannot be used for searching the index.
  * 
  * <p>
  * Each <code>PropertySet</code> is primarily identified by its URI. In addition, 
@@ -209,6 +211,11 @@ public interface PropertySetIndex {
      * @throws IndexException
      */
     public void close() throws IndexException;
+    
+    /**
+     * Determine if underlying index is closed for access or not. 
+     */
+    public boolean isClosed();
     
     /**
      * Re-initialize the index. Should be used to re-open a previously

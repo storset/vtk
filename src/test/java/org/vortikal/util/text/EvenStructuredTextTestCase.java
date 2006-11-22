@@ -75,10 +75,14 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals(s, this.est.parseElement(fritekst));
     }
     
+    public void testStartsWithList() {
+        String s = "\nparagraph";
+        assertEquals(s, this.est.parseElement(this.est.parseStructuredText(s)));
+    }
+    
     public void testEmptyParagraph2() {
         String s = "\n\n\nAvsnitt1\n\n\n";
-        String s2 = "Avsnitt1";
-        assertEquals(s2, this.est.parseElement(this.est.parseStructuredText(s)));
+        assertEquals(s, this.est.parseElement(this.est.parseStructuredText(s)));
     }
     
     public void testComplexStructure() {

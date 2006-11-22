@@ -393,14 +393,17 @@ public final class EvenStructuredText implements StructuredText {
     
     public Element parseStructuredText(String text) {
         String structureText = unifyNewlines(text);
-        structureText = removeStartingAndTrailingNewlines(structureText);
                 
         // All structuretext skal inn i avsnitt eller liste
-        if ((!structureText.startsWith(this.PARAGRAPH_START))
-                || (!structureText.startsWith(this.LIST_START))
-                || (!structureText.startsWith(this.NUMLIST_START))) {
+        // If the first element
+        // If first non line break is:
+        // - if liststart without line sep -> 1 line sep
+        // - else -> 2 line sep
+//        if ((!structureText.startsWith(this.PARAGRAPH_START))
+//                || (!structureText.startsWith(this.LIST_START))
+//                || (!structureText.startsWith(this.NUMLIST_START))) {
             structureText = this.PARAGRAPH_START + structureText;
-        }
+//        }
 
         Element root = new Element(lookupTag("root"));
         

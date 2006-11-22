@@ -210,7 +210,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             return new Term(DocumentMapper.ID_FIELD_NAME, String.valueOf(
                     PropertySetImpl.NULL_RESOURCE_ID));
         } catch (IOException io) {
-            throw new QueryBuilderException("IOException while building query: ", io);
+            throw new QueryBuilderException("IOException while building query: " + io.getMessage());
         } finally {
             try {
                 if (td != null) td.close();

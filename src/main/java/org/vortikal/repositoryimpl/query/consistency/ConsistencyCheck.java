@@ -50,6 +50,12 @@ import org.vortikal.repositoryimpl.query.StorageCorruptionException;
 /**
  * Check consistency and optionally repair errors afterwords.
  * 
+ * Note that usage of this class requires external locking of the index in question, if 
+ * writing operations are known to occur during testing.
+ * 
+ * TODO: handle locking internally instead (makes this tool a little easier to use from management
+ * code)
+ * 
  * @author oyviste
  */
 public class ConsistencyCheck {

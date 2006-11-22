@@ -45,7 +45,9 @@ import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
  * <p>The target index will be exclusively locked for writing immediately, while the re-indexing runs
  * on the temporary index. This is done to avoid losing any updates that might happen
  * during the operation. This, however, does not prevent doing queries on the target index.
- *  
+ * 
+ * <p>The provided temporary index will be explicitly closed after usage.
+ * 
  * @author oyviste
  *
  */
@@ -97,7 +99,10 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
             if (LOG.isInfoEnabled()) {
                 LOG.info("Merge operation completed successfully, " + count + " property sets" 
                         + " were indexed.");
+                LOG.info("Closing temporary index instance.");
             }
+            
+            this.temporaryIndex.close();
             
             return count;
         } catch (IndexException ie) {

@@ -128,7 +128,7 @@ public interface DataAccessor {
     /**
      * Atomically copies a resource to a new destination.
      * @param resource the resource to copy from
-     * @param dest the resource to copy intto (becomes the parent of
+     * @param dest the resource to copy into (becomes the parent of
      * the copied resource after the copy operation)
      * @param destURI the destination path
      * @param copyACLs whether to copy ACLs from the existing

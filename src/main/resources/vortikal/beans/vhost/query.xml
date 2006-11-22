@@ -38,7 +38,7 @@
     <property name="valueFactory" ref="valueFactory"/>
   </bean>
 
-  <!-- A Lucene index accessor instance. Manages low-level access. -->
+  <!-- Primary Lucene index accessor instance. Manages low-level access. -->
   <bean id="systemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index"/>
@@ -46,27 +46,28 @@
     <property name="maxLockAcquireTimeOnShutdown" value="30"/>
   </bean>
 
-  <!-- Property set index based on a single Lucene index accessor instance.  -->
+  <!-- Property set index based on primary Lucene index accessor instance.  -->
   <bean id="systemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
     <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="propertyManager" ref="propertyManager"/>
   </bean>
 
-  <!-- Secondary property set index instance (tuned for batch indexing) -->
+  <!-- A Lucene index accessor (secondary instance, batch indexing tuned) -->
+  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
+    <property name="storageRootPath" value="${indexStorageRootPath}"/>
+    <property name="storageId" value="property_index.secondary"/>
+    <property name="maxBufferedDocs" value="100"/>
+    <property name="mergeFactor" value="100"/>
+    <property name="maxMergeDocs" value="15000"/>
+    <property name="forceUnlock" value="true"/>
+    <property name="maxLockAcquireTimeOnShutdown" value="30"/>
+    <property name="closeAfterInitialization" value="true"/>
+  </bean>
+
+  <!-- Secondary property set index instance -->
   <bean id="secondarySystemIndex" class="org.vortikal.repositoryimpl.query.PropertySetIndexImpl">
-    <property name="indexAccessor">
-      <!-- This accessor is anonymous, it doesn't need to be referenced from any other beans -->
-      <bean class="org.vortikal.repositoryimpl.query.LuceneIndex">
-        <property name="storageRootPath" value="${indexStorageRootPath}"/>
-        <property name="storageId" value="property_index.secondary"/>
-        <property name="maxBufferedDocs" value="100"/>
-        <property name="mergeFactor" value="100"/>
-        <property name="maxMergeDocs" value="15000"/>
-        <property name="forceUnlock" value="true"/>
-        <property name="maxLockAcquireTimeOnShutdown" value="30"/>
-      </bean>
-    </property>
+    <property name="indexAccessor" ref="secondarySystemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="propertyManager" ref="propertyManager"/>
   </bean>

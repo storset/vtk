@@ -189,7 +189,6 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         checkReadOnly(principal);
 
-//         ResourceImpl parent = this.dao.load(URIUtil.getParentURI(uri));
         ResourceImpl resource = this.dao.load(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);

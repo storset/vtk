@@ -985,7 +985,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             }
 
             acl = (AclImpl) acl.clone();
-//             acl.setInherited(resources[i].isInheritedACL());
             resources[i].setAcl(acl);
         }
     }

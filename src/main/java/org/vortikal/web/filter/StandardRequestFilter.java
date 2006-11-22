@@ -33,12 +33,17 @@ package org.vortikal.web.filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 
 /**
  * Standard request filter. Ensures that the URI is not empty or
  * <code>null</code>.
  */
 public class StandardRequestFilter implements RequestFilter {
+
+    private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
 
     private int order = Integer.MAX_VALUE;
     
@@ -63,14 +68,17 @@ public class StandardRequestFilter implements RequestFilter {
 
             super(request);
             String requestURI = request.getRequestURI();
-
+            this.uri = requestURI;
+            
             if (requestURI == null || "".equals(requestURI)) {
-                requestURI = "/";
+                this.uri = "/";
             }
 
             // Spaces are not always decoded by the container:
-            requestURI = requestURI.replaceAll("%20", " ");
-            this.uri = requestURI;
+            this.uri = this.uri.replaceAll("%20", " ");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Translated uri: from '" + requestURI + "' to '" + uri + "'");
+            }
         }
         
         public String getRequestURI() {

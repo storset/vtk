@@ -52,7 +52,7 @@ import org.vortikal.util.web.URLUtil;
  */
 public class RequestURLDecoder implements RequestFilter, InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(RequestURLDecoder.class);
 
     private String characterEncoding;
     
@@ -99,6 +99,7 @@ public class RequestURLDecoder implements RequestFilter, InitializingBean {
         public String getRequestURI() {
             
             String uri = this.request.getRequestURI();
+            String uriBefore = uri;
             boolean appendSlash = false;
             if (uri == null || uri.endsWith("/")) {
                 appendSlash = true;
@@ -111,6 +112,10 @@ public class RequestURLDecoder implements RequestFilter, InitializingBean {
             }
             if (appendSlash && !"/".equals(uri)) {
                 uri += "/";
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Translated uri: from '" + uriBefore + "' to '" + uri + "'");
             }
             return uri;
         }

@@ -116,7 +116,7 @@
     <constructor-arg>
       <map>
         <entry key="Resource type tree">
-          <value>"\n" + context.getBean("propertyManager").getResourceTypeTreeAsString()</value>
+          <value>"\n" + context.getBean("resourceTypeTree").getResourceTypeTreeAsString()</value>
         </entry>
       </map>
     </constructor-arg>

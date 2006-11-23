@@ -113,8 +113,9 @@ public class LockManager {
                  * serves only as a synchronization point, in which
                  * threads can wait their turn, and then try to
                  * acquire a new lock (on the next iteration in this
-                 * loop). This process is repeaded at most
-                 * this.lmaxIterations times.  */
+                 * loop). This process is repeated at most
+                 * this.lmaxIterations times.
+                 */
 
                 if (lock.isValid()) {                    
                     if (this.logger.isDebugEnabled()) {
@@ -141,6 +142,7 @@ public class LockManager {
                 }
             }
         }
+        
         return (String[]) claimedLocks.toArray(new String[claimedLocks.size()]);
     }
 
@@ -201,6 +203,10 @@ public class LockManager {
      * @return the lock object corresponding to the URI
      */
     private synchronized Lock getLock(String uri) {
+        // XXX: This code does not seem to consider hashcode collisions for strings
+        //      Example of two strings that hash to the same code:
+        //      '/foo/bar/BB' and  '/foo/bar/Aa'
+        
         Integer hashCode = new Integer(uri.hashCode());
 
         if (!this.locks.containsKey(hashCode)) {

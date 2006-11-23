@@ -143,7 +143,7 @@
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
-          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <scanIntervalSeconds>0</scanIntervalSeconds>
           <systemProperties>
             <systemProperty>
               <name>org.apache.commons.logging.Log</name>

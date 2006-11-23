@@ -30,14 +30,25 @@
  */
 package org.vortikal.web.controller.repository;
 
+import java.io.File;
 import java.io.InputStream;
-
+import java.util.Iterator;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -45,16 +56,21 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 
-
 public class FileUploadController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(FileUploadController.class);
 
     private Repository repository = null;
+    private int maxUploadSize = 100000000;
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
+
+    public void setMaxUploadSize(int maxUploadSize) {
+        this.maxUploadSize = maxUploadSize;
+    }
+    
 
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception {
@@ -69,83 +85,98 @@ public class FileUploadController extends SimpleFormController {
             resource, securityContext.getPrincipal());
 
         FileUploadCommand command = new FileUploadCommand(url);
-
         return command;
     }
 
-    protected void doSubmitAction(Object command) throws Exception {
+        
+
+    protected ModelAndView onSubmit(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    Object command,
+                                    BindException errors)
+        throws Exception {
+
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        // cast the bean
         FileUploadCommand fileUploadCommand = (FileUploadCommand) command;
 
         if (fileUploadCommand.getCancelAction() != null) {
             fileUploadCommand.setDone(true);
-            return;
+            return new ModelAndView(getSuccessView());
         }
 
-        // let's see if there's content there
-        MultipartFile file = fileUploadCommand.getFile();
+        FileItemFactory factory = new DiskFileItemFactory(
+            this.maxUploadSize, new File(System.getProperty("java.io.tmpdir")));
+        ServletFileUpload upload = new ServletFileUpload(factory);
+    
 
-        if (file == null) {
+        FileItem uploadItem = null;
+        List fileItems = upload.parseRequest(request);
+        for (Iterator i = fileItems.iterator(); i.hasNext();) {
+            FileItem item = (FileItem) i.next();
+            if (!item.isFormField()) {
+                uploadItem = item;
+            }
+        }
+        
+        if (uploadItem == null) {
             logger.info("The user didn't upload anything");
-            //FIXME: what to do?
-            // hmm, that's strange, the user did not upload anything
+            return new ModelAndView(getSuccessView());
         }
 
-        String name = file.getOriginalFilename();
+        String name = uploadItem.getName();
         try {
 
             name = stripWindowsPath(name);
-
             if (name == null || name.trim().equals("")) {
-
-                // FIXME: shouldn't be here
-                return;
+                return new ModelAndView(getSuccessView());
             }
 
             String itemURI = uri.equals("/") ? "/" + name : uri + "/" + name;
-
             if (logger.isDebugEnabled()) {
                 logger.debug("Uploaded resource will be: " + itemURI);
             }
 
             boolean exists = this.repository.exists(token, itemURI);
             if (exists) {
-
                 if (logger.isDebugEnabled()) {
                     logger.debug("Uploaded file already existed.");
                 }
-                // FIXME: shouldn't be here
-                return;
+                errors.rejectValue("file",
+                                   "manage.upload.resource.exists",
+                                   "A resource with this name already exists");
+                return showForm(request, response, errors);
             }
 
             Resource newResource = this.repository.createDocument(token, itemURI);
-            if (file.getContentType() != null) {
+            if (uploadItem.getContentType() != null) {
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Setting content type of resource to "
-                                 + file.getContentType());
+                                 + uploadItem.getContentType());
                 }
-                newResource.setContentType(file.getContentType());
+                newResource.setContentType(uploadItem.getContentType());
                 this.repository.store(token, newResource);
             }
 
-            InputStream inStream = file.getInputStream();
+            InputStream inStream = uploadItem.getInputStream();
             this.repository.storeContent(token, itemURI, inStream);
-
+            fileUploadCommand.setDone(true);
+            return new ModelAndView(getSuccessView());
         } catch (Exception e) {
-            logger.info("Caught exception while performing file upload", e);
-            // FIXME: what to do?
+            logger.warn("Caught exception while performing file upload", e);
+            errors.rejectValue("file",
+                               "manage.upload.error",
+                               "An unexpected error occurred while processing file upload");
+            return showForm(request, response, errors);
         }
-
-        fileUploadCommand.setDone(true);
-
     }
+
+
 
     /**
      * Attempts to extract only the file name from a Windows style

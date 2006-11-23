@@ -249,17 +249,6 @@
           </property>
         </bean>
         <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
-        
-        <!--        <bean class="org.vortikal.web.service.RequestMethodAssertion">
-             <property name="method">
-             <value>POST</value>
-             </property>       
-             </bean>
-             <bean class="org.vortikal.web.service.RequestContentTypeRegexpAssertion">
-             <property name="pattern">
-             <value>^multipart/form-data;.*</value>
-             </property>
-             </bean> -->
       </list>
     </property>
     <property name="handler">
@@ -855,11 +844,6 @@
 
     <property name="commandName" value="form" />
     <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
-    <!--
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.properties.ResourceEnumerationPropertyCommand</value>
-    </property>
-    -->
   </bean>
 
   <bean id="fileUploadHandler" 
@@ -870,27 +854,13 @@
     <property name="commandName" value="uploadForm" />
     <property name="commandClass"
               value="org.vortikal.web.controller.repository.FileUploadCommand" />
-    <property name="validator">
-      <bean class="org.vortikal.web.controller.repository.FileUploadCommandValidator"
-            parent="requestLocalRepositoryAware">
-      </bean>
-    </property>
   </bean>
-
-  <bean id="multipartResolver" 
-    class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
   <bean id="deleteResourceHandler" 
     class="org.vortikal.web.controller.repository.DeleteResourceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="redirectToManage" />
   </bean>
-
-  <!-- bean id="duplicateResourceHandler" 
-    class="org.vortikal.web.controller.repository.DuplicateResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="viewName" value="redirectToManage" />
-  </bean -->
 
   <bean id="lockResourceHandler" 
     class="org.vortikal.web.controller.repository.LockResourceController"
@@ -937,33 +907,6 @@
     <property name="method" value="refresh" />
   </bean>
 
-  <!-- Refresh the document templates bean every 10 minutes -->
-  <!--
-  <bean id="repository.refreshDocumentTemplatsSchedulerFactory"
-        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    <property name="triggers">
-      <list>
-        <bean id="repository.refreshDocumentTemplatesTrigger"
-              class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-          <property name="jobDetail">
-            <bean id="repository.refreshDocumentTemplatesJobDetail" 
-                  class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-              <property name="group" value="repository" />
-              <property name="targetObject"><ref bean="defaultDocumentTemplates"/></property>
-              <property name="targetMethod"><value>refresh</value></property>
-            </bean>
-          </property>
-          <property name="startDelay">
-            <value>60000</value>
-          </property>
-          <property name="repeatInterval">
-            <value>600000</value>
-          </property>
-        </bean>
-      </list>
-    </property>
-  </bean>
-  -->
 
   <bean id="createCollectionHandler" 
     class="org.vortikal.web.controller.repository.CreateCollectionController"
@@ -1141,15 +1084,6 @@
       <value>org.vortikal.web.controller.properties.CharacterEncodingCommand</value>
     </property>
   </bean>
-  <!--
-
-  <bean id="setPropertyHandler" 
-    class="org.vortikal.web.controller.SetPropertyController"
-    parent="requestLocalRepositoryAware" />
-
-  <bean id="deletePropertyHandler" 
-    class="org.vortikal.web.controller.DeletePropertyController"
-    parent="requestLocalRepositoryAware" /-->
 
   <bean id="manageCollectionListingHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
@@ -1710,13 +1644,6 @@
     </property>
     <property name="viewWrapper" ref="manageViewWrapper" />
   </bean>
-
-  <!--
-  <bean id="manageErrorHandlerViewWrapper"
-        class="org.vortikal.web.view.wrapper.WrappingView" abstract="true">
-    <property name="viewWrapper" ref="manageViewWrapper" />
-  </bean>
-  -->
 
   <bean id="defaultManageErrorView" parent="freemarkerView">
     <property name="url" value="pages/error/default-manage-error.ftl" />

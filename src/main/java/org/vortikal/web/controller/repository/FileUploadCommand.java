@@ -30,26 +30,23 @@
  */
 package org.vortikal.web.controller.repository;
 
-import org.springframework.web.multipart.MultipartFile;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 
 public class FileUploadCommand extends AbstractSaveCancelCommand {
 
-    private MultipartFile file;
+    private String file;
 
     public FileUploadCommand(String submitURL) {
         super(submitURL);
     }
 
-        
-    public void setFile(MultipartFile file) {
+    public void setFile(String file) {
         this.file = file;
     }
     
-    public MultipartFile getFile() {
+    public String getFile() {
         return this.file;
     }
-
 }
 

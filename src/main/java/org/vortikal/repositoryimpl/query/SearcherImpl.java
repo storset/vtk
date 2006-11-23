@@ -36,18 +36,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.parser.QueryException;
 import org.vortikal.repositoryimpl.query.parser.ResultSet;
 import org.vortikal.repositoryimpl.query.parser.ResultSetImpl;
@@ -90,7 +86,7 @@ import org.vortikal.repositoryimpl.query.security.QueryResultAuthorizationManage
  */
 public class SearcherImpl implements Searcher, InitializingBean {
 
-    private static Log logger = LogFactory.getLog(SearcherImpl.class);
+    private final Log logger = LogFactory.getLog(SearcherImpl.class);
 
     private LuceneIndexManager indexAccessor;
     private DocumentMapper documentMapper;
@@ -231,7 +227,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
                     this.logger.debug("Sorted Lucene query took: " 
                             + (System.currentTimeMillis()-start) + " ms");
                 } else {
-                    this.logger.debug("Unsorted (index-ordered) Lucene query took: " 
+                    this.logger.debug("Unsorted Lucene query took: " 
                             + (System.currentTimeMillis()-start) + " ms");
                 }
             }
@@ -285,9 +281,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
             }
             
             long start = System.currentTimeMillis();
-            this.queryResultAuthorizationManager.authorizeQueryResults(token, 
-                                                                       rsiList);
+            this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
             long finish = System.currentTimeMillis();
+            
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Query result authorization took " 
                         + (finish-start) + " ms");
@@ -346,7 +342,5 @@ public class SearcherImpl implements Searcher, InitializingBean {
                                                    queryResultAuthorizationManager) {
         this.queryResultAuthorizationManager = queryResultAuthorizationManager;
     }
-    
-    
 
 }

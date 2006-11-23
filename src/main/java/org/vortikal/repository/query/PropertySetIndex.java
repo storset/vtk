@@ -72,6 +72,9 @@ import org.vortikal.repositoryimpl.query.StorageCorruptionException;
  * at the same time. Any modifying operation is not guaranteed to be visible by
  * other index users before {@link commit()} has been called.
  * </p>
+ * 
+ * TODO: Move to repositoryimpl-package, I don't see the need to expose this as an official 
+ * repository query interface.
  *
  * @author oyviste
  */

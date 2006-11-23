@@ -180,7 +180,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             
-            String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
+            String query = 
+                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
                 + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
                 + "where r.resource_id = ? order by p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);

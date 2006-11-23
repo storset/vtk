@@ -39,7 +39,7 @@
   </bean>
 
   <!-- Primary Lucene index accessor instance. Manages low-level access. -->
-  <bean id="systemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
+  <bean id="systemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
@@ -54,7 +54,7 @@
   </bean>
 
   <!-- A Lucene index accessor (secondary instance, batch indexing tuned) -->
-  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndex">
+  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repositoryimpl.query.LuceneIndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index.secondary"/>
     <property name="maxBufferedDocs" value="100"/>

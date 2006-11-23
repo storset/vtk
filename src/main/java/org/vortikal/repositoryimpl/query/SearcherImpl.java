@@ -92,7 +92,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
 
     private static Log logger = LogFactory.getLog(SearcherImpl.class);
 
-    private LuceneIndex indexAccessor;
+    private LuceneIndexManager indexAccessor;
     private DocumentMapper documentMapper;
     private QueryResultAuthorizationManager queryResultAuthorizationManager;
     private QueryBuilderFactory queryBuilderFactory;
@@ -321,7 +321,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
         this.documentMapper = documentMapper;
     }
 
-    public void setIndexAccessor(LuceneIndex indexAccessor) {
+    public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
 

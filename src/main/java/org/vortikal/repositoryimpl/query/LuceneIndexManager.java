@@ -46,9 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
 import EDU.oswego.cs.dl.util.concurrent.Mutex;
 
 /**
- * Class for low-level Lucene index access.
- * 
- * Manages write & search access to a single filesystem-based Lucene index.
+ * Manages access to a single file-system based Lucene index instance.
  * 
  * Contains mutex-locking functionality.
  *
@@ -57,9 +55,9 @@ import EDU.oswego.cs.dl.util.concurrent.Mutex;
  * 
  * @author oyviste
  */
-public class LuceneIndex implements InitializingBean, DisposableBean {
+public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
-    private final Log LOG = LogFactory.getLog(LuceneIndex.class);
+    private final Log LOG = LogFactory.getLog(LuceneIndexManager.class);
 
     private FSBackedLuceneIndex fsIndex;
     

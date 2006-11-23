@@ -106,7 +106,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
      * @throws IOException if corruption is detected.
      */
     public void corruptionTest() throws IOException {
-        reinitialize();
+        super.reinitialize();
         
         IndexReader reader = super.getIndexReader();
         

@@ -87,7 +87,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     Log logger = LogFactory.getLog(QueryBuilderFactoryImpl.class);
     
     private PropertyManager propertyManager;
-    private LuceneIndex indexAccessor;
+    private LuceneIndexManager indexAccessor;
     private ResourceTypeTree resourceTypeTree;
     
     public void afterPropertiesSet() throws BeanInitializationException {
@@ -224,7 +224,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         this.propertyManager = propertyManager;
     }
     
-    public void setIndexAccessor(LuceneIndex indexAccessor) {
+    public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
 

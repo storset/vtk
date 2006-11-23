@@ -65,7 +65,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
 
     Log logger = LogFactory.getLog(PropertySetIndexImpl.class);
     
-    private LuceneIndex indexAccessor; // Underlying Lucene index accessor.
+    private LuceneIndexManager indexAccessor; // Underlying Lucene index accessor.
     private DocumentMapper documentMapper;
     private PropertyManager propertyManager;
     private Analyzer analyzer;
@@ -431,7 +431,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         try {
             PropertySetIndexImpl indexImpl = (PropertySetIndexImpl)index;
             
-            LuceneIndex accessor = indexImpl.indexAccessor;
+            LuceneIndexManager accessor = indexImpl.indexAccessor;
             
             IndexReader[] readers = new IndexReader[] { accessor.getIndexReader() };
             
@@ -476,7 +476,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         this.documentMapper = documentMapper;
     }
 
-    public void setIndexAccessor(LuceneIndex indexAccessor) {
+    public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
 

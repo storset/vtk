@@ -262,7 +262,8 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     
                     Thread.sleep(SimpleMethodInvokingTriggerBean.this.startDelay);
                 } catch (InterruptedException ie) {
-                    SimpleMethodInvokingTriggerBean.this.logger.warn("Interrupted while waiting to start !");
+                    SimpleMethodInvokingTriggerBean.this.logger.warn(
+                                                        "Interrupted while waiting to start !");
                 }
             }
             
@@ -274,11 +275,14 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     
                     // Invoke
                     SimpleMethodInvokingTriggerBean.this.targetMethod.invoke(
-                                                        SimpleMethodInvokingTriggerBean.this.targetObject, SimpleMethodInvokingTriggerBean.this.arguments);
+                                           SimpleMethodInvokingTriggerBean.this.targetObject, 
+                                           SimpleMethodInvokingTriggerBean.this.arguments);
                     
                 } catch (IllegalAccessException iae) {
-                    SimpleMethodInvokingTriggerBean.this.logger.error("Target method not accessible", iae);
-                    SimpleMethodInvokingTriggerBean.this.logger.error("Unrecoverable error, aborting interval trigger");
+                    SimpleMethodInvokingTriggerBean.this.logger.error(
+                                                            "Target method not accessible", iae);
+                    SimpleMethodInvokingTriggerBean.this.logger.error(
+                                                "Unrecoverable error, aborting interval trigger");
                     this.alive = false;
                     break;
                     
@@ -286,26 +290,31 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                     if (SimpleMethodInvokingTriggerBean.this.arguments!= null) {
                         StringBuffer argTypes = new StringBuffer("(");
                         for (int i=0; i<SimpleMethodInvokingTriggerBean.this.arguments.length; i++) {
-                            argTypes.append(SimpleMethodInvokingTriggerBean.this.arguments[i].getClass().getName());
+                            argTypes.append(
+                                    SimpleMethodInvokingTriggerBean.this.arguments[i].getClass().getName());
                             if (i < SimpleMethodInvokingTriggerBean.this.arguments.length-1) {
                                 argTypes.append(", ");
                             }
                         }
                         argTypes.append(")");
                         
-                        SimpleMethodInvokingTriggerBean.this.logger.error("Supplied arguments illegal for given target method: "
+                        SimpleMethodInvokingTriggerBean.this.logger.error(
+                                "Supplied arguments illegal for given target method: "
                                 + argTypes.toString(), iae);
                     } else {
-                        SimpleMethodInvokingTriggerBean.this.logger.error("No arguments supplied for given target method", iae);
+                        SimpleMethodInvokingTriggerBean.this.logger.error(
+                                "No arguments supplied for given target method", iae);
                     }
                     
-                    SimpleMethodInvokingTriggerBean.this.logger.error("Unrecoverable error, aborting interval trigger");
+                    SimpleMethodInvokingTriggerBean.this.logger.error(
+                            "Unrecoverable error, aborting interval trigger");
                     this.alive = false;
                     break;
 
                 } catch (InvocationTargetException ite) {
-                    SimpleMethodInvokingTriggerBean.this.logger.warn("Invoked method threw an exception: " + 
-                            ite.getTargetException().getMessage(), 
+                    SimpleMethodInvokingTriggerBean.this.logger.warn(
+                            "Invoked method threw an exception: "  
+                            + ite.getTargetException().getMessage(), 
                             ite.getTargetException());
                     if (SimpleMethodInvokingTriggerBean.
                             this.abortTriggerOnTargetMethodException) {
@@ -315,7 +324,8 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
                         break;
                     }
                 } catch (Exception e) {
-                    SimpleMethodInvokingTriggerBean.this.logger.warn("Got an unexpected exception during method invocation:", e);
+                    SimpleMethodInvokingTriggerBean.this.logger.warn(
+                                        "Got an unexpected exception during method invocation:", e);
                 }
                 
                 // Sleep

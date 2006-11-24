@@ -47,10 +47,6 @@
     <property name="resourceTypeDefinition" ref="textResourceTypeDefinition" />
   </bean>
 
-  <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
-    <property name="resourceTypeDefinition" ref="managedXmlResource" />
-  </bean>
-
   <bean id="resourceTypeIsNotManagedXml" parent="resourceTypeIsManagedXml">
     <property name="invert" value="true" />
   </bean>

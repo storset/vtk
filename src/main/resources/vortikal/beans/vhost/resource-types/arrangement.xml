@@ -16,6 +16,7 @@
                 <ref bean="arrangementStarttidspunktPropDef" />
                 <ref bean="arrangementSluttidspunktPropDef" />
                 <ref bean="arrangementStedPropDef" />
+                <ref bean="arrangementArrangorPropDef" />
             </list>
         </property>
         <property name="assertions">
@@ -91,5 +92,19 @@
     <bean id="arrangementStedEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/arrangement/tid-og-sted/sted"  />
     </bean>
+
+    <bean id="arrangementArrangorPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="arrangor" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="arrangementArrangorEvaluator" />
+    </bean>
+    
+    <bean id="arrangementArrangorEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/arrangement/arrangor/navn" />
+    </bean>
+
     
 </beans>

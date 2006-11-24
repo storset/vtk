@@ -203,19 +203,13 @@ public class LockManager {
      * @return the lock object corresponding to the URI
      */
     private synchronized Lock getLock(String uri) {
-        // XXX: This code does not seem to consider hashcode collisions for strings
-        //      Example of two strings that hash to the same code:
-        //      '/foo/bar/BB' and  '/foo/bar/Aa'
-        
-        Integer hashCode = new Integer(uri.hashCode());
 
-        if (!this.locks.containsKey(hashCode)) {
+        if (!this.locks.containsKey(uri)) {
             Lock lock = new Lock(uri);
 
-            this.locks.put(hashCode, lock);
+            this.locks.put(uri, lock);
         }
-
-        return (Lock) this.locks.get(hashCode);
+        return (Lock) this.locks.get(uri);
     }
 
     /**
@@ -224,10 +218,8 @@ public class LockManager {
      * @param uri a <code>String</code> value
      */
     private synchronized void disposeLock(String uri) {
-        Integer hashCode = new Integer(uri.hashCode());
-
-        if (this.locks.containsKey(hashCode)) {
-            this.locks.remove(hashCode);
+        if (this.locks.containsKey(uri)) {
+            this.locks.remove(uri);
         }
     }
 

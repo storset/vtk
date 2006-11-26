@@ -99,4 +99,10 @@ public class CopyMoveSessionVariableExistsAssertion implements Assertion {
 		return true;
     }
 
+
+    public void processURL(URL url) {
+        // Empty
+        
+    }
+
 }

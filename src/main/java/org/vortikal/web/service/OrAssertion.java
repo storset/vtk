@@ -34,9 +34,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.web.RequestContext;
 
 
+/**
+ * XXX: Cannot be used on request assertions!
+ */
 public class OrAssertion implements Assertion {
 
     private Assertion[] assertions;
@@ -46,14 +48,18 @@ public class OrAssertion implements Assertion {
         this.assertions = assertions;
     }
     
+    public void processURL(URL url) {
+    }
+    
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        HttpServletRequest request = null;
-        if (match) {
-            RequestContext context = RequestContext.getRequestContext();
-            if (context != null) {
-                request = context.getServletRequest();
-            }
-        }
+        // Remove (?) or match!
+//        HttpServletRequest request = null;
+//        if (match) {
+//            RequestContext context = RequestContext.getRequestContext();
+//            if (context != null) {
+//                request = context.getServletRequest();
+//            }
+//        }
         for (int i = 0; i < this.assertions.length; i++) {
             if (this.assertions[i].processURL(url, resource, principal, match)) {
                 return true;
@@ -87,6 +93,5 @@ public class OrAssertion implements Assertion {
         sb.append(": assertions = [" + java.util.Arrays.asList(this.assertions) + "]");
         return sb.toString();
     }
-    
 
 }

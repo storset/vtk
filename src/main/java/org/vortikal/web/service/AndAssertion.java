@@ -52,14 +52,21 @@ public class AndAssertion implements Assertion {
         this.assertions = assertions;
     }
     
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        HttpServletRequest request = null;
-        if (match) {
-            RequestContext context = RequestContext.getRequestContext();
-            if (context != null) {
-                request = context.getServletRequest();
-            }
+    public void processURL(URL url) {
+        for (int i = 0; i < this.assertions.length; i++) {
+            this.assertions[i].processURL(url);
         }
+    }
+    
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        // XXX: remove this (?)
+//        HttpServletRequest request = null;
+//        if (match) {
+//            RequestContext context = RequestContext.getRequestContext();
+//            if (context != null) {
+//                request = context.getServletRequest();
+//            }
+//        }
 
         for (int i = 0; i < this.assertions.length; i++) {
             if (!this.assertions[i].processURL(url, resource, principal, match)) {
@@ -98,6 +105,5 @@ public class AndAssertion implements Assertion {
         sb.append(": assertions = [" + java.util.Arrays.asList(this.assertions) + "]");
         return sb.toString();
     }
-    
 
 }

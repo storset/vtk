@@ -42,7 +42,7 @@ import org.vortikal.security.Principal;
 
 /**
  * Class that takes an Asserion of any type as "parameter" and inverts its result
- *
+ * XXX: Cannot be used on request matching, impossible to invert url processing!
  * Properties:
  * 
  * <ul>
@@ -66,11 +66,15 @@ public class InvertAssertion extends AbstractAssertion implements InitializingBe
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof InvertAssertion)
             return true;
-        else
-            return false;
+
+        return false;
     }
         
-    
+    public void processURL(URL url) {
+        // Empty
+        
+    }
+
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }

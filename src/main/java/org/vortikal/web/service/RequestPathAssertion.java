@@ -72,10 +72,15 @@ public class RequestPathAssertion implements Assertion, InitializingBean {
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        url.setPath(this.path);
+        processURL(url);
         return true;
     }
 
+    // XXX: This seems strange?
+    public void processURL(URL url) {
+        url.setPath(this.path);
+    }
+    
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         return request.getRequestURI().equals(this.path);
     }

@@ -47,7 +47,9 @@ import org.vortikal.security.PrincipalManager;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>principalStore</code> - a {@link org.vortikal.security.PrincipalStore} used
+ *   <li><code>principalFactory</code> - a {@link org.vortikal.security.PrincipalFactory} used
+ *   for creating groups from group names (XXX: should be in config instead..)
+ *   <li><code>principalManager</code> - a {@link org.vortikal.security.PrincipalManager} used
  *   for validating group membership
  *   <li><code>principals</code> - a {@link Set} of (fully qualified)
  *   principal names to match the current principal against.
@@ -77,6 +79,9 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
         this.principalManager = principalManager;
     }
     
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
     
     public void afterPropertiesSet() throws Exception {
         if (this.principals == null) {
@@ -126,9 +131,5 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
     
     public boolean conflicts(Assertion assertion) {
         return false;
-    }
-
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
     }
 }

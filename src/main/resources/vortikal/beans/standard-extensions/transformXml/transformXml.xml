@@ -186,6 +186,10 @@
     <property name="namedDateFormats" ref="xmlSearcherNamedDateformats" />
     <property name="defaultDateFormatKey" value="long" />
     <property name="defaultLocale" value="${defaultLocale}" />
+
+    <property name="linkToService" ref="viewService" />
+    <property name="collectionResourceTypeDef"
+              ref="collectionResourceTypeDefinition" />
   </bean>
 
 

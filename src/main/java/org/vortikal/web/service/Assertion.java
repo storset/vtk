@@ -71,8 +71,10 @@ public interface Assertion {
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match);
 
 
+    public void processURL(URL url);
+    
     /**
-     * @return wether the request matches this assertion.
+     * @return whether the request matches this assertion.
      */
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal);
 

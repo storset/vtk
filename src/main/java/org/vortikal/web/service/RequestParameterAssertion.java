@@ -85,10 +85,14 @@ public class RequestParameterAssertion implements Assertion {
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        url.addParameter(this.parameterName, this.parameterValue);
+        processURL(url);
         return true;
     }
 
+    public void processURL(URL url) {
+        url.addParameter(this.parameterName, this.parameterValue);
+    }
+    
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         return this.parameterValue.equals(request.getParameter(this.parameterName)); 
     }

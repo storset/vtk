@@ -138,7 +138,10 @@ public class RequestLocaleMatchAssertion
         return true;
     }
 
-
+    public void processURL(URL url) {
+        // Empty
+    }
+    
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         Locale locale = this.localeResolver.resolveLocale(request);
         boolean match = match(locale);
@@ -147,5 +150,6 @@ public class RequestLocaleMatchAssertion
         }
         return match;
     }
-    
+
+
 }

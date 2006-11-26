@@ -135,6 +135,10 @@ public class RequestMethodAssertion
         return true;
     }
 
+    public void processURL(URL url) {
+        // Empty
+    }
+    
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         String reqMethod = request.getMethod();
 

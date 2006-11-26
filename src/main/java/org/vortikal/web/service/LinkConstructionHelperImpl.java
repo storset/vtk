@@ -53,7 +53,6 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
     private static Log logger = LogFactory.getLog(LinkConstructionHelperImpl.class);
     
 
-
     public String construct(Resource resource, Principal principal,
                             Map parameters, List assertions, Service service,
                             boolean matchAssertions, List urlPostProcessors) {
@@ -114,6 +113,8 @@ public class LinkConstructionHelperImpl implements LinkConstructionHelper {
         }
         return url;
     }
+
+
 
 
 

@@ -104,13 +104,16 @@ public class RequestParameterExistsAssertion implements Assertion {
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        if (!this.invert && (url.getParameter(this.parameterName) == null))
-                url.addParameter(this.parameterName, "");
-        
+        processURL(url);
         return true;
     }
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         return (this.invert != request.getParameterMap().containsKey(this.parameterName));
+    }
+
+    public void processURL(URL url) {
+        if (!this.invert && (url.getParameter(this.parameterName) == null))
+            url.addParameter(this.parameterName, "");
     }
 }

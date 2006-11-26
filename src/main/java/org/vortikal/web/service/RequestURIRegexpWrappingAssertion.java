@@ -105,6 +105,10 @@ public class RequestURIRegexpWrappingAssertion
         return sb.toString();
     }
 
+    // Check..
+    public void processURL(URL url) {
+        this.wrappedAssertion.processURL(url);        
+    }
 
     public boolean processURL(URL url, Resource resource,
                               Principal principal, boolean match) {
@@ -134,5 +138,6 @@ public class RequestURIRegexpWrappingAssertion
 
         return this.wrappedAssertion.matches(request, resource, principal);
     }
+
 
 }

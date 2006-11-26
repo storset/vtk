@@ -149,6 +149,9 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
     }
 
 
+    public void processURL(URL url) {
+        // Empty
+    }
 
     public boolean processURL(URL url, Resource resource, Principal principal,
                               boolean match) {
@@ -166,6 +169,5 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
     public void setInvert(boolean invert) {
         this.invert = invert;
     }
-    
 
 }

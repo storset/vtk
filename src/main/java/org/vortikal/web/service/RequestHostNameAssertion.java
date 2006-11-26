@@ -106,9 +106,7 @@ public class RequestHostNameAssertion implements Assertion {
     }
 
 
-    public boolean processURL(URL url, Resource resource,
-                              Principal principal, boolean match) {
-
+    public void processURL(URL url) {
         url.setHost(this.defaultHostName);
         RequestContext requestContext = RequestContext.getRequestContext();
 
@@ -124,6 +122,11 @@ public class RequestHostNameAssertion implements Assertion {
                 }
             }
         }
+    }
+
+    public boolean processURL(URL url, Resource resource,
+                              Principal principal, boolean match) {
+        processURL(url);
         return true;
     }
 

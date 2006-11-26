@@ -58,8 +58,13 @@ public class RequestEmptyQueryStringAssertion implements Assertion {
         return true;
     }
 
+    public void processURL(URL url) {
+        // Empty
+    }
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         return request.getQueryString() == null;
     }
+
+
 }

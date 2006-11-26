@@ -92,4 +92,12 @@ public class SecurityTokenRequestParameterAssertion implements Assertion {
         return false;
     }
 
+    public void processURL(URL url) {
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
+        if (token != null) {
+            url.addParameter(this.requestParameter, token);
+        }        
+    }
+
 }

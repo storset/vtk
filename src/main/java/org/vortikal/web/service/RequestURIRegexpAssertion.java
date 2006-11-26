@@ -82,6 +82,10 @@ public class RequestURIRegexpAssertion
     }
 
 
+    public void processURL(URL url) {
+        // Empty
+    }
+
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
@@ -91,5 +95,7 @@ public class RequestURIRegexpAssertion
         Matcher m = this.pattern.matcher(request.getRequestURI());
         return m.find();
     }
+
+
 
 }

@@ -43,6 +43,11 @@ public abstract class AbstractRepositoryAssertion
         if (match) return matches(resource, principal);
         return true;
     }
+    
+    public void processURL(URL url) {
+        // Empty
+        
+    }
 
     public boolean matches(HttpServletRequest request, Resource resource,
             Principal principal) {

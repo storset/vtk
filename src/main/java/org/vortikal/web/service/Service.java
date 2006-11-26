@@ -199,6 +199,7 @@ public interface Service extends  Ordered, Categorizable {
                                 boolean matchAssertions)
         throws ServiceUnlinkableException;
 	
+    public String constructLink(String uri);
 
     /**
      * Gets the list of handler interceptors for this service, if any.
@@ -216,5 +217,7 @@ public interface Service extends  Ordered, Categorizable {
      * <code>null</code> if none has been defined.
      */
     public AuthenticationChallenge getAuthenticationChallenge();
+
+
 
 }

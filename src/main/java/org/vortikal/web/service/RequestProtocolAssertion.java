@@ -112,10 +112,7 @@ public class RequestProtocolAssertion implements Assertion {
         return false;
     }
 
-
-    public boolean processURL(URL url, Resource resource,
-                              Principal principal, boolean match) {
-
+    public void processURL(URL url) {
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext != null && this.preferRequestProtocol) {
 
@@ -147,6 +144,12 @@ public class RequestProtocolAssertion implements Assertion {
             }
 
         }
+        
+    }
+    
+    public boolean processURL(URL url, Resource resource,
+                              Principal principal, boolean match) {
+        processURL(url);
         return true;
     }
 
@@ -182,6 +185,7 @@ public class RequestProtocolAssertion implements Assertion {
     private String getProtocol(HttpServletRequest request) {
         return request.isSecure() ? PROTO_HTTPS : PROTO_HTTP;
     }
-    
+
+
 
 }

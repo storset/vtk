@@ -48,6 +48,7 @@ import org.springframework.core.OrderComparator;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
+import org.vortikal.util.net.NetUtils;
 
 
 /**
@@ -261,6 +262,16 @@ public class ServiceImpl
                                               matchAssertions, urlPostProcessors);
     }
 	
+    public String constructLink(String uri) {
+        URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
+        for (Iterator i = assertions.iterator(); i.hasNext();) {
+            Assertion assertion = (Assertion) i.next();
+            assertion.processURL(urlObject);
+        }
+        
+        return urlObject.toString();
+    }
+
     
     public void afterPropertiesSet() throws Exception {
 
@@ -392,5 +403,6 @@ public class ServiceImpl
         Collections.sort(allServices, new OrderComparator());
         return allServices;
     }
+
 
 }

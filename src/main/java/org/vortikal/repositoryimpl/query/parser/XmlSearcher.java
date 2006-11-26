@@ -55,6 +55,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.WildcardPropertySelect;
@@ -67,6 +68,7 @@ import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -94,8 +96,10 @@ public class XmlSearcher implements InitializingBean {
     private Map namedDateFormats = new HashMap();
     private Repository repository;
     private String defaultLocale = Locale.getDefault().getLanguage();
-    
 
+    private Service linkToService;
+    private ResourceTypeDefinition collectionResourceTypeDef;
+    
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
@@ -145,6 +149,10 @@ public class XmlSearcher implements InitializingBean {
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'repository' not set");
+        }
+        if (this.linkToService == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'linkToService' not set");
         }
         if (this.namedDateFormats == null || this.namedDateFormats.isEmpty()) {
             throw new BeanInitializationException(
@@ -291,12 +299,23 @@ public class XmlSearcher implements InitializingBean {
         propertySetElement.setAttribute("uri", propSet.getURI());
         propertySetElement.setAttribute("name", propSet.getName());
         propertySetElement.setAttribute("type", propSet.getResourceType());
+        propertySetElement.setAttribute("url", getUrl(propSet));
 
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Property prop = (Property) i.next();
             addPropertyToPropertySetElement(doc, propertySetElement, prop, envir);
         }
         
+    }
+    
+    private String getUrl(PropertySet propSet) {
+        String uri = propSet.getURI();
+        if (collectionResourceTypeDef != null && !uri.equals("/") 
+                && resourceTypeTree.isContainedType(collectionResourceTypeDef,
+                        propSet.getResourceType()))
+            uri += "/";
+                        
+        return this.linkToService.constructLink(uri);
     }
     
     private void addPropertyToPropertySetElement(Document doc, Element propSetElement,
@@ -658,6 +677,16 @@ public class XmlSearcher implements InitializingBean {
             return sb.toString();
         }
         
+    }
+
+
+    public void setLinkToService(Service linkToService) {
+        this.linkToService = linkToService;
+    }
+
+    public void setCollectionResourceTypeDef(
+            ResourceTypeDefinition collectionResourceTypeDef) {
+        this.collectionResourceTypeDef = collectionResourceTypeDef;
     }
 
 }

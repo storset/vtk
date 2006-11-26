@@ -457,6 +457,13 @@ public class SchemaDocumentDefinition {
                     + element.getName(), e);
         }
         
+
+        if (structuredText == null) 
+            throw new XMLEditException("Asked to parse element as unbounded, " +
+                    "but unable to find StructuredText implementation for " +
+                    "element '" + element.getName() + "'");
+        structuredText.setTextMappings(getTextMappings(element));
+
         return structuredText;
     }
     
@@ -469,12 +476,6 @@ public class SchemaDocumentDefinition {
      */
     private void parseUnbounded(String parseData, Element element) {
         StructuredText structuredText = getStructuredText(element);
-
-        if (structuredText == null) 
-            throw new XMLEditException("Asked to parse element as unbounded, " +
-                    "but unable to find StructuredText implementation for " +
-                    "element '" + element.getName() + "'");
-        structuredText.setTextMappings(getTextMappings(element));
         
         Element root = structuredText.parseStructuredText(parseData);
 
@@ -493,12 +494,6 @@ public class SchemaDocumentDefinition {
 
     private void generateUnbounded(Element element) {
         StructuredText structuredText = getStructuredText(element);
-
-        if (structuredText == null) 
-            throw new XMLEditException("Asked to generate element as unbounded, " +
-                    "but unable to find StructuredText implementation for " +
-                    "element '" + element.getName() + "'");
-         structuredText.setTextMappings(getTextMappings(element));
         
         String text = structuredText.parseElement(element);
 

@@ -102,4 +102,9 @@ public class StaticResourceLocationsAssertion
         return false;
     }
 
+
+    public void processURL(URL url) {
+        // Empty
+    }
+
 }

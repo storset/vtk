@@ -101,9 +101,7 @@ public class RequestPortAssertion
     }
 
 
-    public boolean processURL(URL url, Resource resource, Principal principal,
-                              boolean match) {
-
+    public void processURL(URL url) {
         if (this.ports[0] != PORT_ANY) {
             url.setPort(new Integer(this.ports[0]));
         }
@@ -119,6 +117,11 @@ public class RequestPortAssertion
                 }
             }
         }
+    }
+
+    public boolean processURL(URL url, Resource resource, Principal principal,
+                              boolean match) {
+        processURL(url);
         return true;
     }
 

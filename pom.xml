@@ -83,6 +83,12 @@
       <id>xml.uio.no</id>
       <url>http://xml.uio.no/vortex/maven2</url>
     </repository>
+    <!--
+    <repository>
+      <id>repo1.maven.org</id>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>
+    -->
   </repositories>
   
   <packaging>jar</packaging>
@@ -177,6 +183,12 @@
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-surefire-plugin</artifactId>
 	<configuration>
+          <systemProperties>
+            <property>
+              <name>log4j.configuration</name>
+              <value>log4j.test.xml</value>
+            </property>
+          </systemProperties>
 	  <excludes>
 	    <exclude>**/Abstract*.java</exclude>
 	    <!-- Threaded tests -->
@@ -366,6 +378,13 @@
       <artifactId>lucene-core</artifactId>
       <version>2.0.0</version>
     </dependency>
+    <!--
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-cache</artifactId>
+      <version>1.2.2</version>
+    </dependency>
+    -->
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
@@ -416,6 +435,13 @@
       <artifactId>xercesImpl</artifactId>
       <version>2.8.1</version>
     </dependency>
+    <!--
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>2.0.2</version>
+    </dependency>
+    -->
     <dependency>
       <groupId>groovy</groupId>
       <artifactId>groovy-all</artifactId>

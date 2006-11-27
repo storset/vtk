@@ -35,8 +35,13 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.ResourceTypeTree;
@@ -48,23 +53,22 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.Principal;
 
 
-public class PropertyManagerImpl implements PropertyManager, InitializingBean {
+public class PropertyManagerImpl
+  implements PropertyManager, ApplicationContextAware, InitializingBean {
 
     private static Log logger = LogFactory.getLog(PropertyManagerImpl.class);
 
     private ValueFactory valueFactory;
     private ResourceTypeTree resourceTypeTree;
+    private ApplicationContext applicationContext;
     
-    public void afterPropertiesSet() throws Exception {
-        if (this.valueFactory == null) {
-            throw new BeanInitializationException("Property 'valueFactory' not set.");
-        }
-        if (this.resourceTypeTree == null) {
-            throw new BeanInitializationException("Property 'resourceTypeTree' not set.");
-        }
-    }
+    private boolean initialized;
+    
 
     public Property createProperty(Namespace namespace, String name) {
+        if (!this.initialized) {
+            initialize();
+        }
 
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespace);
@@ -90,6 +94,9 @@ public class PropertyManagerImpl implements PropertyManager, InitializingBean {
 
     public Property createProperty(Namespace namespace, String name, Object value) 
         throws ValueFormatException {
+        if (!this.initialized) {
+            initialize();
+        }
 
         PropertyImpl prop = new PropertyImpl();
         prop.setNamespace(namespace);
@@ -131,6 +138,10 @@ public class PropertyManagerImpl implements PropertyManager, InitializingBean {
     public Property createProperty(String namespaceUrl, String name, 
                                    String[] stringValues) 
         throws ValueFormatException {
+
+        if (!this.initialized) {
+            initialize();
+        }
         
         Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);        
         PropertyImpl prop = new PropertyImpl();
@@ -172,16 +183,40 @@ public class PropertyManagerImpl implements PropertyManager, InitializingBean {
         
     }
     
+    public ResourceTypeTree getResourceTypeTree() {
+        if (!this.initialized) {
+            initialize();
+        }
+        return this.resourceTypeTree;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        if (this.valueFactory == null) {
+            throw new BeanInitializationException("Property 'valueFactory' not set.");
+        }
+    }
+
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+    
+
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
 
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
+    private synchronized void initialize() {
+        if (!this.initialized) {
+            this.resourceTypeTree = (ResourceTypeTree)
+                BeanFactoryUtils.beanOfType(this.applicationContext, ResourceTypeTree.class);
+            if (this.resourceTypeTree == null) {
+                throw new BeanInitializationException(
+                    "No resource type tree found in application context");
+            }
+            this.initialized = true;
+        }
     }
-
-    public ResourceTypeTree getResourceTypeTree() {
-        return this.resourceTypeTree;
-    }
+    
 
 }

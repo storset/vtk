@@ -53,11 +53,23 @@
   </bean>
 
 
+
   <bean id="repository.cache" class="org.vortikal.repositoryimpl.dao.Cache">
     <property name="maxItems" value="${resourceCacheSize}" />
     <property name="wrappedAccessor" ref="repository.database" />
   </bean>
 
+
+  <!--
+  <bean id="repository.cache" class="org.vortikal.repositoryimpl.dao.JBossCacheDataAccessor">
+    <property name="wrappedAccessor" ref="repository.database" />
+    <property name="treeCache" ref="jbossTreeCache" />
+  </bean>
+
+  <bean id="jbossTreeCache" class="org.jboss.cache.TreeCache"
+        init-method="startService" destroy-method="stopService">
+  </bean>
+  -->
 
   <!-- Override iBATIS SQL map statement names in this map (should
        generally not be necessary): -->
@@ -123,7 +135,7 @@
 
   <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">
     <property name="valueFactory" ref="valueFactory"/>
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <!--property name="resourceTypeTree" ref="resourceTypeTree" /-->
   </bean>
 
   <bean id="repositoryResourceHelper"

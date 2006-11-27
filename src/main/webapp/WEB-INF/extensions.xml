@@ -7,19 +7,16 @@
 
   <!-- Import files from standard-extensions (if any): -->
   <!--
+  <import resource="classpath:/vortikal/beans/standard-extensions/transformXml/transformXml.xml" />
+  <import resource="classpath:/vortikal/beans/standard-extensions/editXml/editXml.xml" />
+  <import resource="classpath:/vortikal/beans/standard-extensions/kupu/kupu.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/changeLogType1/changeLogType1.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/displayVersionHistory/displayVersionHistory.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/performanceMonitor/performanceMonitor.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/repositoryPrincipalStore/repositoryPrincipalStore.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/shell/shell.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/webConsole/webConsole.xml" />
-
-  <import resource="classpath:/vortikal/beans/standard-extensions/transformXml/transformXml.xml" />
-  <import resource="classpath:/vortikal/beans/standard-extensions/editXml/editXml.xml" />
-
-
   -->
-  <import resource="classpath:/vortikal/beans/standard-extensions/kupu/kupu.xml" />
 
 
 </beans>

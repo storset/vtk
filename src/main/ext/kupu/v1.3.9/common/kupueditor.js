@@ -8,7 +8,7 @@
  *
  *****************************************************************************/
 
-// $Id: kupueditor.js 18104 2005-10-03 14:10:11Z duncan $
+// $Id: kupueditor.js 34308 2006-11-07 10:10:48Z duncan $
 
 //----------------------------------------------------------------------------
 // Main classes
@@ -453,27 +453,11 @@ function KupuEditor(document, config, logger) {
         // bug, but too many users had trouble with it...
         if (request.status != '200' && request.status != '204' &&
                 request.status != '1223') {
-            /*
-            var msg = _('Error saving your data.\nResponse status: ' +
+            var msg = _('Error saving your data.\nResponse status: ' + 
                             '${status}.\nCheck your server log for more ' +
                             'information.', {'status': request.status});
             alert(msg);
-
-Vortex-fix!
-Denne skriver direkte til alert-boksen (dvs ingen forandring gjort i beskjed-(internationaliserings)filen 'kupu.pox'
-*/
-           var USITmsg = "Det har g\u00E5tt mer enn 30 minutter siden du lagret sist, og du har derfor blitt logget ut." +
-                          "\n" +
-                          "\nFor \u00E5 redde endringene du har gjort i dokumentet siden forrige lagring m\u00E5 du:" +
-                          "\n\u00A0\u00A01. \u00C5pne et nytt nettleservindu" +
-                          "\n\u00A0\u00A02. Administrere en webside p\u00E5 samme server som dokumentet du redigerer (gjerne det samme dokumentet)" +
-                          "\n" +
-                          "\nLes mer om dette problemet her:" +
-                          "\n\u00A0\u00A0http://www.usit.uio.no/it/vortex/hjelp/admin/kupu/work-around/";
-            alert(USITmsg);
-/* end USIT-fix */
-			
-			window.status = _("Error saving document");
+            window.status = _("Error saving document");
         } else if (redirect) { // && (!request.status || request.status == '200' || request.status == '204'))
             window.document.location = redirect;
             this.content_changed = false;

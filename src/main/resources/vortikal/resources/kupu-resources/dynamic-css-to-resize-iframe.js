@@ -28,10 +28,10 @@ function resizeEditorIframe() {
 // default variables for resize function
 var iframeid = "kupu-editor";
 
-var offset = 300; // value in 'px'
-//var geckoOffset = 300;
-//var iexploreOffset = 300;
-// testing viste at det er greit med samme offset for begge browser-typer
+// value in 'px'
+var geckoOffset = 320;
+var iexplore56offset = 330;
+var iexplore7offset = 350;  // window is slightly smaller due to tabs
 
 
 function dyniframesize() {
@@ -39,20 +39,26 @@ function dyniframesize() {
     if( !is_safari ) {
         if( document.getElementById ) { //begin resizing iframe procedure
             var editIframe = document.getElementById(iframeid);
-            
+                        
             if( editIframe && !window.opera ) {
                 try {
                     // Gecko-based browsers (Firefox, Mozilla, Netscape, Camino etc.)
                     if( editIframe.contentDocument && window.innerHeight ) { 
-                        var height = window.innerHeight - offset; //- geckoOffset;
+                        var height = window.innerHeight - geckoOffset;
                         editIframe.style.height = height.toString() + "px";
                     }
-                    // Internet Explorer 5 and later
+                    // Internet Explorer
                     else if( editIframe.Document && editIframe.Document.body.clientHeight ) {
-                        // Mulig "document.body.clientHeight" skal brukes for IE4/IE5...?
+                    	// Internet Explorer 7
+                    	if (typeof document.documentElement.style.maxHeight != 'undefined')  // only implemented in IE7+
+                    		var offset = iexplore7offset;
+                        // Internet Explorer 5 and 6
+                        else
+                        	var offset = iexplore56offset;
                         window.status = document.documentElement.clientHeight;
-                        var height = parseInt(document.documentElement.clientHeight) - offset; //- iexploreOffset;
+                        var height = parseInt(document.documentElement.clientHeight) - offset;
                         editIframe.style.height = height.toString() + "px";
+                        // Mulig "document.body.clientHeight" skal brukes for IE4/IE5...?
                     }
                 } catch (exception) {
                     alert('Exception: ' + exception.message)

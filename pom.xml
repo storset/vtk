@@ -117,7 +117,7 @@
         </includes>
       </resource>
       <resource>
-        <directory>src/main/ext/kupu/v1.3.5</directory>
+        <directory>src/main/ext/kupu/v1.3.9</directory>
         <targetPath>vortikal/resources/kupu-resources</targetPath>
         <includes>
           <include>common/**</include>

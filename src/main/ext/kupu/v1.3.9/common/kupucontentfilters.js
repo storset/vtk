@@ -1,13 +1,31 @@
+/*****************************************************************************
+ *
+ * Copyright (c) 2003-2004 Kupu Contributors. All rights reserved.
+ *
+ * This software is distributed under the terms of the Kupu
+ * License. See LICENSE.txt for license text. For a list of Kupu
+ * Contributors see CREDITS.txt.
+ *
+ *****************************************************************************/
+
+// $Id: kupucontentfilters.js 27715 2006-05-26 10:35:22Z duncan $
+
+
 //----------------------------------------------------------------------------
 // 
 // ContentFilters
 //
-//  Based on NonXHTMLTagFilter() in kupucontentfilters.js
-//  Added 'hr': 1,
+//  These are (or currently 'this is') filters for HTML cleanup and 
+//  conversion. Kupu filters should be classes that should get registered to
+//  the editor using the registerFilter method with 2 methods: 'initialize'
+//  and 'filter'. The first will be called with the editor as its only
+//  argument and the latter with a reference to the ownerdoc (always use 
+//  that to create new nodes and such) and the root node of the HTML DOM as 
+//  its arguments.
 //
 //----------------------------------------------------------------------------
 
-function VortikalNonXHTMLTagFilter() {
+function NonXHTMLTagFilter() {
     /* filter out non-XHTML tags*/
     
     // A mapping from element name to whether it should be left out of the 
@@ -52,7 +70,6 @@ function VortikalNonXHTMLTagFilter() {
                             'h5': 1,
                             'h6': 1,
                             'h7': 1,
-                            'hr': 1,
                             'i': 1,
                             'img': 1,
                             'kbd': 1,
@@ -80,7 +97,7 @@ function VortikalNonXHTMLTagFilter() {
                             'ul': 1,
                             'u': 1,
                             'var': 1,
-                            
+
                             // even though they're deprecated we should leave
                             // font tags as they are, since Kupu sometimes
                             // produces them itself.
@@ -95,8 +112,6 @@ function VortikalNonXHTMLTagFilter() {
     };
 
     this.filter = function(ownerdoc, htmlnode) {
-        //var mycomment = ownerdoc.createComment("hei og hopp");
-        //htmlnode.childNodes[2].appendChild(mycomment); // iexplore = [1], firefox = [2]
         return this._filterHelper(ownerdoc, htmlnode);
     };
 
@@ -106,11 +121,7 @@ function VortikalNonXHTMLTagFilter() {
             return ownerdoc.createTextNode(node.nodeValue);
         } else if (node.nodeType == 4) {
             return ownerdoc.createCDATASection(node.nodeValue);
-        } else if (node.nodeType == 8) {
-            // Keep comment statements within HTML body
-            return ownerdoc.createComment(node.nodeValue);
         };
-                
         // create a new node to place the result into
         // XXX this can be severely optimized by doing stuff inline rather 
         // than on creating new elements all the time!
@@ -120,12 +131,11 @@ function VortikalNonXHTMLTagFilter() {
             var attr = node.attributes[i];
             newnode.setAttribute(attr.nodeName, attr.nodeValue);
         };
-        
         for (var i=0; i < node.childNodes.length; i++) {
             var child = node.childNodes[i];
             var nodeType = child.nodeType;
             var nodeName = child.nodeName.toLowerCase();
-            if (nodeType == 3 || nodeType == 4 || nodeType == 8) {
+            if (nodeType == 3 || nodeType == 4) {
                 newnode.appendChild(this._filterHelper(ownerdoc, child));
             };
             if (nodeName in this.filterdata && this.filterdata[nodeName]) {
@@ -141,18 +151,14 @@ function VortikalNonXHTMLTagFilter() {
     };
 };
 
-
-
-/* ==================================================================================== */
-
-
-/*
-Overridden conversion functions '_convertToSarissaNode' and '_convertNodes', in order to aviod
-HTML comments in body do be removed by KUPU.
-This was necessary in order to allow SSI in KUPU-editable HTML documents etc.  
-*/
-
-function VortikalXhtmlValidation(editor) {
+//-----------------------------------------------------------------------------
+//
+// XHTML validation support
+//
+// This class is the XHTML 1.0 transitional DTD expressed as Javascript
+// data structures.
+//
+function XhtmlValidation(editor) {
     // Support functions
     this.Set = function(ary) {
         if (typeof(ary)==typeof('')) ary = [ary];
@@ -210,10 +216,10 @@ function VortikalXhtmlValidation(editor) {
             var val = this.tagAttributes[tag];
             if (val) {
                 for (var i = val.length; i >= 0; i--) {
-            	    if (bad[val[i]]) {
+                    if (bad[val[i]]) {
                         val = val.concat(); // Copy
                         val.splice(i,1);
-                	}
+                    }
                 }
             }
             this.tagAttributes[tag] = val;
@@ -505,23 +511,20 @@ function VortikalXhtmlValidation(editor) {
         }
         this.style = function(name, htmlnode, xhtmlnode) {
             var val = htmlnode.style.cssText;
-
-// Removed this test to allow inline CSS
-//            if (val) {
-//                var styles = val.split(/; */);
-//                for (var i = styles.length; i >= 0; i--) if (styles[i]) {
-//                    var parts = /^([^:]+): *(.*)$/.exec(styles[i]);
-//                    var name = parts[1].toLowerCase();
-//                    if (validation.styleWhitelist[name]) {
-//                        styles[i] = name+': '+parts[2];
-//                    } else {
-//                        styles.splice(i,1); // delete
-//                    }
-//                }
-//                if (styles[styles.length-1]) styles.push('');
-//                val = styles.join('; ').strip();
-//            }
-
+            if (val) {
+                var styles = val.split(/; */);
+                for (var i = styles.length; i >= 0; i--) if (styles[i]) {
+                    var parts = /^([^:]+): *(.*)$/.exec(styles[i]);
+                    var name = parts[1].toLowerCase();
+                    if (validation.styleWhitelist[name]) {
+                        styles[i] = name+': '+parts[2];
+                    } else {
+                        styles.splice(i,1); // delete
+                    }
+                }
+                if (styles[styles.length-1]) styles.push('');
+                val = styles.join('; ').strip();
+            }
             if (val) xhtmlnode.setAttribute('style', val);
         }
     }(this, editor);
@@ -572,12 +575,6 @@ function VortikalXhtmlValidation(editor) {
         }
     }
 
-
-
-    /*
-    // Overridden conversion functions
-    */
-    
     this._convertToSarissaNode = function(ownerdoc, htmlnode, xhtmlparent) {
         return this._convertNodes(ownerdoc, htmlnode, xhtmlparent, new this.Set(['html']));
     };
@@ -634,13 +631,9 @@ function VortikalXhtmlValidation(editor) {
                 } else if (kid.nodeType == 4) {
                     if (nostructure || permittedChildren['#PCDATA'])
                         parentnode.appendChild(ownerdoc.createCDATASection(kid.nodeValue));
-                } else if (kid.nodeType == 8) {
-                    // nodeType 8 added to ensure HTML comments remain after editing and parsing the contents using KUPU
-                    if (nostructure || permittedChildren['#PCDATA'])
-                        parentnode.appendChild(ownerdoc.createComment(kid.nodeValue));
                 }
             }
         } 
         return xhtmlnode;
     };
-};
+}

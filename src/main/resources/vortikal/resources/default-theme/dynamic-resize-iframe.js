@@ -1,5 +1,5 @@
 /***********************************************
-* IFrame SSI script- Ž© Dynamic Drive DHTML code library (http://www.dynamicdrive.com)
+* IFrame SSI script- ï¿½ï¿½ Dynamic Drive DHTML code library (http://www.dynamicdrive.com)
 * Visit DynamicDrive.com for hundreds of original DHTML scripts
 * This notice must stay intact for legal use
 ***********************************************/
@@ -12,7 +12,7 @@ var iframeids=["previewIframe"]
 var iframehide="no"
 
 var getFFVersion=navigator.userAgent.substring(navigator.userAgent.indexOf("Firefox")).split("/")[1]
-var FFextraHeight=parseFloat(getFFVersion)>=0.1? 16 : 0 //extra height in px to add to iframe in FireFox 1.0+ browsers
+var FFextraHeight=parseFloat(getFFVersion)>=0.1? 35 : 0 //extra height in px to add to iframe in FireFox 1.0+ browsers
 
 function dyniframesize() {
 var dyniframe=new Array()

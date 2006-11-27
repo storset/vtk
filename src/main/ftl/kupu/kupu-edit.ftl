@@ -44,7 +44,7 @@
     <script type="text/javascript" src="kupunoi18n.js"> </script>
     <!--script type="text/javascript" src="../../i18n.js/i18n.js"> </script-->
     <script type="text/javascript" src="kupucleanupexpressions.js"> </script>
-    <script type="text/javascript" src="kupucontentfilters.js"> </script>
+    <script type="text/javascript" src="kupucontentfilters.js"> </script>  <!-- TROR ikke denne er i bruk lenger? (begge funksjonene overstyres i kupucontentfilters-vortikal.js -->
     <script type="text/javascript" src="${kupuLocalBase}/kupucontentfilters-vortikal.js"> </script>
     <script type="text/javascript" src="kuputoolcollapser.js"> </script>
     <script type="text/javascript" src="kupucontextmenu.js"> </script>

@@ -12,7 +12,6 @@
         <property name="parentTypeDefinition" ref="managedXmlResource" />
         <property name="propertyTypeDefinitions">
             <list>
-                <ref bean="disputasDoktorandTittelPropDef" />
                 <ref bean="disputasDoktorandFornavnPropDef" />
                 <ref bean="disputasDoktorandEtternavnPropDef" />
                 <ref bean="disputasOppgavetittelPropDef" />
@@ -41,19 +40,6 @@
     </bean>
     
         
-    <bean id="disputasDoktorandTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="doktorand.tittel" />
-        <property name="type" ref="TYPE_STRING" />
-        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-        <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasDoktorandTittelEvaluator" />
-    </bean>
-        
-    <bean id="disputasDoktorandTittelEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/disputas/doktorand/tittel" />
-    </bean>
-
-
     <bean id="disputasDoktorandFornavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="doktorand.fornavn" />
         <property name="type" ref="TYPE_STRING" />

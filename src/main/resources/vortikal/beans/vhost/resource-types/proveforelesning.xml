@@ -12,10 +12,8 @@
         <property name="parentTypeDefinition" ref="managedXmlResource" />
         <property name="propertyTypeDefinitions">
             <list>
-                <ref bean="proveforelesningDoktorandTittelPropDef" />
                 <ref bean="proveforelesningDoktorandFornavnPropDef" />
                 <ref bean="proveforelesningDoktorandEtternavnPropDef" />
-                <!-- ref bean="proveforelesningTilhorighetPropDef" / -->
                 <ref bean="proveforelesningEmnePropDef" />
                 <ref bean="proveforelesningStarttidspunktPropDef" />
                 <ref bean="proveforelesningSluttidspunktPropDef" />
@@ -42,19 +40,6 @@
     </bean>
     
         
-    <bean id="proveforelesningDoktorandTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="doktorand.tittel" />
-        <property name="type" ref="TYPE_STRING" />
-        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-        <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandTittelEvaluator" />
-    </bean>
-        
-    <bean id="proveforelesningDoktorandTittelEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/proveforelesning/doktorand/tittel" />
-    </bean>
-
-
     <bean id="proveforelesningDoktorandFornavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="doktorand.fornavn" />
         <property name="type" ref="TYPE_STRING" />
@@ -80,20 +65,6 @@
         <property name="expression" value="/proveforelesning/doktorand/etternavn" />
     </bean>
 
-    
-    <!-- bean id="proveforelesningTilhorighetPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="tilhorighet" />
-        <property name="type" ref="TYPE_STRING" />
-        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-        <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningTilhorighetEvaluator" />
-    </bean>
-    
-    <bean id="proveforelesningTilhorighetEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/proveforelesning/tilhorighet" />
-    </bean -->
-    
     
     <bean id="proveforelesningEmnePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

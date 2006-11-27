@@ -85,7 +85,12 @@ import org.w3c.dom.Text;
  */
 public class XmlSearcher implements InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static final String URL_IDENTIFIER = "url";
+    private static final String NAME_IDENTIFIER = "name";
+    private static final String TYPE_IDENTIFIER = "type";
+    private static final String URI_IDENTIFIER = "uri";
+    
+    private static Log logger = LogFactory.getLog(XmlSearcher.class);
 
     private Searcher searcher;
     private QueryManager queryManager;
@@ -223,7 +228,6 @@ public class XmlSearcher implements InitializingBean {
     public Document executeDocumentQuery(String token, String query,
                                          String sort, String maxResults,
                                          String fields) throws QueryException {
-        Set properties = null;
         Document doc = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -245,9 +249,6 @@ public class XmlSearcher implements InitializingBean {
             PropertySelect select = envir.getPropertySelect();
             Sorting sorting = envir.getSorting();
 
-            if (select == null) {
-                select = WildcardPropertySelect.WILDCARD_PROPERTY_SELECT;
-            }
             if (logger.isDebugEnabled()) {
                 logger.debug("About to execute query: " + query + ": sort = " + sorting
                              + ", limit = " + limit + ", envir = " + envir);
@@ -257,7 +258,7 @@ public class XmlSearcher implements InitializingBean {
             
             addResultSetToDocument(rs, doc, envir);
         } catch (Exception e) {
-            this.logger.warn("Error occurred while performing query: '" + query + "'", e);
+            logger.warn("Error occurred while performing query: '" + query + "'", e);
             
             Element errorElement = doc.createElement("error");
             doc.appendChild(errorElement);
@@ -285,9 +286,9 @@ public class XmlSearcher implements InitializingBean {
             addPropertySetToResults(doc, resultElement, propSet, envir);
         }
         
-        if (this.logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
-            this.logger.debug("Building XML result set took " + (now - start) + " ms");
+            logger.debug("Building XML result set took " + (now - start) + " ms");
         }
     }
     
@@ -296,10 +297,14 @@ public class XmlSearcher implements InitializingBean {
         
         Element propertySetElement = doc.createElement("resource");
         resultsElement.appendChild(propertySetElement);
-        propertySetElement.setAttribute("uri", propSet.getURI());
-        propertySetElement.setAttribute("name", propSet.getName());
-        propertySetElement.setAttribute("type", propSet.getResourceType());
-        propertySetElement.setAttribute("url", getUrl(propSet));
+        if (envir.reportUri())
+            propertySetElement.setAttribute(URI_IDENTIFIER, propSet.getURI());
+        if (envir.reportName())
+            propertySetElement.setAttribute(NAME_IDENTIFIER, propSet.getName());
+        if (envir.reportType())
+            propertySetElement.setAttribute(TYPE_IDENTIFIER, propSet.getResourceType());
+        if (envir.reportUrl())
+            propertySetElement.setAttribute(URL_IDENTIFIER, getUrl(propSet));
 
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Property prop = (Property) i.next();
@@ -448,10 +453,14 @@ public class XmlSearcher implements InitializingBean {
 
     private class SearchEnvironment {
         
-        private HashSetPropertySelect select = null;
+        private PropertySelect select = null;
         private Sorting sort;
         private Formats formats = new Formats();
         private Locale locale = new Locale(defaultLocale);
+        private boolean reportUri = false;
+        private boolean reportName = false;
+        private boolean reportType = false;
+        private boolean reportUrl = false;
         
         public SearchEnvironment(String sort, String fields) {
             parseSortString(sort);
@@ -521,7 +530,11 @@ public class XmlSearcher implements InitializingBean {
                 }
                 SortField sortField = null;
                 sortField = new SimpleSortField(field, direction);
-                if ("uri".equals(field) || "type".equals(field) || "name".equals(field)) {
+                if (URI_IDENTIFIER.equals(field) || 
+                        TYPE_IDENTIFIER.equals(field) || 
+                        NAME_IDENTIFIER.equals(field) || 
+                        URL_IDENTIFIER.equals(field)) {
+
                 } else {
                     String prefix = null;
                     String name = null;
@@ -555,9 +568,16 @@ public class XmlSearcher implements InitializingBean {
 
         private void parseFields(String fields) {
             if (fields == null || "".equals(fields.trim())) {
+                this.select = WildcardPropertySelect.WILDCARD_PROPERTY_SELECT;
+                this.reportUri = true;
+                this.reportName = true;
+                this.reportType = true;
+                this.reportUrl = true;
                 return;
             }
             String[] fieldsArray = splitFields(fields);
+            HashSetPropertySelect selectedFields = new HashSetPropertySelect();
+            this.select = selectedFields;
 
             for (int i = 0; i < fieldsArray.length; i++) {
                 String fullyQualifiedName = fieldsArray[i];
@@ -568,7 +588,20 @@ public class XmlSearcher implements InitializingBean {
                 String prefix = null;
                 String name = fullyQualifiedName.trim();
 
-
+                if (URI_IDENTIFIER.equals(name)) {
+                    this.reportUri = true;
+                    continue;
+                } else if (NAME_IDENTIFIER.equals(name)) {
+                    this.reportName = true;
+                    continue;
+                } else if (TYPE_IDENTIFIER.equals(name)) {
+                    this.reportType = true;
+                    continue;
+                } else if (URL_IDENTIFIER.equals(name)) {
+                    this.reportUrl = true;
+                    continue;
+                } 
+                
                 String format = null;
                 int bracketStartPos = name.indexOf("[");
                 if (bracketStartPos != -1 && bracketStartPos > 1) {
@@ -592,12 +625,10 @@ public class XmlSearcher implements InitializingBean {
                     this.formats.addFormat(def, format);
                 }
                 if (def != null) {
-                    if (this.select == null) {
-                        this.select = new HashSetPropertySelect();
-                    }
-                    this.select.addPropertyDefinition(def);
+                    selectedFields.addPropertyDefinition(def);
                 }
             }
+            
         }
         
 
@@ -656,6 +687,23 @@ public class XmlSearcher implements InitializingBean {
             }
             return (String[]) l.toArray(new String[l.size()]);
         }
+        
+        public boolean reportUri() {
+            return this.reportUri;
+        }
+
+        public boolean reportName() {
+            return this.reportName;
+        }
+
+        public boolean reportType() {
+            return this.reportType;
+        }
+
+        public boolean reportUrl() {
+            return this.reportUrl;
+        }
+
     }
 
 
@@ -664,6 +712,10 @@ public class XmlSearcher implements InitializingBean {
         
         public void addPropertyDefinition(PropertyTypeDefinition def) {
             this.properties.add(def);
+        }
+
+        public boolean isEmpty() {
+            return this.properties.isEmpty();
         }
 
         public boolean isIncludedProperty(PropertyTypeDefinition def) {

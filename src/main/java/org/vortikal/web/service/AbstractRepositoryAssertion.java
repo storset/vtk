@@ -46,7 +46,6 @@ public abstract class AbstractRepositoryAssertion
     
     public void processURL(URL url) {
         // Empty
-        
     }
 
     public boolean matches(HttpServletRequest request, Resource resource,

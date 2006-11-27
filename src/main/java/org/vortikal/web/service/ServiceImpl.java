@@ -93,13 +93,7 @@ public class ServiceImpl
     private ApplicationContext applicationContext;
     private List urlPostProcessors = new ArrayList();
     private List accumulatedUrlPostProcessors = null;
-    
-
-
-    // Duplicate:
-    
-    private LinkConstructionHelper linkConstructor = new LinkConstructionHelperImpl();
-	
+    	
     
     public void setHandler(Object handler) {
         this.handler = handler;
@@ -195,7 +189,7 @@ public class ServiceImpl
             if ((s instanceof ServiceImpl) && ((ServiceImpl) s).urlPostProcessors != null) {
                 allPostProcessors.addAll(((ServiceImpl) s).urlPostProcessors);
             }
-            s = (ServiceImpl) s.getParent();
+            s = s.getParent();
         }
         this.accumulatedUrlPostProcessors = allPostProcessors;
         return allPostProcessors;
@@ -248,26 +242,30 @@ public class ServiceImpl
 	
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters) {
-        List assertions = getAllAssertions(this);
-        List urlPostProcessors = getAllURLPostProcessors();
-        return this.linkConstructor.construct(resource, principal, parameters, assertions,
-                                              this, true, urlPostProcessors);
+        return constructLink(resource, principal, parameters, true);
     }
 
     public String constructLink(Resource resource, Principal principal,
                                 Map parameters, boolean matchAssertions) {
         List assertions = getAllAssertions(this);
-        List urlPostProcessors = getAllURLPostProcessors();
-        return this.linkConstructor.construct(resource, principal, parameters, assertions, this,
-                                              matchAssertions, urlPostProcessors);
+        URL urlObject = 
+            constructInternal(resource, principal, parameters, assertions, 
+                    matchAssertions);
+
+        postProcess(urlObject);
+
+        return urlObject.toString();
     }
 	
     public String constructLink(String uri) {
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
+
         for (Iterator i = assertions.iterator(); i.hasNext();) {
             Assertion assertion = (Assertion) i.next();
             assertion.processURL(urlObject);
         }
+       
+        postProcess(urlObject);
         
         return urlObject.toString();
     }
@@ -404,5 +402,56 @@ public class ServiceImpl
         return allServices;
     }
 
+    private void postProcess(URL urlObject) {
+        List urlPostProcessors = getAllURLPostProcessors();
+
+        if (urlPostProcessors != null) {
+            for (Iterator i = urlPostProcessors.iterator(); i.hasNext();) {
+                URLPostProcessor urlProcessor = (URLPostProcessor) i.next();
+                try {
+                    urlProcessor.processURL(urlObject);
+                } catch (Exception e) {
+                    throw new ServiceUnlinkableException("URL Post processor " + urlProcessor
+                                                         + " threw exception", e);
+                }
+            }
+        }
+    }
+
+    private URL constructInternal(Resource resource, Principal principal,
+            Map parameters, List assertions, boolean matchAssertions) {
+
+        String path = resource.getURI();
+        if (resource.isCollection()) {
+            path += "/";
+        }
+        URL urlObject = new URL("http", NetUtils.guessHostName(), path);
+        if (parameters != null) {
+            for (Iterator iter = parameters.entrySet().iterator(); iter
+                    .hasNext();) {
+                Map.Entry entry = (Map.Entry) iter.next();
+
+                String key = entry.getKey().toString();
+                String value = entry.getValue().toString();
+
+                urlObject.addParameter(key, value);
+            }
+        }
+        // urlObject.setQuery(parameters);
+
+        for (Iterator i = assertions.iterator(); i.hasNext();) {
+            Assertion assertion = (Assertion) i.next();
+            boolean match = assertion.processURL(urlObject, resource,
+                    principal, matchAssertions);
+            if (match == false) {
+                throw new ServiceUnlinkableException("Service "
+                        + getName() + " cannot be applied to resource "
+                        + resource.getURI() + ". Assertion " + assertion
+                        + " false for resource.");
+            }
+        }
+
+        return urlObject;
+    }
 
 }

@@ -30,11 +30,9 @@
  */
 package org.vortikal.web.service;
 
-import org.vortikal.repository.Resource;
-
 
 public interface URLPostProcessor {
 
-    public void processURL(Resource resource, URL url) throws Exception;
+    public void processURL(URL url) throws Exception;
 
 }

@@ -93,45 +93,33 @@
         class="org.vortikal.web.controller.SetLocaleController">
     <property name="locale">
       <bean class="java.util.Locale">
-        <constructor-arg><value>no</value></constructor-arg>
+        <constructor-arg value="no" />
       </bean>
     </property>
-    <property name="localeResolver">
-      <ref bean="localeResolver" />
-    </property>
-    <property name="viewName">
-      <value>redirectToManage</value>
-    </property>
+    <property name="localeResolver" ref="localeResolver" />
+    <property name="viewName" value="redirectToManage" />
   </bean>
 
   <bean id="setNorwegianNNLocaleController"
         class="org.vortikal.web.controller.SetLocaleController">
     <property name="locale">
       <bean class="java.util.Locale">
-        <constructor-arg><value>nn</value></constructor-arg>
+        <constructor-arg value="nn" />
       </bean>
     </property>
-    <property name="localeResolver">
-      <ref bean="localeResolver" />
-    </property>
-    <property name="viewName">
-      <value>redirectToManage</value>
-    </property>
+    <property name="localeResolver" ref="localeResolver" />
+    <property name="viewName" value="redirectToManage"/>
   </bean>
 
   <bean id="setEnglishLocaleController"
         class="org.vortikal.web.controller.SetLocaleController">
     <property name="locale">
       <bean class="java.util.Locale">
-        <constructor-arg><value>en</value></constructor-arg>
+        <constructor-arg value="en" />
       </bean>
     </property>
-    <property name="localeResolver">
-      <ref bean="localeResolver" />
-    </property>
-    <property name="viewName">
-      <value>redirectToManage</value>
-    </property>
+    <property name="localeResolver" ref="localeResolver" />
+    <property name="viewName" value="redirectToManage" />
   </bean>
 
 

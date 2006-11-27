@@ -13,6 +13,7 @@
         <property name="propertyTypeDefinitions">
             <list>
                 <ref bean="arrangementTittelPropDef" />
+                <ref bean="arrangementTypePropDef" />
                 <ref bean="arrangementStarttidspunktPropDef" />
                 <ref bean="arrangementSluttidspunktPropDef" />
                 <ref bean="arrangementStedPropDef" />
@@ -50,6 +51,20 @@
     
     <bean id="arrangementTittelEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/arrangement/tittel" />
+    </bean>
+
+
+    <bean id="arrangementTypePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="type" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="arrangementTypeEvaluator" />
+    </bean>
+    
+    <bean id="arrangementTypeEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/arrangement/type" />
     </bean>
 
     

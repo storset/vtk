@@ -15,7 +15,6 @@
                 <ref bean="disputasDoktorandTittelPropDef" />
                 <ref bean="disputasDoktorandFornavnPropDef" />
                 <ref bean="disputasDoktorandEtternavnPropDef" />
-                <!-- ref bean="disputasTilhorighetPropDef" / -->
                 <ref bean="disputasOppgavetittelPropDef" />
                 <ref bean="disputasStarttidspunktPropDef" />
                 <ref bean="disputasSluttidspunktPropDef" />
@@ -78,22 +77,7 @@
         
     <bean id="disputasDoktorandEtternavnEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/disputas/doktorand/etternavn" />
-    </bean>
-    
-    
-    <!-- bean id="disputasTilhorighetPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-        <property name="name" value="tilhorighet" />
-        <property name="type" ref="TYPE_STRING" />
-        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-        <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasTilhorighetEvaluator" />
-    </bean>
-    
-    <bean id="disputasTilhorighetEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/disputas/tilhorighet" />
-    </bean -->
-    
+    </bean>        
     
     <bean id="disputasOppgavetittelPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

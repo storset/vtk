@@ -33,15 +33,18 @@ package org.vortikal.web.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
-import org.jmock.cglib.MockObjectTestCase;
+
 import org.jmock.Mock;
+import org.jmock.cglib.MockObjectTestCase;
+
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -49,13 +52,14 @@ import org.vortikal.repositoryimpl.PropertyImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
+
 public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
 
     private static Log logger = LogFactory.getLog(DisplayXmlResourceControllerTestCase.class);
 
     private String schemaPropertyName = "schema";
 
-    private Namespace schemaNamespace = Namespace.CUSTOM_NAMESPACE;
+    private Namespace schemaNamespace = Namespace.DEFAULT_NAMESPACE;
 
     private String faqSchema = "http://www.uio.no/xsd/uio/faq/v001/faq.xsd";
 
@@ -74,6 +78,7 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         BasicConfigurator.configure();
         this.request = new MockHttpServletRequest();
         this.controller = new DisplayXmlResourceController();
+        BaseContext.pushContext();
         RequestContext requestContext = new RequestContext(this.request, null, this.uri);
         RequestContext.setRequestContext(requestContext);
         this.token = "";
@@ -100,8 +105,8 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
                 returnValue(false));
         mockResource.expects(atLeastOnce()).method("getLastModified").withNoArguments().will(
                 returnValue(lastModifiedExpected));
-        mockResource.expects(atLeastOnce()).method("getProperty").with(eq(this.schemaNamespace),
-                eq(this.schemaPropertyName)).will(returnValue(schemaProperty));
+//         mockResource.expects(atLeastOnce()).method("getProperty").with(eq(this.schemaNamespace),
+//                 eq(this.schemaPropertyName)).will(returnValue(schemaProperty));
         Resource resource = (Resource) mockResource.proxy();
 
         this.mockRepository = mock(Repository.class);

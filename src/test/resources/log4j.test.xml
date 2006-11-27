@@ -10,10 +10,10 @@
   </appender>
 
   
-  <logger name="com.ibatis"><level value="debug" /></logger>
-  <logger name="java.sql"><level value="debug" /></logger>
-  <logger name="org.apache.commons.dbcp"><level value="debug" /></logger>
-  <logger name="org.hsqldb"><level value="debug" /></logger>
+  <logger name="com.ibatis"><level value="info" /></logger>
+  <logger name="java.sql"><level value="info" /></logger>
+  <logger name="org.apache.commons.dbcp"><level value="info" /></logger>
+  <logger name="org.hsqldb"><level value="info" /></logger>
   
 
 <!--

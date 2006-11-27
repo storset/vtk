@@ -205,7 +205,7 @@
 	  </includes>
 	  <forkMode>pertest</forkMode>
 	  <useFile>false</useFile>
-	  <skip>true</skip>
+	  <skip>false</skip>
         </configuration>
       </plugin>
       <plugin>

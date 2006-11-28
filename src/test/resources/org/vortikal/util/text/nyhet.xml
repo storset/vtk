@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <nyhet>
-  <fritekst><paragraph xml:space="preserve">Avsnitt1</paragraph><paragraph xml:space="preserve" /></fritekst>
+  <fritekst><paragraph xml:space="preserve" /><paragraph xml:space="preserve">Avsnitt1</paragraph><paragraph xml:space="preserve" /></fritekst>
+  <fritekst2><paragraph xml:space="preserve" /><unsortedlist><listitem>aaa</listitem></unsortedlist><paragraph xml:space="preserve" /></fritekst2>
 </nyhet>
 

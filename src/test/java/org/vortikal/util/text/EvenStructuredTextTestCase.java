@@ -30,9 +30,7 @@
  */
 package org.vortikal.util.text;
 
-
 import java.io.File;
-import java.net.URL;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -42,18 +40,18 @@ import junit.framework.TestCase;
 
 public class EvenStructuredTextTestCase extends TestCase {
 
-    private static final String TEST_XML = 
-        "src/test/resources/org/vortikal/util/text/nyhet.xml";
- 
-    private EvenStructuredText est; 
+    private static final String TEST_XML = "src/test/resources/org/vortikal/util/text/nyhet.xml";
+
+    private EvenStructuredText est;
 
     Document testDocument;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         this.est = new EvenStructuredText();
 
-        SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");
+        SAXBuilder builder = new SAXBuilder(
+                "org.apache.xerces.parsers.SAXParser");
 
         try {
             File testXML = new File(TEST_XML);
@@ -68,28 +66,84 @@ public class EvenStructuredTextTestCase extends TestCase {
         super.tearDown();
     }
 
-    public void testEmptyParagraph() {
-        String s = "Avsnitt1\n\n";
-        Element fritekst = this.testDocument.getRootElement().getChild("fritekst");
+    public void testStripLeadingTrailingNewLines() {
+        String s = "\n\n\nlala\n\n\n";
+        String result = "lala";
+        assertEquals(result, this.est.stripLeadingTrailingNewLines(s));
+        
+        s = "";
+        assertEquals(s, this.est.stripLeadingTrailingNewLines(s));
 
-        assertEquals(s, this.est.parseElement(fritekst));
+        s = "\n";
+        result = "";
+        assertEquals(result, this.est.stripLeadingTrailingNewLines(s));
+        
     }
     
-    public void testStartsWithList() {
-        String s = "\nparagraph";
-        assertEquals(s, this.est.parseElement(this.est.parseStructuredText(s)));
+    public void testStartsEndsWithEmptyParagraph() {
+        String result = "Avsnitt1";
+        Element element = this.testDocument.getRootElement().getChild(
+                "fritekst");
+
+        assertEquals(result, this.est.parseElement(element));
+
+        element = this.testDocument.getRootElement().getChild("fritekst2");
+        result = "- aaa";
+
+        assertEquals(result, this.est.parseElement(element));
     }
-    
-    public void testEmptyParagraph2() {
-        String s = "\n\n\nAvsnitt1\n\n\n";
-        assertEquals(s, this.est.parseElement(this.est.parseStructuredText(s)));
+
+    public void testNewlinesWithParagraph() {
+        String result = "paragraph";
+
+        String s = "paragraph";
+        assertEquals(result, this.est.parseElement(this.est.parseStructuredText(s)));
+
+        s = "paragraph\n";
+        assertEquals(result, this.est.parseElement(this.est.parseStructuredText(s)));
+
+        s = "paragraph\n\n\n";
+        assertEquals(result, this.est.parseElement(this.est
+                .parseStructuredText(s)));
+
+        s = "\nparagraph\n\n\n";
+        assertEquals(result, this.est.parseElement(this.est
+                .parseStructuredText(s)));
+
+        s = "\n\n\n\nparagraph\n\n\n\n\n";
+        assertEquals(result, this.est.parseElement(this.est
+                .parseStructuredText(s)));
+
     }
-    
+
+    public void testNewlinesWithList() {
+        String result = "- list item";
+
+        String s = "- list item";
+        assertEquals(result, this.est.parseElement(this.est.parseStructuredText(s)));
+
+        s = "- list item\n";
+        assertEquals(result, this.est.parseElement(this.est.parseStructuredText(s)));
+
+        s = "- list item\n\n\n";
+        assertEquals(result, this.est.parseElement(this.est
+                .parseStructuredText(s)));
+
+        s = "\n- list item\n\n\n";
+        assertEquals(result, this.est.parseElement(this.est
+                .parseStructuredText(s)));
+
+        s = "\n\n\n\n- list item\n\n\n\n\n";
+        assertEquals(result, this.est.parseElement(this.est
+                .parseStructuredText(s)));
+
+    }
+
     public void testComplexStructure() {
         try {
-            String complex = "[sub:subscript] og [super:superscript]\\\n" +
-            "escaped newline\n*fet \\* stjerne* og _kursiv \\_ " +
-            "underscore_";
+            String complex = "[sub:subscript] og [super:superscript]\\\n"
+                    + "escaped newline\n*fet \\* stjerne* og _kursiv \\_ "
+                    + "underscore_";
             Element parsed = this.est.parseStructuredText(complex);
             String reparsed = this.est.parseElement(parsed);
             assertEquals(complex, reparsed);
@@ -109,38 +163,34 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals("]", parent.getChildText("sub"));
     }
 
-
-    
- 
     public void testEscapeText() {
-    	String s = "\\*bold\\*";
-    	String s2 = null;
-        try {
-        		Element e = this.est.parseStructuredText(s);
-        		s2 = this.est.parseElement(e);
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	fail(e.getMessage());
-        }
-    	assertEquals(s, s2);
-    }
-    
-    
- // Roundtrip tests for testing escape
-    
-    public void testBoldText() {
-        String s = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla * bla _";
-    	String sback = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla \\* bla \\_";
-    	String s2 = null;
+        String s = "\\*bold\\*";
+        String s2 = null;
         try {
             Element e = this.est.parseStructuredText(s);
-            //est.dumpXML(e, System.out);
             s2 = this.est.parseElement(e);
         } catch (Exception e) {
-//        	e.printStackTrace();
-        	fail(e.getMessage());
+            e.printStackTrace();
+            fail(e.getMessage());
         }
-    	assertEquals(sback, s2);
+        assertEquals(s, s2);
+    }
+
+    // Roundtrip tests for testing escape
+
+    public void testBoldText() {
+        String s = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla * bla _";
+        String sback = "*boldtext\\_test* \\\\* bla *\"bold_\\*text\" \\** \\* bla \\* bla \\_";
+        String s2 = null;
+        try {
+            Element e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            s2 = this.est.parseElement(e);
+        } catch (Exception e) {
+            // e.printStackTrace();
+            fail(e.getMessage());
+        }
+        assertEquals(sback, s2);
     }
 
     public void testItalicText() {
@@ -195,22 +245,22 @@ public class EvenStructuredTextTestCase extends TestCase {
             Element e = this.est.parseStructuredText(s);
             s2 = this.est.parseElement(e);
         } catch (Exception e) {
-            //    	e.printStackTrace();
+            // e.printStackTrace();
             fail(e.getMessage());
         }
         assertEquals(sback, s2);
     }
 
-/**
- * Link tests
- */
+    /**
+     * Link tests
+     */
     public void testLinkText() {
         String s = "Bla \\\"bla \"link*_text\":bla_bla bla_bla";
         String sback = "Bla \\\"bla \"link*_text\":bla_bla bla\\_bla";
         String s2 = null;
         try {
             Element e = this.est.parseStructuredText(s);
-            //est.dumpXML(e, System.out);
+            // est.dumpXML(e, System.out);
             s2 = this.est.parseElement(e);
         } catch (Exception e) {
             // e.printStackTrace();
@@ -239,7 +289,7 @@ public class EvenStructuredTextTestCase extends TestCase {
         try {
             Element e = this.est.parseStructuredText(s);
             s2 = this.est.parseElement(e);
-            //est.dumpXML(e, System.out);
+            // est.dumpXML(e, System.out);
         } catch (Exception e) {
             // e.printStackTrace();
             fail(e.getMessage());
@@ -247,15 +297,13 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals(s, s2);
     }
 
-    
-    
     public void testEmptyLinks() {
         String s = "\"\":www.uio.no \"uio\": end";
         String s2 = null;
         try {
             Element e = this.est.parseStructuredText(s);
             s2 = this.est.parseElement(e);
-            //est.dumpXML(e, System.out);
+            // est.dumpXML(e, System.out);
         } catch (Exception e) {
             // e.printStackTrace();
             fail(e.getMessage());
@@ -263,269 +311,262 @@ public class EvenStructuredTextTestCase extends TestCase {
         assertEquals(s, s2);
     }
 
-
-
-/**
- * Reference tests
- */
-public void testNormalReferences() {
-    String s1 = "reference-test 1 [attribute:reference]";
-    String s1parsed = null;
-    String s2 = "reference-test 2 [without_attribute]";
-    String s2parsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s1);
-        s1parsed = this.est.parseElement(e);
-        e = this.est.parseStructuredText(s2);
-        s2parsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
-    }
+    /**
+     * Reference tests
+     */
+    public void testNormalReferences() {
+        String s1 = "reference-test 1 [attribute:reference]";
+        String s1parsed = null;
+        String s2 = "reference-test 2 [without_attribute]";
+        String s2parsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s1);
+            s1parsed = this.est.parseElement(e);
+            e = this.est.parseStructuredText(s2);
+            s2parsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         assertEquals(s1, s1parsed);
         assertEquals(s2, s2parsed);
-}
-
-public void testEscapedReferences() {
-    String s = "reference-test with escape [attribute\\:reference] [attr:ref\\]]";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        //est.dumpXML(e, System.out);
-        sParsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
     }
+
+    public void testEscapedReferences() {
+        String s = "reference-test with escape [attribute\\:reference] [attr:ref\\]]";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            sParsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         assertEquals(s, sParsed);
-}
-
-public void testEmptyAttribute() {
-    String s = "reference-test empty attribute [:reference] [attr\\:ref]";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        //est.dumpXML(e, System.out);
-        sParsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
     }
+
+    public void testEmptyAttribute() {
+        String s = "reference-test empty attribute [:reference] [attr\\:ref]";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            sParsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         assertEquals(s, sParsed);
-}
-
-
-/**
- * List items tests
- */
-public void testNormalList() {
-    String s = "- listitem 1 \n- listitem 2";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        //est.dumpXML(e, System.out);
-        sParsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
     }
+
+    /**
+     * List items tests
+     */
+    public void testNormalList() {
+        String s = "- listitem 1 \n- listitem 2";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            sParsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         assertEquals(s, sParsed);
-}
-
-public void testNormalNumlist() {
-    String s = "# numlistitem 1 \n# numlistitem 2";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        //est.dumpXML(e, System.out);
-        sParsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
     }
+
+    public void testNormalNumlist() {
+        String s = "# numlistitem 1 \n# numlistitem 2";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            sParsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         assertEquals(s, sParsed);
-}
-
-
-public void testEscapedList() {
-    String s = "normal text \n\n\\- escaped BAJS- \\- -BAJS listitem 1 \n\\- escaped listitem 2\n\n normal text again";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        //est.dumpXML(e, System.out);
-        sParsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
     }
-        assertEquals(s, sParsed );
-}
 
-public void testEscapedNumlist() {
-    String s = "normal text \n\n\\# escaped numlistitem 1 \n\\# escaped numlistitem 2\n\n normal text again";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        //est.dumpXML(e, System.out);
-        sParsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
-    }
+    public void testEscapedList() {
+        String s = "normal text \n\n\\- escaped BAJS- \\- -BAJS listitem 1 \n\\- escaped listitem 2\n\n normal text again";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            sParsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         assertEquals(s, sParsed);
-}
-
-/**
- * Newline tests
- */
-
-public void testNewLine() {
-    String s = "la\nla\nla";
-    Element parsed = this.est.parseStructuredText(s);
-    String reparsed = this.est.parseElement(parsed);
-    assertEquals(s, reparsed);
-}
-/**
- * FIXME:
- * Escaped newline is not yet fully implementet!
- */
-// Will fail when escapable newline is implemented
-public void testSimpleEscapedNewline() {
-    String s = "line\\\nnewline";
-    Element e = this.est.parseStructuredText(s);
-    //est.dumpXML(e, System.out);
-    String reparsed = this.est.parseElement(e);
-    assertEquals(s, reparsed);
-}
-// Will fail when escapable newline is implemented
-public void testEscapedNewline() {
-    String s = "text\\\n text on escaped newline \n text after normal newline";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        //est.dumpXML(e, System.out);
-        sParsed = this.est.parseElement(e);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
     }
+
+    public void testEscapedNumlist() {
+        String s = "normal text \n\n\\# escaped numlistitem 1 \n\\# escaped numlistitem 2\n\n normal text again";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            sParsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         assertEquals(s, sParsed);
-}
-
-
-/**
- * TODO:
- * Feiler på escaping newline før listepunkt (som dermed egentlig ikke skal bli listepunkt) *
- */
-public void testTryingToMessUpListsWithEscape() {
-    String s = "test-text\n\n\\- escaped listitem \\\n- not a listitem \\\n- another line not listitem \nend of text";
-    // List adds a new newline (since escaped newline is not supported)
-    String sExpectedResult = "test-text\n\n\\- escaped listitem \\\n\n- not a listitem \\\n- another line not listitem \nend of text";
-    String sParsed = null;
-    try {
-        Element e;
-        e = this.est.parseStructuredText(s);
-        sParsed = this.est.parseElement(e);
-        //est.dumpXML(e, System.out);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
     }
-        assertEquals(sExpectedResult, sParsed);
-}
 
+    /**
+     * Newline tests
+     */
 
-/**
- * Test of potential outofbounds.
- */
-public void testEndsWithUnfinishedLink() {
-    try {
-        this.est.parseStructuredText("lala lala \"lala\":");
-    } catch (StringIndexOutOfBoundsException e) {
-        fail(e.getMessage());
-    }
-}
-
-public void testSuperWithOneCharString() {
-    Element parent = new Element("parent");
-    try {
-        this.est.parseSuper("[super:1]", 0, parent);
-    } catch (Exception e) {
-        fail(e.getMessage());
-    }
-    assertEquals("1", parent.getChildText("sup"));
-}
-
-public void testSuperWithEmptyString() {
-    Element parent = new Element("parent");
-    try {
-        this.est.parseSuper("[super:]", 0, parent);
-    } catch (Exception e) {
-        fail(e.getMessage());
-    }
-    assertEquals("", parent.getChildText("sup"));
-}
-
-public void testSubWithOneCharString() {
-    Element parent = new Element("parent");
-    try {
-        this.est.parseSub("[sub:1]", 0, parent);
-    } catch (Exception e) {
-        fail(e.getMessage());
-    }
-    assertEquals("1", parent.getChildText("sub"));
-}
-
-public void testSubWithEmptyString() {
-    Element parent = new Element("parent");
-    try {
-        this.est.parseSub("[sub:]", 0, parent);
-    } catch (Exception e) {
-        fail(e.getMessage());
-    }
-    assertEquals("", parent.getChildText("sub"));
-}
-
-
-public void testLinkWithSingleCharUrlAndDescription() {
-    String s = "\"a\":b";
-    Element parsed = this.est.parseStructuredText(s);
-    String reparsed = this.est.parseElement(parsed);
-    assertEquals(s, reparsed);
-}
-
-
-/**
- * Iterative complex tests
- */
-public void testIterativeParsingOfComplexStructure() {
-    try {
-        String complex = "[sub:subscript] og [super:superscript]\\\n" +
-        "escaped newline\n*fet \\* stjerne* og _kursiv \\_ " +
-        "underscore_ lenke: \"her\\\":er lenketekst\":~ _kursiv_";
-        // first iteration
-        Element parsed = this.est.parseStructuredText(complex);
+    public void testNewLine() {
+        String s = "la\nla\nla";
+        Element parsed = this.est.parseStructuredText(s);
         String reparsed = this.est.parseElement(parsed);
-        // second iteration
-        parsed = this.est.parseStructuredText(reparsed);
-        reparsed = this.est.parseElement(parsed);
-        // third iteration
-        parsed = this.est.parseStructuredText(reparsed);
-        reparsed = this.est.parseElement(parsed);
-        //est.dumpXML(parsed, System.out);
-        assertEquals(complex, reparsed);
-    } catch (Exception e) {
-        e.printStackTrace();
-        fail(e.getMessage());
+        assertEquals(s, reparsed);
     }
-}
+
+    /**
+     * FIXME: Escaped newline is not yet fully implementet!
+     */
+    // Will fail when escapable newline is implemented
+    public void testSimpleEscapedNewline() {
+        String s = "line\\\nnewline";
+        Element e = this.est.parseStructuredText(s);
+        // est.dumpXML(e, System.out);
+        String reparsed = this.est.parseElement(e);
+        assertEquals(s, reparsed);
+    }
+
+    // Will fail when escapable newline is implemented
+    public void testEscapedNewline() {
+        String s = "text\\\n text on escaped newline \n text after normal newline";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            // est.dumpXML(e, System.out);
+            sParsed = this.est.parseElement(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+        assertEquals(s, sParsed);
+    }
+
+    /**
+     * TODO: Feiler på escaping newline før listepunkt (som dermed egentlig ikke
+     * skal bli listepunkt) *
+     */
+    public void testTryingToMessUpListsWithEscape() {
+        String s = "test-text\n\n\\- escaped listitem \\\n- not a listitem \\\n- another line not listitem \nend of text";
+        // List adds a new newline (since escaped newline is not supported)
+        String sExpectedResult = "test-text\n\n\\- escaped listitem \\\n\n- not a listitem \\\n- another line not listitem \nend of text";
+        String sParsed = null;
+        try {
+            Element e;
+            e = this.est.parseStructuredText(s);
+            sParsed = this.est.parseElement(e);
+            // est.dumpXML(e, System.out);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+        assertEquals(sExpectedResult, sParsed);
+    }
+
+    /**
+     * Test of potential outofbounds.
+     */
+    public void testEndsWithUnfinishedLink() {
+        try {
+            this.est.parseStructuredText("lala lala \"lala\":");
+        } catch (StringIndexOutOfBoundsException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public void testSuperWithOneCharString() {
+        Element parent = new Element("parent");
+        try {
+            this.est.parseSuper("[super:1]", 0, parent);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        assertEquals("1", parent.getChildText("sup"));
+    }
+
+    public void testSuperWithEmptyString() {
+        Element parent = new Element("parent");
+        try {
+            this.est.parseSuper("[super:]", 0, parent);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        assertEquals("", parent.getChildText("sup"));
+    }
+
+    public void testSubWithOneCharString() {
+        Element parent = new Element("parent");
+        try {
+            this.est.parseSub("[sub:1]", 0, parent);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        assertEquals("1", parent.getChildText("sub"));
+    }
+
+    public void testSubWithEmptyString() {
+        Element parent = new Element("parent");
+        try {
+            this.est.parseSub("[sub:]", 0, parent);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        assertEquals("", parent.getChildText("sub"));
+    }
+
+    public void testLinkWithSingleCharUrlAndDescription() {
+        String s = "\"a\":b";
+        Element parsed = this.est.parseStructuredText(s);
+        String reparsed = this.est.parseElement(parsed);
+        assertEquals(s, reparsed);
+    }
+
+    /**
+     * Iterative complex tests
+     */
+    public void testIterativeParsingOfComplexStructure() {
+        try {
+            String complex = "[sub:subscript] og [super:superscript]\\\n"
+                    + "escaped newline\n*fet \\* stjerne* og _kursiv \\_ "
+                    + "underscore_ lenke: \"her\\\":er lenketekst\":~ _kursiv_";
+            // first iteration
+            Element parsed = this.est.parseStructuredText(complex);
+            String reparsed = this.est.parseElement(parsed);
+            // second iteration
+            parsed = this.est.parseStructuredText(reparsed);
+            reparsed = this.est.parseElement(parsed);
+            // third iteration
+            parsed = this.est.parseStructuredText(reparsed);
+            reparsed = this.est.parseElement(parsed);
+            // est.dumpXML(parsed, System.out);
+            assertEquals(complex, reparsed);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
 
 }

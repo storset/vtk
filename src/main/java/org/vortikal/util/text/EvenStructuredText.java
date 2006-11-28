@@ -392,38 +392,35 @@ public final class EvenStructuredText implements StructuredText {
     
     
     public Element parseStructuredText(String text) {
-        String structureText = unifyNewlines(text);
-                
-        // All structuretext skal inn i avsnitt eller liste
-        // If the first element
-        // If first non line break is:
-        // - if liststart without line sep -> 1 line sep
-        // - else -> 2 line sep
-//        if ((!structureText.startsWith(this.PARAGRAPH_START))
-//                || (!structureText.startsWith(this.LIST_START))
-//                || (!structureText.startsWith(this.NUMLIST_START))) {
-            structureText = this.PARAGRAPH_START + structureText;
-//        }
+
+        // Unifying new lines
+        text = unifyNewlines(text);
+
+        // Stripping all leading/triling new lines
+        text = stripLeadingTrailingNewLines(text);        
+        
+        // Adding initial paragraph/list start new lines.
+        text = this.PARAGRAPH_START + text;
 
         Element root = new Element(lookupTag("root"));
         
         int pos = 0;
         int nextPos = 0;
                 
-        while (pos < structureText.length()) {
-            if (listAtPos(structureText, pos + this.LINE_SEPARATOR.length())) {
-                nextPos = parseList(structureText, pos
+        while (pos < text.length()) {
+            if (listAtPos(text, pos + this.LINE_SEPARATOR.length())) {
+                nextPos = parseList(text, pos
                         + this.LINE_SEPARATOR.length(), root);
-            } else if (numlistAtPos(structureText, pos
+            } else if (numlistAtPos(text, pos
                     + this.LINE_SEPARATOR.length())) { // telle opp riktig
-                nextPos = parseNumlist(structureText, pos
+                nextPos = parseNumlist(text, pos
                         + this.LINE_SEPARATOR.length(), root);
-            } else if (listAtPos(structureText, pos)) {
-                nextPos = parseList(structureText, pos, root);
-            } else if (numlistAtPos(structureText, pos)) {
-                nextPos = parseNumlist(structureText, pos, root);
-            } else if (paragraphAtPos(structureText, pos)) {
-                nextPos = parseParagraph(structureText, pos, root);
+            } else if (listAtPos(text, pos)) {
+                nextPos = parseList(text, pos, root);
+            } else if (numlistAtPos(text, pos)) {
+                nextPos = parseNumlist(text, pos, root);
+            } else if (paragraphAtPos(text, pos)) {
+                nextPos = parseParagraph(text, pos, root);
             }
 
             pos = nextPos;
@@ -432,49 +429,25 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
+    protected String stripLeadingTrailingNewLines(String text) {
+        int startPos = 0;
+        int endPos = text.length();
+
+        while (startPos < endPos && text.charAt(startPos) == NEWLINE)
+            startPos++;
+        
+        while (endPos > startPos && text.charAt(endPos - 1) == NEWLINE)
+            endPos--;
+
+        return text.substring(startPos, endPos);
+
+    }
+
     protected String unifyNewlines( String text ) {
         text = text.replaceAll("\r\n", "\n");
         text = text.replaceAll("\r", "\n");
         return text;
     }
-
-    
-    private String removeStartingAndTrailingNewlines(String structureText) {
-        // Strip newlines at start of structuredText 
-        // (will else incorrectly be saved as <newline/> 
-        int startPos = 0;
-        try {
-            while (this.NEWLINE == structureText.charAt(startPos) ) {
-                ++startPos;
-            }
-            if (startPos > 0)
-                structureText = structureText.substring(startPos); 
-            // Strip newlines at end of structuredText 
-            // (will else incorrectly be displayed as '\'
-            int endPos = structureText.length();
-            while (this.NEWLINE == structureText.charAt(endPos -1) ) {
-                --endPos;
-            }
-            if (endPos < structureText.length())
-                structureText = structureText.substring(0, endPos);
-                    
-            // XXX: Why is this?
-            // Remove trailing ESCAPE
-            // (if text has trailing NEWLINE, an ESCAPE character may be added 
-            // when converting from XML to structured text)
-            if (structureText.charAt(structureText.length()-1) == this.ESCAPE 
-                    && structureText.charAt(structureText.length()-2) != this.ESCAPE) {
-                structureText = structureText.substring(0, structureText.length()-1);
-            }
-        } catch (Exception e) {
-            // XXX: This should not happen, and should therefore throw serious exception!
-            this.logger.warn(
-                    "Attempting to parse invalid or empty StructuredText string");
-        }
-                
-        return structureText;
-    }
-
     
     protected int parseParagraph(String text, int startPos, Element root) {
 
@@ -1152,26 +1125,26 @@ public final class EvenStructuredText implements StructuredText {
             return "";
 
         String text = generateStructuredText(root);
-        // Why is this done on both in and out?
-        //        text = removeStartingAndTrailingNewlines(text);
-        
 
-        Element child = (Element) root.getChildren().get(0);
+        // Remove possible inconsistencies caused by directly edited xml
+        return stripLeadingTrailingNewLines(text);
 
-        // Delete first paragraph/list start
-
-        if ("paragraph".equals(reverseLookupTag(child.getName()))) {
-            return text.substring(this.PARAGRAPH_START.length());
-        }
-
-        if ("unordered-list".equals(reverseLookupTag(child.getName()))) {
-            return text.substring((this.LINE_SEPARATOR + this.LINE_SEPARATOR).length());
-        }
-
-        if ("ordered-list".equals(reverseLookupTag(child.getName()))) {
-            return text.substring((this.LINE_SEPARATOR + this.LINE_SEPARATOR).length());
-        }
-        return text;
+//        Element child = (Element) root.getChildren().get(0);
+//
+//        // Delete first paragraph/list start
+//
+//        if ("paragraph".equals(reverseLookupTag(child.getName()))) {
+//            return text.substring(this.PARAGRAPH_START.length());
+//        }
+//
+//        if ("unordered-list".equals(reverseLookupTag(child.getName()))) {
+//            return text.substring((this.LINE_SEPARATOR + this.LINE_SEPARATOR).length());
+//        }
+//
+//        if ("ordered-list".equals(reverseLookupTag(child.getName()))) {
+//            return text.substring((this.LINE_SEPARATOR + this.LINE_SEPARATOR).length());
+//        }
+//        return text;
     }
     
     

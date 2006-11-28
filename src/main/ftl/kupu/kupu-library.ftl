@@ -31,7 +31,20 @@
   <!--icon>foobar.png</icon-->
 
   <items>
-
+    
+    <#if resourceContext.currentResource.parent?exists>
+      <collection id="resource:${resourceContext.currentResource.parent}">
+        <title>Parent</title>
+        <#if (parentURL.url)?has_content>
+        <src>${parentURL.url?html}</src>
+        </#if>
+        <#if (viewParentService.url)?has_content>
+        <uri>${viewParentService.url?html}</uri>
+        </#if>
+        <icon>${cssBaseURL}/up.gif</icon>
+      </collection>
+    </#if>
+    
   <#list collectionListing.children as child>
 
     <#if collectionListing.browsingLinks[child_index]?exists>

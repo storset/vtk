@@ -517,13 +517,27 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="kupuBrowseImagesCollectionlistingProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="viewService" />
           <property name="modelName" value="viewService" />
           <property name="urlName" value="url" />
         </bean>
+        <ref bean="kupuBrowseImagesCollectionlistingProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="kupuBrowseImagesService" />
+          <property name="modelName" value="parentURL" />
+          <property name="linkToParent" value="true" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="linkToParent" value="true" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="viewParentService" />
+          <property name="urlName" value="url" />
+        </bean>     
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
@@ -540,6 +554,7 @@
     <property name="url" value="kupu/kupu-library.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <!--
         <ref bean="resourceContextProvider" />
         <ref bean="kupuBrowseLinksCollectionlistingProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
@@ -548,6 +563,31 @@
           <property name="modelName" value="viewService" />
           <property name="urlName" value="url" />
         </bean>
+        -->
+        
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="viewService" />
+          <property name="urlName" value="url" />
+        </bean>
+        <ref bean="kupuBrowseLinksCollectionlistingProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="kupuBrowseLinksService" />
+          <property name="modelName" value="parentURL" />
+          <property name="linkToParent" value="true" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="linkToParent" value="true" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="viewParentService" />
+          <property name="urlName" value="url" />
+        </bean>
+        
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>

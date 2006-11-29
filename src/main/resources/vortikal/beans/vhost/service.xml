@@ -76,7 +76,7 @@
         <!--ref bean="editService" /-->               <!-- 400 -->
         <!--ref bean="manageService" /-->             <!-- 500 -->
         <!--ref bean="browseService" /-->             <!-- 600 -->
-        <ref bean="viewService"/>                     <!-- 700 -->
+        <!--ref bean="viewService" /-->               <!-- 700 -->
         <!--         <ref bean="searchService" /> -->
       </list>
     </property>
@@ -181,6 +181,7 @@
   <!-- View services -->
   
   <bean id="viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
     <property name="order" value="700" />
     <property name="assertions">
       <list>

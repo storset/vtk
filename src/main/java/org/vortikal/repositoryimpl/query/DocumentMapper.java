@@ -114,7 +114,6 @@ public class DocumentMapper implements InitializingBean {
     }
     
     public Document getDocument(PropertySetImpl propSet) throws DocumentMappingException {
-        
         Document doc = new Document();
         
         // Special fields
@@ -165,7 +164,7 @@ public class DocumentMapper implements InitializingBean {
         List propDefs = 
             this.resourceTypeTree.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
         
-        // Index only properties that satisfy the following two conditions:
+        // Index only properties that satisfy both of the following conditions:
         // 1) Belongs to the resource type's definition
         // 2) Exists in the property set.
         for (Iterator i = propDefs.iterator(); i.hasNext();) {
@@ -175,31 +174,50 @@ public class DocumentMapper implements InitializingBean {
             
             if (property == null) continue;
            
-            // The field used for searching on the property
+            // The field used for searching on the property (multi-values encoded, if any)
             Field indexedField = getIndexedFieldFromProperty(property);
-            if (indexedField != null) {
-                doc.add(indexedField);
-                
-                // Stored fields used for re-creating the actual property value
-                // from binary data.
-                Field[] storedFields = getStoredFieldsFromProperty(property);
-                for (int u=0; u < storedFields.length; u++) {
-                    doc.add(storedFields[u]);
-                }
+            doc.add(indexedField);
+            
+            // The field(s) used for storing the property value(s) (in binary form) 
+            Field[] storedFields = getStoredFieldsFromProperty(property);
+            for (int u=0; u < storedFields.length; u++) {
+               doc.add(storedFields[u]);
             }
+            
+//            if (indexedField != null) {
+//                doc.add(indexedField);
+//                
+//                // Stored fields used for re-creating the actual property value
+//                // from binary data.
+//                Field[] storedFields = getStoredFieldsFromProperty(property);
+//                for (int u=0; u < storedFields.length; u++) {
+//                    doc.add(storedFields[u]);
+//                }
+//            }
+            
         }
         
         return doc;
     }
 
     /**
+     * Map from Lucene <code>Document</code> instance to a 
+     * repository <code>PropertySet</code> instance. 
      * 
-     * @param doc
+     * This method is heavily used when generating query results and
+     * is critical for general query performance. Emphasis should be placed
+     * on optimizing it as much as possible.
+     * 
+     * @param doc The {@link org.apache.lucene.document.Document} to map from
+     * @param select A {@link PropertySelect} instance determining which
+     *               properties that should be mapped.
+     *
      * @return
      * @throws DocumentMappingException
      */
-    public PropertySetImpl getPropertySet(Document doc, PropertySelect select) throws DocumentMappingException {
-        // XXX: Exception handling
+    public PropertySetImpl getPropertySet(Document doc, PropertySelect select) 
+        throws DocumentMappingException {
+        
         PropertySetImpl propSet = new PropertySetImpl(doc.get(URI_FIELD_NAME));
         propSet.setAclInheritedFrom(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
                 doc.getField(ACL_INHERITED_FROM_FIELD_NAME)));
@@ -210,6 +228,7 @@ public class DocumentMapper implements InitializingBean {
         // Loop through all stored binary fields and re-create properties with
         // values. Multi-valued properties are stored as a sequence of binary fields
         // (with the same name) in the index.
+        // Note that the enumeration will _only_ contain _stored_ fields.
         Enumeration e = doc.fields();
         String currentName = null;
         List fields = null;
@@ -222,16 +241,19 @@ public class DocumentMapper implements InitializingBean {
             }
             
             if (currentName == null) {
-                // New field
                 currentName = field.name();
                 fields = new ArrayList();
             }
             
-            if (field.name().equals(currentName)) {
+            // Field.name() returns an internalized String instance. 
+            // Optimize by only comparing reference instead of calling 
+            // String.equals(Object o). This saves a method call, 
+            // and a full string comparison in cases where the references differ.
+            if (field.name() == currentName) {
                 fields.add(field);
             } else {
-                Property prop = getPropertyFromStoredFieldValues(currentName, fields,
-                                                                 select);
+                Property prop = getPropertyFromStoredFieldValues(currentName, 
+                                                                 fields, select);
                 if (prop != null) {
                     propSet.addProperty(prop);
                 }
@@ -247,7 +269,7 @@ public class DocumentMapper implements InitializingBean {
             Property prop = getPropertyFromStoredFieldValues(currentName,
                                                              fields, select);
             if (prop != null) {
-                propSet.addProperty(prop);        
+                propSet.addProperty(prop);
             }
         }
         
@@ -278,12 +300,17 @@ public class DocumentMapper implements InitializingBean {
             name = fieldName.substring(pos+1, fieldName.length());
         } 
         
-        PropertyTypeDefinition def = this.resourceTypeTree.getPropertyDefinitionByPrefix(nsPrefix, name);
+        PropertyTypeDefinition def = 
+            this.resourceTypeTree.getPropertyDefinitionByPrefix(nsPrefix, name);
+        
+        // TODO: Re-structure. test for (def == null) only once, and do it here.
+        
         if (!select.isIncludedProperty(def)) {
             return null;
         }
 
-        Namespace ns = def == null ? Namespace.getNamespaceFromPrefix(nsPrefix) : def.getNamespace();
+        Namespace ns = def == null ? 
+                  Namespace.getNamespaceFromPrefix(nsPrefix) : def.getNamespace();
         Property property = this.propertyManager.createProperty(ns, name);
         
         if (def != null) {          // Def should really not be null here, unless the config has changed
@@ -299,7 +326,8 @@ public class DocumentMapper implements InitializingBean {
                     // Fail hard if multiple stored fields found for single value property
                     throw new DocumentMappingException("Single value property '"
                             + nsPrefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
-                            + name + "' has an invalid number of stored values (!= 1) in index.");
+                            + name + "' has an invalid number of stored values ("
+                            + storedValueFields.size() + ") in index.");
                 }
                 
                 Value value = BinaryFieldValueMapper.getValueFromBinaryField(

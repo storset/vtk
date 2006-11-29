@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.service;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,7 +122,15 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
                 return false;
             }
             String docType = schemaProp.getStringValue();
-            Document schema = this.schemaRegistry.getXMLSchema(docType);
+            Document schema = null;
+            try {
+                schema = this.schemaRegistry.getXMLSchema(docType);
+            } catch (IOException e) {
+                // Unable to get schema
+            } catch (JDOMException e) {
+                // Couldn't parse schema..
+            }
+            
             if (schema == null) {
                 return false;
             }

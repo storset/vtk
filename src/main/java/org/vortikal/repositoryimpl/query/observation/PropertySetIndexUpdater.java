@@ -52,6 +52,10 @@ import org.vortikal.repositoryimpl.index.observation.ResourceDeletion;
  * Incremental index updates from resource changes.
  * Hooking up to the old resource change event system, for now.
  *  
+ * <p>
+ * TODO: Should consider batch processing of a set of changes and indexing
+ *       to a volatile (memory) index, then merge back each finished batch.
+ * 
  * @author oyviste
  *
  */
@@ -171,7 +175,8 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 List updateUris = new ArrayList(updates.size());
                 
                 // Remove updated property sets from index in one batch, first, 
-                // before re-adding them.
+                // before re-adding them. This is very necessary to keep things
+                // efficient.
                 for (Iterator i = updates.iterator(); i.hasNext();) {
                     ResourceChange change = (ResourceChange)i.next();
                     this.index.deletePropertySet(change.getUri());

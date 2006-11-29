@@ -65,6 +65,11 @@ public class PropertyManagerImpl
     private boolean initialized;
     
 
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+    
+
     public Property createProperty(Namespace namespace, String name) {
         if (!this.initialized) {
             initialize();
@@ -191,6 +196,7 @@ public class PropertyManagerImpl
     }
 
     public void afterPropertiesSet() throws Exception {
+        initialize();
         if (this.valueFactory == null) {
             throw new BeanInitializationException("Property 'valueFactory' not set.");
         }
@@ -207,7 +213,7 @@ public class PropertyManagerImpl
     }
 
     private synchronized void initialize() {
-        if (!this.initialized) {
+        if (!this.initialized && this.resourceTypeTree == null) {
             this.resourceTypeTree = (ResourceTypeTree)
                 BeanFactoryUtils.beanOfType(this.applicationContext, ResourceTypeTree.class);
             if (this.resourceTypeTree == null) {

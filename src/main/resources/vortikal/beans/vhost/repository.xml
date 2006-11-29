@@ -135,7 +135,7 @@
 
   <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">
     <property name="valueFactory" ref="valueFactory"/>
-    <!--property name="resourceTypeTree" ref="resourceTypeTree" /-->
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="repositoryResourceHelper"

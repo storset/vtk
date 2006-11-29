@@ -145,9 +145,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             propDef = (PropertyTypeDefinition) map.get(name);
         }
 
-        if (logger.isDebugEnabled() && propDef == null)
+        if (logger.isDebugEnabled() && propDef == null) {
             logger.debug("No definition found for property "
                     + namespace.getPrefix() + ":" + name);
+        }
 
         return propDef;
     }

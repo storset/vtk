@@ -50,6 +50,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import org.vortikal.repository.Property;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -203,6 +204,10 @@ public class HeaderControlHandlerInterceptor
 
             if (expiresProperty != null && expiresProperty.getValue() != null) {
 
+                if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
+                    return;
+                }
+                
                 long expiresMilliseconds = expiresProperty.getLongValue() * 1000;
                 Date expires = new Date(new Date().getTime() + expiresMilliseconds);
                 response.setHeader("Expires", HttpUtil.getHttpDateString(expires));

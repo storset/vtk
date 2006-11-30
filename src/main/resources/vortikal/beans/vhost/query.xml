@@ -20,14 +20,8 @@
       <list>
         <bean class="org.vortikal.repositoryimpl.query.parser.CurrentDepthExpressionEvaluator" />
         <bean class="org.vortikal.repositoryimpl.query.parser.CurrentFolderExpressionEvaluator"
-              parent="requestLocalRepositoryAware">
-          <!-- Temp. name change, remove when ready for changing existing queries-->
-          <property name="variableName" value="currentURI" />
-        </bean>
-        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentTimeExpressionEvaluator">
-          <!-- Temp. name change, remove when ready for changing existing queries-->
-          <property name="variableName" value="currentDate" />
-        </bean>
+              parent="requestLocalRepositoryAware" />
+        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentTimeExpressionEvaluator" />
       </list>
     </property>
   </bean>

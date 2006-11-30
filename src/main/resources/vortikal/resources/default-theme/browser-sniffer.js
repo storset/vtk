@@ -32,6 +32,8 @@
     var is_ie5_5up =(is_ie && !is_ie3 && !is_ie4 && !is_ie5);
     var is_ie6    = (is_ie && (is_major == 4) && (agt.indexOf("msie 6.")!=-1) );
     var is_ie6up  = (is_ie && !is_ie3 && !is_ie4 && !is_ie5 && !is_ie5_5);
+    var is_ie7    = (is_ie && (is_major == 4) && (agt.indexOf("msie 7.")!=-1) );
+
 
     // KNOWN BUG: On AOL4, returns false if IE3 is embedded browser
     // or if this is the first browser window opened.  Thus the

@@ -45,22 +45,13 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
-<!--
     <property name="defaultValue">
-      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="valueFactory" />
-        <property name="targetMethod" value="createValue" />
-        <property name="arguments">
-          <list>
-            <value>utf-8</value>
-            <ref bean="TYPE_STRING" />
-          </list>
-        </property>
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.String"
+                         value="${defaultXHtml10TransitionalResourceCharacterEncoding}" />
       </bean>
     </property>
--->
   </bean>
 
 
@@ -69,24 +60,10 @@
     <property name="propertyEvaluators">
       <list>
         <bean class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
-        <bean class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
-          <property name="defaultEncoding" ref="defaultXHtml10TransitionalResourceCharacterEncodingString" />
-        </bean>
+        <bean class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
       </list>
     </property>
   </bean>
-
-  <bean id="defaultXHtml10TransitionalResourceCharacterEncodingString" class="java.lang.String">
-    <constructor-arg value="${defaultXHtml10TransitionalResourceCharacterEncoding}" />
-  </bean>
-
-<!--
-
-  <bean id="xhtml10TransGuessedCharacterEncodingEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
-    <property name="defaultEncoding" value="utf-8" />
-  </bean>
--->
 
   <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->
   <bean id="xhtml10TransCharacterEncodingPropDef"

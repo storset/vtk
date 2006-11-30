@@ -32,20 +32,16 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.security.Principal;
 import org.vortikal.util.io.StreamUtil;
 
@@ -63,7 +59,7 @@ import org.vortikal.util.io.StreamUtil;
  * <p>One possibility might be to use
  * <code>org.dom4j.Document#getXMLEncoding</code>?
  */
-public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
+public class XMLCharacterEncodingEvaluator implements 
         ContentModificationPropertyEvaluator {
 
     private int maxBytes = 10000000;
@@ -75,30 +71,11 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private String defaultEncoding = null;
-
-    public void setDefaultEncoding(String defaultEncoding)
-        throws IllegalCharsetNameException, UnsupportedCharsetException {
-        Charset.forName(defaultEncoding);
-        this.defaultEncoding = defaultEncoding;
-    }
-    
-
     public void setMaxBytes(int maxBytes) {
         this.maxBytes = maxBytes;
     }
     
 
-    public boolean create(Principal principal, Property property, 
-            PropertySet ancestorPropertySet, boolean isCollection, Date time)
-        throws PropertyEvaluationException {
-        if (this.defaultEncoding != null) {
-            property.setStringValue(this.defaultEncoding);
-            return true;
-        }
-        return false;
-    }
-    
     public boolean contentModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Content content, Date time)
             throws PropertyEvaluationException {
@@ -138,15 +115,6 @@ public class XMLCharacterEncodingEvaluator implements CreatePropertyEvaluator,
             }
         }
             
-        if (characterEncoding == null && this.defaultEncoding != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(
-                    "Unable to find encoding using regexp pattern '" + CHARSET_PATTERN.pattern()
-                    + "' for XML document <string>, using default encoding: " + this.defaultEncoding);
-            }
-            characterEncoding = this.defaultEncoding;
-        }
-
         if (characterEncoding == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug(

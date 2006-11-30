@@ -149,20 +149,36 @@ public class RepositoryResourceHelperImpl
             CreatePropertyEvaluator evaluator = 
                 propertyDef.getCreateEvaluator();            
 
-            Property prop = this.propertyManager.createProperty(rt.getNamespace(), propertyDef.getName());
-            if (evaluator != null && evaluator.create(principal, prop, newResource,
-                                                      isCollection, time)) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Property evaluated for creation [" + rt.getName() + "]: "
-                                 + prop + " using evaluator " + evaluator);
-                
+            Property prop = null;            
+
+            if (evaluator != null) {
+                prop = this.propertyManager.createProperty(
+                        propertyDef.getNamespace(), propertyDef.getName());
+
+                boolean evaluated = evaluator.create(principal, prop, newResource,
+                        isCollection, time);
+                if (!evaluated) {
+                    prop = null;
+                } else if (!prop.isValueInitialized()) 
+                    throw new InternalRepositoryException("Property  " + prop
+                            + " not initialized");
+
             }
 
-            if (propertyDef.isMandatory() && !((PropertyImpl) prop).isValueInitialized())
-                throw new InternalRepositoryException("Property  " + prop + " not initialized");
+            if (prop == null && propertyDef.isMandatory()) {
+                Value defaultValue = propertyDef.getDefaultValue();
+                if (defaultValue == null) {
+                    throw new InternalRepositoryException("Property " + propertyDef + "is " +
+                            "mandatory and evaluator returned false, but no default value is set." +
+                            "Resource " + newResource + " not evaluated.");
+                }
+                prop = this.propertyManager.createProperty(propertyDef.getNamespace(), propertyDef.getName());
+                prop.setValue(defaultValue);
+            } 
 
-            if (prop.isValueInitialized())
+            if (prop != null) {
                 newProps.add(prop);
+            }
         }
     }
     
@@ -349,14 +365,21 @@ public class RepositoryResourceHelperImpl
         
         ResourceImpl newResource = ctx.getNewResource();
 
+        if (evaluatedProp == null && propDef.isMandatory()) {
+            Value defaultValue = propDef.getDefaultValue();
+            if (defaultValue == null) {
+                throw new InternalRepositoryException("Property " + propDef + "is " +
+                        "mandatory and evaluator returned false, but no default value is set." +
+                        "Resource " + newResource + " not evaluated.");
+            }
+            evaluatedProp = this.propertyManager.createProperty(propDef.getNamespace(), propDef.getName());
+            evaluatedProp.setValue(defaultValue);
+        } 
+
         if (evaluatedProp != null) {
             newResource.addProperty(evaluatedProp);
-        } else if (propDef.isMandatory()) {
-            throw new InternalRepositoryException("Property " + propDef + "is " +
-                    "mandatory, but isn't set for resource '" + newResource + "'");
         }
     }
-    
     /**
      * The evaluator will be given a clone of the original property as input if it 
      * previously existed, or an uninitialized property otherwise.
@@ -377,7 +400,7 @@ public class RepositoryResourceHelperImpl
         Property prop = ctx.getOriginalResource().getProperty(propDef);
         if (prop != null) {
             try {
-                prop = (Property) ctx.getOriginalResource().getProperty(propDef).clone();
+                prop = (Property) prop.clone();
             } catch (CloneNotSupportedException e) {
                 throw new InternalRepositoryException(
                         "Couldn't clone property " + propDef + "on resource '"
@@ -399,8 +422,10 @@ public class RepositoryResourceHelperImpl
                 evaluator.contentModification(ctx.getPrincipal(), prop,
                         newResource, content, time);
             if (!evaluated) {
-                prop = null;
-            } else if (!prop.isValueInitialized()) {
+                return null;
+            } 
+            
+            if (!prop.isValueInitialized()) {
                 throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
                         + newResource.getURI() + "' returned not value initialized property " + 
                         propDef);
@@ -445,17 +470,10 @@ public class RepositoryResourceHelperImpl
                     ctx.getPrincipal(), property, newResource, time);
 
             if (!evaluated) {
-                if (propDef.isMandatory()) {
-                    Value defaultValue = propDef.getDefaultValue();
-                    if (defaultValue == null)
-                        throw new InternalRepositoryException("Property " + propDef + "is " +
-                                "mandatory and evaluator returned false, but no default value is set.");
-
-                    property.setValue(defaultValue);
-                } else {
-                    property = null;
-                }
-            } else if (!property.isValueInitialized()) {
+                return null;
+            } 
+            
+            if (!property.isValueInitialized()) {
                 throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
                         + newResource.getURI() + "' returned not value initialized property " + 
                         propDef);

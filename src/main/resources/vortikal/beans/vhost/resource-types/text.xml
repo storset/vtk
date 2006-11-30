@@ -47,29 +47,13 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="abstractTextResourceEncodingEvaluator" />
-    <property name="contentModificationEvaluator" ref="abstractTextResourceEncodingEvaluator" />
-  </bean>
-
-
-  <bean id="abstractTextResourceEncodingEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.FixedValuePropertyEvaluator">
-    <property name="value" ref="defaultTextResourceEncoding" />
-  </bean>
-
-
-  <bean id="defaultTextResourceEncoding"
-    class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="valueFactory" />
-    <property name="targetMethod" value="createValue" />
-    <property name="arguments">
-      <list>
-        <value>${defaultTextResourceCharacterEncoding}</value>
-        <ref bean="TYPE_STRING" />
-      </list>
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.String"
+                         value="${defaultTextResourceCharacterEncoding}" />
+      </bean>
     </property>
   </bean>
-
 
   <bean id="characterEncodingValidator"
         class="org.vortikal.repository.resourcetype.property.CharacterEncodingValidator" />

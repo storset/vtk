@@ -81,7 +81,8 @@ import org.vortikal.util.web.HttpUtil;
  *   <li><code>Expires</code> if the configuration property
  *   <code>expiresHeaderProperty</code> is configured and the resource
  *   has the corresponding property set. The value of the header will
- *   be the same as the value of the property.
+ *   be the same as the value of the property. NOTE: This is only set for resources 
+ *   with anonymous read processed (or read) access.
  *   <li><code>Cache-Control: no-cache</code> if the configuration
  *   property <code>expiresHeaderProperty</code> is not set,
  *   or it is set, but the corresponding resource property

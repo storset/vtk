@@ -61,32 +61,17 @@
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
-    <!--property name="defaultValue" ref="defaultXmlResourceCharacterEncoding" /-->
-  </bean>
-
-  <bean id="defaultXmlResourceCharacterEncoding"
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="valueFactory" />
-    <property name="targetMethod" value="createValue" />
-    <property name="arguments">
-      <list>
-        <ref bean="defaultXmlResourceCharacterEncodingString" />
-        <ref bean="TYPE_STRING" />
-      </list>
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.String"
+                         value="${defaultXmllResourceCharacterEncoding}" />
+      </bean>
     </property>
   </bean>
 
-
-  <bean id="defaultXmlResourceCharacterEncodingString" class="java.lang.String">
-    <constructor-arg><value>${defaultXmllResourceCharacterEncoding}</value></constructor-arg>
-  </bean>
-
   <bean id="xmlGuessedCharacterEncodingEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
-    <property name="defaultEncoding" ref="defaultXmlResourceCharacterEncodingString" />
-  </bean>
+        class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
 
 
   <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->

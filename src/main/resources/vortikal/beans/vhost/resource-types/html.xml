@@ -60,7 +60,12 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="contentModificationEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
-    <property name="defaultValue" ref="defaultHtmlResourceCharacterEncoding" />
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.String"
+                         value="${defaultHtmlResourceCharacterEncoding}" />
+      </bean>
+    </property>
   </bean>
 
 
@@ -69,24 +74,11 @@
     <property name="propertyEvaluators">
       <list>
         <bean class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
-        <bean class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator">
-          <property name="defaultEncoding" ref="defaultHtmlResourceCharacterEncodingString" />
-        </bean>
+        <bean class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
       </list>
     </property>
   </bean>
 
-
-
-  <bean id="defaultHtmlResourceCharacterEncoding" class="org.vortikal.repository.resourcetype.Value">
-    <constructor-arg type="java.lang.String">
-      <ref bean="defaultHtmlResourceCharacterEncodingString" />
-    </constructor-arg>
-  </bean>
-
-  <bean id="defaultHtmlResourceCharacterEncodingString" class="java.lang.String">
-    <constructor-arg value="${defaultHtmlResourceCharacterEncoding}" />
-  </bean>
 
 
   <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->

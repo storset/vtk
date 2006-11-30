@@ -31,21 +31,16 @@
 package org.vortikal.repository.resourcetype.property;
 
 import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.security.Principal;
 import org.vortikal.util.text.TextUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -53,27 +48,10 @@ import org.w3c.dom.NodeList;
 
 
 
-public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
-        ContentModificationPropertyEvaluator {
+public class HtmlCharacterEncodingEvaluator implements ContentModificationPropertyEvaluator {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    public static final String DEFAULT_ENCODING = "ISO-8859-1";
-
-    private String defaultEncoding = null;
-    
-
-    public boolean create(Principal principal, Property property, 
-                          PropertySet ancestorPropertySet, boolean isCollection, Date time)
-        throws PropertyEvaluationException {
-        if (this.defaultEncoding != null) {
-            property.setStringValue(this.defaultEncoding);
-            return true;
-
-        }
-        return false;
-    }
-    
     public boolean contentModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Content content, Date time)
             throws PropertyEvaluationException {
@@ -86,17 +64,12 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
             if (logger.isDebugEnabled()) {
                 logger.debug("Unable to get DOM representation of content", e);
             }
-            if (this.defaultEncoding == null) {
-                return false;
-            }
-            property.setStringValue(this.defaultEncoding);
-            return true;
+            return false;
         }
 
         String encoding = findEncodingFromMetaElement(doc);
-        if (encoding == null && this.defaultEncoding != null) {
-            encoding = this.defaultEncoding;
-        } else if (encoding == null) {
+
+        if (encoding == null) {
             return false;
         }
 
@@ -104,10 +77,9 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
             Charset.forName(encoding);
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Unknown character encoding " + encoding
-                             + ", using default value: " + this.defaultEncoding, e);
+                logger.debug("Unknown character encoding " + encoding, e);
             }
-            encoding = this.defaultEncoding;
+            return false;
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Setting property value: " + encoding);
@@ -151,17 +123,4 @@ public class HtmlCharacterEncodingEvaluator implements CreatePropertyEvaluator,
         return encoding;
     }
     
-    
-    public String getDefaultEncoding() {
-        return this.defaultEncoding;
-    }
-
-
-    public void setDefaultEncoding(String defaultEncoding)
-        throws IllegalCharsetNameException, UnsupportedCharsetException {
-        Charset.forName(defaultEncoding);
-        this.defaultEncoding = defaultEncoding;
-    }
-    
-
 }

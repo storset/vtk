@@ -292,7 +292,8 @@ public class RepositoryResourceHelperImpl
             if (propDef == null) {
                 // Dead property, preserve
                 newResource.addProperty(suppliedProp);
-            } else {
+            } else if (newResource.getProperty(propDef) == null) {
+                // If it hasn't been set for the new resource, check if zombie
                 ResourceTypeDefinition[] rts = 
                     resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);
 

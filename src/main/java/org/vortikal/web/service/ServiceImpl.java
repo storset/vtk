@@ -258,6 +258,7 @@ public class ServiceImpl
     }
 	
     public String constructLink(String uri) {
+        List assertions = getAllAssertions(this);
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
 
         for (Iterator i = assertions.iterator(); i.hasNext();) {

@@ -119,7 +119,7 @@ public interface ResourceTypeTree {
      * @return an array containing the <code>PrimaryResourceTypeDefinition</code>s that define
      * this property, or an empty array if none 
      */
-    public ResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
-            PropertyTypeDefinition definition);
+    public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
+        PropertyTypeDefinition definition);
     
 }

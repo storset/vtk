@@ -326,7 +326,7 @@ VALUES (
 );
 
 
--- (pseudo:authenticated (read))
+-- (pseudo:all (read))
 
 INSERT INTO ACL_ENTRY (
     acl_entry_id,
@@ -340,7 +340,7 @@ VALUES (
     acl_entry_seq_pk.nextval,
     vortex_resource_seq_pk.currval,
     1,
-    'pseudo:authenticated',
+    'pseudo:all',
     'Y',
     'vortex@localhost',
     sysdate

@@ -236,16 +236,6 @@
     </property>
   </bean>
 
-  <!-- Add the raw query URL provider to the central list: -->
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="editView" />
-    <property name="targetMethod" value="addReferenceDataProvider" />
-    <property name="arguments">
-      <list>
-        <ref bean="rawXmlQueryURLProvider" />
-      </list>
-    </property>
-  </bean>
 
   <bean id="rawXmlQueryURLProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"

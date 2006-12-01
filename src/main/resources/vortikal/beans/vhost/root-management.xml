@@ -11,13 +11,22 @@
     <property name="order" value="350" />
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
-          <property name="username" value="root@localhost"/>
+        <bean class="org.vortikal.web.service.OrAssertion">
+          <property name="assertions">
+            <list>
+              <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+                <property name="username" value="root@localhost"/>
+              </bean>
+              <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+                <property name="username" value="vortex@services.uio.no"/>
+              </bean>
+            </list>
+          </property>
         </bean>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="vrtx" />
           <property name="parameterValue" value="root" />
-        </bean>      
+        </bean>
       </list>
     </property>
   </bean>
@@ -25,6 +34,13 @@
   <bean id="repositoryManageDefaultService"
         class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="repositoryManageService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+      </list>
+    </property>
     <property name="categories">
       <set>
         <value>rootMenu</value>
@@ -203,7 +219,7 @@
   </bean>
 
 
-  <!-- Old index management service. -->
+  <!-- Old (and obsolete) index management service. -->
   <bean id="indexManagementService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-300"/>
     <property name="parent" ref="repositoryManageService"/>
@@ -219,6 +235,9 @@
     </property>
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="index"/>
           <property name="parameterValue" value="manage"/>
@@ -228,7 +247,7 @@
     <property name="handler" ref="indexManagementHandler"/>
   </bean>
 
-  <!-- Temporary web-accessible index runtime manager controller. --> 
+  <!-- Temporary web-accessible index runtime manager controller (old and obsolete). --> 
   <bean id="indexManagementHandler"
     class="org.vortikal.web.controller.index.IndexManagementController">
     <property name="runtimeManager" ref="indexRuntimeManager"/>

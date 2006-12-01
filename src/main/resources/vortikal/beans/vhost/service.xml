@@ -134,17 +134,65 @@
     <property name="handler" ref="logoutHandler" />
   </bean>
 
-
+  <!-- Service for explicitly requesting authentication. This service 
+       will not match requests that are already authenticated.
+       
+       Has two sub-services:
+       * authenticateBasicSSLService
+       * authenticateDigestService
+       
+       If the connection is SSL-secured, an HTTP Basic challenge will be issued
+       through the 'authenticateBasicSSLService' service. Otherwise, the next matched
+       service will be 'authenticateDigestService' which will issue an HTTP
+       Digest challenge.
+  -->
   <bean id="authenticateService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="100" />
-
-    <property name="authenticationChallenge" 
-              ref="httpDigestAuthenticationChallenge" />
+    <property name="order" value="100"/>
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
           <property name="parameterName" value="authenticate" />
         </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="invert" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="services">
+      <list>
+        <ref bean="authenticateBasicSSLService"/>
+        <ref bean="authenticateDigestService"/>
+      </list>
+    </property>    
+  </bean>
+  
+  <!-- Explicit authentication with HTTP Basic if the connection is SSL-secured -->
+  <bean id="authenticateBasicSSLService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="100" />
+    
+    <property name="authenticationChallenge" 
+              ref="httpBasicAuthenticationChallenge" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="https" />
+        </bean>        
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="invert" value="true" />
+          <property name="requiresAuthentication" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <!-- Explicit HTTP Digest authentication over unsecured connection -->
+  <bean id="authenticateDigestService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="200" />
+
+    <property name="authenticationChallenge" 
+              ref="httpDigestAuthenticationChallenge" />
+    <property name="assertions">
+      <list>
         <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
           <property name="invert" value="true" />
           <property name="requiresAuthentication" value="true" />

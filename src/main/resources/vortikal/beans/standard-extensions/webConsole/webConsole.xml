@@ -18,6 +18,9 @@
     </property>
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="mode"/>
           <property name="parameterValue" value="webconsole"/>
@@ -26,7 +29,6 @@
     </property>
     <property name="handler" ref="webConsoleHandler"/>
   </bean>
-
 
 
   <bean id="webConsoleHandler"

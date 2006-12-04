@@ -37,11 +37,15 @@ import org.vortikal.security.Principal;
 
 
 /**
- * XXX: Cannot be used on request assertions!
+ * NOTE: When used on fast link construction,
+ * the first child assertion is used!
+ * 
+ * XXX: Needs typed assertions to deal with or-ing 
+ * on link construction
  */
 public class OrAssertion implements Assertion {
 
-    private Assertion[] assertions;
+    private Assertion[] assertions = new Assertion[0];
 
 
     public void setAssertions(Assertion[] assertions) {
@@ -49,17 +53,10 @@ public class OrAssertion implements Assertion {
     }
     
     public void processURL(URL url) {
+        this.assertions[0].processURL(url);
     }
     
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        // Remove (?) or match!
-//        HttpServletRequest request = null;
-//        if (match) {
-//            RequestContext context = RequestContext.getRequestContext();
-//            if (context != null) {
-//                request = context.getServletRequest();
-//            }
-//        }
         for (int i = 0; i < this.assertions.length; i++) {
             if (this.assertions[i].processURL(url, resource, principal, match)) {
                 return true;

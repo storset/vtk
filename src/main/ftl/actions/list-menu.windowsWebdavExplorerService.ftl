@@ -1,6 +1,6 @@
 <script language="JavaScript" type="text/javascript">
 <!--          
- if (is_ie5up && is_win && !is_ie7) 
+ if (is_ie5up && is_win) 
  {
  document.write('(&nbsp;<a href="${item.url?html}" target="WindowsExplorer" folder="${item.url?html}" style="behavior:url(#default#AnchorClick)">vis&nbsp;i&nbsp;filutforsker<\/a>&nbsp;)&nbsp;');
  }

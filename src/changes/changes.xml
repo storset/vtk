@@ -12,6 +12,33 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action type="add">
+        Allow option to specify (date) format strings in XML search
+        results.
+      </action>
+
+      <action type="add">
+        Search syntax: allow dates to be specified (in several
+        ISO-8601-ish formats)
+      </action>
+
+      <action type="fix">
+        Avoid sending the HTTP "Expires" header on documents that are
+        not readable by all (anonymous users).
+      </action>
+
+      <action type="fix">
+        Fixed several resource property evaluation issues.
+      </action>
+
+      <action type="update">
+        Kupu: upgrade to version 1.3.9, fix various bugs.
+      </action>
+
+      <action type="add">
+        Add view URL to result elements (XML-search service)
+      </action>
+
       <action dev="gormap" type="add">
         Add ability to limit the set of properties that are returned
         in search queries (optional feature).

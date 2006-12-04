@@ -8,9 +8,13 @@
 
   <body>
 
-    <release version="0.3.3" date="In SVN" description="Release 0.3.3">
+    <release version="0.3.4-SNAPSHOT" date="In SVN" description="Release 0.3.4">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+
+    </release>
+
+    <release version="0.3.3" date="2006-12-04" description="Release 0.3.3">
 
       <action type="add">
         Allow option to specify (date) format strings in XML search

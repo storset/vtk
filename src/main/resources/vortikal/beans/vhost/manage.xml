@@ -650,7 +650,9 @@
         class="org.vortikal.web.controller.repository.copy.SimpleFilteringCopyAction"
         parent="requestLocalRepositoryAware">
     <property name="filter">
-      <bean class="org.vortikal.web.controller.repository.tidy.JTidyTransformer" />
+      <bean class="org.vortikal.web.controller.repository.tidy.JTidyTransformer">
+        <property name="insertedCssReference" value="${tidyConvertInsertedCssRef}" />
+      </bean>
     </property>
   </bean>
 

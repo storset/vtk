@@ -59,15 +59,20 @@ public class JTidyTransformer implements Filter {
 
     private static boolean tidyMark = false;
     private static boolean makeClean = true;
-    // private static boolean onlyErrors = true;
     private static boolean showWarnings = false;
     private static boolean quiet = true;
     private static boolean xhtml = true;
-    private static String doctype = "transitional"; // "loose" will also be equivalent
+    private static String doctype = "transitional";
     private String generatedContentType = "text/html";
+    private String insertedCssReference;
+    
     
     public void setGeneratedContentType(String generatedContentType) {
         this.generatedContentType = generatedContentType;
+    }
+    
+    public void setInsertedCssReference(String insertedCssReference) {
+        this.insertedCssReference = insertedCssReference;
     }
     
 
@@ -96,6 +101,10 @@ public class JTidyTransformer implements Filter {
 
             Document document = tidy.parseDOM(newStream, null);
             alterContentTypeMetaElement(document);
+            if (this.insertedCssReference != null && !"".equals(this.insertedCssReference.trim())) {
+                insertCssReference(document, this.insertedCssReference);
+            }
+
             resource.setUserSpecifiedCharacterEncoding(null);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -117,7 +126,18 @@ public class JTidyTransformer implements Filter {
     }
 
     
-
+    private void insertCssReference(Document doc, String cssReference) {
+        NodeList headNodes = doc.getElementsByTagName("head");
+        Node head = headNodes.item(0);
+        if (head != null) {
+            Element link = doc.createElement("link");
+            link.setAttribute("type", "text/css");
+            link.setAttribute("rel", "stylesheet");
+            link.setAttribute("href", cssReference);
+            head.appendChild(link);
+        }
+    }
+    
 
     private void alterContentTypeMetaElement(Document doc) {
         String encoding = null;

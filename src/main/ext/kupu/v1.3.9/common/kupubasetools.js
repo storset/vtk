@@ -575,9 +575,11 @@ function KupuUI(textstyleselectid) {
             gp.insertBefore(el, parent);
             this._cleanNode(el);
             this._cleanNode(parent);
-        } else {
+        } /*
+        * Stil-setting feiler for ny tekst pga dette
+        * else {
             this._cleanNode(el);
-        }
+        }*/
         // now set the classname
         if (classname) {
             el.className = classname;

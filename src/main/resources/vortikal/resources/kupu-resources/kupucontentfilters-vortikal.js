@@ -76,6 +76,7 @@ function VortikalNonXHTMLTagFilter() {
                             'tfoot': 1,
                             'th': 1,
                             'thead': 1,
+                            'tt': 1,
                             'tr': 1,
                             'ul': 1,
                             'u': 1,

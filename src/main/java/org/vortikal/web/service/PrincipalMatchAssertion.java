@@ -38,7 +38,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 
 /**
@@ -47,40 +46,32 @@ import org.vortikal.security.PrincipalManager;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>principalFactory</code> - a {@link org.vortikal.security.PrincipalFactory} used
- *   for creating groups from group names (XXX: should be in config instead..)
  *   <li><code>principalManager</code> - a {@link org.vortikal.security.PrincipalManager} used
  *   for validating group membership
  *   <li><code>principals</code> - a {@link Set} of (fully qualified)
  *   principal names to match the current principal against.
- *   <li><code>groups</code> - a {@link Set} of group names to match
+ *   <li><code>groups</code> - a {@link Set} of groups to match
  *   the current principal against.
  * </ul>
  */
 public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
   implements InitializingBean {
 
-    private PrincipalFactory principalFactory;
     private PrincipalManager principalManager;
 
     private Set principals = new HashSet();
-    private Set groupNames = new HashSet();
-    private Set groups = new HashSet();
+    private Principal[] groups = new Principal[0];
     
     public void setPrincipals(Set principals) {
         this.principals = principals;
     }
     
-    public void setGroups(Set groups) {
-        this.groupNames = groups;
+    public void setGroups(Principal[] groups) {
+        this.groups = groups;
     }
     
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
-    }
-    
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
     }
     
     public void afterPropertiesSet() throws Exception {
@@ -88,26 +79,16 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
             throw new BeanInitializationException(
                 "JavaBean property 'principals' cannot be null");
         }
-        if (this.groupNames == null) {
+        if (this.groups == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'groups' cannot be null");
         }
         
-        if (this.principalFactory == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'principalFactory' cannot be null");
-        }
-
         if (this.principalManager == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'principalManager' cannot be null");
         }
 
-        for (Iterator iter = this.groupNames.iterator(); iter.hasNext();) {
-            String groupName = (String) iter.next();
-            this.groups.add(this.principalFactory.getGroupPrincipal(groupName));
-        }
-        
     }
 
 
@@ -118,8 +99,9 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
                 return true;
             }
 
-            for (Iterator i = this.groups.iterator(); i.hasNext();) {
-                Principal group = (Principal) i.next();
+            
+            for (int i = 0; i < this.groups.length; i++) {
+                Principal group = this.groups[i];
                 if (this.principalManager.isMember(principal, group)) {
                     return true;
                 }

@@ -112,9 +112,6 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
         }
     }
 
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     public void afterPropertiesSet() throws Exception {
         if (this.principalManager == null) {
             throw new BeanInitializationException(

@@ -62,7 +62,8 @@ public interface Resource extends PropertySet, Cloneable {
      * @return <code>true</code> if the principal is authorized,
      * <code>false</code> otherwise.
      */
-    public boolean isAuthorized(RepositoryAction privilege, Principal principal) throws IOException;
+    public boolean isAuthorized(RepositoryAction privilege, 
+            Principal principal) throws IOException;
 
 
     /**

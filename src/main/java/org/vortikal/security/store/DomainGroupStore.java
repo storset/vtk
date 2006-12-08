@@ -58,7 +58,7 @@ public class DomainGroupStore implements GroupStore {
         if (validateGroup(group)) {
             String pDomain = principal.getDomain();
             String gDomain = group.getDomain();
-            if ((pDomain == null && gDomain == null) || pDomain.equals(gDomain)) 
+            if ((pDomain == null && gDomain == null) || (pDomain != null && pDomain.equals(gDomain))) 
                 return true;
         }
         

@@ -34,15 +34,17 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.query.InversionFilter;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.query.TermExistsFilter;
 import org.vortikal.repositoryimpl.query.query.PropertyExistsQuery;
 
 /**
- * XXX: Experimental, might be extremely slow to execute !
+ * XXX: Experimental, might be slow to execute, especially in the
+ * case of result-inversion.
+ * 
  * @author oyviste
- *
  */
 public class PropertyExistsQueryBuilder implements QueryBuilder {
 
@@ -56,8 +58,12 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
         
         String fieldName = DocumentMapper.getFieldName(def);
-        
+
         Filter filter = new TermExistsFilter(fieldName);
+        
+        if (query.isInverted()) {
+            filter = new InversionFilter(filter);
+        }
         
         return new ConstantScoreQuery(filter);
     }

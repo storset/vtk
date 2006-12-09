@@ -45,13 +45,13 @@ public class QueryParser implements Parser {
         }
     }
 
-    private Query getExistsQuery(String prefix, String name, boolean exists) {
+    private Query getExistsQuery(String prefix, String name, boolean inverted) {
         PropertyTypeDefinition def = 
             resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
         if (def == null)
             throw new RuntimeException("Unknown property " + prefix + ":" + name);
 
-        return new PropertyExistsQuery(def, exists);
+        return new PropertyExistsQuery(def, inverted);
     }
 
     private Query getPropTermQuery(String prefix, String name, String value, 
@@ -365,8 +365,8 @@ Query PropertyExistsQuery() : {
         {
             String prefix = null;
             if (p != null) prefix = p.image;
-            boolean exists = ex != null; 
-            return getExistsQuery(prefix, name.image, exists);
+            boolean inverted = (ex == null); 
+            return getExistsQuery(prefix, name.image, inverted);
         }
 
 }

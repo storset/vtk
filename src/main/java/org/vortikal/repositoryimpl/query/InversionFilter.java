@@ -34,66 +34,48 @@ import java.io.IOException;
 import java.util.BitSet;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Filter;
 
 /**
- * Experimental, might be slow for common terms in indexes with many
- * documents. Avoid if you can.
+ * A {@link org.apache.lucene.search.Filter} that inverts the result of 
+ * another <code>Filter</code>.
+ * <p>
  * 
- * <p>      
- * Not thread safe. A new instance should be created for every query.
- *      
+ * It basically flips all bits provided by the wrapped filter, while
+ * making sure that bits for deleted documents are not set.
+ * <p>
+ * 
+ * It is a non-thread safe, per-query dyanmic filter. It will directly alter the 
+ * <code>BitSet</code> provided by the wrapped filter to avoid double 
+ * memory allocation and copying. Beware of this if wrapping
+ * re-usable (long-lived) filters that cache their own bitset and expect it
+ * not to change.
+ * <p>
+ * 
+ * NOTE: It may be more efficient to code inversion-logic directly into
+ * filter implementations (depends).
+ * 
  * @author oyviste
  *
  */
-public class TermExistsFilter extends Filter {
-    
-    private static final long serialVersionUID = 6676434194690479831L;
-    private String fieldName;
+public class InversionFilter extends Filter {
+
+    private Filter wrappedFilter;
     private BitSet bits;
     
-    /**
-     * Construct a filter for the given fieldName.
-     * 
-     * @param fieldName The Lucene Document field to check for existence on.
-     */
-    public TermExistsFilter(String fieldName) {
-        this.fieldName = fieldName;
+    public InversionFilter(Filter wrappedFilter) {
+        this.wrappedFilter = wrappedFilter;
     }
     
     public BitSet bits(IndexReader reader) throws IOException {
-        if (this.bits == null) {
-            this.bits = getBits(reader);
-        }
-
-        return this.bits;
-    }
-    
-    private BitSet getBits(IndexReader reader) throws IOException {
-        BitSet bits = new BitSet(reader.maxDoc());
-        Term term = new Term(this.fieldName, "");
-        String termField = term.field();
-        
-        TermEnum tenum = reader.terms(term);
-        TermDocs tdocs = reader.termDocs(term);
-        try {
-            do {
-                Term t = tenum.term();
-                if (t != null && t.field() == termField) {
-                    // Add the docs
-                    tdocs.seek(tenum);
-                    while (tdocs.next()) {
-                        bits.set(tdocs.doc());
-                    }
-                } else break;
-                
-            } while (tenum.next());
-        } finally {
-            tenum.close();
-            tdocs.close();
+        if (bits == null) {
+            bits = this.wrappedFilter.bits(reader);
+            bits.flip(0, reader.maxDoc());
+            for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
+                if (reader.isDeleted(i)) {
+                    bits.clear(i);
+                }
+            }
         }
         
         return bits;

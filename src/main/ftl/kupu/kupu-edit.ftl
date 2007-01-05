@@ -33,13 +33,18 @@
     <!-- In case we need to override without deploying new Vortex version.  -->
     <!-- This stylesheet should normally be empty.                          -->
     <link href="http://www.uio.no/profil/kupu/kupustyles-override.css" rel="stylesheet" type="text/css"/>
-
+    
+    
+    <!-- needed to override popup-funtions from 'kupubasetools.js' -->
+	<script type="text/javascript" src="${cssBaseURL}/browser-sniffer.js"> </script>
+	
     <script type="text/javascript" src="sarissa.js"> </script>
     <script type="text/javascript" src="sarissa_ieemu_xpath.js"> </script>
     <script type="text/javascript" src="kupuhelpers.js"> </script>
     <!-- <script type="text/javascript" src="kupueditor.js"> </script> -->
     <script type="text/javascript" src="${kupuLocalBase}/kupueditor-vortikal.js"> </script> <!-- overridden file (minor changes to alert message) -->
-    <script type="text/javascript" src="kupubasetools.js"> </script>
+    <!-- <script type="text/javascript" src="kupubasetools.js"> </script> -->
+    <script type="text/javascript" src="${kupuLocalBase}/kupubasetools-vortikal.js"> </script> <!-- overridden two functions: added variable 'baseURL', for IE, to LinkTool() and ImageTool() -->
     <script type="text/javascript" src="kupuloggers.js"> </script>
     <script type="text/javascript" src="kupunoi18n.js"> </script>
     <!--script type="text/javascript" src="../../i18n.js/i18n.js"> </script-->

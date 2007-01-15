@@ -953,15 +953,17 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
         if (resources.length == 0) return; 
 
-        List resourceIds = new ArrayList();
+        Set resourceIds = new HashSet();
         for (int i = 0; i < resources.length; i++) {
-            if (resources[i].isInheritedAcl()) {
-                resourceIds.add(new Integer(resources[i].getAclInheritedFrom()));
-            } else {
-                resourceIds.add(new Integer(resources[i].getID()));
-            }
+
+            Integer id = new Integer(
+                resources[i].isInheritedAcl()
+                ? resources[i].getAclInheritedFrom()
+                : resources[i].getID());
+
+            resourceIds.add(id);
         }
-        Map map = loadAclMap(resourceIds);
+        Map map = loadAclMap(new ArrayList(resourceIds));
 
         if (map.isEmpty()) {
             throw new SQLException(

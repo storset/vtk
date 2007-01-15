@@ -76,6 +76,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
 
     private static Log logger = LogFactory.getLog(SecurityContext.class);
+    private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
+
     private TokenManager tokenManager;
 
     private AuthenticationHandler[] authenticationHandlers = null;
@@ -183,6 +185,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                             + " using authentication handler " + handler + ". "
                             + "Setting security context.");
                     }
+                    if (authLogger.isDebugEnabled()) {
+                        authLogger.debug("Auth: principal: '" + principal + "' - method: '"
+                                         + handler.getClass().getName() + "' - status: OK");
+                    }
+
                     
                     token = this.tokenManager.newToken(principal, handler);
                     SecurityContext securityContext = 
@@ -222,6 +229,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                             "handler " + handler + " with message "
                             + exception.getMessage() + ", presenting challenge "
                             + challenge + " to the client");
+                    }
+                    if (authLogger.isDebugEnabled()) {
+                        authLogger.debug("Auth: request: '" + req.getRequestURI()
+                                         + "' - method: '" + handler.getClass().getName()
+                                         + "' - status: FAIL");
                     }
                     challenge.challenge(req, resp);
                     return false;
@@ -279,6 +291,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         // FIXME: what if handler.isLogoutSupported() == false?
         boolean result = handler.logout(principal, req, resp);
+        String status = result ? "OK": "FAIL";
+        if (authLogger.isDebugEnabled()) {
+            authLogger.debug("Logout: principal: '" + principal
+                             + "' - method: '" + handler.getClass().getName()
+                             + "' - status: " + status);
+        }
+
 
         this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);

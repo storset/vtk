@@ -33,7 +33,8 @@
   -->
 
   <!-- SqlMap setup for iBATIS Database Layer -->
-  <bean id="sqlMapClientFactory" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+  <bean id="repository.sqlMapClient"
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
     <property name="transactionConfigClass"
               value="com.ibatis.sqlmap.engine.transaction.jdbc.JdbcTransactionConfig" />
     <property name="useTransactionAwareDataSource" value="false" />
@@ -42,8 +43,9 @@
     <property name="dataSource" ref="repository.dataSource"/>
   </bean>
 
+
   <bean id="repository.database" class="org.vortikal.repositoryimpl.dao.SqlMapDataAccessor">
-    <property name="sqlMapClient" ref="sqlMapClientFactory"/>
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="contentStore" ref="repository.contentStore" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="authorizationManager" ref="authorizationManager" />
@@ -85,7 +87,7 @@
     <property name="dataSource" ref="repository.dataSource" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="principalFactory" ref="principalFactory" />
-    <property name="sqlMapClient" ref="sqlMapClientFactory"/>
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings"/>
     
     <!-- Only temporary -->

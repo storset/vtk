@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <!-- Override iBATIS SqlMap setup with logging of lengthy operations: -->
+
+  <bean id="repository.sqlMapClient"
+      class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces" value="com.ibatis.sqlmap.client.SqlMapClient" />
+    <property name="target" ref="repository.sqlMapClientInternal" />
+    <property name="interceptorNames">
+      <list>				
+        <value>repository.sqlMapClientTimerInterceptor</value>
+      </list>
+    </property>		
+  </bean>	
+
+  <bean id="repository.sqlMapClientTimerInterceptor"
+        class="org.vortikal.aop.interceptor.LoggingMethodTimerInterceptor">
+    <property name="timeLimitMilliseconds" value="${databaseOperationWarningTimeLimit}"/>
+    <property name="logStackTraces" value="${databaseOperationWarningLogStackTraces}"/>
+  </bean>
+
+  <bean id="repository.sqlMapClientInternal"
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="transactionConfigClass"
+              value="com.ibatis.sqlmap.engine.transaction.jdbc.JdbcTransactionConfig" />
+    <property name="useTransactionAwareDataSource" value="false" />
+    <property name="configLocation"
+              value="classpath:/org/vortikal/repositoryimpl/dao/ibatis/${sqlDialect}-sql-map-config.xml"/>
+    <property name="dataSource" ref="repository.dataSource"/>
+  </bean>
+
+  
+</beans>
+

@@ -13,6 +13,11 @@
       <!-- type: update|fix|add|remove -->
 
       <action type="fix">
+        File upload no longer chrashes with file names shorter than 3
+        characters.
+      </action>
+
+      <action type="fix">
         File upload no longer converts file names to lower case.
       </action>
 

@@ -199,49 +199,54 @@ public class XmlSearcher implements InitializingBean {
     }
     
 
-    public NodeList executeQuery(String query, String sort,
-                                             String maxResults) throws QueryException {
-        return executeQuery(query, sort, maxResults, null);
-    }
-
-
-    public NodeList executeQuery(String query, String sort, String maxResults,
+    /**
+     * Should probably be deprecated?
+     */
+    public NodeList executeQuery(String query, String sort, String maxResultsStr,
                                  String fields) throws QueryException {
-        
-        String token = null;
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        if (securityContext != null) {
-            token = securityContext.getToken();
-        }
-        Document doc = executeDocumentQuery(token, query, sort, maxResults, fields);
-        return doc.getDocumentElement().getChildNodes();
+        return executeQuery(query, sort, maxResultsStr, fields, false);
     }
   
+    public NodeList executeQuery(String query, String sort, String maxResultsStr,
+            String fields, boolean authorizeCurrentPrincipal) throws QueryException {
 
-    public Document executeDocumentQuery(String token, String query,
-                                         String sort, String maxResults) throws QueryException {
-        return executeDocumentQuery(token, query, sort, maxResults, null);
+        int limit = this.maxResults;
+        try {
+            limit = Integer.parseInt(maxResultsStr);
+        } catch (NumberFormatException e) {}
+
+        Document doc = executeDocumentQuery(query, sort, limit, fields, authorizeCurrentPrincipal);
+        return doc.getDocumentElement().getChildNodes();
     }
-    
 
+    public Document executeDocumentQuery(String query, String sort,
+            int maxResults, String fields, boolean authorizeCurrentPrincipal) throws QueryException {
+        String token = null;
+        
+        if (authorizeCurrentPrincipal) {
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            token = securityContext.getToken();
+        }
+        
+        return executeDocumentQuery(token, query, sort, maxResults, fields);
+    }
 
-    public Document executeDocumentQuery(String token, String query,
-                                         String sort, String maxResults,
+    private Document executeDocumentQuery(String token, String query,
+                                         String sort, int maxResults,
                                          String fields) throws QueryException {
+        int limit = maxResults;
+
+        if (maxResults > this.maxResults) {
+            limit = this.maxResults;
+        }
+
+
         Document doc = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             doc = builder.newDocument();
         } catch (ParserConfigurationException e) {
             throw new QueryException(e.getMessage());
-        }
-        
-        int limit = this.maxResults;
-        try {
-            limit = Integer.parseInt(maxResults);
-        } catch (NumberFormatException e) {}
-        if (limit > this.maxResults) {
-            limit = this.maxResults;
         }
         
         try {

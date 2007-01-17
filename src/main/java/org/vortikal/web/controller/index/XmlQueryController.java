@@ -31,6 +31,7 @@
 package org.vortikal.web.controller.index;
 
 import java.io.OutputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Result;
@@ -40,34 +41,30 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repositoryimpl.query.parser.XmlSearcher;
-import org.vortikal.security.SecurityContext;
-
 import org.w3c.dom.Document;
 
 
 /**
  * Perform a query via HTTP, get results as XML.
+ * 
+ * Defaults to only return resources readable by all. Set java bean property
+ * authorizeCurrentPrincipal to <code>true</true> to authorize on current 
+ * principal instead. 
  */
 public class XmlQueryController implements Controller, InitializingBean {
     
-    private static Log logger = LogFactory.getLog(XmlQueryController.class);
-
     private String expressionParameterName = "query";
     private String limitParameterName = "limit";
     private String sortParameterName = "sort";
-    private String invertParameterName = "invert";
     private String fieldsParameterName = "fields";
     private int defaultMaxLimit = 500;
     private XmlSearcher xmlSearcher;
+    private boolean authorizeCurrentPrincipal = false;
     
     public void setXmlSearcher(XmlSearcher xmlSearcher) {
         this.xmlSearcher = xmlSearcher;
@@ -85,10 +82,6 @@ public class XmlQueryController implements Controller, InitializingBean {
         this.sortParameterName = sortParameterName;
     }
 
-    public void setInvertParameterName(String invertParameterName) {
-        this.invertParameterName = invertParameterName;
-    }
-    
     public void setFieldsParameterName(String fieldsParameterName) {
         this.fieldsParameterName = fieldsParameterName;
     }
@@ -107,9 +100,6 @@ public class XmlQueryController implements Controller, InitializingBean {
     
     public ModelAndView handleRequest(HttpServletRequest request, 
             HttpServletResponse response) throws Exception {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-
 
         String query = request.getParameter(this.expressionParameterName);
         if (query == null) 
@@ -124,14 +114,8 @@ public class XmlQueryController implements Controller, InitializingBean {
         }
         String sortStr = request.getParameter(this.sortParameterName);
         String fields = request.getParameter(this.fieldsParameterName);
-        Document result = null;
-
-        if (fields != null) {
-            result = this.xmlSearcher.executeDocumentQuery(token, query, sortStr,
-                                                           limitStr, fields);
-        } else {
-            result = this.xmlSearcher.executeDocumentQuery(token, query, sortStr, limitStr);
-        }
+        Document result = this.xmlSearcher.executeDocumentQuery(query, sortStr,
+                maxResults, fields, this.authorizeCurrentPrincipal);
 
         OutputStream outputStream = null;
         response.setContentType("text/xml");
@@ -145,6 +129,10 @@ public class XmlQueryController implements Controller, InitializingBean {
         transformer.transform(input, output);
 
         return null;
+    }
+
+    public void setAuthorizeCurrentPrincipal(boolean authorizeCurrentPrincipal) {
+        this.authorizeCurrentPrincipal = authorizeCurrentPrincipal;
     }
     
     

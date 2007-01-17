@@ -62,6 +62,7 @@ public class XmlQueryController implements Controller, InitializingBean {
     private String limitParameterName = "limit";
     private String sortParameterName = "sort";
     private String fieldsParameterName = "fields";
+    private String authorizeParameterName = "authorize";
     private int defaultMaxLimit = 500;
     private XmlSearcher xmlSearcher;
     private boolean authorizeCurrentPrincipal = false;
@@ -114,8 +115,15 @@ public class XmlQueryController implements Controller, InitializingBean {
         }
         String sortStr = request.getParameter(this.sortParameterName);
         String fields = request.getParameter(this.fieldsParameterName);
+
+        boolean authorize = this.authorizeCurrentPrincipal;
+        String authorizeParameter = request.getParameter(this.authorizeParameterName);
+        if (authorizeParameter != null) {
+            authorize = "true".equals(authorizeParameter);
+        }
+
         Document result = this.xmlSearcher.executeDocumentQuery(query, sortStr,
-                maxResults, fields, this.authorizeCurrentPrincipal);
+                maxResults, fields, authorize);
 
         OutputStream outputStream = null;
         response.setContentType("text/xml");

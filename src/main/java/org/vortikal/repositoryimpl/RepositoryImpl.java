@@ -701,7 +701,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
      */
     private File writeTempFile(String name, InputStream byteStream) throws IOException {
         byteStream = new java.io.BufferedInputStream(byteStream);
-        File tempFile = File.createTempFile(name, null);
+        String prefix = "tmpfile-" + name;
+        File tempFile = File.createTempFile(prefix, null);
         java.io.OutputStream stream = new java.io.FileOutputStream(tempFile);
 
         // XXX: Review impl.

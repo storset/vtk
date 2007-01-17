@@ -12,6 +12,18 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+      <action type="fix">
+        File upload no longer converts file names to lower case.
+      </action>
+
+      <action type="add">
+        Searching: implemented support for "property not exists"
+        queries.
+      </action>
+
+      <action type="fix">
+        Fixed several Kupu-related issues.
+      </action>
     </release>
 
     <release version="0.3.3" date="2006-12-04" description="Release 0.3.3">

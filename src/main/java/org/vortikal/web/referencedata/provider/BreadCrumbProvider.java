@@ -128,7 +128,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
 
 
-    public void setTitleOverrideProperties(PropertyTypeDefinition[] titleOverrideProperties) {
+    public void setTitleOverrideProperties(
+        PropertyTypeDefinition[] titleOverrideProperties) {
         this.titleOverrideProperties = titleOverrideProperties;
     }
     
@@ -190,7 +191,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         if (!"/".equals(uri)) {
             for (int i = 0; i < length; i++) {
                 try {
-                    Resource r = this.repository.retrieve(token, incrementalPath[i], true);
+                    Resource r = this.repository.retrieve(
+                        token, incrementalPath[i], true);
 
                     if (checkIgnore(r)) {
                         continue;
@@ -210,7 +212,13 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                     }
                 } catch (Exception e) {
                     breadCrumb.add(new BreadcrumbElement(null, path[i]));
-                    logger.warn("Unable to generate breadcrumb path element " + incrementalPath[i], e);
+                    String msg = e.getMessage();
+                    if (msg == null) {
+                        msg = e.getClass().getName();
+                    }
+
+                    logger.warn("Unable to generate breadcrumb path element '"
+                                + incrementalPath[i] + "': " + msg);
                 }
             }
         }
@@ -219,7 +227,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             logger.debug("Generated breadcrumb path: " + breadCrumb);
         }
 
-        model.put(this.breadcrumbName, breadCrumb.toArray((new BreadcrumbElement[breadCrumb.size()])));
+        model.put(this.breadcrumbName, breadCrumb.toArray(
+                      (new BreadcrumbElement[breadCrumb.size()])));
     }
 
 

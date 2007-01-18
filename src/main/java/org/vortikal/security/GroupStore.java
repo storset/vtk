@@ -48,12 +48,6 @@ public interface GroupStore extends Ordered {
 
 
 
-    /**
-     * Lists the members of a group.
-     *
-     * @param groupName the group in question
-     * @return an array of the principals that are members of the group
-     */
     
     /**
      * Convenience method for determining whether a principal is a
@@ -66,5 +60,14 @@ public interface GroupStore extends Ordered {
      */
     public boolean isMember(Principal principal, Principal group);
 
+
+    /**
+     * Lists groups of a given principal.
+     *
+     * @param principal the principal in question
+     * @return a set of the groups of which this principal is a
+     * member. If no such groups exists, the return value should be an
+     * empty set (not <code>null</code>).
+     */
     public Set getMemberGroups(Principal principal);
 }

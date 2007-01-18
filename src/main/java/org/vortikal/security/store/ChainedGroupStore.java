@@ -109,26 +109,6 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
     }
     
 
-//    public String[] resolveGroup(Principal group)
-//        throws AuthenticationProcessingException {
-//        for (Iterator i = managers.iterator(); i.hasNext();) {
-//            PrincipalStore manager = (PrincipalStore) i.next();
-//            if (manager.validateGroup(group)) {
-//                if (logger.isDebugEnabled()) {
-//                    logger.debug("Resolved group '" + group
-//                                 + "' using manager " + manager);
-//                }
-//                return manager.resolveGroup(group);
-//            }
-//        }
-//        if (logger.isDebugEnabled()) {
-//            logger.debug("Unable to resolve group '" + group + "'");
-//        }
-//        return new String[0];
-//    }
-    
-    
-
     public boolean isMember(Principal principal, Principal group)
         throws AuthenticationProcessingException {
 
@@ -248,7 +228,10 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
         for (Iterator i = this.managers.iterator(); i.hasNext();) {
             GroupStore manager = (GroupStore) i.next();
             
-            groups.addAll(manager.getMemberGroups(principal));
+            Set memberGroups = manager.getMemberGroups(principal);
+            if (memberGroups != null) {
+                groups.addAll(memberGroups);
+            }
         }
         return groups;
     }

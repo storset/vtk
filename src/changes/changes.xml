@@ -8,9 +8,7 @@
 
   <body>
 
-    <release version="0.3.4-SNAPSHOT" date="In SVN" description="Release 0.3.4">
-      <!-- add 'action' entries here, newest on top: -->
-      <!-- type: update|fix|add|remove -->
+    <release version="0.3.4" date="2007-01-18" description="Release 0.3.4">
 
       <action type="fix">
         File upload no longer chrashes with file names shorter than 3

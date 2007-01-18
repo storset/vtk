@@ -31,7 +31,6 @@
 package org.vortikal.web.controller.index;
 
 import java.io.OutputStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Result;
@@ -45,7 +44,13 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.query.parser.XmlSearcher;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
+
 import org.w3c.dom.Document;
 
 
@@ -65,6 +70,7 @@ public class XmlQueryController implements Controller, InitializingBean {
     private String authorizeParameterName = "authorize";
     private int defaultMaxLimit = 500;
     private XmlSearcher xmlSearcher;
+    private Repository repository;
     private boolean authorizeCurrentPrincipal = false;
     
     public void setXmlSearcher(XmlSearcher xmlSearcher) {
@@ -91,16 +97,32 @@ public class XmlQueryController implements Controller, InitializingBean {
         this.defaultMaxLimit = defaultMaxLimit;
     }
 
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+    
+
     public void afterPropertiesSet()
         throws BeanInitializationException {
         if (this.xmlSearcher == null) {
             throw new BeanInitializationException("Property" +
                     " 'xmlSearcher' not set");
         }
+        if (this.repository == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'repository' not set");
+        }
     }
     
     public ModelAndView handleRequest(HttpServletRequest request, 
             HttpServletResponse response) throws Exception {
+
+        // Attempt to retrieve resource
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = securityContext.getToken();
+        String uri = requestContext.getResourceURI();
+        Resource resource = this.repository.retrieve(token, uri, true);
 
         String query = request.getParameter(this.expressionParameterName);
         if (query == null) 

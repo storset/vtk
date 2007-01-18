@@ -51,7 +51,8 @@
     </property>
   </bean>
 
-  <bean id="rawXmlQueryHandler" class="org.vortikal.web.controller.index.XmlQueryController">
+  <bean id="rawXmlQueryHandler" class="org.vortikal.web.controller.index.XmlQueryController"
+        parent="requestLocalRepositoryAware">
     <property name="xmlSearcher" ref="xmlSearcher" />
   </bean>
 

@@ -5,7 +5,7 @@ are necessary:
    ( http://maven.apache.org/download.html )
 
 2. Create a database using the DDL in the
-   'src/sql/postgresql-schema.sql' (currently only PostgreSQL is
+   'src/main/sql/postgresql-schema.sql' (currently only PostgreSQL is
    supported, but HSQLDB has also been known to work in the past).
 
 3. Set up the configuration. Configuration should be placed in the

@@ -62,7 +62,7 @@ public class NewElementAtController implements ActionHandler {
             String elementName = (mode.equals("default")) ? 
                     request.getParameter("name") : document.getNewElementName();
                     
-            if (elementName == null) {
+            if (elementName == null || elementName.equals("")) {
                 Util.setXsltParameter(model,"ERRORMESSAGE", 
                 "NEW_ELEMENT_AT_MISSING_ELEMENT_NAME");
                 return model;

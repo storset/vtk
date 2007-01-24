@@ -319,29 +319,6 @@ VALUES (
 );    
 
 
--- (pseudo:all, read-processed)
-
-INSERT INTO ACL_ENTRY (
-    acl_entry_id,
-    resource_id,
-    action_type_id,
-    user_or_group_name,
-    is_user,
-    granted_by_user_name,
-    granted_date)
-VALUES (
-    next value for acl_entry_seq_pk,
-    --nextval('acl_entry_seq_pk'),
-    1000,
-    --currval('vortex_resource_seq_pk'),
-    4,
-    'pseudo:all',
-    'Y',
-    'vortex@localhost',
-    current_timestamp
-);    
-
-
 -- (pseudo:owner, all)
 
 INSERT INTO ACL_ENTRY (

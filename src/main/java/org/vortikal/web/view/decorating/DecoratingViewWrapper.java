@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,15 +28,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import com.opensymphony.module.sitemesh.HTMLPage;
-import com.opensymphony.module.sitemesh.parser.FastPageParser;
+import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
 
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.web.servlet.View;
 
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -52,10 +54,12 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.servlet.BufferedResponse;
-
-
+import org.vortikal.web.view.wrapper.RequestWrapper;
+import org.vortikal.web.view.wrapper.ViewWrapper;
+import org.vortikal.web.view.wrapper.ViewWrapperException;
 
 /**
+ * 
  */
 public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProviding {
 
@@ -122,15 +126,11 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
         BufferedResponse responseWrapper = new BufferedResponse();
 
-
         preRender(model, request, responseWrapper);
 
         if (this.propagateExceptions) {
-
             view.render(model, requestWrapper, responseWrapper);
-
         } else {
-
             try {
                 view.render(model, requestWrapper, responseWrapper);
             } catch (Throwable t) {
@@ -139,6 +139,10 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                         t, model, view);
             }
         }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Rendered view " + view + ", proceeding to postRender step");
+        }
+
         postRender(model, request, responseWrapper, response);
 
     }
@@ -171,13 +175,14 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
 
         if (!ContentTypeHelper.isHTMLContentType(contentType)) {
-//             throw new IllegalArgumentException(
-//                 "Unable to decorate response " + bufferedResponse
-//                 + " for requested URL " + request.getRequestURL()
-//                 + ": unsupported content type: " + contentType);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to decorate response " + bufferedResponse
+                             + " for requested URL " + request.getRequestURL()
+                             + ": unsupported content type: " + contentType);
+
+            }
             writeResponse(bufferedResponse, servletResponse);
             return;
-
         }
 
         if (characterEncoding == null) {
@@ -203,8 +208,15 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
 
         String content = new String(contentBuffer, characterEncoding);
-        FastPageParser parser = new FastPageParser();
-        HTMLPage html = (HTMLPage) parser.parse(new StringReader(content));
+        
+        HTMLPageParser parser = new HTMLPageParser();
+        
+        long before = System.currentTimeMillis();
+        HTMLPage html = (HTMLPage) parser.parse(content.toCharArray());
+        long duration = System.currentTimeMillis() - before;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Parsing document took " + duration + " ms");
+        }
 
         Map coreHtml = new HashMap();
         coreHtml.put("title", html.getTitle());
@@ -216,16 +228,16 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             model, request, bufferedResponse);
         
         if (template == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to resolve template for request " + request);
+            }
+
             writeResponse(bufferedResponse, servletResponse);
             return;
         }
 
-
         BufferedResponse templateResponse = new BufferedResponse();
         template.render(model, request, templateResponse);
-        
-        System.out.println("T_RESP: " + new String(templateResponse.getContentBuffer()));
-
         writeResponse(templateResponse, servletResponse, "text/html");
     }
     
@@ -242,7 +254,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                                  ServletResponse response)
             throws Exception {
 
-        //ServletResponse response = responseWrapper.getResponse();
         ServletOutputStream outStream = response.getOutputStream();
         byte[] content = responseWrapper.getContentBuffer();
         if (logger.isDebugEnabled()) {
@@ -250,7 +261,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                     + ", unspecified content type");
         }
         response.setContentLength(content.length);
-        response.setContentType(responseWrapper.getContentType());
+        response.setContentType(responseWrapper.getContentType() + ";charset=utf-8");
         outStream.write(content);
         outStream.flush();
         outStream.close();
@@ -260,7 +271,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     protected void writeResponse(BufferedResponse responseWrapper,
                                  ServletResponse response, String contentType)
             throws Exception {
-        //ServletResponse response = responseWrapper.getResponse();
         byte[] content = responseWrapper.getContentBuffer();
         ServletOutputStream outStream = response.getOutputStream();
 
@@ -268,7 +278,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             logger.debug("Write response: Content-Length: " + content.length
                     + ", Content-Type: " + contentType);
         }
-        response.setContentType(contentType);
+        response.setContentType(contentType + ";charset=utf-8");
         response.setContentLength(content.length);
         outStream.write(content);
         outStream.flush();

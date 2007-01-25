@@ -19,6 +19,7 @@
   <import resource="classpath:/vortikal/beans/standard-extensions/transformXml/transformXml.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/editXml/editXml.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/kupu/kupu.xml" />
+  <import resource="classpath:/vortikal/beans/standard-extensions/decorating/decorating.xml" />
 
 
 </beans>

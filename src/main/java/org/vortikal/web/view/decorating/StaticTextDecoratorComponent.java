@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,45 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
-public class BeanContextTemplateManager
-  implements TemplateManager, ApplicationContextAware {
 
-    private ApplicationContext applicationContext;
+public class StaticTextDecoratorComponent implements DecoratorComponent {
     
+    private String content;
+    
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public String getRenderedContent(Map model, HttpServletRequest request,
+                                     HttpServletResponse response) throws Exception {
+        
+        
+        return this.content;
+    }
+    
+    
+    public String getName() {
+        return this.getClass().getName();
+    }
+    
+    public String getDescription() {
+        return this.getClass().getName();
     }
     
 
-    public Template getTemplate(String name) throws Exception {
-        return (Template) this.applicationContext.getBean(name, Template.class);
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName()).append(": [");
+        sb.append(this.getName()).append("]");
+        return sb.toString();
     }
+    
+
 }
-
-

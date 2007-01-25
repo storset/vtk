@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,16 +28,58 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.vortikal.web.servlet.BufferedResponseWrapper;
 
-public interface TemplateResolver {
+public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent {
+    
+    private String namespace;
+    private String key;
 
-    public Template resolveTemplate(Map model, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception;
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    
+    public void setKey(String key) {
+        this.key = key;
+    }
+    
+
+    public String getRenderedContent(Map model, HttpServletRequest request,
+                                     HttpServletResponse response) throws Exception {
+        
+        Map map = model;
+        if (this.namespace != null) {
+
+            Object subModel = model.get(this.namespace);
+            if (!(subModel instanceof Map)) {
+                return "";
+            }
+            map = (Map) subModel;
+        }
+
+        Object obj = map.get(this.key);
+        if (obj == null) {
+            return "";
+        }
+
+        return obj.toString();
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName()).append(": [");
+        if (this.namespace != null) {
+            sb.append("namespace = ").append(this.namespace).append(", ");
+        }
+        sb.append("key = ").append(this.key).append("]");
+        return sb.toString();
+    }
     
 }

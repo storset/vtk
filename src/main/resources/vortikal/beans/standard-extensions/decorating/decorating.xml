@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="decoratorViewResolver" 
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="order" value="-100" />
+    <property name="views">
+      <map>
+        <entry key="displayHTMLResource"  value-ref="displayResourceView" />
+        <!--entry key="transformXmlResource" value-ref="transformXmlView" /-->
+        <entry key="collectionListing" value-ref="collectionListingView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="decoratingViewWrapper" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="decorating.manageLinkProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.manageLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelName" value="manage" />
+    <property name="urlName" value="manageURL" />
+    <property name="service" ref="manageService" />
+  </bean>
+
+  <bean id="decoratingViewWrapper"
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
+    <property name="templateResolver" ref="templateResolver" />
+  </bean>
+
+
+  <bean id="templateResolver"
+        class="org.vortikal.web.view.decorating.PropertyConfigurableTemplateResolver">
+    <property name="templateManager" ref="templateManager" />
+    <property name="templateConfiguration" ref="templateConfigurationPropertiesFile" />
+
+  </bean>
+
+  <bean id="templateConfigurationPropertiesFile"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.templateConfigFile}" />
+    <property name="lazyInit" value="false" />
+  </bean>
+
+  <bean id="templateConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uriPattern" value="${decorating.templateConfigFile}" />
+    <property name="targetObject" ref="templateConfigurationPropertiesFile" />
+    <property name="method" value="load" />
+  </bean>
+
+
+  <bean id="templateManager" class="org.vortikal.web.view.decorating.CollectionTemplateManager">
+    <property name="repository" ref="repository" />
+    <property name="collectionName" value="${decorating.templatesCollection}" />
+  </bean>
+
+
+  <bean id="core:body" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="core" />
+    <property name="key" value="body" />
+  </bean>
+
+  <bean id="core:head" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="core" />
+    <property name="key" value="head" />
+  </bean>
+
+  <bean id="core:title" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="core" />
+    <property name="key" value="title" />
+  </bean>
+
+  <bean id="manage:manageURL" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="manage" />
+    <property name="key" value="manageURL" />
+  </bean>
+
+  <bean id="view:breadcrumb" class="org.vortikal.web.view.decorating.ViewRenderingDecoratorComponent">
+    <property name="view" ref="breadcrumbView" />
+  </bean>
+
+  <bean id="breadcrumbView" parent="freemarkerView">
+    <property name="url" value="layouts/breadcrumb.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="viewBreadCrumbProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+</beans>

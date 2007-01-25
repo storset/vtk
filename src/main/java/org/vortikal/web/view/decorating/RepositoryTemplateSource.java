@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,45 +28,55 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 
 
+public class RepositoryTemplateSource implements TemplateSource {
 
-public class StaticTextDecoratorComponent implements DecoratorComponent {
+    private String uri;
+    private Repository repository;
+    private String token;
     
-    private String content;
-    
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getRenderedContent(Map model, HttpServletRequest request,
-                                     HttpServletResponse response) throws Exception {
-        
-        
-        return this.content;
+    public RepositoryTemplateSource() {
     }
     
-    
-    public String getName() {
-        return this.getClass().getName();
+    public RepositoryTemplateSource(String uri, Repository repository, String token) {
+        this.uri = uri;
+        this.repository = repository;
+        this.token = token;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
     
-    public String getDescription() {
-        return this.getClass().getName();
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+    
+    
+    public long getLastModified() throws Exception {
+
+        Resource resource = this.repository.retrieve(this.token, this.uri, true);
+        return resource.getLastModified().getTime();
     }
     
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(": [");
-        sb.append(this.getName()).append("]");
-        return sb.toString();
+    public InputStream getTemplateInputStream() throws Exception {
+        return this.repository.getInputStream(this.token, this.uri, true);
     }
     
 
 }
+

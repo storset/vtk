@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,36 +28,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
+package org.vortikal.web.view.decorating;
 
 
+public interface TemplateManager {
 
-public class URLTemplateSource implements TemplateSource {
-
-    private String url;
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    public Template getTemplate(String name) throws Exception;
     
-    public long getLastModified() throws Exception {
-        if (this.url.startsWith("file://")) {
-            URL fileURL = new URL(this.url);
-            File file = new File(fileURL.getFile());
-            return file.lastModified();
-        }
-        return -1;
-    }
-    
-
-    public InputStream getTemplateInputStream() throws Exception {
-        return new URL(this.url).openStream();
-    }
-    
-
 }
-

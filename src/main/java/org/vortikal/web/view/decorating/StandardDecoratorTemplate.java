@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -38,13 +38,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
@@ -55,7 +58,7 @@ import org.vortikal.web.servlet.BufferedResponse;
 public class StandardDecoratorTemplate
   implements Template, BeanNameAware, ApplicationContextAware, InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(StandardDecoratorTemplate.class);
 
     private DecoratorComponent[] fragments;
     private TemplateSource templateSource;
@@ -97,7 +100,6 @@ public class StandardDecoratorTemplate
     }
     
 
-
     public void afterPropertiesSet() {
         if (this.applicationContext == null) {
             throw new BeanInitializationException(
@@ -119,10 +121,6 @@ public class StandardDecoratorTemplate
 
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
-
-        logger.info("m1: " + this.templateSource.getLastModified()
-                    + ", m2: " + this.lastModified);
-        
 
         synchronized(this) {
             if (this.templateSource.getLastModified() > this.lastModified) {
@@ -146,16 +144,16 @@ public class StandardDecoratorTemplate
                         providers[j].referenceData(model, request);
                     }
                 }
-
             }
-
 
             try {
 
                 String chunk = this.fragments[i].getRenderedContent(
                     model, request, bufferedResponse);
-                logger.info("Included component: " + this.fragments[i]
-                            + " with result " + chunk);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Included component: " + this.fragments[i]
+                                 + " with result " + chunk);
+                }
                 sb.append(chunk);
             } catch (Throwable t) {
                 String msg = t.getMessage();
@@ -164,10 +162,10 @@ public class StandardDecoratorTemplate
                 }
                 sb.append(msg);
             }
-
-
-
         }
+
+        // XXX: handle character encoding
+
         byte[] buffer = sb.toString().getBytes("utf-8");
         OutputStream out = response.getOutputStream();
         
@@ -202,23 +200,26 @@ public class StandardDecoratorTemplate
             String namespace = matcher.group(1);
             String name = matcher.group(2);
 
-            logger.info("Found match on idx:  " + idx + ": "
-                        + namespace + ":" + name);
-
             if (contentIdx < matcher.start()) {
                 String chunk = s.substring(contentIdx, matcher.start());
                 StaticTextDecoratorComponent c = new StaticTextDecoratorComponent();
                 c.setContent(chunk);
-                logger.info("Static text component:  " + c);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Static text component:  " + c);
+                }
                 fragmentList.add(c);
             }
 
             
             try {
+                // XXX: Need to implement ComponentResolver, ComponentSource
+
                 DecoratorComponent component = (DecoratorComponent)
                     this.applicationContext.getBean(namespace + ":" + name,
                                                     DecoratorComponent.class);
-                logger.info("Dynamic component:  " + component);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Dynamic component:  " + component);
+                }
 
                 fragmentList.add(component);
             } catch (Exception e) {
@@ -233,15 +234,15 @@ public class StandardDecoratorTemplate
         String chunk = s.substring(contentIdx, s.length());
         StaticTextDecoratorComponent c = new StaticTextDecoratorComponent();
         c.setContent(chunk);
-        logger.info("Static text component:  " + c);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Static text component:  " + c);
+        }
         fragmentList.add(c);
-            
         this.fragments = (DecoratorComponent[]) fragmentList.toArray(
             new DecoratorComponent[fragmentList.size()]);
         this.lastModified = templateSource.getLastModified();
     }
     
-
 }
 
 

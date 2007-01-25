@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,62 +28,80 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.Map;
+import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.vortikal.web.service.Service;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
+import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
 
-public class ServiceAwareTemplateResolver implements TemplateResolver {
+public class PropertyConfigurableTemplateResolver
+  implements TemplateResolver, InitializingBean {
+
+    private static Log logger = LogFactory.getLog(PropertyConfigurableTemplateResolver.class);
 
     private TemplateManager templateManager;
-    private Map serviceTemplatesMap;
+    private Properties templateConfiguration;
     
+
     public void setTemplateManager(TemplateManager templateManager) {
         this.templateManager = templateManager;
     }
     
-
-    public void setServiceTemplatesMap(Map serviceTemplatesMap) {
-        this.serviceTemplatesMap = serviceTemplatesMap;
-    }
     
+    public void setTemplateConfiguration(Properties templateConfiguration) {
+        this.templateConfiguration = templateConfiguration;
+    }
+
+
+    public void afterPropertiesSet() {
+        if (this.templateManager == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'templateManager' not set");
+        }
+
+        if (this.templateConfiguration == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'templateConfiguration' not set");
+        }
+    }
     
     public Template resolveTemplate(Map model, HttpServletRequest request,
                                     HttpServletResponse response) throws Exception {
-        Service currentService = null;
-        RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext != null) {
-            currentService = requestContext.getService();
-        }
 
-        if (currentService == null) {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        if (requestContext == null) {
             return null;
         }
-
-
-        String templateName = null;
-
-        do {
-
-            System.out.println("templateName: " + templateName + ", service: " + currentService);
-
-            templateName = (String) this.serviceTemplatesMap.get(currentService);
-            
-        } while (templateName == null
-                 && (currentService = currentService.getParent()) != null);
-
-
-        if (templateName == null) {
-            throw new RuntimeException(
-                "Unable to resolve template for request: " + request);
+        Template template = null;
+        String uri = requestContext.getResourceURI();
+        String[] path = URLUtil.splitUriIncrementally(uri);
+        for (int i = path.length - 1; i >= 0; i--) {
+            String prefix = path[i];
+            String mapping = this.templateConfiguration.getProperty(prefix);
+            if ("NONE".equals(mapping)) {
+                return null;
+            }
+            if (mapping != null) {
+                template = this.templateManager.getTemplate(mapping);
+                break;
+            }
         }
-
-        return this.templateManager.getTemplate(templateName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Resolved request '" + uri + "' to template " + template);
+        }
+        return template;
     }
     
-    
+
 }

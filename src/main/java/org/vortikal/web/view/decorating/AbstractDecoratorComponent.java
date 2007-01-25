@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,25 +28,52 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.web.servlet.View;
-import org.vortikal.web.servlet.BufferedResponseWrapper;
+
+import org.springframework.beans.factory.BeanNameAware;
+
+import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProviding;
 
 
-
-public interface DecoratorComponent {
-
-
-    public String getRenderedContent(Map model, HttpServletRequest request,
-                                     HttpServletResponse response) throws Exception;
-        
+public abstract class AbstractDecoratorComponent
+  implements DecoratorComponent, ReferenceDataProviding, BeanNameAware {
     
-    public String getName();
+    private ReferenceDataProvider[] referenceDataProviders;
+    private String name;
+    private String description;
 
-    public String getDescription();
+    public void setBeanName(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+    
+    public void setReferenceDataProviders(
+        ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
+
+    public ReferenceDataProvider[] getReferenceDataProviders() {
+        return this.referenceDataProviders;
+    }
+    
 
 }

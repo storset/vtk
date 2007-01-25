@@ -1468,6 +1468,20 @@
   </bean>
 
 
+  <bean id="collectionMenuProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="collectionActionServicesFactory" />
+    <constructor-arg value="tabMenu2" />
+    <constructor-arg ref="repository.requestLocal" />
+  </bean>
+
+  <bean id="collectionActionServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="collectionMenu" />
+  </bean>
+
+
   <bean id="resourceMenuProvider" 
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="resourceActionServicesFactory" />

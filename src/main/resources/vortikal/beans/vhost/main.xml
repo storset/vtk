@@ -22,6 +22,7 @@
   <import resource="schema-registry.xml" />
   <import resource="vortex.xml" />
   <import resource="view.xml" />
+  <import resource="decorating.xml" />
   <import resource="controllers.xml" />
   <import resource="service.xml" />
   <import resource="manage.xml" />

@@ -68,7 +68,7 @@ public class CollectionTemplateManager implements TemplateManager, ApplicationCo
 
     public Template getTemplate(String name) throws Exception {
         if (this.templatesMap == null) {
-            loadTemplates();
+            load();
         }
         if (this.templatesMap == null) {
             return null;
@@ -83,7 +83,7 @@ public class CollectionTemplateManager implements TemplateManager, ApplicationCo
     }
 
 
-    private synchronized void loadTemplates() {
+    public synchronized void load() {
         if (this.templatesMap != null) {
             return;
         }

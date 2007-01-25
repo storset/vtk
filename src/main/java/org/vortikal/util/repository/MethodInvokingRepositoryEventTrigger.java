@@ -36,14 +36,16 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.event.RepositoryEvent;
-
-
+import org.vortikal.repository.event.ResourceCreationEvent;
+import org.vortikal.repository.event.ResourceDeletionEvent;
 
 /**
  * 
@@ -51,7 +53,7 @@ import org.vortikal.repository.event.RepositoryEvent;
 public class MethodInvokingRepositoryEventTrigger 
   implements ApplicationListener, InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(MethodInvokingRepositoryEventTrigger.class);
 
     private Repository repository;
     private String uri;
@@ -109,41 +111,46 @@ public class MethodInvokingRepositoryEventTrigger
 
     
     public void onApplicationEvent(ApplicationEvent event) {
-
         if (! (event instanceof RepositoryEvent)) {
             return;
         }
-
         Repository rep = ((RepositoryEvent) event).getRepository();
-
         if (! rep.getId().equals(this.repository.getId())) {
             return;
         }
         
         String resourceURI = ((RepositoryEvent) event).getURI();
+
         if (this.uri != null) {
-            if (!this.uri.equals(resourceURI)) {
-                return;
+            if (((event instanceof ResourceDeletionEvent)
+                 || (event instanceof ResourceCreationEvent))
+                && this.uri.startsWith(resourceURI)) {
+                invoke();
+            } else if (this.uri.equals(resourceURI)) {
+                invoke();
             }
-        }
-
-        if (this.uriPattern != null) {
+        } else if (this.uriPattern != null) {
             Matcher matcher = this.uriPattern.matcher(resourceURI);
-            if (!matcher.matches()) {
-                return;
+            if (matcher.find()) {
+                invoke();
             }
         }
+    }
 
+
+    private void invoke() {
         try {
-            this.logger.info("Invoking method on ooobject:");
-
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invoking method " + this.targetMethod + "on object "
+                             + this.targetObject);
+            }
             this.targetMethod.invoke(this.targetObject, new Object[0]);
         } catch (Throwable t) {
             this.logger.warn("Error occurred while invoking method '" + this.method +
-                        "' on object '" + this.targetObject + "'", t);
+                             "' on object '" + this.targetObject + "'", t);
         }
-
     }
+    
 
 }
 

@@ -36,12 +36,15 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.event.ContentModificationEvent;
 
 
 /**
@@ -133,10 +136,18 @@ public class PropertiesResource extends Properties implements InitializingBean,
             } catch (Exception e) {
                 this.logger.warn(e);
             }
+        } else if (event instanceof ContentModificationEvent) {
+            ContentModificationEvent modEvent = (ContentModificationEvent) event;
+            if (this.uri.equals(modEvent.getURI())) {
+                try {
+                    this.load();
+                } catch (Exception e) {
+                    this.logger.warn(e);
+                }
+            }
         }
     }
     
-
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
             throw new BeanInitializationException(

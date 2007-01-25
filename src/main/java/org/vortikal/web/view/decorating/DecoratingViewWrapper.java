@@ -181,7 +181,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                              + ": unsupported content type: " + contentType);
 
             }
-            writeResponse(bufferedResponse, servletResponse);
+            writeResponse(bufferedResponse, servletResponse,
+                          bufferedResponse.getContentType());
             return;
         }
 
@@ -197,7 +198,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                         + characterEncoding
                         + "' is not supported on this system");
             }
-            writeResponse(bufferedResponse, servletResponse);
+            writeResponse(bufferedResponse, servletResponse,
+                          bufferedResponse.getContentType());
             return;
         }
 
@@ -232,7 +234,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                 logger.debug("Unable to resolve template for request " + request);
             }
 
-            writeResponse(bufferedResponse, servletResponse);
+            writeResponse(bufferedResponse, servletResponse,
+                          bufferedResponse.getContentType());
             return;
         }
 
@@ -248,26 +251,10 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
      * the size of the buffer in the wrapped response.
      * 
      * @param responseWrapper the wrapped response.
+     * @param response the real servlet response.
+     * @param contentType the content type of the response.
      * @exception Exception if an error occurs.
      */
-    protected void writeResponse(BufferedResponse responseWrapper,
-                                 ServletResponse response)
-            throws Exception {
-
-        ServletOutputStream outStream = response.getOutputStream();
-        byte[] content = responseWrapper.getContentBuffer();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Write response: Content-Length: " + content.length
-                    + ", unspecified content type");
-        }
-        response.setContentLength(content.length);
-        response.setContentType(responseWrapper.getContentType() + ";charset=utf-8");
-        outStream.write(content);
-        outStream.flush();
-        outStream.close();
-    }
-
-
     protected void writeResponse(BufferedResponse responseWrapper,
                                  ServletResponse response, String contentType)
             throws Exception {

@@ -67,6 +67,7 @@
   <logger name="org.vortikal.web.view.wrapper"><level value="info" /></logger>
   <logger name="org.vortikal.web.view.xslt.ResourceXsltView"><level value="info" /></logger>
   <logger name="org.vortikal.web.view.components.menu"><level value="info" /></logger>
+  <logger name="org.vortikal.web.view.decorating"><level value="info" /></logger>
   <logger name="org.vortikal.web.controller"><level value="info" /></logger>
   <logger name="org.vortikal.web.service"><level value="info" /></logger>
   <logger name="org.vortikal.web.RequestContextInitializer"><level value="info" /></logger>

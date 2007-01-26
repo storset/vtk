@@ -38,7 +38,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * XXX: interface should be extended with the following concepts:
  * <ul>
- *   <li>Supported doctype(s) and possibly encoding
+ *   <li>List of supported parameters
+ *   <li>Supported doctype(s) and possibly character encoding
+ *   <li>Language
  *   <li>Cache model: dynamic/static/"private" (per-principal)
  * </ul>
  *

@@ -265,7 +265,11 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             logger.debug("Write response: Content-Length: " + content.length
                     + ", Content-Type: " + contentType);
         }
-        response.setContentType(contentType + ";charset=utf-8");
+        if (contentType.indexOf("charset") == -1) {
+            response.setContentType(contentType  + ";charset=utf-8");
+        } else {
+            response.setContentType(contentType);
+        }
         response.setContentLength(content.length);
         outStream.write(content);
         outStream.flush();

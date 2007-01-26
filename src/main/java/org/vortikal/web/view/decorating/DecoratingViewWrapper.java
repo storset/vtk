@@ -54,6 +54,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.view.decorating.ssi.SsiProcessor;
 import org.vortikal.web.view.wrapper.RequestWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapperException;
@@ -75,7 +76,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     private boolean appendCharacterEncodingToContentType = true;
     private ReferenceDataProvider[] referenceDataProviders;
     private Assertion[] assertions;
-    
+    private SsiProcessor ssiProcessor;
 
 
     public void setTemplateResolver(TemplateResolver templateResolver) {
@@ -223,7 +224,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         Map coreHtml = new HashMap();
         coreHtml.put("title", html.getTitle());
         coreHtml.put("head", html.getHead());
-        coreHtml.put("body", html.getBody());
+        String body = html.getBody();
+        coreHtml.put("body", body);
         model.put(this.coreHtmlModelName, coreHtml);
         
         Template template = this.templateResolver.resolveTemplate(
@@ -259,6 +261,14 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                                  ServletResponse response, String contentType)
             throws Exception {
         byte[] content = responseWrapper.getContentBuffer();
+        if (this.ssiProcessor != null) {
+            String characterEncoding = responseWrapper.getCharacterEncoding();
+            String body = new String(content,characterEncoding);
+            logger.warn("Running SSI processor");
+            body = this.ssiProcessor.parse(body);
+            content = body.getBytes(characterEncoding);
+        }
+
         ServletOutputStream outStream = response.getOutputStream();
 
         if (logger.isDebugEnabled()) {
@@ -282,6 +292,11 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         sb.append(this.getClass().getName()).append(":");
         sb.append("]");
         return sb.toString();
+    }
+
+
+    public void setSsiProcessor(SsiProcessor ssiProcessor) {
+        this.ssiProcessor = ssiProcessor;
     }
 
 }

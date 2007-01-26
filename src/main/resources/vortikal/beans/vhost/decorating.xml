@@ -19,8 +19,11 @@
         <ref bean="decorating.manageLinkProvider" />
       </list>
     </property>
+    <property name="ssiProcessor" ref="ssiProcessor"  />
   </bean>
 
+  <bean id="ssiProcessor"
+        class="org.vortikal.web.view.decorating.ssi.HttpSsiProcessor" />
 
   <bean id="templateResolver"
         class="org.vortikal.web.view.decorating.PropertyConfigurableTemplateResolver">

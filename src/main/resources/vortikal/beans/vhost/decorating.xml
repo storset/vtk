@@ -19,11 +19,30 @@
         <ref bean="decorating.manageLinkProvider" />
       </list>
     </property>
-    <property name="ssiProcessor" ref="ssiProcessor"  />
+    <property name="ssiHandler" ref="ssiHandler"  />
   </bean>
 
-  <bean id="ssiProcessor"
-        class="org.vortikal.web.view.decorating.ssi.HttpSsiProcessor" />
+  <bean id="ssiHandler"
+        class="org.vortikal.web.view.decorating.ssi.SsiHandler">
+    <property name="ssiProcessors">
+      <set>
+        <bean class="org.vortikal.web.view.decorating.ssi.HttpSsiProcessor" />
+        <bean class="org.vortikal.web.view.decorating.ssi.RepositoryAccessingSsiProcessor"
+              parent="requestLocalRepositoryAware" />
+        <bean class="org.vortikal.web.view.decorating.ssi.RepositoryAccessingSsiProcessor"
+              parent="requestLocalRepositoryAware">
+          <property name="identifier" value="virtual" />
+        </bean>
+        <bean class="org.vortikal.web.view.decorating.ssi.RssRenderingSsiProcessor">
+          <property name="view" ref="feedView" />
+        </bean>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="feedView" parent="freemarkerView">
+    <property name="url" value="layouts/renderedFeed.ftl" />
+  </bean>
 
   <bean id="templateResolver"
         class="org.vortikal.web.view.decorating.PropertyConfigurableTemplateResolver">

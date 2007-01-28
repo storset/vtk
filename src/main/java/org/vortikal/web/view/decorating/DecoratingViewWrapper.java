@@ -30,10 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
-import com.opensymphony.module.sitemesh.HTMLPage;
-import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
-
-import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,19 +42,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.View;
-
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.servlet.BufferedResponse;
-import org.vortikal.web.view.decorating.ssi.SsiProcessor;
+import org.vortikal.web.view.decorating.ssi.SsiHandler;
 import org.vortikal.web.view.wrapper.RequestWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapperException;
+
+import com.opensymphony.module.sitemesh.HTMLPage;
+import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
 
 /**
  * 
@@ -76,7 +74,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     private boolean appendCharacterEncodingToContentType = true;
     private ReferenceDataProvider[] referenceDataProviders;
     private Assertion[] assertions;
-    private SsiProcessor ssiProcessor;
+    private SsiHandler ssiHandler;
 
 
     public void setTemplateResolver(TemplateResolver templateResolver) {
@@ -221,6 +219,19 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             logger.debug("Parsing document took " + duration + " ms");
         }
 
+        Template template = this.templateResolver.resolveTemplate(
+                model, request, bufferedResponse);
+            
+        if (template == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to resolve template for request " + request);
+            }
+                
+            writeResponse(bufferedResponse, servletResponse,
+                    bufferedResponse.getContentType());
+            return;
+        }
+
         Map coreHtml = new HashMap();
         coreHtml.put("title", html.getTitle());
         coreHtml.put("head", html.getHead());
@@ -228,19 +239,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         coreHtml.put("body", body);
         model.put(this.coreHtmlModelName, coreHtml);
         
-        Template template = this.templateResolver.resolveTemplate(
-            model, request, bufferedResponse);
-        
-        if (template == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to resolve template for request " + request);
-            }
-
-            writeResponse(bufferedResponse, servletResponse,
-                          bufferedResponse.getContentType());
-            return;
-        }
-
         BufferedResponse templateResponse = new BufferedResponse();
         template.render(model, request, templateResponse);
         writeResponse(templateResponse, servletResponse, "text/html");
@@ -260,13 +258,12 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     protected void writeResponse(BufferedResponse responseWrapper,
                                  ServletResponse response, String contentType)
             throws Exception {
-        byte[] content = responseWrapper.getContentBuffer();
-        if (this.ssiProcessor != null) {
-            String characterEncoding = responseWrapper.getCharacterEncoding();
-            String body = new String(content,characterEncoding);
-            logger.warn("Running SSI processor");
-            body = this.ssiProcessor.parse(body);
-            content = body.getBytes(characterEncoding);
+        byte[] content = null;
+        
+        if (this.ssiHandler == null) {
+            content = responseWrapper.getContentBuffer();
+        } else {
+            content = handleSsi(responseWrapper);
         }
 
         ServletOutputStream outStream = response.getOutputStream();
@@ -287,6 +284,16 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
 
+    private byte[] handleSsi(BufferedResponse responseWrapper) throws UnsupportedEncodingException {
+        if (logger.isDebugEnabled())
+            logger.debug("Running SSI processor");
+        String characterEncoding = responseWrapper.getCharacterEncoding();
+        String s = new String(responseWrapper.getContentBuffer(),characterEncoding);
+        s = this.ssiHandler.process(s);
+        return s.getBytes(characterEncoding);
+    }
+
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(":");
@@ -295,8 +302,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
 
-    public void setSsiProcessor(SsiProcessor ssiProcessor) {
-        this.ssiProcessor = ssiProcessor;
+    public void setSsiHandler(SsiHandler ssiHandler) {
+        this.ssiHandler = ssiHandler;
     }
 
 }

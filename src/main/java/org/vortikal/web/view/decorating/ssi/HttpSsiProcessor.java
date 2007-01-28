@@ -1,10 +1,38 @@
+/* Copyright (c) 2007, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.vortikal.web.view.decorating.ssi;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
@@ -24,57 +52,22 @@ import org.apache.log4j.Logger;
 public class HttpSsiProcessor implements SsiProcessor {
 
     private static Logger logger = Logger.getLogger(HttpSsiProcessor.class.getName());
-    //Is not private since we need access to this pattern from the unittests
-    static final Pattern INCLUDE_REGEXP = Pattern.compile(
-            "<!--#include\\s+([\000-\377]*?)\\s*?=\"([\000-\377]*?)\"\\s*?-->",
-            +Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     
     private int timeoutInMillisecondsWhenGettingIncludedFiles = 3000;
     private int maxlengthForIncludedFiles = 1024000; //set low for testing
     private String defaultEncodingForIncludedFiles = "iso-8859-1";
 
-    public String parse(final String content) {
-        String docContentProcessed = content;
-        int indexStartIncludeStatements;
-        int indexEndIncludeStatements;
-        StringBuffer sb;
-
-        Matcher matcherInclude = INCLUDE_REGEXP.matcher(docContentProcessed);
-        while (matcherInclude.find()) {            
-            if (logger.isDebugEnabled()) {
-                logger.debug("matcherInclude.group(0): " + matcherInclude.group(0));
-            }
-
-            indexStartIncludeStatements = matcherInclude.start();
-            indexEndIncludeStatements = matcherInclude.end();
-            
-            String url = docContentProcessed.substring(matcherInclude.start(2), matcherInclude.end(2));
-            if (url != null && !url.trim().equals("")) {
-                String ssiContent = null;
-                
-                // if we can't fetch the included resource ssiContent is set to an empty String
-                // and the SSI directive is removed by the replaceFirst statement bellow
-                ssiContent = fetchIncludedFile(url);
-
-                sb = new StringBuffer();        
-                sb.append(docContentProcessed.substring(0, indexStartIncludeStatements));
-                sb.append(ssiContent);
-                sb.append(docContentProcessed.substring(indexEndIncludeStatements, docContentProcessed.length()));
-                docContentProcessed = sb.toString();
-
-                // We have to reset the matcher because we are using replaceFirst. From the
-                // javadoc for Matcher:
-                // "Invoking this method changes this matcher's state. If the matcher is to be
-                // used in further matching operations then it should first be reset."
-                matcherInclude.reset(docContentProcessed);
-            }
-        }
-        return docContentProcessed;
+    // FIXME: changed from virtual
+    private String identifier = "http";
+    
+    
+    public String getIdentifier() {
+        return this.identifier;
     }
 
-    
-    private String fetchIncludedFile(final String address) {
+
+    public String resolve(final String address) {
         String contentAsString = "";
         
         HttpClient client = new HttpClient();
@@ -167,6 +160,11 @@ public class HttpSsiProcessor implements SsiProcessor {
      */
     public void setDefaultEncodingForIncludedFiles(String defaultEncodingForIncludedFiles) {
         this.defaultEncodingForIncludedFiles = defaultEncodingForIncludedFiles;
+    }
+
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
     
 

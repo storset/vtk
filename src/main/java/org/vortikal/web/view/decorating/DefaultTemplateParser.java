@@ -100,7 +100,7 @@ public class DefaultTemplateParser implements TemplateParser {
 
 
     private ComponentInvocation staticTextComponent(String s) {
-        StaticTextDecoratorComponent c = new StaticTextDecoratorComponent();
+        StaticComponent c = new StaticComponent();
         c.setContent(s);
         if (logger.isDebugEnabled()) {
             logger.debug("Static text: " + s);
@@ -139,69 +139,6 @@ public class DefaultTemplateParser implements TemplateParser {
         return new ComponentInvocationImpl(component, actualParameters);
     }
 
-
-    public ComponentInvocation[] parseTemplateOLD(TemplateSource source) throws Exception {
-        
-
-        String s = new String(StreamUtil.readInputStream(
-                                  source.getTemplateInputStream()));
-
-        parseInternal(s);
-        logger.info("Compiling template from source " + source);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Compiling template from string " + s);
-        }
-        
-        // Original:
-        Pattern pattern = Pattern.compile("\\$\\{([^\\}:]+):([^\\}:]+)\\}", Pattern.DOTALL);
-
-        Matcher matcher = pattern.matcher(s);
-
-        int idx = 0;
-        int contentIdx = 0;
-
-        List fragmentList = new ArrayList();
-
-
-        while (matcher.find(idx)) {
-
-            String namespace = matcher.group(1);
-            String name = matcher.group(2);
-            if (contentIdx < matcher.start()) {
-                String chunk = s.substring(contentIdx, matcher.start());
-                StaticTextDecoratorComponent c = new StaticTextDecoratorComponent();
-                c.setContent(chunk);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Static text component:  " + c);
-                }
-                fragmentList.add(new ComponentInvocationImpl(c, new HashMap()));
-            }
-
-            DecoratorComponent component = this.componentResolver.resolveComponent(
-                namespace, name);
-            if (component == null) {
-                logger.info("Unable to resolve component " + namespace + ":" + name);
-            } else {
-                fragmentList.add(new ComponentInvocationImpl(component, new HashMap()));
-            }
-
-            idx = matcher.end();
-            contentIdx = idx;
-        }
-
-        String chunk = s.substring(contentIdx, s.length());
-        StaticTextDecoratorComponent c = new StaticTextDecoratorComponent();
-        c.setContent(chunk);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Static text component:  " + c);
-        }
-        fragmentList.add(new ComponentInvocationImpl(c, new HashMap()));
-
-        return (ComponentInvocation[]) fragmentList.toArray(
-            new ComponentInvocation[fragmentList.size()]);
-    }
-    
 
     private String parseComponentRef(String s) {
         if (s == null || s.trim().length() <= 1) {
@@ -280,5 +217,41 @@ public class DefaultTemplateParser implements TemplateParser {
     
 
     
+    private class StaticComponent implements DecoratorComponent {
+    
+        private String content;
+    
+        public void setContent(String content) {
+            this.content = content;
+        }
 
+        public String getRenderedContent(DecoratorRequest request) throws Exception {
+            return this.content;
+        }
+    
+    
+        public String getNamespace() {
+            return this.getClass().getName();
+        }
+    
+        public String getName() {
+            return String.valueOf(System.identityHashCode(this));
+        }
+    
+        public String getDescription() {
+            return this.getClass().getName();
+        }
+    
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(this.getClass().getName()).append(": ");
+            sb.append(this.getName());
+            sb.append(" [").append(this.content).append("]");
+            return sb.toString();
+        }
+    
+
+    }
+    
 }

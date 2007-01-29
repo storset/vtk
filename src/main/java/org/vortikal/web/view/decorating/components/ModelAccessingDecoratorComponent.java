@@ -28,13 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.components;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.web.servlet.BufferedResponseWrapper;
+import org.vortikal.web.view.decorating.DecoratorRequest;
 
 public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent {
     

@@ -36,21 +36,29 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.BeanNameAware;
-
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 
 
 public abstract class AbstractDecoratorComponent
-  implements DecoratorComponent, ReferenceDataProviding, BeanNameAware {
+  implements DecoratorComponent, ReferenceDataProviding, InitializingBean {
     
     private ReferenceDataProvider[] referenceDataProviders;
+    private String namespace;
     private String name;
     private String description;
 
-    public void setBeanName(String name) {
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getNamespace() {
+        return this.namespace;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
     
@@ -75,5 +83,13 @@ public abstract class AbstractDecoratorComponent
         return this.referenceDataProviders;
     }
     
-
+    public void afterPropertiesSet() {
+        if (this.namespace == null) {
+            throw new BeanInitializationException("JavaBean property 'namespace' not set");
+        }
+        if (this.name == null) {
+            throw new BeanInitializationException("JavaBean property 'name' not set");
+        }
+    }
+    
 }

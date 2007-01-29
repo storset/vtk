@@ -30,46 +30,9 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.web.servlet.BufferedResponseWrapper;
+public interface TemplateParser {
 
-public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent {
-    
-    private String key;
+    public ComponentInvocation[] parseTemplate(TemplateSource source) throws Exception;
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-    
-
-    public String getRenderedContent(DecoratorRequest request) throws Exception {
-        
-        Map model = request.getModel();
-        Map map = model;
-
-        Object subModel = model.get(getNamespace());
-        if (!(subModel instanceof Map)) {
-            return "";
-        }
-        map = (Map) subModel;
-
-        Object obj = map.get(this.key);
-        if (obj == null) {
-            return "";
-        }
-
-        return obj.toString();
-    }
-    
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(": [");
-        sb.append("namespace = ").append(getNamespace()).append(", ");
-        sb.append("key = ").append(this.key).append("]");
-        return sb.toString();
-    }
-    
 }

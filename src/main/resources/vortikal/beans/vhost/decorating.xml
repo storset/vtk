@@ -3,6 +3,7 @@
 
 <beans>
 
+  
   <bean id="decorating.manageLinkProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
         parent="requestLocalRepositoryAware">
@@ -69,6 +70,7 @@
   <bean id="templateManager" class="org.vortikal.web.view.decorating.CollectionTemplateManager">
     <property name="repository" ref="repository" />
     <property name="collectionName" value="${decorating.templatesCollection}" />
+    <property name="templateParser" ref="defaultTemplateParser" />
   </bean>
 
   <bean id="templateCollectionRefreshTrigger"
@@ -80,31 +82,45 @@
   </bean>
 
 
-  <bean id="core:body" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+  <bean id="defaultTemplateParser" class="org.vortikal.web.view.decorating.DefaultTemplateParser">
+    <property name="componentResolver" ref="defaultComponentResolver" />
+  </bean>
+
+  <bean name="defaultComponentResolver" class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
+    
+  </bean>
+
+  <bean id="bodyComponent" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
     <property name="namespace" value="core" />
+    <property name="name" value="body" />
     <property name="key" value="body" />
   </bean>
 
-  <bean id="core:head" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+  <bean id="headComponent" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
     <property name="namespace" value="core" />
+    <property name="name" value="head" />
     <property name="key" value="head" />
   </bean>
 
-  <bean id="core:title" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+  <bean id="titleComponent" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
     <property name="namespace" value="core" />
+    <property name="name" value="title" />
     <property name="key" value="title" />
   </bean>
 
-  <bean id="manage:manageURL" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
+  <bean id="manageURLComponent" class="org.vortikal.web.view.decorating.ModelAccessingDecoratorComponent">
     <property name="namespace" value="manage" />
+    <property name="name" value="manageURL" />
     <property name="key" value="manageURL" />
   </bean>
 
-  <bean id="view:breadcrumb" class="org.vortikal.web.view.decorating.ViewRenderingDecoratorComponent">
-    <property name="view" ref="breadcrumbView" />
+  <bean id="breadcrumbComponent" class="org.vortikal.web.view.decorating.ViewRenderingDecoratorComponent">
+    <property name="namespace" value="view" />
+    <property name="name" value="breadcrumb" />
+    <property name="view" ref="breadcrumbComponentView" />
   </bean>
 
-  <bean id="breadcrumbView" parent="freemarkerView">
+  <bean id="breadcrumbComponentView" parent="freemarkerView">
     <property name="url" value="layouts/breadcrumb.ftl" />
     <property name="referenceDataProviders">
       <list>

@@ -278,6 +278,14 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             response.setContentType(contentType);
         }
         response.setContentLength(content.length);
+
+        // Make sure content is not cached:
+        if (response instanceof HttpServletResponse) {
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            httpServletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
+            httpServletResponse.setHeader("Expires", "0");
+            httpServletResponse.setHeader("Pragma", "no-cache");
+        }
         outStream.write(content);
         outStream.flush();
         outStream.close();

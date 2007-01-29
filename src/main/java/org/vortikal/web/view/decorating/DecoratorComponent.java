@@ -47,10 +47,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface DecoratorComponent {
 
-    public String getRenderedContent(Map model, HttpServletRequest request,
-                                     HttpServletResponse response) throws Exception;
+    public String getNamespace();
+
     public String getName();
 
     public String getDescription();
+
+    public String getRenderedContent(DecoratorRequest request) throws Exception;
 
 }

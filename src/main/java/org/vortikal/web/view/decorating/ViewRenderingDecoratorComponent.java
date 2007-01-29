@@ -41,11 +41,11 @@ import org.springframework.web.servlet.View;
 
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
+import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
 
 
-public class ViewRenderingDecoratorComponent
-  extends AbstractDecoratorComponent {
+public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent {
     
     private View view;
     private ReferenceDataProvider[] referenceDataProviders;
@@ -82,12 +82,14 @@ public class ViewRenderingDecoratorComponent
     
     
 
-    public String getRenderedContent(Map model, HttpServletRequest request,
-                                     HttpServletResponse response) throws Exception {
+    public String getRenderedContent(DecoratorRequest request) throws Exception {
         
-        BufferedResponseWrapper wrapper = new BufferedResponseWrapper(response);
-        this.view.render(model, request, wrapper);
-        return wrapper.getContentString();
+        Map model = request.getModel();
+        HttpServletRequest servletRequest = request.getServletRequest();
+
+        BufferedResponse bufferedResponse = new BufferedResponse();
+        this.view.render(model, servletRequest, bufferedResponse);
+        return bufferedResponse.getContentString();
     }
     
     

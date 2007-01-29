@@ -31,45 +31,33 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.web.servlet.BufferedResponseWrapper;
 
-public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent {
-    
-    private String key;
+public class ComponentInvocationImpl implements ComponentInvocation {
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-    
+    private DecoratorComponent component;
+    private Map parameters;
 
-    public String getRenderedContent(DecoratorRequest request) throws Exception {
-        
-        Map model = request.getModel();
-        Map map = model;
-
-        Object subModel = model.get(getNamespace());
-        if (!(subModel instanceof Map)) {
-            return "";
+    public ComponentInvocationImpl(DecoratorComponent component, Map parameters) {
+        if (component == null) {
+            throw new IllegalArgumentException("Component argument is NULL");
         }
-        map = (Map) subModel;
-
-        Object obj = map.get(this.key);
-        if (obj == null) {
-            return "";
+        if (parameters == null) {
+            throw new IllegalArgumentException("Parameters argument is NULL");
         }
 
-        return obj.toString();
+        this.component = component;
+        this.parameters = parameters;
     }
     
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(": [");
-        sb.append("namespace = ").append(getNamespace()).append(", ");
-        sb.append("key = ").append(this.key).append("]");
-        return sb.toString();
+
+    public DecoratorComponent getComponent() {
+        return this.component;
+    }
+
+    public Map getParameters() {
+        return this.parameters;
     }
     
+
 }

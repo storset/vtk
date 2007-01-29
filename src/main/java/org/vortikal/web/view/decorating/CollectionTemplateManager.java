@@ -47,9 +47,9 @@ public class CollectionTemplateManager implements TemplateManager, ApplicationCo
     private Repository repository;
     private String collectionName;
     private ApplicationContext applicationContext;
+    private TemplateParser parser;
     private Map templatesMap;
     
-
 
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -60,6 +60,11 @@ public class CollectionTemplateManager implements TemplateManager, ApplicationCo
         this.collectionName = collectionName;
     }
 
+
+    public void setTemplateParser(TemplateParser parser) {
+        this.parser = parser;
+    }
+    
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -100,7 +105,7 @@ public class CollectionTemplateManager implements TemplateManager, ApplicationCo
                                                      this.repository, null);
                     
                     Template template = new StandardDecoratorTemplate(
-                        this.applicationContext, templateSource);
+                        resources[i].getName(), this.parser, templateSource);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Loaded template '" + resources[i].getName() + "'");
                     }

@@ -44,16 +44,17 @@ public class StaticTextDecoratorComponent implements DecoratorComponent {
         this.content = content;
     }
 
-    public String getRenderedContent(Map model, HttpServletRequest request,
-                                     HttpServletResponse response) throws Exception {
-        
-        
+    public String getRenderedContent(DecoratorRequest request) throws Exception {
         return this.content;
     }
     
     
-    public String getName() {
+    public String getNamespace() {
         return this.getClass().getName();
+    }
+    
+    public String getName() {
+        return String.valueOf(System.identityHashCode(this));
     }
     
     public String getDescription() {
@@ -63,8 +64,9 @@ public class StaticTextDecoratorComponent implements DecoratorComponent {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(": [");
-        sb.append(this.getName()).append("]");
+        sb.append(this.getClass().getName()).append(": ");
+        sb.append(this.getName());
+        sb.append(" [").append(this.content).append("]");
         return sb.toString();
     }
     

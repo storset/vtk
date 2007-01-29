@@ -34,42 +34,33 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.web.servlet.BufferedResponseWrapper;
 
-public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent {
+public class DecoratorRequestImpl implements DecoratorRequest {
+
+    private Map model;
+
+    private HttpServletRequest servletRequest;
+
+    private Map decoratorParameters;
     
-    private String key;
-
-    public void setKey(String key) {
-        this.key = key;
+    public DecoratorRequestImpl(Map model, HttpServletRequest servletRequest, Map decoratorParameters) {
+        this.model = model;
+        this.servletRequest = servletRequest;
+        this.decoratorParameters = decoratorParameters;
+    }
+    
+    public Map getModel() {
+        return this.model;
     }
     
 
-    public String getRenderedContent(DecoratorRequest request) throws Exception {
-        
-        Map model = request.getModel();
-        Map map = model;
-
-        Object subModel = model.get(getNamespace());
-        if (!(subModel instanceof Map)) {
-            return "";
-        }
-        map = (Map) subModel;
-
-        Object obj = map.get(this.key);
-        if (obj == null) {
-            return "";
-        }
-
-        return obj.toString();
+    public HttpServletRequest getServletRequest() {
+        return this.servletRequest;
     }
     
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(": [");
-        sb.append("namespace = ").append(getNamespace()).append(", ");
-        sb.append("key = ").append(this.key).append("]");
-        return sb.toString();
+    public Map getDecoratorParameters() {
+        return this.decoratorParameters;
     }
     
+
 }

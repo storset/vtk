@@ -54,7 +54,7 @@ import org.vortikal.web.view.decorating.DecoratorRequest;
 
 public class RssFeedComponent extends AbstractDecoratorComponent {
 
-    private static Log logger = LogFactory.getLog(RssIncludeComponent.class);
+    private static Log logger = LogFactory.getLog(RssFeedComponent.class);
     
     private String identifier = "feed";
     private View view;

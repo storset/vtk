@@ -100,6 +100,14 @@ public class BufferedResponse implements HttpServletResponse {
         return this.bufferStream.toByteArray();
     }
 
+    public String getContentString() throws Exception {
+        if (this.characterEncoding != null) {
+            return new String(this.bufferStream.toByteArray(), this.characterEncoding);
+        }
+
+        return new String(this.bufferStream.toByteArray(), "utf-8");
+    }
+
     public int getStatus() {
         return this.status;
     }
@@ -265,9 +273,7 @@ public class BufferedResponse implements HttpServletResponse {
     private void applyHeaderSideEffects(String header, String value) {
 
         if ("Content-Type".equals(header)) {
-
             processContentTypeHeader(value);
-
         } else if ("Content-Length".equals(header)) {
             try {
                 int intValue = Integer.parseInt(value);

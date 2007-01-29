@@ -5,6 +5,7 @@ feed: a SyndFeed (from rome)
 
 conf: RssConfig
 containing:
+  conf.includeTitle: boolean
   conf.includeLogo: boolean
   conf.includeDescription: boolean
   conf.includeUpdatedDate: boolean
@@ -13,11 +14,11 @@ containing:
 -->
 
 <div class="feed">
-    <h2 class="portlet-section-header">
-      <a class="portlet-section-header" href="${feed.getLink()}">
-	${feed.getTitle()}
-      </a>
+  <#if conf.includeTitle == true>
+    <h2 class="feedTitle">
+      <a href="${feed.getLink()}">${feed.getTitle()}</a>
     </h2>
+  </#if>
 
     <#-- logo -->
     <#if conf.includeLogo == true>
@@ -52,7 +53,7 @@ containing:
 	  <#-- published date -->
 	  <#if conf.includePublishedDate == true>
 	  <li class="published_date">
-	    Publisert tidspunkt: 
+	    Published: 
 	    <#if entry.getPublishedDate()?exists>
 	    ${dateFormatter.formatDate(entry.getPublishedDate())}
 	    </#if>
@@ -62,7 +63,7 @@ containing:
 	  <#-- updated date -->
 	  <#if conf.includeUpdatedDate == true>
 	  <li class="updated_date">
-	    Sist oppdatert tidspunkt: 
+	    Last updated:
 	    <#if entry.getUpdatedDate()?exists>
 	    ${dateFormatter.formatDate(entry.getUpdatedDate())}
 	    </#if>

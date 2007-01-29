@@ -210,6 +210,9 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
         String content = new String(contentBuffer, characterEncoding);
         
+        if (this.ssiHandler != null) {
+            content = this.ssiHandler.process(content);
+        }
         HTMLPageParser parser = new HTMLPageParser();
         
         long before = System.currentTimeMillis();
@@ -258,14 +261,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     protected void writeResponse(BufferedResponse responseWrapper,
                                  ServletResponse response, String contentType)
             throws Exception {
-        byte[] content = null;
+        byte[] content = responseWrapper.getContentBuffer();
         
-        if (this.ssiHandler == null) {
-            content = responseWrapper.getContentBuffer();
-        } else {
-            content = handleSsi(responseWrapper);
-        }
-
         ServletOutputStream outStream = response.getOutputStream();
 
         if (logger.isDebugEnabled()) {
@@ -292,14 +289,14 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
 
-    private byte[] handleSsi(BufferedResponse responseWrapper) throws UnsupportedEncodingException {
-        if (logger.isDebugEnabled())
-            logger.debug("Running SSI processor");
-        String characterEncoding = responseWrapper.getCharacterEncoding();
-        String s = new String(responseWrapper.getContentBuffer(),characterEncoding);
-        s = this.ssiHandler.process(s);
-        return s.getBytes(characterEncoding);
-    }
+//     private byte[] handleSsi(byte[] content, String characterEncoding) throws UnsupportedEncodingException {
+//         if (logger.isDebugEnabled())
+//             logger.debug("Running SSI processor");
+//         //String characterEncoding = responseWrapper.getCharacterEncoding();
+//         String s = new String(responseWrapper.getContentBuffer(),characterEncoding);
+//         s = this.ssiHandler.process(s);
+//         return s.getBytes(characterEncoding);
+//     }
 
 
     public String toString() {

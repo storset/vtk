@@ -58,8 +58,12 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return this.servletRequest;
     }
     
-    public Map getDecoratorParameters() {
-        return this.decoratorParameters;
+    public String getParameter(String name) {
+        String value = null;
+        if (this.decoratorParameters != null) {
+            value = (String) this.decoratorParameters.get(name);
+        }
+        return value;
     }
     
 

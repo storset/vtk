@@ -129,5 +129,19 @@
     </property>
   </bean>
 
+  <bean id="rssFeedComponent" class="org.vortikal.web.view.decorating.components.RssFeedComponent">
+    <property name="namespace" value="rss" />
+    <property name="name" value="include" />
+    <property name="view" ref="feedView" />
+  </bean>
+
+  <bean id="includeComponent"
+        class="org.vortikal.web.view.decorating.components.IncludeComponent"
+        parent="requestLocalRepositoryAware">
+    <property name="namespace" value="repo" />
+    <property name="name" value="include" />
+  </bean>
+
+
 
 </beans>

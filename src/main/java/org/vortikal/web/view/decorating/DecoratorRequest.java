@@ -40,6 +40,6 @@ public interface DecoratorRequest {
 
     public HttpServletRequest getServletRequest();
 
-    public Map getDecoratorParameters();
+    public String getParameter(String name);
 
 }

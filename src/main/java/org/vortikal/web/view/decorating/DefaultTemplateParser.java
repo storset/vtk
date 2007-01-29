@@ -110,7 +110,9 @@ public class DefaultTemplateParser implements TemplateParser {
     
 
     private ComponentInvocation parseDirective(String s) {
-
+        if (s != null) {
+            s = s.trim();
+        }
         // namespace:name param1=[value] param2=[value]
         String componentRef = parseComponentRef(s);
         if (componentRef == null) {
@@ -123,7 +125,7 @@ public class DefaultTemplateParser implements TemplateParser {
         DecoratorComponent component = this.componentResolver.resolveComponent(
             namespace, name);
         if (component == null) {
-            logger.info("Unable to resolve component " + namespace + ":" + name);
+            logger.info("Unable to resolve component '" + namespace + "' : '" + name + "'");
             return null;
         } 
 
@@ -169,7 +171,7 @@ public class DefaultTemplateParser implements TemplateParser {
         if (!namespace.matches("[a-zA-Z]+")) {
             return null;
         }
-        return namespace;
+        return namespace.trim();
     }
     
     private String parseComponentName(String s) {
@@ -179,7 +181,7 @@ public class DefaultTemplateParser implements TemplateParser {
             return null;
         }
         String name = s.substring(delimIdx + 1, s.length());
-        return name;
+        return name.trim();
     }
     
     
@@ -193,7 +195,8 @@ public class DefaultTemplateParser implements TemplateParser {
                 break;
             }
 
-            int nameStartIdx = s.indexOf(" ", startIdx) + 1;
+            //int nameStartIdx = s.indexOf(" ", startIdx) + 1;
+            int nameStartIdx = nextWhitespaceIdx(s, startIdx) + 1;
             if (nameStartIdx == 0 || nameStartIdx > equalsIdx) {
                 break;
             }
@@ -208,13 +211,35 @@ public class DefaultTemplateParser implements TemplateParser {
                 break;
             }
             startIdx = valueEndIdx;
-            String name = s.substring(nameStartIdx, equalsIdx);
-            String value = s.substring(valueStartIdx, valueEndIdx);
+            String name = s.substring(nameStartIdx, equalsIdx).trim();
+            String value = s.substring(valueStartIdx, valueEndIdx).trim();
             result.put(name, value);
         }
         return result;
     }
     
+
+    private int nextWhitespaceIdx(String s, int startIdx) {
+        int nearest = -1;
+        for (int i = startIdx; i < s.length(); i++) {
+            boolean found = false;
+            char c = s.charAt(i);
+            switch (c) {
+                case ' ':
+                case '\t':
+                case '\n':
+                    found = true;
+                    break;
+                default:
+                    found = false;
+            }
+            if (found) {
+                nearest = i;
+                break;
+            }
+        }
+        return nearest;
+    }
 
     
     private class StaticComponent implements DecoratorComponent {

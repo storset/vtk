@@ -45,7 +45,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
-import org.vortikal.web.service.Service;
 
 /**
  * Factory bean looking up groups of objects based on the
@@ -56,7 +55,7 @@ import org.vortikal.web.service.Service;
  * <ul>
  * 
  *   <li><code>category</code> - required {@link String} describing
- *   the category of the services
+ *   the category of the objects
  *   <li><code>clazz</code> - required bean {@link Class type}. Must
  *    implement {@link Categorizable}.  If the class implements {@link
  *    Ordered}, the returned set will be sorted.
@@ -76,15 +75,15 @@ public class CategoryResolvingFactoryBean
     
 
     /**
-     * Gets a list of {@link Service services} declared to belong to a
-     * certain category (this.category).
+     * Gets a list of obkects declared to belong to a certain category
+     * (this.category).
      *
-     * @return a list of {@link Service} objects belonging to the
-     * category in question. If no such services exist, an empty list
-     * is returned.
+     * @return a list of objects belonging to the category in
+     * question. If no such objects exist, an empty list is returned.
      */
     private List getObjectsOfCategory() {
-        // find all services, and sort out those of category 'category';
+        // find all objects of the given class and sort out those of
+        // category 'category';
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, this.clazz, true, false);
     
@@ -115,7 +114,7 @@ public class CategoryResolvingFactoryBean
     }
 
     public Class getObjectType() {
-        return new Service[0].getClass();
+        return this.clazz;
     }
 
     public boolean isSingleton() {

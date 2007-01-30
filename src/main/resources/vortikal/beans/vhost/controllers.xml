@@ -89,39 +89,5 @@
     <property name="viewName" value="displayHTMLResource" />
   </bean>
 
-  <bean id="setNorwegianNBLocaleController"
-        class="org.vortikal.web.controller.SetLocaleController">
-    <property name="locale">
-      <bean class="java.util.Locale">
-        <constructor-arg value="no" />
-      </bean>
-    </property>
-    <property name="localeResolver" ref="localeResolver" />
-    <property name="viewName" value="redirectToManage" />
-  </bean>
-
-  <bean id="setNorwegianNNLocaleController"
-        class="org.vortikal.web.controller.SetLocaleController">
-    <property name="locale">
-      <bean class="java.util.Locale">
-        <constructor-arg value="nn" />
-      </bean>
-    </property>
-    <property name="localeResolver" ref="localeResolver" />
-    <property name="viewName" value="redirectToManage"/>
-  </bean>
-
-  <bean id="setEnglishLocaleController"
-        class="org.vortikal.web.controller.SetLocaleController">
-    <property name="locale">
-      <bean class="java.util.Locale">
-        <constructor-arg value="en" />
-      </bean>
-    </property>
-    <property name="localeResolver" ref="localeResolver" />
-    <property name="viewName" value="redirectToManage" />
-  </bean>
-
-
 
 </beans>

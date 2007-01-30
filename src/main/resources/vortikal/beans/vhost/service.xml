@@ -112,8 +112,6 @@
 
 
 
-
-
   <!-- WEB assertions -->
 
 
@@ -416,38 +414,6 @@
   <bean id="resourceIsCollectionAssertion" 
         class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
 
-  <bean id="requestLocaleNotNorwegianNB"
-        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
-    <property name="invert" value="true" />
-    <property name="locale">
-      <bean class="java.util.Locale">
-        <constructor-arg><value>no</value></constructor-arg>
-      </bean>
-    </property>
-    <property name="localeResolver" ref="localeResolver" />
-  </bean>
-  
-  <bean id="requestLocaleNotNorwegianNN"
-        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
-    <property name="invert" value="true" />
-    <property name="locale">
-      <bean class="java.util.Locale">
-        <constructor-arg><value>nn</value></constructor-arg>
-      </bean>
-    </property>
-    <property name="localeResolver" ref="localeResolver" />
-  </bean>
-  
-  <bean id="requestLocaleNotEnglish"
-        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
-    <property name="invert" value="true" />
-    <property name="locale">
-      <bean class="java.util.Locale">
-        <constructor-arg><value>en</value></constructor-arg>
-      </bean>
-    </property>
-    <property name="localeResolver" ref="localeResolver" />
-  </bean>
   
 
 </beans>

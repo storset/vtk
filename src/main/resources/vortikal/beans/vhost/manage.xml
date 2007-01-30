@@ -4,7 +4,6 @@
 
 <beans>
 
-
   <!-- MANAGE services -->
   
   <!-- (deleteResourceService has been moved out of manageService and
@@ -655,6 +654,44 @@
       </bean>
     </property>
   </bean>
+
+  <!-- Locale controllers -->
+
+  <bean id="setNorwegianNBLocaleController"
+        class="org.vortikal.web.controller.SetLocaleController">
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg value="no" />
+      </bean>
+    </property>
+    <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="viewName" value="redirectToManage" />
+  </bean>
+
+  <bean id="setNorwegianNNLocaleController"
+        class="org.vortikal.web.controller.SetLocaleController">
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg value="nn" />
+      </bean>
+    </property>
+    <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="viewName" value="redirectToManage"/>
+  </bean>
+
+  <bean id="setEnglishLocaleController"
+        class="org.vortikal.web.controller.SetLocaleController">
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg value="en" />
+      </bean>
+    </property>
+    <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="viewName" value="redirectToManage" />
+  </bean>
+
+
+
 
   <!-- preview services -->
   
@@ -1665,5 +1702,73 @@
     <property name="url" value="pages/error/default-manage-error.ftl" />
   </bean>
 
+
+
+
+  <bean id="requestLocaleNotNorwegianNB"
+        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
+    <property name="invert" value="true" />
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>no</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver" ref="manageLocaleResolver" />
+  </bean>
+  
+  <bean id="requestLocaleNotNorwegianNN"
+        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
+    <property name="invert" value="true" />
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>nn</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver" ref="manageLocaleResolver" />
+  </bean>
+  
+  <bean id="requestLocaleNotEnglish"
+        class="org.vortikal.web.service.RequestLocaleMatchAssertion">
+    <property name="invert" value="true" />
+    <property name="locale">
+      <bean class="java.util.Locale">
+        <constructor-arg><value>en</value></constructor-arg>
+      </bean>
+    </property>
+    <property name="localeResolver" ref="manageLocaleResolver" />
+  </bean>
+
+
+   <!-- Global locale resolver  -->
+
+
+   <bean id="localeResolver"
+         class="org.vortikal.web.servlet.ServiceDelegatingLocaleResolver">
+     <property name="serviceLocaleResolverMap">
+       <map>
+         <entry key-ref="manageService" value-ref="manageLocaleResolver" />
+       </map>
+     </property>
+     <property name="defaultLocaleResolver" ref="resourceAwareLocaleResolver" />
+   </bean>
+
+   <bean id="resourceAwareLocaleResolver"
+         class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
+         parent="requestLocalRepositoryAware">
+     <property name="defaultLocale" value="${defaultLocale}" />
+   </bean>
+
+
+   <!-- Locale resolver for manage service  -->
+
+   <bean id="manageLocaleResolver"
+         class="org.vortikal.web.servlet.CookieLocaleResolver" >
+     <property name="cookieMaxAge" value="315360000" />
+     <property name="defaultLocale"> 
+       <bean class="java.util.Locale">
+         <constructor-arg value="${defaultLocale}" />
+       </bean>
+     </property>
+   </bean>
 
 </beans>

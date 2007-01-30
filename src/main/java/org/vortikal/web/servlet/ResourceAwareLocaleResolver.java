@@ -81,14 +81,12 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         
-System.out.println("__token: " + token + ", uri: " + uri);
         try {
             Resource resource = this.repository.retrieve(token, uri, false);
             locale = LocaleHelper.getLocale(resource.getContentLanguage());
             if (locale == null) {
                 locale = this.defaultLocale;
             }
-System.out.println("__resolve_locale: " + locale);
             return locale;
         } catch (Throwable t) {
             return this.defaultLocale;
@@ -98,7 +96,6 @@ System.out.println("__resolve_locale: " + locale);
 
     public void setLocale(HttpServletRequest request,
                           HttpServletResponse response, Locale locale) {
-System.out.println("__set_locale: " + locale);
         request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
     }
 }

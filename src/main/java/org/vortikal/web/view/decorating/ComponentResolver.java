@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.List;
 
 public interface ComponentResolver {
 
@@ -43,5 +44,7 @@ public interface ComponentResolver {
      */
     public DecoratorComponent resolveComponent(String namespace, String name);
     
+    public List listComponents();
+
 }
 

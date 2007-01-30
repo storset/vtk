@@ -250,8 +250,12 @@ public class DefaultTemplateParser implements TemplateParser {
             this.content = content;
         }
 
-        public String getRenderedContent(DecoratorRequest request) throws Exception {
-            return this.content;
+        public void render(DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
+            response.setCharacterEncoding("utf-8");
+            java.io.OutputStream out = response.getOutputStream();
+            out.write(this.content.getBytes("utf-8"));
+            out.close();
         }
     
     

@@ -30,9 +30,11 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -80,6 +82,14 @@ public class BeanContextComponentResolver
     }
     
     
+    public List listComponents() {
+        if (!this.initialized) {
+            init();
+        }
+        return new ArrayList(this.components.values());
+    }
+    
+
     private synchronized void init() {
         Collection beans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(

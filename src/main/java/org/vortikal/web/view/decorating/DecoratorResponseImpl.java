@@ -28,45 +28,66 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.components;
+package org.vortikal.web.view.decorating;
 
-import java.io.InputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.util.io.StreamUtil;
-import org.vortikal.web.view.decorating.DecoratorRequest;
-import org.vortikal.web.view.decorating.DecoratorResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
-public class IncludeComponent extends AbstractDecoratorComponent {
 
-    private static Log logger = LogFactory.getLog(IncludeComponent.class);
+public class DecoratorResponseImpl implements DecoratorResponse {
+
+    private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    private String doctype;
+    private Locale locale;
+    private String characterEncoding;
     
-    private Repository repository;
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+    public DecoratorResponseImpl(String doctype, Locale locale, String characterEncoding) {
+        this.doctype = doctype;
+        this.locale = locale;
+        this.characterEncoding = characterEncoding;
+    }
+    
+
+    public void setDoctype(String doctype) {
+        this.doctype = doctype;
+    }
+    
+    
+    public String getDoctype() {
+        return this.doctype;
+    }
+    
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
-    public void render(DecoratorRequest request, DecoratorResponse response)
-        throws Exception {
-        String uri = request.getParameter("uri");;
-        if (uri == null) {
-            throw new IllegalArgumentException("Parameter 'uri' not specified");
-        }
-        String token = SecurityContext.getSecurityContext().getToken();
-
-        String content = null;
-        InputStream is = null;
-        Resource r = this.repository.retrieve(token, uri, false);
-        String characterEncoding = r.getCharacterEncoding();
-        is = this.repository.getInputStream(token, uri, true);
-        byte[] bytes = StreamUtil.readInputStream(is);
-        
-        response.setCharacterEncoding(characterEncoding);
-        response.getOutputStream().write(bytes);
+    public Locale getLocale() {
+        return this.locale;
+    }
+    
+    
+    public void setCharacterEncoding(String characterEncoding) {
+        java.nio.charset.Charset.forName(characterEncoding);
+        this.characterEncoding = characterEncoding;
+    }
+    
+    public String getCharacterEncoding() {
+        return this.characterEncoding;
     }
 
+
+    public OutputStream getOutputStream() throws IOException {
+        return this.outputStream;
+    }
+    
+    public String getContentAsString() throws Exception {
+        return this.outputStream.toString(this.characterEncoding);
+    }
+    
 }

@@ -53,6 +53,7 @@ public interface DecoratorComponent {
 
     public String getDescription();
 
-    public String getRenderedContent(DecoratorRequest request) throws Exception;
+    public void render(DecoratorRequest request, DecoratorResponse response)
+        throws Exception;
 
 }

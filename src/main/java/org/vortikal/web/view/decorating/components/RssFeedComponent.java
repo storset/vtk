@@ -36,6 +36,7 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,8 +50,8 @@ import org.springframework.web.servlet.View;
 
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.BufferedResponse;
-
 import org.vortikal.web.view.decorating.DecoratorRequest;
+import org.vortikal.web.view.decorating.DecoratorResponse;
 
 public class RssFeedComponent extends AbstractDecoratorComponent {
 
@@ -69,68 +70,74 @@ public class RssFeedComponent extends AbstractDecoratorComponent {
     }
 
 
-    public String getRenderedContent(DecoratorRequest request) throws Exception {
+    public void render(DecoratorRequest request, DecoratorResponse response)
+        throws Exception {
         String result = null;
-        try {
-            String address = request.getParameter("address");
-            if (address == null) {
-                throw new IllegalArgumentException("Component parameter 'address' is required");
-            }
-
-            boolean includeLogo = "true".equals(request.getParameter("includeLogo"));
-            boolean includeTitle = "true".equals(request.getParameter("includeTitle"));
-            boolean includeDescription = "true".equals(request.getParameter("includeDescription"));
-            boolean includePublishedDate = "true".equals(request.getParameter("includePublishedDate"));
-            boolean includeUpdatedDate = "true".equals(request.getParameter("includeUpdatedDate"));
-
-            Integer maxMsgs = new Integer(5);
-            String numStr = request.getParameter("maxMsgs");
-            if (numStr != null) {
-                try {
-                    maxMsgs = Integer.valueOf(numStr);
-                } catch (Exception e) { }
-            }
-
-            XmlReader xmlReader = new XmlReader(new URL(address));
-            SyndFeedInput input = new SyndFeedInput();
-
-            SyndFeed feed = input.build(xmlReader);
-            Map conf = new HashMap();
-            conf.put("includeLogo", new Boolean(includeLogo));
-            conf.put("includeTitle", new Boolean(includeTitle));
-            conf.put("includeDescription", new Boolean(includeDescription));
-            conf.put("includePublishedDate", new Boolean(includePublishedDate));
-            conf.put("includeUpdatedDate", new Boolean(includeUpdatedDate));
-            conf.put("maxMsgs", maxMsgs);
-
-            Map model = new HashMap();
-
-            model.put("feed", feed);
-            model.put("dateFormatter", new DateFormatter());
-            model.put("conf", conf);
-            BufferedResponse tmpResponse = new BufferedResponse();
-
-            this.view.render(model, RequestContext.getRequestContext().getServletRequest(), tmpResponse);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Rendered wrapped view " + this.view + ". "
-                             + "Character encoding was: "
-                             + tmpResponse.getCharacterEncoding() + ", "
-                             + "Content-Length was: " + tmpResponse.getContentLength());
-            }
-
-            result = new String(tmpResponse.getContentBuffer(), tmpResponse.getCharacterEncoding());
-        } catch (Exception e) {
-            logger.warn(e);
-            return e.getMessage();
+        String address = request.getParameter("address");
+        if (address == null) {
+            throw new IllegalArgumentException(
+                "Component parameter 'address' is required");
         }
 
-        return result;
+        boolean includeLogo = "true".equals(request.getParameter("includeLogo"));
+        boolean includeTitle = "true".equals(request.getParameter("includeTitle"));
+        boolean includeDescription = "true".equals(request.getParameter(
+                                                       "includeDescription"));
+        boolean includePublishedDate = "true".equals(request.getParameter(
+                                                         "includePublishedDate"));
+        boolean includeUpdatedDate = "true".equals(request.getParameter(
+                                                       "includeUpdatedDate"));
+
+        Integer maxMsgs = new Integer(5);
+        String numStr = request.getParameter("maxMsgs");
+        if (numStr != null) {
+            try {
+                maxMsgs = Integer.valueOf(numStr);
+            } catch (Exception e) { }
+        }
+
+        XmlReader xmlReader = new XmlReader(new URL(address));
+        SyndFeedInput input = new SyndFeedInput();
+
+        SyndFeed feed = input.build(xmlReader);
+        Map conf = new HashMap();
+        conf.put("includeLogo", new Boolean(includeLogo));
+        conf.put("includeTitle", new Boolean(includeTitle));
+        conf.put("includeDescription", new Boolean(includeDescription));
+        conf.put("includePublishedDate", new Boolean(includePublishedDate));
+        conf.put("includeUpdatedDate", new Boolean(includeUpdatedDate));
+        conf.put("maxMsgs", maxMsgs);
+
+        Map model = new HashMap();
+
+        model.put("feed", feed);
+        model.put("dateFormatter", new DateFormatter());
+        model.put("conf", conf);
+        BufferedResponse tmpResponse = new BufferedResponse();
+
+        this.view.render(
+            model, RequestContext.getRequestContext().getServletRequest(),
+            tmpResponse);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Rendered wrapped view " + this.view + ". "
+                         + "Character encoding was: "
+                         + tmpResponse.getCharacterEncoding() + ", "
+                         + "Content-Length was: " + tmpResponse.getContentLength());
+        }
+
+        response.setCharacterEncoding(tmpResponse.getCharacterEncoding());
+        OutputStream out = response.getOutputStream();
+        out.write(tmpResponse.getContentBuffer());
+        out.close();
     }
+
+
 
     private class DateFormatter {
         private String DATE_FORMAT_STRING = "yyyy-MM-dd HH:mm";
-        private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+        private final SimpleDateFormat DATE_FORMAT = new
+            SimpleDateFormat(DATE_FORMAT_STRING);
 
         /**
          * Formats the provided date

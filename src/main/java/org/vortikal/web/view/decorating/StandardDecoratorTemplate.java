@@ -31,12 +31,8 @@
 package org.vortikal.web.view.decorating;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,10 +43,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
+
 
 
 public class StandardDecoratorTemplate implements Template, InitializingBean, BeanNameAware  {
@@ -142,7 +138,6 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
                     ((ReferenceDataProviding) this.fragments[i]).
                     getReferenceDataProviders();
                 if (providers != null) {
-
                     for (int j = 0; j < providers.length; j++) {
                         providers[j].referenceData(model, request);
                     }
@@ -151,16 +146,22 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
 
             try {
                 DecoratorComponent c = this.fragments[i].getComponent();
+                // XXX:
+                String doctype = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                    model, request, this.fragments[i].getParameters());
+                    model, request, this.fragments[i].getParameters(), doctype,
+                    request.getLocale());
 
-                String chunk = c.getRenderedContent(decoratorRequest);
+                String chunk = renderComponent(c, decoratorRequest);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Included component: " + this.fragments[i]
                                  + " with result [" + chunk + "]");
                 }
                 sb.append(chunk);
+
             } catch (Throwable t) {
+                logger.warn("Error including component: " + this.fragments[i], t);
+                // Include error message in output:
                 String msg = t.getMessage();
                 if (msg == null) {
                     msg = t.getClass().getName();
@@ -177,6 +178,19 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
         out.write(buffer);
         out.flush();
         out.close();
+    }
+    
+
+    private String renderComponent(DecoratorComponent c, DecoratorRequest request)
+        throws Exception {
+        // XXX:
+        String doctype = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
+        DecoratorResponseImpl response = new DecoratorResponseImpl(
+            doctype, Locale.getDefault(), "utf-8");
+        c.render(request, response);
+        String result = response.getContentAsString();
+        System.out.println("__render: " + c + ": " + result);
+        return result;
     }
     
 

@@ -32,6 +32,7 @@ package org.vortikal.web.view.decorating;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 
 public interface DecoratorRequest {
@@ -39,6 +40,10 @@ public interface DecoratorRequest {
     public Map getModel();
 
     public HttpServletRequest getServletRequest();
+
+    public Locale getLocale();
+
+    public String getDoctype();
 
     public String getParameter(String name);
 

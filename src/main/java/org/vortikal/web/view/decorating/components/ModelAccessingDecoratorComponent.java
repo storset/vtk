@@ -30,12 +30,14 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import java.io.OutputStream;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.web.servlet.BufferedResponseWrapper;
 import org.vortikal.web.view.decorating.DecoratorRequest;
+import org.vortikal.web.view.decorating.DecoratorResponse;
 
 public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent {
     
@@ -46,24 +48,28 @@ public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent
     }
     
 
-    public String getRenderedContent(DecoratorRequest request) throws Exception {
+    public void render(DecoratorRequest request, DecoratorResponse response)
+        throws Exception {
         
         Map model = request.getModel();
         Map map = model;
 
+        String result = "";
         Object subModel = model.get(getNamespace());
-        if (!(subModel instanceof Map)) {
-            return "";
-        }
-        map = (Map) subModel;
+        if (subModel instanceof Map) {
+            map = (Map) subModel;
 
-        Object obj = map.get(this.key);
-        if (obj == null) {
-            return "";
+            Object obj = map.get(this.key);
+            if (obj != null) {
+                result = obj.toString();
+            }
         }
-
-        return obj.toString();
+        response.setCharacterEncoding("utf-8");
+        OutputStream out = response.getOutputStream();
+        out.write(result.getBytes("utf-8"));
+        out.close();
     }
+
     
     public String toString() {
         StringBuffer sb = new StringBuffer();

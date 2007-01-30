@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
 import org.vortikal.web.view.decorating.DecoratorComponent;
 import org.vortikal.web.view.decorating.DecoratorRequest;
+import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
 public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent {
@@ -83,15 +85,19 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     }
     
     
-
-    public String getRenderedContent(DecoratorRequest request) throws Exception {
+    public void render(DecoratorRequest request, DecoratorResponse response)
+        throws Exception {
         
         Map model = request.getModel();
         HttpServletRequest servletRequest = request.getServletRequest();
 
         BufferedResponse bufferedResponse = new BufferedResponse();
         this.view.render(model, servletRequest, bufferedResponse);
-        return bufferedResponse.getContentString();
+        
+        response.setCharacterEncoding(bufferedResponse.getCharacterEncoding());
+        OutputStream out = response.getOutputStream();
+        out.write(bufferedResponse.getContentBuffer());
+        out.close();
     }
     
     

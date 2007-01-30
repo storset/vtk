@@ -28,45 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.components;
+package org.vortikal.web.view.decorating;
 
-import java.io.InputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.util.io.StreamUtil;
-import org.vortikal.web.view.decorating.DecoratorRequest;
-import org.vortikal.web.view.decorating.DecoratorResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Locale;
 
-public class IncludeComponent extends AbstractDecoratorComponent {
 
-    private static Log logger = LogFactory.getLog(IncludeComponent.class);
+public interface DecoratorResponse {
+
+    public void setDoctype(String doctype);
     
-    private Repository repository;
+    public void setLocale(Locale locale);
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
+    public void setCharacterEncoding(String characterEncoding);
 
-    public void render(DecoratorRequest request, DecoratorResponse response)
-        throws Exception {
-        String uri = request.getParameter("uri");;
-        if (uri == null) {
-            throw new IllegalArgumentException("Parameter 'uri' not specified");
-        }
-        String token = SecurityContext.getSecurityContext().getToken();
-
-        String content = null;
-        InputStream is = null;
-        Resource r = this.repository.retrieve(token, uri, false);
-        String characterEncoding = r.getCharacterEncoding();
-        is = this.repository.getInputStream(token, uri, true);
-        byte[] bytes = StreamUtil.readInputStream(is);
-        
-        response.setCharacterEncoding(characterEncoding);
-        response.getOutputStream().write(bytes);
-    }
+    public OutputStream getOutputStream() throws IOException;
 
 }

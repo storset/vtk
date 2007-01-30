@@ -31,6 +31,7 @@
 package org.vortikal.edit.plaintext;
 
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import java.util.List;
 
 
 /**
@@ -39,10 +40,13 @@ import org.vortikal.web.controller.AbstractSaveCancelCommand;
 public class PlaintextEditCommand extends AbstractSaveCancelCommand {
 
     private String content;
+    private List tooltips;
     
-    public PlaintextEditCommand(String content, String submitURL) {
+    
+    public PlaintextEditCommand(String content, String submitURL, List tooltips) {
         super(submitURL);
         this.content = content;
+        this.tooltips = tooltips;
     }
 
     public String getContent() {
@@ -51,6 +55,10 @@ public class PlaintextEditCommand extends AbstractSaveCancelCommand {
 
     public void setContent(String content)  {
         this.content = content;
+    }
+
+    public List getTooltips() {
+        return this.tooltips;
     }
 
 }

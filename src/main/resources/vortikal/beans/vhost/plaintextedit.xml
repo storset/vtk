@@ -108,6 +108,15 @@
     <property name="cancelView" value="redirectToManage" />
     <property name="commandName" value="plaintextEditForm" />
     <property name="commandClass" value="org.vortikal.edit.plaintext.PlaintextEditCommand" />
+    <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
   </bean>
+
+
+  <bean id="plaintextEditTooltipURLServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="plaintextEditTooltipService" />
+  </bean>
+
 
 </beans>

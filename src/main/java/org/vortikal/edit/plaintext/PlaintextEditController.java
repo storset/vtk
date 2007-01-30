@@ -33,6 +33,9 @@ package org.vortikal.edit.plaintext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +55,8 @@ import org.vortikal.util.repository.TextResourceContentHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceUnlinkableException;
+import java.util.HashMap;
 
 /**
  * Controller that handles editing of plaintext resource content.
@@ -95,34 +100,34 @@ public class PlaintextEditController extends SimpleFormController
     private Repository repository;
     private int lockTimeoutSeconds = 300;
 
-//     private String formCharacterEncoding = "utf-8";
-    
-
     private String defaultCharacterEncoding = "utf-8";
     private TextResourceContentHelper textResourceContentHelper;
+    
+    private Service[] tooltipServices;
     
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
     public void setLockTimeoutSeconds(int lockTimeoutSeconds) {
         this.lockTimeoutSeconds = lockTimeoutSeconds;
     }
-    
 
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
     }
     
-
     public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
         this.defaultCharacterEncoding = defaultCharacterEncoding;
     }
 
     public void setUpdateEncodingProperty(PropertyTypeDefinition updateEncodingProperty) {
         this.updateEncodingProperty = updateEncodingProperty;
+    }
+    
+    public void setTooltipServices(Service[] tooltipServices) {
+        this.tooltipServices = tooltipServices;
     }
     
     
@@ -160,7 +165,8 @@ public class PlaintextEditController extends SimpleFormController
         String characterEncoding = resource.getCharacterEncoding();
         String content = getTextualContent(resource, token);
         
-        return new PlaintextEditCommand(content, url);
+        List tooltips = resolveTooltips(resource, principal);
+        return new PlaintextEditCommand(content, url, tooltips);
     }
 
 
@@ -262,26 +268,6 @@ public class PlaintextEditController extends SimpleFormController
 
 
 
-//     private String getEncoding(Resource resource) {
-//         String encoding = null;
-        
-//         if (resource.getCharacterEncoding() != null) {
-//             encoding = resource.getCharacterEncoding();
-//         }
-//         if (encoding == null) {
-//             Property guessedEncoding = resource.getProperty(
-//                 Namespace.CUSTOM_NAMESPACE, "guessedCharacterEncoding");
-//             if (guessedEncoding != null) {
-//                 encoding = guessedEncoding.getStringValue();
-//             }
-//         }
-//         if (encoding == null) {
-//             encoding = this.defaultCharacterEncoding;
-//         }
-//         return encoding;
-//     }
-    
-
     private String getPostedEncoding(Resource resource, PlaintextEditCommand command) {
         String postedEncoding = null;
         if (ContentTypeHelper.isXMLContentType(resource.getContentType())) {
@@ -295,6 +281,52 @@ public class PlaintextEditController extends SimpleFormController
                 command.getContent().getBytes());
         } 
         return postedEncoding;
+    }
+    
+
+    private List resolveTooltips(Resource resource, Principal principal) {
+        List tooltips = new ArrayList();
+        if (this.tooltipServices != null) {
+            for (int i = 0; i < this.tooltipServices.length; i++) {
+                Service service = this.tooltipServices[i];
+                String url = null;
+                try {
+                    url = service.constructLink(resource, principal);
+                    Map tooltip = new HashMap();
+                    tooltip.put("url", url);
+                    tooltip.put("messageKey", "plaintextEdit.tooltip." + service.getName());
+
+//                     Tooltip tooltip = new Tooltip(url, "plaintextEdit.tooltip."
+//                                                   + service.getName());
+                    tooltips.add(tooltip);
+                    System.out.println("___tooltip: " + tooltip);
+                } catch (ServiceUnlinkableException e) {
+                    // Ignore
+                    System.out.println("___tooltip: " + e);
+                }
+            }
+        }
+        return tooltips;
+    }
+    
+
+    private class Tooltip {
+
+        private String url;
+        private String messageKey;
+        
+        public Tooltip(String url, String messageKey) {
+            this.url = url;
+            this.messageKey = messageKey;
+        }
+
+        public String getUrl() {
+            return this.url;
+        }
+
+        public String getMessageKey() {
+            return this.messageKey;
+        }
     }
     
 

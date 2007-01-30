@@ -25,6 +25,15 @@
       <div style="padding-top:7px;">
         <input type="submit" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>">
         <input type="submit" name="cancelAction" value="<@vrtx.msg code="plaintextEditForm.cancel" default="Cancel"/>">
+
+        <#if plaintextEditForm.tooltips?exists>
+          <#list plaintextEditForm.tooltips as tooltip>
+            <a href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">
+              <@vrtx.msg code=tooltip.messageKey default=tooltip.messageKey/>
+            </a>
+          </#list>
+        </#if>
+
       </div>
     </form>
   </div>

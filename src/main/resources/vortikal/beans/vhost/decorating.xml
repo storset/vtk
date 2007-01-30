@@ -90,58 +90,57 @@
     
   </bean>
 
-  <bean id="bodyComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
-    <property name="namespace" value="core" />
-    <property name="name" value="body" />
-    <property name="key" value="body" />
-  </bean>
 
-  <bean id="headComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
-    <property name="namespace" value="core" />
-    <property name="name" value="head" />
-    <property name="key" value="head" />
-  </bean>
-
-  <bean id="titleComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
-    <property name="namespace" value="core" />
-    <property name="name" value="title" />
-    <property name="key" value="title" />
-  </bean>
-
-  <bean id="manageURLComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
-    <property name="namespace" value="manage" />
-    <property name="name" value="manageURL" />
-    <property name="key" value="manageURL" />
-  </bean>
-
-  <bean id="breadcrumbComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" value="view" />
-    <property name="name" value="breadcrumb" />
-    <property name="view" ref="breadcrumbComponentView" />
-  </bean>
-
-  <bean id="breadcrumbComponentView" parent="freemarkerView">
-    <property name="url" value="layouts/breadcrumb.ftl" />
-    <property name="referenceDataProviders">
+  <bean id="listDecoratorComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <!--property name="parent" ref="webService" /-->
+    <property name="order" value="-200" />
+    <property name="categories">
+      <set>
+        <value>plaintextEditTooltipService</value>
+      </set>
+    </property>
+    <property name="assertions">
       <list>
-        <ref bean="viewBreadCrumbProvider" />
+        <ref bean="webServiceAssertion" />
+        <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
+          <property name="pattern" value="^${decorating.templatesCollection}/.*" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="list-decorator-components" />
+        </bean>
       </list>
+    </property>
+    <property name="handler">
+      <ref bean="listDecoratorComponentsHandler" />
     </property>
   </bean>
 
-  <bean id="rssFeedComponent" class="org.vortikal.web.view.decorating.components.RssFeedComponent">
-    <property name="namespace" value="rss" />
-    <property name="name" value="include" />
-    <property name="view" ref="feedView" />
+  <bean name="listDecoratorComponentsHandler" class="org.vortikal.web.controller.MethodInvokingController">
+    <property name="targetObject" ref="defaultComponentResolver" />
+    <property name="targetMethod" value="listComponents" />
+    <property name="modelName" value="componentList" />
+    <property name="viewName" value="listDecoratorComponents" />
   </bean>
 
-  <bean id="includeComponent"
-        class="org.vortikal.web.view.decorating.components.IncludeComponent"
-        parent="requestLocalRepositoryAware">
-    <property name="namespace" value="repo" />
-    <property name="name" value="include" />
+  
+  <bean id="listDecoratorComponentsViewResolver"
+        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="listDecoratorComponents" value-ref="listDecoratorComponentsView" />        
+      </map>
+    </property>
   </bean>
 
+
+  <bean id="listDecoratorComponentsView" parent="freemarkerView">
+    <property name="url" value="pages/list-decorator-components.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+      </list>
+    </property>
+  </bean>
 
 
 </beans>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="bodyComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="core" />
+    <property name="name" value="body" />
+    <property name="key" value="body" />
+    <property name="description" value="Outputs the contents of the &lt;body&gt; tag of the original HTML document" />
+  </bean>
+
+  <bean id="headComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="core" />
+    <property name="name" value="head" />
+    <property name="key" value="head" />
+    <property name="description" value="Outputs the contents of the &lt;head&gt; tag of the original HTML document, but with the &lt;title&gt; tag removed" />
+  </bean>
+
+  <bean id="titleComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="core" />
+    <property name="name" value="title" />
+    <property name="key" value="title" />
+    <property name="description" value="Outputs the contents of the &lt;title&gt; tag of the original HTML document" />
+  </bean>
+
+  <bean id="manageURLComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+    <property name="namespace" value="manage" />
+    <property name="name" value="manageURL" />
+    <property name="key" value="manageURL" />
+    <property name="description" value="Inserts the admin URL of the current document" />
+  </bean>
+
+  <bean id="breadcrumbComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" value="view" />
+    <property name="name" value="breadcrumb" />
+    <property name="view" ref="breadcrumbComponentView" />
+    <property name="description" value="Inserts a breadcrumb trail to the current document" />
+  </bean>
+
+  <bean id="breadcrumbComponentView" parent="freemarkerView">
+    <property name="url" value="layouts/breadcrumb.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="viewBreadCrumbProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="rssFeedComponent" class="org.vortikal.web.view.decorating.components.RssFeedComponent">
+    <property name="namespace" value="rss" />
+    <property name="name" value="include" />
+    <property name="view" ref="feedView" />
+    <property name="description" value="Inserts an RSS feed component on the page" />
+  </bean>
+
+  <bean id="includeComponent"
+        class="org.vortikal.web.view.decorating.components.IncludeComponent"
+        parent="requestLocalRepositoryAware">
+    <property name="namespace" value="file" />
+    <property name="name" value="include" />
+    <property name="description" value="Includes the contents of another document in the page" />
+  </bean>
+
+
+</beans>

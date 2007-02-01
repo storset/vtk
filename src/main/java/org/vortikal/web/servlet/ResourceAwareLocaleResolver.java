@@ -47,8 +47,8 @@ import org.vortikal.web.RequestContext;
 
 public class ResourceAwareLocaleResolver implements LocaleResolver {
     
-    private static final String LOCALE_REQUEST_ATTRIBUTE_NAME =
-        LocaleResolver.class.getName() + ".RequestAttribute";
+    protected static final String LOCALE_REQUEST_ATTRIBUTE_NAME =
+        ResourceAwareLocaleResolver.class.getName() + ".RequestAttribute";
     
     private Locale defaultLocale;
     private Repository repository;

@@ -125,10 +125,9 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
             Document schema = null;
             try {
                 schema = this.schemaRegistry.getXMLSchema(docType);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Unable to get schema
-            } catch (JDOMException e) {
-                // Couldn't parse schema..
+                logger.warn("Unable to obtain XML schema from registry: " + docType, e);
             }
             
             if (schema == null) {

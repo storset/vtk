@@ -45,6 +45,10 @@ public class HtmlUtil {
 
     private static final int NUM_HEAD_BYTES = 4096; 
     
+    private static final Pattern DOCTYPE_REGEXP =
+		Pattern.compile("<\\s*!DOCTYPE\\s+([^>]+)>",
+            			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
     private static final Pattern HEAD_REGEXP =
 		Pattern.compile("(<\\s*head.*?>)(.*)(<\\s*/\\s*head\\s*>)",
             			Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -53,13 +57,38 @@ public class HtmlUtil {
         Pattern.compile("(<\\s*meta[^>]+charset\\s*\\=\\s*)([\\w-]+)", 
                         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
+
+    /**
+     * Tries to extract the HTML doctype from the first bytes of the
+     * content. Note that this method does not validate that the
+     * doctype found is actually a well-known doctype.
+     *
+     * @param html a <code>byte[]</code> sequence
+     * @return the HTML doctype, or <code>null</code> if not found
+     */
+    public static String getDoctypeFromBody(byte[] html) {
+        String doctype = null;
+        int numBytes = Math.min(NUM_HEAD_BYTES, html.length);
+        try {
+            String content = new String(html, 0, numBytes, "iso-8859-1");
+            Matcher matcher = DOCTYPE_REGEXP.matcher(content);
+            if (matcher.find(0)) {
+                doctype = matcher.group(1);
+            }
+        } catch (UnsupportedEncodingException e) {
+            // Should never happen
+        }
+        return doctype;
+    }
+    
+
+
     /**
      * Tries to guess the HTML character encoding using regular
      * expression matching.
      *
      * @param html a <code>byte[]</code> value
      * @return a <code>String</code>
-     * @deprecated Move to resource/properties evaluation framework?
      */
     public static String getCharacterEncodingFromBody(byte[] html) {
         // Reads the first bytes of the content to look for the charset to use.
@@ -82,7 +111,7 @@ public class HtmlUtil {
                 matcher = CHARSET_REGEXP.matcher(headContent);
 	
                 if (matcher.find(0)) {
-                    String charset = matcher.group(2).toUpperCase();
+                    String charset = matcher.group(2).toLowerCase();
                     if (logger.isDebugEnabled()) {
                         logger.debug("Found meta element with charset '" + charset + "'.");
                     }

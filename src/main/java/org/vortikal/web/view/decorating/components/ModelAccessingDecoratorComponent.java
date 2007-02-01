@@ -41,29 +41,31 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 
 public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent {
     
-    private String key;
+    private String[] keys;
 
     public void setKey(String key) {
-        this.key = key;
+        this.keys = new String[] {key};
+    }
+
+    public void setKeySequence(String[] keys) {
+        this.keys = keys;
     }
     
 
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         
-        Map model = request.getModel();
-        Map map = model;
-
         String result = "";
-        Object subModel = model.get(getNamespace());
-        if (subModel instanceof Map) {
-            map = (Map) subModel;
-
-            Object obj = map.get(this.key);
-            if (obj != null) {
-                result = obj.toString();
+        Object value = request.getParameter(this.keys[0]);
+        for (int i = 1; i < this.keys.length; i++) {
+            if (value != null && (value instanceof Map)) {
+                value = ((Map) value).get(this.keys[i]);
             }
         }
+        if (value != null) {
+            result = value.toString();
+        }
+
         response.setCharacterEncoding("utf-8");
         OutputStream out = response.getOutputStream();
         out.write(result.getBytes("utf-8"));
@@ -75,7 +77,7 @@ public class ModelAccessingDecoratorComponent extends AbstractDecoratorComponent
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(": [");
         sb.append("namespace = ").append(getNamespace()).append(", ");
-        sb.append("key = ").append(this.key).append("]");
+        //sb.append("key = ").append(this.key).append("]");
         return sb.toString();
     }
     

@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface TemplateResolver {
 
-    public Template resolveTemplate(Map model, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception;
+    public Template[] resolveTemplates(Map model, HttpServletRequest request,
+                                       HttpServletResponse response) throws Exception;
     
 }

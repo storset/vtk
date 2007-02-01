@@ -43,10 +43,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.View;
+
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
-import org.vortikal.web.referencedata.ReferenceDataProvider;
-import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.view.decorating.ssi.SsiHandler;
@@ -60,7 +59,7 @@ import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
 /**
  * 
  */
-public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProviding {
+public class DecoratingViewWrapper implements ViewWrapper {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
@@ -72,7 +71,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     private String forcedOutputEncoding;
     private boolean guessCharacterEncodingFromContent = false;
     private boolean appendCharacterEncodingToContentType = true;
-    private ReferenceDataProvider[] referenceDataProviders;
     private Assertion[] assertions;
     private SsiHandler ssiHandler;
 
@@ -104,16 +102,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
 
-    public ReferenceDataProvider[] getReferenceDataProviders() {
-        return this.referenceDataProviders;
-    }
-
-
-    public void setReferenceDataProviders(
-        ReferenceDataProvider[] referenceDataProviders) {
-        this.referenceDataProviders = referenceDataProviders;
-    }
-    
     public void setAssertions(Assertion[] assertions) {
         this.assertions = assertions;
     }
@@ -143,18 +131,17 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
 
         postRender(model, request, responseWrapper, response);
-
     }
 
 
-    public void preRender(Map model, HttpServletRequest request,
+    protected void preRender(Map model, HttpServletRequest request,
             BufferedResponse bufferedResponse) throws Exception {
     }
 
 
-    public void postRender(Map model, HttpServletRequest request,
-                           BufferedResponse bufferedResponse,
-                           HttpServletResponse servletResponse) throws Exception {
+    protected void postRender(Map model, HttpServletRequest request,
+                              BufferedResponse bufferedResponse,
+                              HttpServletResponse servletResponse) throws Exception {
 
         byte[] contentBuffer = bufferedResponse.getContentBuffer();
 
@@ -207,44 +194,60 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                     + characterEncoding);
         }
 
-
         String content = new String(contentBuffer, characterEncoding);
         
         if (this.ssiHandler != null) {
             content = this.ssiHandler.process(content);
         }
-        HTMLPageParser parser = new HTMLPageParser();
         
         long before = System.currentTimeMillis();
-        HTMLPage html = (HTMLPage) parser.parse(content.toCharArray());
         long duration = System.currentTimeMillis() - before;
         if (logger.isDebugEnabled()) {
             logger.debug("Parsing document took " + duration + " ms");
         }
 
-        Template template = this.templateResolver.resolveTemplate(
-                model, request, bufferedResponse);
+        model.put(this.coreHtmlModelName, splitHTML(content));
+        
+        Template[] templates = resolveTemplates(model, request, bufferedResponse);
             
-        if (template == null) {
+        if (templates == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Unable to resolve template for request " + request);
             }
-                
             writeResponse(bufferedResponse, servletResponse,
                     bufferedResponse.getContentType());
             return;
         }
 
+        BufferedResponse templateResponse = new BufferedResponse();
+        for (int i = 0; i < templates.length; i++) {
+            templates[i].render(model, request, templateResponse);
+            model.put(this.coreHtmlModelName, splitHTML(content));
+            content = new String(templateResponse.getContentBuffer(),
+                                 templateResponse.getCharacterEncoding());
+        }
+
+        writeResponse(templateResponse, servletResponse, "text/html");
+    }
+    
+
+
+    protected Template[] resolveTemplates(Map model, HttpServletRequest request,
+                                          BufferedResponse response) throws Exception {
+        return this.templateResolver.resolveTemplates(model, request, response);
+    }
+    
+
+
+    protected Map splitHTML(String content) throws Exception {
+        HTMLPageParser parser = new HTMLPageParser();
+        HTMLPage html = (HTMLPage) parser.parse(content.toCharArray());
         Map coreHtml = new HashMap();
         coreHtml.put("title", html.getTitle());
         coreHtml.put("head", html.getHead());
         String body = html.getBody();
         coreHtml.put("body", body);
-        model.put(this.coreHtmlModelName, coreHtml);
-        
-        BufferedResponse templateResponse = new BufferedResponse();
-        template.render(model, request, templateResponse);
-        writeResponse(templateResponse, servletResponse, "text/html");
+        return coreHtml;
     }
     
 

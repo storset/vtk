@@ -15,11 +15,6 @@
   <bean id="decoratingViewWrapper"
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="templateResolver" ref="templateResolver" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="decorating.manageLinkProvider" />
-      </list>
-    </property>
     <property name="ssiHandler" ref="ssiHandler"  />
   </bean>
 

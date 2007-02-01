@@ -52,7 +52,7 @@ public class IncludeComponent extends AbstractDecoratorComponent {
 
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        String uri = request.getParameter("uri");;
+        String uri = request.getStringParameter("uri");;
         if (uri == null) {
             throw new IllegalArgumentException("Parameter 'uri' not specified");
         }

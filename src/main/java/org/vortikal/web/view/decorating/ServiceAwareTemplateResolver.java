@@ -53,8 +53,8 @@ public class ServiceAwareTemplateResolver implements TemplateResolver {
     }
     
     
-    public Template resolveTemplate(Map model, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception {
+    public Template[] resolveTemplates(Map model, HttpServletRequest request,
+                                       HttpServletResponse response) throws Exception {
         Service currentService = null;
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext != null) {
@@ -64,7 +64,6 @@ public class ServiceAwareTemplateResolver implements TemplateResolver {
         if (currentService == null) {
             return null;
         }
-
 
         String templateName = null;
 
@@ -78,7 +77,7 @@ public class ServiceAwareTemplateResolver implements TemplateResolver {
                 "Unable to resolve template for request: " + request);
         }
 
-        return this.templateManager.getTemplate(templateName);
+        return new Template[] {this.templateManager.getTemplate(templateName)};
     }
     
     

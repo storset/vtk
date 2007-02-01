@@ -34,10 +34,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.View;
 
-
-public interface Template extends View {
+public interface Template {
 
     public String getName();
 

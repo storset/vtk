@@ -118,7 +118,6 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
             throw new BeanInitializationException("Error compiling template " +
                                                   this.templateSource, e);
         }
-
     }
     
 
@@ -133,19 +132,18 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
         for (int i = 0; i < this.fragments.length; i++) {
             
             BufferedResponse bufferedResponse = new BufferedResponse();
-            if (this.fragments[i] instanceof ReferenceDataProviding) {
-                ReferenceDataProvider[] providers =
-                    ((ReferenceDataProviding) this.fragments[i]).
-                    getReferenceDataProviders();
-                if (providers != null) {
-                    for (int j = 0; j < providers.length; j++) {
-                        providers[j].referenceData(model, request);
-                    }
-                }
-            }
 
             try {
                 DecoratorComponent c = this.fragments[i].getComponent();
+                if (c instanceof ReferenceDataProviding) {
+                    ReferenceDataProvider[] providers =
+                        ((ReferenceDataProviding) c).getReferenceDataProviders();
+                    if (providers != null) {
+                        for (int j = 0; j < providers.length; j++) {
+                            providers[j].referenceData(model, request);
+                        }
+                    }
+                }
                 // XXX:
                 String doctype = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
@@ -166,7 +164,8 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
                 if (msg == null) {
                     msg = t.getClass().getName();
                 }
-                sb.append(msg);
+                sb.append(this.fragments[i].getComponent().getName());
+                sb.append(": ").append(msg);
             }
         }
 

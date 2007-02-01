@@ -1749,10 +1749,10 @@
          <entry key-ref="manageService" value-ref="manageLocaleResolver" />
        </map>
      </property>
-     <property name="defaultLocaleResolver" ref="resourceAwareLocaleResolver" />
+     <property name="defaultLocaleResolver" ref="viewLocaleResolver" />
    </bean>
 
-   <bean id="resourceAwareLocaleResolver"
+   <bean id="viewLocaleResolver"
          class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
          parent="requestLocalRepositoryAware">
      <property name="defaultLocale" value="${defaultLocale}" />

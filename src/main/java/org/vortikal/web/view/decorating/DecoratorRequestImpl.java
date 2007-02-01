@@ -30,8 +30,11 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,7 +51,8 @@ public class DecoratorRequestImpl implements DecoratorRequest {
 
     private Locale locale;
     
-    public DecoratorRequestImpl(Map model, HttpServletRequest servletRequest, Map decoratorParameters,
+    public DecoratorRequestImpl(Map model, HttpServletRequest servletRequest,
+                                Map decoratorParameters,
                                 String doctype, Locale locale) {
         this.model = model;
         this.servletRequest = servletRequest;
@@ -57,23 +61,32 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         this.locale = locale;
     }
     
-    public Map getModel() {
-        return this.model;
-    }
+//     public Map getModel() {
+//         return this.model;
+//     }
     
 
     public HttpServletRequest getServletRequest() {
         return this.servletRequest;
     }
     
-    public String getParameter(String name) {
-        String value = null;
+    public Object getParameter(String name) {
+        Object value = null;
         if (this.decoratorParameters != null) {
-            value = (String) this.decoratorParameters.get(name);
+            value = this.decoratorParameters.get(name);
+        }
+        if (value == null && this.model != null) {
+            value = this.model.get(name);
         }
         return value;
     }
     
+    public String getStringParameter(String name) {
+        Object value = getParameter(name);
+        return (String) value;
+    }
+    
+
     public String getDoctype() {
         return this.doctype;
     }
@@ -83,4 +96,12 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return this.locale;
     }
     
+    public Iterator getRequestParameterNames() {
+        Set s = new HashSet();
+        s.addAll(this.model.keySet());
+        s.addAll(this.decoratorParameters.keySet());
+        return s.iterator();
+    }
+    
+
 }

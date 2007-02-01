@@ -73,7 +73,7 @@ public class RssFeedComponent extends AbstractDecoratorComponent {
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         String result = null;
-        String address = request.getParameter("address");
+        String address = request.getStringParameter("address");
         if (address == null) {
             throw new IllegalArgumentException(
                 "Component parameter 'address' is required");
@@ -89,7 +89,7 @@ public class RssFeedComponent extends AbstractDecoratorComponent {
                                                        "includeUpdatedDate"));
 
         Integer maxMsgs = new Integer(5);
-        String numStr = request.getParameter("maxMsgs");
+        String numStr = request.getStringParameter("maxMsgs");
         if (numStr != null) {
             try {
                 maxMsgs = Integer.valueOf(numStr);

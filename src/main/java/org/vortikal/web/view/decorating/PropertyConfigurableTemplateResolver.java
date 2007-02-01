@@ -76,8 +76,8 @@ public class PropertyConfigurableTemplateResolver
         }
     }
     
-    public Template resolveTemplate(Map model, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception {
+    public Template[] resolveTemplates(Map model, HttpServletRequest request,
+                                       HttpServletResponse response) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext == null) {
@@ -100,7 +100,7 @@ public class PropertyConfigurableTemplateResolver
         if (logger.isDebugEnabled()) {
             logger.debug("Resolved request '" + uri + "' to template " + template);
         }
-        return template;
+        return new Template[]{template};
     }
     
 

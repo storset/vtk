@@ -30,16 +30,18 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+
+
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.servlet.View;
-
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
@@ -88,10 +90,18 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         
-        Map model = request.getModel();
+        Map model = new java.util.HashMap();
+        for (Iterator i = request.getRequestParameterNames(); i.hasNext();) {
+            String name = (String) i.next();
+            Object value = request.getParameter(name);
+            model.put(name, value);
+        }
+
+//         Map model = request.getModel();
         HttpServletRequest servletRequest = request.getServletRequest();
 
         BufferedResponse bufferedResponse = new BufferedResponse();
+
         this.view.render(model, servletRequest, bufferedResponse);
         
         response.setCharacterEncoding(bufferedResponse.getCharacterEncoding());

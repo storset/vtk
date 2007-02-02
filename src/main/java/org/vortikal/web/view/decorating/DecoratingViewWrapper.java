@@ -210,7 +210,7 @@ public class DecoratingViewWrapper implements ViewWrapper {
         
         Template[] templates = resolveTemplates(model, request, bufferedResponse);
             
-        if (templates == null) {
+        if (templates == null || templates.length == 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Unable to resolve template for request " + request);
             }
@@ -220,6 +220,12 @@ public class DecoratingViewWrapper implements ViewWrapper {
         }
 
         BufferedResponse templateResponse = new BufferedResponse();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Rendering template sequence "
+                         + java.util.Arrays.asList(templates));
+        }
+
         for (int i = 0; i < templates.length; i++) {
             templates[i].render(model, request, templateResponse);
             model.put(this.coreHtmlModelName, splitHTML(content));

@@ -100,6 +100,9 @@ public class PropertyConfigurableTemplateResolver
         if (logger.isDebugEnabled()) {
             logger.debug("Resolved request '" + uri + "' to template " + template);
         }
+        if (template == null) {
+            return new Template[0];
+        }
         return new Template[]{template};
     }
     

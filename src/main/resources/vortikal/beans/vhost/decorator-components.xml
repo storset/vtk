@@ -78,6 +78,23 @@
     <property name="description" value="Inserts an RSS feed component on the page" />
   </bean>
 
+  <bean id="listMenuComponent"
+        class="org.vortikal.web.view.decorating.components.ListMenuComponent">
+    <property name="namespace" value="menu" />
+    <property name="name" value="listmenu" />
+    <property name="queryManager" ref="queryManager" />
+    <property name="view" ref="listMenuView" />
+    <property name="titlePropdef" ref="titlePropDef" />
+    <property name="viewService" ref="webService" />
+    <property name="modelName" value="tabs" />
+    <property name="description" value="Inserts a menu component on the page, based on a folder " />
+  </bean>
+
+  <bean name="listMenuView" parent="freemarkerView">
+    <property name="url" value="layouts/tabs.ftl" />
+  </bean>
+
+
   <bean id="includeComponent"
         class="org.vortikal.web.view.decorating.components.IncludeComponent"
         parent="requestLocalRepositoryAware">

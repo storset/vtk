@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-
-
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,28 +87,35 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        
         Map model = new java.util.HashMap();
+        processModel(model, request, response);
+        renderView(model, request, response);
+    }
+    
+    
+    protected void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
+        throws Exception {
+        // Default implementation does nothing.
+    }
+    
+
+    protected void renderView(Map model, DecoratorRequest request, DecoratorResponse response)
+        throws Exception {
         for (Iterator i = request.getRequestParameterNames(); i.hasNext();) {
             String name = (String) i.next();
             Object value = request.getParameter(name);
             model.put(name, value);
         }
-
-//         Map model = request.getModel();
         HttpServletRequest servletRequest = request.getServletRequest();
-
         BufferedResponse bufferedResponse = new BufferedResponse();
-
         this.view.render(model, servletRequest, bufferedResponse);
-        
         response.setCharacterEncoding(bufferedResponse.getCharacterEncoding());
         OutputStream out = response.getOutputStream();
         out.write(bufferedResponse.getContentBuffer());
         out.close();
     }
     
-    
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(": [");

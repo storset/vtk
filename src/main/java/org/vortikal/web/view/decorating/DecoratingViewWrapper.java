@@ -225,7 +225,7 @@ public class DecoratingViewWrapper implements ViewWrapper {
         for (int i = 0; i < templates.length; i++) {
             templateResponse = new BufferedResponse();
             model.put(this.coreHtmlModelName, splitHTML(content));
-            templates[i].render(model, request, templateResponse);
+            templates[i].render(model, request, ctx.getLocale(), templateResponse);
             content = new String(templateResponse.getContentBuffer(),
                                  templateResponse.getCharacterEncoding());
         }

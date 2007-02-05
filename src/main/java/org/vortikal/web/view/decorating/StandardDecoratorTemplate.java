@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
@@ -121,7 +120,7 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
     }
     
 
-    public void render(Map model, HttpServletRequest request,
+    public void render(Map model, HttpServletRequest request, Locale locale,
                        HttpServletResponse response) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {
@@ -147,8 +146,7 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
                 // XXX:
                 String doctype = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                    model, request, this.fragments[i].getParameters(), doctype,
-                    request.getLocale());
+                    model, request, this.fragments[i].getParameters(), doctype, locale);
 
                 String chunk = renderComponent(c, decoratorRequest);
                 if (logger.isDebugEnabled()) {

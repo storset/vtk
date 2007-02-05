@@ -200,14 +200,7 @@ public class DecoratingViewWrapper implements ViewWrapper {
             content = this.ssiHandler.process(content);
         }
         
-        long before = System.currentTimeMillis();
-        long duration = System.currentTimeMillis() - before;
-        if (logger.isDebugEnabled()) {
-            logger.debug("Parsing document took " + duration + " ms");
-        }
 
-        model.put(this.coreHtmlModelName, splitHTML(content));
-        
         Template[] templates = resolveTemplates(model, request, bufferedResponse);
             
         if (templates == null || templates.length == 0) {
@@ -219,16 +212,17 @@ public class DecoratingViewWrapper implements ViewWrapper {
             return;
         }
 
-        BufferedResponse templateResponse = new BufferedResponse();
-
         if (logger.isDebugEnabled()) {
             logger.debug("Rendering template sequence "
                          + java.util.Arrays.asList(templates));
         }
 
+        BufferedResponse templateResponse = null;
+
         for (int i = 0; i < templates.length; i++) {
-            templates[i].render(model, request, templateResponse);
+            templateResponse = new BufferedResponse();
             model.put(this.coreHtmlModelName, splitHTML(content));
+            templates[i].render(model, request, templateResponse);
             content = new String(templateResponse.getContentBuffer(),
                                  templateResponse.getCharacterEncoding());
         }
@@ -247,7 +241,14 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
     protected Map splitHTML(String content) throws Exception {
         HTMLPageParser parser = new HTMLPageParser();
+
+        long before = System.currentTimeMillis();
         HTMLPage html = (HTMLPage) parser.parse(content.toCharArray());
+        long duration = System.currentTimeMillis() - before;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Parsing document took " + duration + " ms");
+        }
+
         Map coreHtml = new HashMap();
         coreHtml.put("title", html.getTitle());
         coreHtml.put("head", html.getHead());

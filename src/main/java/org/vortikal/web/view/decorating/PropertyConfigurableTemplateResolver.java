@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
@@ -83,28 +86,87 @@ public class PropertyConfigurableTemplateResolver
         if (requestContext == null) {
             return null;
         }
-        Template template = null;
         String uri = requestContext.getResourceURI();
         String[] path = URLUtil.splitUriIncrementally(uri);
         for (int i = path.length - 1; i >= 0; i--) {
             String prefix = path[i];
             String mapping = this.templateConfiguration.getProperty(prefix);
             if ("NONE".equals(mapping)) {
-                return null;
+                return new Template[0];
             }
             if (mapping != null) {
-                template = this.templateManager.getTemplate(mapping);
-                break;
+                Template[] templates = resolveTemplateReferences(request, mapping);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Resolved request '" + uri
+                                 + "' to templates " + java.util.Arrays.asList(templates));
+                }
+
+                return templates;
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Resolved request '" + uri + "' to template " + template);
-        }
-        if (template == null) {
-            return new Template[0];
-        }
-        return new Template[]{template};
+        return new Template[0];
     }
     
 
+    private Template[] resolveTemplateReferences(HttpServletRequest request,
+                                                 String mapping) throws Exception {
+        if (mapping == null) {
+            return null;
+        }
+        List result = new ArrayList();
+        String[] templateList = mapping.split(",");
+        for (int i = 0; i < templateList.length; i++) {
+            String ref = templateList[i];
+            String[] localizedRefs = buildLocalizedReferences(ref, resolveLocale(request));
+            for (int j = 0; j < localizedRefs.length; j++) {
+                String localizedRef = localizedRefs[j];
+                Template t = this.templateManager.getTemplate(localizedRef);
+                if (t != null) {
+                    result.add(t);
+                    break;
+                }
+            }
+        }
+        return (Template[]) result.toArray(new Template[result.size()]);
+    }
+    
+
+    protected Locale resolveLocale(HttpServletRequest request) {
+        org.springframework.web.servlet.support.RequestContext ctx =
+            new org.springframework.web.servlet.support.RequestContext(request);
+        return ctx.getLocale();
+    }
+    
+
+    private String[] buildLocalizedReferences(String ref, Locale locale) {
+        String base = ref;
+        String extension = "";
+        int baseIdx = ref.lastIndexOf(".");
+        int slashIdx = ref.lastIndexOf("/");
+        if (baseIdx != -1 && slashIdx < baseIdx) {
+            base = ref.substring(0, baseIdx);
+            extension = ref.substring(baseIdx);
+        }
+
+        String language = locale.getLanguage();
+        String country = locale.getCountry();
+        String variant = locale.getVariant();
+        
+        List references = new ArrayList();
+        if (!"".equals(country) && !"".equals(variant)) {
+            references.add(base + "_" + language + "_" + country + "_" + variant + extension);
+        }
+        if (!"".equals(country)) {
+            references.add(base + "_" + language + "_" + country + "_" + extension);
+        }
+        references.add(base + "_" + language + extension);
+        references.add(base + extension);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Attempting to resolve template ref '" + ref + "' using "
+                         + "sequence " + references);
+        }
+        return (String[]) references.toArray(new String[references.size()]);
+    }
+    
+    
 }

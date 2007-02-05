@@ -124,7 +124,8 @@ public class MethodInvokingRepositoryEventTrigger
         if (this.uri != null) {
             if (((event instanceof ResourceDeletionEvent)
                  || (event instanceof ResourceCreationEvent))
-                && this.uri.startsWith(resourceURI)) {
+                && (this.uri.startsWith(resourceURI)
+                    || resourceURI.startsWith(this.uri))) {
                 invoke();
             } else if (this.uri.equals(resourceURI)) {
                 invoke();
@@ -141,7 +142,7 @@ public class MethodInvokingRepositoryEventTrigger
     private void invoke() {
         try {
             if (logger.isDebugEnabled()) {
-                logger.debug("Invoking method " + this.targetMethod + "on object "
+                logger.debug("Invoking method " + this.targetMethod + " on object "
                              + this.targetObject);
             }
             this.targetMethod.invoke(this.targetObject, new Object[0]);

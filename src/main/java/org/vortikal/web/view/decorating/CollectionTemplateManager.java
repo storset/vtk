@@ -32,12 +32,15 @@ package org.vortikal.web.view.decorating;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.apache.commons.logging.Log;
 
 
 public class CollectionTemplateManager implements TemplateManager, ApplicationContextAware {
@@ -89,10 +92,6 @@ public class CollectionTemplateManager implements TemplateManager, ApplicationCo
 
 
     public synchronized void load() {
-        if (this.templatesMap != null) {
-            return;
-        }
-
         try {
             Map map = new HashMap();
             Resource[] resources =

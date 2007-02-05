@@ -80,7 +80,7 @@ public class PropertyConfigurableTemplateResolver
     }
     
     public Template[] resolveTemplates(Map model, HttpServletRequest request,
-                                       HttpServletResponse response) throws Exception {
+                                       Locale locale) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext == null) {
@@ -95,7 +95,7 @@ public class PropertyConfigurableTemplateResolver
                 return new Template[0];
             }
             if (mapping != null) {
-                Template[] templates = resolveTemplateReferences(request, mapping);
+                Template[] templates = resolveTemplateReferences(locale, mapping);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Resolved request '" + uri
                                  + "' to templates " + java.util.Arrays.asList(templates));
@@ -108,8 +108,8 @@ public class PropertyConfigurableTemplateResolver
     }
     
 
-    private Template[] resolveTemplateReferences(HttpServletRequest request,
-                                                 String mapping) throws Exception {
+    private Template[] resolveTemplateReferences(Locale locale, String mapping)
+        throws Exception {
         if (mapping == null) {
             return null;
         }
@@ -117,7 +117,7 @@ public class PropertyConfigurableTemplateResolver
         String[] templateList = mapping.split(",");
         for (int i = 0; i < templateList.length; i++) {
             String ref = templateList[i];
-            String[] localizedRefs = buildLocalizedReferences(ref, resolveLocale(request));
+            String[] localizedRefs = buildLocalizedReferences(ref, locale);
             for (int j = 0; j < localizedRefs.length; j++) {
                 String localizedRef = localizedRefs[j];
                 Template t = this.templateManager.getTemplate(localizedRef);
@@ -128,13 +128,6 @@ public class PropertyConfigurableTemplateResolver
             }
         }
         return (Template[]) result.toArray(new Template[result.size()]);
-    }
-    
-
-    protected Locale resolveLocale(HttpServletRequest request) {
-        org.springframework.web.servlet.support.RequestContext ctx =
-            new org.springframework.web.servlet.support.RequestContext(request);
-        return ctx.getLocale();
     }
     
 

@@ -30,11 +30,14 @@
  */
 package org.vortikal.web.view.decorating;
 
+import com.opensymphony.module.sitemesh.HTMLPage;
+import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.web.servlet.View;
 
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -52,9 +56,6 @@ import org.vortikal.web.view.decorating.ssi.SsiHandler;
 import org.vortikal.web.view.wrapper.RequestWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapperException;
-
-import com.opensymphony.module.sitemesh.HTMLPage;
-import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
 
 /**
  * 
@@ -200,8 +201,10 @@ public class DecoratingViewWrapper implements ViewWrapper {
             content = this.ssiHandler.process(content);
         }
         
+        org.springframework.web.servlet.support.RequestContext ctx =
+            new org.springframework.web.servlet.support.RequestContext(request);
 
-        Template[] templates = resolveTemplates(model, request, bufferedResponse);
+        Template[] templates = resolveTemplates(model, request, ctx.getLocale());
             
         if (templates == null || templates.length == 0) {
             if (logger.isDebugEnabled()) {
@@ -233,8 +236,9 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
 
     protected Template[] resolveTemplates(Map model, HttpServletRequest request,
-                                          BufferedResponse response) throws Exception {
-        return this.templateResolver.resolveTemplates(model, request, response);
+                                          Locale locale) throws Exception {
+        return this.templateResolver.resolveTemplates(model, request, locale);
+
     }
     
 

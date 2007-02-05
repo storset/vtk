@@ -61,11 +61,6 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         this.locale = locale;
     }
     
-//     public Map getModel() {
-//         return this.model;
-//     }
-    
-
     public HttpServletRequest getServletRequest() {
         return this.servletRequest;
     }

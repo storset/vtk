@@ -47,8 +47,11 @@
     <property name="urlPostProcessors" ref="webServiceUrlPostProcessors" />
     <property name="handlerInterceptors">
       <list>
-        <bean id="webServiceInterceptor"
-              class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+        <bean class="org.vortikal.web.ThrottleHandlerInterceptor">
+          <property name="maxConcurrentRequests" value="${webService.maxConcurrentRequests}" />
+          <property name="rejectStatus" value="${webService.tooManyRequests.rejectStatus}" />
+        </bean>
+        <bean class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
           <description>
             Interceptor on the web-based services, in order to provide a
             global 'message' in all the MVC models that are produced by

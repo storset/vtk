@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <version>0.3.4</version>
+  <version>0.3.4.1</version>
   <name>The Vortikal Web Framework</name>
   <url>http://vortikal.berlios.de</url>
   <organization>

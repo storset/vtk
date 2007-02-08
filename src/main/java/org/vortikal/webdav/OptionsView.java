@@ -68,6 +68,9 @@ public class OptionsView implements View {
         }
     }
     
+    public String getContentType() {
+        return null;
+    }
 
 
 }

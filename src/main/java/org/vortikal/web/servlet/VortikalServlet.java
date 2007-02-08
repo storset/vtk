@@ -51,6 +51,7 @@ import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.core.OrderComparator;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.RequestHandledEvent;
+import org.springframework.web.context.support.ServletRequestHandledEvent;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -440,13 +441,13 @@ public class VortikalServlet extends DispatcherServlet {
             if (request.getAttribute(INDEX_FILE_REQUEST_ATTRIBUTE) == null) {
                 logRequest(request, responseWrapper, processingTime, !proceedService);
                 getWebApplicationContext().publishEvent(
-                    new RequestHandledEvent(this, request.getRequestURI(),
-                                            processingTime, request.getRemoteAddr(), request
-                                            .getMethod(), getServletConfig()
-                                            .getServletName(), WebUtils
-                                            .getSessionId(request),
-                                            getUsernameForRequest(request), failureCause));
-
+                        new ServletRequestHandledEvent(this, request
+                                .getRequestURI(), request.getRemoteAddr(),
+                                request.getMethod(), getServletConfig()
+                                        .getServletName(), WebUtils
+                                        .getSessionId(request),
+                                getUsernameForRequest(request), processingTime,
+                                failureCause));
             }
 
             this.securityInitializer.destroyContext();

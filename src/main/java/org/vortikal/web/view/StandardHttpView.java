@@ -132,4 +132,8 @@ public class StandardHttpView implements View {
         this.headers = headers;
     }
 
+    public String getContentType() {
+        return null;
+    }
+
 }

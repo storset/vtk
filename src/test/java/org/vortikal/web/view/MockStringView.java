@@ -70,5 +70,8 @@ public class MockStringView implements View {
         response.flushBuffer();
     }
 
-    
+    public String getContentType() {
+        return null;
+    }
+
 }

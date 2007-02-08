@@ -676,4 +676,8 @@ public class PropfindView implements View, InitializingBean {
         return e;
     }
 
+    public String getContentType() {
+        return null;
+    }
+
 }

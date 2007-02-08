@@ -215,4 +215,9 @@ public class LockView implements View {
         } 
         return ownerElement;
     }
+
+    public String getContentType() {
+        return null;
+    }
+
 }

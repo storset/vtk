@@ -215,4 +215,8 @@ public class ServletWrappingView
         outStream.close();
     }
 
+    public String getContentType() {
+        return null;
+    }
+
 }

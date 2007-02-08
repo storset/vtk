@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -51,12 +53,14 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
+import freemarker.ext.jsp.TaglibFactory;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 
@@ -80,7 +84,7 @@ import freemarker.template.TemplateException;
  *  @see FreeMarkerTemplateLocation
  */
 public class MultiTemplateLocationsFreeMarkerConfigurer
-  implements FreeMarkerConfig, InitializingBean, ApplicationContextAware {
+  implements FreeMarkerConfig, InitializingBean, ApplicationContextAware, ServletContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
     
@@ -98,6 +102,9 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
     private boolean preferFileSystemAccess = true;
 
     private Configuration configuration;
+
+
+    private TaglibFactory taglibFactory;
     
 
     
@@ -197,5 +204,15 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
         this.preferFileSystemAccess = preferFileSystemAccess;
     }
 
-     
+    /**
+     * Initialize the {@link TaglibFactory} for the given ServletContext.
+     */
+    public void setServletContext(ServletContext servletContext) {
+        this.taglibFactory = new TaglibFactory(servletContext);
+    }
+
+    public TaglibFactory getTaglibFactory() {
+        return taglibFactory;
+    }
+
 }

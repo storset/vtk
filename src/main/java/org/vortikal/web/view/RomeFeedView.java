@@ -292,4 +292,8 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
         this.referenceDataProviders = referenceDataProviders;
     }
 
+    public String getContentType() {
+        return null;
+    }
+
 }

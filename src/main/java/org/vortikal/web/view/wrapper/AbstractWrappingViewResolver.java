@@ -209,6 +209,10 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver, Orde
             return sb.toString();
         }
 
+        public String getContentType() {
+            return null;
+        }
+
     }
 
 }

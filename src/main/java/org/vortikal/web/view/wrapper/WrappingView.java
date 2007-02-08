@@ -138,4 +138,8 @@ public class WrappingView implements View, InitializingBean, ReferenceDataProvid
             new ReferenceDataProvider[providersList.size()]);
     }
 
+    public String getContentType() {
+        return null;
+    }
+
 }

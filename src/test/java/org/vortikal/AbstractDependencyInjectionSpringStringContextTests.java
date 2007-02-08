@@ -69,11 +69,11 @@ public abstract class AbstractDependencyInjectionSpringStringContextTests extend
         return null;
     }
     
-    protected ConfigurableApplicationContext getContext(Object key) {
-        Resource configResource = new ByteArrayResource(getConfigAsString().getBytes());
-        ConfigurableApplicationContext context = new ResourceXmlApplicationContext(configResource);
-        context.refresh();
-        return context;
-    }
+//    protected ConfigurableApplicationContext getContext(Object key) {
+//        Resource configResource = new ByteArrayResource(getConfigAsString().getBytes());
+//        ConfigurableApplicationContext context = new ResourceXmlApplicationContext(configResource);
+//        context.refresh();
+//        return context;
+//    }
 
 }

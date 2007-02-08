@@ -75,5 +75,8 @@ public class ConfigurableResponseHeaderWrappingView implements View {
         this.view.render(model, request, response);
     }
 
-    
+    public String getContentType() {
+        return null;
+    }
+
 }

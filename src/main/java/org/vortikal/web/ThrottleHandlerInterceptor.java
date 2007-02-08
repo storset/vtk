@@ -58,8 +58,6 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class ThrottleHandlerInterceptor implements HandlerInterceptor {
 
-    private final static Integer ZERO = new Integer(0);
-
     private Map requestCache = new HashMap();
     private int maxConcurrentRequests = -1;
     private int rejectStatus = 503;
@@ -88,15 +86,15 @@ public class ThrottleHandlerInterceptor implements HandlerInterceptor {
 
         String ip = request.getRemoteAddr();
         boolean reject = false;
-        int count;
 
+        int count = 0;
         synchronized (this.requestCache) {
 
             Integer number = (Integer) this.requestCache.get(ip);
-            if (number == null) {
-                number = ZERO;
+            if (number != null) {
+                count = number.intValue();
             }
-            count = number.intValue();
+            
             if (count < this.maxConcurrentRequests) {
                 count++;
                 this.requestCache.put(ip, new Integer(count));
@@ -105,7 +103,7 @@ public class ThrottleHandlerInterceptor implements HandlerInterceptor {
             }
         }
         if (reject) {
-            logger.info("Client " + ip + " already has " + count + " active requests, "
+            logger.info("Client " + ip + " already has " + this.maxConcurrentRequests + " active requests, "
                         + "rejecting current request with status " + this.rejectStatus);
             response.setContentLength(0);
             response.sendError(this.rejectStatus);

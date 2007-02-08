@@ -106,7 +106,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             
-            String query = "select r.*, p.* from vortex_resource r "
+            String query = "select r.*, "
+                + "p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r "
                 + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
                 + "order by r.uri, p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -128,7 +129,8 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             
-            String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
+            String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
+                + "p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r "
                 + "left outer join extra_prop_entry p  on r.resource_id = p.resource_id "
                 + "where r.uri = ? or r.uri like ? order by r.uri, p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -151,7 +153,9 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);     
             
-            String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
+            String query = 
+                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
+                + "p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r "
                 + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
                 + "where r.uri = ? order by p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -181,9 +185,12 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             conn.setAutoCommit(false);     
             
             String query = 
-                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r "
+                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
+                + "p.prop_type_id, p.name_space, p.name, p.value "
+                + "from vortex_resource r "
                 + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
                 + "where r.resource_id = ? order by p.extra_prop_entry_id";
+            
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();

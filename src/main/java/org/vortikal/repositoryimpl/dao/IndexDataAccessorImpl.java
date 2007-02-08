@@ -228,12 +228,14 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             pstmt.close();            
             
             String query =
-                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* "
-              + "from vortex_tmp vu, vortex_resource r "
+                "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
+              + "p.prop_type_id, p.name_space, p.name, p.value "
+              + "from vortex_tmp t, vortex_resource r "
               + "left outer join extra_prop_entry p on r.resource_id = p.resource_id "
-              + "where r.uri = vu.uri AND vu.session_id=? "
+              + "where r.uri = t.uri AND t.session_id=? "
               + "order by p.resource_id, p.extra_prop_entry_id";            
             
+
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, sessionId);
             
@@ -312,8 +314,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
      *  (non-Javadoc)
      *  TODO: Optimize if possible (use different approaches, etc.)
      *        I think most of the time is spent hashing integers to 
-     *        avoid unnecessary database lookups
-     *        (which I'm guessing are even more expensive).
+     *        avoid unnecessary database lookups.
      * @see org.vortikal.repositoryimpl.dao.IndexDataAccessor#processQueryResultsAuthorization(java.util.List)
      */
     public void processQueryResultsAuthorization(Set principalNames,
@@ -387,7 +388,9 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                                           id + " to set of authorized IDs");
                         }
                         
-                        this.logger.debug("Current ACL node id: " + id);
+                        if (logger.isDebugEnabled()) {
+                            this.logger.debug("Current ACL node id: " + id);
+                        }
                     }
                     rs.close();
                     

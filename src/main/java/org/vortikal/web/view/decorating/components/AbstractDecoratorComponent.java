@@ -86,7 +86,7 @@ public abstract class AbstractDecoratorComponent
         return this.referenceDataProviders;
     }
     
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception {
         if (this.namespace == null) {
             throw new BeanInitializationException("JavaBean property 'namespace' not set");
         }

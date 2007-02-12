@@ -219,41 +219,48 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             pstmt.close();
 
             String changelogEntriesQuery = 
-                    "SELECT cl1.* " +
-                    "FROM changelog_entry cl1 " +
-                    "WHERE cl1.changelog_entry_id IN " +
-                         "( SELECT MAX(cl2.changelog_entry_id) " +
-                         "  FROM changelog_entry cl2 " +
-                         "  WHERE cl1.uri = cl2.uri " + 
-                         "  AND cl2.logger_id =? " + 
-                         "  AND cl2.logger_type =? ) " +
-                         "  OR (cl1.is_collection='Y' AND cl1.operation ='deleted')" +
-                         // The OR clause above fixes a subtle problem regarding deletion
-                         // of collections. The difference between collection deletions
-                         // and every other operation, is that the event doesn't map 1:1 with
-                         // the number of affected resources, but rather 1:N. A collection deletion
-                         // can involve many resources in a tree. 
-                         // Therefore, we must make sure that we don't miss any of 
-                         // these events. Only picking the very latest event for collections, 
-                         // can result in masking earlier deletion events for collections
-                         // whose names were the same as newly created collections.
-                         // This will cause the indexing system to miss these important events, 
-                         // and the old tree will remain in the index, except for the replaced parent.
-                    "AND cl1.changelog_entry_id <=? " +
-                    "AND cl1.logger_id=? " +
-                    "AND cl1.logger_type=? ORDER BY cl1.changelog_entry_id";
-            // Changed ORDER BY to order by event id, instead of URI. It makes more sense
-            // to list events in the order they happened, rather than what the URI looks like.
-            // The URI is only an ID treated specially, and it doesn't
-            // necessarily need a parent URI to exist in the index. The index is not a file
-            // system, only a collection of documents, which happen to have an URI.
-            // Should be more efficient to sort by a number, instead of string, as well.
+                "SELECT cl1.* "
+                + "FROM changelog_entry cl1 "
+                + "WHERE "
+                + "cl1.operation = 'deleted' AND cl1.is_collection = 'Y' "
+                // This fixes a subtle problem regarding deletion
+                // of collections. The difference between collection deletions
+                // and every other operation, is that the event doesn't map 1:1 with
+                // the number of affected resources, but rather 1:N. A collection deletion
+                // can involve many resources in a tree. 
+                // Therefore, we must make sure that we don't miss any of 
+                // these events. Only picking the very latest event for collections, 
+                // can result in masking earlier deletion events for collections
+                // whose names were the same as newly created collections.
+                // This will cause the indexing system to miss these important events, 
+                // and the old tree will remain in the index, except for the replaced parent node.
+                + "AND cl1.changelog_entry_id <= ? "
+                + "AND cl1.logger_id = ? "
+                + "AND cl1.logger_type = ? "
+                + "OR " 
+                + "cl1.changelog_entry_id IN " 
+                + "( SELECT MAX(cl2.changelog_entry_id) "
+                + "  FROM changelog_entry cl2 "
+                + "  WHERE cl1.uri = cl2.uri " 
+                + "  AND cl2.logger_id = ? " 
+                + "  AND cl2.logger_type = ? "
+                + "  AND cl2.changelog_entry_id <= ? ) "
+
+                + "ORDER BY cl1.changelog_entry_id";
+                // Changed ORDER BY to order by event id, instead of URI. It makes more sense
+                // to list events in the order they happened, rather than what the URI looks like.
+                // The URI is only an ID treated specially, and it doesn't
+                // necessarily need a parent URI to exist in the index. The index is not a file
+                // system, only a collection of documents, which happen to have an URI.
+                // Should be more efficient to sort by a number, instead of string, as well.
             pstmt = conn.prepareStatement(changelogEntriesQuery);
-            pstmt.setInt(1, this.loggerId);
-            pstmt.setInt(2, this.loggerType);
-            pstmt.setInt(3, maxId);
+            pstmt.setInt(1, maxId);
+            pstmt.setInt(2, this.loggerId);
+            pstmt.setInt(3, this.loggerType);
             pstmt.setInt(4, this.loggerId);
             pstmt.setInt(5, this.loggerType);
+            pstmt.setInt(6, maxId);
+            
             // NOTE: We cannot avoid adding resources to the list of changes that might
             //       be deleted by the time the resource change consumer gets the change
             //       events (it's impossible to predict later deletions based on the currently selected

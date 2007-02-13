@@ -28,35 +28,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.htmlparser;
 
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import org.vortikal.web.view.decorating.HtmlAttribute;
 
 
-/**
- * Represents a decorator request for a component.
- *
- * XXX: decide what objects should be exposed to the component: model,
- * servlet request, parameters?
- */
-public interface DecoratorRequest {
+public class HtmlAttributeImpl implements HtmlAttribute {
+    private String name;
+    private String value;
+        
+    public HtmlAttributeImpl(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+        
+    public String getName() {
+        return this.name;
+    }
 
-    //public Map getModel();
-
-    public HtmlPage getHtmlPage();
-
-    public HttpServletRequest getServletRequest();
-
-    public Locale getLocale();
-
-    public String getDoctype();
-
-    public Object getParameter(String name);
-
-    public String getStringParameter(String name);
-
-    public Iterator getRequestParameterNames();
+    public String getValue() {
+        return this.value;
+    }
 }
+
+

@@ -30,33 +30,21 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * Represents a decorator request for a component.
+ * Simple HTML page interface.
  *
- * XXX: decide what objects should be exposed to the component: model,
- * servlet request, parameters?
+ * TODO: isFrameset(), getDoctype(), getOriginal()
  */
-public interface DecoratorRequest {
+public interface HtmlPage {
 
-    //public Map getModel();
+    public HtmlElement getHtmlElement();
+    
+    public HtmlElement getHeadElement();
 
-    public HtmlPage getHtmlPage();
+    public HtmlElement getTitleElement();
 
-    public HttpServletRequest getServletRequest();
-
-    public Locale getLocale();
-
-    public String getDoctype();
-
-    public Object getParameter(String name);
-
-    public String getStringParameter(String name);
-
-    public Iterator getRequestParameterNames();
+    public HtmlElement getBodyElement();
 }

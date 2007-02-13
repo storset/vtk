@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.view.decorating;
 
-import com.opensymphony.module.sitemesh.HTMLPage;
-import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
-
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -66,6 +63,7 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
     private String coreHtmlModelName = "core";
 
+    private HtmlPageParser parser;
     private TemplateResolver templateResolver;
     
     private boolean propagateExceptions = true;
@@ -105,6 +103,11 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
     public void setAssertions(Assertion[] assertions) {
         this.assertions = assertions;
+    }
+    
+
+    public void setHtmlParser(HtmlPageParser parser) {
+        this.parser = parser;
     }
     
 
@@ -219,17 +222,16 @@ public class DecoratingViewWrapper implements ViewWrapper {
             logger.debug("Rendering template sequence "
                          + java.util.Arrays.asList(templates));
         }
-
         BufferedResponse templateResponse = null;
 
         for (int i = 0; i < templates.length; i++) {
             templateResponse = new BufferedResponse();
-            model.put(this.coreHtmlModelName, splitHTML(content));
-            templates[i].render(model, request, ctx.getLocale(), templateResponse);
+            
+            HtmlPage html = parseHtml(content);
+            templates[i].render(model, html, request, ctx.getLocale(), templateResponse);
             content = new String(templateResponse.getContentBuffer(),
                                  templateResponse.getCharacterEncoding());
         }
-
         writeResponse(templateResponse, servletResponse, "text/html");
     }
     
@@ -242,24 +244,17 @@ public class DecoratingViewWrapper implements ViewWrapper {
     }
     
 
-
-    protected Map splitHTML(String content) throws Exception {
-        HTMLPageParser parser = new HTMLPageParser();
-
+    protected HtmlPage parseHtml(String content) throws Exception {
         long before = System.currentTimeMillis();
-        HTMLPage html = (HTMLPage) parser.parse(content.toCharArray());
+        HtmlPage html = this.parser.parse(content.toCharArray());
         long duration = System.currentTimeMillis() - before;
         if (logger.isDebugEnabled()) {
             logger.debug("Parsing document took " + duration + " ms");
         }
-
-        Map coreHtml = new HashMap();
-        coreHtml.put("title", html.getTitle());
-        coreHtml.put("head", html.getHead());
-        String body = html.getBody();
-        coreHtml.put("body", body);
-        return coreHtml;
+        return html;
     }
+    
+
     
 
     /**

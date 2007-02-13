@@ -28,43 +28,64 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.htmlparser;
 
-import java.util.Map;
+import com.opensymphony.module.sitemesh.html.util.CharArray;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.vortikal.web.view.decorating.HtmlAttribute;
+import org.vortikal.web.view.decorating.HtmlElement;
 
 
-public class ComponentInvocationImpl implements ComponentInvocation {
+public class HtmlElementImpl implements HtmlElement {
+    private String name;
+    private CharArray content, completeContent;
+    private HtmlAttributeImpl[] attributes;
+    private List children = new ArrayList();
 
-    private DecoratorComponent component;
-    private Map parameters;
-
-    public ComponentInvocationImpl(DecoratorComponent component, Map parameters) {
-        if (component == null) {
-            throw new IllegalArgumentException("Component argument is NULL");
-        }
-        if (parameters == null) {
-            throw new IllegalArgumentException("Parameters argument is NULL");
-        }
-
-        this.component = component;
-        this.parameters = parameters;
-    }
-    
-
-    public DecoratorComponent getComponent() {
-        return this.component;
+    public HtmlElementImpl(String name, CharArray content, CharArray completeContent,
+                           HtmlAttributeImpl[] attributes) {
+        this.name = name;
+        this.content = content;
+        this.completeContent = completeContent;
+        this.attributes = attributes;
     }
 
-    public Map getParameters() {
-        return this.parameters;
+    public String getName() {
+        return this.name;
     }
-    
+        
+    public CharArray getContentBuffer() {
+        return this.content;
+    }
+
+    public String getContent() {
+        return this.content.toString();
+    }
+
+    public CharArray getCompleteContentBuffer() {
+        return this.completeContent;
+    }
+        
+    public String getCompleteContent() {
+        return this.completeContent.toString();
+    }
+        
+    public HtmlAttribute[] getAttributes() {
+        return this.attributes;
+    }
+        
+    public void addChildElement(HtmlElementImpl child) {
+        this.children.add(child);
+    }
+        
+    public HtmlElement[] getChildElements() {
+        return (HtmlElement[]) this.children.toArray(new HtmlElement[this.children.size()]);
+    }
+        
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append(this.component.toString()).append(" [");
-        sb.append(this.parameters.toString()).append("]");
-        return sb.toString();
+        return "element: " + this.name;
     }
-    
 }

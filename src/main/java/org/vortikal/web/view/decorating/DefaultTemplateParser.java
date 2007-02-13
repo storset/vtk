@@ -264,20 +264,19 @@ public class DefaultTemplateParser implements TemplateParser {
         }
     
         public String getName() {
-            return String.valueOf(System.identityHashCode(this));
+            return "StaticText";
         }
     
         public String getDescription() {
-            return this.getClass().getName();
+            return "";
         }
-    
+
+        public Map getParameterDescriptions() {
+            return new HashMap();
+        }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append(this.getClass().getName()).append(": ");
-            sb.append(this.getName());
-            sb.append(" [").append(this.content).append("]");
-            return sb.toString();
+            return getName();
         }
     
 

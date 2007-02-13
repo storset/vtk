@@ -28,35 +28,51 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.htmlparser;
 
-import java.util.Iterator;
-import java.util.Locale;
+
+
+import com.opensymphony.module.sitemesh.HTMLPage;
+import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import org.vortikal.web.view.decorating.HtmlPage;
+import org.vortikal.web.view.decorating.HtmlElement;
 
 
-/**
- * Represents a decorator request for a component.
- *
- * XXX: decide what objects should be exposed to the component: model,
- * servlet request, parameters?
- */
-public interface DecoratorRequest {
+public class HtmlPageImpl implements HtmlPage {
 
-    //public Map getModel();
+    private HtmlElement html;
+    private HtmlElement head;
+    private HtmlElement title;
+    private HtmlElement body;
+    
 
-    public HtmlPage getHtmlPage();
+    public HtmlPageImpl(HtmlElement html, HtmlElement head,
+                        HtmlElement title, HtmlElement body) {
+        this.html = html;
+        this.head = head;
+        this.title = title;
+        this.body = body;
+    }
+    
 
-    public HttpServletRequest getServletRequest();
+    public HtmlElement getHtmlElement() {
+        return this.html;
+    }
+    
+    
+    public HtmlElement getHeadElement() {
+        return this.head;
+    }
+    
 
-    public Locale getLocale();
+    public HtmlElement getTitleElement() {
+        return this.title;
+    }
+    
 
-    public String getDoctype();
-
-    public Object getParameter(String name);
-
-    public String getStringParameter(String name);
-
-    public Iterator getRequestParameterNames();
+    public HtmlElement getBodyElement() {
+        return this.body;
+    }
+    
 }

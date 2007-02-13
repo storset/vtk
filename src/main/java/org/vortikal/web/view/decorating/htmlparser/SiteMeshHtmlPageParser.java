@@ -28,35 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.htmlparser;
 
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import com.opensymphony.module.sitemesh.html.HTMLProcessor;
+import com.opensymphony.module.sitemesh.html.State;
+import com.opensymphony.module.sitemesh.html.util.CharArray;
+import com.opensymphony.module.sitemesh.parser.TokenizedHTMLPage;
+
+import org.vortikal.web.view.decorating.HtmlPage;
+import org.vortikal.web.view.decorating.HtmlPageParser;
 
 
-/**
- * Represents a decorator request for a component.
- *
- * XXX: decide what objects should be exposed to the component: model,
- * servlet request, parameters?
- */
-public interface DecoratorRequest {
+public class SiteMeshHtmlPageParser implements HtmlPageParser {
 
-    //public Map getModel();
-
-    public HtmlPage getHtmlPage();
-
-    public HttpServletRequest getServletRequest();
-
-    public Locale getLocale();
-
-    public String getDoctype();
-
-    public Object getParameter(String name);
-
-    public String getStringParameter(String name);
-
-    public Iterator getRequestParameterNames();
+    public HtmlPage parse(char[] content) throws Exception {
+        CharArray head = new CharArray(64);
+        CharArray body = new CharArray(4096);
+        TokenizedHTMLPage page = new TokenizedHTMLPage(content, body, head);
+        HTMLProcessor processor = new HTMLProcessor(content, body);
+        State html = processor.defaultState();
+        TagExtractor extractor = new TagExtractor();
+        html.addRule(extractor);
+        processor.process();
+        return extractor.getPage();
+    }
+    
 }

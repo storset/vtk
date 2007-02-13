@@ -53,6 +53,8 @@ public interface DecoratorComponent {
 
     public String getDescription();
 
+    public Map getParameterDescriptions();
+
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception;
 

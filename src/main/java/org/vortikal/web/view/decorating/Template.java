@@ -40,6 +40,6 @@ public interface Template {
 
     public String getName();
 
-    public void render(Map model, HttpServletRequest request, Locale locale,
-                       HttpServletResponse response) throws Exception;
+    public void render(Map model, HtmlPage html, HttpServletRequest request,
+                       Locale locale, HttpServletResponse response) throws Exception;
 }

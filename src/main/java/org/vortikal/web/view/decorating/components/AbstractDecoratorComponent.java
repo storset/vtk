@@ -52,6 +52,7 @@ public abstract class AbstractDecoratorComponent
     private String namespace;
     private String name;
     private String description;
+    private Map parameterDescriptions;
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
@@ -77,6 +78,14 @@ public abstract class AbstractDecoratorComponent
         return this.description;
     }
     
+    public void setParameterDescriptions(Map parameterDescriptions) {
+        this.parameterDescriptions = parameterDescriptions;
+    }
+
+    public Map getParameterDescriptions() {
+        return this.parameterDescriptions;
+    }
+
     public void setReferenceDataProviders(
         ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
@@ -93,6 +102,12 @@ public abstract class AbstractDecoratorComponent
         if (this.name == null) {
             throw new BeanInitializationException("JavaBean property 'name' not set");
         }
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": ").append(this.namespace).append(":").append(this.name);
+        return sb.toString();
     }
     
 }

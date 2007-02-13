@@ -2,43 +2,48 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean id="bodyComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+  <bean id="bodyComponent"
+        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
     <property name="namespace" value="core" />
     <property name="name" value="body" />
-    <property name="keySequence">
-      <list>
-        <value>core</value>
-        <value>body</value>
-      </list>
-    </property>
+    <property name="select" value="body" />
     <property name="description" value="Outputs the contents of the &lt;body&gt; tag of the original HTML document" />
   </bean>
 
-  <bean id="headComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+  <bean id="headComponent"
+        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
     <property name="namespace" value="core" />
     <property name="name" value="head" />
-    <property name="keySequence">
-      <list>
-        <value>core</value>
-        <value>head</value>
-      </list>
-    </property>
+    <property name="select" value="head" />
+    <property name="exclude" value="title" />
     <property name="description" value="Outputs the contents of the &lt;head&gt; tag of the original HTML document, but with the &lt;title&gt; tag removed" />
   </bean>
 
-  <bean id="titleComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+  <bean id="titleComponent"
+        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
     <property name="namespace" value="core" />
     <property name="name" value="title" />
-    <property name="keySequence">
-      <list>
-        <value>core</value>
-        <value>title</value>
-      </list>
-    </property>
+    <property name="select" value="head.title" />
     <property name="description" value="Outputs the contents of the &lt;title&gt; tag of the original HTML document" />
   </bean>
 
-  <bean id="manageURLComponent" class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
+  <bean id="elementContentComponent"
+        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
+    <property name="namespace" value="element" />
+    <property name="name" value="content" />
+    <property name="description" value="Outputs the contents of a specified element" />
+  </bean>
+
+  <bean id="elementAttributesComponent"
+        class="org.vortikal.web.view.decorating.components.HtmlAttributesComponent">
+    <property name="namespace" value="element" />
+    <property name="name" value="attributes" />
+    <property name="description" value="Outputs the attributes of a specified element" />
+  </bean>
+
+
+  <bean id="manageURLComponent"
+        class="org.vortikal.web.view.decorating.components.ModelAccessingDecoratorComponent">
     <property name="namespace" value="manage" />
     <property name="name" value="manageURL" />
     <property name="keySequence">

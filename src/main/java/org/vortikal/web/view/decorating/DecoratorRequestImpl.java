@@ -43,6 +43,8 @@ public class DecoratorRequestImpl implements DecoratorRequest {
 
     private Map model;
 
+    private HtmlPage html;
+
     private HttpServletRequest servletRequest;
 
     private Map decoratorParameters;
@@ -51,16 +53,23 @@ public class DecoratorRequestImpl implements DecoratorRequest {
 
     private Locale locale;
     
-    public DecoratorRequestImpl(Map model, HttpServletRequest servletRequest,
+    public DecoratorRequestImpl(Map model, HtmlPage html,
+                                HttpServletRequest servletRequest,
                                 Map decoratorParameters,
                                 String doctype, Locale locale) {
         this.model = model;
+        this.html = html;
         this.servletRequest = servletRequest;
         this.decoratorParameters = decoratorParameters;
         this.doctype = doctype;
         this.locale = locale;
     }
     
+    public HtmlPage getHtmlPage() {
+        return this.html;
+    }
+    
+
     public HttpServletRequest getServletRequest() {
         return this.servletRequest;
     }
@@ -91,6 +100,7 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return this.locale;
     }
     
+
     public Iterator getRequestParameterNames() {
         Set s = new HashSet();
         s.addAll(this.model.keySet());

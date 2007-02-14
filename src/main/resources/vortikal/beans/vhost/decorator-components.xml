@@ -6,7 +6,7 @@
         class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
     <property name="namespace" value="core" />
     <property name="name" value="body" />
-    <property name="select" value="body" />
+    <property name="select" value="html.body" />
     <property name="description" value="Outputs the contents of the &lt;body&gt; tag of the original HTML document" />
   </bean>
 
@@ -14,7 +14,7 @@
         class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
     <property name="namespace" value="core" />
     <property name="name" value="head" />
-    <property name="select" value="head" />
+    <property name="select" value="html.head" />
     <property name="exclude" value="title" />
     <property name="description" value="Outputs the contents of the &lt;head&gt; tag of the original HTML document, but with the &lt;title&gt; tag removed" />
   </bean>
@@ -23,7 +23,7 @@
         class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
     <property name="namespace" value="core" />
     <property name="name" value="title" />
-    <property name="select" value="head.title" />
+    <property name="select" value="html.head.title" />
     <property name="description" value="Outputs the contents of the &lt;title&gt; tag of the original HTML document" />
   </bean>
 
@@ -32,6 +32,12 @@
     <property name="namespace" value="element" />
     <property name="name" value="content" />
     <property name="description" value="Outputs the contents of a specified element" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="select" value="The element to select" />
+        <entry key="exclude" value="Comma-separated list of element names to exclude" />
+      </map>
+    </property>
   </bean>
 
   <bean id="elementAttributesComponent"
@@ -39,6 +45,12 @@
     <property name="namespace" value="element" />
     <property name="name" value="attributes" />
     <property name="description" value="Outputs the attributes of a specified element" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="select" value="The element for which to select attributes" />
+        <entry key="exclude" value="Comma-separated list of attribute names to exclude" />
+      </map>
+    </property>
   </bean>
 
 

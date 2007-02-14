@@ -38,7 +38,7 @@ public class HtmlAttributeImpl implements HtmlAttribute {
     private String value;
         
     public HtmlAttributeImpl(String name, String value) {
-        this.name = name;
+        this.name = name.toLowerCase();
         this.value = value;
     }
         
@@ -49,6 +49,11 @@ public class HtmlAttributeImpl implements HtmlAttribute {
     public String getValue() {
         return this.value;
     }
+
+    public boolean hasValue() {
+        return this.value != null;
+    }
+    
 }
 
 

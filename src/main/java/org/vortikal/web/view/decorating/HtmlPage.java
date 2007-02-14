@@ -40,11 +40,14 @@ import java.util.Map;
  */
 public interface HtmlPage {
 
-    public HtmlElement getHtmlElement();
+    public String getDoctype();
     
-    public HtmlElement getHeadElement();
 
-    public HtmlElement getTitleElement();
+    public HtmlElement getRootElement();
+    
+//     public HtmlElement getHeadElement();
 
-    public HtmlElement getBodyElement();
+//     public HtmlElement getTitleElement();
+
+//     public HtmlElement getBodyElement();
 }

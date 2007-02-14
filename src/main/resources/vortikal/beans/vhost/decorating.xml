@@ -20,7 +20,7 @@
   </bean>
 
   <bean id="decorating.siteMeshParser"
-        class="org.vortikal.web.view.decorating.htmlparser.SiteMeshHtmlPageParser">
+        class="org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl">
   </bean>
 
 

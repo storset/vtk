@@ -35,7 +35,7 @@ public interface HtmlAttribute {
 
     public String getName();
 
-
     public String getValue();
 
+    public boolean hasValue();
 }

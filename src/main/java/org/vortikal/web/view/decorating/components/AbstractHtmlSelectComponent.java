@@ -58,7 +58,7 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
 
         HtmlPage page = request.getHtmlPage();
         HtmlElement element = null;
-        HtmlElement current = page.getHtmlElement();
+        HtmlElement current = page.getRootElement();
         if (current == null) {
             return;
         }

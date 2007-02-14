@@ -246,7 +246,9 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
     protected HtmlPage parseHtml(String content) throws Exception {
         long before = System.currentTimeMillis();
-        HtmlPage html = this.parser.parse(content.toCharArray());
+        // XXX: 
+        HtmlPage html = this.parser.parse(
+            new java.io.ByteArrayInputStream(content.getBytes("utf-8")), "utf-8");
         long duration = System.currentTimeMillis() - before;
         if (logger.isDebugEnabled()) {
             logger.debug("Parsing document took " + duration + " ms");

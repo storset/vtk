@@ -41,38 +41,21 @@ import org.vortikal.web.view.decorating.HtmlElement;
 
 public class HtmlPageImpl implements HtmlPage {
 
-    private HtmlElement html;
-    private HtmlElement head;
-    private HtmlElement title;
-    private HtmlElement body;
-    
+    private String doctype;
 
-    public HtmlPageImpl(HtmlElement html, HtmlElement head,
-                        HtmlElement title, HtmlElement body) {
-        this.html = html;
-        this.head = head;
-        this.title = title;
-        this.body = body;
-    }
+    private HtmlElement root;
     
+    public HtmlPageImpl(HtmlElement root, String doctype) {
+        this.root = root;
+        this.doctype = doctype;
+    }
 
-    public HtmlElement getHtmlElement() {
-        return this.html;
+    public HtmlElement getRootElement() {
+        return this.root;
     }
-    
-    
-    public HtmlElement getHeadElement() {
-        return this.head;
-    }
-    
 
-    public HtmlElement getTitleElement() {
-        return this.title;
-    }
-    
-
-    public HtmlElement getBodyElement() {
-        return this.body;
+    public String getDoctype() {
+        return this.doctype;
     }
     
 }

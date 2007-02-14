@@ -33,14 +33,41 @@ package org.vortikal.web.view.decorating;
 
 public interface HtmlElement {
 
+
+    /**
+     * Gets the name of this element.
+     */
     public String getName();
 
+    
+    /**
+     * Gets the contents of this element (including child elements) as
+     * a string.
+     */
     public String getContent();
 
-    public String getCompleteContent();
+    /**
+     * Gets the contents of this element (including child elements)
+     * with the enclosing tag and attributes as a string.
+     */
+    public String getEnclosedContent();
 
+
+    /**
+     * Gets the attributes of this element.
+     */
     public HtmlAttribute[] getAttributes();
 
+
+    /**
+     * Gets the child elements of this element.
+     */
     public HtmlElement[] getChildElements();
+
+
+    /**
+     * Gets the child elements of this element by name.
+     */
+    public HtmlElement[] getChildElements(String name);
 
 }

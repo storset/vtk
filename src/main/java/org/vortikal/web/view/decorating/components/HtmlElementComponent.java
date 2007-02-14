@@ -70,7 +70,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                 if (children[i].getName().equals(exclude)) {
                     continue;
                 }
-                out.write(children[i].getCompleteContent().getBytes("utf-8"));
+                out.write(children[i].getEnclosedContent().getBytes("utf-8"));
                 out.write("\n".getBytes("utf-8"));
             }
         }

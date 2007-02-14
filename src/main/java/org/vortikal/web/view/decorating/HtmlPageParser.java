@@ -31,8 +31,10 @@
 package org.vortikal.web.view.decorating;
 
 import java.io.InputStream;
+import java.io.Reader;
 
 public interface HtmlPageParser {
 
-    public HtmlPage parse(char[] content) throws Exception;
+    public HtmlPage parse(InputStream in, String encoding) throws Exception;
+
 }

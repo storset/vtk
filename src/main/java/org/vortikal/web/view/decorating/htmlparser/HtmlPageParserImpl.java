@@ -1,0 +1,173 @@
+/* Copyright (c) 2007, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.web.view.decorating.htmlparser;
+
+import java.io.CharArrayReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Vector;
+import org.htmlparser.Attribute;
+import org.htmlparser.Node;
+import org.htmlparser.Parser;
+import org.htmlparser.Remark;
+import org.htmlparser.Tag;
+import org.htmlparser.Text;
+import org.htmlparser.lexer.Lexer;
+import org.htmlparser.lexer.Page;
+import org.htmlparser.tags.DoctypeTag;
+import org.htmlparser.tags.Html;
+import org.htmlparser.util.NodeList;
+import org.htmlparser.visitors.NodeVisitor;
+import org.vortikal.web.view.decorating.HtmlElement;
+import org.vortikal.web.view.decorating.HtmlPage;
+import org.vortikal.web.view.decorating.HtmlPageParser;
+
+public class HtmlPageParserImpl implements HtmlPageParser {
+
+    private String defaultDoctype = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+    
+
+    public void setDefaultDoctype(String defaultDoctype) {
+        this.defaultDoctype = defaultDoctype;
+    }
+    
+
+    public HtmlPage parse(InputStream in, String encoding) throws Exception {
+        Page page = new Page(in, encoding);
+
+        Lexer lexer = new Lexer(page);
+
+        Parser parser = new Parser(lexer);
+        NodeList nodeList = parser.parse(null);
+
+        Node root = findRootNode(nodeList);
+        String doctype = findDoctype(nodeList);
+        if (doctype == null) {
+            doctype = this.defaultDoctype;
+        }
+        boolean xhtml = isXhtml(doctype);
+
+        HtmlElement rootEl = buildHtml(root, xhtml);
+        return new HtmlPageImpl(rootEl, doctype);
+    }
+
+
+    private boolean isXhtml(String doctype) {
+        boolean xhtml = doctype.toUpperCase().startsWith(
+            "HTML PUBLIC \"-//W3C//DTD XHTML");
+        return xhtml;
+    }
+    
+
+    private Node findRootNode(NodeList nodeList) {
+        Node root = null;
+        for (int i = 0; i < nodeList.size(); i++) {
+            Node node = nodeList.elementAt(i);
+            if (node instanceof DoctypeTag) {
+                continue;
+            } else if (node instanceof Tag) {
+                root = node;
+                break;
+            }
+        }
+        return root;
+    }
+    
+    private String findDoctype(NodeList nodeList) {
+        for (int i = 0; i < nodeList.size(); i++) {
+            Node node = nodeList.elementAt(i);
+            if (node != null && node instanceof DoctypeTag) {
+                DoctypeTag doctypeTag = (DoctypeTag) node;
+                String text = doctypeTag.getText();
+                if (text != null && text.startsWith("!DOCTYPE ")) {
+                    text = text.substring("!DOCTYPE ".length());
+                }
+                return text;
+            }
+        }
+        return null;
+    }
+    
+
+    private HtmlElementImpl buildHtml(Node node, boolean xhtml) {
+
+        if (node instanceof Tag) {
+            Tag tag = (Tag) node;
+            String name = tag.getRawTagName();
+            boolean empty = tag.isEmptyXmlTag() || tag.getEndTag() == null;
+            HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, false);
+
+            Vector attrs = tag.getAttributesEx();
+            for (int i = 0; i < attrs.size(); i++) {
+                Attribute attr = (Attribute) attrs.get(i);
+                if (attr != null && !attr.isWhitespace()) {
+                    String attrName = attr.getName();
+                    if (attrName != null && !name.equals(attrName) && !"/".equals(attrName)) {
+                        String attrValue = attr.getValue();
+                        element.addAttribute(new HtmlAttributeImpl(attrName, attrValue));
+                    }
+                }
+            }
+
+            NodeList children = tag.getChildren();
+            if (children != null) {
+                for (int i = 0; i < children.size(); i++) {
+                    HtmlElementImpl child = buildHtml(children.elementAt(i), xhtml);
+                    if (child != null) {
+                        element.addChild(child);
+                    }
+                }
+            }
+            return element;
+
+        } else if (node instanceof Text) {
+            Text text = (Text) node;
+            String name = "#text";
+            boolean empty = false;
+            HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, true);
+            element.setContent(text.getText());
+            return element;
+            
+        } else if (node instanceof Remark) {
+            Remark remark = (Remark) node;
+            String name = "#text";
+            boolean empty = false;
+            HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, true);
+            element.setContent(remark.toHtml());
+            return element;
+        }
+        // Unhandled node type:
+        return null;
+    }
+    
+
+}

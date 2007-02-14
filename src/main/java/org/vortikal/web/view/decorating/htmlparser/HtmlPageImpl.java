@@ -32,11 +32,8 @@ package org.vortikal.web.view.decorating.htmlparser;
 
 
 
-import com.opensymphony.module.sitemesh.HTMLPage;
-import java.util.HashMap;
-import java.util.Map;
-import org.vortikal.web.view.decorating.HtmlPage;
 import org.vortikal.web.view.decorating.HtmlElement;
+import org.vortikal.web.view.decorating.HtmlPage;
 
 
 public class HtmlPageImpl implements HtmlPage {

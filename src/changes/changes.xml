@@ -14,6 +14,13 @@
 
     </release>
 
+    <release version="0.3.4.1" date="2007-02-08" description="Release 0.3.4.1">
+      <action type="add">
+        Added ThrottleHandlerInterceptor (avoid too many concurrent
+        requests from a single client).
+      </action>
+    </release>
+
     <release version="0.3.4" date="2006-01-18" description="Release 0.3.4">
 
       <action type="fix">

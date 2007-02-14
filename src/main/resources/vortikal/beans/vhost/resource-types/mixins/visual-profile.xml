@@ -215,6 +215,11 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>psyk</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>sosiologi</value>
           </constructor-arg>
         </bean>

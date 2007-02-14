@@ -67,7 +67,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         } else {
             HtmlElement[] children = element.getChildElements();
             for (int i = 0; i < children.length; i++) {
-                if (children[i].getName().equals(exclude)) {
+                if (excludedElements.contains(children[i].getName())) {
                     continue;
                 }
                 out.write(children[i].getEnclosedContent().getBytes("utf-8"));

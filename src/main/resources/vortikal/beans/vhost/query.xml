@@ -4,8 +4,8 @@
 <beans>
 
   <bean id="queryParser"
-        class="org.vortikal.repositoryimpl.query.parser.QueryParser">
-    <constructor-arg ref="resourceTypeTree" />
+        class="org.vortikal.repositoryimpl.query.parser.QueryParserFactoryImpl">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="queryManager" class="org.vortikal.repositoryimpl.query.parser.QueryManager">

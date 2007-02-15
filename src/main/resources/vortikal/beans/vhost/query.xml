@@ -3,13 +3,13 @@
 
 <beans>
 
-  <bean id="queryParser"
-        class="org.vortikal.repositoryimpl.query.parser.QueryParser">
-    <constructor-arg ref="resourceTypeTree" />
+  <bean id="queryParserFactory"
+        class="org.vortikal.repositoryimpl.query.parser.QueryParserFactoryImpl">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="queryManager" class="org.vortikal.repositoryimpl.query.parser.QueryManager">
-    <property name="parser" ref="queryParser" />
+    <property name="parserFactory" ref="queryParserFactory" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryStringProcessor" ref="queryStringProcessor" />
   </bean>

@@ -45,13 +45,13 @@ public class QueryManager implements InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private Parser parser;
+    private QueryParserFactory parserFactory;
     private Searcher searcher;
     private QueryStringProcessor queryStringProcessor;
     
 
-    public void setParser(Parser parser) {
-        this.parser = parser;
+    public void setParserFactory(QueryParserFactory parserFactory) {
+        this.parserFactory = parserFactory;
     }
 
     public void setSearcher(Searcher searcher) {
@@ -63,8 +63,8 @@ public class QueryManager implements InitializingBean {
     }
     
     public void afterPropertiesSet() throws Exception {
-        if (this.parser == null) {
-            throw new BeanInitializationException("JavaBean property 'parser' not set");
+        if (this.parserFactory == null) {
+            throw new BeanInitializationException("JavaBean property 'parserFactory' not set");
         }
         if (this.searcher == null) {
             throw new BeanInitializationException("JavaBean property 'searcher' not set");
@@ -77,7 +77,8 @@ public class QueryManager implements InitializingBean {
     }
 
     public ResultSet execute(String token, String queryString) throws QueryException {
-        Query q = this.parser.parse(queryString);
+        Parser parser = this.parserFactory.getParser();
+        Query q = parser.parse(queryString);
         return execute(token, q); 
     }
     
@@ -85,7 +86,8 @@ public class QueryManager implements InitializingBean {
                              Sorting sorting, int maxResults, PropertySelect select)
         throws QueryException {
         queryString = this.queryStringProcessor.processQueryString(queryString);
-        Query q = this.parser.parse(queryString);
+        Parser parser = this.parserFactory.getParser();
+        Query q = parser.parse(queryString);
         return execute(token, q, sorting, maxResults, select); 
     }
     

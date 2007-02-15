@@ -5,13 +5,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repositoryimpl.query.query.Query;
 
-public class QueryParserFactoryImpl implements Parser, InitializingBean {
+public class QueryParserFactoryImpl implements QueryParserFactory, InitializingBean {
 
     private ResourceTypeTree resourceTypeTree;
 
-    public Query parse(String query) {
-        QueryParser parser = new QueryParser(resourceTypeTree);
-        return parser.parse(query);
+    public Parser getParser() {
+        // Generated from QueryParser.jj:
+        return new QueryParser(resourceTypeTree);
     }
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {

@@ -65,6 +65,18 @@ public class HtmlPageParserImplTestCase extends TestCase {
                      .getAttributes()[1].getValue());
     }
     
+    private static final String PARTIAL_HTML_PAGE =
+        "  <body>The <div>page</div></body>";
+    
+    public void testPartialHtmlPage() throws Exception {
+        HtmlPage page = parse(PARTIAL_HTML_PAGE);
+        assertEquals("body", page.getRootElement().getName());
+        assertEquals("div", page.getRootElement().getChildElements()[0].getName());
+        assertEquals("page", page.getRootElement().getChildElements()[0].getContent());
+        assertEquals("The <div>page</div>", page.getRootElement().getContent());
+    }
+
+
     String VALID_HTML_401_TRANS = 
         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
         + "<html>\n"

@@ -228,6 +228,11 @@ public class DecoratingViewWrapper implements ViewWrapper {
             templateResponse = new BufferedResponse();
             
             HtmlPage html = parseHtml(content);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Parsed document [root element: " + html.getRootElement() + " "
+                             + ", doctype: "+ html.getDoctype() + "]");
+            }
+
             templates[i].render(model, html, request, ctx.getLocale(), templateResponse);
             content = new String(templateResponse.getContentBuffer(),
                                  templateResponse.getCharacterEncoding());

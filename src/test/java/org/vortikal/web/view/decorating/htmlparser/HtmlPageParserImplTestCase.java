@@ -160,6 +160,32 @@ public class HtmlPageParserImplTestCase extends TestCase {
     }
 
 
+    public void testHtmlFile1() throws Exception {
+        HtmlPage page = parseFile("test-1.html");
+        assertEquals("html", page.getRootElement().getName());
+        assertEquals("head", page.getRootElement().getChildElements()[0].getName());
+
+        assertEquals("Maecenas lobortis", page.getRootElement()
+                     .getChildElements()[1]
+                     .getChildElements()[1]
+                     .getChildElements()[1]
+                     .getChildElements("span")[0].getContent());
+
+        assertEquals("Maecenas lobortis", page.getRootElement()
+                     .getChildElements()[1]
+                     .getChildElements()[1]
+                     .getChildElements()[1]
+                     .getChildElements("span")[0].getContent());
+
+        assertEquals("sollicitudin", page.getRootElement()
+                     .getChildElements("body")[0]
+                     .getChildElements("div")[0]
+                     .getChildElements("p")[2]
+                     .getChildElements("span")[3].getContent());
+    }
+
+
+
     private HtmlPage parse(String content) throws Exception {
         HtmlPageParser parser = new HtmlPageParserImpl();
         long before = System.currentTimeMillis();
@@ -169,4 +195,19 @@ public class HtmlPageParserImplTestCase extends TestCase {
         return page;
     }
     
+    private HtmlPage parseFile(String fileName) throws Exception {
+        HtmlPageParser parser = new HtmlPageParserImpl();
+        long before = System.currentTimeMillis();
+        HtmlPage page = parser.parse(getClass().getResourceAsStream(fileName), "utf-8");
+        long duration = System.currentTimeMillis() - before;
+        return page;
+    }
+    
+    private void print(HtmlElement element, String indent) {
+        System.out.println(indent + element.getName());
+        HtmlElement[] children = element.getChildElements();
+        for (int i = 0; i < children.length; i++) {
+            print(children[i], indent + "  ");
+        }
+    }
 }

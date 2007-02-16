@@ -98,8 +98,6 @@ public class ProppatchController extends AbstractWebdavController  {
             /* Make sure the request is valid: */
             validateRequestBody(requestBody);
 
-            //Resource resource = repository.retrieve(token, uri, false);
-
             doPropertyUpdate(resource, requestBody, token);
             
             /* Store the altered resource: */
@@ -115,10 +113,8 @@ public class ProppatchController extends AbstractWebdavController  {
             model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
         } catch (InvalidRequestException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Caught InvalidRequestException for URI "
-                             + uri, e);
-            }
+            this.logger.info("Invalid request on URI '" + uri + "'", e);
+
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_BAD_REQUEST));

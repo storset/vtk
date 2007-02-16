@@ -33,18 +33,17 @@ package org.vortikal.web.view.decorating;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
-import org.vortikal.web.servlet.BufferedResponse;
 
 
 
@@ -130,8 +129,6 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < this.fragments.length; i++) {
             
-            BufferedResponse bufferedResponse = new BufferedResponse();
-
             try {
                 DecoratorComponent c = this.fragments[i].getComponent();
                 if (c instanceof ReferenceDataProviding) {

@@ -30,17 +30,18 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.web.view.decorating.HtmlElement;
 import org.vortikal.web.view.decorating.HtmlPage;
-import java.io.OutputStream;
 
 public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorComponent {
 
     private String elementPath;
-    private String exclude;
-    
 
     public void setSelect(String select) {
         this.elementPath = select;
@@ -57,39 +58,38 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
         String[] path = expression.split("\\.");        
 
         HtmlPage page = request.getHtmlPage();
-        HtmlElement element = null;
         HtmlElement current = page.getRootElement();
+
         if (current == null) {
             return;
         }
+        
+        HtmlElement[] elements = new HtmlElement[] {current} ;
 
-        for (int i = 0; i < path.length; i++) {
+        int i = 0;
+        while (i < path.length && elements.length > 0) {
             String name = path[i];
-            HtmlElement[] children = current.getChildElements();
-            boolean found = false;
-            for (int j = 0; j < children.length; j++) {
-                if (children[j].getName().equals(name)) {
-                    current = children[j];
-                    found = true;
-                    break;
-                }
+            List list = new ArrayList();
+            
+            for (int j = 0; j < elements.length; j++) {
+                HtmlElement e = elements[j];
+                HtmlElement[] m = e.getChildElements(name);
+                list.addAll(Arrays.asList(m));
             }
-            if (!found) {
-                element = null;
-                return;
-            }
-            element = current;
+        
+            elements = (HtmlElement[])list.toArray(new HtmlElement[list.size()]);
+            i++;
         }
         
-        if (element == null) {
+        if (i < path.length - 1 || elements.length == 0) {
             return;
         }
 
-        handleElement(element, request, response);
+        handleElements(elements, request, response);
     }
 
 
-    protected abstract void handleElement(HtmlElement element,
+    protected abstract void handleElements(HtmlElement[] elements,
                                           DecoratorRequest request,
                                           DecoratorResponse response) throws Exception;
 

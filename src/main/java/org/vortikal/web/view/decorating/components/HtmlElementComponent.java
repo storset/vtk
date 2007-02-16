@@ -31,15 +31,16 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.Set;
+
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.web.view.decorating.HtmlElement;
-import org.vortikal.web.view.decorating.HtmlPage;
-import java.util.HashSet;
 
 public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
+    private static final String ENCODING = "utf-8";
     private String exclude;
     
     public void setExclude(String exclude) {
@@ -47,7 +48,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
     }
     
 
-    public void handleElement(HtmlElement element, DecoratorRequest request,
+    public void handleElements(HtmlElement[] elements, DecoratorRequest request,
                               DecoratorResponse response) throws Exception {
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter("exclude");
@@ -60,18 +61,21 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
             }
         }
 
-        response.setCharacterEncoding("utf-8");
+        response.setCharacterEncoding(ENCODING);
         OutputStream out = response.getOutputStream();
         if (exclude == null) {
-            out.write(element.getContent().getBytes("utf-8"));
+            for (int i = 0; i < elements.length; i++) {
+                out.write(elements[i].getEnclosedContent().getBytes(ENCODING));    
+            }
+
         } else {
-            HtmlElement[] children = element.getChildElements();
-            for (int i = 0; i < children.length; i++) {
-                if (excludedElements.contains(children[i].getName())) {
+            //HtmlElement[] children = elements.getChildElements();
+            for (int i = 0; i < elements.length; i++) {
+                if (excludedElements.contains(elements[i].getName())) {
                     continue;
                 }
-                out.write(children[i].getEnclosedContent().getBytes("utf-8"));
-                out.write("\n".getBytes("utf-8"));
+                out.write(elements[i].getEnclosedContent().getBytes(ENCODING));
+                out.write("\n".getBytes(ENCODING));
             }
         }
         out.flush();

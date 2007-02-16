@@ -31,13 +31,13 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.Set;
+
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.web.view.decorating.HtmlAttribute;
 import org.vortikal.web.view.decorating.HtmlElement;
-import org.vortikal.web.view.decorating.HtmlPage;
-import java.util.HashSet;
 
 public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
 
@@ -47,8 +47,13 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         this.exclude = exclude;
     }
     
-    public void handleElement(HtmlElement element, DecoratorRequest request,
+    public void handleElements(HtmlElement[] elements, DecoratorRequest request,
                               DecoratorResponse response) throws Exception {
+        if (elements.length == 0) {
+            return;
+        }
+        HtmlElement element = elements[0];
+        
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter("exclude");
 

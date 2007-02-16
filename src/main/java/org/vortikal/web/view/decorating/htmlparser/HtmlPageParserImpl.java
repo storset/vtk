@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Vector;
+
 import org.htmlparser.Attribute;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
@@ -47,13 +48,16 @@ import org.htmlparser.tags.DoctypeTag;
 import org.htmlparser.tags.Html;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.visitors.NodeVisitor;
+
 import org.vortikal.web.view.decorating.HtmlElement;
 import org.vortikal.web.view.decorating.HtmlPage;
 import org.vortikal.web.view.decorating.HtmlPageParser;
 
 public class HtmlPageParserImpl implements HtmlPageParser {
 
-    private String defaultDoctype = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+    private String defaultDoctype =
+        "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
+        + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
     
 
     public void setDefaultDoctype(String defaultDoctype) {
@@ -118,6 +122,23 @@ public class HtmlPageParserImpl implements HtmlPageParser {
     }
     
 
+
+    private void addAttributes(HtmlElementImpl element, Tag tag) {
+        String name = tag.getRawTagName();
+        Vector attrs = tag.getAttributesEx();
+        for (int i = 0; i < attrs.size(); i++) {
+            Attribute attr = (Attribute) attrs.get(i);
+            if (attr != null && !attr.isWhitespace()) {
+                String attrName = attr.getName();
+                if (attrName != null && !name.equals(attrName) && !"/".equals(attrName)) {
+                    String attrValue = attr.getValue();
+                    element.addAttribute(new HtmlAttributeImpl(attrName, attrValue));
+                }
+            }
+        }
+    }
+    
+
     private HtmlElementImpl buildHtml(Node node, boolean xhtml) {
 
         if (node instanceof Tag) {
@@ -126,25 +147,56 @@ public class HtmlPageParserImpl implements HtmlPageParser {
             boolean empty = tag.isEmptyXmlTag() || tag.getEndTag() == null;
             HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, false);
 
-            Vector attrs = tag.getAttributesEx();
-            for (int i = 0; i < attrs.size(); i++) {
-                Attribute attr = (Attribute) attrs.get(i);
-                if (attr != null && !attr.isWhitespace()) {
-                    String attrName = attr.getName();
-                    if (attrName != null && !name.equals(attrName) && !"/".equals(attrName)) {
-                        String attrValue = attr.getValue();
-                        element.addAttribute(new HtmlAttributeImpl(attrName, attrValue));
-                    }
-                }
-            }
+            if (tag.isEndTag()) {
+                return null;
+            } 
 
+            addAttributes(element, tag);
+            
             NodeList children = tag.getChildren();
             if (children != null) {
                 for (int i = 0; i < children.size(); i++) {
+                    Node childNode = children.elementAt(i);
+
+                    // Handle "flattened" nodes (tags that should be
+                    // nested, but aren't):
+
+                    if (i <= children.size() - 3) {
+                        Node firstSibling = children.elementAt(i + 1);
+                        Node nextSibling = children.elementAt(i + 2);
+
+                        if (childNode instanceof Tag
+                            && firstSibling != null
+                            && nextSibling != null
+                            && firstSibling instanceof Text
+                            && nextSibling instanceof Tag
+                            && ((Tag) nextSibling).isEndTag()
+                            && ((Tag) nextSibling).getTagName()
+                               .equals(((Tag)childNode).getTagName())) {
+
+                            HtmlElementImpl child = new HtmlElementImpl(
+                                ((Tag) childNode).getRawTagName(), false, xhtml, false);
+
+                            if (child != null) {
+                                HtmlElementImpl textNode = new HtmlElementImpl(
+                                    "#text", false, xhtml, true);
+                                textNode.setContent(((Text) firstSibling).getText());
+
+                                if (textNode != null) {
+                                    child.addChild(textNode);
+                                }
+                                element.addChild(child);
+
+                                i+=2; // Skip the text node and end tag:
+                            }
+                            continue;
+                        }
+                    } 
                     HtmlElementImpl child = buildHtml(children.elementAt(i), xhtml);
                     if (child != null) {
                         element.addChild(child);
                     }
+
                 }
             }
             return element;
@@ -159,7 +211,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
             
         } else if (node instanceof Remark) {
             Remark remark = (Remark) node;
-            String name = "#text";
+            String name = "#comment";
             boolean empty = false;
             HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, true);
             element.setContent(remark.toHtml());
@@ -168,6 +220,4 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         // Unhandled node type:
         return null;
     }
-    
-
 }

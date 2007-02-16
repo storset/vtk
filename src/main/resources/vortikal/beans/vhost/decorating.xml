@@ -14,12 +14,12 @@
 
   <bean id="decoratingViewWrapper"
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-    <property name="htmlParser" ref="decorating.siteMeshParser" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateResolver" ref="templateResolver" />
     <property name="ssiHandler" ref="ssiHandler"  />
   </bean>
 
-  <bean id="decorating.siteMeshParser"
+  <bean id="decorating.htmlParser"
         class="org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl">
   </bean>
 

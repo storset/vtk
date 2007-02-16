@@ -87,7 +87,7 @@ public class DefaultTemplateParser implements TemplateParser {
                 fragmentList.add(staticTextComponent(s.substring(contentIdx, directiveStart - 2)));
                 fragmentList.add(c);
             } else {
-                fragmentList.add(staticTextComponent(s.substring(directiveStart - 2, directiveEnd + 1)));
+                fragmentList.add(staticTextComponent(s.substring(contentIdx, directiveEnd + 1)));
             }
             contentIdx = directiveEnd + 1;
         }

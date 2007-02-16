@@ -61,8 +61,6 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    private String coreHtmlModelName = "core";
-
     private HtmlPageParser parser;
     private TemplateResolver templateResolver;
     
@@ -232,10 +230,15 @@ public class DecoratingViewWrapper implements ViewWrapper {
                 logger.debug("Parsed document [root element: " + html.getRootElement() + " "
                              + ", doctype: "+ html.getDoctype() + "]");
             }
-
-            templates[i].render(model, html, request, ctx.getLocale(), templateResponse);
-            content = new String(templateResponse.getContentBuffer(),
-                                 templateResponse.getCharacterEncoding());
+            HtmlElement rootElement = html.getRootElement();
+            if (rootElement != null && "frameset".equals(rootElement.getName())) {
+                // Framesets are not decorated:
+                content = html.getDoctype() + rootElement.getEnclosedContent();
+            } else {
+                templates[i].render(model, html, request, ctx.getLocale(), templateResponse);
+                content = new String(templateResponse.getContentBuffer(),
+                                     templateResponse.getCharacterEncoding());
+            }
         }
         writeResponse(templateResponse, servletResponse, "text/html");
     }

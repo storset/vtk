@@ -83,7 +83,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         String uri = request.getStringParameter("uri");;
         if (uri == null) {
-            throw new IllegalArgumentException("Parameter 'uri' not specified");
+            throw new DecoratorComponentException("Parameter 'uri' not specified");
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();

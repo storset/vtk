@@ -47,8 +47,8 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         this.exclude = exclude;
     }
     
-    public void handleElements(HtmlElement[] elements, DecoratorRequest request,
-                              DecoratorResponse response) throws Exception {
+    public void processElements(HtmlElement[] elements, DecoratorRequest request,
+                                DecoratorResponse response) throws Exception {
         if (elements.length == 0) {
             return;
         }

@@ -34,12 +34,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.web.view.decorating.HtmlElement;
 import org.vortikal.web.view.decorating.HtmlPage;
 
 public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorComponent {
+
+    private static Log logger = LogFactory.getLog(AbstractDecoratorComponent.class);
 
     private String elementPath;
 
@@ -52,21 +57,33 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
         String expression = (this.elementPath != null) ?
             this.elementPath : request.getStringParameter("select");
         if (expression == null) {
-            throw new IllegalArgumentException("Missing parameter 'select'");
+            throw new DecoratorComponentException("Missing parameter 'select'");
         }
 
-        String[] path = expression.split("\\.");        
+        String[] path = expression.split("\\.");
 
         HtmlPage page = request.getHtmlPage();
         HtmlElement current = page.getRootElement();
 
         if (current == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("No root element in page");
+            }
+
             return;
         }
         
         HtmlElement[] elements = new HtmlElement[] {current} ;
 
-        int i = 0;
+        if (!current.getName().equals(path[0])) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("No node match for expression '" + expression + "'");
+            }
+            return;
+        }
+
+
+        int i = 1;
         while (i < path.length && elements.length > 0) {
             String name = path[i];
             List list = new ArrayList();
@@ -85,13 +102,17 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
             return;
         }
 
-        handleElements(elements, request, response);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Processing elements: " + java.util.Arrays.asList(elements));
+        }
+
+        processElements(elements, request, response);
     }
 
 
-    protected abstract void handleElements(HtmlElement[] elements,
-                                          DecoratorRequest request,
-                                          DecoratorResponse response) throws Exception;
+    protected abstract void processElements(HtmlElement[] elements,
+                                            DecoratorRequest request,
+                                            DecoratorResponse response) throws Exception;
 
 }
 

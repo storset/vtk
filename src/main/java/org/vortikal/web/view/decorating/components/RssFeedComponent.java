@@ -75,7 +75,7 @@ public class RssFeedComponent extends AbstractDecoratorComponent {
         String result = null;
         String address = request.getStringParameter("address");
         if (address == null) {
-            throw new IllegalArgumentException(
+            throw new DecoratorComponentException(
                 "Component parameter 'address' is required");
         }
 

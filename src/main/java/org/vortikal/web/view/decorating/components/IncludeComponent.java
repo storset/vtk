@@ -31,16 +31,31 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.InputStream;
+import java.io.OutputStream;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.web.context.ServletContextAware;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
+import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.servlet.VortikalServlet;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
-public class IncludeComponent extends AbstractDecoratorComponent {
+public class IncludeComponent extends AbstractDecoratorComponent implements ServletContextAware {
+
+    private static final String INCLUDE_ATTRIBUTE_NAME =
+        IncludeComponent.class.getName() + ".IncludeRequestAttribute";
+
+
+    private ServletContext servletContext;
 
     private static Log logger = LogFactory.getLog(IncludeComponent.class);
     
@@ -50,23 +65,111 @@ public class IncludeComponent extends AbstractDecoratorComponent {
         this.repository = repository;
     }
 
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+      
+    }
+
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
+        boolean virtual = false;
         String uri = request.getStringParameter("uri");;
         if (uri == null) {
-            throw new IllegalArgumentException("Parameter 'uri' not specified");
+            uri = request.getStringParameter("virtual");
+            if (uri == null) {
+                throw new DecoratorComponentException(
+                    "One of parameters 'uri' or 'virtual' must be specified");
+            }
+            virtual = true;
         }
+            
+        if (virtual) {
+            handleVirtualInclude(uri, request, response);
+        } else {
+            handleDirectInclude(uri, request, response);
+        }
+    }
+
+    private void handleDirectInclude(String uri, DecoratorRequest request,
+                                     DecoratorResponse response) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
 
         String content = null;
         InputStream is = null;
         Resource r = this.repository.retrieve(token, uri, false);
+
+        if (r.isCollection() || !ContentTypeHelper.isTextContentType(r.getContentType())) {
+            throw new DecoratorComponentException(
+                "Cannot include URI '" + uri + "': not a textual resource");
+        }
+
         String characterEncoding = r.getCharacterEncoding();
         is = this.repository.getInputStream(token, uri, true);
         byte[] bytes = StreamUtil.readInputStream(is);
         
         response.setCharacterEncoding(characterEncoding);
-        response.getOutputStream().write(bytes);
+        OutputStream out = response.getOutputStream();
+        out.write(bytes);
+        out.close();
+    }
+    
+
+
+    private void handleVirtualInclude(String uri, DecoratorRequest request,
+                                      DecoratorResponse response) throws Exception {
+        
+        HttpServletRequest servletRequest = request.getServletRequest();
+        if (servletRequest.getAttribute(INCLUDE_ATTRIBUTE_NAME) != null) {
+            throw new DecoratorComponentException(
+                "Error including URI '" + uri + "': possible include loop detected ");
+        }
+
+        // XXX: encode URI?
+        String encodedURI = uri;
+
+        RequestWrapper requestWrapper = new RequestWrapper(servletRequest, encodedURI);
+        requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, new Object());
+        
+        String servletName = (String) servletRequest.getAttribute(
+                VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
+
+        RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
+        
+        if (rd == null) {
+            throw new RuntimeException(
+                "No request dispatcher for name '" + servletName + "' available");
+        }
+
+        BufferedResponse servletResponse = new BufferedResponse();
+        rd.forward(requestWrapper, servletResponse);
+        
+        if (!ContentTypeHelper.isTextContentType(servletResponse.getContentType())) {
+            throw new DecoratorComponentException(
+                "Cannot include URI '" + uri + "': not a textual resource");
+        }
+
+        byte[] bytes = servletResponse.getContentBuffer();
+        response.setCharacterEncoding(servletResponse.getCharacterEncoding());
+        OutputStream out = response.getOutputStream();
+        out.write(bytes);
+        out.close();
+    }
+    
+
+    private class RequestWrapper extends HttpServletRequestWrapper {
+
+        private String uri;
+        private HttpServletRequest request;
+        
+        public RequestWrapper(HttpServletRequest request, String uri) {
+            super(request);
+            this.uri = uri;
+            this.request = request;
+        }
+        
+        public String getRequestURI() {
+            return this.uri;
+        }
     }
 
 }

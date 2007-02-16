@@ -48,8 +48,8 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
     }
     
 
-    public void handleElements(HtmlElement[] elements, DecoratorRequest request,
-                              DecoratorResponse response) throws Exception {
+    public void processElements(HtmlElement[] elements, DecoratorRequest request,
+                                DecoratorResponse response) throws Exception {
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter("exclude");
 

@@ -79,7 +79,6 @@ public class IndexFileController
     private Log logger = LogFactory.getLog(this.getClass());
     private String[] indexFiles;
     private Repository repository;
-    private String servletName;
     private ServletContext servletContext;
     private String uriCharacterEncoding = "utf-8";
     
@@ -178,7 +177,7 @@ public class IndexFileController
         
         if (rd == null) {
             throw new RuntimeException(
-                "No request dispatcher for name '" + this.servletName + "' available");
+                "No request dispatcher for name '" + servletName + "' available");
         }
 
         try {

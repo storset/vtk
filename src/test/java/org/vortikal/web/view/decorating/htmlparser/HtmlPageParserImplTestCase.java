@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 import org.vortikal.web.view.decorating.HtmlElement;
 import org.vortikal.web.view.decorating.HtmlPage;
 import org.vortikal.web.view.decorating.HtmlPageParser;
+import org.vortikal.web.view.decorating.HtmlPageParserException;
 
 
 public class HtmlPageParserImplTestCase extends TestCase {
@@ -65,6 +66,17 @@ public class HtmlPageParserImplTestCase extends TestCase {
                      .getAttributes()[1].getValue());
     }
     
+    private static final String UNFORMATTED_STRING =
+        "  body The div page div body";
+    
+    public void testUnformattedString() throws Exception {
+        try {
+            HtmlPage page = parse(UNFORMATTED_STRING);
+        } catch (HtmlPageParserException e) {
+            // Expected
+        }
+    }
+
     private static final String PARTIAL_HTML_PAGE =
         "  <body>The <div>page</div></body>";
     
@@ -81,6 +93,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
         + "<html>\n"
         + "  <head>\n"
+        + "    <!-- My comment #1 -->\n"
         + "    <link REL=\"stylesheet\" HREF=\"/some/stylesheet.css\">\n"
         + "    <link REL=\"stylesheet\" HREF=\"/some/other/stylesheet.css\">\n"
         + "    <title>My title</title>\n"
@@ -92,7 +105,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
         + "        <h1>Header 1</h1>\n"
         + "      </div>\n"
         + "    </div>\n"
-        + "    <!-- My comment #1 -->\n"
+        + "    <!-- My comment #2 -->\n"
         + "    <br>\n"
         + "    <form action=\"http://foo.bar/post.html\" method=\"POST\">\n"
         + "      <select name=val1>\n"
@@ -101,7 +114,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
         + "    </form>\n"
         + "    <hr>\n"
         + "    <table class=\"myListing\">\n"
-        + "      <!-- My comment #2 -->\n"
+        + "      <!-- My comment #3 -->\n"
         + "      <tr class=\"listingHeader\">\n"
         + "        <th class=\"sortColumn name\"><a href=\"http://foo.bar?sort=1\">Name</a></th>\n"
         + "        <th class=\"size\"><a href=\"http://foo.bar?sort=2\">Size</a></th>\n"
@@ -124,6 +137,12 @@ public class HtmlPageParserImplTestCase extends TestCase {
 
     public void testValidHtml401Trans() throws Exception {
         HtmlPage page = parse(VALID_HTML_401_TRANS);
+        assertEquals("html", page.getRootElement().getName());
+        assertEquals("head", page.getRootElement().getChildElements()[0].getName());
+        assertEquals(" My comment #1 ", page.getRootElement()
+                     .getChildElements()[0]
+                     .getChildNodes()[1].getContent());
+
     }
     
 
@@ -195,8 +214,6 @@ public class HtmlPageParserImplTestCase extends TestCase {
                      .getChildElements("p")[2]
                      .getChildElements("span")[3].getContent());
     }
-
-
 
     private HtmlPage parse(String content) throws Exception {
         HtmlPageParser parser = new HtmlPageParserImpl();

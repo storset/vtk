@@ -41,15 +41,38 @@ import org.vortikal.web.view.decorating.HtmlElement;
 public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
     private static final String ENCODING = "utf-8";
+    private String include;
     private String exclude;
+    private boolean enclosed = true;
+    
     
     public void setExclude(String exclude) {
         this.exclude = exclude;
     }
-    
 
+    public void setEnclosed(boolean enclosed) {
+        this.enclosed = enclosed;
+    }
+    
+    
     public void processElements(HtmlElement[] elements, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
+
+        boolean enclosed = (request.getStringParameter("enclosed") != null) ?
+            "true".equals(request.getStringParameter("enclosed")) :
+            this.enclosed;
+
+        String include = (this.include != null) ?
+            this.include : request.getStringParameter("include");
+
+        Set includedElements = new HashSet();
+        if (include != null) {
+            String[] splitValues = exclude.split(",");
+            for (int i = 0; i < splitValues.length; i++) {
+                includedElements.add(splitValues[i]);
+            }
+        }
+
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter("exclude");
 
@@ -63,20 +86,22 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
         response.setCharacterEncoding(ENCODING);
         OutputStream out = response.getOutputStream();
-        if (exclude == null) {
-            for (int i = 0; i < elements.length; i++) {
-                out.write(elements[i].getEnclosedContent().getBytes(ENCODING));    
-            }
 
-        } else {
-            //HtmlElement[] children = elements.getChildElements();
-            for (int i = 0; i < elements.length; i++) {
-                if (excludedElements.contains(elements[i].getName())) {
-                    continue;
+        for (int i = 0; i < elements.length; i++) {
+            boolean included = true;
+            if (excludedElements.contains(elements[i].getName())) {
+                included = false;
+            } else if (include != null && !include.contains(elements[i].getName())) {
+                included = false;
+            } 
+            if (included) {
+                if (enclosed) {
+                    out.write(elements[i].getEnclosedContent().getBytes(ENCODING));
+                } else {
+                    out.write(elements[i].getContent().getBytes(ENCODING));
                 }
-                out.write(elements[i].getEnclosedContent().getBytes(ENCODING));
-                out.write("\n".getBytes(ENCODING));
             }
+            
         }
         out.flush();
         out.close();

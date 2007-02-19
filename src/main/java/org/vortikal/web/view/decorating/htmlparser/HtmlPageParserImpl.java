@@ -49,9 +49,15 @@ import org.htmlparser.tags.Html;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.visitors.NodeVisitor;
 
+import org.vortikal.web.view.decorating.HtmlComment;
+import org.vortikal.web.view.decorating.HtmlContent;
 import org.vortikal.web.view.decorating.HtmlElement;
+import org.vortikal.web.view.decorating.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.HtmlPage;
 import org.vortikal.web.view.decorating.HtmlPageParser;
+import org.vortikal.web.view.decorating.HtmlPageParserException;
+import org.vortikal.web.view.decorating.HtmlText;
+
 
 public class HtmlPageParserImpl implements HtmlPageParser {
 
@@ -63,9 +69,20 @@ public class HtmlPageParserImpl implements HtmlPageParser {
     public void setDefaultDoctype(String defaultDoctype) {
         this.defaultDoctype = defaultDoctype;
     }
-    
+
 
     public HtmlPage parse(InputStream in, String encoding) throws Exception {
+        HtmlNodeFilter filter = new HtmlNodeFilter() {
+           public HtmlContent filterNode(HtmlContent node) {
+              return node;
+           }
+        };
+        return parse(in, encoding, filter);
+    }
+    
+
+    public HtmlPage parse(InputStream in, String encoding, HtmlNodeFilter filter)
+        throws Exception {
         Page page = new Page(in, encoding);
 
         Lexer lexer = new Lexer(page);
@@ -80,8 +97,11 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         }
         boolean xhtml = isXhtml(doctype);
 
-        HtmlElement rootEl = buildHtml(root, xhtml);
-        return new HtmlPageImpl(rootEl, doctype);
+        HtmlElement rootElement = (HtmlElement) buildHtml(root, filter, xhtml);
+        if (rootElement == null) {
+            throw new HtmlPageParserException("Unable to parse input: no root element");
+        }
+        return new HtmlPageImpl(rootElement, doctype);
     }
 
 
@@ -139,13 +159,13 @@ public class HtmlPageParserImpl implements HtmlPageParser {
     }
     
 
-    private HtmlElementImpl buildHtml(Node node, boolean xhtml) {
+    private HtmlContent buildHtml(Node node, HtmlNodeFilter filter, boolean xhtml) {
 
         if (node instanceof Tag) {
             Tag tag = (Tag) node;
             String name = tag.getRawTagName();
             boolean empty = tag.isEmptyXmlTag() || tag.getEndTag() == null;
-            HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, false);
+            HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml);
 
             if (tag.isEndTag()) {
                 return null;
@@ -175,47 +195,38 @@ public class HtmlPageParserImpl implements HtmlPageParser {
                                .equals(((Tag)childNode).getTagName())) {
 
                             HtmlElementImpl child = new HtmlElementImpl(
-                                ((Tag) childNode).getRawTagName(), false, xhtml, false);
+                                ((Tag) childNode).getRawTagName(), false, xhtml);
 
                             if (child != null) {
-                                HtmlElementImpl textNode = new HtmlElementImpl(
-                                    "#text", false, xhtml, true);
-                                textNode.setContent(((Text) firstSibling).getText());
-
-                                if (textNode != null) {
-                                    child.addChild(textNode);
-                                }
-                                element.addChild(child);
+                                HtmlText textNode = new HtmlTextImpl(
+                                    ((Text) firstSibling).getText());
+                                child.addContent(textNode);
+                                element.addContent(child);
 
                                 i+=2; // Skip the text node and end tag:
                             }
                             continue;
                         }
                     } 
-                    HtmlElementImpl child = buildHtml(children.elementAt(i), xhtml);
+                    HtmlContent child = buildHtml(children.elementAt(i), filter, xhtml);
                     if (child != null) {
-                        element.addChild(child);
+                        element.addContent(child);
                     }
 
                 }
             }
-            return element;
+            return filter.filterNode(element);
 
         } else if (node instanceof Text) {
             Text text = (Text) node;
-            String name = "#text";
-            boolean empty = false;
-            HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, true);
-            element.setContent(text.getText());
-            return element;
+            HtmlTextImpl textNode = new HtmlTextImpl(text.getText());
+            return filter.filterNode(textNode);
             
         } else if (node instanceof Remark) {
             Remark remark = (Remark) node;
-            String name = "#comment";
-            boolean empty = false;
-            HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml, true);
-            element.setContent(remark.toHtml());
-            return element;
+            HtmlCommentImpl comment = new HtmlCommentImpl(
+                new HtmlTextImpl(remark.getText()), remark.toHtml());
+            return filter.filterNode(comment);
         }
         // Unhandled node type:
         return null;

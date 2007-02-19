@@ -30,30 +30,30 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.vortikal.web.view.decorating.EnclosingHtmlContent;
 import org.vortikal.web.view.decorating.HtmlAttribute;
+import org.vortikal.web.view.decorating.HtmlContent;
 import org.vortikal.web.view.decorating.HtmlElement;
+
 
 public class HtmlElementImpl implements HtmlElement {
     private boolean empty;
     private boolean xhtml;
 
     private String name;
-    private String content;
     private List attributes = new ArrayList();
     private List contentList = new ArrayList();
-    private List children = new ArrayList();
+    private List childElements = new ArrayList();
     private Map namedChildMap = new HashMap();
-    private boolean text;
         
-    public HtmlElementImpl(String name, boolean empty, boolean xhtml, boolean text) {
+    public HtmlElementImpl(String name, boolean empty, boolean xhtml) {
         this.name = name;
-        this.text = text;
         this.xhtml = xhtml;
         this.empty = empty;
     }
@@ -63,7 +63,8 @@ public class HtmlElementImpl implements HtmlElement {
     }
         
     public HtmlElement[] getChildElements() {
-        return (HtmlElement[]) this.children.toArray(new HtmlElement[this.children.size()]);
+        return (HtmlElement[]) this.childElements.toArray(
+            new HtmlElement[this.childElements.size()]);
     }
         
     public HtmlElement[] getChildElements(String name) {
@@ -74,21 +75,29 @@ public class HtmlElementImpl implements HtmlElement {
         return (HtmlElement[]) list.toArray(new HtmlElement[list.size()]);
     }
 
-    public void addChild(HtmlElementImpl child) {
+    public HtmlContent[] getChildNodes() {
+        return (HtmlContent[]) this.contentList.toArray(
+            new HtmlContent[this.contentList.size()]);
+    }
+    
+
+    public void addContent(HtmlContent child) {
         this.contentList.add(child);
-        if (!child.text) {
-            this.children.add(child);
-            List childList = (List) this.namedChildMap.get(child.getName());
+        if (child instanceof HtmlElement) {
+            HtmlElement theChild = (HtmlElement) child;
+            this.childElements.add(theChild);
+            List childList = (List) this.namedChildMap.get(theChild.getName());
             if (childList == null) {
                 childList = new ArrayList();
-                this.namedChildMap.put(child.getName(), childList);
+                this.namedChildMap.put(theChild.getName(), childList);
             }
             childList.add(child);
         }
     }
 
     public HtmlAttribute[] getAttributes() {
-        return (HtmlAttribute[]) this.attributes.toArray(new HtmlAttribute[this.attributes.size()]);
+        return (HtmlAttribute[]) this.attributes.toArray(
+            new HtmlAttribute[this.attributes.size()]);
     }
 
     public void addAttribute(HtmlAttributeImpl attribute) {
@@ -97,51 +106,44 @@ public class HtmlElementImpl implements HtmlElement {
         
 
     public String getContent() {
-        if (this.text) {
-            return this.content;
-        }
         StringBuffer sb = new StringBuffer();
         for (Iterator i = this.contentList.iterator(); i.hasNext();) {
-            HtmlElementImpl child = (HtmlElementImpl) i.next();
-            sb.append(child.getEnclosedContent());
+            HtmlContent child = (HtmlContent) i.next();
+            if (child instanceof EnclosingHtmlContent) {
+                sb.append(((EnclosingHtmlContent) child).getEnclosedContent());
+            } else {
+                sb.append(child.getContent());
+            }
         }
         return sb.toString();
     }
         
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public String getEnclosedContent() {
-        if (this.text) {
-            return this.content;
-        } else {
-            StringBuffer sb = new StringBuffer();
-            sb.append("<").append(this.name);
-            if (this.attributes.size() > 0) {
-                for (Iterator i = this.attributes.iterator(); i.hasNext();) {
-                    HtmlAttributeImpl attr = (HtmlAttributeImpl) i.next();
-                    if (attr.hasValue()) {
-                        sb.append(" ").append(attr.getName()).append("=\"");
-                        sb.append(attr.getValue()).append("\"");
-                    } else if (this.xhtml) {
-                        sb.append(" ").append(attr.getName()).append("=\"\"");
-                    } else {
-                        sb.append(" ").append(attr.getName());
-                    }
+        StringBuffer sb = new StringBuffer();
+        sb.append("<").append(this.name);
+        if (this.attributes.size() > 0) {
+            for (Iterator i = this.attributes.iterator(); i.hasNext();) {
+                HtmlAttributeImpl attr = (HtmlAttributeImpl) i.next();
+                if (attr.hasValue()) {
+                    sb.append(" ").append(attr.getName()).append("=\"");
+                    sb.append(attr.getValue()).append("\"");
+                } else if (this.xhtml) {
+                    sb.append(" ").append(attr.getName()).append("=\"\"");
+                } else {
+                    sb.append(" ").append(attr.getName());
                 }
             }
-            if (this.empty && this.xhtml) {
-                sb.append("/>");
-            }
-            else if (this.empty) {
-                sb.append(">");
-            } else {
-                sb.append(">").append(getContent());
-                sb.append("</").append(this.name).append(">");    
-            }
-            return sb.toString();
         }
+        if (this.empty && this.xhtml) {
+            sb.append("/>");
+        }
+        else if (this.empty) {
+            sb.append(">");
+        } else {
+            sb.append(">").append(getContent());
+            sb.append("</").append(this.name).append(">");    
+        }
+        return sb.toString();
     }
 
     public String toString() {

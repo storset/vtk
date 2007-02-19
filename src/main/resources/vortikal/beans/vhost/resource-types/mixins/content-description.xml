@@ -22,10 +22,23 @@
         <ref bean="authorNamePropDef" />
         <ref bean="authorEmailPropDef" />
         <ref bean="authorURLPropDef" />
+        <ref bean="validToDatePropDef" />
       </list>
     </property>
   </bean>
 
+  <bean id="validToDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="validToDate" /> 
+    <property name="type" ref="TYPE_DATE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="validToEvaluator"/>
+  </bean>
+
+  <bean id="validToEvaluator"
+    class="org.vortikal.repository.resourcetype.property.UhtmlValidToEvaluator">
+    <property name="valueFactory" ref="valueFactory" />
+  </bean>
 
   <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="verifiedDate" /> 

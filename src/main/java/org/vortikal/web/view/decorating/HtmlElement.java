@@ -31,26 +31,13 @@
 package org.vortikal.web.view.decorating;
 
 
-public interface HtmlElement {
+public interface HtmlElement extends EnclosingHtmlContent {
 
 
     /**
      * Gets the name of this element.
      */
     public String getName();
-
-    
-    /**
-     * Gets the contents of this element (including child elements) as
-     * a string.
-     */
-    public String getContent();
-
-    /**
-     * Gets the contents of this element (including child elements)
-     * with the enclosing tag and attributes as a string.
-     */
-    public String getEnclosedContent();
 
 
     /**

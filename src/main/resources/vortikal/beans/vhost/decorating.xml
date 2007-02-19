@@ -16,13 +16,23 @@
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateResolver" ref="templateResolver" />
-    <property name="ssiHandler" ref="ssiHandler"  />
+    <!--property name="ssiHandler" ref="ssiHandler"  /-->
+    <property name="htmlNodeFilter" ref="ssiNodeFilter" />
   </bean>
 
   <bean id="decorating.htmlParser"
         class="org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl">
   </bean>
 
+
+  <bean id="ssiNodeFilter" class="org.vortikal.web.view.decorating.ssi.SsiNodeFilter">
+    <property name="directiveComponentMap">
+      <map>
+        <entry key="include" value-ref="includeComponent" />
+        <entry key="rss" value-ref="rssFeedComponent" />
+      </map>
+    </property>
+  </bean>
 
   <bean id="ssiHandler"
         class="org.vortikal.web.view.decorating.ssi.SsiHandler">
@@ -43,7 +53,7 @@
   </bean>
 
   <bean id="feedView" parent="freemarkerView">
-    <property name="url" value="layouts/renderedFeed.ftl" />
+    <property name="url" value="layouts/feed-listing.ftl" />
   </bean>
 
   <bean id="templateResolver"

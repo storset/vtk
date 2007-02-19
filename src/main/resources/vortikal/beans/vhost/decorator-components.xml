@@ -7,6 +7,7 @@
     <property name="namespace" value="core" />
     <property name="name" value="body" />
     <property name="select" value="html.body" />
+    <property name="enclosed" value="false" />
     <property name="description" value="Outputs the contents of the &lt;body&gt; tag of the original HTML document" />
   </bean>
 
@@ -15,6 +16,7 @@
     <property name="namespace" value="core" />
     <property name="name" value="head" />
     <property name="select" value="html.head" />
+    <property name="enclosed" value="false" />
     <property name="exclude" value="title" />
     <property name="description" value="Outputs the contents of the &lt;head&gt; tag of the original HTML document, but with the &lt;title&gt; tag removed" />
   </bean>
@@ -24,6 +26,7 @@
     <property name="namespace" value="core" />
     <property name="name" value="title" />
     <property name="select" value="html.head.title" />
+    <property name="enclosed" value="false" />
     <property name="description" value="Outputs the contents of the &lt;title&gt; tag of the original HTML document" />
   </bean>
 
@@ -35,7 +38,8 @@
     <property name="parameterDescriptions">
       <map>
         <entry key="select" value="The element to select" />
-        <entry key="exclude" value="Comma-separated list of element names to exclude" />
+        <entry key="include" value="Comma-separated list of element names to include" />
+        <entry key="exclude" value="Comma-separated list of element names to exclude (takes presedence over includes)" />
       </map>
     </property>
   </bean>
@@ -79,6 +83,7 @@
     <property name="description" value="Inserts a breadcrumb trail to the current document" />
   </bean>
 
+
   <bean id="breadcrumbComponentView" parent="freemarkerView">
     <property name="url" value="layouts/breadcrumb.ftl" />
     <property name="referenceDataProviders">
@@ -88,12 +93,29 @@
     </property>
   </bean>
 
+
   <bean id="rssFeedComponent" class="org.vortikal.web.view.decorating.components.RssFeedComponent">
     <property name="namespace" value="rss" />
     <property name="name" value="include" />
     <property name="view" ref="feedView" />
     <property name="description" value="Inserts an RSS feed component on the page" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="address" value="The URL of the RSS stream" />
+        <entry key="maxMsgs" value="The maximum number of messages to display" />
+        <entry key="dateFormat" value="The date format to use for publish dates" />
+        <entry key="includeLogo" value="Whether to include the logo of the RSS stream" />
+        <entry key="includeTitle" value="Whether to include the title of the RSS stream" />
+        <entry key="includeDescription" value="Whether to include the description of the RSS stream" />
+      </map>
+    </property>
+    <property name="identifier" value="${decorating.rssComponent.identifier}" />
+    <property name="connectTimeoutSeconds" value="${decorating.rssComponent.connectTimeoutSeconds}" />
+    <property name="readTimeoutSeconds" value="${decorating.rssComponent.readTimeoutSeconds}" />
+
+    <property name="cacheSeconds" value="${decorating.rssComponent.cacheTimeoutSeconds}" />
   </bean>
+
 
   <bean id="listMenuComponent"
         class="org.vortikal.web.view.decorating.components.ListMenuComponent">

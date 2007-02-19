@@ -700,7 +700,7 @@ public class VortikalServlet extends DispatcherServlet {
         }
 
         resp.setStatus(statusCode);
-        
+        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");        
         try {
 
             if (this.logger.isDebugEnabled()) {
@@ -711,7 +711,7 @@ public class VortikalServlet extends DispatcherServlet {
             }
             view.render(model, req, resp);
             
-        } catch (Exception e){
+        } catch (Exception e) {
             e.initCause(t);
             throw new ServletException("Error while rendering error view", e);
         }

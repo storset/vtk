@@ -140,8 +140,9 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
                         }
                     }
                 }
+
                 // XXX:
-                String doctype = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
+                String doctype = "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                     model, html, request, this.fragments[i].getParameters(), doctype, locale);
 
@@ -178,7 +179,7 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
     private String renderComponent(DecoratorComponent c, DecoratorRequest request)
         throws Exception {
         // XXX:
-        String doctype = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
+        String doctype = "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
         DecoratorResponseImpl response = new DecoratorResponseImpl(
             doctype, Locale.getDefault(), "utf-8");
         c.render(request, response);

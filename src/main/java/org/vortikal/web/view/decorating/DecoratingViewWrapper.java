@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -69,7 +70,7 @@ public class DecoratingViewWrapper implements ViewWrapper {
     private boolean guessCharacterEncodingFromContent = false;
     private boolean appendCharacterEncodingToContentType = true;
     private Assertion[] assertions;
-    private SsiHandler ssiHandler;
+    private HtmlNodeFilter htmlNodeFilter;    
 
 
     public void setTemplateResolver(TemplateResolver templateResolver) {
@@ -106,6 +107,10 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
     public void setHtmlParser(HtmlPageParser parser) {
         this.parser = parser;
+    }
+    
+    public void setHtmlNodeFilter(HtmlNodeFilter htmlNodeFilter) {
+        this.htmlNodeFilter = htmlNodeFilter;
     }
     
 
@@ -198,10 +203,6 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
         String content = new String(contentBuffer, characterEncoding);
         
-        if (this.ssiHandler != null) {
-            content = this.ssiHandler.process(content);
-        }
-        
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(request);
 
@@ -234,6 +235,9 @@ public class DecoratingViewWrapper implements ViewWrapper {
             if (rootElement != null && "frameset".equals(rootElement.getName())) {
                 // Framesets are not decorated:
                 content = html.getDoctype() + rootElement.getEnclosedContent();
+                // XXX: write content to response
+                templateResponse.getOutputStream().write(content.getBytes("utf-8"));
+
             } else {
                 templates[i].render(model, html, request, ctx.getLocale(), templateResponse);
                 content = new String(templateResponse.getContentBuffer(),
@@ -254,9 +258,17 @@ public class DecoratingViewWrapper implements ViewWrapper {
 
     protected HtmlPage parseHtml(String content) throws Exception {
         long before = System.currentTimeMillis();
-        // XXX: 
-        HtmlPage html = this.parser.parse(
-            new java.io.ByteArrayInputStream(content.getBytes("utf-8")), "utf-8");
+
+        // XXX: encoding
+        String encoding = "utf-8";        
+        InputStream stream = new java.io.ByteArrayInputStream(content.getBytes(encoding));
+        HtmlPage html = null;
+        if (this.htmlNodeFilter != null) {
+            html = this.parser.parse(stream, encoding, this.htmlNodeFilter);
+        } else {
+            html = this.parser.parse(stream, encoding);
+        }
+
         long duration = System.currentTimeMillis() - before;
         if (logger.isDebugEnabled()) {
             logger.debug("Parsing document took " + duration + " ms");
@@ -308,16 +320,6 @@ public class DecoratingViewWrapper implements ViewWrapper {
     }
 
 
-//     private byte[] handleSsi(byte[] content, String characterEncoding) throws UnsupportedEncodingException {
-//         if (logger.isDebugEnabled())
-//             logger.debug("Running SSI processor");
-//         //String characterEncoding = responseWrapper.getCharacterEncoding();
-//         String s = new String(responseWrapper.getContentBuffer(),characterEncoding);
-//         s = this.ssiHandler.process(s);
-//         return s.getBytes(characterEncoding);
-//     }
-
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(":");
@@ -325,9 +327,5 @@ public class DecoratingViewWrapper implements ViewWrapper {
         return sb.toString();
     }
 
-
-    public void setSsiHandler(SsiHandler ssiHandler) {
-        this.ssiHandler = ssiHandler;
-    }
 
 }

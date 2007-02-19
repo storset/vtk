@@ -15,6 +15,23 @@
         <ref bean="contentTypeMatchesAudio" />
       </list>
     </property>
+
+    <property name="propertyTypeDefinitions">
+      <list>
+        <!--
+        <ref bean="audioChannelsPropDef" />
+        <ref bean="audioEncodingPropDef" />
+        <ref bean="audioFrameRatePropDef" />
+        <ref bean="audioFrameSizePropDef" />
+        <ref bean="audioSampleRatePropDef" />
+        -->
+        <ref bean="audioAuthorPropDef" />
+        <ref bean="audioAlbumPropDef" />
+        <ref bean="audioTitlePropDef" />
+        <ref bean="audioGenrePropDef" />
+      </list>
+    </property>
+
   </bean>
 
 
@@ -22,6 +39,56 @@
         class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="audio/(.+)" />
   </bean>
+
+
+  <bean id="audioAuthorPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="author" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="audioAuthorPropertyEvaluator" />
+  </bean>
+  <bean id="audioAuthorPropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.author}" />
+  </bean>
+
+  <bean id="audioAlbumPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="album" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="audioAlbumPropertyEvaluator" />
+  </bean>
+  <bean id="audioAlbumPropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.album}" />
+  </bean>
+
+  <bean id="audioTitlePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="title" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="audioTitlePropertyEvaluator" />
+  </bean>
+  <bean id="audioTitlePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.title}" />
+  </bean>
+
+  <bean id="audioGenrePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="genre" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="audioGenrePropertyEvaluator" />
+  </bean>
+  <bean id="audioGenrePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.genre}" />
+  </bean>
+
 
 </beans>
 

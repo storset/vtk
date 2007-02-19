@@ -159,6 +159,8 @@
 
   <bean id="jtidyContentFactory" class="org.vortikal.repositoryimpl.content.JTidyContentFactory" />
   <bean id="bufferedImageContentFactory" class="org.vortikal.repositoryimpl.content.BufferedImageContentFactory" />
+  <bean id="audioFileContentFactory"
+        class="org.vortikal.repositoryimpl.content.AudioFileContentFactory" />
 
 
   <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManagerImpl">

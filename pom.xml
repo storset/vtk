@@ -80,15 +80,32 @@
   </pluginRepositories>
 
   <repositories>
+
     <repository>
       <id>xml.uio.no</id>
       <url>http://xml.uio.no/vortex/maven2</url>
     </repository>
+
     <!--
+    <repository>
+      <id>local-bundle</id>
+      <url>file://${basedir}/bundled-repo</url>
+    </repository>
+    -->
+
     <repository>
       <id>repo1.maven.org</id>
       <url>http://repo1.maven.org/maven2</url>
     </repository>
+    <!--
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>https://maven2-repository.dev.java.net/nonav/repository</url>
+      <layout>default</layout>	  
+    </repository>
+    -->
+    <!--
     -->
   </repositories>
   
@@ -308,11 +325,32 @@
   </build>
   
   <dependencies>
+    <!-- MP3 support: these dependencies are not in any known Maven
+         repository: -->
+    <!--
+    <dependency>
+      <groupId>org.tritonus</groupId>
+      <artifactId>tritonus_share</artifactId>
+      <version>release</version>
+    </dependency>
+    <dependency>
+      <groupId>jlayer</groupId>
+      <artifactId>jl</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>mp3spi</groupId>
+      <artifactId>mp3spi</artifactId>
+      <version>1.9.4</version>
+    </dependency>
+    -->
+
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
       <version>0.8</version>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

@@ -3,7 +3,7 @@
 // written by Andrew Clover <and@doxdesk.com>, use freely
 
 /*@cc_on
-@if (@_win32 && @_jscript_version>4)
+@if (@_win32 && @_jscript_version>4 && @_jscript_version<5.7)
 
 var fixed_positions= new Array();
 var fixed_backgrounds= new Array();

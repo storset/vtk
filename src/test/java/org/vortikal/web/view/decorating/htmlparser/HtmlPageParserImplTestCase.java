@@ -32,10 +32,10 @@ package org.vortikal.web.view.decorating.htmlparser;
 
 import junit.framework.TestCase;
 
-import org.vortikal.web.view.decorating.HtmlElement;
-import org.vortikal.web.view.decorating.HtmlPage;
-import org.vortikal.web.view.decorating.HtmlPageParser;
-import org.vortikal.web.view.decorating.HtmlPageParserException;
+import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlPage;
+import org.vortikal.web.view.decorating.html.HtmlPageParser;
+import org.vortikal.web.view.decorating.html.HtmlPageParserException;
 
 
 public class HtmlPageParserImplTestCase extends TestCase {

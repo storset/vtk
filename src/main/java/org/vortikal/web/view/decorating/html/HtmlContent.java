@@ -28,24 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.html;
 
-import java.io.InputStream;
-import java.io.Reader;
 
-/**
- * Simple HTML node filter interface. Nodes are filtered during
- * document building.
- */
-public interface HtmlNodeFilter {
+public interface HtmlContent {
 
     /**
-     * Filters a HTML content node.
-     *
-     * @param content the HTML node to filter.
-     * @return a filtered HTML content node. Return <code>null</code>
-     * if the node should not be included in the current element.
+     * Gets the contents of this node as a string.
      */
-    public HtmlContent filterNode(HtmlContent content);
-    
+    public String getContent();
+
 }

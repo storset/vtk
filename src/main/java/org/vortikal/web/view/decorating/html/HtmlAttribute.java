@@ -28,26 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
-
-import java.util.Map;
+package org.vortikal.web.view.decorating.html;
 
 
-/**
- * Simple HTML page interface.
- *
- * TODO: isFrameset(), getDoctype(), getOriginal()
- */
-public interface HtmlPage {
+public interface HtmlAttribute {
 
-    public String getDoctype();
-    
+    public String getName();
 
-    public HtmlElement getRootElement();
-    
-//     public HtmlElement getHeadElement();
+    public String getValue();
 
-//     public HtmlElement getTitleElement();
-
-//     public HtmlElement getBodyElement();
+    public boolean hasValue();
 }

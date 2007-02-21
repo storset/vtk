@@ -30,8 +30,8 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-import org.vortikal.web.view.decorating.HtmlComment;
-import org.vortikal.web.view.decorating.HtmlContent;
+import org.vortikal.web.view.decorating.html.HtmlComment;
+import org.vortikal.web.view.decorating.html.HtmlContent;
 
 public class HtmlCommentImpl implements HtmlComment {
 

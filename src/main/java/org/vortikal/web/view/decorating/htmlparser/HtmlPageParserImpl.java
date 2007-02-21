@@ -49,14 +49,14 @@ import org.htmlparser.tags.Html;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.visitors.NodeVisitor;
 
-import org.vortikal.web.view.decorating.HtmlComment;
-import org.vortikal.web.view.decorating.HtmlContent;
-import org.vortikal.web.view.decorating.HtmlElement;
-import org.vortikal.web.view.decorating.HtmlNodeFilter;
-import org.vortikal.web.view.decorating.HtmlPage;
-import org.vortikal.web.view.decorating.HtmlPageParser;
-import org.vortikal.web.view.decorating.HtmlPageParserException;
-import org.vortikal.web.view.decorating.HtmlText;
+import org.vortikal.web.view.decorating.html.HtmlComment;
+import org.vortikal.web.view.decorating.html.HtmlContent;
+import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
+import org.vortikal.web.view.decorating.html.HtmlPage;
+import org.vortikal.web.view.decorating.html.HtmlPageParser;
+import org.vortikal.web.view.decorating.html.HtmlPageParserException;
+import org.vortikal.web.view.decorating.html.HtmlText;
 
 
 public class HtmlPageParserImpl implements HtmlPageParser {

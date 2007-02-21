@@ -30,7 +30,7 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-import org.vortikal.web.view.decorating.HtmlAttribute;
+import org.vortikal.web.view.decorating.html.HtmlAttribute;
 
 
 public class HtmlAttributeImpl implements HtmlAttribute {

@@ -50,10 +50,15 @@ import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
+import org.vortikal.web.view.decorating.html.HtmlPage;
+import org.vortikal.web.view.decorating.html.HtmlPageParser;
 import org.vortikal.web.view.decorating.ssi.SsiHandler;
 import org.vortikal.web.view.wrapper.RequestWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapper;
 import org.vortikal.web.view.wrapper.ViewWrapperException;
+
 
 /**
  * 

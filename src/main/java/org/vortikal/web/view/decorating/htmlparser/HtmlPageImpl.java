@@ -30,10 +30,8 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-
-
-import org.vortikal.web.view.decorating.HtmlElement;
-import org.vortikal.web.view.decorating.HtmlPage;
+import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlPage;
 
 
 public class HtmlPageImpl implements HtmlPage {

@@ -30,7 +30,7 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-import org.vortikal.web.view.decorating.HtmlText;
+import org.vortikal.web.view.decorating.html.HtmlText;
 
 public class HtmlTextImpl implements HtmlText {
 

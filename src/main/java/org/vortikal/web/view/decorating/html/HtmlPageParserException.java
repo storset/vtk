@@ -28,33 +28,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.html;
 
 
-public interface HtmlElement extends EnclosingHtmlContent {
+public class HtmlPageParserException extends RuntimeException {
 
+    public HtmlPageParserException(String message) {
+        super(message);
+    }
 
-    /**
-     * Gets the name of this element.
-     */
-    public String getName();
-
-
-    /**
-     * Gets the attributes of this element.
-     */
-    public HtmlAttribute[] getAttributes();
-
-
-    /**
-     * Gets the child elements of this element.
-     */
-    public HtmlElement[] getChildElements();
-
-
-    /**
-     * Gets the child elements of this element by name.
-     */
-    public HtmlElement[] getChildElements(String name);
-
+    public HtmlPageParserException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

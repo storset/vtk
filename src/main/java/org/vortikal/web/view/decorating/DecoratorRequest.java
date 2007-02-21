@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.web.view.decorating.html.HtmlPage;
+
 
 /**
  * Represents a decorator request for a component.

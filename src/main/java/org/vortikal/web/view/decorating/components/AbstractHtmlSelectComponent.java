@@ -39,8 +39,9 @@ import org.apache.commons.logging.LogFactory;
 
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
-import org.vortikal.web.view.decorating.HtmlElement;
-import org.vortikal.web.view.decorating.HtmlPage;
+import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlPage;
+
 
 public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorComponent {
 

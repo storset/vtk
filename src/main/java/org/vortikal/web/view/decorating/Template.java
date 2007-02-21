@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.vortikal.web.view.decorating.html.HtmlPage;
 
 public interface Template {
 

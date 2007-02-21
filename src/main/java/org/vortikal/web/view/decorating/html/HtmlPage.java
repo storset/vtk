@@ -28,35 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.html;
 
-import java.io.InputStream;
-import java.io.Reader;
+import java.util.Map;
+
 
 /**
- * Simple HTML parser interface.
+ * Simple HTML page interface.
+ *
+ * TODO: isFrameset(), getDoctype(), getOriginal()
  */
-public interface HtmlPageParser {
+public interface HtmlPage {
 
-    /**
-     * Parses HTML from an input stream.
-     *
-     * @param in the input stream
-     * @param encoding the character encoding of the stream
-     * @return a the parsed HTML page
-     * @exception Exception if an error occurs
-     */
-    public HtmlPage parse(InputStream in, String encoding) throws Exception;
-
-
-    /**
-     * Parses HTML from an input stream.
-     *
-     * @param in the input stream
-     * @param encoding the character encoding of the stream
-     * @return a the parsed HTML page
-     * @exception Exception if an error occurs
-     */
-    public HtmlPage parse(InputStream in, String encoding, HtmlNodeFilter filter)
-        throws Exception;
+    public String getDoctype();
+    
+    public HtmlElement getRootElement();
+    
 }

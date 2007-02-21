@@ -28,21 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.html;
 
 
-public interface EnclosingHtmlContent extends HtmlContent {
-
-    /**
-     * Gets the contents of this node (including child nodes) with the
-     * enclosing tag and attributes as a string.
-     */
-    public String getEnclosedContent();
+public interface HtmlElement extends EnclosingHtmlContent {
 
 
     /**
-     * Gets the child nodes of this node.
+     * Gets the name of this element.
      */
-    public HtmlContent[] getChildNodes();
-    
+    public String getName();
+
+
+    /**
+     * Gets the attributes of this element.
+     */
+    public HtmlAttribute[] getAttributes();
+
+
+    /**
+     * Gets the child elements of this element.
+     */
+    public HtmlElement[] getChildElements();
+
+
+    /**
+     * Gets the child elements of this element by name.
+     */
+    public HtmlElement[] getChildElements(String name);
+
 }

@@ -30,24 +30,24 @@
  */
 package org.vortikal.web.view.decorating.ssi;
 
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.view.decorating.DecoratorComponent;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorRequestImpl;
 import org.vortikal.web.view.decorating.DecoratorResponseImpl;
-import org.vortikal.web.view.decorating.HtmlComment;
-import org.vortikal.web.view.decorating.HtmlContent;
-import org.vortikal.web.view.decorating.HtmlElement;
-import org.vortikal.web.view.decorating.HtmlNodeFilter;
-import org.vortikal.web.view.decorating.HtmlPage;
-import org.vortikal.web.view.decorating.HtmlText;
+import org.vortikal.web.view.decorating.html.HtmlComment;
+import org.vortikal.web.view.decorating.html.HtmlContent;
+import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
+import org.vortikal.web.view.decorating.html.HtmlPage;
+import org.vortikal.web.view.decorating.html.HtmlText;
 
 
 public class SsiNodeFilter implements HtmlNodeFilter {
@@ -95,7 +95,6 @@ public class SsiNodeFilter implements HtmlNodeFilter {
             }
             HtmlContent filteredNode = invokeComponent(node, directive, parameters);
             return filteredNode;
-            //System.out.println("_________directive: " + directive + ", params: " + parameters);
         }
         return node;
     }

@@ -44,7 +44,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
-
+import org.vortikal.web.view.decorating.html.HtmlPage;
 
 
 public class StandardDecoratorTemplate implements Template, InitializingBean, BeanNameAware  {

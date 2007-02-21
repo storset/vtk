@@ -36,7 +36,6 @@ import org.apache.lucene.search.TermQuery;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.TermOperator;
 import org.vortikal.repositoryimpl.query.query.UriDepthQuery;
 
 /**

@@ -365,7 +365,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     public void updateACL(ResourceImpl r) throws SQLException {
 
         // XXX: ACL inheritance checking does not belong here!?
-        Acl newAcl = r.getAcl();
         boolean wasInherited = isInheritedAcl(r);
         if (wasInherited && r.isInheritedAcl()) {
             return;
@@ -658,11 +657,11 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 parameters.put("previouslyInheritedFrom", new Integer(srcNearestACL));
 
                 sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
-                int n = this.sqlMapClient.update(sqlMap, parameters);
+                this.sqlMapClient.update(sqlMap, parameters);
 
                 if (this.optimizedAclCopySupported) {
                     sqlMap = getSqlMap("updateAclInheritedFromByPreviousResourceId");
-                    n = this.sqlMapClient.update(sqlMap, parameters);
+                    this.sqlMapClient.update(sqlMap, parameters);
                 } else {
                     sqlMap = getSqlMap("loadPreviousInheritedFromMap");
                     List list = this.sqlMapClient.queryForList(sqlMap, parameters);
@@ -1164,7 +1163,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         boolean collection = "Y".equals(resourceMap.get("isCollection"));
         Property prop = propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
-            new Boolean(collection));
+            Boolean.valueOf(collection));
         propertySet.addProperty(prop);
         
         Principal createdBy = principalFactory.getUserPrincipal(

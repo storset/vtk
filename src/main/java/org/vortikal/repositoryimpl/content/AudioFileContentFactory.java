@@ -35,9 +35,6 @@ import java.io.InputStream;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 
-import org.vortikal.repositoryimpl.content.ContentFactory;
-
-
 public class AudioFileContentFactory implements ContentFactory {
 
     public Class[] getRepresentationClasses() {

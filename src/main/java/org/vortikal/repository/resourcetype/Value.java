@@ -129,7 +129,7 @@ public final class Value implements Cloneable {
         switch (this.type) {
         
             case PropertyType.TYPE_BOOLEAN:
-                return new Boolean(this.booleanValue);
+                return Boolean.valueOf(this.booleanValue);
             
             case PropertyType.TYPE_DATE:
                 return this.dateValue.clone();

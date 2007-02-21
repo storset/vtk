@@ -61,7 +61,6 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.util.repository.URIUtil;
-import org.vortikal.util.web.URLUtil;
 
 
 

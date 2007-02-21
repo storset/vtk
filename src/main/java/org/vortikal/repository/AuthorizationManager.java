@@ -32,9 +32,6 @@ package org.vortikal.repository;
 
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import org.vortikal.security.Principal;
 import org.vortikal.security.AuthenticationException;
 

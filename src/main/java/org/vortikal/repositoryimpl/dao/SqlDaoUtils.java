@@ -73,7 +73,7 @@ class SqlDaoUtils {
         boolean collection = rs.getString("is_collection").equals("Y");
         Property prop = propertyManager.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
-            new Boolean(collection));
+            Boolean.valueOf(collection));
         propertySet.addProperty(prop);
         
         Principal createdBy = principalFactory.getUserPrincipal(rs.getString("created_by"));

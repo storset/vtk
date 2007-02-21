@@ -33,13 +33,11 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.xpath.XPath;
+
 import org.springframework.beans.factory.BeanInitializationException;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;

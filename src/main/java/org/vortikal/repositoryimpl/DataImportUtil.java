@@ -66,7 +66,7 @@ public class DataImportUtil implements InitializingBean {
     private void create(File file, String token, String uri) throws IOException {
 
         if (file.isDirectory()) {
-            Resource collection = this.repository.createCollection(token, uri);
+            this.repository.createCollection(token, uri);
         } else {
             this.repository.createDocument(token, uri);
             this.repository.storeContent(

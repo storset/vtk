@@ -162,7 +162,6 @@ public class PlaintextEditController extends SimpleFormController
 
         Resource resource = this.repository.retrieve(token, uri, false);
         String url = service.constructLink(resource, principal);
-        String characterEncoding = resource.getCharacterEncoding();
         String content = getTextualContent(resource, token);
         
         List tooltips = resolveTooltips(resource, principal);

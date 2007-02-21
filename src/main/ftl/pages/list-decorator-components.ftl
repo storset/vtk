@@ -39,23 +39,6 @@
 <body>
   <h1>Decorator components</h1>
   <#if componentList?exists>
-    <dl>
-      <#list componentList?sort_by('namespace') as component>
-        <dt class="componentName">${component.namespace?html}:${component.name?html}</dt>
-        <dd>
-          ${(component.description?html)?if_exists}
-            <#if (component.parameterDescriptions)?exists>
-              <dl>
-                Parameters:
-                <#list component.parameterDescriptions?keys as paramName>
-                  <dt>${paramName}</dt>
-                  <dd>${component.parameterDescriptions[paramName]}</dd>
-                </#list>
-              </dl>
-            </#if>
-        </dd>
-      </#list>
-    </dl>
 
     <table>
       <tr class="header"><th>Name</th><th>Description</th><th>Parameters</th></tr>
@@ -77,6 +60,25 @@
       </tr>
       </#list>
     </table>
+    <#--
+    <dl>
+      <#list componentList?sort_by('namespace') as component>
+        <dt class="componentName">${component.namespace?html}:${component.name?html}</dt>
+        <dd>
+          ${(component.description?html)?if_exists}
+            <#if (component.parameterDescriptions)?exists>
+              <dl>
+                Parameters:
+                <#list component.parameterDescriptions?keys as paramName>
+                  <dt>${paramName}</dt>
+                  <dd>${component.parameterDescriptions[paramName]}</dd>
+                </#list>
+              </dl>
+            </#if>
+        </dd>
+      </#list>
+    </dl>
+    -->
   </#if>
 </body>
 </html>

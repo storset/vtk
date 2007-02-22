@@ -14,10 +14,20 @@
 
   <bean id="decoratingViewWrapper"
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
+    <property name="responseFilter" ref="responseFilter" />
+    <property name="decorator" ref="decorator" />
+  </bean>
+
+  <bean id="responseFilter"
+    class="org.vortikal.web.view.decorating.ResponseFilterImpl">
+    <property name="handler" ref="ssiHandler"  />
+  </bean>
+
+  <bean id="decorator"
+    class="org.vortikal.web.view.decorating.DecoratorImpl">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateResolver" ref="templateResolver" />
-    <!--property name="ssiHandler" ref="ssiHandler"  /-->
-    <property name="htmlNodeFilter" ref="ssiNodeFilter" />
+    <!--property name="htmlNodeFilter" ref="ssiNodeFilter" /-->
   </bean>
 
   <bean id="decorating.htmlParser"

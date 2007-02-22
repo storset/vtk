@@ -65,7 +65,7 @@ public class BufferedResponse implements HttpServletResponse {
     private List cookies = new ArrayList();
     private int bufferSize = 1000;
     private String contentType = null;
-    private int contentLength = 0;
+    private int contentLength = -1;
     private Locale locale = Locale.getDefault();
     private String characterEncoding = null;
     private boolean committed = false;
@@ -113,6 +113,10 @@ public class BufferedResponse implements HttpServletResponse {
     }
     
     public int getContentLength() {
+        if (this.contentLength >= 0) {
+            return this.contentLength;
+        }
+        
         return this.bufferStream.size();
     }
     
@@ -124,7 +128,7 @@ public class BufferedResponse implements HttpServletResponse {
         return this.characterEncoding;
     }
 
-    public PrintWriter getWriter() throws IOException {
+    public PrintWriter getWriter() {
         return new WrappedServletOutputStreamWriter(new WrappedServletOutputStream(
                                             this.bufferStream, this.getCharacterEncoding()));
     }
@@ -145,11 +149,11 @@ public class BufferedResponse implements HttpServletResponse {
         this.bufferStream.reset();
     }
 
-    public void flushBuffer() throws IOException {
+    public void flushBuffer() {
         this.committed = true;
     }
 
-    public ServletOutputStream getOutputStream() throws IOException {
+    public ServletOutputStream getOutputStream() {
         OutputStream outputStream = this.bufferStream;
         if (this.maxBufferSize > 0) {
             outputStream = new BoundedOutputStream(outputStream, this.maxBufferSize);
@@ -163,8 +167,13 @@ public class BufferedResponse implements HttpServletResponse {
         processContentTypeHeader(contentType);
     }
 
+    /**
+     * A negative contentLength implies checking the buffer for actual size.
+     * @see javax.servlet.ServletResponse#setContentLength(int)
+     */
     public void setContentLength(int contentLength) {
-        this.contentLength = contentLength;
+        if (contentLength >= 0)
+            this.contentLength = contentLength;
     }
 
     public Locale getLocale() {
@@ -209,13 +218,13 @@ public class BufferedResponse implements HttpServletResponse {
         this.committed = true;
     }
 
-    public void sendError(int status) throws IOException {
+    public void sendError(int status) {
         this.status = status;
         this.statusMessage = HttpUtil.getStatusMessage(status);
         this.committed = true;
     }
 
-    public void sendRedirect(String url) throws IOException {
+    public void sendRedirect(String url) {
         this.status = HttpServletResponse.SC_MOVED_TEMPORARILY;
         this.statusMessage = "Moved Temporarily";
         this.headers.put("Location", url);

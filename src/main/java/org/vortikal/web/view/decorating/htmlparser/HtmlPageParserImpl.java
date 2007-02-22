@@ -30,10 +30,7 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-import java.io.CharArrayReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Vector;
 
 import org.htmlparser.Attribute;
@@ -45,11 +42,7 @@ import org.htmlparser.Text;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.tags.DoctypeTag;
-import org.htmlparser.tags.Html;
 import org.htmlparser.util.NodeList;
-import org.htmlparser.visitors.NodeVisitor;
-
-import org.vortikal.web.view.decorating.html.HtmlComment;
 import org.vortikal.web.view.decorating.html.HtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;

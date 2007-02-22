@@ -13,14 +13,9 @@
   </bean>
 
   <bean id="decoratingViewWrapper"
-        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-    <property name="responseFilter" ref="responseFilter" />
+        class="org.vortikal.web.view.wrapper.DecoratingViewWrapper">
+    <property name="textContentFilter" ref="ssiTextContentFilter" />
     <property name="decorator" ref="decorator" />
-  </bean>
-
-  <bean id="responseFilter"
-    class="org.vortikal.web.view.decorating.ResponseFilterImpl">
-    <property name="handler" ref="ssiHandler"  />
   </bean>
 
   <bean id="decorator"
@@ -34,7 +29,7 @@
         class="org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl">
   </bean>
 
-
+<!-- 
   <bean id="ssiNodeFilter" class="org.vortikal.web.view.decorating.ssi.SsiNodeFilter">
     <property name="directiveComponentMap">
       <map>
@@ -43,9 +38,10 @@
       </map>
     </property>
   </bean>
+-->
 
-  <bean id="ssiHandler"
-        class="org.vortikal.web.view.decorating.ssi.SsiHandler">
+  <bean id="ssiTextContentFilter"
+        class="org.vortikal.web.view.decorating.ssi.SsiTextContentFilter">
     <property name="ssiProcessors">
       <set>
         <bean class="org.vortikal.web.view.decorating.ssi.HttpSsiProcessor" />

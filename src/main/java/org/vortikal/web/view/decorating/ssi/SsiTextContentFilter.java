@@ -37,21 +37,23 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.web.view.wrapper.TextContentFilter;
 
-public class SsiHandler implements InitializingBean {
+public class SsiTextContentFilter implements TextContentFilter, InitializingBean {
 
     private static final Pattern INCLUDE_REGEXP = Pattern.compile(
             "<!--#include\\s+([\000-\377]*?)\\s*?=\"([\000-\377]*?)\"\\s*?-->",
             +Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private Map ssiProcessors = new HashMap();
-    private static Log logger = LogFactory.getLog(SsiHandler.class);
+    private static Log logger = LogFactory.getLog(SsiTextContentFilter.class);
 
-
-    public String process(String content) {
+    public String process(Map model, HttpServletRequest request, String content) throws Exception {
         String docContentProcessed = content;
         int indexStartIncludeStatements;
         int indexEndIncludeStatements;

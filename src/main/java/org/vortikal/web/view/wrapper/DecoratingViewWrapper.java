@@ -28,10 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.wrapper;
 
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,9 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.View;
 import org.vortikal.web.servlet.BufferedResponse;
-import org.vortikal.web.view.wrapper.RequestWrapper;
-import org.vortikal.web.view.wrapper.ViewWrapper;
-import org.vortikal.web.view.wrapper.ViewWrapperException;
+import org.vortikal.web.view.decorating.Decorator;
 
 
 /**
@@ -52,7 +54,7 @@ public class DecoratingViewWrapper implements ViewWrapper {
     protected Log logger = LogFactory.getLog(this.getClass());
 
     private Decorator decorator;
-    private ResponseFilter responseFilter;
+    private TextContentFilter textContentFilter;
 
     
     private boolean propagateExceptions = true;
@@ -99,12 +101,62 @@ public class DecoratingViewWrapper implements ViewWrapper {
                               BufferedResponse bufferedResponse,
                               HttpServletResponse servletResponse) throws Exception {
 
-        if (this.responseFilter != null) {
-            this.responseFilter.process(model, request, bufferedResponse);
+        
+        
+        if (this.textContentFilter != null) {
+            try {
+                String content = new String(bufferedResponse.getContentBuffer(), bufferedResponse.getCharacterEncoding());
+                String result = this.textContentFilter.process(model, request, content);
+                bufferedResponse.resetBuffer();
+                PrintWriter writer = bufferedResponse.getWriter();
+                writer.write(result);
+            } catch (UnsupportedEncodingException e) {
+            }
         }
         if (this.decorator != null) {
-            this.decorator.decorate(model, request, bufferedResponse, servletResponse);
+            this.decorator.decorate(model, request, bufferedResponse);
         }
+        writeResponse(bufferedResponse, servletResponse,
+                bufferedResponse.getContentType());
+    }
+
+    /**
+     * Writes the buffer from the wrapped response to the actual
+     * response. Sets the HTTP header <code>Content-Length</code> to
+     * the size of the buffer in the wrapped response.
+     * 
+     * @param responseWrapper the wrapped response.
+     * @param response the real servlet response.
+     * @param contentType the content type of the response.
+     * @exception Exception if an error occurs.
+     */
+    protected void writeResponse(BufferedResponse responseWrapper,
+                                 ServletResponse response, String contentType)
+            throws Exception {
+        byte[] content = responseWrapper.getContentBuffer();
+        
+        ServletOutputStream outStream = response.getOutputStream();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Write response: Content-Length: " + content.length
+                    + ", Content-Type: " + contentType);
+        }
+        if (contentType.indexOf("charset") == -1) {
+            response.setContentType(contentType  + ";charset=utf-8");
+        } else {
+            response.setContentType(contentType);
+        }
+        response.setContentLength(content.length);
+
+        // Make sure content is not cached:
+        if (response instanceof HttpServletResponse) {
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            httpServletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
+            httpServletResponse.setHeader("Pragma", "no-cache");
+        }
+        outStream.write(content);
+        outStream.flush();
+        outStream.close();
     }
 
 
@@ -121,8 +173,8 @@ public class DecoratingViewWrapper implements ViewWrapper {
     }
 
 
-    public void setResponseFilter(ResponseFilter responseFilter) {
-        this.responseFilter = responseFilter;
+    public void setTextContentFilter(TextContentFilter textContentFilter) {
+        this.textContentFilter = textContentFilter;
     }
 
 

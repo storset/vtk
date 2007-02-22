@@ -7,10 +7,7 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +35,7 @@ public class DecoratorImpl implements Decorator {
     private boolean appendCharacterEncodingToContentType = true;
     private Assertion[] assertions;
 
-    public void decorate(Map model, HttpServletRequest request, BufferedResponse bufferedResponse, HttpServletResponse servletResponse) throws Exception, UnsupportedEncodingException, IOException {
+    public void decorate(Map model, HttpServletRequest request, BufferedResponse bufferedResponse) throws Exception, UnsupportedEncodingException, IOException {
         byte[] contentBuffer = bufferedResponse.getContentBuffer();
 
         String characterEncoding = null;
@@ -63,8 +60,6 @@ public class DecoratorImpl implements Decorator {
                              + ": unsupported content type: " + contentType);
 
             }
-            writeResponse(bufferedResponse, servletResponse,
-                          bufferedResponse.getContentType());
             return;
         }
 
@@ -80,8 +75,6 @@ public class DecoratorImpl implements Decorator {
                         + characterEncoding
                         + "' is not supported on this system");
             }
-            writeResponse(bufferedResponse, servletResponse,
-                          bufferedResponse.getContentType());
             return;
         }
 
@@ -101,8 +94,6 @@ public class DecoratorImpl implements Decorator {
             if (logger.isDebugEnabled()) {
                 logger.debug("Unable to resolve template for request " + request);
             }
-            writeResponse(bufferedResponse, servletResponse,
-                    bufferedResponse.getContentType());
             return;
         }
 
@@ -133,47 +124,6 @@ public class DecoratorImpl implements Decorator {
                                      templateResponse.getCharacterEncoding());
             }
         }
-        writeResponse(templateResponse, servletResponse, "text/html");
-    }
-
-    /**
-     * Writes the buffer from the wrapped response to the actual
-     * response. Sets the HTTP header <code>Content-Length</code> to
-     * the size of the buffer in the wrapped response.
-     * 
-     * @param responseWrapper the wrapped response.
-     * @param response the real servlet response.
-     * @param contentType the content type of the response.
-     * @exception Exception if an error occurs.
-     */
-    protected void writeResponse(BufferedResponse responseWrapper,
-                                 ServletResponse response, String contentType)
-            throws Exception {
-        byte[] content = responseWrapper.getContentBuffer();
-        
-        ServletOutputStream outStream = response.getOutputStream();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Write response: Content-Length: " + content.length
-                    + ", Content-Type: " + contentType);
-        }
-        if (contentType.indexOf("charset") == -1) {
-            response.setContentType(contentType  + ";charset=utf-8");
-        } else {
-            response.setContentType(contentType);
-        }
-        response.setContentLength(content.length);
-
-        // Make sure content is not cached:
-        if (response instanceof HttpServletResponse) {
-            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-            httpServletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
-            httpServletResponse.setHeader("Expires", "0");
-            httpServletResponse.setHeader("Pragma", "no-cache");
-        }
-        outStream.write(content);
-        outStream.flush();
-        outStream.close();
     }
 
     protected HtmlPage parseHtml(String content) throws Exception {

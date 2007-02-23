@@ -3,15 +3,6 @@
 
 <beans>
 
-  
-  <bean id="decorating.manageLinkProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="modelName" value="manage" />
-    <property name="urlName" value="manageURL" />
-    <property name="service" ref="manageService" />
-  </bean>
-
   <bean id="decoratingViewWrapper"
         class="org.vortikal.web.view.wrapper.DecoratingViewWrapper">
     <property name="textContentFilter" ref="ssiTextContentFilter" />
@@ -51,9 +42,9 @@
               parent="requestLocalRepositoryAware">
           <property name="identifier" value="virtual" />
         </bean>
-        <bean class="org.vortikal.web.view.decorating.ssi.RssRenderingSsiProcessor">
+<!--        <bean class="org.vortikal.web.view.decorating.ssi.RssRenderingSsiProcessor">
           <property name="view" ref="feedView" />
-        </bean>
+        </bean> -->
       </set>
     </property>
   </bean>
@@ -157,6 +148,14 @@
       <list>
       </list>
     </property>
+  </bean>
+
+  <bean id="decorating.manageLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelName" value="manage" />
+    <property name="urlName" value="manageURL" />
+    <property name="service" ref="manageService" />
   </bean>
 
 

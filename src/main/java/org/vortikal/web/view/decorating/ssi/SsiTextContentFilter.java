@@ -113,7 +113,7 @@ public class SsiTextContentFilter implements TextContentFilter, InitializingBean
             SsiProcessor processor = (SsiProcessor) iter.next();
             String identifier = processor.getIdentifier();
             if (this.ssiProcessors.get(identifier) != null)
-                throw new IllegalArgumentException("Processors canot have the same identifier");
+                throw new IllegalArgumentException("Processors cannot have the same identifier");
             this.ssiProcessors.put(identifier, processor);
         }
     }

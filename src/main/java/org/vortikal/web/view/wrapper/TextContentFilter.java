@@ -48,7 +48,7 @@ public interface TextContentFilter {
      *
      * @param model the MVC model.
      * @param request the servlet request
-     * @param content the textual content from another view
+     * @param content the textual content to filter
      * @return the filtered content
      * @exception Exception if an error occurs
      */

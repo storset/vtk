@@ -137,6 +137,9 @@ public class BufferedResponse implements HttpServletResponse {
         this.bufferSize = bufferSize;
     }
 
+    /**
+     * @deprecated Use reset() instead
+     */
     public void resetBuffer() {
         this.bufferStream.reset();
     }
@@ -146,6 +149,13 @@ public class BufferedResponse implements HttpServletResponse {
     }
 
     public void reset() {
+        if (this.committed) {
+            throw new IllegalStateException(
+                "Cannot call reset(): Response has already been committed");
+        }
+
+        this.characterEncoding = null;
+        this.contentLength = -1;
         this.bufferStream.reset();
     }
 

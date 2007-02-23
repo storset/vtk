@@ -49,6 +49,9 @@ import org.vortikal.web.view.decorating.html.HtmlPage;
 
 public class StandardDecoratorTemplate implements Template, InitializingBean, BeanNameAware  {
 
+    private static final String DEFAULT_DOCTYPE =
+        "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
+
     private static Log logger = LogFactory.getLog(StandardDecoratorTemplate.class);
 
     private TemplateParser parser;
@@ -141,8 +144,10 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
                     }
                 }
 
-                // XXX:
-                String doctype = "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
+                String doctype = html.getDoctype();
+                if (doctype == null) {
+                    doctype = DEFAULT_DOCTYPE;
+                }
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                     model, html, request, this.fragments[i].getParameters(), doctype, locale);
 
@@ -178,10 +183,14 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
 
     private String renderComponent(DecoratorComponent c, DecoratorRequest request)
         throws Exception {
-        // XXX:
-        String doctype = "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
+        
+        // Default values for decorator responses:
+        String defaultResponseDoctype = request.getDoctype();
+        String defaultResponseEncoding = "utf-8";
+        Locale defaultResponseLocale = Locale.getDefault();
+
         DecoratorResponseImpl response = new DecoratorResponseImpl(
-            doctype, Locale.getDefault(), "utf-8");
+            defaultResponseDoctype, defaultResponseLocale, defaultResponseDoctype);
         c.render(request, response);
         String result = response.getContentAsString();
         return result;

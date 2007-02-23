@@ -35,7 +35,9 @@ public class DecoratorImpl implements Decorator {
     private boolean appendCharacterEncodingToContentType = true;
     private Assertion[] assertions;
 
-    public void decorate(Map model, HttpServletRequest request, BufferedResponse bufferedResponse) throws Exception, UnsupportedEncodingException, IOException {
+    public void decorate(Map model, HttpServletRequest request, BufferedResponse bufferedResponse)
+        throws Exception, UnsupportedEncodingException, IOException {
+
         byte[] contentBuffer = bufferedResponse.getContentBuffer();
 
         String characterEncoding = null;
@@ -101,10 +103,10 @@ public class DecoratorImpl implements Decorator {
             logger.debug("Rendering template sequence "
                          + java.util.Arrays.asList(templates));
         }
-        BufferedResponse templateResponse = null;
 
         for (int i = 0; i < templates.length; i++) {
-            templateResponse = new BufferedResponse();
+            // Reset response:
+            bufferedResponse.reset();
             
             HtmlPage html = parseHtml(content);
             if (logger.isDebugEnabled()) {
@@ -114,14 +116,11 @@ public class DecoratorImpl implements Decorator {
             HtmlElement rootElement = html.getRootElement();
             if (rootElement != null && "frameset".equals(rootElement.getName())) {
                 // Framesets are not decorated:
-                content = html.getDoctype() + rootElement.getEnclosedContent();
-                // XXX: write content to response
-                templateResponse.getOutputStream().write(content.getBytes("utf-8"));
-
+                continue;
             } else {
-                templates[i].render(model, html, request, ctx.getLocale(), templateResponse);
-                content = new String(templateResponse.getContentBuffer(),
-                                     templateResponse.getCharacterEncoding());
+                templates[i].render(model, html, request, ctx.getLocale(), bufferedResponse);
+                content = new String(bufferedResponse.getContentBuffer(),
+                                     bufferedResponse.getCharacterEncoding());
             }
         }
     }

@@ -183,7 +183,7 @@
               <bean class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
                 <property name="guessCharacterEncodingFromContent" value="true" />
                 <property name="forcedOutputEncoding" value="utf-8" />
-                <property name="contentFilters">
+                <property name="decorators">
                   <list>
                     <bean class="org.vortikal.web.view.decorating.TextReplaceContentFilter">
                       <property name="pattern">

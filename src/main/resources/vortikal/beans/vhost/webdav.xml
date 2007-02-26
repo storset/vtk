@@ -488,7 +488,7 @@
   <bean id="webdavCollectionListingViewWrapper" 
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="propagateExceptions" value="true" />
-    <property name="contentFilters">
+    <property name="decorators">
       <list>
         <ref bean="collectionListingHeadContentFilter" />
         <ref bean="collectionListingHeaderContentFilter" />

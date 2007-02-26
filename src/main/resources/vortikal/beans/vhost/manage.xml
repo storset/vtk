@@ -1243,7 +1243,7 @@
         <entry key="Expires" value="0" />
       </map>
     </property>
-    <property name="contentFilters">
+    <property name="decorators">
       <list>
         <ref bean="manageHeadContentFilter" />
         <ref bean="manageHeaderContentFilter" />

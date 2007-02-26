@@ -68,10 +68,10 @@
         <bean class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
           <property name="view" ref="browseHeadView"/>
         </bean>
-        <bean class="org.vortikal.web.view.decorating.HtmlHeaderContentFilter">
+        <bean class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
           <property name="view" ref="browseHeaderView"/>
         </bean>
-        <bean class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
+        <bean class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
           <property name="view" ref="browseFooterView"/>
         </bean>
       </list>

@@ -30,12 +30,10 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -183,7 +181,7 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
         Locale defaultResponseLocale = Locale.getDefault();
 
         DecoratorResponseImpl response = new DecoratorResponseImpl(
-            defaultResponseDoctype, defaultResponseLocale, defaultResponseDoctype);
+            defaultResponseDoctype, defaultResponseLocale, defaultResponseEncoding);
         c.render(request, response);
         String result = response.getContentAsString();
         return result;

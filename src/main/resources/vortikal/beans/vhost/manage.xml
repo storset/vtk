@@ -1245,9 +1245,9 @@
     </property>
     <property name="decorators">
       <list>
-        <ref bean="manageHeadContentFilter" />
-        <ref bean="manageHeaderContentFilter" />
-        <ref bean="manageFooterContentFilter" />
+        <ref bean="manageHeadDecorator" />
+        <ref bean="manageHeaderDecorator" />
+        <ref bean="manageFooterDecorator" />
       </list>
     </property>
     <property name="referenceDataProviders">
@@ -1276,7 +1276,7 @@
     <property name="service" ref="manageService" />
   </bean>
 
-  <bean id="manageHeadContentFilter"
+  <bean id="manageHeadDecorator"
         class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
     <description>
       This filter merges the output from the 'manageHeadView' view
@@ -1305,8 +1305,8 @@
     <property name="url" value="layouts/head.ftl" />
   </bean>
 
-  <bean id="manageHeaderContentFilter"
-        class="org.vortikal.web.view.decorating.HtmlHeaderContentFilter">
+  <bean id="manageHeaderDecorator"
+        class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
     <description>
       This filter merges the output from the
       'manageHeaderView' view into the beginning of the HTML
@@ -1324,8 +1324,8 @@
     <property name="url" value="layouts/header.ftl" />
   </bean>
 
-  <bean id="manageFooterContentFilter"
-        class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
+  <bean id="manageFooterDecorator"
+        class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
     <description>
       This filter merges the output from the
       'manageFooterView' view into end of the HTML

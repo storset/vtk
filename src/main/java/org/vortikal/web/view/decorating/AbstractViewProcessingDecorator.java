@@ -43,7 +43,7 @@ import org.vortikal.web.servlet.BufferedResponse;
 
 
 /**
- * Abstract text content filter implementation. This filter takes a
+ * Abstract decorator which takes a
  * view, which is rendered into a string, and the result is merged
  * with the output from the previous view using the abstract {@link
  * #processInternal} method.
@@ -54,22 +54,16 @@ import org.vortikal.web.servlet.BufferedResponse;
  * </ul>
  *
  */
-public abstract class AbstractViewProcessingTextContentFilter
-  implements Decorator, InitializingBean {
+public abstract class AbstractViewProcessingDecorator 
+    implements Decorator, InitializingBean {
 
     protected final Log logger = LogFactory.getLog(this.getClass());
-    protected boolean debug = false;
 
     private View view;
 
 
     public void setView(View view) {
         this.view = view;
-    }
-    
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
     
 
@@ -93,13 +87,11 @@ public abstract class AbstractViewProcessingTextContentFilter
      * #processInternal} method.
      * @exception Exception if an error occurs
      */
-    public final void decorate(Map model,
-                          HttpServletRequest request,
-                          Content content) throws Exception {
+    public final void decorate(Map model, HttpServletRequest request,
+            Content content) throws Exception {
 
         String viewContent = renderView(model, request);
-        String processedContent = processInternal(content.getContent(), viewContent);
-        content.setContent(processedContent);
+        processInternal(content, viewContent);
     }
     
     
@@ -116,7 +108,7 @@ public abstract class AbstractViewProcessingTextContentFilter
      * @return the merged content from the two views
      * @exception Exception if an error occurs
      */
-    protected abstract String processInternal(String content, String viewContent) 
+    protected abstract void processInternal(Content content, String viewContent) 
         throws Exception;
     
 
@@ -135,8 +127,7 @@ public abstract class AbstractViewProcessingTextContentFilter
                          + "Content-Length was: " + tmpResponse.getContentLength());
         }
 
-        return new String(tmpResponse.getContentBuffer(), 
-                          tmpResponse.getCharacterEncoding());
+        return new String(tmpResponse.getContentBuffer(), tmpResponse.getCharacterEncoding());
     }
 
     public String toString() {

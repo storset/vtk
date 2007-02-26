@@ -490,10 +490,10 @@
     <property name="propagateExceptions" value="true" />
     <property name="decorators">
       <list>
-        <ref bean="collectionListingHeadContentFilter" />
-        <ref bean="collectionListingHeaderContentFilter" />
-        <ref bean="collectionListingFooterContentFilter" />
-        <ref bean="adminURLFooterContentFilter" />
+        <ref bean="collectionListingHeadDecorator" />
+        <ref bean="collectionListingHeaderDecorator" />
+        <ref bean="collectionListingFooterDecorator" />
+        <ref bean="adminURLFooterDecorator" />
       </list>
     </property>
   </bean>

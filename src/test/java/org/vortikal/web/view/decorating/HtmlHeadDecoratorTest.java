@@ -40,7 +40,7 @@ import org.vortikal.web.view.decorating.ContentImpl;
 import org.vortikal.web.view.decorating.HtmlHeadDecorator;
 
 
-public class HtmlHeadContentFilterTest extends TestCase {
+public class HtmlHeadDecoratorTest extends TestCase {
 
 
     protected void setUp() throws Exception {

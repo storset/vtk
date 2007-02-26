@@ -33,43 +33,32 @@ package org.vortikal.web.view.decorating;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
 /**
- * Content filter that merges the supplied text content into the
+ * Content decorator that merges the supplied content into the
  * <code>&lt;body&gt;</code> element of the original content (if there
- * is one). The text is placed at the end of the body content.
+ * is one). The text is placed at the beginning of the body content.
  *
- * <p>This type of filter may for example be used to provide a common
- * footer component on all HTML pages.
+ * <p>This type of filter may for example be used to provide a menu
+ * component on all HTML pages.
  */
-public class HtmlFooterContentFilter
-  extends AbstractViewProcessingTextContentFilter {
+public class HtmlHeaderDecorator extends AbstractViewProcessingDecorator {
 
-    private static Pattern FOOTER_REGEXP =
-        Pattern.compile("<\\s*/\\s*body",
+    private static Pattern HEADER_REGEXP =
+        Pattern.compile("<\\s*body[^>]*>(.*)",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected String processInternal(String content, String footer)
-        throws Exception {
+    protected void processInternal(Content content, String header)
+        {
+        String page = content.getContent();
+        Matcher headerMatcher = HEADER_REGEXP.matcher(page);
 
-        Matcher footerMatcher = FOOTER_REGEXP.matcher(content);
-        if (footerMatcher.find()) {
-
-            if (this.debug && this.logger.isDebugEnabled()) {
-                this.logger.debug("Found </body> or similar, will add footer");
+        if (headerMatcher.find()) {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Found <body> or similar, will add header");
             }
-            int index = footerMatcher.start();
-            if (this.debug && this.logger.isDebugEnabled()) {
-                this.logger.debug("Start index of </body>: " + index);
-            }
-            return content.substring(0, index) + footer + content.substring(index);
+            int index = headerMatcher.start(1);
+            content.setContent(page.substring(0, index) + header + page.substring(index));
         } 
-
-        if (this.debug && this.logger.isDebugEnabled()) {
-            this.logger.debug("Did not find </body> or similar, returning original content");
-        }
-        return content;
     }
 
 }

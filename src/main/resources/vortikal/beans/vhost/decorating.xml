@@ -7,7 +7,7 @@
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="decorators">
       <list>
-        <ref bean="ssiTextContentFilter" />
+        <ref bean="ssiDecorator" />
         <ref bean="templateDecorator" />
       </list>
     </property>
@@ -41,7 +41,7 @@
   </bean>
 -->
 
-  <bean id="ssiTextContentFilter"
+  <bean id="ssiDecorator"
         class="org.vortikal.web.view.decorating.ssi.SsiDecorator">
     <property name="ssiProcessors">
       <set>

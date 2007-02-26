@@ -35,38 +35,37 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * A text content filter that takes two filters, a conditional filter
- * and a target filter, and runs the target filter only if the
- * conditional filter returns without altering the content.
+ * A decorator taking two decorators, a conditional decorator
+ * and a target decorator, and runs the target decorator only if the
+ * conditional decorator returns without altering the content.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>conditionalContentFilter</code> - the content filter
+ *   <li><code>conditionalDecorator</code> - the decorator
  *   that is always invoked. The resulting content is then examined
- *   and the target content filter is invoked if the result has not
+ *   and the target decorator is invoked if the result has not
  *   been modified.
- *   <li><code>targetContentFilter</code> - the content filter to
- *   invoke if the first filter did not modified the result.
+ *   <li><code>targetDecorator</code> - the decorator to
+ *   invoke if the first decorator did not modify the result.
  *   <li><code>checkContentLengthOnly</code> - whether to only compare
- *   the length of the content before and after the first filter is
+ *   the length of the content before and after the first decorator is
  *   run - if the content length has not changed, it is interpreted as
  *   if the content itself had not changed, otherwise a full
- *   <code>equals()</code> is performed. Default is
- *   <code>false</code>.
+ *   <code>equals()</code> is performed. Default is <code>false</code>.
  * </ul>
  */
-public class ConditionalContentFilter implements Decorator {
+public class ConditionalDecorator implements Decorator {
 
     private Decorator conditionalDecorator;
     private Decorator targetDecorator;
     private boolean checkContentLengthOnly = false;
     
         
-    public void setConditionalContentFilter(Decorator conditionalDecorator) {
+    public void setConditionalDecorator(Decorator conditionalDecorator) {
         this.conditionalDecorator = conditionalDecorator;
     }
 
-    public void setTargetContentFilter(Decorator targetDecorator) {
+    public void setTargetDecorator(Decorator targetDecorator) {
         this.targetDecorator = targetDecorator;
     }
     
@@ -78,15 +77,15 @@ public class ConditionalContentFilter implements Decorator {
                           Content content) throws Exception {
         String unprocessedContent = content.getContent();
         this.conditionalDecorator.decorate(model, request, content);
-        boolean runContentFilter = false;
+        boolean runDecorator = false;
         int length = content.getContent().length();
         if (this.checkContentLengthOnly) {
-            runContentFilter = unprocessedContent.length() == length;
+            runDecorator = unprocessedContent.length() == length;
         } else if (unprocessedContent.length() == length) {
-            runContentFilter = content.equals(unprocessedContent);
+            runDecorator = content.equals(unprocessedContent);
         } 
 
-        if (runContentFilter) {
+        if (runDecorator) {
             this.targetDecorator.decorate(model, request, content);
         }
     }

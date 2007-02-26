@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,46 +30,63 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Content filter that merges the supplied text content into the
- * <code>&lt;body&gt;</code> element of the original content (if there
- * is one). The text is placed at the beginning of the body content.
+ * Decorator that performs regexp matching and replacing.
  *
- * <p>This type of filter may for example be used to provide a menu
- * component on all HTML pages.
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>pattern</code> - the regular expression to match
+ *   <li><code>replacement</code> - the replacement string
+ * </ul>
  */
-public class HtmlHeaderContentFilter
-  extends AbstractViewProcessingTextContentFilter {
+public class TextReplaceDecorator implements Decorator, InitializingBean {
+
+    private Pattern pattern;
+    private String replacement;
 
 
-    private static Pattern HEADER_REGEXP =
-        Pattern.compile("<\\s*body[^>]*>(.*)",
-                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    public void setPattern(String pattern) {
+        this.pattern = Pattern.compile(pattern, Pattern.DOTALL);
+    }
+    
 
-
-
-    protected String processInternal(String content, String header)
-        throws Exception {
-
-        Matcher headerMatcher = HEADER_REGEXP.matcher(content);
-
-        if (headerMatcher.find()) {
-            if (this.debug && this.logger.isDebugEnabled()) {
-                this.logger.debug("Found <body> or similar, will add header");
-            }
-            int index = headerMatcher.start(1);
-            return content.substring(0, index) + header + content.substring(index);
-        } 
-
-        if (this.debug && this.logger.isDebugEnabled()) {
-            this.logger.debug("Did not find <body> or similar, returning original content");
-        }
-        return content;
+    public void setReplacement(String replacement) {
+        this.replacement = replacement;
     }
 
+    
+    public void afterPropertiesSet() throws Exception {
+        if (this.pattern == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'pattern' not specified");
+        }
+        if (this.replacement == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'replacement' not specified");
+        }
+    }
+
+
+    public void decorate(Map model, HttpServletRequest request,
+                          Content content) throws Exception {
+        
+        String s = content.getContent();
+        Matcher matcher = this.pattern.matcher(s);
+        StringBuffer sb = new StringBuffer();
+            
+        if (matcher.find()) {
+            matcher.appendReplacement(sb, this.replacement);
+        }
+        matcher.appendTail(sb);
+        content.setContent(sb.toString());
+    }
 }

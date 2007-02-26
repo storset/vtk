@@ -55,10 +55,10 @@
     <property name="propagateExceptions" value="true" />
     <property name="decorators">
       <list>
-        <ref bean="collectionListingHeadContentFilter" />
-        <ref bean="collectionListingHeaderContentFilter" />
-        <ref bean="collectionListingFooterContentFilter" />
-        <ref bean="adminURLFooterContentFilter" />
+        <ref bean="collectionListingHeadDecorator" />
+        <ref bean="collectionListingHeaderDecorator" />
+        <ref bean="collectionListingFooterDecorator" />
+        <ref bean="adminURLFooterDecorator" />
       </list>
     </property>
   </bean>
@@ -169,7 +169,7 @@
   </bean>
 
 
-  <bean id="collectionListingHeadContentFilter"
+  <bean id="collectionListingHeadDecorator"
         class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
     <property name="view">
       <bean id="collectionListingHeadView" parent="freemarkerView">
@@ -190,8 +190,8 @@
   </bean>
 
 
-  <bean id="collectionListingHeaderContentFilter"
-        class="org.vortikal.web.view.decorating.HtmlHeaderContentFilter">
+  <bean id="collectionListingHeaderDecorator"
+        class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
     <property name="view">
       <bean id="collectionListingHeader" parent="freemarkerView">
         <property name="url" value="layouts/plain-header.ftl" />
@@ -200,8 +200,8 @@
   </bean>
 
 
-  <bean id="collectionListingFooterContentFilter"
-        class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
+  <bean id="collectionListingFooterDecorator"
+        class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
     <property name="view">
       <bean id="collectionListingFooterView" parent="freemarkerView">
         <property name="url" value="layouts/plain-footer.ftl" />
@@ -209,8 +209,8 @@
     </property>
   </bean>
 
-  <bean id="adminURLFooterContentFilter"
-        class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
+  <bean id="adminURLFooterDecorator"
+        class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
     <property name="view">
       <bean parent="freemarkerView">
         <property name="url" value="layouts/manage-link.ftl" />

@@ -34,7 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
 /**
  * Content filter that merges the supplied text content into the
  * <code>&lt;head&gt;</code> element of the original content. An
@@ -49,17 +48,15 @@ import java.util.regex.Pattern;
  *   <li><code>removeCharsets</code> - default <code>true</code>
  * </ul>
  */
-public class HtmlHeadDecorator
-  extends AbstractViewProcessingTextContentFilter {
+public class HtmlHeadDecorator extends AbstractViewProcessingDecorator {
 
     private static Pattern HEAD_START_REGEXP =
         Pattern.compile("<\\s*head[^>]*>",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
     private static Pattern HEAD_END_REGEXP =
         Pattern.compile("<\\s*/\\s*head\\s*>",
                         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
-    
     
     private static Pattern CHARACTER_ENCODING__REGEXP =
 		Pattern.compile("((<\\s*meta[^>]+charset\\s*\\=\\s*)([\\w-]+)[^>]*>"
@@ -73,23 +70,23 @@ public class HtmlHeadDecorator
     private boolean removeTitles = true;
     private boolean removeCharsets = true;
         
-    protected String processInternal(String content, String head) throws Exception {
-
+    protected void processInternal(Content content, String head) {
+        String page = content.getContent();
         // Get the head content to look for a charset meta element there.
-        Matcher headStartMatcher = HEAD_START_REGEXP.matcher(content);
-        Matcher headEndMatcher = HEAD_END_REGEXP.matcher(content);
+        Matcher headStartMatcher = HEAD_START_REGEXP.matcher(page);
+        Matcher headEndMatcher = HEAD_END_REGEXP.matcher(page);
         String headContent = null;
         int startHead, endHead;
         
         if (! (headStartMatcher.find(0) && headEndMatcher.find(0))) {
             // No head found, nothing to do
-            return content;
+            return;
         }
 
         startHead = headStartMatcher.end();
         endHead = headEndMatcher.start();
         
-        headContent = content.substring(startHead, endHead);
+        headContent = page.substring(startHead, endHead);
 
         // Look for title element
         Matcher titleMatcher = TITLE_REGEXP.matcher(headContent);
@@ -102,18 +99,18 @@ public class HtmlHeadDecorator
         Matcher charsetMatcher = CHARACTER_ENCODING__REGEXP.matcher(headContent);
 	
         if (this.removeCharsets && charsetMatcher.find(0)) {
-            if (this.debug && this.logger.isDebugEnabled()) {
+            if (this.logger.isDebugEnabled()) {
                 this.logger.debug("found charset content, will remove");
             }
             headContent = charsetMatcher.replaceAll("");
         }
             
-        if (this.debug && this.logger.isDebugEnabled()) {
+        if (this.logger.isDebugEnabled()) {
             this.logger.debug("New head content:\n" + headContent);
         }
         
-        return content.substring(0, headStartMatcher.end())
-            + headContent + head + content.substring(headEndMatcher.start());
+        content.setContent(page.substring(0, headStartMatcher.end())
+            + headContent + head + page.substring(headEndMatcher.start()));
     }
     
     

@@ -185,7 +185,7 @@
                 <property name="forcedOutputEncoding" value="utf-8" />
                 <property name="decorators">
                   <list>
-                    <bean class="org.vortikal.web.view.decorating.TextReplaceContentFilter">
+                    <bean class="org.vortikal.web.view.decorating.TextReplaceDecorator">
                       <property name="pattern">
                         <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
                       </property>

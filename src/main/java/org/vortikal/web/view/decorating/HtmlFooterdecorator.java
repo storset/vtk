@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2004, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,62 +30,38 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
-public class DecoratorResponseImpl implements DecoratorResponse {
 
-    private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+/**
+ * Decorator that merges the supplied text content into the
+ * <code>&lt;body&gt;</code> element of the original content (if there
+ * is one). The text is placed at the end of the body content.
+ *
+ * <p>This type of filter may for example be used to provide a common
+ * footer component on all HTML pages.
+ */
+public class HtmlFooterdecorator extends AbstractViewProcessingDecorator {
 
-    private String doctype;
-    private Locale locale;
-    private String characterEncoding;
-    
+    private static Pattern FOOTER_REGEXP =
+        Pattern.compile("<\\s*/\\s*body", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    public DecoratorResponseImpl(String doctype, Locale locale, String characterEncoding) {
-        this.doctype = doctype;
-        this.locale = locale;
-        this.characterEncoding = characterEncoding;
-    }
-    
+    protected void processInternal(Content content, String footer) {
 
-    public void setDoctype(String doctype) {
-        this.doctype = doctype;
-    }
-    
-    
-    public String getDoctype() {
-        return this.doctype;
-    }
-    
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
-    }
-
-    public Locale getLocale() {
-        return this.locale;
-    }
-    
-    
-    public void setCharacterEncoding(String characterEncoding) {
-        java.nio.charset.Charset.forName(characterEncoding);
-        this.characterEncoding = characterEncoding;
-    }
-    
-    public String getCharacterEncoding() {
-        return this.characterEncoding;
+        String page = content.getContent();
+        Matcher footerMatcher = FOOTER_REGEXP.matcher(page);
+        if (footerMatcher.find()) {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Found </body> or similar, will add footer");
+            }
+            int index = footerMatcher.start();
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Start index of </body>: " + index);
+            }
+            content.setContent(page.substring(0, index) + footer + page.substring(index));
+        } 
     }
 
-
-    public OutputStream getOutputStream() {
-        return this.outputStream;
-    }
-    
-    public String getContentAsString() throws Exception {
-        return this.outputStream.toString(this.characterEncoding);
-    }
-    
 }

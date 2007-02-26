@@ -175,9 +175,9 @@
     </property>
     <property name="decorators">
       <list>
-        <ref bean="manageHeadContentFilter" />
-        <ref bean="manageHeaderContentFilter" />
-        <ref bean="manageFooterContentFilter" />
+        <ref bean="manageHeadDecorator" />
+        <ref bean="manageHeaderDecorator" />
+        <ref bean="manageFooterDecorator" />
       </list>
     </property>
     <property name="referenceDataProviders">

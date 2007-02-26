@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.HashMap;
 
@@ -36,6 +36,8 @@ import junit.framework.TestCase;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.web.view.MockStringView;
+import org.vortikal.web.view.decorating.ContentImpl;
+import org.vortikal.web.view.decorating.HtmlHeadDecorator;
 
 
 public class HtmlHeadContentFilterTest extends TestCase {
@@ -182,14 +184,15 @@ public class HtmlHeadContentFilterTest extends TestCase {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         MockStringView view = new MockStringView(headContent);
-        HtmlHeadContentFilter filter = new HtmlHeadContentFilter();
-        filter.setView(view);
-        filter.setRemoveCharsets(removeCharsets);
-        filter.setRemoveTitles(removeTitles);
+        HtmlHeadDecorator decorator = new HtmlHeadDecorator();
+        decorator.setView(view);
+        decorator.setRemoveCharsets(removeCharsets);
+        decorator.setRemoveTitles(removeTitles);
 
-        filter.afterPropertiesSet();
-        String result = filter.process(new HashMap(), request, document);
-        return result;
+        decorator.afterPropertiesSet();
+        ContentImpl content = new ContentImpl(document);
+        decorator.decorate(new HashMap(), request, content);
+        return content.getContent();
 
     }
     

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
  *   <li><code>removeCharsets</code> - default <code>true</code>
  * </ul>
  */
-public class HtmlHeadContentFilter
+public class HtmlHeadDecorator
   extends AbstractViewProcessingTextContentFilter {
 
     private static Pattern HEAD_START_REGEXP =

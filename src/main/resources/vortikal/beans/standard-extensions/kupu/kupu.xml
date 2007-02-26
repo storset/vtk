@@ -174,18 +174,18 @@
             parent="requestLocalRepositoryAware">
         <property name="ignoreLastModified" value="true" />
         <property name="view">
-          <bean class="org.vortikal.web.view.wrapper.WrappingView">
+          <bean class="org.vortikal.web.view.decorating.WrappingView">
             <property name="view">
               <bean class="org.vortikal.web.view.DisplayResourceView">
               </bean>
             </property>
             <property name="viewWrapper">
-              <bean class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+              <bean class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
                 <property name="guessCharacterEncodingFromContent" value="true" />
                 <property name="forcedOutputEncoding" value="utf-8" />
                 <property name="contentFilters">
                   <list>
-                    <bean class="org.vortikal.web.view.wrapper.TextReplaceContentFilter">
+                    <bean class="org.vortikal.web.view.decorating.TextReplaceContentFilter">
                       <property name="pattern">
                         <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
                       </property>
@@ -442,7 +442,7 @@
     </property>
   </bean>
 
-  <bean id="kupuNoWrappingViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+  <bean id="kupuNoWrappingViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <description>View resolver without view wrapping</description>
     <property name="views">
       <map>

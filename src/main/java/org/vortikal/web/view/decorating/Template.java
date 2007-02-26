@@ -32,8 +32,8 @@ package org.vortikal.web.view.decorating;
 
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.web.view.decorating.html.HtmlPage;
 
@@ -41,6 +41,6 @@ public interface Template {
 
     public String getName();
 
-    public void render(Map model, HtmlPage html, HttpServletRequest request,
-                       Locale locale, HttpServletResponse response) throws Exception;
+    public String render(Map model, HtmlPage html, HttpServletRequest request,
+                       Locale locale) throws Exception;
 }

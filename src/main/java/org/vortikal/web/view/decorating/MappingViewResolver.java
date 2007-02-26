@@ -28,27 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 
-/**
- * A request wrapper that delegates every method to the wrapped
- * request except <code>getMethod()</code>. Useful for wrapping views
- * that are sensitive to the HTTP HEAD method, for instance.
+/** 
+ * Simple mapping view resolver. Maps from names to view instances.
+ * 
+ * FIXME: remove this
  */
-public class RequestWrapper extends HttpServletRequestWrapper {
+public class MappingViewResolver extends AbstractWrappingViewResolver
+  implements ViewResolver {
 
-    private String method;
+    private Map views = new HashMap();
+    
+    protected View resolveViewNameInternal(String viewName, Locale locale) {
 
-    public RequestWrapper(HttpServletRequest request, String method) {
-        super(request);
-        this.method = method;
+        View view = (View) this.views.get(viewName);
+        return view;
+    }
+    
+    public void setViews(Map views) {
+        this.views = views;
     }
 
-    public String getMethod() {
-        return this.method;
-    }
 }

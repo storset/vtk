@@ -444,7 +444,7 @@
   <!-- View resolver -->
 
   
-  <bean id="webdavViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+  <bean id="webdavViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="webdavDisplayResource" value-ref="webdavDisplayResourceView" />
@@ -486,7 +486,7 @@
 
   <!-- lagt inn -->
   <bean id="webdavCollectionListingViewWrapper" 
-        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="propagateExceptions" value="true" />
     <property name="contentFilters">
       <list>

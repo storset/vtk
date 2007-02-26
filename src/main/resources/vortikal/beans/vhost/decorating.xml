@@ -4,13 +4,23 @@
 <beans>
 
   <bean id="decoratingViewWrapper"
-        class="org.vortikal.web.view.wrapper.DecoratingViewWrapper">
-    <property name="textContentFilter" ref="ssiTextContentFilter" />
-    <property name="decorator" ref="decorator" />
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
+    <property name="decorators">
+      <list>
+        <ref bean="ssiTextContentFilter" />
+        <ref bean="templateDecorator" />
+      </list>
+    </property>
+    <property name="staticHeaders">
+      <map>
+        <entry key="Cache-Control" value="no-cache, no-store, must-revalidate, max-age=0" />
+        <entry key="Pragma" value="no-cache" />
+      </map>
+    </property>
   </bean>
 
-  <bean id="decorator"
-    class="org.vortikal.web.view.decorating.DecoratorImpl">
+  <bean id="templateDecorator"
+    class="org.vortikal.web.view.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateResolver" ref="templateResolver" />
     <!--property name="htmlNodeFilter" ref="ssiNodeFilter" /-->
@@ -32,7 +42,7 @@
 -->
 
   <bean id="ssiTextContentFilter"
-        class="org.vortikal.web.view.decorating.ssi.SsiTextContentFilter">
+        class="org.vortikal.web.view.decorating.ssi.SsiDecorator">
     <property name="ssiProcessors">
       <set>
         <bean class="org.vortikal.web.view.decorating.ssi.HttpSsiProcessor" />
@@ -133,7 +143,7 @@
 
   
   <bean id="listDecoratorComponentsViewResolver"
-        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+        class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="listDecoratorComponents" value-ref="listDecoratorComponentsView" />        

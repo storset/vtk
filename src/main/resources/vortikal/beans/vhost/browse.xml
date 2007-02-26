@@ -48,7 +48,7 @@
   <!-- BROWSE view resolver -->
 
   <bean id="browseViewResolver" 
-        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+        class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="browse" value-ref="browseView" />
@@ -61,17 +61,17 @@
   <!-- BROWSE views -->
 
   <bean id="browseViewWrapper" 
-        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="propagateExceptions" value="true" />
     <property name="contentFilters">
       <list>
-        <bean class="org.vortikal.web.view.wrapper.HtmlHeadContentFilter">
+        <bean class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
           <property name="view" ref="browseHeadView"/>
         </bean>
-        <bean class="org.vortikal.web.view.wrapper.HtmlHeaderContentFilter">
+        <bean class="org.vortikal.web.view.decorating.HtmlHeaderContentFilter">
           <property name="view" ref="browseHeaderView"/>
         </bean>
-        <bean class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+        <bean class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
           <property name="view" ref="browseFooterView"/>
         </bean>
       </list>

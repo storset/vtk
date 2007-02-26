@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2004, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,33 +28,48 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
 
-/** 
- * Simple mapping view resolver. Maps from names to view instances.
- * 
- * FIXME: remove this
+
+/**
+ * Content filter that merges the supplied text content into the
+ * <code>&lt;body&gt;</code> element of the original content (if there
+ * is one). The text is placed at the beginning of the body content.
+ *
+ * <p>This type of filter may for example be used to provide a menu
+ * component on all HTML pages.
  */
-public class MappingViewResolver extends AbstractWrappingViewResolver
-  implements ViewResolver {
+public class HtmlHeaderContentFilter
+  extends AbstractViewProcessingTextContentFilter {
 
-    private Map views = new HashMap();
-    
-    protected View resolveViewNameInternal(String viewName, Locale locale) {
 
-        View view = (View) this.views.get(viewName);
-        return view;
-    }
-    
-    public void setViews(Map views) {
-        this.views = views;
+    private static Pattern HEADER_REGEXP =
+        Pattern.compile("<\\s*body[^>]*>(.*)",
+                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+
+
+    protected String processInternal(String content, String header)
+        throws Exception {
+
+        Matcher headerMatcher = HEADER_REGEXP.matcher(content);
+
+        if (headerMatcher.find()) {
+            if (this.debug && this.logger.isDebugEnabled()) {
+                this.logger.debug("Found <body> or similar, will add header");
+            }
+            int index = headerMatcher.start(1);
+            return content.substring(0, index) + header + content.substring(index);
+        } 
+
+        if (this.debug && this.logger.isDebugEnabled()) {
+            this.logger.debug("Did not find <body> or similar, returning original content");
+        }
+        return content;
     }
 
 }

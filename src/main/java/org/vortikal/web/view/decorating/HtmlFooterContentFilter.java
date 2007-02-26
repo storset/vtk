@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2004, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,55 +28,48 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.View;
 
 
 /**
- * A View wrapper that sets configurable response headers. The headers
- * are set on the response before the wrapped view is rendered.
+ * Content filter that merges the supplied text content into the
+ * <code>&lt;body&gt;</code> element of the original content (if there
+ * is one). The text is placed at the end of the body content.
  *
- * <p>Configurable JavaBean properties:
- * <ul>
- *   <code>headers</code> - a map containing <code>(headerName,
- *   headerValue)</code> entries.
- * </ul>
+ * <p>This type of filter may for example be used to provide a common
+ * footer component on all HTML pages.
  */
-public class ConfigurableResponseHeaderWrappingView implements View {
+public class HtmlFooterContentFilter
+  extends AbstractViewProcessingTextContentFilter {
 
-    private Map headers;
-    private View view;
-    
+    private static Pattern FOOTER_REGEXP =
+        Pattern.compile("<\\s*/\\s*body",
+                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    public void setHeaders(Map headers) {
-        this.headers = headers;
-    }
-    
-    public void setView(View view) {
-        this.view = view;
-    }
-    
+    protected String processInternal(String content, String footer)
+        throws Exception {
 
-    public void render(Map model, HttpServletRequest request,
-                       HttpServletResponse response) throws Exception {
-        
-        for (Iterator i = this.headers.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            response.setHeader((String) entry.getKey(), (String) entry.getValue());
+        Matcher footerMatcher = FOOTER_REGEXP.matcher(content);
+        if (footerMatcher.find()) {
+
+            if (this.debug && this.logger.isDebugEnabled()) {
+                this.logger.debug("Found </body> or similar, will add footer");
+            }
+            int index = footerMatcher.start();
+            if (this.debug && this.logger.isDebugEnabled()) {
+                this.logger.debug("Start index of </body>: " + index);
+            }
+            return content.substring(0, index) + footer + content.substring(index);
+        } 
+
+        if (this.debug && this.logger.isDebugEnabled()) {
+            this.logger.debug("Did not find </body> or similar, returning original content");
         }
-        
-        this.view.render(model, request, response);
-    }
-
-    public String getContentType() {
-        return null;
+        return content;
     }
 
 }

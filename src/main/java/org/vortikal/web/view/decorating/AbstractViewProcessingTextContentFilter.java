@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.Map;
 
@@ -55,7 +55,7 @@ import org.vortikal.web.servlet.BufferedResponse;
  *
  */
 public abstract class AbstractViewProcessingTextContentFilter
-  implements TextContentFilter, InitializingBean {
+  implements Decorator, InitializingBean {
 
     protected final Log logger = LogFactory.getLog(this.getClass());
     protected boolean debug = false;
@@ -93,13 +93,13 @@ public abstract class AbstractViewProcessingTextContentFilter
      * #processInternal} method.
      * @exception Exception if an error occurs
      */
-    public final String process(Map model,
+    public final void decorate(Map model,
                           HttpServletRequest request,
-                          String content) throws Exception {
+                          Content content) throws Exception {
 
         String viewContent = renderView(model, request);
-        String processedContent = processInternal(content, viewContent);
-        return processedContent;
+        String processedContent = processInternal(content.getContent(), viewContent);
+        content.setContent(processedContent);
     }
     
     

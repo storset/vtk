@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 
 /**
- * Content filter that merges the supplied text content into the
- * <code>&lt;body&gt;</code> element of the original content (if there
- * is one). The text is placed at the beginning of the body content.
- *
- * <p>This type of filter may for example be used to provide a menu
- * component on all HTML pages.
+ * A request wrapper that delegates every method to the wrapped
+ * request except <code>getMethod()</code>. Useful for wrapping views
+ * that are sensitive to the HTTP HEAD method, for instance.
  */
-public class HtmlHeaderContentFilter
-  extends AbstractViewProcessingTextContentFilter {
+public class RequestWrapper extends HttpServletRequestWrapper {
 
+    private String method;
 
-    private static Pattern HEADER_REGEXP =
-        Pattern.compile("<\\s*body[^>]*>(.*)",
-                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
-
-
-    protected String processInternal(String content, String header)
-        throws Exception {
-
-        Matcher headerMatcher = HEADER_REGEXP.matcher(content);
-
-        if (headerMatcher.find()) {
-            if (this.debug && this.logger.isDebugEnabled()) {
-                this.logger.debug("Found <body> or similar, will add header");
-            }
-            int index = headerMatcher.start(1);
-            return content.substring(0, index) + header + content.substring(index);
-        } 
-
-        if (this.debug && this.logger.isDebugEnabled()) {
-            this.logger.debug("Did not find <body> or similar, returning original content");
-        }
-        return content;
+    public RequestWrapper(HttpServletRequest request, String method) {
+        super(request);
+        this.method = method;
     }
 
+    public String getMethod() {
+        return this.method;
+    }
 }

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ import org.springframework.web.servlet.View;
  * rendering a wrapped view. The MVC model and view objects that
  * failed are made available.
  * 
- * @see FilteringViewWrapper
+ * @see DecoratingViewWrapper
  */
 public class ViewWrapperException extends RuntimeException {
 

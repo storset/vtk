@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -48,7 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
  *   <li><code>replacement</code> - the replacement string
  * </ul>
  */
-public class TextReplaceContentFilter implements TextContentFilter, InitializingBean {
+public class TextReplaceContentFilter implements Decorator, InitializingBean {
 
     private Pattern pattern;
     private String replacement;
@@ -76,16 +76,17 @@ public class TextReplaceContentFilter implements TextContentFilter, Initializing
     }
 
 
-    public String process(Map model, HttpServletRequest request,
-                          String content) throws Exception {
+    public void decorate(Map model, HttpServletRequest request,
+                          Content content) throws Exception {
         
-        Matcher matcher = this.pattern.matcher(content);
+        String s = content.getContent();
+        Matcher matcher = this.pattern.matcher(s);
         StringBuffer sb = new StringBuffer();
             
         if (matcher.find()) {
             matcher.appendReplacement(sb, this.replacement);
         }
         matcher.appendTail(sb);
-        return sb.toString();
+        content.setContent(sb.toString());
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.View;
 
-/**
- * Interface utilized by {@link FilteringViewWrapper} for filtering
- * text content from other views. 
- * 
- * @see FilteringViewWrapper
- */
-public interface TextContentFilter {
+public interface ViewWrapper {
 
-    /**
-     * Processes the content from another view.
-     *
-     * @param model the MVC model.
-     * @param request the servlet request
-     * @param content the textual content to filter
-     * @return the filtered content
-     * @exception Exception if an error occurs
-     */
-    public String process(Map model, HttpServletRequest request,
-                          String content) throws Exception;
-    
+    public void renderView(View view, Map model, HttpServletRequest request, HttpServletResponse response) throws Exception;
 }

@@ -106,7 +106,7 @@
   <!-- Error views-->
 
 
-  <bean id="errorViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+  <bean id="errorViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="order" value="0" />
     <property name="views">
       <map>

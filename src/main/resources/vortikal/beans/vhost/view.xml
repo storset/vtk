@@ -4,7 +4,7 @@
 
 <beans>
 
-  <bean id="viewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+  <bean id="viewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="httpOptions" value-ref="httpOptionsView" />
@@ -19,7 +19,7 @@
     </property>
   </bean>
 
-  <bean id="decoratorViewResolver" class="org.vortikal.web.view.wrapper.MappingViewResolver">
+  <bean id="decoratorViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="displayHTMLResource"  value-ref="displayResourceView" />
@@ -32,7 +32,7 @@
 
   <!--
   <bean id="collectionListingViewResolver"
-        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+        class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="collectionListing">
@@ -51,7 +51,7 @@
 -->
 
   <bean id="collectionListingViewWrapper" 
-        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="propagateExceptions" value="true" />
     <property name="contentFilters">
       <list>
@@ -170,7 +170,7 @@
 
 
   <bean id="collectionListingHeadContentFilter"
-        class="org.vortikal.web.view.wrapper.HtmlHeadContentFilter">
+        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
     <property name="view">
       <bean id="collectionListingHeadView" parent="freemarkerView">
         <property name="attributesMap">
@@ -191,7 +191,7 @@
 
 
   <bean id="collectionListingHeaderContentFilter"
-        class="org.vortikal.web.view.wrapper.HtmlHeaderContentFilter">
+        class="org.vortikal.web.view.decorating.HtmlHeaderContentFilter">
     <property name="view">
       <bean id="collectionListingHeader" parent="freemarkerView">
         <property name="url" value="layouts/plain-header.ftl" />
@@ -201,7 +201,7 @@
 
 
   <bean id="collectionListingFooterContentFilter"
-        class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+        class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
     <property name="view">
       <bean id="collectionListingFooterView" parent="freemarkerView">
         <property name="url" value="layouts/plain-footer.ftl" />
@@ -210,7 +210,7 @@
   </bean>
 
   <bean id="adminURLFooterContentFilter"
-        class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+        class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
     <property name="view">
       <bean parent="freemarkerView">
         <property name="url" value="layouts/manage-link.ftl" />

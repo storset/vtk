@@ -122,8 +122,8 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
     }
     
 
-    public void render(Map model, HtmlPage html, HttpServletRequest request,
-                       Locale locale, HttpServletResponse response) throws Exception {
+    public String render(Map model, HtmlPage html, HttpServletRequest request,
+                       Locale locale) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
@@ -170,14 +170,7 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
             }
         }
 
-        // XXX: handle character encoding
-        byte[] buffer = sb.toString().getBytes("utf-8");
-        OutputStream out = response.getOutputStream();
-        
-        response.setContentType("text/html;charset=utf-8");
-        out.write(buffer);
-        out.flush();
-        out.close();
+        return sb.toString();
     }
     
 

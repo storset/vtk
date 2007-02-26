@@ -1204,7 +1204,7 @@
   <!-- MANAGE views -->
 
   <bean id="adminViewResolver" 
-        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+        class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="manageCollectionListing" 
@@ -1231,7 +1231,7 @@
   <!-- Manage wrapping -->
 
   <bean id="manageViewWrapper" 
-        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <description>
       This wrapper wraps manage views with the manage view layout
       items. It uses three filters for head, header and footer
@@ -1277,7 +1277,7 @@
   </bean>
 
   <bean id="manageHeadContentFilter"
-        class="org.vortikal.web.view.wrapper.HtmlHeadContentFilter">
+        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
     <description>
       This filter merges the output from the 'manageHeadView' view
       into the HTML head element.
@@ -1306,7 +1306,7 @@
   </bean>
 
   <bean id="manageHeaderContentFilter"
-        class="org.vortikal.web.view.wrapper.HtmlHeaderContentFilter">
+        class="org.vortikal.web.view.decorating.HtmlHeaderContentFilter">
     <description>
       This filter merges the output from the
       'manageHeaderView' view into the beginning of the HTML
@@ -1325,7 +1325,7 @@
   </bean>
 
   <bean id="manageFooterContentFilter"
-        class="org.vortikal.web.view.wrapper.HtmlFooterContentFilter">
+        class="org.vortikal.web.view.decorating.HtmlFooterContentFilter">
     <description>
       This filter merges the output from the
       'manageFooterView' view into end of the HTML
@@ -1689,7 +1689,7 @@
 
 
   <bean id="manageErrorViewResolver"
-        class="org.vortikal.web.view.wrapper.MappingViewResolver">
+        class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="defaultManageError" value-ref="defaultManageErrorView" />

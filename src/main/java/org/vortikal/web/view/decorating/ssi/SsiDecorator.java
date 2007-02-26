@@ -42,19 +42,20 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.web.view.wrapper.TextContentFilter;
+import org.vortikal.web.view.decorating.Content;
+import org.vortikal.web.view.decorating.Decorator;
 
-public class SsiTextContentFilter implements TextContentFilter, InitializingBean {
+public class SsiDecorator implements Decorator, InitializingBean {
 
     private static final Pattern INCLUDE_REGEXP = Pattern.compile(
             "<!--#include\\s+([\000-\377]*?)\\s*?=\"([\000-\377]*?)\"\\s*?-->",
             +Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private Map ssiProcessors = new HashMap();
-    private static Log logger = LogFactory.getLog(SsiTextContentFilter.class);
+    private static Log logger = LogFactory.getLog(SsiDecorator.class);
 
-    public String process(Map model, HttpServletRequest request, String content) throws Exception {
-        String docContentProcessed = content;
+    public void decorate(Map model, HttpServletRequest request, Content content) throws Exception {
+        String docContentProcessed = content.getContent();
         int indexStartIncludeStatements;
         int indexEndIncludeStatements;
         StringBuffer sb;
@@ -96,8 +97,7 @@ public class SsiTextContentFilter implements TextContentFilter, InitializingBean
                 matcherInclude.reset(docContentProcessed);
             }
         }
-        return docContentProcessed;
-
+        content.setContent(docContentProcessed);
     }
 
 

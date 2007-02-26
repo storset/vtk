@@ -161,7 +161,7 @@
 
 
   <bean id="rootManageViewWrapper" 
-        class="org.vortikal.web.view.wrapper.FilteringViewWrapper">
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <description>
       This wrapper wraps manage views with the manage view layout
       items. It uses three filters for head, header and footer

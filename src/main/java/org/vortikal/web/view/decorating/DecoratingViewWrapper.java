@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -69,7 +69,7 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>contentFilters</code> - an array of {@link
+ *   <li><code>decorators</code> - an array of {@link
  *   TextContentFilter content filters} to apply to the textual content
  *   that was the result of the wrapped view invocation.
  *   <li><code>guessCharacterEncodingFromContent</code> (boolean) -
@@ -92,20 +92,20 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  * 
  * @see TextContentFilter
  */
-public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding {
+public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProviding {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
     private boolean propagateExceptions = true;
-    private TextContentFilter[] contentFilters;
+    private Decorator[] decorators;
     private ReferenceDataProvider[] referenceDataProviders;
     private String forcedOutputEncoding;
     private boolean guessCharacterEncodingFromContent = false;
     private boolean appendCharacterEncodingToContentType = true;
     private Map staticHeaders = null;
 
-    public void setContentFilters(TextContentFilter[] contentFilters) {
-        this.contentFilters = contentFilters;
+    public void setDecorators(Decorator[] decorators) {
+        this.decorators = decorators;
     }
 
 
@@ -201,8 +201,7 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
             contentType = contentType.substring(0, contentType.indexOf(";"));
             characterEncoding = bufferedResponse.getCharacterEncoding();
         } else if (this.guessCharacterEncodingFromContent) {
-            characterEncoding = HtmlUtil
-                    .getCharacterEncodingFromBody(contentBuffer);
+            characterEncoding = HtmlUtil.getCharacterEncodingFromBody(contentBuffer);
         }
 
         if (characterEncoding == null) {
@@ -226,14 +225,16 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
                     + characterEncoding);
         }
 
-        String content = new String(contentBuffer, characterEncoding);
-
-        if (this.contentFilters != null) {
-            for (int i = 0; i < this.contentFilters.length; i++) {
-                content = this.contentFilters[i].process(model, request, content);
+        Content content = new ContentImpl();
+        content.setContent(new String(contentBuffer, characterEncoding));
+        
+        
+        if (this.decorators != null) {
+            for (int i = 0; i < this.decorators.length; i++) {
+                this.decorators[i].decorate(model, request, content);
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Ran content filter " + this.contentFilters[i]
-                            + ", content length after = " + content.length());
+                    this.logger.debug("Ran content filter " + this.decorators[i]
+                            + ", content length after = " + content.getContent().length());
                 }
             }
         }
@@ -249,7 +250,7 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
         }
 
 
-        writeResponse(content.getBytes(characterEncoding), bufferedResponse,
+        writeResponse(content.getContent().getBytes(characterEncoding), bufferedResponse,
                 contentType);
     }
 
@@ -320,8 +321,8 @@ public class FilteringViewWrapper implements ViewWrapper, ReferenceDataProviding
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(":");
-        sb.append(" [contentFilters = ").append(
-            (this.contentFilters != null) ? Arrays.asList(this.contentFilters) : null);
+        sb.append(" [decorators = ").append(
+            (this.decorators != null) ? Arrays.asList(this.decorators) : null);
         sb.append("]");
         return sb.toString();
     }

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -55,41 +55,40 @@ import javax.servlet.http.HttpServletRequest;
  *   <code>false</code>.
  * </ul>
  */
-public class ConditionalContentFilter implements TextContentFilter {
+public class ConditionalContentFilter implements Decorator {
 
-    private TextContentFilter conditionalContentFilter;
-    private TextContentFilter targetContentFilter;
+    private Decorator conditionalDecorator;
+    private Decorator targetDecorator;
     private boolean checkContentLengthOnly = false;
     
         
-    public void setConditionalContentFilter(TextContentFilter conditionalContentFilter) {
-        this.conditionalContentFilter = conditionalContentFilter;
+    public void setConditionalContentFilter(Decorator conditionalDecorator) {
+        this.conditionalDecorator = conditionalDecorator;
     }
 
-    public void setTargetContentFilter(TextContentFilter targetContentFilter) {
-        this.targetContentFilter = targetContentFilter;
+    public void setTargetContentFilter(Decorator targetDecorator) {
+        this.targetDecorator = targetDecorator;
     }
     
     public void setCheckContentLengthOnly(boolean checkContentLengthOnly) {
         this.checkContentLengthOnly = checkContentLengthOnly;
     }
     
-    public String process(Map model, HttpServletRequest request,
-                          String content) throws Exception {
-        String processedContent = this.conditionalContentFilter.process(
-            model, request, content);
+    public void decorate(Map model, HttpServletRequest request,
+                          Content content) throws Exception {
+        String unprocessedContent = content.getContent();
+        this.conditionalDecorator.decorate(model, request, content);
         boolean runContentFilter = false;
+        int length = content.getContent().length();
         if (this.checkContentLengthOnly) {
-            runContentFilter = processedContent.length() == content.length();
-        } else if (processedContent.length() == content.length()) {
-            runContentFilter = content.equals(processedContent);
-        } else {
-            runContentFilter = false;
-        }
+            runContentFilter = unprocessedContent.length() == length;
+        } else if (unprocessedContent.length() == length) {
+            runContentFilter = content.equals(unprocessedContent);
+        } 
 
         if (runContentFilter) {
-            return this.targetContentFilter.process(model, request, processedContent);
+            this.targetDecorator.decorate(model, request, content);
         }
-        return processedContent;
     }
+
 }

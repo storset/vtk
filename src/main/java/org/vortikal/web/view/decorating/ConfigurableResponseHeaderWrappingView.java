@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.wrapper;
+package org.vortikal.web.view.decorating;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +38,45 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
 
-public interface ViewWrapper {
 
-    public void renderView(View view, Map model, HttpServletRequest request, HttpServletResponse response) throws Exception;
+/**
+ * A View wrapper that sets configurable response headers. The headers
+ * are set on the response before the wrapped view is rendered.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <code>headers</code> - a map containing <code>(headerName,
+ *   headerValue)</code> entries.
+ * </ul>
+ */
+public class ConfigurableResponseHeaderWrappingView implements View {
+
+    private Map headers;
+    private View view;
+    
+
+    public void setHeaders(Map headers) {
+        this.headers = headers;
+    }
+    
+    public void setView(View view) {
+        this.view = view;
+    }
+    
+
+    public void render(Map model, HttpServletRequest request,
+                       HttpServletResponse response) throws Exception {
+        
+        for (Iterator i = this.headers.entrySet().iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            response.setHeader((String) entry.getKey(), (String) entry.getValue());
+        }
+        
+        this.view.render(model, request, response);
+    }
+
+    public String getContentType() {
+        return null;
+    }
+
 }

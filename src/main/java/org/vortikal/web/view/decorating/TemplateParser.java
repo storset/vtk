@@ -30,9 +30,11 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.io.Reader;
+
 
 public interface TemplateParser {
 
-    public ComponentInvocation[] parseTemplate(TemplateSource source) throws Exception;
+    public ComponentInvocation[] parseTemplate(Reader reader) throws Exception;
 
 }

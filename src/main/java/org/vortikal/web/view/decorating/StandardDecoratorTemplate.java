@@ -189,7 +189,8 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
     
 
     public synchronized void compile() throws Exception {
-        ComponentInvocation[] components = this.parser.parseTemplate(this.templateSource);
+        ComponentInvocation[] components = this.parser.parseTemplate(
+            this.templateSource.getTemplateReader());
         this.fragments = components;
         this.lastModified = templateSource.getLastModified();
     }

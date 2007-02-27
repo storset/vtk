@@ -32,18 +32,23 @@ package org.vortikal.web.view.decorating;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
-
-
 
 public class URLTemplateSource implements TemplateSource {
 
     private String url;
+    private String characterEncoding;
 
     public void setUrl(String url) {
         this.url = url;
     }
     
+    public void setCharacterEncoding(String characterEncoding) {
+        this.characterEncoding = characterEncoding;
+    }
+
     public long getLastModified() throws Exception {
         if (this.url.startsWith("file://")) {
             URL fileURL = new URL(this.url);
@@ -53,11 +58,13 @@ public class URLTemplateSource implements TemplateSource {
         return -1;
     }
     
+    public Reader getTemplateReader() throws Exception {
+        String encoding = (this.characterEncoding != null) ?
+            this.characterEncoding : System.getProperty("file.encoding");
 
-    public InputStream getTemplateInputStream() throws Exception {
-        return new URL(this.url).openStream();
+        return new InputStreamReader(
+            new URL(this.url).openStream(), encoding);
     }
-    
 
 }
 

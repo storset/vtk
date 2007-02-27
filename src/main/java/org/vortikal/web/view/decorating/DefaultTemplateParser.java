@@ -30,17 +30,19 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.io.BufferedReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.io.StreamUtil;
-import java.util.Map;
 
 
 public class DefaultTemplateParser implements TemplateParser {
@@ -53,15 +55,21 @@ public class DefaultTemplateParser implements TemplateParser {
         this.componentResolver = componentResolver;
     }
     
+    public ComponentInvocation[] parseTemplate(Reader reader) throws Exception {
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        
+        StringBuffer sb = new StringBuffer();
+        char[] buffer = new char[1024];
 
-    
-    public ComponentInvocation[] parseTemplate(TemplateSource source) throws Exception {
-        String s = new String(StreamUtil.readInputStream(source.getTemplateInputStream()));
-        return parseInternal(s);
+        int n = 0;
+        while ((n = bufferedReader.read(buffer)) > 0) {
+            sb.append(buffer, 0, n);
+        }
+        return parseInternal(sb.toString());
     }
     
 
-    public ComponentInvocation[] parseInternal(String s) throws Exception {
+    private ComponentInvocation[] parseInternal(String s) throws Exception {
 
         // Searching for:
         // ${namespace:name param1=[value] param2=[value]}
@@ -83,11 +91,11 @@ public class DefaultTemplateParser implements TemplateParser {
             }
 
             ComponentInvocation c = parseDirective(s.substring(directiveStart, directiveEnd));
-            if (c != null) {
+            if (c == null) {
+                fragmentList.add(staticTextComponent(s.substring(contentIdx, directiveEnd + 1)));
+            } else {
                 fragmentList.add(staticTextComponent(s.substring(contentIdx, directiveStart - 2)));
                 fragmentList.add(c);
-            } else {
-                fragmentList.add(staticTextComponent(s.substring(contentIdx, directiveEnd + 1)));
             }
             contentIdx = directiveEnd + 1;
         }
@@ -98,16 +106,6 @@ public class DefaultTemplateParser implements TemplateParser {
             new ComponentInvocation[fragmentList.size()]);
     }
 
-
-    private ComponentInvocation staticTextComponent(String s) {
-        StaticComponent c = new StaticComponent();
-        c.setContent(s);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Static text: " + s);
-        }
-        return new ComponentInvocationImpl(c, new HashMap());
-    }
-    
 
     private ComponentInvocation parseDirective(String s) {
         if (s != null) {
@@ -140,6 +138,7 @@ public class DefaultTemplateParser implements TemplateParser {
         }
         return new ComponentInvocationImpl(component, actualParameters);
     }
+
 
 
     private String parseComponentRef(String s) {
@@ -218,6 +217,16 @@ public class DefaultTemplateParser implements TemplateParser {
         return result;
     }
     
+
+    private ComponentInvocation staticTextComponent(String s) {
+        StaticComponent c = new StaticComponent();
+        c.setContent(s);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Static text: " + s);
+        }
+        return new ComponentInvocationImpl(c, new HashMap());
+    }
+
 
     private int nextWhitespaceIdx(String s, int startIdx) {
         int nearest = -1;

@@ -31,6 +31,8 @@
 package org.vortikal.web.view.decorating;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -55,6 +57,7 @@ public class RepositoryTemplateSource implements TemplateSource {
         this.uri = uri;
     }
     
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -63,16 +66,18 @@ public class RepositoryTemplateSource implements TemplateSource {
         this.token = token;
     }
     
-    
     public long getLastModified() throws Exception {
-
         Resource resource = this.repository.retrieve(this.token, this.uri, true);
         return resource.getLastModified().getTime();
     }
     
+    public Reader getTemplateReader() throws Exception {
+        Resource resource = this.repository.retrieve(this.token, this.uri, true);
+        String encoding = resource.getCharacterEncoding();
 
-    public InputStream getTemplateInputStream() throws Exception {
-        return this.repository.getInputStream(this.token, this.uri, true);
+        return new InputStreamReader(
+            this.repository.getInputStream(this.token, this.uri, true),
+            encoding);
     }
     
 

@@ -144,6 +144,13 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
         view.render(model, requestWrapper, responseWrapper);
         
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("About to post process buffered content, content type: "
+                    + responseWrapper.getContentType()
+                    + ", character encoding: "
+                    + responseWrapper.getCharacterEncoding());
+        }
+
         postRender(model, request, responseWrapper);
 
     }
@@ -157,21 +164,17 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     public void postRender(Map model, HttpServletRequest request,
             BufferedResponseWrapper bufferedResponse) throws Exception {
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("About to process buffered content, content type: "
-                    + bufferedResponse.getContentType()
-                    + ", character encoding: "
-                    + bufferedResponse.getCharacterEncoding());
-        }
-
         byte[] contentBuffer = bufferedResponse.getContentBuffer();
 
-        String characterEncoding = null;
         String contentType = bufferedResponse.getContentType();
         if (contentType == null) {
             contentType = "application/octet-stream";
         }
         contentType = contentType.trim();
+        
+        String characterEncoding = null;
+        
+        
         if (contentType.indexOf("charset") != -1
                 && contentType.indexOf(";") != -1) {
             contentType = contentType.substring(0, contentType.indexOf(";"));

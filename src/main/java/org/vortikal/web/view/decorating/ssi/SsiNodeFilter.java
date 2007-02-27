@@ -113,17 +113,9 @@ public class SsiNodeFilter implements HtmlNodeFilter {
         Locale locale = ctx.getLocale();
 
         final String doctype = "";
-        HtmlPage dummyPage = new HtmlPage() {
-           public String getDoctype() {
-               return doctype;
-           }
-           public HtmlElement getRootElement() {
-               return null;
-           }
-        };
         
         DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-            new HashMap(), dummyPage, servletRequest, parameters, doctype, locale);
+            new HashMap(), null, servletRequest, parameters, doctype, locale);
 
         DecoratorResponseImpl response = new DecoratorResponseImpl(doctype, locale, "utf-8");
         

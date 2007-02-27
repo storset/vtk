@@ -32,8 +32,8 @@ package org.vortikal.web.view.decorating;
 
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 
 public interface TemplateResolver {

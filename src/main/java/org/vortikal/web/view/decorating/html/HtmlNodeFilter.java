@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.view.decorating.html;
 
-import java.io.InputStream;
-import java.io.Reader;
 
 /**
  * Simple HTML node filter interface. Nodes are filtered during

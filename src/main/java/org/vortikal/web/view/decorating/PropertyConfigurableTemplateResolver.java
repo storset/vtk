@@ -35,21 +35,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
 
-public class PropertyConfigurableTemplateResolver
-  implements TemplateResolver, InitializingBean {
+public class PropertyConfigurableTemplateResolver implements TemplateResolver, InitializingBean {
 
     private static Log logger = LogFactory.getLog(PropertyConfigurableTemplateResolver.class);
 

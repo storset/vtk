@@ -30,9 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;

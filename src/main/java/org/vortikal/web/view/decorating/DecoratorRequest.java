@@ -46,8 +46,6 @@ import org.vortikal.web.view.decorating.html.HtmlPage;
  */
 public interface DecoratorRequest {
 
-    //public Map getModel();
-
     public HtmlPage getHtmlPage();
 
     public HttpServletRequest getServletRequest();

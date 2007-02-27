@@ -32,8 +32,8 @@ package org.vortikal.web.view.decorating;
 
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -56,11 +56,7 @@ public class ServiceAwareTemplateResolver implements TemplateResolver {
     
     public Template[] resolveTemplates(Map model, HttpServletRequest request,
                                        Locale locale) throws Exception {
-        Service currentService = null;
-        RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext != null) {
-            currentService = requestContext.getService();
-        }
+        Service currentService = RequestContext.getRequestContext().getService();
 
         if (currentService == null) {
             return null;

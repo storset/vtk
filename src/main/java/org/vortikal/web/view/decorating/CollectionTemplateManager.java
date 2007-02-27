@@ -35,21 +35,16 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 
 
-public class CollectionTemplateManager implements TemplateManager, ApplicationContextAware {
+public class CollectionTemplateManager implements TemplateManager {
 
     private Log logger = LogFactory.getLog(CollectionTemplateManager.class);
 
     private Repository repository;
     private String collectionName;
-    private ApplicationContext applicationContext;
     private TemplateParser parser;
     private Map templatesMap;
     
@@ -66,11 +61,6 @@ public class CollectionTemplateManager implements TemplateManager, ApplicationCo
 
     public void setTemplateParser(TemplateParser parser) {
         this.parser = parser;
-    }
-    
-
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
     
 

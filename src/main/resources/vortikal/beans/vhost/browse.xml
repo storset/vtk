@@ -62,7 +62,6 @@
 
   <bean id="browseViewWrapper" 
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-<!--     <property name="propagateExceptions" value="true" /> -->
     <property name="decorators">
       <list>
         <bean class="org.vortikal.web.view.decorating.HtmlHeadDecorator">

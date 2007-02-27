@@ -34,12 +34,12 @@
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="validToEvaluator"/>
   </bean>
--->
+
   <bean id="validToEvaluator"
     class="org.vortikal.repository.resourcetype.property.UhtmlValidToEvaluator">
     <property name="valueFactory" ref="valueFactory" />
   </bean>
-
+-->
   <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="verifiedDate" /> 
     <property name="type" ref="TYPE_DATE" />

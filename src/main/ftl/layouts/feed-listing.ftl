@@ -15,7 +15,7 @@ containing:
 
   <#if conf.includeTitle == true>
     <h2 class="feedTitle">
-      <a href="${feed.getLink()}">${feed.getTitle()}</a>
+      <a href="${feed.getLink()}">${feed.getTitle()?html}</a>
     </h2>
   </#if>
 
@@ -23,7 +23,7 @@ containing:
     <#if conf.includeLogo == true>
       <#if feed.getImage()?exists >
       <#assign image = feed.getImage()>
-        <img class="rssLogo" alt="logo" src="${image.getUrl()}"/>
+        <img class="rssLogo" alt="logo" src="${image.getUrl()?html}"/>
       </#if>
     </#if>
     
@@ -35,8 +35,8 @@ containing:
       </#if>      
       <#list feed.getEntries()[0..maxMsgs-1] as entry>
       <li class="feedEntryTitle"> 
-	<a href="${entry.getLink()}">
-	  ${entry.getTitle()}
+	<a href="${entry.getLink()?html}">
+	  ${entry.getTitle()?html}
 	</a>
         <#if conf.includeDescription == true ||
              conf.includePublishedDate == true || conf.includeUpdatedDate == true>
@@ -46,7 +46,7 @@ containing:
 	  <#if conf.includeDescription == true>
 	  <#list entry.getContents() as content>
 	  <li class="feedDescription">
-	    ${content.getValue()}
+	    ${content.getValue()?html}
 	  </li>
 	  </#list>
 	  </#if>

@@ -52,7 +52,7 @@
 
   <bean id="collectionListingViewWrapper" 
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-    <property name="propagateExceptions" value="true" />
+<!--     <property name="propagateExceptions" value="true" /> -->
     <property name="decorators">
       <list>
         <ref bean="collectionListingHeadDecorator" />

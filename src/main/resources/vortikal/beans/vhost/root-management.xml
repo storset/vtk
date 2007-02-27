@@ -166,7 +166,7 @@
       This wrapper wraps manage views with the manage view layout
       items. It uses three filters for head, header and footer
     </description>
-    <property name="propagateExceptions" value="true" />
+<!--     <property name="propagateExceptions" value="true" /> -->
     <property name="staticHeaders">
       <map>
         <entry key="Cache-Control" value="no-cache, must-revalidate" />

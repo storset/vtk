@@ -76,8 +76,7 @@ public class TextReplaceDecorator implements Decorator, InitializingBean {
     }
 
 
-    public void decorate(Map model, HttpServletRequest request,
-                          Content content) throws Exception {
+    public void decorate(Map model, HttpServletRequest request, Content content) {
         
         String s = content.getContent();
         Matcher matcher = this.pattern.matcher(s);

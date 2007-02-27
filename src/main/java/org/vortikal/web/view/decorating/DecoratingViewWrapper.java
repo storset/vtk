@@ -80,23 +80,16 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  *   - if set to <code>false</code>, no <code>charset</code> parameter
  *   will be added to the <code>Content-Type</code> header set by this
  *   view. Default is <code>true</code>.
- *   <li><code>propagateExceptions</code> a boolean specifying whether
- *   or not to let runtime exceptions that occur while rendering the
- *   wrapped view propagate all the way up to the caller. When set to
- *   <code>false</code>, all exceptions are caught and re-thrown
- *   wrapped inside a {@link ViewWrapperException}. The default value
- *   is <code>true</code>.
  *   <li><code>forcedOutputEncoding</code> - if this option is set,
  *   the output will be written using that character encoding.
  * </ul>
  * 
- * @see TextContentFilter
+ * @see Decorator
  */
 public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProviding {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    private boolean propagateExceptions = true;
     private Decorator[] decorators;
     private ReferenceDataProvider[] referenceDataProviders;
     private String forcedOutputEncoding;
@@ -134,11 +127,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }
-    
-
-    public void setPropagateExceptions(boolean propagateExceptions) {
-        this.propagateExceptions = propagateExceptions;
-    }
 
 
     public void setStaticHeaders(Map staticHeaders) {
@@ -148,26 +136,14 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+        
         RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
-        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(
-                response);
+        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
 
         preRender(model, request, responseWrapper);
 
-        if (this.propagateExceptions) {
-
-            view.render(model, requestWrapper, responseWrapper);
-
-        } else {
-
-            try {
-                view.render(model, requestWrapper, responseWrapper);
-            } catch (Throwable t) {
-                throw new ViewWrapperException(
-                        "An error occurred while rendering the wrapped view",
-                        t, model, view);
-            }
-        }
+        view.render(model, requestWrapper, responseWrapper);
+        
         postRender(model, request, responseWrapper);
 
     }

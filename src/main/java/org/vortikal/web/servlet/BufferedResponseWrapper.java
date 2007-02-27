@@ -31,7 +31,6 @@
 package org.vortikal.web.servlet;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -140,7 +139,7 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
         return this.isCommitted || super.isCommitted();
     }
 
-    public ServletOutputStream getOutputStream() throws IOException {
+    public ServletOutputStream getOutputStream() {
         if (this.isCommitted) {
             throw new IllegalStateException(
                 "getWriter() has already been called on this response.");
@@ -156,7 +155,7 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
     }
 
 
-    public PrintWriter getWriter() throws IOException {
+    public PrintWriter getWriter() {
         if (this.isCommitted) {
             throw new IllegalStateException(
                 "getOutputStream() has already been called on this response.");

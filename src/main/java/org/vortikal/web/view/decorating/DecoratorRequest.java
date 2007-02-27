@@ -32,7 +32,7 @@ package org.vortikal.web.view.decorating;
 
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.web.view.decorating.html.HtmlPage;
@@ -47,6 +47,8 @@ import org.vortikal.web.view.decorating.html.HtmlPage;
 public interface DecoratorRequest {
 
     //public Map getModel();
+
+    public HtmlPage getHtmlPage();
 
     public HttpServletRequest getServletRequest();
 

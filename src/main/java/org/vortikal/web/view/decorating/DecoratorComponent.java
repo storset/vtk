@@ -34,6 +34,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.vortikal.web.view.decorating.html.HtmlPage;
+
 
 /**
  * XXX: interface should be extended with the following concepts:
@@ -55,7 +57,7 @@ public interface DecoratorComponent {
 
     public Map getParameterDescriptions();
 
-    public void render(DecoratorRequest request, DecoratorResponse response)
+    public void render(HtmlPage htmlPage, DecoratorRequest request, DecoratorResponse response)
         throws Exception;
 
 }

@@ -20,7 +20,8 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
  * before the wrapped view is run (and the necessary model is available),
  * wrapping the view in a <code>viewWrapper</code>
  * 
- * @see ViewWrapper, ReferenceDataProvider, ReferenceDataProviding
+ * @see AbstractWrappingViewResolver, ViewWrapper, ReferenceDataProvider, 
+ * @see ReferenceDataProviding
  */
 public class ProxyView implements View {
 

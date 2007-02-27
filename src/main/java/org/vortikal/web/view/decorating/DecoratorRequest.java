@@ -48,8 +48,6 @@ public interface DecoratorRequest {
 
     //public Map getModel();
 
-    public HtmlPage getHtmlPage();
-
     public HttpServletRequest getServletRequest();
 
     public Locale getLocale();

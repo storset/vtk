@@ -11,6 +11,20 @@
     <release version="0.3.5-SNAPSHOT" date="In SVN" description="Release 0.3.4">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Added support for extracting audio properties from MP3 files
+        (currently requires external libraries to be installed).
+      </action>
+
+      <action type="add">
+        Introduced a new HTML decorating framework, making it possible
+        to add modifications (e.g. add visual components) to plain
+        HTML output. implemented as a view wrapper.
+      </action>
+
+      <action type="update">
+        Updgraded to Spring 2.0
+      </action>
 
     </release>
 

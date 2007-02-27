@@ -116,6 +116,10 @@
     <property name="cacheSeconds" value="${decorating.rssComponent.cacheTimeoutSeconds}" />
   </bean>
 
+  <bean id="feedView" parent="freemarkerView">
+    <property name="url" value="layouts/feed-listing.ftl" />
+  </bean>
+
 
   <bean id="listMenuComponent"
         class="org.vortikal.web.view.decorating.components.ListMenuComponent">
@@ -132,6 +136,7 @@
   <bean name="listMenuView" parent="freemarkerView">
     <property name="url" value="layouts/tabs.ftl" />
   </bean>
+
 
 
   <bean id="includeComponent"

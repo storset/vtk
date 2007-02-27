@@ -39,28 +39,6 @@
     <property name="contentComponentParser" ref="defaultTemplateParser" />
   </bean>
 
-  <bean id="ssiDecorator"
-        class="org.vortikal.web.view.decorating.ssi.SsiDecorator">
-    <property name="ssiProcessors">
-      <set>
-        <bean class="org.vortikal.web.view.decorating.ssi.HttpSsiProcessor" />
-        <bean class="org.vortikal.web.view.decorating.ssi.RepositoryAccessingSsiProcessor"
-              parent="requestLocalRepositoryAware" />
-        <bean class="org.vortikal.web.view.decorating.ssi.RepositoryAccessingSsiProcessor"
-              parent="requestLocalRepositoryAware">
-          <property name="identifier" value="virtual" />
-        </bean>
-<!--        <bean class="org.vortikal.web.view.decorating.ssi.RssRenderingSsiProcessor">
-          <property name="view" ref="feedView" />
-        </bean> -->
-      </set>
-    </property>
-  </bean>
-
-  <bean id="feedView" parent="freemarkerView">
-    <property name="url" value="layouts/feed-listing.ftl" />
-  </bean>
-
   <bean id="templateResolver"
         class="org.vortikal.web.view.decorating.PropertyConfigurableTemplateResolver">
     <property name="templateManager" ref="templateManager" />

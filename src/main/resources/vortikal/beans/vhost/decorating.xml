@@ -29,7 +29,7 @@
         class="org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl">
   </bean>
 
-  <bean id="ssiNodeFilter" class="org.vortikal.web.view.decorating.ssi.SsiNodeFilter">
+  <bean id="ssiNodeFilter" class="org.vortikal.web.view.decorating.ComponentHandlingNodeFilter">
     <property name="directiveComponentMap">
       <map>
         <entry key="include" value-ref="includeComponent" />

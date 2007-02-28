@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.ssi;
+package org.vortikal.web.view.decorating;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -41,19 +41,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.view.decorating.ComponentInvocation;
-import org.vortikal.web.view.decorating.DecoratorComponent;
-import org.vortikal.web.view.decorating.DecoratorRequest;
-import org.vortikal.web.view.decorating.DecoratorRequestImpl;
-import org.vortikal.web.view.decorating.DecoratorResponseImpl;
-import org.vortikal.web.view.decorating.TemplateParser;
 import org.vortikal.web.view.decorating.html.HtmlComment;
 import org.vortikal.web.view.decorating.html.HtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlText;
 
 
-public class SsiNodeFilter implements HtmlNodeFilter, InitializingBean {
+public class ComponentHandlingNodeFilter implements HtmlNodeFilter, InitializingBean {
     
     private static final Pattern SSI_DIRECTIVE_REGEXP = Pattern.compile(
             "#([a-zA-Z]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);

@@ -65,12 +65,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
 
     public HtmlPage parse(InputStream in, String encoding) throws Exception {
-        HtmlNodeFilter filter = new HtmlNodeFilter() {
-           public HtmlContent filterNode(HtmlContent node) {
-              return node;
-           }
-        };
-        return parse(in, encoding, filter);
+        return parse(in, encoding, null);
     }
     
 
@@ -154,6 +149,8 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
     private HtmlContent buildHtml(Node node, HtmlNodeFilter filter, boolean xhtml) {
 
+        HtmlContent content = null;
+        
         if (node instanceof Tag) {
             Tag tag = (Tag) node;
             String name = tag.getRawTagName();
@@ -208,20 +205,23 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
                 }
             }
-            return filter.filterNode(element);
-
+            content = element;
         } else if (node instanceof Text) {
             Text text = (Text) node;
             HtmlTextImpl textNode = new HtmlTextImpl(text.getText());
-            return filter.filterNode(textNode);
+            content = textNode;
             
         } else if (node instanceof Remark) {
             Remark remark = (Remark) node;
             HtmlCommentImpl comment = new HtmlCommentImpl(
                 new HtmlTextImpl(remark.getText()), remark.toHtml());
-            return filter.filterNode(comment);
-        }
-        // Unhandled node type:
-        return null;
+            content = comment;
+        } 
+        // Else unhandled node type:
+        
+        if (content != null && filter != null)
+            return filter.filterNode(content);
+
+        return content;
     }
 }

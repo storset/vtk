@@ -135,6 +135,11 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>opa</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>samfmed</value>
           </constructor-arg>
         </bean>

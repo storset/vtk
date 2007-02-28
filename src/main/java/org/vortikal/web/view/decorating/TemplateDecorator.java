@@ -35,11 +35,11 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlPage;
@@ -85,8 +85,31 @@ public class TemplateDecorator implements Decorator {
             return;
         } 
         content.setContent(template.render(model, html, request, ctx.getLocale()));
+        tidyContent(content);
     }
 
+    protected void tidyContent(Content content) throws Exception {
+        java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(
+            content.getContent().getBytes("utf-8"));
+
+        java.io.Reader reader = new java.io.StringReader(content.getContent());
+
+        org.w3c.tidy.Tidy tidy = new org.w3c.tidy.Tidy();
+        tidy.setTidyMark(false);
+        tidy.setMakeClean(false);
+        tidy.setShowWarnings(false);
+        tidy.setQuiet(true);
+        tidy.setXHTML(true);
+        tidy.setDocType("transitional"); 
+        tidy.setCharEncoding(org.w3c.tidy.Configuration.UTF8);
+
+        org.w3c.dom.Document document = tidy.parseDOM(inStream, null);
+        java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+        tidy.pprint(document, outputStream);
+            
+        content.setContent(new String(outputStream.toByteArray(), "utf-8"));
+    }
+    
 
     protected Template resolveTemplate(Map model, HttpServletRequest request,
                                           Locale locale) throws Exception {
@@ -98,7 +121,7 @@ public class TemplateDecorator implements Decorator {
         long before = System.currentTimeMillis();
 
         // XXX: encoding
-        String encoding = "utf-8";        
+        String encoding = "utf-8";
         InputStream stream = new java.io.ByteArrayInputStream(content.getBytes(encoding));
         HtmlPage html = null;
         if (this.htmlNodeFilter != null) {

@@ -30,9 +30,14 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
+
+import java.io.ByteArrayInputStream;
+
 import junit.framework.TestCase;
 
+import org.vortikal.web.view.decorating.html.HtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlPage;
 import org.vortikal.web.view.decorating.html.HtmlPageParser;
 import org.vortikal.web.view.decorating.html.HtmlPageParserException;
@@ -55,6 +60,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
         + "</html>\n";
 
 
+
     public void testSimpleHtmlPage() throws Exception {
 
         HtmlPage page = parse(SIMPLE_XHTML_PAGE);
@@ -65,6 +71,26 @@ public class HtmlPageParserImplTestCase extends TestCase {
         assertEquals("bar", page.getRootElement().getChildElements()[0]
                      .getAttributes()[1].getValue());
     }
+
+
+    public void testNodeFiltering() throws Exception {
+        HtmlPage page = parse(SIMPLE_XHTML_PAGE, 
+            new HtmlNodeFilter() {
+                public HtmlContent filterNode(HtmlContent node) {
+                    if (node instanceof HtmlElement) {
+                        HtmlElement element = (HtmlElement) node;
+                        if (element.getName().equals("meta")) {
+                            return null;
+                        }
+                    }
+                    return node;
+                }
+            });
+        
+        HtmlElement head = page.getRootElement().getChildElements()[0];
+        assertEquals(0, head.getChildElements("meta").length);
+    }
+    
     
     private static final String UNFORMATTED_STRING =
         "  body The div page div body";
@@ -220,6 +246,17 @@ public class HtmlPageParserImplTestCase extends TestCase {
         long before = System.currentTimeMillis();
         HtmlPage page = parser.parse(new java.io.ByteArrayInputStream(
                                          content.getBytes("utf-8")), "utf-8");
+        long duration = System.currentTimeMillis() - before;
+        return page;
+    }
+
+
+    private HtmlPage parse(String content, HtmlNodeFilter filter) throws Exception {
+        HtmlPageParser parser = new HtmlPageParserImpl();
+        long before = System.currentTimeMillis();
+        HtmlPage page = parser.parse(
+            new java.io.ByteArrayInputStream(content.getBytes("utf-8")), "utf-8",
+            filter);        
         long duration = System.currentTimeMillis() - before;
         return page;
     }

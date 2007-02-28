@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface TemplateResolver {
 
-    public Template[] resolveTemplates(Map model, HttpServletRequest request,
-                                       Locale locale) throws Exception;
+    public Template resolveTemplate(Map model, HttpServletRequest request,
+                                    Locale locale) throws Exception;
     
 }

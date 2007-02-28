@@ -54,8 +54,8 @@ public class ServiceAwareTemplateResolver implements TemplateResolver {
     }
     
     
-    public Template[] resolveTemplates(Map model, HttpServletRequest request,
-                                       Locale locale) throws Exception {
+    public Template resolveTemplate(Map model, HttpServletRequest request,
+                                    Locale locale) throws Exception {
         Service currentService = RequestContext.getRequestContext().getService();
 
         if (currentService == null) {
@@ -74,7 +74,7 @@ public class ServiceAwareTemplateResolver implements TemplateResolver {
                 "Unable to resolve template for request: " + request);
         }
 
-        return new Template[] {this.templateManager.getTemplate(templateName)};
+        return this.templateManager.getTemplate(templateName);
     }
     
     

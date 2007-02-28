@@ -76,8 +76,8 @@ public class PropertyConfigurableTemplateResolver implements TemplateResolver, I
         }
     }
     
-    public Template[] resolveTemplates(Map model, HttpServletRequest request,
-                                       Locale locale) throws Exception {
+    public Template resolveTemplate(Map model, HttpServletRequest request,
+                                    Locale locale) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext == null) {
@@ -89,42 +89,34 @@ public class PropertyConfigurableTemplateResolver implements TemplateResolver, I
             String prefix = path[i];
             String mapping = this.templateConfiguration.getProperty(prefix);
             if ("NONE".equals(mapping)) {
-                return new Template[0];
+                return null;
             }
             if (mapping != null) {
-                Template[] templates = resolveTemplateReferences(locale, mapping);
+                Template template = resolveTemplateReference(locale, mapping);
                 if (logger.isDebugEnabled()) {
                     logger.debug("Resolved request '" + uri
-                                 + "' to templates " + java.util.Arrays.asList(templates));
+                                 + "' to template '" + template + "'");
                 }
 
-                return templates;
+                return template;
             }
         }
-        return new Template[0];
+        return null;
     }
     
 
-    private Template[] resolveTemplateReferences(Locale locale, String mapping)
+    private Template resolveTemplateReference(Locale locale, String mapping)
         throws Exception {
-        if (mapping == null) {
-            return null;
-        }
-        List result = new ArrayList();
-        String[] templateList = mapping.split(",");
-        for (int i = 0; i < templateList.length; i++) {
-            String ref = templateList[i];
-            String[] localizedRefs = buildLocalizedReferences(ref, locale);
-            for (int j = 0; j < localizedRefs.length; j++) {
-                String localizedRef = localizedRefs[j];
-                Template t = this.templateManager.getTemplate(localizedRef);
-                if (t != null) {
-                    result.add(t);
-                    break;
-                }
+
+        String[] localizedRefs = buildLocalizedReferences(mapping, locale);
+        for (int j = 0; j < localizedRefs.length; j++) {
+            String localizedRef = localizedRefs[j];
+            Template t = this.templateManager.getTemplate(localizedRef);
+            if (t != null) {
+                return t;
             }
         }
-        return (Template[]) result.toArray(new Template[result.size()]);
+        return null;
     }
     
 

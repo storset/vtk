@@ -1,3 +1,33 @@
+/* Copyright (c) 2007, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.vortikal.web.view.decorating;
 
 import java.io.IOException;
@@ -31,9 +61,9 @@ public class TemplateDecorator implements Decorator {
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(request);
 
-        Template[] templates = resolveTemplates(model, request, ctx.getLocale());
+        Template template = this.templateResolver.resolveTemplate(model, request, ctx.getLocale());
             
-        if (templates == null || templates.length == 0) {
+        if (template == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Unable to resolve template for request " + request);
             }
@@ -41,25 +71,22 @@ public class TemplateDecorator implements Decorator {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Rendering template sequence "
-                         + java.util.Arrays.asList(templates));
+            logger.debug("Rendering using template '" + template + "'");
         }
 
-
-        for (int i = 0; i < templates.length; i++) {
-            HtmlPage html = parseHtml(content.getContent());
-            if (logger.isDebugEnabled()) {
-                logger.debug("Parsed document [root element: " + html.getRootElement() + " "
-                             + ", doctype: "+ html.getDoctype() + "]");
-            }
-            HtmlElement rootElement = html.getRootElement();
-            if (rootElement != null && "frameset".equals(rootElement.getName())) {
-                // Framesets are not decorated:
-                continue;
-            } 
-            content.setContent(templates[i].render(model, html, request, ctx.getLocale()));
+        HtmlPage html = parseHtml(content.getContent());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Parsed document [root element: " + html.getRootElement() + " "
+                         + ", doctype: "+ html.getDoctype() + "]");
         }
+        HtmlElement rootElement = html.getRootElement();
+        if (rootElement != null && "frameset".equals(rootElement.getName())) {
+            // Framesets are not decorated:
+            return;
+        } 
+        content.setContent(template.render(model, html, request, ctx.getLocale()));
     }
+
 
     protected HtmlPage parseHtml(String content) throws Exception {
         long before = System.currentTimeMillis();
@@ -81,11 +108,6 @@ public class TemplateDecorator implements Decorator {
         return html;
     }
     
-    protected Template[] resolveTemplates(Map model, HttpServletRequest request,
-            Locale locale) throws Exception {
-        return this.templateResolver.resolveTemplates(model, request, locale);
-
-    }
 
     public void setHtmlNodeFilter(HtmlNodeFilter htmlNodeFilter) {
         this.htmlNodeFilter = htmlNodeFilter;

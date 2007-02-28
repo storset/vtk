@@ -35,11 +35,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.view.decorating.ComponentInvocation;
 import org.vortikal.web.view.decorating.DecoratorComponent;
@@ -47,12 +47,9 @@ import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorRequestImpl;
 import org.vortikal.web.view.decorating.DecoratorResponseImpl;
 import org.vortikal.web.view.decorating.TemplateParser;
-import org.vortikal.web.view.decorating.TemplateSource;
 import org.vortikal.web.view.decorating.html.HtmlComment;
 import org.vortikal.web.view.decorating.html.HtmlContent;
-import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
-import org.vortikal.web.view.decorating.html.HtmlPage;
 import org.vortikal.web.view.decorating.html.HtmlText;
 
 

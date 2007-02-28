@@ -32,18 +32,24 @@ package org.vortikal.web.view.decorating.components;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.context.ServletContextAware;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.VortikalServlet;
 import org.vortikal.web.view.decorating.DecoratorRequest;
@@ -54,10 +60,11 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
     private static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
 
-
     private ServletContext servletContext;
 
     private static Log logger = LogFactory.getLog(IncludeComponent.class);
+    
+    private UrlRetriever urlRetriever = new UrlRetriever();
     
     private Repository repository;
 
@@ -72,39 +79,52 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
 
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        boolean virtual = false;
-        String uri = request.getStringParameter("uri");;
-        if (uri == null) {
-            uri = request.getStringParameter("virtual");
-            if (uri == null) {
-                throw new DecoratorComponentException(
-                    "One of parameters 'uri' or 'virtual' must be specified");
-            }
-            virtual = true;
-        }
-            
-        if (virtual) {
-            handleVirtualInclude(uri, request, response);
-        } else {
+
+        String uri = request.getStringParameter("file");
+        if (uri != null) {
             handleDirectInclude(uri, request, response);
+            return;
         }
+        uri = request.getStringParameter("virtual");
+
+        if (uri == null) {
+            throw new DecoratorComponentException(
+                "One of parameters 'file' or 'virtual' must be specified");
+        }
+
+        if (this.urlRetriever.match(uri)) {
+            handleHttpInclude(uri, request, response);
+        } else {
+            handleVirtualInclude(uri, request, response);
+        }  
     }
 
-    private void handleDirectInclude(String uri, DecoratorRequest request,
+    private void handleDirectInclude(String address, DecoratorRequest request,
                                      DecoratorResponse response) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
 
-        String content = null;
-        InputStream is = null;
-        Resource r = this.repository.retrieve(token, uri, false);
+        if (address.startsWith("/"))
+            throw new DecoratorComponentException(
+            "Include 'file' takes a relative path as argument");
+        
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        uri = uri.substring(0, uri.lastIndexOf("/") + 1) + address;
 
+        Resource r = null;
+        try {
+            r = this.repository.retrieve(token, uri, false);
+        } catch (ResourceNotFoundException e) {
+            throw new DecoratorComponentException(
+                    "Resource '" + uri + "' not found");
+        }
+        
         if (r.isCollection() || !ContentTypeHelper.isTextContentType(r.getContentType())) {
             throw new DecoratorComponentException(
                 "Cannot include URI '" + uri + "': not a textual resource");
         }
 
         String characterEncoding = r.getCharacterEncoding();
-        is = this.repository.getInputStream(token, uri, true);
+        InputStream is = this.repository.getInputStream(token, uri, true);
         byte[] bytes = StreamUtil.readInputStream(is);
         
         response.setCharacterEncoding(characterEncoding);
@@ -113,10 +133,20 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         out.close();
     }
     
+    private void handleHttpInclude(String uri, DecoratorRequest request,
+            DecoratorResponse response) throws Exception {
+        String result = this.urlRetriever.fetchIncludedUrl(uri);
+        Writer writer = response.getWriter();
+        writer.write(result);
+    }
 
 
     private void handleVirtualInclude(String uri, DecoratorRequest request,
                                       DecoratorResponse response) throws Exception {
+        
+        if (!uri.startsWith("/"))
+            return;
+
         
         HttpServletRequest servletRequest = request.getServletRequest();
         if (servletRequest.getAttribute(INCLUDE_ATTRIBUTE_NAME) != null) {

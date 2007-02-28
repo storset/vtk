@@ -1,13 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
+<head>
+</head>
 <body>
-
 This package contains interfaces and classes for response decoration.
 
-<p>A DecoratingViewWrapper may for example be used in
-  conjunction with Decorator implementations to create a
-  consistent set of components that appear on every generated page.
+<h2>Package Specification</h2>
 
-<p>TODO: update documentation.
+<p>To hook decoration into the work flow, to concrete mechanisms are provided.
+Either explicitly wrap a view with a {@link WrappingView}, or use the {@link MappingViewResolver} 
+to wrap all views resolved by it.
+
+<p>The actual decoration is done with a {@link ViewWrapper}, {@link DecoratingViewWrapper} is our provided implementation.
+
+<p>The {@link DecoratingViewWrapper} takes an array of {@link Decorator decorators}, allowing them to process the response content.
+
+<p>The main decorator is {@link TemplateDecorator}, which has two features. The first is to allow parsing of the response with a 
+{@link NodeFilter}, optionally substituting matched patterns with custom content (i.e. SSI parsing). The other is resolving a {@link Template}
+ and merging the content into this template.
 
 </body>
 </html>

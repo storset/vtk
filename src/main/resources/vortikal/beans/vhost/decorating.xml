@@ -33,7 +33,6 @@
     <property name="directiveComponentMap">
       <map>
         <entry key="include" value-ref="includeComponent" />
-        <entry key="rss" value-ref="rssFeedComponent" />
       </map>
     </property>
     <property name="contentComponentParser" ref="defaultTemplateParser" />

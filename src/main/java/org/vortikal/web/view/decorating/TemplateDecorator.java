@@ -61,7 +61,7 @@ public class TemplateDecorator implements Decorator {
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(request);
 
-        Template template = this.templateResolver.resolveTemplate(model, request, ctx.getLocale());
+        Template template = resolveTemplate(model, request, ctx.getLocale());
             
         if (template == null) {
             if (logger.isDebugEnabled()) {
@@ -87,6 +87,12 @@ public class TemplateDecorator implements Decorator {
         content.setContent(template.render(model, html, request, ctx.getLocale()));
     }
 
+
+    protected Template resolveTemplate(Map model, HttpServletRequest request,
+                                          Locale locale) throws Exception {
+        return this.templateResolver.resolveTemplate(model, request, locale);
+    }
+    
 
     protected HtmlPage parseHtml(String content) throws Exception {
         long before = System.currentTimeMillis();

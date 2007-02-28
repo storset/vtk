@@ -31,7 +31,10 @@
 package org.vortikal.web.view.decorating;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Locale;
 
 
@@ -82,6 +85,10 @@ public class DecoratorResponseImpl implements DecoratorResponse {
 
     public OutputStream getOutputStream() {
         return this.outputStream;
+    }
+    
+    public Writer getWriter() throws IOException {
+        return new OutputStreamWriter(this.outputStream, this.characterEncoding);
     }
     
     public String getContentAsString() throws Exception {

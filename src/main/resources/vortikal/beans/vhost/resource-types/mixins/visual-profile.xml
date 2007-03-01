@@ -115,6 +115,11 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>opa</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>sadm</value>
           </constructor-arg>
         </bean>
@@ -125,17 +130,17 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>ta</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>usit</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
             <value>oepa</value>
-          </constructor-arg>
-        </bean>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="java.lang.String">
-            <value>opa</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
@@ -225,6 +230,11 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>ima</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>sosiologi</value>
           </constructor-arg>
         </bean>
@@ -240,17 +250,7 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
-            <value>ima</value>
-          </constructor-arg>
-        </bean>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="java.lang.String">
             <value>econ</value>
-          </constructor-arg>
-        </bean>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="java.lang.String">
-            <value>iri</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
@@ -271,6 +271,11 @@
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
             <value>eouroparett</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>iri</value>
           </constructor-arg>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">

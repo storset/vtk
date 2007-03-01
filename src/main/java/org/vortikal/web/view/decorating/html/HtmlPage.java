@@ -36,7 +36,6 @@ import java.util.Map;
 /**
  * Simple HTML page interface.
  *
- * TODO: isFrameset(), getDoctype(), getOriginal()
  */
 public interface HtmlPage {
 

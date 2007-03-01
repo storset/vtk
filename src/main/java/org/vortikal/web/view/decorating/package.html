@@ -5,19 +5,19 @@
 <body>
 This package contains interfaces and classes for response decoration.
 
-<h2>Package Specification</h2>
-
-<p>To hook decoration into the work flow, to concrete mechanisms are provided.
+<p>To hook decoration into the work flow, two concrete mechanisms are provided.
 Either explicitly wrap a view with a {@link WrappingView}, or use the {@link MappingViewResolver} 
 to wrap all views resolved by it.
 
-<p>The actual decoration is done with a {@link ViewWrapper}, {@link DecoratingViewWrapper} is our provided implementation.
+<p>The actual decoration is done with a {@link org.vortikal.web.view.decorating.ViewWrapper}, {@link org.vortikal.web.view.decorating.DecoratingViewWrapper} is our provided implementation.
 
-<p>The {@link DecoratingViewWrapper} takes an array of {@link Decorator decorators}, allowing them to process the response content.
+<p>The {@link org.vortikal.web.view.decorating.DecoratingViewWrapper} takes an array of {@link org.vortikal.web.view.decorating.Decorator decorators}, allowing them to process the response content.
 
-<p>The main decorator is {@link TemplateDecorator}, which has two features. The first is to allow parsing of the response with a 
-{@link NodeFilter}, optionally substituting matched patterns with custom content (i.e. SSI parsing). The other is resolving a {@link Template}
+<p>The main decorator is {@link org.vortikal.web.view.decorating.TemplateDecorator}, which has two features. The first is to allow parsing of the response with a 
+{@link org.vortikal.web.view.decorating.html.HtmlNodeFilter}, optionally substituting matched patterns with custom content (e.g. SSI parsing). The other is resolving a {@link org.vortikal.web.view.decorating.Template}
  and merging the content into this template.
 
+<p>Both these features match content patterns to {@link Component components}. Se the {@link org.vortikal.web.view.decorating.components components} 
+package for implmented components.
 </body>
 </html>

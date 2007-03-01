@@ -6,7 +6,9 @@ are necessary:
 
 2. Create a database using the DDL in the
    'src/main/sql/postgresql-schema.sql' (currently only PostgreSQL is
-   supported, but HSQLDB has also been known to work in the past).
+   supported, but HSQLDB has also been known to work in the past). The
+   current PostgreSQL usage requires the language 'plpgsql' to be
+   installed in the database.
 
 3. Set up the configuration. Configuration should be placed in the
    file ~/vrtx.properties:

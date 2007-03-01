@@ -294,14 +294,9 @@ public class PlaintextEditController extends SimpleFormController
                     Map tooltip = new HashMap();
                     tooltip.put("url", url);
                     tooltip.put("messageKey", "plaintextEdit.tooltip." + service.getName());
-
-//                     Tooltip tooltip = new Tooltip(url, "plaintextEdit.tooltip."
-//                                                   + service.getName());
                     tooltips.add(tooltip);
-                    System.out.println("___tooltip: " + tooltip);
                 } catch (ServiceUnlinkableException e) {
                     // Ignore
-                    System.out.println("___tooltip: " + e);
                 }
             }
         }

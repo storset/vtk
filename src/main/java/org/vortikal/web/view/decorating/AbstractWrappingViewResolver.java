@@ -52,7 +52,7 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver, Orde
             return null;
         }
 
-        return new ProxyView(view, this.referenceDataProviders, this.viewWrapper);
+        return new WrappingView(view, this.referenceDataProviders, this.viewWrapper);
     }
 
     /**

@@ -39,16 +39,16 @@ import org.springframework.web.servlet.View;
 
 /**
  * Generic work flow interface that allows for pre and post handling of the model, request or 
- * <code>View</code> rendered response.
+ * {@link View} rendered response.
  * 
  * Intended to be used to intercept the View rendering by dynamic or explicit proxying. 
- * Resembles the servlet <code>Filter</code>, in that it delegates the further excecution of 
- * the view to the Wrapper. 
+ * Resembles the servlet {@link javax.servlet.Filter}, in that the further excecution of 
+ * the view is delegated to this wrapper. 
  * 
  * This mechanism intercepts the specific Spring MVC view rendering, giving acces to the Spring
  * <code>View</code> and <code>model</code> and running in the specific excecution context.
  * 
- * @see WrappingView, ProxyView, AbstractWrappingViewResolver, javax.servlet.Filter
+ * @see WrappingView, AbstractWrappingViewResolver, javax.servlet.Filter
  * 
  */
 public interface ViewWrapper {

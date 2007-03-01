@@ -1,145 +1,154 @@
-/* Copyright (c) 2005, University of Oslo, Norway
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- * 
- *  * Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 
- *  * Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- *  * Neither the name of the University of Oslo nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *      
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
- * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package org.vortikal.web.view.decorating;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanInitializationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 
-
-
 /**
- * A view that applies a wrapper around the output of another
- * view. The {@link ViewWrapper} interface is utilized for the
- * wrapping.
- *
- * <p>The wrapping view implements {@link ReferenceDataProviding},
- * returning the following concatenated list of providers:
- * <ol>
- *   <li>The reference data providers specified on this view, if any
- *   <li>The providers from the view wrapper, if that wrapper
- *   implements {@link ReferenceDataProviding}
- *   <li>The providers from the view, if that view implements {@link
- *   ReferenceDataProviding}
- * </ol>
- *
- * <p>Configurable JavaBean properties:
- * <ul>
- *   <li><code>view</code> - the {@link View} to wrap around.
- *   <li><code>viewWrapper</code> - the {@link ViewWrapper} that
- *   performs the actual wrapping.
- *   <li><code>referenceDataProviders</code> - the array of {@link
- *   ReferenceDataProvider} objects specified on this view
- * </ul>
+ * Wrapper class for view, running {@link ReferenceDataProvider referenceDataProviders}
+ * before the wrapped view is run (and the necessary model is available),
+ * wrapping the view in an optional {@ling ViewWrapper}
  * 
- * @see ViewWrapper
+ * @see AbstractWrappingViewResolver, ViewWrapper, ReferenceDataProvider, 
+ * @see ReferenceDataProviding
  */
-public class WrappingView implements View, InitializingBean, ReferenceDataProviding {
+public class WrappingView implements View, InitializingBean {
 
+    private static Log logger = LogFactory.getLog(WrappingView.class);
+
+    private ReferenceDataProvider[] referenceDataProviders;
     private View view;
     private ViewWrapper viewWrapper;
-    private ReferenceDataProvider[] referenceDataProviders;
     
+    public WrappingView() {}
+    
+    /**
+     * @param view - the view to eventually run
+     * @param referenceDataProviders - the set of reference data
+     * providers for this view
+     */
+    public WrappingView(View view, ReferenceDataProvider[] resolverProviders,
+                     ViewWrapper viewWrapper) {
+
+        this.view = view;
+        this.viewWrapper = viewWrapper;
+        this.referenceDataProviders = resolverProviders;
+
+        afterPropertiesSet();
+    }
+
+    public void render(Map model, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        if (this.referenceDataProviders != null && this.referenceDataProviders.length > 0) {
+
+            if (model == null) {
+                model = new HashMap();
+            }
+            
+            for (int i = 0; i < this.referenceDataProviders.length; i++) {
+                ReferenceDataProvider provider = this.referenceDataProviders[i];
+                if (logger.isDebugEnabled())
+                    logger.debug("Invoking reference data provider '" + provider + "'");
+                provider.referenceData(model, request);
+            }
+        }
+        String method = request.getMethod();
+        
+        if (!"GET".equals(method) && !"HEAD".equals(method)) {
+            method = "GET";
+        }
+
+        RequestWrapper requestWrapper = new RequestWrapper(request, method);
+        
+        if (this.viewWrapper != null) {
+            this.viewWrapper.renderView(this.view, model, requestWrapper, response);
+        } else {
+            this.view.render(model, requestWrapper, response);
+        }
+        
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName()).append(":");
+        sb.append(" [view = ").append(this.view);
+        sb.append(", viewWrapper = ").append(this.viewWrapper).append("]");
+        return sb.toString();
+    }
+
+    public String getContentType() {
+        return null;
+    }
+
+    public void setReferenceDataProviders(
+            ReferenceDataProvider[] referenceDataProviders) {
+        this.referenceDataProviders = referenceDataProviders;
+    }
 
     public void setView(View view) {
         this.view = view;
     }
 
-
     public void setViewWrapper(ViewWrapper viewWrapper) {
         this.viewWrapper = viewWrapper;
     }
 
+    public void afterPropertiesSet() {
+        if (this.view == null)
+            throw new IllegalArgumentException(
+                    "The wrapped view cannot be null");
 
-    public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
-        this.referenceDataProviders = referenceDataProviders;
-    }
-    
+        List providerList = new ArrayList();
 
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.view == null) {
-            throw new BeanInitializationException(
-                    "Required property 'view' not set");
+        if (this.referenceDataProviders != null) {
+            providerList.addAll(Arrays.asList(this.referenceDataProviders));
         }
-        if (this.viewWrapper == null) {
-            throw new BeanInitializationException(
-                    "Required property 'viewWrapper' not set");
+
+        if (this.viewWrapper != null
+            && (this.viewWrapper instanceof ReferenceDataProviding)) {
+
+            ReferenceDataProvider[] wrapperProviders = null;
+
+            wrapperProviders = ((ReferenceDataProviding) this.viewWrapper)
+                    .getReferenceDataProviders();
+            if (wrapperProviders != null) {
+                providerList.addAll(Arrays.asList(wrapperProviders));
+            }
         }
-    }
-    
-
-    public void render(Map model, HttpServletRequest request,
-                       HttpServletResponse response) throws Exception {
-        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
-        this.viewWrapper.renderView(this.view, model, requestWrapper, response);
-    }
-
-
-    public ReferenceDataProvider[] getReferenceDataProviders() {
-        List providersList = new ArrayList();
         
-        if (this.referenceDataProviders != null && this.referenceDataProviders.length > 0)
-            providersList.addAll(Arrays.asList(this.referenceDataProviders));
-
-        if (this.viewWrapper instanceof ReferenceDataProviding) {
-            ReferenceDataProvider[] providers =
-                ((ReferenceDataProviding) this.viewWrapper).getReferenceDataProviders();
-            if (providers != null && providers.length > 0)
-                providersList.addAll(Arrays.asList(providers));
-        }
-
         if (this.view instanceof ReferenceDataProviding) {
-            ReferenceDataProvider[] providers =
-                ((ReferenceDataProviding) this.view).getReferenceDataProviders();
-            if (providers != null && providers.length > 0)
-                providersList.addAll(Arrays.asList(providers));
+            ReferenceDataProvider[] viewProviders = null;
+
+            viewProviders = ((ReferenceDataProviding) this.view)
+                    .getReferenceDataProviders();
+            if (viewProviders != null) {
+                providerList.addAll(Arrays.asList(viewProviders));
+            }
         }
 
-        return (ReferenceDataProvider[]) providersList.toArray(
-            new ReferenceDataProvider[providersList.size()]);
-    }
+        if (providerList.size() > 0) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found reference data providers for view "
+                        + this.view + ": " + providerList);
+            }
 
-    public String getContentType() {
-        return null;
+            this.referenceDataProviders = (ReferenceDataProvider[]) providerList.
+                toArray(new ReferenceDataProvider[providerList.size()]);
+        }        
+        
     }
 
 }

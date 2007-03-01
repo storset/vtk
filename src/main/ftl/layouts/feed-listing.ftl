@@ -46,7 +46,8 @@ containing:
 	  <#if conf.includeDescription == true>
 	  <#list entry.getContents() as content>
 	  <li class="feedDescription">
-	    ${content.getValue()?html}
+	      <#--${content.getValue()?html}-->
+	      ${content.getValue()}
 	  </li>
 	  </#list>
 	  </#if>

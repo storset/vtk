@@ -92,8 +92,6 @@ public class TemplateDecorator implements Decorator {
         java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(
             content.getContent().getBytes("utf-8"));
 
-        java.io.Reader reader = new java.io.StringReader(content.getContent());
-
         org.w3c.tidy.Tidy tidy = new org.w3c.tidy.Tidy();
         tidy.setTidyMark(false);
         tidy.setMakeClean(false);

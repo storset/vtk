@@ -33,6 +33,8 @@ package org.vortikal.web.view.decorating.components;
 
 public class DecoratorComponentException extends RuntimeException {
 
+    private static final long serialVersionUID = 4549947499502523691L;
+
     public DecoratorComponentException(String message) {
         super(message);
     }

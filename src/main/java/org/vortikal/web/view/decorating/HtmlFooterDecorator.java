@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  * <p>This type of filter may for example be used to provide a common
  * footer component on all HTML pages.
  */
-public class HtmlFooterdecorator extends AbstractViewProcessingDecorator {
+public class HtmlFooterDecorator extends AbstractViewProcessingDecorator {
 
     private static Pattern FOOTER_REGEXP =
         Pattern.compile("<\\s*/\\s*body", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);

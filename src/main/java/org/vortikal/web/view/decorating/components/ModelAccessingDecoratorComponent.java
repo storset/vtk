@@ -32,10 +32,7 @@ package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.vortikal.web.servlet.BufferedResponseWrapper;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 

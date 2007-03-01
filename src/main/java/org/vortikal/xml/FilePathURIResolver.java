@@ -42,7 +42,7 @@ public class FilePathURIResolver extends AbstractPathBasedURIResolver {
     
 
 
-    public Date getLastModifiedInternal(String path) throws IOException {
+    public Date getLastModifiedInternal(String path) {
         File f = new File(path);
         return new Date(f.lastModified());
     }

@@ -86,7 +86,7 @@ public class FileURIResolver implements StylesheetURIResolver, InitializingBean 
     
 
 
-    public Date getLastModified(String url) throws IOException {
+    public Date getLastModified(String url) {
         url = url.substring(PROTOCOL_PREFIX.length());
         File f = new File(url);
         return new Date(f.lastModified());

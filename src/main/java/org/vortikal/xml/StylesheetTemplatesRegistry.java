@@ -30,7 +30,6 @@
  */
 package org.vortikal.xml;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +61,7 @@ public class StylesheetTemplatesRegistry {
 
     public Templates compile(String stylesheetPath, URIResolver uriResolver,
                              Date compilationTime)
-        throws IOException, ResourceNotFoundException, AuthorizationException,
+        throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, ResourceLockedException, TransformerException,
         TransformerConfigurationException {
 
@@ -105,52 +104,15 @@ public class StylesheetTemplatesRegistry {
 
     private Templates compileInternal(String stylesheetPath,
                                       URIResolver uriResolver) throws
-        IOException, TransformerException, TransformerConfigurationException {
+        TransformerException, TransformerConfigurationException {
 
         TransformerFactory factory = TransformerFactory.newInstance();
-        //Source source = stylesheetResolver.getSource(stylesheetPath);
         Source source = uriResolver.resolve(stylesheetPath, null);
         if (uriResolver != null) {
             factory.setURIResolver(uriResolver);
         }
         return factory.newTemplates(source);
     }
-
-
-
-//     private class RelativeURIResolver implements URIResolver {
-
-//         private URIResolver parent;
-//         private String origin;
-
-
-//         public RelativeURIResolver(TransformerFactory f, String stylesheetPath) {
-
-//             this.parent = f.getURIResolver();
-
-//             File file = new File(stylesheetPath);
-//             this.origin = file.getParent();
-//         }
-
-
-//         public Source resolve(String href, String base)
-//             throws TransformerException {
-
-//             if (new File(href).isAbsolute()) {
-//                 return parent.resolve(href, base);
-//             }
-
-//             try {
-
-//                 URL url = new URL(origin + "/" + href);
-//                 return new StreamSource(url.openStream());
-
-//             } catch (Exception e) {
-
-//                 throw new TransformerException(e);
-//             }
-//         }
-//     }
 
 
     private class Item {

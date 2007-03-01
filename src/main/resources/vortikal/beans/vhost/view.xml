@@ -178,7 +178,7 @@
 
 
   <bean id="collectionListingFooterDecorator"
-        class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
+        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
     <property name="view">
       <bean id="collectionListingFooterView" parent="freemarkerView">
         <property name="url" value="layouts/plain-footer.ftl" />
@@ -187,7 +187,7 @@
   </bean>
 
   <bean id="adminURLFooterDecorator"
-        class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
+        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
     <property name="view" ref="manageURLView" />
   </bean>
 

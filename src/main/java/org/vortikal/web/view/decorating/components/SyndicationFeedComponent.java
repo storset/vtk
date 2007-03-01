@@ -50,11 +50,12 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
-// XXX: this class currently depends on the thread safety of the
-// SyndFeed implementation: if it turns out that it is not thread
-// safe, its data has to be extracted data to a custom bean after
-// fetching a feed.
-// 
+/**
+ * XXX: this class currently depends on the thread safety of the
+ * SyndFeed implementation: if it turns out that it is not thread
+ * safe, its data has to be extracted data to a custom bean after
+ * fetching a feed.
+ */
 public class SyndicationFeedComponent extends AbstractDecoratorComponent {
 
     private static Log logger = LogFactory.getLog(SyndicationFeedComponent.class);
@@ -101,7 +102,6 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
 
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        String result = null;
         String address = request.getStringParameter("address");
         if (address == null) {
             throw new DecoratorComponentException(

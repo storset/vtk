@@ -1324,7 +1324,7 @@
   </bean>
 
   <bean id="manageFooterDecorator"
-        class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
+        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
     <description>
       This filter merges the output from the
       'manageFooterView' view into end of the HTML

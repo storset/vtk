@@ -32,8 +32,6 @@ package org.vortikal.web.view;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,15 +40,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.view.AbstractView;
-
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.repository.LocaleHelper;
-import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;

@@ -86,11 +86,14 @@ public class XmlSchemaRegistry {
         throws JDOMException, IOException {
         
         SchemaItem item = (SchemaItem) this.cache.get(docType);
-        if (item == null) {
-            cacheXMLSchema(docType);
-        }
 
+        if (item != null) {
+            return item.getDocument();
+        }
+        
+        cacheXMLSchema(docType);
         item = (SchemaItem) this.cache.get(docType);
+
         if (item == null) {
             throw new IOException("Unable to find XML schema " + docType);
         }

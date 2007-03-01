@@ -108,7 +108,7 @@
   </bean>
 
   <bean name="listDecoratorComponentsHandler" class="org.vortikal.web.controller.MethodInvokingController">
-    <property name="targetObject" ref="defaultComponentResolver" />
+    <property name="targetObject" ref="decorating.defaultComponentResolver" />
     <property name="targetMethod" value="listComponents" />
     <property name="modelName" value="componentList" />
     <property name="viewName" value="listDecoratorComponents" />

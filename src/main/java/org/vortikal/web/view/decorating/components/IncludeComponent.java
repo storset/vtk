@@ -39,13 +39,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.context.ServletContextAware;
-
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
@@ -64,8 +59,6 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
 
     private ServletContext servletContext;
 
-    private static Log logger = LogFactory.getLog(IncludeComponent.class);
-    
     private UrlRetriever urlRetriever = new UrlRetriever();
     
     private Repository repository;
@@ -191,12 +184,10 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
     private class RequestWrapper extends HttpServletRequestWrapper {
 
         private String uri;
-        private HttpServletRequest request;
         
         public RequestWrapper(HttpServletRequest request, String uri) {
             super(request);
             this.uri = uri;
-            this.request = request;
         }
         
         public String getRequestURI() {

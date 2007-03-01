@@ -39,12 +39,12 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.servlet.View;
+
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
-import org.vortikal.web.servlet.BufferedResponseWrapper;
-import org.vortikal.web.view.decorating.DecoratorComponent;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
@@ -66,7 +66,21 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     }
 
 
-    public ReferenceDataProvider[] getReferenceDataProviders() {
+    public final void render(DecoratorRequest request, DecoratorResponse response)
+        throws Exception {
+        Map model = new java.util.HashMap();
+        processModel(model, request, response);
+        renderView(model, request, response);
+    }
+    
+    
+    /**
+     * Gets the set of reference data providers for the view. The
+     * default implementation is to gather this component's reference
+     * data providers, and then append any providers associated with
+     * the view.
+     */
+    protected ReferenceDataProvider[] getReferenceDataProviders() {
         List providers = new ArrayList();
         if (this.referenceDataProviders != null) {
             providers.addAll(Arrays.asList(this.referenceDataProviders));
@@ -85,21 +99,30 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     }
     
     
-    public void render(DecoratorRequest request, DecoratorResponse response)
-        throws Exception {
-        Map model = new java.util.HashMap();
-        processModel(model, request, response);
-        renderView(model, request, response);
-    }
-    
-    
+    /**
+     * Process the model prior to view rendering. The default
+     * implementation is to gather all reference data providers (using
+     * <code>getReferenceDataProviders()</code>) and invoke them in order.
+     *
+     * @param model the MVC model
+     * @param request the decorator request
+     * @param response the decorator response
+     * @exception Exception if an error occurs
+     */
     protected void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        // Default implementation does nothing.
+        ReferenceDataProvider[] providers = getReferenceDataProviders();
+        if (providers == null) {
+            return;
+        }
+        HttpServletRequest servletRequest = request.getServletRequest();
+        for (int i = 0; i < providers.length; i++) {
+            providers[i].referenceData(model, servletRequest);
+        }
     }
     
 
-    protected void renderView(Map model, DecoratorRequest request, DecoratorResponse response)
+    private void renderView(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         for (Iterator i = request.getRequestParameterNames(); i.hasNext();) {
             String name = (String) i.next();

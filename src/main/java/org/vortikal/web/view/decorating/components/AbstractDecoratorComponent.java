@@ -34,15 +34,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.web.referencedata.ReferenceDataProvider;
-import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.view.decorating.DecoratorComponent;
 
 
-public abstract class AbstractDecoratorComponent
-  implements DecoratorComponent, ReferenceDataProviding, InitializingBean {
+public abstract class AbstractDecoratorComponent implements DecoratorComponent, InitializingBean {
     
-    private ReferenceDataProvider[] referenceDataProviders;
     private String namespace;
     private String name;
     private String description;
@@ -80,15 +76,6 @@ public abstract class AbstractDecoratorComponent
         return this.parameterDescriptions;
     }
 
-    public void setReferenceDataProviders(
-        ReferenceDataProvider[] referenceDataProviders) {
-        this.referenceDataProviders = referenceDataProviders;
-    }
-
-    public ReferenceDataProvider[] getReferenceDataProviders() {
-        return this.referenceDataProviders;
-    }
-    
     public void afterPropertiesSet() throws Exception {
         if (this.namespace == null) {
             throw new BeanInitializationException("JavaBean property 'namespace' not set");

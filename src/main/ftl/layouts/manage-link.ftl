@@ -11,8 +11,7 @@
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#if manageLink?exists && manageLink.url?exists>
-  <div class="manageLink">
-    <a href="${manageLink.url?html}"><@vrtx.msg code="manage.folder" default="Manage" /></a>
-  </div>
+<#if !manageLink?exists || !manageLink.url?exists>
+  <#stop "Missing manageLink in model"/>
 </#if>
+<a class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>

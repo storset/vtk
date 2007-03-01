@@ -14,7 +14,6 @@
         <entry key="redirectToPermissions" value-ref="redirectToPermissionView" />
         <entry key="redirectToPreviewCollection" value-ref="redirectToPreviewCollectionView" />
         <entry key="displayResource" value-ref="displayResourceView" />
-<!--        <entry key="collectionListingAsFeed" value-ref="collectionListingAsFeedView" />        -->
       </map>
     </property>
   </bean>
@@ -30,26 +29,6 @@
   </bean>
 
 
-  <!--
-  <bean id="collectionListingViewResolver"
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
-    <property name="views">
-      <map>
-        <entry key="collectionListing">
-          <ref bean="collectionListingView" />
-        </entry>
-      </map>
-    </property>
-    <property name="viewWrapper" ref="collectionListingViewWrapper" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="collectionListingHtmlTitleProvider" />
-        <ref bean="manageLinkProvider" />
-      </list>
-    </property>
-  </bean>
--->
-
   <bean id="collectionListingViewWrapper" 
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="decorators">
@@ -57,7 +36,6 @@
         <ref bean="collectionListingHeadDecorator" />
         <ref bean="collectionListingHeaderDecorator" />
         <ref bean="collectionListingFooterDecorator" />
-        <ref bean="adminURLFooterDecorator" />
       </list>
     </property>
   </bean>
@@ -210,13 +188,12 @@
 
   <bean id="adminURLFooterDecorator"
         class="org.vortikal.web.view.decorating.HtmlFooterdecorator">
-    <property name="view">
-      <bean parent="freemarkerView">
-        <property name="url" value="layouts/manage-link.ftl" />
-      </bean>
-    </property>
+    <property name="view" ref="manageURLView" />
   </bean>
 
+  <bean id="manageURLView" parent="freemarkerView">
+    <property name="url" value="layouts/manage-link.ftl" />
+  </bean>
 
 
   <!-- Model data providers -->
@@ -275,12 +252,6 @@
     </property>
   </bean>
 
-  <bean id="manageLinkProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="modelName" value="manageLink" />
-    <property name="service" ref="manageService" />
-  </bean>
 
   <bean id="resourceDetailProvider"
         class="org.vortikal.web.referencedata.provider.ResourceDetailProvider"

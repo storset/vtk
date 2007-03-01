@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="decoratingViewWrapper"
@@ -32,7 +31,7 @@
   <bean id="ssiNodeFilter" class="org.vortikal.web.view.decorating.ComponentHandlingNodeFilter">
     <property name="directiveComponentMap">
       <map>
-        <entry key="include" value-ref="includeComponent" />
+        <entry key="include" value-ref="decorating.includeComponent" />
       </map>
     </property>
     <property name="contentComponentParser" ref="defaultTemplateParser" />
@@ -76,16 +75,15 @@
 
 
   <bean id="defaultTemplateParser" class="org.vortikal.web.view.decorating.DefaultTemplateParser">
-    <property name="componentResolver" ref="defaultComponentResolver" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 
-  <bean name="defaultComponentResolver" class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
-    
+  <bean name="decorating.defaultComponentResolver"
+        class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
   </bean>
 
 
   <bean id="listDecoratorComponentsService" class="org.vortikal.web.service.ServiceImpl">
-    <!--property name="parent" ref="webService" /-->
     <property name="order" value="-200" />
     <property name="categories">
       <set>
@@ -126,7 +124,6 @@
     </property>
   </bean>
 
-
   <bean id="listDecoratorComponentsView" parent="freemarkerView">
     <property name="url" value="pages/list-decorator-components.ftl" />
     <property name="referenceDataProviders">
@@ -134,14 +131,5 @@
       </list>
     </property>
   </bean>
-
-  <bean id="decorating.manageLinkProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="modelName" value="manage" />
-    <property name="urlName" value="manageURL" />
-    <property name="service" ref="manageService" />
-  </bean>
-
 
 </beans>

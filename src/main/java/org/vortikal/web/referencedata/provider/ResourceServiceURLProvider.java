@@ -32,11 +32,10 @@ package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.NoSuchMessageException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -73,6 +72,11 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   <li><code>url</code> - the URL of the resource. If it could not
  *   be constructed for some reason, <code>null</code> is supplied
  *   as the value.
+ *   <li><code>title</code> - a localized string that can be used as
+ *   the URL title. It is looked up based on the current resource's
+ *   type as follows:
+ *   <code>url.&lt;serviceName&gt;.&lt;resourceType&gt;</code> (e.g.
+ *   <code>url.manageService.collection = Manage this folder</code>).
  * </ul>
  * 
  */
@@ -84,8 +88,8 @@ public class ResourceServiceURLProvider
     private Repository repository = null;
     private boolean matchAssertions = false;
     private boolean linkToParent = false;
-    private boolean linkToGrandparent = false;
     private String urlName = "url";
+    private String titleName = "title";
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
@@ -103,10 +107,6 @@ public class ResourceServiceURLProvider
         this.linkToParent = linkToParent;
     }
     
-    public void setLinkToGrandparent(boolean linkToGrandparent) {
-        this.linkToGrandparent = linkToGrandparent;
-    }
-
     public void setMatchAssertions(boolean matchAssertions) {
         this.matchAssertions = matchAssertions;
     }
@@ -115,6 +115,9 @@ public class ResourceServiceURLProvider
         this.urlName = urlName;
     }
     
+    public void setTitleName (String titleName) {
+        this.titleName = titleName;
+    }
     public void afterPropertiesSet() {
         if (this.modelName == null) {
             throw new BeanInitializationException(
@@ -146,9 +149,6 @@ public class ResourceServiceURLProvider
         if (this.linkToParent) {
             uri = URIUtil.getParentURI(uri);
         }
-        if (this.linkToGrandparent) {
-            uri = URIUtil.getGrandparentURI(uri);
-        }
 
         try {
             if (uri != null) {
@@ -171,8 +171,25 @@ public class ResourceServiceURLProvider
         } catch (ServiceUnlinkableException ex) { }
 
         urlMap.put(this.urlName, url);
+        if (url != null) {
+            urlMap.put(this.titleName, getLocalizedTitle(request, resource, this.service));
+        }
         model.put(this.modelName, urlMap);
     }
+
+    private String getLocalizedTitle(HttpServletRequest request, Resource resource, Service service) {
+        String localizationKey = "url." + service.getName() + "." + resource.getResourceType();
+        org.springframework.web.servlet.support.RequestContext springContext =
+            new org.springframework.web.servlet.support.RequestContext(request);
+            
+        try {
+            return springContext.getMessage(localizationKey);
+        } catch (NoSuchMessageException e) {
+            localizationKey = "url." + service.getName();
+            return springContext.getMessage(localizationKey, service.getName());
+        }
+    }
+    
 
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());

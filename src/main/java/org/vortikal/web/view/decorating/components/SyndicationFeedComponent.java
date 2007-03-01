@@ -55,9 +55,9 @@ import com.sun.syndication.io.XmlReader;
 // safe, its data has to be extracted data to a custom bean after
 // fetching a feed.
 // 
-public class RssFeedComponent extends AbstractDecoratorComponent {
+public class SyndicationFeedComponent extends AbstractDecoratorComponent {
 
-    private static Log logger = LogFactory.getLog(RssFeedComponent.class);
+    private static Log logger = LogFactory.getLog(SyndicationFeedComponent.class);
     
     private int readTimeout = -1;
     private int connectTimeout = -1;

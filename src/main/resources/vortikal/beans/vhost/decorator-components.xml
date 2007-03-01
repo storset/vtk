@@ -94,26 +94,27 @@
   </bean>
 
 
-  <bean id="rssFeedComponent" class="org.vortikal.web.view.decorating.components.RssFeedComponent">
-    <property name="namespace" value="rss" />
+  <bean id="feedComponent"
+        class="org.vortikal.web.view.decorating.components.SyndicationFeedComponent">
+    <property name="namespace" value="feed" />
     <property name="name" value="include" />
     <property name="view" ref="feedView" />
-    <property name="description" value="Inserts an RSS feed component on the page" />
+    <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
     <property name="parameterDescriptions">
       <map>
-        <entry key="address" value="The URL of the RSS stream" />
+        <entry key="address" value="The URL of the feed" />
         <entry key="maxMsgs" value="The maximum number of messages to display" />
         <entry key="dateFormat" value="The date format to use for publish dates" />
-        <entry key="includeLogo" value="Whether to include the logo of the RSS stream" />
-        <entry key="includeTitle" value="Whether to include the title of the RSS stream" />
-        <entry key="includeDescription" value="Whether to include the description of the RSS stream" />
+        <entry key="includeLogo" value="Whether to include the logo of the feed" />
+        <entry key="includeTitle" value="Whether to include the title of the feed" />
+        <entry key="includeDescription" value="Whether to include the description of the feed" />
       </map>
     </property>
-    <property name="identifier" value="${decorating.rssComponent.identifier}" />
-    <property name="connectTimeoutSeconds" value="${decorating.rssComponent.connectTimeoutSeconds}" />
-    <property name="readTimeoutSeconds" value="${decorating.rssComponent.readTimeoutSeconds}" />
+    <property name="identifier" value="${decorating.feedComponent.identifier}" />
+    <property name="connectTimeoutSeconds" value="${decorating.feedComponent.connectTimeoutSeconds}" />
+    <property name="readTimeoutSeconds" value="${decorating.feedComponent.readTimeoutSeconds}" />
 
-    <property name="cacheSeconds" value="${decorating.rssComponent.cacheTimeoutSeconds}" />
+    <property name="cacheSeconds" value="${decorating.feedComponent.cacheTimeoutSeconds}" />
   </bean>
 
   <bean id="feedView" parent="freemarkerView">

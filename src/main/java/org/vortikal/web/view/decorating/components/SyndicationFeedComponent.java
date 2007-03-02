@@ -30,9 +30,9 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import com.sun.syndication.feed.synd.SyndFeed;
+
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,15 +40,15 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.web.servlet.View;
+
+import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
 
 /**
  * XXX: this class currently depends on the thread safety of the
@@ -59,15 +59,7 @@ import com.sun.syndication.io.XmlReader;
 public class SyndicationFeedComponent extends AbstractDecoratorComponent {
 
     private static Log logger = LogFactory.getLog(SyndicationFeedComponent.class);
-    
-    private int readTimeout = -1;
-    private int connectTimeout = -1;
-
-    private Map cache = new HashMap();
-    private long cacheTimeout = 5 * 60 * 1000;
-
-    private String identifier = "Anonymous Feed Fetcher";
-
+    private ContentCache cache;
     private View view;
 
     private String defaultDateFormat = "yyyy-MM-dd HH:mm";
@@ -75,22 +67,9 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
     public void setView(View view) {
         this.view = view;
     }
-    
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
 
-    public void setConnectTimeoutSeconds(int connectTimeout) {
-        this.connectTimeout = connectTimeout * 1000;
-    }
-
-    public void setReadTimeoutSeconds(int readTimeout) {
-        this.readTimeout = readTimeout * 1000;
-    }
-    
-
-    public void setCacheSeconds(int cacheSeconds) {
-        this.cacheTimeout = cacheSeconds * 1000;
+    public void setContentCache(ContentCache cache) {
+        this.cache = cache;
     }
     
     public void setDefaultDateFormat(String defaultDateFormat) {
@@ -130,7 +109,7 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
             } catch (Exception e) { }
         }
 
-        SyndFeed feed = getFeed(address);
+        SyndFeed feed = (SyndFeed) this.cache.get(address);
 
         Map conf = new HashMap();
         conf.put("includeLogo", new Boolean(includeLogo));
@@ -164,122 +143,6 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
         out.close();
     }
 
-    public SyndFeed getFeed(String address) throws Exception {
-
-        if (this.cacheTimeout <= 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Returning uncached feed: '" + address + "'");
-            }
-            return fetchFeed(address);
-        }
-
-        FeedItem feed = (FeedItem) this.cache.get(address);
-        if (feed == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Caching feed: '" + address + "'");
-            }
-            cacheFeed(address);
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning feed '" + address + "' from cache");
-        }
-
-        feed = (FeedItem) this.cache.get(address);
-        if (feed.getTimestamp().getTime() + this.cacheTimeout <= System.currentTimeMillis()) {
-            triggerFeedRefresh(address);
-        }
-
-
-        return feed.getFeed();
-    }
-
-    private void triggerFeedRefresh(final String address) {
-        Runnable fetcher = new Runnable() {
-           public void run() {
-              try {
-                 cacheFeed(address);
-              } catch (Exception e) {
-                 logger.info("Error refreshing feed '" + address + "'", e);
-              }
-           }
-        };
-        new Thread(fetcher).start();
-    }
-    
-
-
-    private synchronized void cacheFeed(String address) throws Exception {
-
-        FeedItem item = (FeedItem) this.cache.get(address);
-        long now = new Date().getTime();
-
-        if (item == null ||
-            (item.getTimestamp().getTime() + this.cacheTimeout <= now)) {
-            SyndFeed feed = fetchFeed(address);
-            this.cache.put(address, new FeedItem(feed));
-            logger.info("Cached feed '" + address + "'");
-        }
-    }
-
-
-
-    private SyndFeed fetchFeed(String address) throws Exception {
-
-        URLConnection connection = new URL(address).openConnection();
-        setTimeouts(connection);
-
-        connection.setRequestProperty("User-Agent", this.identifier);
-        connection.setUseCaches(true);
-
-        XmlReader xmlReader = new XmlReader(connection.getInputStream());
-        SyndFeedInput input = new SyndFeedInput();
-
-        SyndFeed feed = input.build(xmlReader);
-        return feed;
-    }
-    
-
-    private void setTimeouts(URLConnection connection) {
-        // XXX: In Java 1.5 timeouts can (and should be) be specified
-        // on a URLConnection. Coding these using reflection until we
-        // are officially on 1.5:
-
-        try {
-            java.lang.reflect.Method setConnectTimeout = connection.getClass().getMethod(
-                "setConnectTimeout", new Class[]{int.class});
-            java.lang.reflect.Method setReadTimeout = connection.getClass().getMethod(
-                "setReadTimeout", new Class[]{int.class});
-            if (this.connectTimeout > 0) {
-                setConnectTimeout.invoke(connection, new java.lang.Object[]{
-                        new Integer(this.connectTimeout)});
-            }
-            if (this.readTimeout > 0) {
-                setReadTimeout.invoke(connection, new java.lang.Object[]{
-                        new Integer(this.readTimeout)});
-            }
-            
-        } catch (Throwable t) {
-            // Connection timeouts not available
-        }
-    }
-    
-    private class FeedItem {
-        private SyndFeed feed;
-        private Date timestamp;
-
-        public FeedItem(SyndFeed feed) {
-            this.feed = feed;
-            this.timestamp = new Date();
-        }
-
-        public SyndFeed getFeed() {
-            return this.feed;
-        }
-
-        public Date getTimestamp() {
-            return this.timestamp;
-        }
-    }
 
     private class DateFormatter {
         private SimpleDateFormat dateFormat; 

@@ -33,13 +33,15 @@ package org.vortikal.util.cache;
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,8 +53,9 @@ import org.springframework.beans.factory.InitializingBean;
  * stylesheets, etc. A {@link ContentLoader} is responsible for
  * loading the actual items.
  *
- * <p>Note: This cache is not meant as a general read/write cache, as
- * it never shrinks (it does not contain a <code>remove()</code> method).
+ * <p>Note: This cache is not meant as a generalized read/write cache,
+ * as it never shrinks (it does not contain a <code>remove()</code>
+ * method, although a size limit can be specified). 
  *
  * <p>Configurable JavaBean properties:
  * <ul>
@@ -67,6 +70,8 @@ import org.springframework.beans.factory.InitializingBean;
  *   seconds, a thread is created at initialization time, triggering a
  *   refresh of expired items at regular intervals (in a separate
  *   thread).
+ *   <li><code>maxItems</code> - the maximum number of items to allow
+ *   in the cache. A negative number means no limit.
  * </ul>
  *
  */
@@ -80,6 +85,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     private boolean asynchronousRefresh = false;
     private int refreshInterval = -1;
     private RefreshThread refreshThread;
+    private int maxItems = -1;
     
     public void setCacheLoader(ContentCacheLoader loader) {
         this.loader = loader;
@@ -101,10 +107,21 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         this.refreshInterval = refreshInterval;
     }
 
+    public void setMaxItems(int maxItems) {
+        this.maxItems = maxItems;
+    }
+    
+
     public void afterPropertiesSet() {
         if (this.loader == null) {
             throw new BeanInitializationException("JavaBean property 'loader' not set");
         }
+        if (this.maxItems == 0) {
+            throw new BeanInitializationException(
+                "JavaBean property 'maxItems' has an illegal value: specify "
+                + "either a positive or negative integer");
+        }
+
         if (this.refreshInterval > 0) {
             this.refreshThread = new RefreshThread(this.refreshInterval);
             this.refreshThread.start();
@@ -127,15 +144,17 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             }
             return this.loader.load(identifier);
         }
+        if (this.refreshThread == null && this.cache.size() > this.maxItems) {
+            // Shrink cache synchronously (no refresh thread)
+            removeOldestExceedingSizeLimit();
+        }
+
         Item item = (Item) this.cache.get(identifier);
         if (item == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caching object: '" + identifier + "'");
             }
             cacheItem(identifier);
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning object '" + identifier + "' from cache");
         }
         item = (Item) this.cache.get(identifier);
         if (item.getTimestamp().getTime() + this.cacheTimeout <= System.currentTimeMillis()) {
@@ -145,6 +164,9 @@ public final class ContentCache implements InitializingBean, DisposableBean {
                 cacheItem(identifier);
                 item = (Item) this.cache.get(identifier);
             }
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Returning object '" + item + "' from cache");
         }
         return item.getObject();
     }
@@ -158,8 +180,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         if (item == null ||
             (item.getTimestamp().getTime() + this.cacheTimeout <= now)) {
             Object object = this.loader.load(identifier);
-            this.cache.put(identifier, new Item(object));
-            logger.info("Cached object '" + identifier + "'");
+            this.cache.put(identifier, new Item(identifier, object));
         }
     }
 
@@ -178,7 +199,47 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     }
 
 
+    private synchronized void removeOldestExceedingSizeLimit() {
+        int size = this.cache.size();
+        int n = size - this.maxItems;
+        if (n <= 0) {
+            return;
+        }
+
+        List sortedList = new ArrayList(this.cache.entrySet());
+        Collections.sort(sortedList, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    Map.Entry entry1 = (Map.Entry) o1;
+                    Map.Entry entry2 = (Map.Entry) o2;
+                    Item i1 = (Item) entry1.getValue();
+                    Item i2 = (Item) entry2.getValue();
+
+                    return new Long(i1.getTimestamp().getTime()).compareTo(
+                        new Long(i2.getTimestamp().getTime()));
+                }
+            });
+        
+        List removeList = sortedList.subList(0, n);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Cache size limit exceeded, removing " + n
+                         + " oldest items (of total " + size + ")");
+        }
+
+        for (Iterator i = removeList.iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            Item item = (Item) entry.getValue();
+            this.cache.remove(item.getKey());
+        }
+    }
+    
+
     private synchronized void refreshExpired() {
+        int size = this.cache.size();
+        if (size > this.maxItems) {
+            removeOldestExceedingSizeLimit();
+            size = this.cache.size();
+        }
+
         List refreshList = new ArrayList();
 
         for (Iterator i = this.cache.keySet().iterator(); i.hasNext();) {
@@ -192,7 +253,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Checking expired items: " + refreshList.size()
-                         + " expired items found");
+                         + " expired items found (of total " + size + ")");
         }
 
         for (Iterator i = refreshList.iterator(); i.hasNext();) {
@@ -206,12 +267,17 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     }
 
     private class Item {
+        private Object key;
         private Object object;
         private Date timestamp;
 
-        public Item(Object object) {
+        public Item(Object key, Object object) {
+            this.key = key;
             this.object = object;
             this.timestamp = new Date();
+        }
+        public Object getKey() {
+            return this.key;
         }
         public Object getObject() {
             return this.object;
@@ -219,6 +285,15 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         public Date getTimestamp() {
             return this.timestamp;
         }
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer("item: [");
+            sb.append(this.key.toString()).append(" = ");
+            sb.append(this.object.getClass().getName());
+            sb.append("]");
+            return sb.toString();
+        }
+        
     }
 
     private class RefreshThread extends Thread {

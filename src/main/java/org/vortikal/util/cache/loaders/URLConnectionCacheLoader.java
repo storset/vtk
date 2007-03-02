@@ -76,9 +76,7 @@ public abstract class URLConnectionCacheLoader implements ContentCacheLoader {
         String address = url.toString();
         URLConnection connection = new URL(address).openConnection();
         setConnectionProperties(connection);
-
-        InputStream stream = connection.getInputStream();
-        return handleContentStream(stream);
+        return handleConnection(connection);        
     }
 
 
@@ -114,6 +112,6 @@ public abstract class URLConnectionCacheLoader implements ContentCacheLoader {
     }
 
 
-    protected abstract Object handleContentStream(InputStream stream) throws Exception;
+    protected abstract Object handleConnection(URLConnection connection) throws Exception;
     
 }

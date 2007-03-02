@@ -55,7 +55,8 @@ public class SyndFeedLoader extends URLConnectionCacheLoader {
         connection.setRequestProperty("User-Agent", this.clientIdentifier);
     }
 
-    protected Object handleContentStream(InputStream stream) throws Exception {
+    protected Object handleConnection(URLConnection connection) throws Exception {
+        InputStream stream = connection.getInputStream();
         XmlReader xmlReader = new XmlReader(stream);
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(xmlReader);

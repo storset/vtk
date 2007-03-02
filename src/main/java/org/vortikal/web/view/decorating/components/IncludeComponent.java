@@ -33,17 +33,18 @@ package org.vortikal.web.view.decorating.components;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.web.context.ServletContextAware;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.web.RequestContext;
@@ -59,7 +60,8 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
 
     private ServletContext servletContext;
 
-    private UrlRetriever urlRetriever = new UrlRetriever();
+    private ContentCache httpIncludeCache;
+    private ContentCache virtualIncludeCache;
     
     private Repository repository;
 
@@ -69,14 +71,20 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
 
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
-      
     }
 
+    public void setHttpIncludeCache(ContentCache httpIncludeCache) {
+        this.httpIncludeCache = httpIncludeCache;
+    }
+    
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
 
         String uri = request.getStringParameter("file");
         if (uri != null) {
+            if (uri.startsWith("/"))
+                throw new DecoratorComponentException(
+                    "Include 'file' takes a relative path as argument");
             handleDirectInclude(uri, request, response);
             return;
         }
@@ -86,22 +94,19 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
             throw new DecoratorComponentException(
                 "One of parameters 'file' or 'virtual' must be specified");
         }
-
-        if (this.urlRetriever.match(uri)) {
+        if (uri.startsWith("/")) {
+            handleVirtualInclude(uri, request, response);
+        } else if (uri.startsWith("http") || uri.startsWith("https")) {
             handleHttpInclude(uri, request, response);
         } else {
-            handleVirtualInclude(uri, request, response);
-        }  
+            throw new DecoratorComponentException("Invalid 'virtual' parameter: '" + uri + "'");
+        }
     }
 
     private void handleDirectInclude(String address, DecoratorRequest request,
                                      DecoratorResponse response) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
 
-        if (address.startsWith("/"))
-            throw new DecoratorComponentException(
-            "Include 'file' takes a relative path as argument");
-        
         String uri = RequestContext.getRequestContext().getResourceURI();
         uri = uri.substring(0, uri.lastIndexOf("/") + 1) + address;
 
@@ -128,20 +133,8 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         out.close();
     }
     
-    private void handleHttpInclude(String uri, DecoratorRequest request,
-            DecoratorResponse response) throws Exception {
-        String result = this.urlRetriever.fetchIncludedUrl(uri);
-        Writer writer = response.getWriter();
-        writer.write(result);
-    }
-
-
     private void handleVirtualInclude(String uri, DecoratorRequest request,
                                       DecoratorResponse response) throws Exception {
-        
-        if (!uri.startsWith("/"))
-            return;
-
         
         HttpServletRequest servletRequest = request.getServletRequest();
         if (servletRequest.getAttribute(INCLUDE_ATTRIBUTE_NAME) != null) {
@@ -180,6 +173,15 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         out.close();
     }
     
+    private void handleHttpInclude(String uri, DecoratorRequest request,
+            DecoratorResponse response) throws Exception {
+        String result = (String) this.httpIncludeCache.get(uri);
+        Writer writer = response.getWriter();
+        writer.write(result);
+        writer.close();
+    }
+
+
 
     private class RequestWrapper extends HttpServletRequestWrapper {
 

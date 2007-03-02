@@ -124,8 +124,9 @@
   <bean id="decorating.feedComponent.contentCache" class="org.vortikal.util.cache.ContentCache">
     <property name="cacheLoader" ref="decorating.feedComponent.contentCache.loader" />
     <property name="cacheSeconds" value="${decorating.feedComponent.cacheTimeoutSeconds}" />
-    <property name="asynchronousRefresh" value="false" />
+    <property name="asynchronousRefresh" value="true" />
     <property name="refreshInterval" value="30" />
+    <property name="maxItems" value="${decorating.feedComponent.maxCachedItems}" />
   </bean>
 
   <bean id="decorating.feedComponent.contentCache.loader"
@@ -160,7 +161,29 @@
     <property name="namespace" value="file" />
     <property name="name" value="include" />
     <property name="description" value="Includes the contents of another document in the page" />
+    <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="file" value="A relative path to a the file to include" />
+        <entry key="virtual" value="Either a complete URL, or a path starting with '/'" />
+      </map>
+    </property>
   </bean>
 
+  <bean id="decorating.includeComponent.httpIncludeCache"
+        class="org.vortikal.util.cache.ContentCache">
+    <property name="cacheLoader" ref="decorating.includeComponent.httpIncludeCache.loader" />
+    <property name="cacheSeconds" value="${decorating.includeComponent.cacheTimeoutSeconds}" />
+    <property name="asynchronousRefresh" value="false" />
+    <property name="refreshInterval" value="30" />
+    <property name="maxItems" value="${decorating.includeComponent.maxCachedItems}" />
+  </bean>
+
+  <bean id="decorating.includeComponent.httpIncludeCache.loader"
+        class="org.vortikal.web.view.decorating.components.URLToStringLoader">
+    <property name="connectTimeoutSeconds" value="${decorating.includeComponent.connectTimeoutSeconds}" />
+    <property name="readTimeoutSeconds" value="${decorating.includeComponent.readTimeoutSeconds}" />
+    <property name="clientIdentifier" value="${decorating.includeComponent.identifier}" />
+  </bean>
 
 </beans>

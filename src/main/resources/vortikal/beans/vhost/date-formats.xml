@@ -84,4 +84,26 @@
     </property>
   </bean>
 
+  <bean id="valueFormatter"
+        class="org.vortikal.repository.resourcetype.ValueFormatter">
+    <property name="namedDateFormats" ref="valueFormatterNamedDateformats" />
+    <property name="defaultDateFormatKey" value="long" />
+  </bean>
+
+  <bean id="valueFormatterNamedDateformats"
+       class="org.springframework.beans.factory.config.MapFactoryBean">
+   <property name="sourceMap">
+     <map>
+       <entry key="short" value-ref="shortDateFormat" />
+       <entry key="short_no" value-ref="shortDateFormat_no" />
+       <entry key="long" value-ref="longDateFormat" />
+       <entry key="long_no" value-ref="longDateFormat_no" />
+       <entry key="iso-8601" value-ref="iso8601FullDateFormat" />
+       <entry key="iso-8601-short" value-ref="iso8601ShortDateFormat" />
+       <entry key="rfc-822" value-ref="rfc822DateFormat" />
+     </map>
+   </property>
+ </bean>
+
+
 </beans>

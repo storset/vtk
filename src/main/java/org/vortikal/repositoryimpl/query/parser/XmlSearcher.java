@@ -43,7 +43,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -53,10 +52,10 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.query.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.query.query.PropertySelect;
@@ -97,13 +96,13 @@ public class XmlSearcher implements InitializingBean {
     private PropertyManager propertyManager;
     private ResourceTypeTree resourceTypeTree;
     private int maxResults = 1000;
-    private String defaultDateFormatKey;
-    private Map namedDateFormats = new HashMap();
     private Repository repository;
     private String defaultLocale = Locale.getDefault().getLanguage();
 
     private Service linkToService;
     private ResourceTypeDefinition collectionResourceTypeDef;
+
+    private ValueFormatter valueFormatter;
     
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
@@ -125,14 +124,6 @@ public class XmlSearcher implements InitializingBean {
         this.repository = repository;
     }
 
-    public void setDefaultDateFormatKey(String defaultDateFormatKey) {
-        this.defaultDateFormatKey = defaultDateFormatKey;
-    }
-    
-    public void setNamedDateFormats(Map namedDateFormats) {
-        this.namedDateFormats = namedDateFormats;
-    }
-    
     public void setDefaultLocale(String defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
@@ -155,41 +146,14 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'repository' not set");
         }
+        if (this.valueFormatter == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'valueFormatter' not set");
+        }
         if (this.linkToService == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'linkToService' not set");
         }
-        if (this.namedDateFormats == null || this.namedDateFormats.isEmpty()) {
-            throw new BeanInitializationException(
-                "JavaBean property 'namedDateFormats' not set");
-        }
-        
-        for (Iterator i = this.namedDateFormats.keySet().iterator(); i.hasNext();) {
-            Object key = i.next();
-            if (!(key instanceof String)) {
-                throw new BeanInitializationException(
-                    "All keys in the 'namedDateFormats' map must be of type java.lang.String"
-                    + "(found " + key.getClass().getName() + ")");
-            }
-            Object value = this.namedDateFormats.get(key);
-            if (!(value instanceof FastDateFormat)) {
-                throw new BeanInitializationException(
-                    "All values in the 'namedDateFormats' map must be of type "
-                    + FastDateFormat.class.getName()
-                    + "(found " + value.getClass().getName() + ")");
-            }
-        }
-
-        if (this.defaultDateFormatKey == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'defaultDateFormatKey' not set");
-        }
-        if (!this.namedDateFormats.containsKey(this.defaultDateFormatKey)) {
-            throw new BeanInitializationException(
-                "The map 'namedDateFormats' must contain an entry specified by the "
-                + "'defaultDateFormatKey' JavaBean property");
-        }
-
         if (this.defaultLocale == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'defaultLocale' not set");
@@ -386,46 +350,11 @@ public class XmlSearcher implements InitializingBean {
     
     private Element valueElement(Document doc, Value value, String format, Locale locale) {
             Element valueElement = doc.createElement("value");
-            Text text = doc.createTextNode(valueToString(value, format, locale));
+            Text text = doc.createTextNode(this.valueFormatter.valueToString(value, format, locale));
             valueElement.appendChild(text);
             return valueElement;
     }
     
-
-    private String valueToString(Value value, String format, Locale locale) {
-        switch (value.getType()) {
-            case PropertyType.TYPE_DATE:
-                if (format == null) {
-                    format = this.defaultDateFormatKey;
-                }
-                FastDateFormat f = null;
-                    
-                // Check if format refers to any of the
-                // predefined (named) formats:
-                String key = format + "_" + locale.getLanguage();
-
-                f = (FastDateFormat) this.namedDateFormats.get(key);
-                if (f == null) {
-                    key = format;
-                    f = (FastDateFormat) this.namedDateFormats.get(key);
-                }
-                try {
-                    if (f == null) {
-                        // Parse the given format
-                        // XXX: formatter instances should be cached
-                        f = FastDateFormat.getInstance(format, locale);
-                    }
-                    return f.format(value.getDateValue());
-                } catch (Throwable t) {
-                    return "Error: " + t.getMessage();
-                }
-
-            case PropertyType.TYPE_PRINCIPAL:
-                return value.getPrincipalValue().getName();
-            default:
-                return value.toString();
-        }
-    }
 
     private class Formats {
 
@@ -744,6 +673,10 @@ public class XmlSearcher implements InitializingBean {
     public void setCollectionResourceTypeDef(
             ResourceTypeDefinition collectionResourceTypeDef) {
         this.collectionResourceTypeDef = collectionResourceTypeDef;
+    }
+
+    public void setValueFormatter(ValueFormatter valueFormatter) {
+        this.valueFormatter = valueFormatter;
     }
 
 }

@@ -80,6 +80,14 @@
   </bean>
 
 
+  <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
+        class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorCompontent">
+    <property name="namespace" value="resource" />
+    <property name="name" value="property" />
+    <property name="description" value="Inserts the last modified date of the current document" />
+    <property name="valueFormatter" ref="valueFormatter" />
+  </bean>
+
   <bean id="decorating.breadcrumbComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" value="view" />
     <property name="name" value="breadcrumb" />

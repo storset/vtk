@@ -16,6 +16,7 @@ import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
 public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComponent {
+
     private static final String URL_IDENTIFIER = "url";
     private static final String NAME_IDENTIFIER = "name";
     private static final String TYPE_IDENTIFIER = "type";

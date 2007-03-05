@@ -40,7 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Acl;
@@ -71,6 +73,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
         setSessionForm(true);
     }
     
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        binder.registerCustomEditor(java.lang.String[].class, new StringArrayPropertyEditor());
+    }
+
+
 
     public void setRepository(Repository repository) {
         this.repository = repository;

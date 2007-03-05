@@ -1,87 +1,56 @@
-<#-- -*- coding: utf-8 -*-
-This template takes these parameters:
+<div class="vrtxFeed">
+  <#if conf.feedTitle>
+ <a class="feedTitle" href="${feed.link}">${feed.title?html}</a> <#-- vanskelig å si hvilken heading dette skal være hvis h1, h2, osv. -->
+ </#if>
 
-feed: a SyndFeed (from rome)
-
-conf: RssConfig
-containing:
-  conf.includeTitle: boolean
-  conf.includeLogo: boolean
-  conf.includeDescription: boolean
-  conf.includeUpdatedDate: boolean
-  conf.includePublishedDate: boolean
-  conf.maxMsgs: max number of messages to show
--->
-
-  <#if conf.includeTitle == true>
-    <h2 class="feedTitle">
-      <a href="${feed.getLink()}">${feed.getTitle()?html}</a>
-    </h2>
-  </#if>
-
+ <#-- img class="logo" alt="Logo - {channel/title}" src="{channel/logo}" /> (?) Eksempel på bruk av dette??? -->
     <#-- logo -->
-    <#if conf.includeLogo == true>
-      <#if feed.getImage()?exists >
-      <#assign image = feed.getImage()>
-        <img class="rssLogo" alt="logo" src="${image.getUrl()?html}"/>
+    <#--if conf.logo>
+      <#if feed.image?exists >
+        <img class="rssLogo" alt="logo" src="${feed.image.url?html}"/>
       </#if>
-    </#if>
-    
-    <#if feed.getEntries()?exists >
-    <ul class="feedList">
-      <#assign maxMsgs = feed.getEntries()?size>
+    </#if-->
+
+  <#if conf.feedDescription>
+ <div class="feedDescription">${feed.description?html}</div> 
+ </#if>
+
+    <#if feed.entries?exists>
+      <#assign entries = feed.entries>
+      <#if conf.sortByTitle>
+        <#assign entries = entries?sort_by("title")>
+      </#if>
+      <#assign maxMsgs = feed.entries?size>
       <#if maxMsgs gt conf.maxMsgs>
-      <#assign maxMsgs = conf.maxMsgs>
+        <#assign maxMsgs = conf.maxMsgs>
       </#if>      
-      <#list feed.getEntries()[0..maxMsgs-1] as entry>
-      <li class="feedEntryTitle"> 
-	<a href="${entry.getLink()?html}">
-	  ${entry.getTitle()?html}
-	</a>
-        <#if conf.includeDescription == true ||
-             conf.includePublishedDate == true || conf.includeUpdatedDate == true>
-	<ul>
-	
+ <ul class="items">
+      <#list entries[0..maxMsgs-1] as entry>
+   <li>
+     <a class="itemTitle" href="${entry.link?html}">${entry.title?html}</a>
 	  <#-- description -->
-	  <#if conf.includeDescription == true>
-	  <#list entry.getContents() as content>
+	  <#if conf.itemDescription>
+     <div class="itemDescription">
+	  <#list entry.contents as content>
 	  <li class="feedDescription">
 	      <#--${content.getValue()?html}-->
-	      ${content.getValue()}
+	      ${content.value}
 	  </li>
 	  </#list>
-	  </#if>
-
-	  <#-- published date -->
-	  <#if conf.includePublishedDate == true>
-	  <li class="feedPublishedDate">
-	    Published: 
-	    <#if entry.getPublishedDate()?exists>
-	    ${dateFormatter.formatDate(entry.getPublishedDate())}
+     </div> <!-- fordi <p> ol. kan foekomme ... -->
+          </#if>
+          <#if conf.publishedDate && entry.publishedDate?exists>
+     <span class="publishedDate">${entry.publishedDate?string(conf.format)}</span>  <!-- hva med bruk av skilletegn? -->
+          </#if>
+	    <#if entry.updatedDate?exists>
+     <span class="updatedDate">${entry.updatedDate?string(conf.format)}<span> <!-- bort ?? -->
 	    </#if>
-	  </li>
-	  </#if>
+   </li>
+</#list>
+ </ul>
+ </#if>
 
-	  <#-- updated date -->
-	  <#if conf.includeUpdatedDate == true>
-	  <li class="feedUpdatedDate">
-	    Last updated:
-	    <#if entry.getUpdatedDate()?exists>
-	    ${dateFormatter.formatDate(entry.getUpdatedDate())}
-	    </#if>
-	  </li>
-	  </#if>
-	</ul>
-        </#if>
-      </li>
-      </#list>
-    </ul>
-    </#if>
-
-    <#--if feed.getCopyright()?exists>
-    <span class="feedCopyright">
-      &copy; ${feed.getCopyright()}
-    </span>
-    </#if-->
-    
-
+<#if conf.bottomLinkToAllMessages>
+ <a class="all-messages" href="${feed.link}">Alle meldinger</a>
+</#if>
+</div>

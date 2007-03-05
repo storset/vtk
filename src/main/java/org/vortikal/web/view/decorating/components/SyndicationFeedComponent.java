@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-import com.sun.syndication.feed.synd.SyndFeed;
-
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,20 +38,20 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.View;
-
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
+import com.sun.syndication.feed.synd.SyndFeed;
+
 
 /**
  * XXX: this class currently depends on the thread safety of the
  * SyndFeed implementation: if it turns out that it is not thread
- * safe, its data has to be extracted data to a custom bean after
+ * safe, its data has to be extracted to a custom bean after
  * fetching a feed.
  */
 public class SyndicationFeedComponent extends AbstractDecoratorComponent {
@@ -62,8 +60,8 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
     private ContentCache cache;
     private View view;
 
-    private String defaultDateFormat = "yyyy-MM-dd HH:mm";
-
+    private String onlyDateDateFormat = "dd.MM.yyyy";
+    
     public void setView(View view) {
         this.view = view;
     }
@@ -72,58 +70,69 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
         this.cache = cache;
     }
     
-    public void setDefaultDateFormat(String defaultDateFormat) {
-        if (defaultDateFormat == null) {
-            throw new IllegalArgumentException("Date format not valid");
-        }
-        this.defaultDateFormat = defaultDateFormat;
-    }
-
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        String address = request.getStringParameter("address");
-        if (address == null) {
+
+        SyndicationFeedConfig conf = new SyndicationFeedConfig();
+        
+        String url = request.getStringParameter("url");
+        if (url == null) {
             throw new DecoratorComponentException(
-                "Component parameter 'address' is required");
+                "Component parameter 'url' is required");
         }
 
-        boolean includeLogo = "true".equals(request.getParameter("includeLogo"));
-        boolean includeTitle = "true".equals(request.getParameter("includeTitle"));
-        boolean includeDescription = "true".equals(request.getParameter(
-                                                       "includeDescription"));
-        boolean includePublishedDate = "true".equals(request.getParameter(
-                                                         "includePublishedDate"));
-        boolean includeUpdatedDate = "true".equals(request.getParameter(
-                                                       "includeUpdatedDate"));
-
-        String dateFormat = request.getStringParameter("dateFormat");
-        if (dateFormat == null) {
-            dateFormat = this.defaultDateFormat;
+        String feedTitleString = request.getStringParameter("feedTitle"); 
+        if (feedTitleString != null && "false".equals(feedTitleString)) {
+            conf.setFeedTitle(false);
+        }
+        
+        String feedDescriptionString = request.getStringParameter("feedDescription");
+        if (feedDescriptionString != null && "true".equals(feedDescriptionString)) {
+            conf.setFeedDescription(true);
         }
 
-        Integer maxMsgs = new Integer(5);
-        String numStr = request.getStringParameter("maxMsgs");
-        if (numStr != null) {
+        String itemDescriptionString = request.getStringParameter("itemDescription"); 
+        if (itemDescriptionString != null && "true".equals(itemDescriptionString)) {
+            conf.setItemDescription(true);
+        }
+
+        String maxMsgsString = request.getStringParameter("maxMsgs");
+        if (maxMsgsString != null) {
             try {
-                maxMsgs = Integer.valueOf(numStr);
+                int tmpInt = Integer.parseInt(maxMsgsString);
+                if (tmpInt > 0) {
+                    conf.setMaxMsgs(tmpInt);
+                }
             } catch (Exception e) { }
         }
 
-        SyndFeed feed = (SyndFeed) this.cache.get(address);
 
-        Map conf = new HashMap();
-        conf.put("includeLogo", new Boolean(includeLogo));
-        conf.put("includeTitle", new Boolean(includeTitle));
-        conf.put("includeDescription", new Boolean(includeDescription));
-        conf.put("includePublishedDate", new Boolean(includePublishedDate));
-        conf.put("includeUpdatedDate", new Boolean(includeUpdatedDate));
-        conf.put("maxMsgs", maxMsgs);
+        String publishedDateString = request.getStringParameter("publishedDate");
+        if (publishedDateString != null) {
+            if ("none".equals(publishedDateString)) {
+                conf.setPublishedDate(false);
+            } else if ("date".equals(publishedDateString)) {
+                conf.setFormat(this.onlyDateDateFormat);
+            }
+        }
+        
+        String bottomLinkToAllMessagesString = request.getStringParameter("bottomLinkToAllMessages");
+        if ("false".equals(bottomLinkToAllMessagesString)) {
+            conf.setBottomLinkToAllMessages(false);
+        }
+
+        String sortString = request.getStringParameter("sort");
+        if ("itemTitle".equals(sortString)) {
+            conf.setSortByTitle(true);
+        }
+        
+        SyndFeed feed = (SyndFeed) this.cache.get(url);
 
         Map model = new HashMap();
 
         model.put("feed", feed);
-        model.put("dateFormatter", new DateFormatter(dateFormat));
         model.put("conf", conf);
+
         BufferedResponse tmpResponse = new BufferedResponse();
 
         this.view.render(
@@ -142,23 +151,5 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
         out.write(tmpResponse.getContentBuffer());
         out.close();
     }
-
-
-    private class DateFormatter {
-        private SimpleDateFormat dateFormat; 
-
-        public DateFormatter(String dateFormat) {
-            this.dateFormat = new SimpleDateFormat(dateFormat);
-        }
-        
-        public String formatDate(Date date) {
-            String formattedDate = "no date present";
-            if (date != null) {
-                formattedDate = this.dateFormat.format(date);
-            }
-            return formattedDate;
-        }
-    }
-
 
 }

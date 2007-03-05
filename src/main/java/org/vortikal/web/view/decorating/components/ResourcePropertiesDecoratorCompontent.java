@@ -73,8 +73,23 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
             if (prop == null) {
                 return;
             }
+            
+            if (prop.getDefinition().isMultiple()) {
+                result = "";
+                Value[] values = prop.getValues();
+                for (int j = 0; j < values.length; j++) {
+                    Value value = values[j];
+                    result += this.valueFormatter.valueToString(value, null, request.getLocale());
+                    if (j != values.length - 1) {
+                        result += ", ";
+                    }
+                }
+                
+            } else {
+            
             Value value = prop.getValue();
             result = this.valueFormatter.valueToString(value, null, request.getLocale());
+            }
         }   
         
         Writer writer = response.getWriter();

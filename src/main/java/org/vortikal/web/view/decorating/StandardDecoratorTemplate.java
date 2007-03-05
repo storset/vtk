@@ -37,15 +37,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.web.referencedata.ReferenceDataProvider;
-import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.view.decorating.html.HtmlPage;
 
 
-public class StandardDecoratorTemplate implements Template, InitializingBean, BeanNameAware  {
+public class StandardDecoratorTemplate implements Template {
 
     private static final String DEFAULT_DOCTYPE =
         "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
@@ -55,70 +50,21 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
     private TemplateParser parser;
     private ComponentInvocation[] fragments;
     private TemplateSource templateSource;
-    private String beanName;
     private long lastModified = -1;
     
 
-    public StandardDecoratorTemplate() {
-    }
-    
-
-    public StandardDecoratorTemplate(String name, TemplateParser parser,
+    public StandardDecoratorTemplate(TemplateParser parser,
                                      TemplateSource templateSource) throws Exception {
-        if (name == null) {
-            throw new IllegalArgumentException("Argument 'name' is NULL");
-        }
         if (parser == null) {
             throw new IllegalArgumentException("Argument 'parser' is NULL");
         }
-        if (name == null) {
+        if (templateSource == null) {
             throw new IllegalArgumentException("Argument 'templateSource' is NULL");
         }
-        this.beanName = name;
         this.parser = parser;
         this.templateSource = templateSource;
         compile();
     }
-    
-
-    public void setTemplateSource(TemplateSource templateSource) {
-        this.templateSource = templateSource;
-    }
-    
-    public void setParser(TemplateParser parser) {
-        this.parser = parser;
-    }
-    
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
-    public String getName() {
-        return this.beanName;
-    }
-    
-
-    public void afterPropertiesSet() {
-        if (this.beanName == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'beanName' not specified");
-        }
-        if (this.parser == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'parser' not specified");
-        }
-        if (this.templateSource == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'templateSource' not specified");
-        }
-        try {
-            compile();
-        } catch (Exception e) {
-            throw new BeanInitializationException("Error compiling template " +
-                                                  this.templateSource, e);
-        }
-    }
-    
 
     public String render(Map model, HtmlPage html, HttpServletRequest request,
                        Locale locale) throws Exception {
@@ -128,42 +74,34 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
         }
         
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < this.fragments.length; i++) {
+        ComponentInvocation[] fragments = this.fragments;        
+        for (int i = 0; i < fragments.length; i++) {
             
             try {
-                DecoratorComponent c = this.fragments[i].getComponent();
-                if (c instanceof ReferenceDataProviding) {
-                    ReferenceDataProvider[] providers =
-                        ((ReferenceDataProviding) c).getReferenceDataProviders();
-                    if (providers != null) {
-                        for (int j = 0; j < providers.length; j++) {
-                            providers[j].referenceData(model, request);
-                        }
-                    }
-                }
+                DecoratorComponent c = fragments[i].getComponent();
 
                 String doctype = html.getDoctype();
                 if (doctype == null) {
                     doctype = DEFAULT_DOCTYPE;
                 }
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                    model, html, request, this.fragments[i].getParameters(), doctype, locale);
+                    model, html, request, fragments[i].getParameters(), doctype, locale);
 
                 String chunk = renderComponent(c, decoratorRequest);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Included component: " + this.fragments[i]
+                    logger.debug("Included component: " + fragments[i]
                                  + " with result [" + chunk + "]");
                 }
                 sb.append(chunk);
 
             } catch (Throwable t) {
-                logger.warn("Error including component: " + this.fragments[i], t);
+                logger.warn("Error including component: " + fragments[i], t);
                 // Include error message in output:
                 String msg = t.getMessage();
                 if (msg == null) {
                     msg = t.getClass().getName();
                 }
-                sb.append(this.fragments[i].getComponent().getName());
+                sb.append(fragments[i].getComponent().getName());
                 sb.append(": ").append(msg);
             }
         }
@@ -188,15 +126,18 @@ public class StandardDecoratorTemplate implements Template, InitializingBean, Be
     }
     
 
-    public synchronized void compile() throws Exception {
-        ComponentInvocation[] components = this.parser.parseTemplate(
+    private synchronized void compile() throws Exception {
+        if (this.lastModified == templateSource.getLastModified())
+            return;
+
+        this.fragments = this.parser.parseTemplate(
             this.templateSource.getTemplateReader());
-        this.fragments = components;
+
         this.lastModified = templateSource.getLastModified();
     }
     
     public String toString() {
-        return this.getClass().getName() + ": " + this.beanName;
+        return this.getClass().getName() + ": " + this.templateSource;
     }
     
 

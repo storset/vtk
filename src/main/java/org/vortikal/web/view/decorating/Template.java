@@ -39,8 +39,6 @@ import org.vortikal.web.view.decorating.html.HtmlPage;
 
 public interface Template {
 
-    public String getName();
-
     public String render(Map model, HtmlPage html, HttpServletRequest request,
                        Locale locale) throws Exception;
 }

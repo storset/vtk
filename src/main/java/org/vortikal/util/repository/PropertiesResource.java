@@ -91,12 +91,15 @@ public class PropertiesResource extends Properties implements InitializingBean,
     }
     
     public PropertiesResource(Repository repository, String uri, String token,
-                              boolean demandResourceAvailability, boolean lazyInit) {
+                              boolean demandResourceAvailability, boolean lazyInit) 
+        throws Exception {
+        
         this.repository = repository;
         this.uri = uri;
         this.token = token;
         this.demandResourceAvailability = demandResourceAvailability;
         this.lazyInit = lazyInit;
+        afterPropertiesSet();
     }
     
 
@@ -163,26 +166,6 @@ public class PropertiesResource extends Properties implements InitializingBean,
     }
 
 
-    public void load(Repository repository, String uri, String token) throws IOException {
-        this.load(repository, uri, token, false);
-    }
-    
-
-    public void load(Repository repository, String uri, String token,
-                     boolean demandResourceAvailability) throws IOException {
-        if (demandResourceAvailability) {
-            this.loadInternal(repository, uri, token);
-        } else {
-            try {
-                this.loadInternal(repository, uri, token);
-            } catch (Exception e) {
-                this.logger.warn("Unable to load properties from uri '"
-                            + uri + "', repository '" + repository
-                            + "', token '" + token + "'", e);
-            }
-        }
-    }
-    
     public void load() throws IOException {
 
         if (this.repository == null || this.uri == null) {
@@ -190,15 +173,20 @@ public class PropertiesResource extends Properties implements InitializingBean,
                 "JavaBean properties 'repository' and 'uri' must be specified");
         }
         this.clear();
-        this.load(this.repository, this.uri, this.token, this.demandResourceAvailability);
+        if (demandResourceAvailability) {
+            InputStream inputStream = repository.getInputStream(token, uri, false);
+            super.load(inputStream);
+        } else {
+            try {
+                InputStream inputStream = repository.getInputStream(token, uri, false);
+                super.load(inputStream);
+            } catch (Exception e) {
+                this.logger.warn("Unable to load properties from uri '"
+                            + uri + "', repository '" + repository
+                            + "', token '" + token + "'", e);
+            }
+        }
 
     }
     
-
-    private void loadInternal(Repository repository, String uri, String token)
-        throws IOException {
-        InputStream inputStream = repository.getInputStream(token, uri, false);
-        super.load(inputStream);
-    }
-
 }

@@ -93,8 +93,7 @@ public class CollectionTemplateManager implements TemplateManager {
                         new RepositoryTemplateSource(resources[i].getURI(),
                                                      this.repository, null);
                     
-                    Template template = new StandardDecoratorTemplate(
-                        resources[i].getName(), this.parser, templateSource);
+                    Template template = new StandardDecoratorTemplate(this.parser, templateSource);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Loaded template '" + resources[i].getName() + "'");
                     }

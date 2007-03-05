@@ -71,7 +71,7 @@ import org.springframework.beans.factory.InitializingBean;
  *   refresh of expired items at regular intervals (in a separate
  *   thread).
  *   <li><code>maxItems</code> - the maximum number of items to allow
- *   in the cache. A negative number means no limit.
+ *   in the cache. A negative number means no limit (the default).
  * </ul>
  *
  */
@@ -200,11 +200,10 @@ public final class ContentCache implements InitializingBean, DisposableBean {
 
 
     private synchronized void removeOldestExceedingSizeLimit() {
+        if (this.maxItems <= 0) return;
         int size = this.cache.size();
         int n = size - this.maxItems;
-        if (n <= 0) {
-            return;
-        }
+        if (n <= 0) return;
 
         List sortedList = new ArrayList(this.cache.entrySet());
         Collections.sort(sortedList, new Comparator() {

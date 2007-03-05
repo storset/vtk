@@ -5,9 +5,21 @@
 <beans>
    <!-- XML schema registry -->
    <bean id="schemaRegistry" class="org.vortikal.xml.XmlSchemaRegistry">
-     <property name="cacheTimeoutSeconds" value="${xmlSchemaCacheSeconds}" />
+     <property name="schemaCache" ref="xmlSchemaRegistry.cache" />
    </bean>
 
+   <bean id="xmlSchemaRegistry.cache" class="org.vortikal.util.cache.ContentCache">
+     <property name="cacheLoader" ref="xmlSchemaRegistry.cache.loader" />
+     <property name="cacheSeconds" value="${xmlSchemaRegistry.cacheSeconds}" />
+     <property name="refreshInterval" value="${xmlSchemaRegistry.cacheRefreshInterval}" />
+   </bean>
+
+   <bean id="xmlSchemaRegistry.cache.loader" class="org.vortikal.util.cache.loaders.JDOMCacheLoader">
+     <property name="connectTimeoutSeconds" value="5" />
+     <property name="readTimeoutSeconds" value="5" />
+   </bean>
+
+   <!--
   <bean id="schemaRegistrySchedulerFactory"
         class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="triggers">
@@ -32,5 +44,5 @@
     <property name="targetObject"><ref bean="schemaRegistry"/></property>
     <property name="targetMethod"><value>refresh</value></property>
   </bean>
-
+-->
 </beans>

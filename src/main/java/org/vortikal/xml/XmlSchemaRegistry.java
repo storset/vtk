@@ -30,22 +30,8 @@
  */
 package org.vortikal.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-
+import org.vortikal.util.cache.ContentCache;
 
 /**
  * A store for XML schemas. The schemas are cached as JDOM {@link
@@ -63,120 +49,23 @@ import org.jdom.input.SAXBuilder;
  */
 public class XmlSchemaRegistry {
 
-    private static Log logger = LogFactory.getLog(XmlSchemaRegistry.class);
-    private Map cache = new HashMap();
-    private long cacheTimeout = 30 * 60 * 1000;
+    private ContentCache schemaCache;
     
-    
-    public void setCacheTimeoutSeconds(long cacheTimeoutSeconds) {
-        this.cacheTimeout = cacheTimeoutSeconds * 1000;
+    public void setSchemaCache(ContentCache schemaCache) {
+        this.schemaCache = schemaCache;
     }
-    
+
     /**
      * Gets an XML schema as a JDOM document from a URL. If a cached
      * copy of the schema is available, that copy is used.
      *
      * @param docType the schema identifier (URL)
      * @return a schema {@link Document}. If no schema could be
-     * located, <code>null</code> is returned.
-     * @exception JDOMException if the schema is not a valid XML document
-     * @exception IOException if an error occurs
+     * located, an exception is thrown.
+     * @exception Exception if an error occurs
      */
-    public Document getXMLSchema(String docType)
-        throws JDOMException, IOException {
-        
-        SchemaItem item = (SchemaItem) this.cache.get(docType);
-
-        if (item != null) {
-            return item.getDocument();
-        }
-        
-        cacheXMLSchema(docType);
-        item = (SchemaItem) this.cache.get(docType);
-
-        if (item == null) {
-            throw new IOException("Unable to find XML schema " + docType);
-        }
-        
-        return item.getDocument();
-    }
-    
-
-
-    /**
-     * Finds all expired schema items and tries to fetch new copies of
-     * them.
-     */
-    public synchronized void refresh() {
-        List refreshList = new ArrayList();
-        
-        for (Iterator i = this.cache.keySet().iterator(); i.hasNext();) {
-            String url = (String) i.next();
-            SchemaItem item = (SchemaItem) this.cache.get(url);
-
-            long now = new Date().getTime();
-            if (item.getTimestamp().getTime() + this.cacheTimeout < now) {
-
-                refreshList.add(url);
-            }
-        }
-
-        for (Iterator i = refreshList.iterator(); i.hasNext();) {
-            String url = (String) i.next();
-            try {
-
-                cacheXMLSchema(url);
-
-            } catch (Throwable t) {
-                logger.warn("Unable to cache new copy of XML schema " + url, t);
-            }
-        }
-    }
-    
-
-    public synchronized void flush() {
-        this.cache.clear();
-    }
-    
-
-
-    private synchronized void cacheXMLSchema(String docType) throws JDOMException,
-        IOException {
-
-        SchemaItem item = (SchemaItem) this.cache.get(docType);
-        long now = new Date().getTime();
-
-        if (item == null ||
-            (item.getTimestamp().getTime() + this.cacheTimeout < now)) {
-
-            InputStream inStream = (new URL(docType)).openStream();
-            Document schemaDoc = new SAXBuilder().build(inStream);
-            this.cache.put(docType, new SchemaItem(schemaDoc));
-            logger.info("Cached new copy of XML schema " + docType);
-        }
-    }
-
-
-    /**
-     * Class for holding a cached XML schema and a corresponding
-     * timestamp.
-     */
-    private class SchemaItem {
-        private Document doc;
-        private Date timestamp;
-
-        public SchemaItem(Document doc) {
-            this.doc = doc;
-            this.timestamp = new Date();
-        }
-
-        public Document getDocument() {
-            return this.doc;
-        }
-
-        public Date getTimestamp() {
-            return this.timestamp;
-        }
+    public Document getXMLSchema(String docType) throws Exception {
+        return (Document) this.schemaCache.get(docType);
     }
 
 }

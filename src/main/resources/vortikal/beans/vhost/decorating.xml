@@ -6,7 +6,7 @@
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="decorators">
       <list>
-        <ref bean="templateDecorator" />
+        <ref bean="decorating.templateDecorator" />
       </list>
     </property>
     <property name="staticHeaders">
@@ -17,44 +17,49 @@
     </property>
   </bean>
 
-  <bean id="templateDecorator"
+  <bean id="decorating.templateDecorator"
     class="org.vortikal.web.view.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="templateResolver" ref="templateResolver" />
-    <property name="htmlNodeFilter" ref="ssiNodeFilter" />
+    <property name="templateResolver" ref="decorating.templateResolver" />
+    <property name="htmlNodeFilter" ref="decorating.ssiNodeFilter" />
   </bean>
 
   <bean id="decorating.htmlParser"
         class="org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl">
   </bean>
 
-  <bean id="ssiNodeFilter" class="org.vortikal.web.view.decorating.ComponentHandlingNodeFilter">
-    <property name="directiveComponentMap">
+  <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.view.decorating.ComponentHandlingNodeFilter">
+    <property name="ssiDirectiveComponentMap">
       <map>
         <entry key="include" value-ref="decorating.includeComponent" />
       </map>
     </property>
-    <property name="contentComponentParser" ref="defaultTemplateParser" />
+    <property name="prohibitedComponentNamespaces">
+      <set>
+        <ref bean="decorating.documentNamespace" />
+      </set>
+    </property>
+    <property name="contentComponentParser" ref="decorating.defaultTemplateParser" />
   </bean>
 
-  <bean id="templateResolver"
+  <bean id="decorating.templateResolver"
         class="org.vortikal.web.view.decorating.PropertyConfigurableTemplateResolver">
     <property name="templateManager" ref="templateManager" />
-    <property name="templateConfiguration" ref="templateConfigurationPropertiesFile" />
+    <property name="templateConfiguration" ref="decorating.templateConfigurationPropertiesFile" />
   </bean>
 
-  <bean id="templateConfigurationPropertiesFile"
+  <bean id="decorating.templateConfigurationPropertiesFile"
         class="org.vortikal.util.repository.PropertiesResource">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templateConfigFile}" />
     <property name="lazyInit" value="false" />
   </bean>
 
-  <bean id="templateConfigRefreshTrigger"
+  <bean id="decorating.templateConfigRefreshTrigger"
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templateConfigFile}" />
-    <property name="targetObject" ref="templateConfigurationPropertiesFile" />
+    <property name="targetObject" ref="decorating.templateConfigurationPropertiesFile" />
     <property name="method" value="load" />
   </bean>
 
@@ -62,7 +67,7 @@
   <bean id="templateManager" class="org.vortikal.web.view.decorating.CollectionTemplateManager">
     <property name="repository" ref="repository" />
     <property name="collectionName" value="${decorating.templatesCollection}" />
-    <property name="templateParser" ref="defaultTemplateParser" />
+    <property name="templateParser" ref="decorating.defaultTemplateParser" />
   </bean>
 
   <bean id="templateCollectionRefreshTrigger"
@@ -74,7 +79,7 @@
   </bean>
 
 
-  <bean id="defaultTemplateParser" class="org.vortikal.web.view.decorating.DefaultTemplateParser">
+  <bean id="decorating.defaultTemplateParser" class="org.vortikal.web.view.decorating.DefaultTemplateParser">
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 

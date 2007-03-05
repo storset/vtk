@@ -31,15 +31,17 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.view.decorating.html.HtmlComment;
 import org.vortikal.web.view.decorating.html.HtmlContent;
@@ -56,23 +58,32 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             "\\s*([a-zA-Z]*)\\s*=\\s*\"([^\"]+)\"",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    private Map directiveComponentMap;
-    
+    private Map ssiDirectiveComponentMap;
+    private Set prohibitedComponentNamespaces = new HashSet();
     private TemplateParser contentComponentParser;
     
 
-    public void setDirectiveComponentMap(Map directiveComponentMap) {
-        this.directiveComponentMap = directiveComponentMap;
+    public void setSsiDirectiveComponentMap(Map ssiDirectiveComponentMap) {
+        this.ssiDirectiveComponentMap = ssiDirectiveComponentMap;
     }
     
+    public void setProhibitedComponentNamespaces(Set prohibitedComponentNamespaces) {
+        this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
+    }
+    
+
     public void setContentComponentParser(TemplateParser contentComponentParser) {
         this.contentComponentParser = contentComponentParser;
     }
     
     public void afterPropertiesSet() {
-        if (this.directiveComponentMap == null) {
+        if (this.ssiDirectiveComponentMap == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'directiveComponentMap' not specified");
+                "JavaBean property 'ssiDirectiveComponentMap' not specified");
+        }
+        if (this.prohibitedComponentNamespaces == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'prohibitedComponentNamespaces' not specified");
         }
     }
     
@@ -132,7 +143,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         }
 
         final DecoratorComponent component = (DecoratorComponent)
-            this.directiveComponentMap.get(directive);
+            this.ssiDirectiveComponentMap.get(directive);
         if (component == null) {
             return null;
         }
@@ -159,6 +170,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < components.length; i++) {
+
             Map parameters = components[i].getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                 new HashMap(), null, servletRequest, parameters, doctype, locale);
@@ -166,8 +178,13 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             String result = null;
             try {
                 DecoratorComponent component = components[i].getComponent();
-                component.render(decoratorRequest, response);
-                result = response.getContentAsString();
+                if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
+                     result = "Invalid component reference: " + component.getNamespace()
+                         + ":" + component.getName();
+                } else {
+                    component.render(decoratorRequest, response);
+                    result = response.getContentAsString();
+                }
             } catch (Throwable t) {
                 result = "Error: " + t.getMessage();
             }

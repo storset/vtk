@@ -3,10 +3,11 @@ package org.vortikal.web.view.decorating.components;
 import java.io.Writer;
 
 import org.springframework.beans.factory.BeanInitializationException;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
@@ -23,6 +24,7 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
     private Repository repository;
     private boolean forProcessing = true;
     private ValueFormatter valueFormatter;
+    private ResourceTypeTree resourceTypeTree;
 
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -50,7 +52,7 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
         } else if (URL_IDENTIFIER.equals(id)) {
             return;
         } else {
-            String namespace = null;
+            String prefix = null;
             String name = null;
 
             int i = id.indexOf(":");
@@ -60,11 +62,13 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
                 // XXX: throw something 
                 return;
             } else {
-                namespace = id.substring(0, i - 1);
+                prefix = id.substring(0, i);
                 name = id.substring(i + 1);
             }
+            PropertyTypeDefinition def =
+                this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
 
-            Property prop = resource.getProperty(Namespace.getNamespaceFromPrefix(namespace), name);
+            Property prop = resource.getProperty(def);
         
             if (prop == null) {
                 return;
@@ -87,6 +91,9 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
         if (this.repository == null) {
             throw new BeanInitializationException("JavaBean property 'repository' not set");
         }
+        if (this.resourceTypeTree == null) {
+            throw new BeanInitializationException("JavaBean property 'resourceTypeTree' not set");
+        }
         if (this.valueFormatter == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'valueFormatter' not set");
@@ -99,6 +106,10 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
 
     public void setValueFormatter(ValueFormatter valueFormatter) {
         this.valueFormatter = valueFormatter;
+    }
+
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
     

@@ -86,6 +86,7 @@
     <property name="name" value="property" />
     <property name="description" value="Inserts the last modified date of the current document" />
     <property name="valueFormatter" ref="valueFormatter" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="decorating.breadcrumbComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">

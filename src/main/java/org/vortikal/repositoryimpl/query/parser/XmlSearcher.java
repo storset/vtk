@@ -483,7 +483,7 @@ public class XmlSearcher implements InitializingBean {
                         throw new QueryException("Unknown sort field: '" + field + "'");
                     }
                     PropertyTypeDefinition def =
-                        XmlSearcher.this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+                        resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
                     sortField = new PropertySortField(def, direction);
                 }
                 if (referencedFields.contains(field)) {

@@ -31,7 +31,9 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.web.view.decorating.DecoratorRequest;
@@ -41,6 +43,10 @@ import org.vortikal.web.view.decorating.html.HtmlElement;
 
 public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
 
+    private static final String PARAMETER_EXCLUDE = "exclude";
+    private static final String PARAMETER_EXCLUDE_DESC = "Comma-separated list of attribute names to exclude";
+    private static final String PARAMETER_SELECT_DESC = "The element for which to select attributes";
+    
     private String exclude;
     
     public void setExclude(String exclude) {
@@ -55,7 +61,7 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         HtmlElement element = elements[0];
         
         String exclude = (this.exclude != null) ?
-            this.exclude : request.getStringParameter("exclude");
+            this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         Set excludedAttributes = new HashSet();
         if (exclude != null) {
@@ -79,6 +85,17 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         out.write(sb.toString().getBytes("utf-8"));
         out.flush();
         out.close();
+    }
+
+    protected String getDescriptionInternal() {
+        return "Outputs the attributes of a specified element";
+    }
+
+    protected Map getParameterDescriptionsInternal() {
+        Map map = new HashMap();
+        map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
+        map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
+        return map;
     }
 
 }

@@ -1,6 +1,8 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Property;
@@ -15,35 +17,46 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
-public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComponent {
+public class ResourcePropertiesDecoratorCompontent extends
+        AbstractDecoratorComponent {
 
+    private static final String PARAMETER_ID = "id";
+    private static final String PARAMETER_ID_DESC = 
+        "Identifies the property to report. One of 'uri', 'name', 'type' or '&lt;prefix&gt;:&lt;name&gt;' identifying a property.";
+
+    private static final String DESCRIPTION = "Report a property on the current resource, as a formatted and localized string";
+    
     private static final String URL_IDENTIFIER = "url";
     private static final String NAME_IDENTIFIER = "name";
     private static final String TYPE_IDENTIFIER = "type";
     private static final String URI_IDENTIFIER = "uri";
 
     private Repository repository;
+
     private boolean forProcessing = true;
+
     private ValueFormatter valueFormatter;
+
     private ResourceTypeTree resourceTypeTree;
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    public void render(DecoratorRequest request, DecoratorResponse response) throws Exception {
+    public void render(DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
-        
-        Resource resource = repository.retrieve(token, uri, this.forProcessing );
 
-        String id = request.getStringParameter("id");
+        Resource resource = repository.retrieve(token, uri, this.forProcessing);
+
+        String id = request.getStringParameter(PARAMETER_ID);
         String result = null;
-        
+
         if (id == null || id.trim().equals("")) {
             return;
         }
-        
+
         if (URI_IDENTIFIER.equals(id)) {
             result = uri;
         } else if (NAME_IDENTIFIER.equals(id)) {
@@ -60,39 +73,41 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
             if (i < 0) {
                 name = id;
             } else if (i == 0 || i == id.length() - 1) {
-                // XXX: throw something 
+                // XXX: throw something
                 return;
             } else {
                 prefix = id.substring(0, i);
                 name = id.substring(i + 1);
             }
-            PropertyTypeDefinition def =
-                this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+            PropertyTypeDefinition def = this.resourceTypeTree
+                    .getPropertyDefinitionByPrefix(prefix, name);
 
             Property prop = resource.getProperty(def);
-        
+
             if (prop == null) {
                 return;
             }
-            
+
             if (prop.getDefinition().isMultiple()) {
                 result = "";
                 Value[] values = prop.getValues();
                 for (int j = 0; j < values.length; j++) {
                     Value value = values[j];
-                    result += this.valueFormatter.valueToString(value, null, request.getLocale());
+                    result += this.valueFormatter.valueToString(value, null,
+                            request.getLocale());
                     if (j != values.length - 1) {
                         result += ", ";
                     }
                 }
-                
+
             } else {
-            
-            Value value = prop.getValue();
-            result = this.valueFormatter.valueToString(value, null, request.getLocale());
+
+                Value value = prop.getValue();
+                result = this.valueFormatter.valueToString(value, null, request
+                        .getLocale());
             }
-        }   
-        
+        }
+
         Writer writer = response.getWriter();
         try {
             writer.write(result);
@@ -103,16 +118,18 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
 
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-        
+
         if (this.repository == null) {
-            throw new BeanInitializationException("JavaBean property 'repository' not set");
+            throw new BeanInitializationException(
+                    "JavaBean property 'repository' not set");
         }
         if (this.resourceTypeTree == null) {
-            throw new BeanInitializationException("JavaBean property 'resourceTypeTree' not set");
+            throw new BeanInitializationException(
+                    "JavaBean property 'resourceTypeTree' not set");
         }
         if (this.valueFormatter == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'valueFormatter' not set");
+                    "JavaBean property 'valueFormatter' not set");
         }
     }
 
@@ -128,5 +145,14 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
         this.resourceTypeTree = resourceTypeTree;
     }
 
-    
+    protected String getDescriptionInternal() {
+        return DESCRIPTION;
+    }
+
+    protected Map getParameterDescriptionsInternal() {
+        Map map = new HashMap();
+        map.put(PARAMETER_ID, PARAMETER_ID_DESC);
+        return map;
+    }
+
 }

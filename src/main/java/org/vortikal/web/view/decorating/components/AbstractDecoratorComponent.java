@@ -36,13 +36,27 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.web.view.decorating.DecoratorComponent;
 
+/**
+ * 
+ * <p>
+ * Configurable JavaBean properties
+ * 
+ * <ul>
+ * <li><code>description</code> - by default delegates to sub class,
+ * optionally overridden by user. Generic sub classes may not set this, in which case a
+ * description is required by the user.</li>
+ * </ul>
+ */
+public abstract class AbstractDecoratorComponent implements DecoratorComponent,
+        InitializingBean {
 
-public abstract class AbstractDecoratorComponent implements DecoratorComponent, InitializingBean {
-    
     private String namespace;
+
     private String name;
-    private String description;
-    private Map parameterDescriptions;
+
+    private String description = getDescriptionInternal();
+
+    private Map parameterDescriptions = getParameterDescriptionsInternal();
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
@@ -55,40 +69,47 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent, 
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return this.name;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getDescription() {
+    public final String getDescription() {
         return this.description;
     }
-    
-    public void setParameterDescriptions(Map parameterDescriptions) {
-        this.parameterDescriptions = parameterDescriptions;
-    }
 
-    public Map getParameterDescriptions() {
+    protected abstract String getDescriptionInternal();
+
+    public final Map getParameterDescriptions() {
         return this.parameterDescriptions;
     }
 
+    protected abstract Map getParameterDescriptionsInternal();
+
     public void afterPropertiesSet() throws Exception {
+        if (this.description == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'description' not set");
+        }
+
         if (this.namespace == null) {
-            throw new BeanInitializationException("JavaBean property 'namespace' not set");
+            throw new BeanInitializationException(
+                    "JavaBean property 'namespace' not set");
         }
         if (this.name == null) {
-            throw new BeanInitializationException("JavaBean property 'name' not set");
+            throw new BeanInitializationException(
+                    "JavaBean property 'name' not set");
         }
     }
-    
+
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append(": ").append(this.namespace).append(":").append(this.name);
         return sb.toString();
     }
-    
+
 }

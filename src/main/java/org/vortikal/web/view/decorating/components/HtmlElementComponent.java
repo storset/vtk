@@ -31,7 +31,9 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.web.view.decorating.DecoratorRequest;
@@ -40,6 +42,19 @@ import org.vortikal.web.view.decorating.html.HtmlElement;
 
 public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
+    private static final String PARAMETER_EXCLUDE = "exclude";
+    private static final String PARAMETER_EXCLUDE_DESC = 
+        "Comma-separated list of element names to exclude (takes presedence over includes)";
+    private static final String PARAMETER_INCLUDE = "include";
+    private static final String PARAMETER_INCLUDE_DESC = 
+        "Comma-separated list of element names to include";
+    private static final String PARAMETER_ENCLOSED = "enclosed";
+    private static final String PARAMETER_ENCLOSED_DESC = "If the selected element should enclose the content, set this to 'true'";
+    
+    private static final String PARAMETER_SELECT_DESC = "The element to select";
+
+    private static final String DESCRIPTION = "Outputs the contents of the element(s) identified by select";
+    
     private static final String ENCODING = "utf-8";
     private String include;
     private String exclude;
@@ -58,12 +73,12 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
     public void processElements(HtmlElement[] elements, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
 
-        boolean enclosed = (request.getStringParameter("enclosed") != null) ?
-            "true".equals(request.getStringParameter("enclosed")) :
+        boolean enclosed = (request.getStringParameter(PARAMETER_ENCLOSED) != null) ?
+            "true".equals(request.getStringParameter(PARAMETER_ENCLOSED)) :
             this.enclosed;
 
         String include = (this.include != null) ?
-            this.include : request.getStringParameter("include");
+            this.include : request.getStringParameter(PARAMETER_INCLUDE);
 
         Set includedElements = new HashSet();
         if (include != null) {
@@ -74,7 +89,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         }
 
         String exclude = (this.exclude != null) ?
-            this.exclude : request.getStringParameter("exclude");
+            this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         Set excludedElements = new HashSet();
         if (exclude != null) {
@@ -105,6 +120,19 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         }
         out.flush();
         out.close();
+    }
+
+    protected String getDescriptionInternal() {
+        return DESCRIPTION;
+    }
+
+    protected Map getParameterDescriptionsInternal() {
+        Map map = new HashMap();
+        map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
+        map.put(PARAMETER_INCLUDE, PARAMETER_INCLUDE_DESC);
+        map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
+        map.put(PARAMETER_ENCLOSED, PARAMETER_ENCLOSED_DESC);
+        return map;
     }
 
 }

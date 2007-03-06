@@ -41,13 +41,6 @@
     <property name="namespace" value="element" />
     <property name="name" value="content" />
     <property name="description" value="Outputs the contents of a specified element" />
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="select" value="The element to select" />
-        <entry key="include" value="Comma-separated list of element names to include" />
-        <entry key="exclude" value="Comma-separated list of element names to exclude (takes presedence over includes)" />
-      </map>
-    </property>
   </bean>
 
   <bean id="decorating.elementAttributesComponent"
@@ -55,12 +48,6 @@
     <property name="namespace" value="element" />
     <property name="name" value="attributes" />
     <property name="description" value="Outputs the attributes of a specified element" />
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="select" value="The element for which to select attributes" />
-        <entry key="exclude" value="Comma-separated list of attribute names to exclude" />
-      </map>
-    </property>
   </bean>
 
 
@@ -119,16 +106,6 @@
     <property name="name" value="include" />
     <property name="view" ref="decorating.feedComponent.view" />
     <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="address" value="The URL of the feed" />
-        <entry key="maxMsgs" value="The maximum number of messages to display" />
-        <entry key="dateFormat" value="The date format to use for publish dates" />
-        <entry key="includeLogo" value="Whether to include the logo of the feed" />
-        <entry key="includeTitle" value="Whether to include the title of the feed" />
-        <entry key="includeDescription" value="Whether to include the description of the feed" />
-      </map>
-    </property>
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
   </bean>
 
@@ -177,12 +154,6 @@
     <property name="name" value="include" />
     <property name="description" value="Includes the contents of another document in the page" />
     <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="file" value="A relative path to a the file to include" />
-        <entry key="virtual" value="Either a complete URL, or a path starting with '/'" />
-      </map>
-    </property>
   </bean>
 
   <bean id="decorating.includeComponent.httpIncludeCache"

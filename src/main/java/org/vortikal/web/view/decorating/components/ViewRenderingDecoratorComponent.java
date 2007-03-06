@@ -33,7 +33,6 @@ package org.vortikal.web.view.decorating.components;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -122,11 +121,6 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
 
     private void renderView(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        for (Iterator i = request.getRequestParameterNames(); i.hasNext();) {
-            String name = (String) i.next();
-            Object value = request.getParameter(name);
-            model.put(name, value);
-        }
         HttpServletRequest servletRequest = request.getServletRequest();
         BufferedResponse bufferedResponse = new BufferedResponse();
         this.view.render(model, servletRequest, bufferedResponse);
@@ -142,6 +136,16 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         sb.append(this.getClass().getName()).append(": [");
         sb.append("view = ").append(this.view).append("]");
         return sb.toString();
+    }
+
+
+    protected String getDescriptionInternal() {
+        return null;
+    }
+
+
+    protected Map getParameterDescriptionsInternal() {
+        return null;
     }
     
 }

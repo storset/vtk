@@ -45,6 +45,8 @@ import org.vortikal.web.view.decorating.html.HtmlPage;
 
 public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorComponent {
 
+    protected static final String PARAMETER_SELECT = "select";
+
     private static Log logger = LogFactory.getLog(AbstractDecoratorComponent.class);
 
     private String elementPath;
@@ -56,7 +58,7 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
     public void render(DecoratorRequest request, DecoratorResponse response) throws Exception {
 
         String expression = (this.elementPath != null) ?
-            this.elementPath : request.getStringParameter("select");
+            this.elementPath : request.getStringParameter(PARAMETER_SELECT);
         if (expression == null) {
             throw new DecoratorComponentException("Missing parameter 'select'");
         }
@@ -109,7 +111,6 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
 
         processElements(elements, request, response);
     }
-
 
     protected abstract void processElements(HtmlElement[] elements,
                                             DecoratorRequest request,

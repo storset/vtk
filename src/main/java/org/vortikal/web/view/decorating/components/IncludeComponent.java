@@ -33,6 +33,9 @@ package org.vortikal.web.view.decorating.components;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -55,13 +58,18 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 
 public class IncludeComponent extends AbstractDecoratorComponent implements ServletContextAware {
 
+    private static final String PARAMETER_VIRTUAL = "virtual";
+    private static final String PARAMETER_VIRTUAL_DESC = "Either a complete URL, or a path starting with '/'";
+    private static final String PARAMETER_FILE = "file";
+    private static final String PARAMETER_FILE_DESC = "A relative path to a the file to include";
+
+    
     private static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
 
     private ServletContext servletContext;
 
     private ContentCache httpIncludeCache;
-    private ContentCache virtualIncludeCache;
     
     private Repository repository;
 
@@ -80,7 +88,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
 
-        String uri = request.getStringParameter("file");
+        String uri = request.getStringParameter(PARAMETER_FILE);
         if (uri != null) {
             if (uri.startsWith("/"))
                 throw new DecoratorComponentException(
@@ -88,7 +96,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
             handleDirectInclude(uri, request, response);
             return;
         }
-        uri = request.getStringParameter("virtual");
+        uri = request.getStringParameter(PARAMETER_VIRTUAL);
 
         if (uri == null) {
             throw new DecoratorComponentException(
@@ -195,6 +203,19 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         public String getRequestURI() {
             return this.uri;
         }
+    }
+
+
+
+    protected String getDescriptionInternal() {
+        return "Includes the contents of another document in the page";
+    }
+
+    protected Map getParameterDescriptionsInternal() {
+        Map map = new HashMap();
+        map.put(PARAMETER_FILE, PARAMETER_FILE_DESC);
+        map.put(PARAMETER_VIRTUAL, PARAMETER_VIRTUAL_DESC);
+        return map;
     }
 
 }

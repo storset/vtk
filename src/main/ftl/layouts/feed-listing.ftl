@@ -1,3 +1,5 @@
+<#import "/lib/vortikal.ftl" as vrtx />
+
 <div class="vrtxFeed">
   <#if conf.feedTitle>
  <a class="feedTitle" href="${feed.link}">${feed.title?html}</a> <#-- vanskelig å si hvilken heading dette skal være hvis h1, h2, osv. -->
@@ -51,6 +53,8 @@
  </#if>
 
 <#if conf.bottomLinkToAllMessages>
- <a class="all-messages" href="${feed.link}">Alle meldinger</a>
+ <a class="all-messages" href="${feed.link}">
+   <@vrtx.msg code="decorating.feedComponent.allMessages" default="All messages" />
+ </a>
 </#if>
 </div>

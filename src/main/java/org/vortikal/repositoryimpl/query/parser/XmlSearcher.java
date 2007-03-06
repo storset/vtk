@@ -57,6 +57,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repositoryimpl.PropertyManager;
+import org.vortikal.repositoryimpl.query.HashSetPropertySelect;
 import org.vortikal.repositoryimpl.query.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.repositoryimpl.query.query.PropertySortField;
@@ -639,32 +640,6 @@ public class XmlSearcher implements InitializingBean {
         }
 
     }
-
-
-    private class HashSetPropertySelect implements PropertySelect {
-        private Set properties = new HashSet();
-        
-        public void addPropertyDefinition(PropertyTypeDefinition def) {
-            this.properties.add(def);
-        }
-
-        public boolean isEmpty() {
-            return this.properties.isEmpty();
-        }
-
-        public boolean isIncludedProperty(PropertyTypeDefinition def) {
-            return this.properties.contains(def);
-        }
-
-        public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append(this.getClass().getName()).append(":");
-            sb.append("propertiess = ").append(this.properties);
-            return sb.toString();
-        }
-        
-    }
-
 
     public void setLinkToService(Service linkToService) {
         this.linkToService = linkToService;

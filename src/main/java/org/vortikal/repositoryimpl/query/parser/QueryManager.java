@@ -43,6 +43,9 @@ import org.vortikal.repositoryimpl.query.query.Sorting;
 
 public class QueryManager implements InitializingBean {
 
+    private int maxAllowedHitsPerQuery = 50000;
+
+    
     private Log logger = LogFactory.getLog(this.getClass());
 
     private QueryParserFactory parserFactory;
@@ -94,20 +97,7 @@ public class QueryManager implements InitializingBean {
     public ResultSet execute(String token, Query query) throws QueryException {
         validateQuery(query);
         long start = System.currentTimeMillis();
-        ResultSet result = this.searcher.execute(token, query);
-        if (this.logger.isDebugEnabled()) {
-            long now = System.currentTimeMillis();
-            this.logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
-                         + " hits) took " + (now - start) + " ms");
-        }
-        return result;
-    }
-    
-    public ResultSet execute(String token, Query query, Sorting sorting, int maxResults)
-        throws QueryException {
-        validateQuery(query);
-        long start = System.currentTimeMillis();
-        ResultSet result = this.searcher.execute(token, query, sorting, maxResults);
+        ResultSet result = this.searcher.execute(token, query, null, maxAllowedHitsPerQuery);
         if (this.logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
             this.logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
@@ -121,7 +111,9 @@ public class QueryManager implements InitializingBean {
         throws QueryException {
         validateQuery(query);
         long start = System.currentTimeMillis();
+
         ResultSet result = this.searcher.execute(token, query, sorting, maxResults, select);
+
         if (this.logger.isDebugEnabled()) {
             long now = System.currentTimeMillis();
             this.logger.debug("Query for '" + query.dump(" ") + "' (" + result.getSize()
@@ -132,6 +124,10 @@ public class QueryManager implements InitializingBean {
 
     private void validateQuery(Query query) throws QueryException{
         
+    }
+
+    public void setMaxAllowedHitsPerQuery(int maxAllowedHitsPerQuery) {
+        this.maxAllowedHitsPerQuery = maxAllowedHitsPerQuery;
     }
     
 }

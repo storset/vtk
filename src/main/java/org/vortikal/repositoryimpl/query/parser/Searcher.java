@@ -37,46 +37,101 @@ import org.vortikal.repositoryimpl.query.query.Sorting;
 /**
  * Simple search interface
  *
- * XXX: Sorting is missing for methods that have maxresults and cursor.
  */
 public interface Searcher {
 
     /**
-     * Executes a query on repository resources.
+     * Executes a query on repository resources with a hard limit on how
+     * many results that should be returned, in addition to a cursor. 
+     * 
+     * At any given time, the <code>Query</code> alone will produce a complete result
+     * set. The <code>cursor</code> and <code>maxResults</code> parameters
+     * can be used to fetch subsets of this result set. Useful for implementing
+     * paging when browsing large result sets.
+     * 
+     * The implementation must take into consideration what happens
+     * when the complete result set changes between queries with 
+     * cursor/maxResults. 
      * 
      * @param token The security token associated with the principal 
      *              executing the query.
      * @param query The <code>Query</code> object, containing the query
      *              conditions.
-     * @return      A <code>ResultSet</code> containing the results.
+     * @param maxResults Number of results to include from (and including) cursor position.
+     * @param sorting the {@link Sorting} to use
      * 
-     * @see org.vortikal.repository.query.Query
-     * @see org.vortikal.repository.query.ResultSet
-     *              
+     * @return      A <code>ResultSet</code> containing a subset of the results.
+     * 
      * @throws QueryException If the query could not be executed.
+     * 
+     * @see Query, ResultSet
      */
-    public ResultSet execute(String token, Query query) throws QueryException;
+    public ResultSet execute(String token, Query query, Sorting sorting, 
+                             int maxResults) throws QueryException;
+    
+    /**
+     * Executes a query on repository resources with a hard limit on how
+     * many results that should be returned, in addition to a cursor. 
+     * 
+     * At any given time, the <code>Query</code> alone will produce a complete result
+     * set. The <code>cursor</code> and <code>maxResults</code> parameters
+     * can be used to fetch subsets of this result set. Useful for implementing
+     * paging when browsing large result sets.
+     * 
+     * The implementation must take into consideration what happens
+     * when the complete result set changes between queries with 
+     * cursor/maxResults. 
+     * 
+     * @param token The security token associated with the principal 
+     *              executing the query.
+     * @param query The <code>Query</code> object, containing the query
+     *              conditions.
+     * @param maxResults Number of results to include from (and including) cursor position.
+     * @param sorting the {@link Sorting} to use
+     * @param selectedProperties the {@link PropertySelecy properties} queried for
+     * 
+     * @return      A {@link ResultSet} containing a subset of the results.
+     * 
+     * @throws QueryException If the query could not be executed.
+     * 
+     * @see Query, ResultSet
+     */
+    public ResultSet execute(String token, Query query, Sorting sorting, 
+                             int maxResults, PropertySelect selectedProperties)
+        throws QueryException;
 
     /**
-     * Perform a query on repository resources with a hard limit on how
-     * many results that should be returned.
+     * Executes a query on repository resources with a hard limit on how
+     * many results that should be returned, in addition to a cursor. 
+     * 
+     * At any given time, the <code>Query</code> alone will produce a complete result
+     * set. The <code>cursor</code> and <code>maxResults</code> parameters
+     * can be used to fetch subsets of this result set. Useful for implementing
+     * paging when browsing large result sets.
+     * 
+     * The implementation must take into consideration what happens
+     * when the complete result set changes between queries with 
+     * cursor/maxResults. 
      * 
      * @param token The security token associated with the principal 
      *              executing the query.
      * @param query The <code>Query</code> object, containing the query
      *              conditions.
-     * @return      A <code>ResultSet</code> containing the results.
+     * @param sorting the {@link Sorting} to use
+     * @param maxResults Number of results to include from (and including) cursor position.
+     * @param cursor     Positition to start in the query result set (zero-based).
      * 
-     * @param maxResults Maximum number of desired results in the returned
-     *                   result set. If the query produces more hits than
-     *                   this limit, the overflowing results are discarded.
      * 
-     * @return      A <code>ResultSet</code> containing the results.
-     *
+     * @return      A <code>ResultSet</code> containing a subset of the results.
+     * 
      * @throws QueryException If the query could not be executed.
+     * 
+     * @see Query, ResultSet
      */
-    public ResultSet execute(String token, Query query, int maxResults)
-        throws QueryException;
+    public ResultSet execute(String token, Query query, Sorting sorting,
+            int maxResults, int cursor) throws QueryException;
+
+    
 
 
     /**
@@ -99,80 +154,16 @@ public interface Searcher {
      * @param maxResults Number of results to include from (and including) cursor position.
      * @param cursor     Positition to start in the query result set (zero-based).
      * 
+     * @param sorting the {@link Sorting} to use
+     * @param selectedProperties the {@link PropertySelecy properties} queried for
+     * 
      * @return      A <code>ResultSet</code> containing a subset of the results.
      * 
      * @throws QueryException If the query could not be executed.
-     */
-    public ResultSet execute(String token, Query query, int maxResults, int cursor) 
-        throws QueryException;
-    
-    /**
-     * Execute sorted query.
-     * FIXME: javadoc
-     * @param token
-     * @param query
-     * @param sorting
-     * @return
-     * @throws QueryException
-     */
-    public ResultSet execute(String token, Query query, Sorting sorting)
-        throws QueryException;
-    
-
-    /**
-     * FIXME: javadoc
-     * @param token
-     * @param query
-     * @param sorting
-     * @param maxResults
-     * @return
-     * @throws QueryException
-     */
-    public ResultSet execute(String token, Query query, Sorting sorting, 
-                             int maxResults) throws QueryException;
-    
-    /**
-     * FIXME: javadoc
-     * @param token
-     * @param query
-     * @param sorting
-     * @param maxResults
-     * @param selectedProperties
-     * @return
-     * @throws QueryException
-     */
-    public ResultSet execute(String token, Query query, Sorting sorting, 
-                             int maxResults,
-                             PropertySelect selectedProperties) throws QueryException;
-
-    /**
-     * FIXME: javadoc
-     * @param token
-     * @param query
-     * @param sorting
-     * @param maxResults
-     * @param cursor
-     * @return
-     * @throws QueryException
+     * 
+     * @see Query, ResultSet
      */
     public ResultSet execute(String token, Query query, Sorting sorting,
-            int maxResults, int cursor) throws QueryException;
-
-    
-
-
-    /**
-     * FIXME: javadoc
-     * @param token
-     * @param query
-     * @param sorting
-     * @param maxResults
-     * @param cursor
-     * @param selectedProperties
-     * @return
-     * @throws QueryException
-     */
-    public ResultSet execute(String token, Query query, Sorting sorting,
-                             int maxResults, int cursor,
+                             int maxResults, int cursor, 
                              PropertySelect selectedProperties) throws QueryException;
 }

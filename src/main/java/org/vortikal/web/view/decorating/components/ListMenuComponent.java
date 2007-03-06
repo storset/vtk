@@ -36,12 +36,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repositoryimpl.query.HashSetPropertySelect;
 import org.vortikal.repositoryimpl.query.parser.QueryManager;
 import org.vortikal.repositoryimpl.query.parser.ResultSet;
+import org.vortikal.repositoryimpl.query.query.SimpleSortField;
+import org.vortikal.repositoryimpl.query.query.SortingImpl;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -96,15 +98,17 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         int depth = URLUtil.splitUri(uri).length;
 
         String token = null;
-        String query = "uri = " + uri + " OR (" +
-            "uri = " + uri + "/* AND type IN collection AND depth = " + depth
-            + ")";
+        String query = "uri = " + uri + " OR (uri = " + uri + 
+            "/* AND type IN collection AND depth = " + depth + ")";
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new SimpleSortField("uri"));
         
-        List items = new ArrayList();
+        HashSetPropertySelect select = new HashSetPropertySelect();
         
-        ResultSet rs = this.queryManager.execute(token, query);
+        ResultSet rs = this.queryManager.execute(token, query, sorting, 10, select);
 
         MenuItem activeItem = null;
+        List items = new ArrayList();
         
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet res = (PropertySet) rs.getResult(i);

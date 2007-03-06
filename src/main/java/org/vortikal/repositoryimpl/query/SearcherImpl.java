@@ -120,37 +120,6 @@ public class SearcherImpl implements Searcher, InitializingBean {
         }
     }
     
-    public ResultSet execute(String token, Query query) throws QueryException {
-        
-        return executeQuery(token, query, null, this.maxAllowedHitsPerQuery, 0,
-                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-        
-    }
-
-    public ResultSet execute(String token, Query query, int maxResults)
-            throws QueryException {
-        
-        return executeQuery(token, query, null, maxResults, 0,
-                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-        
-    }
-    
-    public ResultSet execute(String token, Query query, int maxResults, int cursor)
-            throws QueryException {
-        
-        return executeQuery(token, query, null, maxResults, cursor,
-                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-        
-    }
-    
-    public ResultSet execute(String token, Query query, Sorting sorting) 
-        throws QueryException {
-
-        return executeQuery(token, query, sorting, this.maxAllowedHitsPerQuery, 0,
-                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-        
-    }
-
     public ResultSet execute(String token, Query query, Sorting sorting,
         int maxResults) throws QueryException {
     

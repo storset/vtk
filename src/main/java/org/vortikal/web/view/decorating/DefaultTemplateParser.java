@@ -32,6 +32,7 @@ package org.vortikal.web.view.decorating;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -259,9 +260,9 @@ public class DefaultTemplateParser implements TemplateParser {
 
         public void render(DecoratorRequest request, DecoratorResponse response)
             throws Exception {
-            response.setCharacterEncoding("utf-8");
-            java.io.OutputStream out = response.getOutputStream();
-            out.write(this.content.getBytes("utf-8"));
+            
+            Writer out = response.getWriter();
+            out.write(this.content);
             out.close();
         }
     

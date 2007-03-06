@@ -31,9 +31,6 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,50 +46,16 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent {
     
     private View view;
-    private ReferenceDataProvider[] referenceDataProviders;
-    
 
     public void setView(View view) {
         this.view = view;
     }
-
-
-    public void setReferenceDataProviders(
-        ReferenceDataProvider[] referenceDataProviders) {
-        this.referenceDataProviders = referenceDataProviders;
-    }
-
 
     public final void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         Map model = new java.util.HashMap();
         processModel(model, request, response);
         renderView(model, request, response);
-    }
-    
-    
-    /**
-     * Gets the set of reference data providers for the view. The
-     * default implementation is to gather this component's reference
-     * data providers, and then append any providers associated with
-     * the view.
-     */
-    protected ReferenceDataProvider[] getReferenceDataProviders() {
-        List providers = new ArrayList();
-        if (this.referenceDataProviders != null) {
-            providers.addAll(Arrays.asList(this.referenceDataProviders));
-        }
-
-        if (this.view instanceof ReferenceDataProviding) {
-            ReferenceDataProvider[] viewProviders =
-                ((ReferenceDataProviding) this.view).getReferenceDataProviders();
-            if (viewProviders != null) {
-                providers.addAll(Arrays.asList(viewProviders));
-            }
-        }
-
-        return (ReferenceDataProvider[]) providers.toArray(
-            new ReferenceDataProvider[providers.size()]);
     }
     
     
@@ -108,13 +71,20 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
      */
     protected void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        ReferenceDataProvider[] providers = getReferenceDataProviders();
+
+        if (!(this.view instanceof ReferenceDataProviding)) {
+            return;
+        }
+
+        ReferenceDataProvider[] providers =
+                ((ReferenceDataProviding) this.view).getReferenceDataProviders();
+
         if (providers == null) {
             return;
         }
-        HttpServletRequest servletRequest = request.getServletRequest();
+        
         for (int i = 0; i < providers.length; i++) {
-            providers[i].referenceData(model, servletRequest);
+            providers[i].referenceData(model, request.getServletRequest());
         }
     }
     

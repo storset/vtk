@@ -89,6 +89,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         throws Exception {
 
         String uri = request.getStringParameter(PARAMETER_FILE);
+
         if (uri != null) {
             if (uri.startsWith("/"))
                 throw new DecoratorComponentException(
@@ -102,6 +103,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
             throw new DecoratorComponentException(
                 "One of parameters 'file' or 'virtual' must be specified");
         }
+
         if (uri.startsWith("/")) {
             handleVirtualInclude(uri, request, response);
         } else if (uri.startsWith("http") || uri.startsWith("https")) {

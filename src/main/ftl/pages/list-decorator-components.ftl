@@ -51,7 +51,7 @@
               <table>
                 <#list component.parameterDescriptions?keys as paramName>
                   <tr>
-                    <td class="parameterName">${paramName}</td><td>${component.parameterDescriptions[paramName]}</td>
+                    <td class="parameterName">${paramName}</td><td>${component.parameterDescriptions[paramName]?html}</td>
                   </tr>
                 </#list>
               </table>

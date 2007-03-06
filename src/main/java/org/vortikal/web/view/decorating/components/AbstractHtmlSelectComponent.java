@@ -68,51 +68,43 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
         HtmlPage page = request.getHtmlPage();
         HtmlElement current = page.getRootElement();
 
-        if (current == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No root element in page");
-            }
-
-            return;
-        }
-        
-        HtmlElement[] elements = new HtmlElement[] {current} ;
-
-        if (!current.getName().equals(path[0])) {
+        if (current == null || !current.getName().equals(path[0])) {
             if (logger.isDebugEnabled()) {
                 logger.debug("No node match for expression '" + expression + "'");
             }
             return;
         }
 
+        List elements = new ArrayList();
+        elements.add(current) ;
 
         int i = 1;
-        while (i < path.length && elements.length > 0) {
+        while (i < path.length && elements.size() > 0) {
             String name = path[i];
             List list = new ArrayList();
             
-            for (int j = 0; j < elements.length; j++) {
-                HtmlElement e = elements[j];
+            for (int j = 0; j < elements.size(); j++) {
+                HtmlElement e = (HtmlElement)elements.get(j);
                 HtmlElement[] m = e.getChildElements(name);
                 list.addAll(Arrays.asList(m));
             }
         
-            elements = (HtmlElement[])list.toArray(new HtmlElement[list.size()]);
+            elements = list;
             i++;
         }
         
-        if (i < path.length - 1 || elements.length == 0) {
+        if (i < path.length - 1 || elements.size() == 0) {
             return;
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Processing elements: " + java.util.Arrays.asList(elements));
+            logger.debug("Processing elements: " + elements);
         }
 
         processElements(elements, request, response);
     }
 
-    protected abstract void processElements(HtmlElement[] elements,
+    protected abstract void processElements(List elements,
                                             DecoratorRequest request,
                                             DecoratorResponse response) throws Exception;
 

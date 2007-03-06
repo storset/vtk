@@ -52,6 +52,9 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
 
+/**
+ * XXX: How should we handle authorization?
+ */
 public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static Log logger = LogFactory.getLog(IncludeComponent.class);
@@ -81,7 +84,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     public void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
 
-        String uri = request.getStringParameter("uri");;
+        String uri = request.getStringParameter("uri");
+        
         if (uri == null) {
             throw new DecoratorComponentException("Parameter 'uri' not specified");
         }

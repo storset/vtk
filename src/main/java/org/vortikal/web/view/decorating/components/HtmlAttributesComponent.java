@@ -30,9 +30,10 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,12 +54,12 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         this.exclude = exclude;
     }
     
-    public void processElements(HtmlElement[] elements, DecoratorRequest request,
+    public void processElements(List elements, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
-        if (elements.length == 0) {
+        if (elements.isEmpty()) {
             return;
         }
-        HtmlElement element = elements[0];
+        HtmlElement element = (HtmlElement) elements.get(0);
         
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
@@ -70,8 +71,7 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
                 excludedAttributes.add(splitValues[i]);
             }
         }
-        response.setCharacterEncoding("utf-8");
-        OutputStream out = response.getOutputStream();
+        Writer out = response.getWriter();
         StringBuffer sb = new StringBuffer();
         HtmlAttribute[] attributes = element.getAttributes();
         for (int i = 0; i < attributes.length; i++) {
@@ -82,7 +82,7 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
             sb.append(attributes[i].getValue()).append("\"");
         }
 
-        out.write(sb.toString().getBytes("utf-8"));
+        out.write(sb.toString());
         out.flush();
         out.close();
     }

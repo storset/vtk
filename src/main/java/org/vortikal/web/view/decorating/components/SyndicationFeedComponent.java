@@ -31,8 +31,6 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,20 +58,27 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
     private static final String PARAMETER_SORT = "sort";
     private static final String PARAMETER_SORT_DESC = 
         "Default sorted by published date. Set to 'itemTitle' to sort by this instead.";
+    
     private static final String PARAMETER_BOTTOM_LINK_TO_ALL_MESSAGES = "bottomLinkToAllMessages";
     private static final String PARAMETER_BOTTOM_LINK_TO_ALL_MESSAGES_DESC = 
         "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";
+    
     private static final String PARAMETER_PUBLISHED_DATE = "publishedDate";
     private static final String PARAMETER_PUBLISHED_DATE_DESC = 
         "How to display published date, defaults to date and time. Set to 'date' to only display the date, or 'none' to not show the date";
+    
     private static final String PARAMETER_MAX_MSGS = "maxMsgs";
     private static final String PARAMETER_MAX_MSGS_DESC = "The max number of messages to display, defaults to 10";
+    
     private static final String PARAMETER_ITEM_DESCRIPTION = "itemDescription";
     private static final String PARAMETER_ITEM_DESCRIPTION_DESC = "Must be set to 'true' to show item descriptions";
+
     private static final String PARAMETER_FEED_DESCRIPTION = "feedDescription";
     private static final String PARAMETER_FEED_DESCRIPTION_DESC = "Must be set to 'true' to show feed description";
+
     private static final String PARAMETER_URL = "url";
     private static final String PARAMETER_URL_DESC = "The feed url";
+
     private static final String PARAMETER_FEED_TITLE = "feedTitle";
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
 

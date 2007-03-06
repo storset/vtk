@@ -32,9 +32,9 @@ package org.vortikal.repositoryimpl.query.consistency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.query.IndexException;
+import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**
  * General data inconsistency error when there is a mismatch between the property set data in the index

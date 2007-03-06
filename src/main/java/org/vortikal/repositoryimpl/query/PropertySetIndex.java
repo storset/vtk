@@ -28,14 +28,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.query;
+package org.vortikal.repositoryimpl.query;
 
 import java.util.Iterator;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.query.IndexException;
-import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessor;
-import org.vortikal.repositoryimpl.query.StorageCorruptionException;
 
 /**
  * <p>Defines an interface for modifying and inspecting the contents of 
@@ -72,9 +69,6 @@ import org.vortikal.repositoryimpl.query.StorageCorruptionException;
  * at the same time. Any modifying operation is not guaranteed to be visible by
  * other index users before {@link commit()} has been called.
  * </p>
- * 
- * TODO: Move to repositoryimpl-package, I don't see the need to expose this as an official 
- * repository query interface.
  *
  * @author oyviste
  */

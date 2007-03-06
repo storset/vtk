@@ -28,52 +28,32 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index.lucene;
 
-import java.io.IOException;
+package org.vortikal.repositoryimpl.query;
 
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.index.Results;
+import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
- * Currently only a place-holder, to allow normal searching of Lucene indexes 
- * for now. 
- * 
- * It has been deprecated by {@link org.vortikal.repositoryimpl.index.lucene.SearcherImpl}. 
- * However, we will need to hold on to it for a while, because our own search API
- * is not rich enough, yet.
  *
  * @author oyviste
- * @deprecated Should be replaced by {@link org.vortikal.repositoryimpl.index.lucene.SearcherImpl}
+ * @deprecated
  */
-public class LuceneSearcher implements InitializingBean {
+public class QueryException extends IndexException {
+    
+    private static final long serialVersionUID = 741215292237620741L;
 
-    private LuceneIndex index;
-    
-    public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.index == null) {
-            throw new BeanInitializationException("Property 'index' not set.");
-        }
+    /**
+     * Creates a new instance of QueryException 
+     */
+    public QueryException() {
+        super();
     }
     
-    public Results search(Query query) throws IOException {
-        IndexSearcher searcher = this.index.getIndexSearcher();
-        Hits hits = searcher.search(query);
-        Results results = new CachedLuceneResults(hits, this.index.getIndexBeanClass());
-        searcher.close();
-        return results;
+    public QueryException(String message) {
+        super(message);
     }
     
-    public IndexSearcher getIndexSearcher() throws IOException {
-        return this.index.getIndexSearcher();
+    public QueryException(String message, Throwable cause) {
+        super(message, cause);
     }
-    
-    public void setIndex(LuceneIndex index) {
-        this.index = index;
-    }
-    
 }

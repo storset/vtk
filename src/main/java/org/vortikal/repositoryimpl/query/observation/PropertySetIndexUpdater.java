@@ -41,12 +41,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
 import org.vortikal.repositoryimpl.index.observation.ResourceChange;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifier;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver;
 import org.vortikal.repositoryimpl.index.observation.ResourceDeletion;
+import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**
  * Incremental index updates from resource changes.

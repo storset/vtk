@@ -30,7 +30,7 @@
  */
 package org.vortikal.repositoryimpl.index.security;
 
-import org.vortikal.repository.query.QueryException;
+import org.vortikal.repositoryimpl.query.QueryException;
 
 /**
  * 

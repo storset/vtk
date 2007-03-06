@@ -50,7 +50,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;

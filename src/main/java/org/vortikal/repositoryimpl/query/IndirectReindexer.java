@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl.query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.query.PropertySetIndex;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
 
 /**

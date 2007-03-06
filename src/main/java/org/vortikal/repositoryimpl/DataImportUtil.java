@@ -38,7 +38,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 
 
 public class DataImportUtil implements InitializingBean {

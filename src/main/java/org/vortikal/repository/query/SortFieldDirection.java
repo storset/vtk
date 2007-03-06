@@ -28,48 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
+package org.vortikal.repository.query;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardTermEnum;
-import org.vortikal.repository.query.NameWildcardQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.WildcardTermFilter;
+public class SortFieldDirection {
 
-/**
- * 
- * @author oyviste
- *
- */
-public class NameWildcardQueryBuilder implements QueryBuilder {
+    private String name;
 
-    private NameWildcardQuery nwq;
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq) { 
-        this.nwq = nwq;
-
+    private SortFieldDirection(String name) {
+        this.name = name;
     }
+    
 
-    public Query buildQuery() throws QueryBuilderException {
-        
-        String wildcard = this.nwq.getTerm();
-        
-        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
-                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
-            throw new QueryBuilderException("The search term '" 
-                    + wildcard + "' does not have any wildcard characters (?,*) !");
-        }
-        
-        Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
-        
-        Filter filter = new WildcardTermFilter(wTerm);
-        
-        return new ConstantScoreQuery(filter);
-        
+    /**
+     * Defines ascending sort order (smallest first).
+     */
+    public static final SortFieldDirection ASC = new SortFieldDirection("asc");
+    
+    /**
+     * Defines descending sort order (biggest first).
+     */
+    public static final SortFieldDirection DESC = new SortFieldDirection("desc");
+
+
+    public String toString() {
+        return this.name;
     }
-
+    
 }

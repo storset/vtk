@@ -46,6 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.query.PropertySelect;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -53,7 +54,6 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.query.query.PropertySelect;
 import org.vortikal.util.repository.URIUtil;
 
 /**

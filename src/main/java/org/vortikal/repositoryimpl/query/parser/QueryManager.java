@@ -36,9 +36,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.vortikal.repositoryimpl.query.query.PropertySelect;
-import org.vortikal.repositoryimpl.query.query.Query;
-import org.vortikal.repositoryimpl.query.query.Sorting;
+import org.vortikal.repository.query.PropertySelect;
+import org.vortikal.repository.query.Query;
+import org.vortikal.repository.query.Sorting;
 
 
 public class QueryManager implements InitializingBean {

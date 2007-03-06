@@ -32,9 +32,9 @@ package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
+import org.vortikal.repository.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.query.NameRangeQuery;
 
 public class NameRangeQueryBuilder implements QueryBuilder {
 

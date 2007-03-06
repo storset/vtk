@@ -44,13 +44,13 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.query.PropertySelect;
+import org.vortikal.repository.query.Query;
+import org.vortikal.repository.query.Sorting;
 import org.vortikal.repositoryimpl.query.parser.QueryException;
 import org.vortikal.repositoryimpl.query.parser.ResultSet;
 import org.vortikal.repositoryimpl.query.parser.ResultSetImpl;
 import org.vortikal.repositoryimpl.query.parser.Searcher;
-import org.vortikal.repositoryimpl.query.query.PropertySelect;
-import org.vortikal.repositoryimpl.query.query.Query;
-import org.vortikal.repositoryimpl.query.query.Sorting;
 import org.vortikal.repositoryimpl.query.security.LuceneResultSecurityInfo;
 import org.vortikal.repositoryimpl.query.security.QueryResultAuthorizationManager;
 

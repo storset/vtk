@@ -32,13 +32,13 @@ package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
+import org.vortikal.repository.query.PropertyExistsQuery;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.InversionFilter;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.query.TermExistsFilter;
-import org.vortikal.repositoryimpl.query.query.PropertyExistsQuery;
 
 /**
  * XXX: Experimental, might be slow to execute, especially in the

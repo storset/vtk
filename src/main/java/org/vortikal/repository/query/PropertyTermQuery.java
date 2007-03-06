@@ -28,48 +28,50 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
+package org.vortikal.repository.query;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardTermEnum;
-import org.vortikal.repository.query.NameWildcardQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.WildcardTermFilter;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-/**
- * 
- * @author oyviste
- *
- */
-public class NameWildcardQueryBuilder implements QueryBuilder {
+public class PropertyTermQuery extends AbstractPropertyQuery {
 
-    private NameWildcardQuery nwq;
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq) { 
-        this.nwq = nwq;
-
+    private String term;
+    private TermOperator operator;
+    
+    public PropertyTermQuery(PropertyTypeDefinition propertyDefinition, String term, TermOperator operator) {
+        super(propertyDefinition);
+        this.term = term;
+        this.operator = operator;
     }
 
-    public Query buildQuery() throws QueryBuilderException {
+    public TermOperator getOperator() {
+        return this.operator;
+    }
+
+    public void setOperator(TermOperator operator) {
+        this.operator = operator;
+    }
+
+    public String getTerm() {
+        return this.term;
+    }
+
+    public void setTerm(String term) {
+        this.term = term;
+    }
+    
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+
+        PropertyTypeDefinition def = getPropertyDefinition();
         
-        String wildcard = this.nwq.getTerm();
+        buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
+        buf.append("', name = '").append(def.getName()).append("'");
+        buf.append(", term = '").append(this.term).append("'");
+        buf.append(", operator = '").append(this.operator.toString()).append("'");
+        buf.append("\n");
         
-        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
-                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
-            throw new QueryBuilderException("The search term '" 
-                    + wildcard + "' does not have any wildcard characters (?,*) !");
-        }
-        
-        Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
-        
-        Filter filter = new WildcardTermFilter(wTerm);
-        
-        return new ConstantScoreQuery(filter);
-        
+        return buf.toString();
     }
 
 }

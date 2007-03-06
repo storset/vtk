@@ -30,7 +30,7 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
-import org.vortikal.repositoryimpl.query.query.Query;
+import org.vortikal.repository.query.Query;
 
 public interface Parser {
 

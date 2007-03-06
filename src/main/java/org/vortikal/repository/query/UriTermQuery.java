@@ -28,48 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
+package org.vortikal.repository.query;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardTermEnum;
-import org.vortikal.repository.query.NameWildcardQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.WildcardTermFilter;
+public class UriTermQuery implements UriQuery {
 
-/**
- * 
- * @author oyviste
- *
- */
-public class NameWildcardQueryBuilder implements QueryBuilder {
+    private final String uri;
+    private final UriOperator operator;
 
-    private NameWildcardQuery nwq;
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq) { 
-        this.nwq = nwq;
-
+    public UriTermQuery(String uri, UriOperator operator) {
+        this.uri = uri;
+        this.operator = operator;
     }
 
-    public Query buildQuery() throws QueryBuilderException {
+    public String getUri() {
+        return this.uri;
+    }
+
+    public UriOperator getOperator() {
+        return this.operator;
+    }
+
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer(prefix);
+        buf.append(this.getClass().getName()).append("\n");
         
-        String wildcard = this.nwq.getTerm();
-        
-        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
-                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
-            throw new QueryBuilderException("The search term '" 
-                    + wildcard + "' does not have any wildcard characters (?,*) !");
-        }
-        
-        Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
-        
-        Filter filter = new WildcardTermFilter(wTerm);
-        
-        return new ConstantScoreQuery(filter);
-        
+        buf.append(prefix).append("Operator = ").append(this.operator);
+        buf.append(prefix).append("Uri = ").append(this.uri).append("\n");
+        return buf.toString();
     }
 
 }

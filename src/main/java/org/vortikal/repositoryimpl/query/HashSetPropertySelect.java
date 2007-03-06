@@ -33,8 +33,8 @@ package org.vortikal.repositoryimpl.query;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.vortikal.repository.query.PropertySelect;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repositoryimpl.query.query.PropertySelect;
 
 public class HashSetPropertySelect implements PropertySelect {
     private Set properties = new HashSet();

@@ -32,12 +32,12 @@ package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
+import org.vortikal.repository.query.PropertyRangeQuery;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.FieldValueMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.PropertyRangeQuery;
 
 /**
  * 

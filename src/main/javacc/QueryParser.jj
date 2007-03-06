@@ -18,7 +18,7 @@ import java.util.Iterator;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repositoryimpl.query.query.*;
+import org.vortikal.repository.query.*;
 
 /**
 * Partial implementation of a query parser based on javacc.

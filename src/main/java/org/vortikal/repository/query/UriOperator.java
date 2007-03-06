@@ -28,48 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
-
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardTermEnum;
-import org.vortikal.repository.query.NameWildcardQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.WildcardTermFilter;
+package org.vortikal.repository.query;
 
 /**
- * 
- * @author oyviste
+ * XXX: This class is probably redundant, TermOperator is a good replacement. 
  *
  */
-public class NameWildcardQueryBuilder implements QueryBuilder {
+public class UriOperator {
 
-    private NameWildcardQuery nwq;
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq) { 
-        this.nwq = nwq;
+    public static final UriOperator EQ = new UriOperator("EQ");
+    public static final UriOperator NE = new UriOperator("NE");
+    
+    private String id;
 
+    private UriOperator(String id) {
+        this.id = id;
     }
 
-    public Query buildQuery() throws QueryBuilderException {
-        
-        String wildcard = this.nwq.getTerm();
-        
-        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
-                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
-            throw new QueryBuilderException("The search term '" 
-                    + wildcard + "' does not have any wildcard characters (?,*) !");
-        }
-        
-        Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
-        
-        Filter filter = new WildcardTermFilter(wTerm);
-        
-        return new ConstantScoreQuery(filter);
-        
+    public String toString() {
+        return this.id;
     }
 
 }

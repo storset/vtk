@@ -35,13 +35,13 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.WildcardTermEnum;
+import org.vortikal.repository.query.PropertyWildcardQuery;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.query.WildcardTermFilter;
-import org.vortikal.repositoryimpl.query.query.PropertyWildcardQuery;
 
 /**
  * 

@@ -34,13 +34,13 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
+import org.vortikal.repository.query.PropertyPrefixQuery;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.query.PrefixTermFilter;
-import org.vortikal.repositoryimpl.query.query.PropertyPrefixQuery;
 
 /**
  * 

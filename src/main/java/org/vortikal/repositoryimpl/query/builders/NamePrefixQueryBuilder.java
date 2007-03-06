@@ -34,11 +34,11 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
+import org.vortikal.repository.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.query.PrefixTermFilter;
-import org.vortikal.repositoryimpl.query.query.NamePrefixQuery;
 
 /**
  * XXX: Somewhat experimental, as it uses a constant-score query with a filter

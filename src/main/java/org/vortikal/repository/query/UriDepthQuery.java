@@ -28,48 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.builders;
-
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardTermEnum;
-import org.vortikal.repository.query.NameWildcardQuery;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
-import org.vortikal.repositoryimpl.query.QueryBuilder;
-import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.WildcardTermFilter;
+package org.vortikal.repository.query;
 
 /**
+ * Query for URI depth.
+ * Only equals is supported, and therefore assumed
  * 
- * @author oyviste
- *
  */
-public class NameWildcardQueryBuilder implements QueryBuilder {
+public class UriDepthQuery implements UriQuery {
 
-    private NameWildcardQuery nwq;
-    public NameWildcardQueryBuilder(NameWildcardQuery nwq) { 
-        this.nwq = nwq;
-
+    private int depth;
+    
+    public UriDepthQuery(int depth) {
+        this.depth = depth;
     }
-
-    public Query buildQuery() throws QueryBuilderException {
-        
-        String wildcard = this.nwq.getTerm();
-        
-        if (wildcard.indexOf(WildcardTermEnum.WILDCARD_CHAR) == -1
-                && wildcard.indexOf(WildcardTermEnum.WILDCARD_STRING) == -1) {
-            throw new QueryBuilderException("The search term '" 
-                    + wildcard + "' does not have any wildcard characters (?,*) !");
-        }
-        
-        Term wTerm = new Term(DocumentMapper.NAME_FIELD_NAME, wildcard);
-        
-        Filter filter = new WildcardTermFilter(wTerm);
-        
-        return new ConstantScoreQuery(filter);
-        
+    
+    public int getDepth() {
+        return this.depth;
+    }
+    
+    public String dump(String prefix) {
+        StringBuffer dump = new StringBuffer(prefix);
+        dump.append(this.getClass().getName()).append("\n");
+        dump.append(prefix).append("Depth = " + this.depth).append("\n");
+        return dump.toString();
     }
 
 }

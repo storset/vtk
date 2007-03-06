@@ -32,11 +32,11 @@ package org.vortikal.repositoryimpl.query.builders;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
+import org.vortikal.repository.query.UriOperator;
+import org.vortikal.repository.query.UriTermQuery;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
-import org.vortikal.repositoryimpl.query.query.UriOperator;
-import org.vortikal.repositoryimpl.query.query.UriTermQuery;
 
 /**
  * 

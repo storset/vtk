@@ -30,8 +30,8 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import org.vortikal.repository.query.PropertySelect;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repositoryimpl.query.query.PropertySelect;
 
 
 /**

@@ -87,6 +87,25 @@
   </bean>
 
 
+  <bean id="decorating.defaultCssComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" value="css" />
+    <property name="name" value="default" />
+    <property name="description" value="Inserts a &lt;style&gt; reference to the default CSS template" />
+    <property name="view" ref="decorating.defaultCssComponent.view" />
+  </bean>
+
+  <bean id="decorating.defaultCssComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/css-ref.ftl" />
+    <property name="attributes">
+      <map>
+        <entry key="url" value="${decorating.defaultCssComponent.defaultCss}" />
+      </map>
+    </property>
+  </bean>
+
+
+
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorCompontent">
     <property name="namespace" value="resource" />

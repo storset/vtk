@@ -31,14 +31,13 @@
 
 package org.vortikal.repositoryimpl.query;
 
-import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
  *
  * @author oyviste
  * @deprecated
  */
-public class QueryException extends IndexException {
+public class QueryException extends RuntimeException {
     
     private static final long serialVersionUID = 741215292237620741L;
 

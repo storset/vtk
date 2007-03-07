@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.observation;
+package org.vortikal.repositoryimpl.index.observation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,10 +42,6 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
-import org.vortikal.repositoryimpl.index.observation.ResourceChange;
-import org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifier;
-import org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver;
-import org.vortikal.repositoryimpl.index.observation.ResourceDeletion;
 import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**

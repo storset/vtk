@@ -36,12 +36,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
@@ -51,22 +49,17 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.view.AbstractView;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.InvalidModelException;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.referencedata.ExtendableReferenceDataProviding;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.view.LinkConstructor;
@@ -122,8 +115,7 @@ import org.vortikal.xml.TransformerManager;
  * 
  */
 public class ResourceXsltView extends AbstractView
-  implements ReferenceDataProviding, ExtendableReferenceDataProviding,
-             InitializingBean {
+  implements ReferenceDataProviding, InitializingBean {
 
     private static Log logger = LogFactory.getLog(ResourceXsltView.class);
     private static Log processingLogger = LogFactory.getLog(ResourceXsltView.class.getName() + ".PROCESSING");
@@ -146,22 +138,6 @@ public class ResourceXsltView extends AbstractView
         this.referenceDataProviders = referenceDataProviders;
     }
     
-
-    public void addReferenceDataProvider(ReferenceDataProvider provider) {
-
-        if (this.referenceDataProviders == null) {
-            this.referenceDataProviders = new ReferenceDataProvider[0];
-        }
-
-        List newProviders = new java.util.ArrayList();
-        newProviders.addAll(java.util.Arrays.asList(this.referenceDataProviders));
-        
-        newProviders.add(provider);
-        this.referenceDataProviders = (ReferenceDataProvider[]) newProviders.toArray(
-            new ReferenceDataProvider[newProviders.size()]);
-    }
-    
-
     public void setTransformerManager(TransformerManager transformerManager)  {
         this.transformerManager = transformerManager;
     }

@@ -101,7 +101,7 @@
 
   <!-- Perform incremental updates on property set index from resource changes. -->
   <bean id="systemIndexUpdater" 
-        class="org.vortikal.repositoryimpl.query.observation.PropertySetIndexUpdater">
+        class="org.vortikal.repositoryimpl.index.observation.PropertySetIndexUpdater">
     <property name="index" ref="systemIndex"/>
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>

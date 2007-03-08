@@ -36,14 +36,14 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.event.ContentModificationEvent;
 
 
@@ -137,7 +137,8 @@ public class PropertiesResource extends Properties implements InitializingBean,
             try {
                 this.load();
             } catch (Exception e) {
-                this.logger.warn(e);
+                this.logger.warn("Context refreshed, exception while re-loading resource at URI '"
+                        + this.uri + "'", e);
             }
         } else if (event instanceof ContentModificationEvent) {
             ContentModificationEvent modEvent = (ContentModificationEvent) event;
@@ -145,7 +146,8 @@ public class PropertiesResource extends Properties implements InitializingBean,
                 try {
                     this.load();
                 } catch (Exception e) {
-                    this.logger.warn(e);
+                    this.logger.warn("Resource modified, exception while re-loading resource at URI '"
+                            + this.uri + "'", e);
                 }
             }
         }
@@ -180,10 +182,21 @@ public class PropertiesResource extends Properties implements InitializingBean,
             try {
                 InputStream inputStream = repository.getInputStream(token, uri, false);
                 super.load(inputStream);
+                
+            } catch (ResourceNotFoundException rnf) {
+                this.logger.warn("Unable to load properties from uri '"
+                        + uri + "', repository '" + repository
+                        + "', token '" + token + "' (resource not found)");
+            
+            } catch (AuthorizationException ae) {
+                this.logger.warn("Unable to load properties from uri '"
+                        + uri + "', repository '" + repository
+                        + "', token '" + token + "' (authorization exception: "
+                        + ae.getMessage()+ ")");
             } catch (Exception e) {
                 this.logger.warn("Unable to load properties from uri '"
                             + uri + "', repository '" + repository
-                            + "', token '" + token + "'", e);
+                            + "', token '" + token + "' (" + e.getMessage() + ")");
             }
         }
 

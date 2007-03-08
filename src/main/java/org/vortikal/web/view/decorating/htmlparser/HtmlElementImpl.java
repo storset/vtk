@@ -40,6 +40,7 @@ import org.vortikal.web.view.decorating.html.EnclosingHtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlAttribute;
 import org.vortikal.web.view.decorating.html.HtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 
 
 public class HtmlElementImpl implements HtmlElement {
@@ -80,6 +81,18 @@ public class HtmlElementImpl implements HtmlElement {
             new HtmlContent[this.contentList.size()]);
     }
     
+    public HtmlContent[] getChildNodes(HtmlNodeFilter filter) {
+        List list = new ArrayList();
+        for (int i = 0; i < this.contentList.size(); i++) {
+            HtmlContent content = (HtmlContent) this.contentList.get(i);
+            content = filter.filterNode(content);
+            if (content != null) {
+                list.add(content);
+            }
+        }
+        return (HtmlContent[]) list.toArray(new HtmlContent[list.size()]);
+    }
+    
 
     public void addContent(HtmlContent child) {
         this.contentList.add(child);
@@ -118,6 +131,24 @@ public class HtmlElementImpl implements HtmlElement {
         return sb.toString();
     }
         
+    public String getContent(HtmlNodeFilter filter) {
+        StringBuffer sb = new StringBuffer();
+        for (Iterator i = this.contentList.iterator(); i.hasNext();) {
+            HtmlContent child = (HtmlContent) i.next();
+            child = filter.filterNode(child);
+            if (child != null) {
+                if (child instanceof HtmlElement) {
+                    sb.append(((HtmlElement) child).getEnclosedContent(filter));
+                } else if (child instanceof EnclosingHtmlContent) {
+                    sb.append(((EnclosingHtmlContent) child).getEnclosedContent());
+                } else {
+                    sb.append(child.getContent());
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     public String getEnclosedContent() {
         StringBuffer sb = new StringBuffer();
         sb.append("<").append(this.name);
@@ -141,6 +172,34 @@ public class HtmlElementImpl implements HtmlElement {
             sb.append(">");
         } else {
             sb.append(">").append(getContent());
+            sb.append("</").append(this.name).append(">");    
+        }
+        return sb.toString();
+    }
+
+    public String getEnclosedContent(HtmlNodeFilter filter) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<").append(this.name);
+        if (this.attributes.size() > 0) {
+            for (Iterator i = this.attributes.iterator(); i.hasNext();) {
+                HtmlAttributeImpl attr = (HtmlAttributeImpl) i.next();
+                if (attr.hasValue()) {
+                    sb.append(" ").append(attr.getName()).append("=\"");
+                    sb.append(attr.getValue()).append("\"");
+                } else if (this.xhtml) {
+                    sb.append(" ").append(attr.getName()).append("=\"\"");
+                } else {
+                    sb.append(" ").append(attr.getName());
+                }
+            }
+        }
+        if (this.empty && this.xhtml) {
+            sb.append("/>");
+        }
+        else if (this.empty) {
+            sb.append(">");
+        } else {
+            sb.append(">").append(getContent(filter));
             sb.append("</").append(this.name).append(">");    
         }
         return sb.toString();

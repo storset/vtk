@@ -33,7 +33,6 @@ package org.vortikal.web.view.decorating.html;
 
 public interface HtmlElement extends EnclosingHtmlContent {
 
-
     /**
      * Gets the name of this element.
      */
@@ -53,8 +52,39 @@ public interface HtmlElement extends EnclosingHtmlContent {
 
 
     /**
-     * Gets the child elements of this element by name.
+     * Gets named child elements of this element.
+     *
+     * @parameter name the element name 
      */
     public HtmlElement[] getChildElements(String name);
+
+
+    /**
+     * Gets the child nodes of this node. A filter is applied to
+     * decide inclusion of child nodes.
+     * 
+     * @param filter the node filter to apply
+     */
+    public HtmlContent[] getChildNodes(HtmlNodeFilter filter);
+
+
+    /**
+     * Gets the contents of this node as a string. A filter is applied
+     * to decide inclusion of child content.
+     *
+     * @param filter the node filter to apply
+     */
+    public String getContent(HtmlNodeFilter filter);
+
+
+    /**
+     * Gets the contents of this node (including child nodes) with the
+     * enclosing tag and attributes as a string. A filter is applied
+     * to decide inclusion of child content.
+     * 
+     * @param filter the node filter to apply
+     */
+    public String getEnclosedContent(HtmlNodeFilter filter);
+
 
 }

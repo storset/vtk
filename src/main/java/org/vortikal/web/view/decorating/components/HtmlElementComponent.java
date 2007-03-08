@@ -37,24 +37,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
+import org.vortikal.web.view.decorating.html.HtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
+
 
 public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
+    private static Log logger = LogFactory.getLog(AbstractDecoratorComponent.class);
+
     private static final String PARAMETER_EXCLUDE = "exclude";
     private static final String PARAMETER_EXCLUDE_DESC = 
-        "Comma-separated list of element names to exclude (takes presedence over includes)";
+        "Comma-separated list of child element names to exclude (takes presedence over includes)";
+
     private static final String PARAMETER_INCLUDE = "include";
     private static final String PARAMETER_INCLUDE_DESC = 
-        "Comma-separated list of element names to include";
+        "Comma-separated list of child element names to include";
+
     private static final String PARAMETER_ENCLOSED = "enclosed";
-    private static final String PARAMETER_ENCLOSED_DESC = "If the selected element should enclose the content, set this to 'true'";
+    private static final String PARAMETER_ENCLOSED_DESC =
+        "If the selected element should enclose the content, set this to 'true'";
     
     private static final String PARAMETER_SELECT_DESC = "The element to select";
 
-    private static final String DESCRIPTION = "Outputs the contents of the element(s) identified by select";
+    private static final String DESCRIPTION
+        = "Outputs the contents of the element(s) identified by select";
     
     private String include;
     private String exclude;
@@ -103,23 +115,41 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         for (int i = 0; i < elements.size(); i++) {
             boolean included = true;
             HtmlElement element = (HtmlElement) elements.get(i);
-            if (excludedElements.contains(element.getName())) {
-                included = false;
-            } else if (include != null && !include.contains(element.getName())) {
-                included = false;
-            } 
-            if (included) {
-                if (enclosed) {
-                    out.write(element.getEnclosedContent());
-                } else {
-                    out.write(element.getContent());
-                }
-            }
             
+            Filter filter = new Filter(excludedElements, includedElements);
+            if (enclosed) {
+                out.write(element.getEnclosedContent(filter));
+            } else {
+                out.write(element.getContent(filter));
+            }
         }
         out.flush();
         out.close();
     }
+
+    private class Filter implements HtmlNodeFilter {
+
+        private Set excluded, included;
+
+        public Filter(Set excluded, Set included) {
+            this.excluded = excluded;
+            this.included = included;
+        }
+
+        public HtmlContent filterNode(HtmlContent node) {
+            if (node instanceof HtmlElement) {
+                HtmlElement element = (HtmlElement) node;
+                if (excluded.contains(element.getName())) {
+                    return null;
+                } else if (include != null && !include.contains(element.getName())) {
+                    return node;
+                }
+            }
+            return node;
+        }
+    }
+    
+
 
     protected String getDescriptionInternal() {
         return DESCRIPTION;

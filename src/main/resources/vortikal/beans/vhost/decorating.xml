@@ -44,7 +44,7 @@
 
   <bean id="decorating.templateResolver"
         class="org.vortikal.web.view.decorating.PropertyConfigurableTemplateResolver">
-    <property name="templateManager" ref="templateManager" />
+    <property name="templateManager" ref="decorating.templateManager" />
     <property name="templateConfiguration" ref="decorating.templateConfigurationPropertiesFile" />
   </bean>
 
@@ -64,17 +64,18 @@
   </bean>
 
 
-  <bean id="templateManager" class="org.vortikal.web.view.decorating.CollectionTemplateManager">
+  <bean id="decorating.templateManager" class="org.vortikal.web.view.decorating.CollectionTemplateManager">
     <property name="repository" ref="repository" />
     <property name="collectionName" value="${decorating.templatesCollection}" />
     <property name="templateParser" ref="decorating.defaultTemplateParser" />
+    <property name="templateResourceType" ref="htmlResourceTypeDefinition" />
   </bean>
 
-  <bean id="templateCollectionRefreshTrigger"
+  <bean id="decorating.templateCollectionRefreshTrigger"
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templatesCollection}" />
-    <property name="targetObject" ref="templateManager" />
+    <property name="targetObject" ref="decorating.templateManager" />
     <property name="method" value="load" />
   </bean>
 

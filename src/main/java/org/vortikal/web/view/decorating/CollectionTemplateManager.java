@@ -35,17 +35,39 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
 
-public class CollectionTemplateManager implements TemplateManager {
+/**
+ * A template manager that loads templates from a specified collection
+ * in a {@link Repository content repository}.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>repository</code> - the {@link Repository content repository}
+ *   <li><code>collectionName</code> - the complete path to the
+ *   templates collection, e.g. <code>/foo/bar/templates</code>.
+ *   <li><code>templateParser</code> - a {@link Templateparser template parser}
+ *   <li><code>templateResourceType</code> - the {@link
+ *   ResourceTypeDefinition resource type} identifying templates (all
+ *   candidate templates must be of this resource type).
+ * </ul>
+ *
+ */
+public class CollectionTemplateManager implements TemplateManager, InitializingBean {
 
-    private Log logger = LogFactory.getLog(CollectionTemplateManager.class);
+    private static Log logger = LogFactory.getLog(CollectionTemplateManager.class);
 
     private Repository repository;
     private String collectionName;
-    private TemplateParser parser;
+    private TemplateParser templateParser;
+    private ResourceTypeDefinition templateResourceType;
     private Map templatesMap;
     
 
@@ -59,8 +81,33 @@ public class CollectionTemplateManager implements TemplateManager {
     }
 
 
-    public void setTemplateParser(TemplateParser parser) {
-        this.parser = parser;
+    public void setTemplateParser(TemplateParser templateParser) {
+        this.templateParser = templateParser;
+    }
+    
+
+    public void setTemplateResourceType(ResourceTypeDefinition templateResourceType) {
+        this.templateResourceType = templateResourceType;
+    }
+    
+
+    public void afterPropertiesSet() {
+        if (this.repository == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'repository' not specified");
+        }
+        if (this.collectionName == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'collectionName' not specified");
+        }
+        if (this.templateParser == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'templateParser' not specified");
+        }
+        if (this.templateResourceType == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'templateResourceType' not specified");
+        }
     }
     
 
@@ -81,37 +128,38 @@ public class CollectionTemplateManager implements TemplateManager {
     }
 
 
-    public synchronized void load() {
-        try {
-            Map map = new HashMap();
-            Resource[] resources =
-                this.repository.listChildren(null, this.collectionName, true);
-            int numTemplates = 0;
-            for (int i = 0; i < resources.length; i++) {
-                if (!resources[i].isCollection()) {
-                    TemplateSource templateSource =
-                        new RepositoryTemplateSource(resources[i].getURI(),
-                                                     this.repository, null);
-                    
-                    Template template = new StandardDecoratorTemplate(this.parser, templateSource);
+    public synchronized void load() throws Exception {
+
+        Map map = new HashMap();
+        Resource[] resources =
+            this.repository.listChildren(null, this.collectionName, true);
+
+        int numTemplates = 0;
+
+        for (int i = 0; i < resources.length; i++) {
+
+            if (resources[i].isOfType(this.templateResourceType)) {
+                TemplateSource templateSource =
+                    new RepositoryTemplateSource(resources[i].getURI(), this.repository, null);
+
+                try {
+                    Template template = new StandardDecoratorTemplate(this.templateParser, templateSource);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Loaded template '" + resources[i].getName() + "'");
                     }
                     map.put(resources[i].getName(), template);
                     numTemplates++;
+                } catch (Throwable t) {
+                    logger.info("Unable to compile template from resource " + resources[i], t);
                 }
             }
-            if (logger.isInfoEnabled()) {
-                logger.info("Loaded " + numTemplates + " template(s) from collection '"
-                             + this.collectionName + "'");
-            }
-
-            this.templatesMap = map;
-        } catch (Exception e) {
-            logger.warn("Unable to load templates from collection '"
-                        + this.collectionName + "'", e);
-            return;
         }
+        if (logger.isInfoEnabled()) {
+            logger.info("Loaded " + numTemplates + " template(s) from collection '"
+                        + this.collectionName + "'");
+        }
+
+        this.templatesMap = map;
     }
     
 

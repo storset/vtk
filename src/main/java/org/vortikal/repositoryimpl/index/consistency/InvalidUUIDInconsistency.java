@@ -28,31 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
+package org.vortikal.repositoryimpl.index.consistency;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.query.IndexException;
-import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**
- * Represents error where multiple index documents (property sets) exist for a single URI.
+ * Invalid (UU)ID inconsistency (in reality a dangling consistency error)
  * 
  * @author oyviste
  *
  */
-public class MultiplesInconsistency extends AbstractConsistencyError {
+public class InvalidUUIDInconsistency extends InvalidDataInconsistency {
 
-    private static final Log LOG = LogFactory.getLog(MultiplesInconsistency.class);
+    private int indexUUID = -1;
+    private int daoUUID = -1;
     
-    private int multiples;
-    private PropertySetImpl repositoryPropSet;
-    
-    public MultiplesInconsistency(String uri, int multiples, PropertySetImpl repositoryPropSet) {
-        super(uri);
-        this.multiples = multiples;
-        this.repositoryPropSet = repositoryPropSet;
+    public InvalidUUIDInconsistency(String uri, PropertySetImpl daoPropSet, int indexUUID, int daoUUID) {
+        super(uri, daoPropSet);
+        this.indexUUID = indexUUID;
+        this.daoUUID = daoUUID;
     }
     
     public boolean canRepair() {
@@ -60,28 +54,13 @@ public class MultiplesInconsistency extends AbstractConsistencyError {
     }
     
     public String getDescription() {
-        return "Multiples inconsistency, there are " 
-            + multiples + " property sets in index at URI '" + getUri() + "'";
-    }
-
-    /**
-     * Repair by removing all property sets for the URI, then re-adding a pristine copy from the
-     * repository.
-     */
-    protected void repair(PropertySetIndex index) throws IndexException {
-        
-        LOG.info("Repairing multiples inconsistency for URI '" + getUri() 
-                                                    + "' (" + multiples + " multiples)");
-
-        index.deletePropertySet(getUri());
-        
-        index.addPropertySet(this.repositoryPropSet);
-
+        return "Invalid UUID inconsistency for index property set at URI '"
+          + getUri() + "', index UUID = + " + this.indexUUID + ", daoUUID = " + this.daoUUID;
     }
 
     public String toString() {
-        return "MultipleConsistencyError[URI = '" + getUri() + "', number of multiples in index: " 
-                                                                            + this.multiples + "]";
+        return "InvalidUUIDInconsistency[URI='" + getUri() + "', indexUUID = " 
+        + this.indexUUID + ", daoUUID = " + this.daoUUID + "]"; 
     }
-    
+
 }

@@ -28,54 +28,52 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
+package org.vortikal.repositoryimpl.index.consistency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.query.IndexException;
 import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**
- * General data inconsistency error when there is a mismatch between the property set data in the index
- * and the property set data in the repository.
- *  
+ * Represents inconsistency where property set deleted from the repository still exists in the
+ * index. There might be multiple property sets for the given URI in the index, but there is
+ * no property set for the URI in the repository.
+ * 
  * @author oyviste
+ *
  */
-public class InvalidDataInconsistency extends AbstractConsistencyError {
+public class DanglingInconsistency extends AbstractConsistencyError {
 
-    private static final Log LOG = LogFactory.getLog(InvalidDataInconsistency.class);
-    private PropertySetImpl repositoryPropSet;
+    private static final Log LOG = LogFactory.getLog(DanglingInconsistency.class);
     
-    public InvalidDataInconsistency(String uri, PropertySetImpl repositoryPropSet) {
+    public DanglingInconsistency(String uri) {
         super(uri);
-        this.repositoryPropSet = repositoryPropSet;
     }
-
+    
     public boolean canRepair() {
         return true;
     }
     
     public String getDescription() {
-        return "Invalid data inconsistency, data in index property set at URI '" 
-                              + getUri() + "' does not match data in property set in repository.";
+        return "Dangling inconsistency, an instance with URI '" 
+                + getUri() + "' exists in index, but not in the repository.";
     }
 
     /**
-     * Fix by deleting property set in index, and re-adding pristine repository copy
+     * Repair by deleting all property sets for the URI.
      */
     protected void repair(PropertySetIndex index) throws IndexException {
-        
-        LOG.info("Repairing invalid data for property set at URI '"
+        LOG.info("Repairing dangling inconsistency by deleting all index property sets with URI '"
                 + getUri() + "'");
         
-        index.deletePropertySet(getUri());
+        int n = index.deletePropertySet(getUri());
         
-        index.addPropertySet(this.repositoryPropSet);
+        LOG.info("Deleted " + n + " index property sets");
     }
     
     public String toString() {
-        return "InvalidDataInconsistency[URI='" + getUri() + "']"; 
+        return "DanglingInconsistency[URI='" + getUri() + "']";
     }
 
 }

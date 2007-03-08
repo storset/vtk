@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
+package org.vortikal.repositoryimpl.index.consistency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,19 +37,25 @@ import org.vortikal.repositoryimpl.query.IndexException;
 import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**
- * Consistency error where a property exists in the repository, but not in the index.
+ * Consistency error representing an index document which could not be mapped to a
+ * <code>PropertySet</code> instance. This is usually caused by property/resource type configuration 
+ * problems.
  * 
  * @author oyviste
  *
  */
-public class MissingInconsistency extends AbstractConsistencyError {
+public class UnmappableConsistencyError extends AbstractConsistencyError {
+
+    private static final Log LOG = LogFactory.getLog(UnmappableConsistencyError.class);
     
-    private static final Log LOG = LogFactory.getLog(MissingInconsistency.class);
     private PropertySetImpl repositoryPropSet;
+    private Exception mappingException;
     
-    public MissingInconsistency(String uri, PropertySetImpl repositoryPropSet) {
+    public UnmappableConsistencyError(String uri, Exception mappingException, 
+                                                                PropertySetImpl repositoryPropSet) {
         super(uri);
         this.repositoryPropSet = repositoryPropSet;
+        this.mappingException = mappingException;
     }
 
     public boolean canRepair() {
@@ -57,22 +63,25 @@ public class MissingInconsistency extends AbstractConsistencyError {
     }
     
     public String getDescription() {
-        return "Property set in repository at URI '" + getUri() + "' does not exist in index.";
-    }
-    
-    public String toString() {
-        return "MissingInconsistency[URI='" + getUri() + "']";
+        return "Index document representing property set at URI '" 
+            + getUri() + "' could not be mapped to a PropertySet instance,"
+            + " exception message: " + mappingException.getMessage();
     }
 
     /**
-     * Fix by adding missing property set.
+     * Repair by deleting index property set and re-adding pristine copy from repository.
      */
     protected void repair(PropertySetIndex index) throws IndexException {
-        LOG.info("Repairing missing inconsistency by adding property set at URI '" 
-                + getUri() + "'");
+        LOG.info("Repairing unmappable consistency error at URI '" + getUri() + "'");
+
+        index.deletePropertySet(getUri());
         
         index.addPropertySet(repositoryPropSet);
-
+    }
+    
+    public String toString() {
+        return "UnmappableConsistencyError[URI = '" + getUri() + "', exception message = '" 
+        + mappingException.getMessage() + "']";
     }
 
 }

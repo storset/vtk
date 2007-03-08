@@ -28,20 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
+package org.vortikal.repositoryimpl.index.consistency;
 
-/**
- * External interface to consistency errors.
- * 
- * @author oyviste
- *
- */
-public interface ConsistencyError {
+import org.vortikal.repositoryimpl.query.IndexException;
 
-    public String getUri();
-    
-    public String getDescription();
-    
-    public boolean canRepair();
-    
+public class ConsistencyCheckException extends IndexException {
+
+    public ConsistencyCheckException() {
+        super();
+    }
+
+    public ConsistencyCheckException(String message, Throwable cause) {
+        super(message, cause);
+
+    }
+
+    public ConsistencyCheckException(String message) {
+        super(message);
+
+    }
+
+    public ConsistencyCheckException(Throwable cause) {
+        super(cause);
+
+    }
+
 }

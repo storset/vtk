@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
+package org.vortikal.repositoryimpl.index.consistency;
 
 import org.vortikal.repositoryimpl.query.IndexException;
 import org.vortikal.repositoryimpl.query.PropertySetIndex;

@@ -28,29 +28,40 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
+package org.vortikal.repositoryimpl.index.consistency;
 
-import org.vortikal.repositoryimpl.query.IndexException;
+import org.vortikal.repositoryimpl.PropertySetImpl;
 
-public class ConsistencyCheckException extends IndexException {
+/**
+ * Invalid ACL inconsistency.
+ * 
+ * @author oyviste
+ *
+ */
+public class InvalidACLInheritedFromInconsistency extends InvalidDataInconsistency {
 
-    public ConsistencyCheckException() {
-        super();
+    private int indexACL = -1;
+    private int daoACL = -1;
+    
+    public InvalidACLInheritedFromInconsistency(String uri, PropertySetImpl daoPropSet, 
+                                                int indexACL, int daoACL) {
+        super(uri, daoPropSet);
+        this.indexACL = indexACL;
+        this.daoACL = daoACL;
+    }
+    
+    public boolean canRepair() {
+        return true;
+    }
+    
+    public String getDescription() {
+        return "Invalid ACL inherited from inconsistency for index property set at URI '"
+          + getUri() + "', indexACL = + " + this.indexACL + ", daoACL = " + this.daoACL;
     }
 
-    public ConsistencyCheckException(String message, Throwable cause) {
-        super(message, cause);
-
-    }
-
-    public ConsistencyCheckException(String message) {
-        super(message);
-
-    }
-
-    public ConsistencyCheckException(Throwable cause) {
-        super(cause);
-
+    public String toString() {
+        return "InvalidACLInheritedFromInconsistency[URI='" + getUri() + "', indexACL = " 
+        + this.indexACL + ", daoACL = " + this.daoACL + "]"; 
     }
 
 }

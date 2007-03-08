@@ -28,27 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
+package org.vortikal.repositoryimpl.index.consistency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.query.IndexException;
 import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**
- * Represents inconsistency where property set deleted from the repository still exists in the
- * index. There might be multiple property sets for the given URI in the index, but there is
- * no property set for the URI in the repository.
+ * Represents error where multiple index documents (property sets) exist for a single URI.
  * 
  * @author oyviste
  *
  */
-public class DanglingInconsistency extends AbstractConsistencyError {
+public class MultiplesInconsistency extends AbstractConsistencyError {
 
-    private static final Log LOG = LogFactory.getLog(DanglingInconsistency.class);
+    private static final Log LOG = LogFactory.getLog(MultiplesInconsistency.class);
     
-    public DanglingInconsistency(String uri) {
+    private int multiples;
+    private PropertySetImpl repositoryPropSet;
+    
+    public MultiplesInconsistency(String uri, int multiples, PropertySetImpl repositoryPropSet) {
         super(uri);
+        this.multiples = multiples;
+        this.repositoryPropSet = repositoryPropSet;
     }
     
     public boolean canRepair() {
@@ -56,24 +60,28 @@ public class DanglingInconsistency extends AbstractConsistencyError {
     }
     
     public String getDescription() {
-        return "Dangling inconsistency, an instance with URI '" 
-                + getUri() + "' exists in index, but not in the repository.";
+        return "Multiples inconsistency, there are " 
+            + multiples + " property sets in index at URI '" + getUri() + "'";
     }
 
     /**
-     * Repair by deleting all property sets for the URI.
+     * Repair by removing all property sets for the URI, then re-adding a pristine copy from the
+     * repository.
      */
     protected void repair(PropertySetIndex index) throws IndexException {
-        LOG.info("Repairing dangling inconsistency by deleting all index property sets with URI '"
-                + getUri() + "'");
         
-        int n = index.deletePropertySet(getUri());
+        LOG.info("Repairing multiples inconsistency for URI '" + getUri() 
+                                                    + "' (" + multiples + " multiples)");
+
+        index.deletePropertySet(getUri());
         
-        LOG.info("Deleted " + n + " index property sets");
-    }
-    
-    public String toString() {
-        return "DanglingInconsistency[URI='" + getUri() + "']";
+        index.addPropertySet(this.repositoryPropSet);
+
     }
 
+    public String toString() {
+        return "MultipleConsistencyError[URI = '" + getUri() + "', number of multiples in index: " 
+                                                                            + this.multiples + "]";
+    }
+    
 }

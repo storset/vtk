@@ -28,39 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.consistency;
-
-import org.vortikal.repositoryimpl.PropertySetImpl;
+package org.vortikal.repositoryimpl.index.consistency;
 
 /**
- * Invalid (UU)ID inconsistency (in reality a dangling consistency error)
+ * External interface to consistency errors.
  * 
  * @author oyviste
  *
  */
-public class InvalidUUIDInconsistency extends InvalidDataInconsistency {
+public interface ConsistencyError {
 
-    private int indexUUID = -1;
-    private int daoUUID = -1;
+    public String getUri();
     
-    public InvalidUUIDInconsistency(String uri, PropertySetImpl daoPropSet, int indexUUID, int daoUUID) {
-        super(uri, daoPropSet);
-        this.indexUUID = indexUUID;
-        this.daoUUID = daoUUID;
-    }
+    public String getDescription();
     
-    public boolean canRepair() {
-        return true;
-    }
+    public boolean canRepair();
     
-    public String getDescription() {
-        return "Invalid UUID inconsistency for index property set at URI '"
-          + getUri() + "', index UUID = + " + this.indexUUID + ", daoUUID = " + this.daoUUID;
-    }
-
-    public String toString() {
-        return "InvalidUUIDInconsistency[URI='" + getUri() + "', indexUUID = " 
-        + this.indexUUID + ", daoUUID = " + this.daoUUID + "]"; 
-    }
-
 }

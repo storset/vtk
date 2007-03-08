@@ -10,7 +10,7 @@
   </#if>
 
   <#if feed.entries?exists>
-    <#assign entries = feed.entries>
+    <#assign entries = feed.entries />
       <#if conf.sortByTitle>
         <#assign entries = entries?sort_by("title") />
       </#if>
@@ -31,7 +31,7 @@
           </div>
         </#if>
         <#if conf.publishedDate && entry.publishedDate?exists>
-          <span class="publishedDate">${entry.publishedDate?string(conf.format)}</span>
+          <span class="publishedDate">${entry.publishedDate?datetime?string.long_short}</span>
         </#if>
       </li>
     </#list>

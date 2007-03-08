@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,33 +28,37 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repository.search.query;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
+public class SortingImpl implements Sorting {
 
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
+    private List sortFields;
     
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
+    public SortingImpl() {
+        this.sortFields = new LinkedList();
     }
-
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
+    
+    public SortingImpl(List sortFields) {
+        this.sortFields = sortFields;
     }
-
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
+    
+    public void addSortField(SortField sortField) {
+        this.sortFields.add(sortField);
     }
-
+    
+    /* (non-Javadoc)
+     * @see org.vortikal.repository.query.SortingInt#getSortFields()
+     */
+    public List getSortFields() {
+        return this.sortFields;
+    }
+    
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": ").append(this.sortFields);
         return sb.toString();
     }
     

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repository.search.query;
 
-import java.util.HashSet;
-import java.util.Set;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
 
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
-    
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
+public class NamePrefixQuery implements NameQuery {
+
+    private final String term;
+
+    public NamePrefixQuery(String term) {
+        this.term = term;
     }
 
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
+    public String getTerm() {
+        return this.term;
     }
 
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
-    }
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+        
+        buf.append(prefix).append("Term = ").append(this.term).append("\n");
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
-        return sb.toString();
+        return buf.toString();
     }
     
 }

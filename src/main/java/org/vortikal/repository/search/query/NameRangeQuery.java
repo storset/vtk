@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repository.search.query;
 
-import java.util.HashSet;
-import java.util.Set;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
+public class NameRangeQuery implements NameQuery {
 
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
+    private final String fromTerm;
+    private final String toTerm;
+    private final boolean inclusive;
     
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
+    public NameRangeQuery(String fromTerm, String toTerm, boolean inclusive) {
+        this.fromTerm = fromTerm;
+        this.toTerm = toTerm;
+        this.inclusive = inclusive;
     }
 
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
+    public String getFromTerm() {
+        return this.fromTerm;
     }
 
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
+    public boolean isInclusive() {
+        return this.inclusive;
     }
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
-        return sb.toString();
+    public String getToTerm() {
+        return this.toTerm;
     }
-    
+
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+
+        buf.append(prefix).append("fromTerm = '").append(this.fromTerm);
+        buf.append("', toTerm = '").append(this.toTerm).append("', inclusive = '");
+        buf.append(this.inclusive).append("'\n");
+        
+        return buf.toString();
+    }
+
 }

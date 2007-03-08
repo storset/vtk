@@ -30,9 +30,9 @@
  */
 package org.vortikal.repositoryimpl.query.parser;
 
-import org.vortikal.repository.query.PropertySelect;
-import org.vortikal.repository.query.Query;
-import org.vortikal.repository.query.Sorting;
+import org.vortikal.repository.search.query.PropertySelect;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.Sorting;
 
 /**
  * Simple search interface

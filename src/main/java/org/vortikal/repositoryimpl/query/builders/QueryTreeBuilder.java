@@ -35,10 +35,10 @@ import java.util.List;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.vortikal.repository.query.AbstractMultipleQuery;
-import org.vortikal.repository.query.AndQuery;
-import org.vortikal.repository.query.OrQuery;
-import org.vortikal.repository.query.Query;
+import org.vortikal.repository.search.query.AbstractMultipleQuery;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.Query;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderFactory;
 

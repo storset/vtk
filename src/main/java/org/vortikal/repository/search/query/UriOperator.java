@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repository.search.query;
 
-import java.util.HashSet;
-import java.util.Set;
+/**
+ * XXX: This class is probably redundant, TermOperator is a good replacement. 
+ *
+ */
+public class UriOperator {
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
-
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
+    public static final UriOperator EQ = new UriOperator("EQ");
+    public static final UriOperator NE = new UriOperator("NE");
     
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
-    }
+    private String id;
 
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
-    }
-
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
+    private UriOperator(String id) {
+        this.id = id;
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
-        return sb.toString();
+        return this.id;
     }
-    
+
 }

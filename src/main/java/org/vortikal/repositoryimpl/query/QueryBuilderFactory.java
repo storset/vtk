@@ -30,7 +30,7 @@
  */
 package org.vortikal.repositoryimpl.query;
 
-import org.vortikal.repository.query.Query;
+import org.vortikal.repository.search.query.Query;
 
 /**
  * 

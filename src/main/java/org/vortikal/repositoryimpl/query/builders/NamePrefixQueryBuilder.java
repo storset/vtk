@@ -34,7 +34,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.query.NamePrefixQuery;
+import org.vortikal.repository.search.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;

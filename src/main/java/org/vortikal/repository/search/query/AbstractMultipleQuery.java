@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repository.search.query;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
 
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
-    
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
-    }
+public abstract class AbstractMultipleQuery implements Query {
 
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
-    }
+    private List queries = new ArrayList();
 
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
-        return sb.toString();
+    public void add(Query query) {
+        this.queries.add(query);
     }
     
+    public List getQueries() {
+        return this.queries;
+    }
+
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+        
+        prefix += "  ";
+        for (Iterator iter = this.queries.iterator(); iter.hasNext();) {
+            Query query = (Query) iter.next();
+            buf.append(query.dump(prefix));
+        }
+
+        return buf.toString();
+    }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repository.search.query;
 
-import java.util.HashSet;
-import java.util.Set;
+/**
+ * Query for URI depth.
+ * Only equals is supported, and therefore assumed
+ * 
+ */
+public class UriDepthQuery implements UriQuery {
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
-
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
+    private int depth;
     
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
-    }
-
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
-    }
-
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
-        return sb.toString();
+    public UriDepthQuery(int depth) {
+        this.depth = depth;
     }
     
+    public int getDepth() {
+        return this.depth;
+    }
+    
+    public String dump(String prefix) {
+        StringBuffer dump = new StringBuffer(prefix);
+        dump.append(this.getClass().getName()).append("\n");
+        dump.append(prefix).append("Depth = " + this.depth).append("\n");
+        return dump.toString();
+    }
+
 }

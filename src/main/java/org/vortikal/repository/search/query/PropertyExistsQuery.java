@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
-
-import java.util.HashSet;
-import java.util.Set;
+package org.vortikal.repository.search.query;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
 
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
+/**
+ * XXX: Missing not exists... Should include NotQuery and syntax instead? 
+ */
+public class PropertyExistsQuery extends AbstractPropertyQuery {
+
+    private boolean inverted;
     
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
+    public PropertyExistsQuery(PropertyTypeDefinition propertyDefinition, boolean inverted) {
+        super(propertyDefinition);
+        this.inverted = inverted;
     }
 
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
+    public String dump(String prefix) {
+        StringBuffer buf = new StringBuffer().append(prefix);
+        buf.append(this.getClass().getName()).append("\n");
+
+        PropertyTypeDefinition def = getPropertyDefinition();
+        
+        buf.append(prefix).append("Property namespace = ").append(def.getNamespace());
+        buf.append(", name = ").append(def.getName()).append("\n");
+        buf.append("Inverted: " + this.inverted);
+        return buf.toString();
     }
 
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
+    public boolean isInverted() {
+        return this.inverted;
     }
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
-        return sb.toString();
-    }
-    
 }

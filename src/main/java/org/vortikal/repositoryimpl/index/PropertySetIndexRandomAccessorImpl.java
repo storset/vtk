@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
 
@@ -36,7 +36,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.index.IndexException;
+import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.query.WildcardPropertySelect;
 
 /**
  * Random accessor for property set index.

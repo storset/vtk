@@ -57,9 +57,6 @@ import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 import org.vortikal.repositoryimpl.query.EscapedMultiValueFieldAnalyzer;
 import org.vortikal.repositoryimpl.query.FieldValueMapper;
-import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessor;
-import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessorImpl;
-import org.vortikal.repositoryimpl.query.PropertySetIndexUriIterator;
 
 /**
  * <code>PropertySet</code> index using Lucene. 

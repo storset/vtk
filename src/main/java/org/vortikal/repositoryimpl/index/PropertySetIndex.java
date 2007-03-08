@@ -33,7 +33,6 @@ package org.vortikal.repositoryimpl.index;
 import java.util.Iterator;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessor;
 
 /**
  * <p>Defines an interface for modifying and inspecting the contents of 

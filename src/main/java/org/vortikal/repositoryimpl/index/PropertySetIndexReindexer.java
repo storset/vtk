@@ -28,9 +28,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
-import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
  * Simple interface for generic re-indexer implementation.

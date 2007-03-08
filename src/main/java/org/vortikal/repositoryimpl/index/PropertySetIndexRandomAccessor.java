@@ -28,10 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
  * Interface for retrieving property sets from a <code>PropertySetIndex</code> 

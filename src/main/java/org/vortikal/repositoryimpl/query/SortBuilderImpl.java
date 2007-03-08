@@ -93,7 +93,7 @@ public class SortBuilderImpl implements SortBuilder {
         SortFieldDirection d = f.getDirection();
         String fieldName = DocumentMapper.getFieldName(def);
         
-        // We do our own type encoding, and must use Lucene's string sorting type.
+        // We do our own type->string encoding, and must use Lucene's generic string sorting type.
         org.apache.lucene.search.SortField sortField =
             new org.apache.lucene.search.SortField(fieldName,
                     org.apache.lucene.search.SortField.STRING, 

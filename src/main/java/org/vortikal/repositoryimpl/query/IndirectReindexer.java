@@ -33,6 +33,7 @@ package org.vortikal.repositoryimpl.query;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
  * <p>A <code>PropertySetIndex</code> re-indexer that uses a temporary index instance, instead of working

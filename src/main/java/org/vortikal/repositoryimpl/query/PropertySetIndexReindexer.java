@@ -30,6 +30,8 @@
  */
 package org.vortikal.repositoryimpl.query;
 
+import org.vortikal.repositoryimpl.index.IndexException;
+
 /**
  * Simple interface for generic re-indexer implementation.
  * 

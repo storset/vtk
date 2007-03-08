@@ -28,25 +28,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
-public class DocumentMappingException extends IndexException {
+import org.vortikal.repositoryimpl.query.parser.QueryException;
 
-    private static final long serialVersionUID = -1196354519437156618L;
+public class IndexException extends QueryException {
 
-    public DocumentMappingException() {
+    private static final long serialVersionUID = 5567453327335222161L;
+
+    public IndexException() {
         super();
     }
 
-    public DocumentMappingException(String message) {
+    public IndexException(String message) {
         super(message);
     }
 
-    public DocumentMappingException(String message, Throwable cause) {
+    public IndexException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DocumentMappingException(Throwable cause) {
+    public IndexException(Throwable cause) {
         super(cause);
     }
 

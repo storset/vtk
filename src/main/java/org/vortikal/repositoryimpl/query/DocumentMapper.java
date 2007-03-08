@@ -54,6 +54,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.index.DocumentMappingException;
+import org.vortikal.repositoryimpl.index.FieldValueMappingException;
 import org.vortikal.util.repository.URIUtil;
 
 /**

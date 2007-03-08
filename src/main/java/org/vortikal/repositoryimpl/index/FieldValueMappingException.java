@@ -28,19 +28,26 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
+public class FieldValueMappingException extends DocumentMappingException {
 
-/**
- * Exception thrown in cases where low-level index storage corruption is detected.
- * 
- * @author oyviste
- *
- */
-public class StorageCorruptionException extends IndexException {
+    private static final long serialVersionUID = 2989933317347109891L;
 
-    public StorageCorruptionException(String message, Throwable cause) {
+    public FieldValueMappingException() {
+        super();
+    }
+
+    public FieldValueMappingException(String message) {
+        super(message);
+    }
+
+    public FieldValueMappingException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public FieldValueMappingException(Throwable cause) {
+        super(cause);
     }
 
 }

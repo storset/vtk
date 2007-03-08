@@ -36,6 +36,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
  * Random accessor for property set index.

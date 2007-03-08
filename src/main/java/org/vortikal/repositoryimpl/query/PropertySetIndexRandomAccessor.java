@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.query;
 
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repositoryimpl.index.IndexException;
 
 /**
  * Interface for retrieving property sets from a <code>PropertySetIndex</code> 

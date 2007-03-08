@@ -38,6 +38,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repositoryimpl.index.FieldValueEncodingException;
 import org.vortikal.util.cache.ReusableObjectCache;
 import org.vortikal.util.text.SimpleDateFormatCache;
 

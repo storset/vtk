@@ -30,7 +30,7 @@
  */
 package org.vortikal.repositoryimpl.index.consistency;
 
-import org.vortikal.repositoryimpl.query.IndexException;
+import org.vortikal.repositoryimpl.index.IndexException;
 import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**

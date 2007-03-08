@@ -33,7 +33,7 @@ package org.vortikal.repositoryimpl.index.consistency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.query.IndexException;
+import org.vortikal.repositoryimpl.index.IndexException;
 import org.vortikal.repositoryimpl.query.PropertySetIndex;
 
 /**

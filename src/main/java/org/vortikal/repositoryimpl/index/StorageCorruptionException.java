@@ -28,28 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
-import org.vortikal.repositoryimpl.query.parser.QueryException;
 
-public class IndexException extends QueryException {
+/**
+ * Exception thrown in cases where low-level index storage corruption is 
+ * detected.
+ * 
+ * @author oyviste
+ *
+ */
+public class StorageCorruptionException extends IndexException {
 
-    private static final long serialVersionUID = 5567453327335222161L;
-
-    public IndexException() {
-        super();
-    }
-
-    public IndexException(String message) {
-        super(message);
-    }
-
-    public IndexException(String message, Throwable cause) {
+    public StorageCorruptionException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public IndexException(Throwable cause) {
-        super(cause);
     }
 
 }

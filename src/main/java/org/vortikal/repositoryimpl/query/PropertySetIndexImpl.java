@@ -54,6 +54,9 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.index.DocumentMappingException;
+import org.vortikal.repositoryimpl.index.IndexException;
+import org.vortikal.repositoryimpl.index.StorageCorruptionException;
 
 /**
  * <code>PropertySet</code> index using Lucene. 

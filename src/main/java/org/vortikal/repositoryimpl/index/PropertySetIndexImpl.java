@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -54,9 +54,12 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.index.DocumentMappingException;
-import org.vortikal.repositoryimpl.index.IndexException;
-import org.vortikal.repositoryimpl.index.StorageCorruptionException;
+import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.query.EscapedMultiValueFieldAnalyzer;
+import org.vortikal.repositoryimpl.query.FieldValueMapper;
+import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessor;
+import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessorImpl;
+import org.vortikal.repositoryimpl.query.PropertySetIndexUriIterator;
 
 /**
  * <code>PropertySet</code> index using Lucene. 

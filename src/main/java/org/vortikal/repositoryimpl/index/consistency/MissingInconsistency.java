@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.index.IndexException;
-import org.vortikal.repositoryimpl.query.PropertySetIndex;
+import org.vortikal.repositoryimpl.index.PropertySetIndex;
 
 /**
  * Consistency error where a property exists in the repository, but not in the index.

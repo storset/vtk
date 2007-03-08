@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
 import java.util.Iterator;

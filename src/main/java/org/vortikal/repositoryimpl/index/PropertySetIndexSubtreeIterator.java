@@ -28,12 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.query.WildcardPropertySelect;
 
 public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
 

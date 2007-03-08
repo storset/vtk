@@ -38,8 +38,9 @@ import org.vortikal.repositoryimpl.query.BinaryFieldValueMapper;
 import org.vortikal.repositoryimpl.query.DocumentMapper;
 
 /**
- * Extract relevant security info from a Lucene 
- * {@link org.apache.lucene.document.Document}.
+ * Quickly extract relevant security info from a Lucene 
+ * {@link org.apache.lucene.document.Document} without going through the
+ * complete property set mapping stage.
  * 
  * @author oyviste
  *

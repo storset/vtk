@@ -28,13 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.util.Iterator;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.index.IndexException;
-import org.vortikal.repositoryimpl.index.StorageCorruptionException;
+import org.vortikal.repositoryimpl.query.PropertySetIndexRandomAccessor;
 
 /**
  * <p>Defines an interface for modifying and inspecting the contents of 

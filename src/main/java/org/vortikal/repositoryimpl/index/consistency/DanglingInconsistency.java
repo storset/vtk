@@ -33,7 +33,7 @@ package org.vortikal.repositoryimpl.index.consistency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.index.IndexException;
-import org.vortikal.repositoryimpl.query.PropertySetIndex;
+import org.vortikal.repositoryimpl.index.PropertySetIndex;
 
 /**
  * Represents inconsistency where property set deleted from the repository still exists in the

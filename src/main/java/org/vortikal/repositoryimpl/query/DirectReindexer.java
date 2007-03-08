@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
 import org.vortikal.repositoryimpl.index.IndexException;
+import org.vortikal.repositoryimpl.index.PropertySetIndex;
 
 /**
  * A simple re-indexer that works directly on the provided <code>PropertySetIndex</code> instance.

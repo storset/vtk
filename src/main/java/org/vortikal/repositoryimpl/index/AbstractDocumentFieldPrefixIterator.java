@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -43,37 +43,41 @@ import org.apache.lucene.index.TermEnum;
 import org.vortikal.repositoryimpl.CloseableIterator;
 
 /**
- * Abstract iterator for Lucene documents over a specific field, starting from a specific value.
+ * Abstract iterator over documents for a given field and a field value prefix.
  * 
  * @author oyviste
  *
  */
-abstract class AbstractDocumentFieldIterator implements CloseableIterator {
+abstract class AbstractDocumentFieldPrefixIterator implements CloseableIterator {
 
-    private Log logger = LogFactory.getLog(AbstractDocumentFieldIterator.class);
+    private Log logger = LogFactory.getLog(AbstractDocumentFieldPrefixIterator.class);
     
     private IndexReader reader;
     private String iterationFieldName;
-    private String iterationFieldStartValue;
+    private String prefix;
     private TermEnum tenum;
     private TermDocs tdocs;
     private int next = -1;
     
-    public AbstractDocumentFieldIterator(IndexReader reader,
-                                    String iterationFieldName,
-                                    String iterationFieldStartValue) 
+    public AbstractDocumentFieldPrefixIterator(IndexReader reader,
+                                               String iterationFieldName,
+                                               String prefix) 
         throws IOException {
+        
         this.reader = reader;
         this.iterationFieldName = iterationFieldName.intern();
-        this.iterationFieldStartValue = iterationFieldStartValue != null ?
-                                        iterationFieldStartValue : "";
+        this.prefix = prefix != null ? prefix : "";
 
-        this.tenum = this.reader.terms(new Term(this.iterationFieldName, this.iterationFieldStartValue));
+        this.tenum = this.reader.terms(new Term(this.iterationFieldName, this.prefix));
         this.tdocs = this.reader.termDocs();
 
-        if (tenum.term() != null && tenum.term().field() == iterationFieldName) {
-            tdocs.seek(tenum);
-            next = nextDoc();
+        while (tenum.term() != null && tenum.term().field() == iterationFieldName) {
+            if (tenum.term().text().startsWith(prefix)) {
+                tdocs.seek(tenum);
+                next = nextDoc();
+                break;
+            }
+            tenum.next();
         }
     }
     
@@ -88,10 +92,12 @@ abstract class AbstractDocumentFieldIterator implements CloseableIterator {
         
         // No more docs for current term, seek to next
         while (tenum.next() && tenum.term().field() == iterationFieldName) {
-            tdocs.seek(tenum);
-            while (tdocs.next()) {
-                if (! reader.isDeleted(tdocs.doc())) {
-                    return tdocs.doc();
+            if (tenum.term().text().startsWith(prefix)) {
+                tdocs.seek(tenum);
+                while (tdocs.next()) {
+                    if (! reader.isDeleted(tdocs.doc())) {
+                        return tdocs.doc();
+                    }
                 }
             }
         }

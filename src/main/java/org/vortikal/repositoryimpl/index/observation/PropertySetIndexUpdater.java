@@ -42,7 +42,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
-import org.vortikal.repositoryimpl.query.PropertySetIndex;
+import org.vortikal.repositoryimpl.index.PropertySetIndex;
 
 /**
  * Incremental index updates from resource changes.

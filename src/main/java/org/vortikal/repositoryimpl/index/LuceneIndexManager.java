@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.File;
 import java.io.IOException;
@@ -144,7 +144,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         return storageDirectory;
     }
     
-    protected void releaseIndexSearcher(IndexSearcher searcher) throws IOException {
+    public void releaseIndexSearcher(IndexSearcher searcher) throws IOException {
         if (searcher == null) {
             return;
         }
@@ -152,55 +152,55 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         this.fsIndex.releaseReadOnlyIndexReader(searcher.getIndexReader());
     }
     
-    protected IndexSearcher getIndexSearcher() throws IOException {
+    public IndexSearcher getIndexSearcher() throws IOException {
         return new IndexSearcher(this.fsIndex.getReadOnlyIndexReader());
     }
     
-    protected IndexReader getReadOnlyIndexReader() throws IOException {
+    public IndexReader getReadOnlyIndexReader() throws IOException {
         return this.fsIndex.getReadOnlyIndexReader();
     }
     
-    protected void releaseReadOnlyIndexReader(IndexReader readOnlyReader) throws IOException {
+    public void releaseReadOnlyIndexReader(IndexReader readOnlyReader) throws IOException {
         this.fsIndex.releaseReadOnlyIndexReader(readOnlyReader);
     }
 
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected IndexReader getIndexReader() throws IOException {
+    public IndexReader getIndexReader() throws IOException {
         return this.fsIndex.getIndexReader();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected IndexWriter getIndexWriter() throws IOException {
+    public IndexWriter getIndexWriter() throws IOException {
         return this.fsIndex.getIndexWriter();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected void clearContents() throws IOException {
+    public void clearContents() throws IOException {
         this.fsIndex.createNewIndex();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected void reinitialize() throws IOException {
+    public void reinitialize() throws IOException {
         this.fsIndex.reinitialize();
     }
     
     //  CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected void close() throws IOException {
+    public void close() throws IOException {
         this.fsIndex.close();
     }
     
-    protected boolean isClosed() {
+    public boolean isClosed() {
         return this.fsIndex.isClosed();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected void optimize() throws IOException {
+    public void optimize() throws IOException {
         this.fsIndex.getIndexWriter().optimize();
     }
     
     // Commit changes done by reader/writer and optimize index if necessary.
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected void commit() throws IOException {
+    public void commit() throws IOException {
         // Optimize index, if we've reached 'optimizeInterval' number of commits.
         if (++this.commitCounter % this.optimizeInterval == 0) {
             LOG.info("Reached " + this.commitCounter 
@@ -213,7 +213,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
-    protected void corruptionTest() throws IOException {
+    public void corruptionTest() throws IOException {
         this.fsIndex.corruptionTest();
     }
     
@@ -241,7 +241,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
      * Explicit write locking. Must be acquired before doing any write
      * operations on index, using either the reader or the writer.
      */
-    protected boolean writeLockAcquire() {
+    public boolean writeLockAcquire() {
         try {
             this.lock.acquire();
         } catch (InterruptedException ie) {
@@ -261,7 +261,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     /**
      * Attempt write lock with timeout 
      */
-    protected boolean writeLockAttempt(long timeout) {
+    public boolean writeLockAttempt(long timeout) {
         try {
             boolean acquired = this.lock.attempt(timeout);
             
@@ -286,7 +286,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     /**
      * Write lock release.
      */
-    protected void writeLockRelease() {
+    public void writeLockRelease() {
         
         this.lock.release();
         

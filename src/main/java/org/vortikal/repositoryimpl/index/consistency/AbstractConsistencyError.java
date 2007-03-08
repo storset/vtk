@@ -31,7 +31,7 @@
 package org.vortikal.repositoryimpl.index.consistency;
 
 import org.vortikal.repositoryimpl.index.IndexException;
-import org.vortikal.repositoryimpl.query.PropertySetIndex;
+import org.vortikal.repositoryimpl.index.PropertySetIndex;
 
 /**
  * Base class for consistency errors (aka inconsistencies).

@@ -28,25 +28,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.query.WildcardPropertySelect;
 
 /**
- * Unordered property set index iterator.
- * 
- * @author oyviste
+ * Iterator over <code>PropertySet</code> instances by URI.
  *
+ * @author oyviste
  */
-public class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator {
+class PropertySetIndexIterator extends AbstractDocumentFieldIterator {
 
     private DocumentMapper mapper;
-    public PropertySetIndexUnorderedIterator(IndexReader reader, DocumentMapper mapper)
+    
+    public PropertySetIndexIterator(IndexReader reader, DocumentMapper mapper)
             throws IOException {
-        super(reader);
+        
+        super(reader, DocumentMapper.URI_FIELD_NAME, null);
         this.mapper = mapper;
     }
 

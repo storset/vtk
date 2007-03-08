@@ -104,6 +104,16 @@
     </property>
   </bean>
 
+  <!-- To be moved to vortex -->
+  <bean id="decorating.keywordsComponent" parent="requestLocalRepositoryAware"
+        class="org.vortikal.web.view.decorating.components.PropertyLinkedValueDecoratorCompontent">
+    <property name="namespace" value="view" />
+    <property name="name" value="tags" />
+    <property name="propertyTypeDefinition" ref="keywordsPropDef" />
+    <property name="description" value="Inserts the the keywords with links to search" />
+    <property name="urlPattern" value="http://www.uio.no/sok?type=query&amp;qt=keywords%3A%v" />
+    <property name="view" ref="decorating.keywordsComponent.view" />
+  </bean>
 
 
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
@@ -130,6 +140,10 @@
         <ref bean="viewBreadCrumbProvider" />
       </list>
     </property>
+  </bean>
+
+  <bean id="decorating.keywordsComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/keywords.ftl" />
   </bean>
 
 

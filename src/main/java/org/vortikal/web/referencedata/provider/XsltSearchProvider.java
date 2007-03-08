@@ -43,20 +43,17 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 
 /**
- * Provide an instance of a {@link org.vortikal.repositoryimpl.index.dms.DMSXslQuery}
- * object in the "xsltParameters" map in the model. Optionally,
- * provide a URL to the "raw" query service as well.
+ * Provide an instance of a {@link XmlSearcher} object in the "xsltParameters" 
+ * map in the model. Optionally, provide a URL to the "raw" query service as well.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>dmsXmlQueryHelper</code> - the {@link DMSXslQueryH} to
+ *   <li><code>xmlSearcher</code> - the {@link XmlSearcher} to
  *   provide to the XSLT transformation
- *   <li><code>key</code> - the key to use when providing the query
- *   helper in the model. The default is
- *   <code>{http://www.uio.no/vortex/xsl-parameters}DMSXslQuery</code>.
+ *   <li><code>key</code> - the key to use when providing the property searcher in the model. 
+ *   The default is <code>{http://www.uio.no/vortex/xsl-parameters}XMLSearcher</code>.
  * </ul>
  *
- * @author oyviste
  */
 public class XsltSearchProvider implements ReferenceDataProvider, InitializingBean {
     

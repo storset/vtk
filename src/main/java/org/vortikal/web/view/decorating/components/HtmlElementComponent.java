@@ -127,10 +127,14 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
     protected Map getParameterDescriptionsInternal() {
         Map map = new HashMap();
-        map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
-        map.put(PARAMETER_INCLUDE, PARAMETER_INCLUDE_DESC);
-        map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
-        map.put(PARAMETER_ENCLOSED, PARAMETER_ENCLOSED_DESC);
+        if (this.elementPath == null)
+            map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
+        if (this.include == null)
+            map.put(PARAMETER_INCLUDE, PARAMETER_INCLUDE_DESC);
+        if (this.exclude == null)
+            map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
+        if (this.enclosed == null)
+            map.put(PARAMETER_ENCLOSED, PARAMETER_ENCLOSED_DESC);
         return map;
     }
 

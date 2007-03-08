@@ -47,8 +47,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
-public class ResourcePropertiesDecoratorCompontent extends
-        AbstractDecoratorComponent {
+public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComponent {
 
     private static final String PARAMETER_ID = "id";
     private static final String PARAMETER_ID_DESC = 

@@ -68,8 +68,6 @@ import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 
 
-
-
 /**
  * XSLT transformation view. Supports transformation of both {@link
  * InputStream input streams} and JDOM {@link Document

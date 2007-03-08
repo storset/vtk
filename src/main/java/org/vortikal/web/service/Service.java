@@ -220,4 +220,20 @@ public interface Service extends  Ordered, Categorizable {
 
 
 
+    /**
+     * Adds this service to the children of another service.
+     *
+     * @param service the service to become the new parent of this
+     * service.
+     */
+    public void setParent(Service service);
+
+    
+    /**
+     * Appends a list of services to the children of this service.
+     *
+     * @param services a list of {@link Service services}
+     */
+    public void addServices(List services);
+
 }

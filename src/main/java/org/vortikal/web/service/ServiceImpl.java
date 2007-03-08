@@ -77,7 +77,7 @@ import org.vortikal.util.net.NetUtils;
  *
  */
 public class ServiceImpl
-  implements Service, RelocatableService, ExtendableService, BeanNameAware, InitializingBean,
+  implements Service, BeanNameAware, InitializingBean,
              ApplicationContextAware {
 
     private AuthenticationChallenge authenticationChallenge;
@@ -294,14 +294,14 @@ public class ServiceImpl
         for (Iterator iter = this.services.iterator(); iter.hasNext();) {
             Object o = iter.next();
 
-            if (! (o instanceof RelocatableService)) {
+            if (! (o instanceof Service)) {
                 throw new BeanInitializationException(
                     "Only 'ServiceImpl' implementations of Service " +
                     "is supported ( check " + getName() +
                     "'s child services )");
             }
 
-            RelocatableService child = (RelocatableService) o;
+            Service child = (Service) o;
             validateAssertions(child);
             child.setParent(this);
         }

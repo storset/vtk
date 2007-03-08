@@ -49,7 +49,7 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
 
     private static Log logger = LogFactory.getLog(AbstractDecoratorComponent.class);
 
-    private String elementPath;
+    protected String elementPath;
 
     public void setSelect(String select) {
         this.elementPath = select;

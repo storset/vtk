@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -54,8 +54,6 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.index.DocumentMappingException;
-import org.vortikal.repositoryimpl.index.FieldValueMappingException;
 import org.vortikal.util.repository.URIUtil;
 
 /**

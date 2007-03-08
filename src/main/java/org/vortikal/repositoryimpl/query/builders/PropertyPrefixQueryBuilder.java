@@ -37,7 +37,7 @@ import org.apache.lucene.search.Query;
 import org.vortikal.repository.query.PropertyPrefixQuery;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.index.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.query.PrefixTermFilter;

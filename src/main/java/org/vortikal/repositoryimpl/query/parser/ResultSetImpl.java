@@ -41,8 +41,6 @@ import org.vortikal.repository.PropertySet;
 /**
  * Simple cached result set.  
  * 
- * XXX: Result type is assumed to be <code>PropertySet</code> instances.
- * 
  * @author oyviste
  */
 public class ResultSetImpl implements ResultSet {

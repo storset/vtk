@@ -34,8 +34,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.query.BinaryFieldValueMapper;
-import org.vortikal.repositoryimpl.query.DocumentMapper;
+import org.vortikal.repositoryimpl.index.BinaryFieldValueMapper;
+import org.vortikal.repositoryimpl.index.DocumentMapper;
 
 /**
  * Quickly extract relevant security info from a Lucene 

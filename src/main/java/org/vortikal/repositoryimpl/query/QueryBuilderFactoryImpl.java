@@ -59,6 +59,8 @@ import org.vortikal.repository.query.UriPrefixQuery;
 import org.vortikal.repository.query.UriTermQuery;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.index.BinaryFieldValueMapper;
+import org.vortikal.repositoryimpl.index.DocumentMapper;
 import org.vortikal.repositoryimpl.index.LuceneIndexManager;
 import org.vortikal.repositoryimpl.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.query.builders.NameRangeQueryBuilder;

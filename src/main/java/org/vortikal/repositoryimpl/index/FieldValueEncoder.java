@@ -28,13 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.math.BigInteger;
 import java.text.ParseException;
 
 import org.apache.lucene.document.DateTools;
-import org.vortikal.repositoryimpl.index.FieldValueEncodingException;
 
 /**
  * Low-level index field value encoder/decoder for some single-value data types.

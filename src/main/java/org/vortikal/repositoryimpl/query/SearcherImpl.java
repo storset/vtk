@@ -47,6 +47,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.query.PropertySelect;
 import org.vortikal.repository.query.Query;
 import org.vortikal.repository.query.Sorting;
+import org.vortikal.repositoryimpl.index.DocumentMapper;
 import org.vortikal.repositoryimpl.index.LuceneIndexManager;
 import org.vortikal.repositoryimpl.query.parser.QueryException;
 import org.vortikal.repositoryimpl.query.parser.ResultSet;

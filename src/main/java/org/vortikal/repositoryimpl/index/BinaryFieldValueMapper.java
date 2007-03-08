@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query;
+package org.vortikal.repositoryimpl.index;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -40,8 +40,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-import org.vortikal.repositoryimpl.index.FieldValueEncodingException;
-import org.vortikal.repositoryimpl.index.FieldValueMappingException;
 
 /**
  * Map to/from stored binary value fields.

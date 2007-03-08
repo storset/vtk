@@ -94,6 +94,9 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
             if (uri.startsWith("/"))
                 throw new DecoratorComponentException(
                     "Include 'file' takes a relative path as argument");
+            String address = RequestContext.getRequestContext().getResourceURI();
+            address = address.substring(0, address.lastIndexOf("/") + 1) + uri;
+
             handleDirectInclude(uri, request, response);
             return;
         }
@@ -105,7 +108,8 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         }
 
         if (uri.startsWith("/")) {
-            handleVirtualInclude(uri, request, response);
+//            handleVirtualInclude(uri, request, response);
+            handleDirectInclude(uri, request, response);
         } else if (uri.startsWith("http") || uri.startsWith("https")) {
             handleHttpInclude(uri, request, response);
         } else {
@@ -117,24 +121,21 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
                                      DecoratorResponse response) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
 
-        String uri = RequestContext.getRequestContext().getResourceURI();
-        uri = uri.substring(0, uri.lastIndexOf("/") + 1) + address;
-
         Resource r = null;
         try {
-            r = this.repository.retrieve(token, uri, false);
+            r = this.repository.retrieve(token, address, false);
         } catch (ResourceNotFoundException e) {
             throw new DecoratorComponentException(
-                    "Resource '" + uri + "' not found");
+                    "Resource '" + address + "' not found");
         }
         
         if (r.isCollection() || !ContentTypeHelper.isTextContentType(r.getContentType())) {
             throw new DecoratorComponentException(
-                "Cannot include URI '" + uri + "': not a textual resource");
+                "Cannot include URI '" + address + "': not a textual resource");
         }
 
         String characterEncoding = r.getCharacterEncoding();
-        InputStream is = this.repository.getInputStream(token, uri, true);
+        InputStream is = this.repository.getInputStream(token, address, true);
         byte[] bytes = StreamUtil.readInputStream(is);
         
         response.setCharacterEncoding(characterEncoding);
@@ -170,6 +171,8 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
 
         BufferedResponse servletResponse = new BufferedResponse();
         rd.forward(requestWrapper, servletResponse);
+        
+        requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, null);
         
         if (!ContentTypeHelper.isTextContentType(servletResponse.getContentType())) {
             throw new DecoratorComponentException(

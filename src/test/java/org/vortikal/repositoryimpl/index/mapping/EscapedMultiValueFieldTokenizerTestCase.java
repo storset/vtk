@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.index.mapping;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -36,7 +36,7 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.Token;
-import org.vortikal.repositoryimpl.index.EscapedMultiValueFieldTokenizer;
+import org.vortikal.repositoryimpl.index.mapping.EscapedMultiValueFieldTokenizer;
 
 public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
     

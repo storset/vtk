@@ -37,6 +37,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.vortikal.repositoryimpl.CloseableIterator;
+import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 
 /**
  * Simple URI-only iterator, lexicographic order.

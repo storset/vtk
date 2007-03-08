@@ -38,7 +38,7 @@ import org.vortikal.repository.query.SortField;
 import org.vortikal.repository.query.SortFieldDirection;
 import org.vortikal.repository.query.Sorting;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repositoryimpl.index.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 
 /**
  * 

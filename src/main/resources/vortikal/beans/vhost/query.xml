@@ -27,7 +27,7 @@
   </bean>
 
   <!-- Document mapper -->
-  <bean id="documentMapper" class="org.vortikal.repositoryimpl.index.DocumentMapper">
+  <bean id="documentMapper" class="org.vortikal.repositoryimpl.index.mapping.DocumentMapper">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="valueFactory" ref="valueFactory"/>
   </bean>

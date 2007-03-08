@@ -28,12 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.index.mapping;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import org.vortikal.repositoryimpl.index.FieldValueEncoder;
+import org.vortikal.repositoryimpl.index.mapping.FieldValueEncoder;
 
 import junit.framework.TestCase;
 

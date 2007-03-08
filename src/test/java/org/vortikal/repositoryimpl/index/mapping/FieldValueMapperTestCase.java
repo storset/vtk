@@ -28,14 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.index.mapping;
 
 import java.util.Date;
 
 import junit.framework.TestCase;
 
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repositoryimpl.index.FieldValueMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
 
 /**
  * TODO: This JUnit test case class is not complete.

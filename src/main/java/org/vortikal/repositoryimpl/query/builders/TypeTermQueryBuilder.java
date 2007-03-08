@@ -41,7 +41,7 @@ import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.query.TypeOperator;
 import org.vortikal.repository.query.TypeTermQuery;
-import org.vortikal.repositoryimpl.index.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 import org.vortikal.repositoryimpl.query.QueryBuilder;
 import org.vortikal.repositoryimpl.query.QueryBuilderException;
 

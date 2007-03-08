@@ -41,11 +41,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
-import org.vortikal.repositoryimpl.index.DocumentMappingException;
 import org.vortikal.repositoryimpl.index.IndexException;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;
 import org.vortikal.repositoryimpl.index.PropertySetIndexRandomAccessor;
 import org.vortikal.repositoryimpl.index.StorageCorruptionException;
+import org.vortikal.repositoryimpl.index.mapping.DocumentMappingException;
 
 /**
  * Check consistency and optionally repair errors afterwords.

@@ -28,7 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.index.mapping;
+
+import org.vortikal.repositoryimpl.index.IndexException;
 
 public class DocumentMappingException extends IndexException {
 

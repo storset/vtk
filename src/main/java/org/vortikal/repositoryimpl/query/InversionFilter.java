@@ -45,7 +45,7 @@ import org.apache.lucene.search.Filter;
  * making sure that bits for deleted documents are not set.
  * <p>
  * 
- * It is a non-thread safe, per-query dyanmic filter. It will directly alter the 
+ * It is a non-thread safe, per-query dynamic filter. It will directly alter the 
  * <code>BitSet</code> provided by the wrapped filter to avoid double 
  * memory allocation and copying. Beware of this if wrapping
  * re-usable (long-lived) filters that cache their own bitset and expect it

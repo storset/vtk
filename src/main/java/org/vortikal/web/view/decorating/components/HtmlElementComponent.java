@@ -53,15 +53,15 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
     private static final String PARAMETER_EXCLUDE = "exclude";
     private static final String PARAMETER_EXCLUDE_DESC = 
-        "Comma-separated list of child element names to exclude (takes presedence over includes)";
+        "Comma-separated list with names of child elements to exclude";// (takes presedence over includes)";
 
-    private static final String PARAMETER_INCLUDE = "include";
-    private static final String PARAMETER_INCLUDE_DESC = 
-        "Comma-separated list of child element names to include";
-
+//    private static final String PARAMETER_INCLUDE = "include";
+//    private static final String PARAMETER_INCLUDE_DESC = 
+//        "Comma-separated list of child element names to include";
+//
     private static final String PARAMETER_ENCLOSED = "enclosed";
     private static final String PARAMETER_ENCLOSED_DESC =
-        "If the selected element should enclose the content, set this to 'true'";
+        "If the selected element tag should enclose the content, set this to 'true'";
     
     private static final String PARAMETER_SELECT_DESC = "The element to select";
 
@@ -88,8 +88,8 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         boolean enclosed = (this.enclosed != null) ?
                 this.enclosed.booleanValue() : "true".equals(request.getStringParameter(PARAMETER_ENCLOSED));
 
-        String include = (this.include != null) ?
-            this.include : request.getStringParameter(PARAMETER_INCLUDE);
+//        String include = (this.include != null) ?
+//            this.include : request.getStringParameter(PARAMETER_INCLUDE);
 
         Set includedElements = new HashSet();
         if (include != null) {
@@ -111,29 +111,28 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         }
 
         Writer out = response.getWriter();
+        ExcludeFilter excludeFilter = new ExcludeFilter(excludedElements);
 
         for (int i = 0; i < elements.size(); i++) {
-            boolean included = true;
             HtmlElement element = (HtmlElement) elements.get(i);
             
-            Filter filter = new Filter(excludedElements, includedElements);
             if (enclosed) {
-                out.write(element.getEnclosedContent(filter));
+                out.write(element.getEnclosedContent(excludeFilter));
             } else {
-                out.write(element.getContent(filter));
+                out.write(element.getContent(excludeFilter));
             }
         }
         out.flush();
         out.close();
     }
 
-    private class Filter implements HtmlNodeFilter {
+    private class ExcludeFilter implements HtmlNodeFilter {
 
-        private Set excluded, included;
+        private Set excluded;
 
-        public Filter(Set excluded, Set included) {
+        public ExcludeFilter(Set excluded) {
             this.excluded = excluded;
-            this.included = included;
+//            this.included = included;
         }
 
         public HtmlContent filterNode(HtmlContent node) {
@@ -141,16 +140,14 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                 HtmlElement element = (HtmlElement) node;
                 if (excluded.contains(element.getName())) {
                     return null;
-                } else if (include != null && !include.contains(element.getName())) {
-                    return node;
+//                } else if (included != null && !included.contains(element.getName())) {
+//                    return node;
                 }
             }
             return node;
         }
     }
     
-
-
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
@@ -159,8 +156,8 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         Map map = new HashMap();
         if (this.elementPath == null)
             map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
-        if (this.include == null)
-            map.put(PARAMETER_INCLUDE, PARAMETER_INCLUDE_DESC);
+//        if (this.include == null)
+//            map.put(PARAMETER_INCLUDE, PARAMETER_INCLUDE_DESC);
         if (this.exclude == null)
             map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
         if (this.enclosed == null)

@@ -54,9 +54,9 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
 
     private String name;
 
-    private String description = getDescriptionInternal();
+    private String description;
 
-    private Map parameterDescriptions = getParameterDescriptionsInternal();
+    private Map parameterDescriptions;
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
@@ -91,6 +91,12 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
     protected abstract Map getParameterDescriptionsInternal();
 
     public void afterPropertiesSet() throws Exception {
+        if (this.description == null)
+            this.description = getDescriptionInternal();
+
+        if (this.parameterDescriptions == null)
+            this.parameterDescriptions = getParameterDescriptionsInternal();
+
         if (this.description == null) {
             throw new BeanInitializationException(
                     "JavaBean property 'description' not set");

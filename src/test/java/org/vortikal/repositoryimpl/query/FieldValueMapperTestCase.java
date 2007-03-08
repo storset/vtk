@@ -35,6 +35,7 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repositoryimpl.index.FieldValueMapper;
 
 /**
  * TODO: This JUnit test case class is not complete.

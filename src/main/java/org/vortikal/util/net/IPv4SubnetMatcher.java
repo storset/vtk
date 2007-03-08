@@ -175,7 +175,7 @@ public class IPv4SubnetMatcher extends AbstractIPv4Matcher implements IPv4Matche
             if (i < 3) buffer.append('.');
         }
         
-        buffer.append("/");
+        buffer.append('/');
         
         for (int i=0; i<4; i++){
             buffer.append(this.maskOctets[i]);

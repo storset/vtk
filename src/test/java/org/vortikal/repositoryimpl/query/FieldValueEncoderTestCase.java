@@ -33,6 +33,8 @@ package org.vortikal.repositoryimpl.query;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.vortikal.repositoryimpl.index.FieldValueEncoder;
+
 import junit.framework.TestCase;
 
 public class FieldValueEncoderTestCase extends TestCase {

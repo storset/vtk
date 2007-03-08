@@ -36,6 +36,7 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.Token;
+import org.vortikal.repositoryimpl.index.EscapedMultiValueFieldTokenizer;
 
 public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
     

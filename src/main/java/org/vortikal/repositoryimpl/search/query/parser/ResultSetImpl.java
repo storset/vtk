@@ -28,27 +28,71 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.parser;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.vortikal.repository.PropertySet;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
 
-    private DocumentMapper mapper;
+
+/**
+ * Simple cached result set.  
+ * 
+ * @author oyviste
+ */
+public class ResultSetImpl implements ResultSet {
+
+    private List results;
+    private int totalHits;
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    public ResultSetImpl() {
+        this.results = new ArrayList();
+        this.totalHits = 0;
+    }
+    
+    public ResultSetImpl(int initialCapacity) {
+        this.results = new ArrayList(initialCapacity);
+    }
+    
+    public Object getResult(int index) {
+        return this.results.get(index);
     }
 
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    public List getResults(int maxIndex) {
+        int max = Math.min(maxIndex, this.results.size());
+        
+        return this.results.subList(0, max);
+    }
+   
+    public List getResults(int fromIndex, int toIndex) {
+        return this.results.subList(fromIndex, toIndex);
+    }
+
+    public List getAllResults() {
+        return this.results;
+    }
+
+    public int getSize() {
+        return this.results.size();
+    }
+    
+    public void addResult(PropertySet propSet) {
+        this.results.add(propSet);
+    }
+    
+    public Iterator iterator() {
+        return this.results.iterator();
+    }
+    
+    public int getTotalHits() {
+        return this.totalHits;
+    }
+    
+    public void setTotalHits(int totalHits) {
+        this.totalHits = totalHits;
     }
 
 }

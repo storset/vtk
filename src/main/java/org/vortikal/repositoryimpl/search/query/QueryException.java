@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2005, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,27 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
 
-import java.io.IOException;
+package org.vortikal.repositoryimpl.search.query;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
-
-    private DocumentMapper mapper;
+/**
+ *
+ * @author oyviste
+ * @deprecated
+ */
+public class QueryException extends RuntimeException {
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
-    }
+    private static final long serialVersionUID = 741215292237620741L;
 
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    /**
+     * Creates a new instance of QueryException 
+     */
+    public QueryException() {
+        super();
     }
-
+    
+    public QueryException(String message) {
+        super(message);
+    }
+    
+    public QueryException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

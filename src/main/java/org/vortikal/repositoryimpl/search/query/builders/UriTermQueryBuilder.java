@@ -28,27 +28,39 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
+import org.vortikal.repository.search.query.UriOperator;
+import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.vortikal.repositoryimpl.search.query.QueryBuilder;
+import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+/**
+ * 
+ * @author oyviste
+ *
+ */
+public class UriTermQueryBuilder implements QueryBuilder {
 
-    private DocumentMapper mapper;
-    
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    private UriTermQuery query;
+    public UriTermQueryBuilder(UriTermQuery query) {
+        this.query = query;
     }
-
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    
+    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
+        String uri = this.query.getUri();
+        
+        if (this.query.getOperator() == UriOperator.EQ) {
+            // URI equality
+            return new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+        }
+        // URI NOT equal
+        throw new QueryBuilderException("UriOperator 'NE' not yet implemented.");
+        
+        
     }
 
 }

@@ -4,24 +4,24 @@
 <beans>
 
   <bean id="queryParserFactory"
-        class="org.vortikal.repositoryimpl.query.parser.QueryParserFactoryImpl">
+        class="org.vortikal.repositoryimpl.search.query.parser.QueryParserFactoryImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="queryManager" class="org.vortikal.repositoryimpl.query.parser.QueryManager">
+  <bean id="queryManager" class="org.vortikal.repositoryimpl.search.query.parser.QueryManager">
     <property name="parserFactory" ref="queryParserFactory" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryStringProcessor" ref="queryStringProcessor" />
   </bean>
 
   <bean id="queryStringProcessor"
-        class="org.vortikal.repositoryimpl.query.parser.QueryStringProcessor">
+        class="org.vortikal.repositoryimpl.search.query.parser.QueryStringProcessor">
     <property name="expressionEvaluators">
       <list>
-        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentDepthExpressionEvaluator" />
-        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentFolderExpressionEvaluator"
+        <bean class="org.vortikal.repositoryimpl.search.query.parser.CurrentDepthExpressionEvaluator" />
+        <bean class="org.vortikal.repositoryimpl.search.query.parser.CurrentFolderExpressionEvaluator"
               parent="requestLocalRepositoryAware" />
-        <bean class="org.vortikal.repositoryimpl.query.parser.CurrentTimeExpressionEvaluator" />
+        <bean class="org.vortikal.repositoryimpl.search.query.parser.CurrentTimeExpressionEvaluator" />
       </list>
     </property>
   </bean>
@@ -68,14 +68,14 @@
   
   <!-- Factory for building Lucene queries. -->
   <bean id="queryBuilderFactory"
-        class="org.vortikal.repositoryimpl.query.QueryBuilderFactoryImpl">
+        class="org.vortikal.repositoryimpl.search.query.QueryBuilderFactoryImpl">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="indexAccessor" ref="systemIndexAccessor"/>
   </bean>
 
   <!-- Searcher implementation -->
   <bean id="systemIndexSearcher"
-        class="org.vortikal.repositoryimpl.query.SearcherImpl">
+        class="org.vortikal.repositoryimpl.search.query.SearcherImpl">
     <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
@@ -85,7 +85,7 @@
 
   <!-- Query result authorization (ACL checking) -->
   <bean id="queryResultAuthorizationManager"
-        class="org.vortikal.repositoryimpl.query.security.DatabaseQueryResultAuthorizationManager">
+        class="org.vortikal.repositoryimpl.search.query.security.DatabaseQueryResultAuthorizationManager">
     <property name="principalManager" ref="principalManager"/>
     <property name="tokenManager" ref="tokenManager"/>
     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>

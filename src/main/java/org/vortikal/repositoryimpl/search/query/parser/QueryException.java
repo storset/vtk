@@ -28,27 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.parser;
 
-import java.io.IOException;
+import org.vortikal.repository.RepositoryException;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+public class QueryException extends RepositoryException {
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+    private static final long serialVersionUID = -3553997097236594602L;
 
-    private DocumentMapper mapper;
+    public QueryException() {
+        super();
+    }
+
+    public QueryException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public QueryException(String message) {
+        super(message);
+    }
+
+    public QueryException(Throwable cause) {
+        super(cause);
+    }
+
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
-    }
-
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-    }
-
 }

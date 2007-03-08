@@ -51,7 +51,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
-import org.vortikal.repositoryimpl.query.security.ResultSecurityInfo;
+import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapClient;

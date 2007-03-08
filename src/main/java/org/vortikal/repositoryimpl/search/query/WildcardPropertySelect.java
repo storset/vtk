@@ -28,27 +28,24 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query;
 
-import java.io.IOException;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.PropertySelect;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+/**
+ * Utility property select implementation that includes all
+ * properties.
+ *
+ */
+public class WildcardPropertySelect implements PropertySelect {
 
-    private DocumentMapper mapper;
+    public static final WildcardPropertySelect WILDCARD_PROPERTY_SELECT =
+        new WildcardPropertySelect();
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
-    }
 
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
+        return true;
     }
-
 }

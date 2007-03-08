@@ -28,27 +28,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
+import org.vortikal.repository.search.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.vortikal.repositoryimpl.search.query.PrefixTermFilter;
+import org.vortikal.repositoryimpl.search.query.QueryBuilder;
+import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+/**
+ * XXX: Somewhat experimental, as it uses a constant-score query with a filter
+ *      to do the actual prefix query. It has no upper limitation on the number
+ *      of matches (we don't risk the BooleanQuery.TooManyClauses-exception).
+ * 
+ * @author oyviste
+ */
+public class NamePrefixQueryBuilder implements QueryBuilder {
 
-    private DocumentMapper mapper;
-    
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    private NamePrefixQuery query;
+    public NamePrefixQueryBuilder(NamePrefixQuery query) {
+        this.query = query;
+        
     }
-
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    
+    /* (non-Javadoc)
+     * @see org.vortikal.repositoryimpl.query.QueryBuilder#buildQuery()
+     */
+    public Query buildQuery() throws QueryBuilderException {
+        
+        Term prefixTerm = new Term(DocumentMapper.NAME_FIELD_NAME, 
+                                                        this.query.getTerm());
+        
+        Filter filter = new PrefixTermFilter(prefixTerm);
+        
+        ConstantScoreQuery csq = new ConstantScoreQuery(filter);
+        
+        return csq;
     }
 
 }

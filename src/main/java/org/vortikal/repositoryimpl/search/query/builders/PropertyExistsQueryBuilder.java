@@ -28,27 +28,44 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.vortikal.repositoryimpl.search.query.InversionFilter;
+import org.vortikal.repositoryimpl.search.query.QueryBuilder;
+import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
+import org.vortikal.repositoryimpl.search.query.TermExistsFilter;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+/**
+ * XXX: Experimental, might be slow to execute, especially in the
+ * case of result-inversion.
+ * 
+ * @author oyviste
+ */
+public class PropertyExistsQueryBuilder implements QueryBuilder {
 
-    private DocumentMapper mapper;
-    
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    private PropertyExistsQuery query;
+    public PropertyExistsQueryBuilder(PropertyExistsQuery query) {
+        this.query = query;
     }
 
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
+        
+        PropertyTypeDefinition def = this.query.getPropertyDefinition();
+        
+        String fieldName = DocumentMapper.getFieldName(def);
+
+        Filter filter = new TermExistsFilter(fieldName);
+        
+        if (query.isInverted()) {
+            filter = new InversionFilter(filter);
+        }
+        
+        return new ConstantScoreQuery(filter);
     }
 
 }

@@ -28,27 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.Query;
+import org.vortikal.repository.search.query.NameRangeQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+public class NameRangeQueryBuilder implements QueryBuilder {
 
-    private DocumentMapper mapper;
+    private NameRangeQuery nrq;
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    public NameRangeQueryBuilder(NameRangeQuery nrq) {
+        this.nrq = nrq;
     }
 
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    public Query buildQuery() {
+        
+        String from = this.nrq.getFromTerm();
+        String to = this.nrq.getToTerm();
+        
+        ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(
+                DocumentMapper.NAME_FIELD_NAME, from, to, this.nrq.isInclusive(), this.nrq.isInclusive());
+        
+        return csrq;
     }
 
 }

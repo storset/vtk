@@ -28,27 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.vortikal.repositoryimpl.search.query.QueryBuilder;
+import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+/**
+ * Build URI depth Lucene query
+ * 
+ * @author oyviste
+ *
+ */
+public class UriDepthQueryBuilder implements QueryBuilder {
 
-    private DocumentMapper mapper;
+    private UriDepthQuery query;
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    public UriDepthQueryBuilder(UriDepthQuery query) {
+        this.query = query;
     }
+    
+    public Query buildQuery() throws QueryBuilderException {
+        
+        Term uriDepthTerm = new Term(
+                DocumentMapper.URI_DEPTH_FIELD_NAME,
+                Integer.toString(query.getDepth()));
+        
+        return new TermQuery(uriDepthTerm);
 
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
     }
 
 }

@@ -28,27 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.security;
 
-import java.io.IOException;
+import java.util.List;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
-
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
-
-    private DocumentMapper mapper;
+/**
+ * Generic interface for authorizing elements in a list of query results.
+ * 
+ * @author oyviste
+ *
+ */
+public interface QueryResultAuthorizationManager {
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
-    }
-
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-    }
-
+    public void authorizeQueryResults(String token, List queryResultSecurityInfo)   
+        throws QueryAuthorizationException;
+    
+    
 }

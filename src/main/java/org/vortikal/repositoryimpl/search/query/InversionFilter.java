@@ -28,27 +28,57 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query;
 
 import java.io.IOException;
+import java.util.BitSet;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.apache.lucene.search.Filter;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+/**
+ * A {@link org.apache.lucene.search.Filter} that inverts the result of 
+ * another <code>Filter</code>.
+ * <p>
+ * 
+ * It basically flips all bits provided by the wrapped filter, while
+ * making sure that bits for deleted documents are not set.
+ * <p>
+ * 
+ * It is a non-thread safe, per-query dynamic filter. It will directly alter the 
+ * <code>BitSet</code> provided by the wrapped filter to avoid double 
+ * memory allocation and copying. Beware of this if wrapping
+ * re-usable (long-lived) filters that cache their own bitset and expect it
+ * not to change.
+ * <p>
+ * 
+ * NOTE: It may be more efficient to code inversion-logic directly into
+ * filter implementations (depends).
+ * 
+ * @author oyviste
+ *
+ */
+public class InversionFilter extends Filter {
 
-    private DocumentMapper mapper;
+    private Filter wrappedFilter;
+    private BitSet bits;
     
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    public InversionFilter(Filter wrappedFilter) {
+        this.wrappedFilter = wrappedFilter;
     }
-
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    
+    public BitSet bits(IndexReader reader) throws IOException {
+        if (bits == null) {
+            bits = this.wrappedFilter.bits(reader);
+            bits.flip(0, reader.maxDoc());
+            for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
+                if (reader.isDeleted(i)) {
+                    bits.clear(i);
+                }
+            }
+        }
+        
+        return bits;
     }
 
 }

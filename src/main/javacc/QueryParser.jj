@@ -10,7 +10,7 @@ options {
 
 PARSER_BEGIN(QueryParser)
 
-package org.vortikal.repositoryimpl.query.parser;
+package org.vortikal.repositoryimpl.search.query.parser;
 
 import java.io.StringReader;
 import java.util.List;

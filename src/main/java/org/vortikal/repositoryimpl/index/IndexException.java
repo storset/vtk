@@ -30,7 +30,7 @@
  */
 package org.vortikal.repositoryimpl.index;
 
-import org.vortikal.repositoryimpl.query.parser.QueryException;
+import org.vortikal.repositoryimpl.search.query.parser.QueryException;
 
 public class IndexException extends QueryException {
 

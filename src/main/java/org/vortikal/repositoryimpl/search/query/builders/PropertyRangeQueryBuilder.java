@@ -28,27 +28,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.Query;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.PropertyRangeQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
+import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
+import org.vortikal.repositoryimpl.search.query.QueryBuilder;
+import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+/**
+ * 
+ * @author oyviste
+ */
+public class PropertyRangeQueryBuilder implements QueryBuilder {
 
-    private DocumentMapper mapper;
-    
-    public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
-            throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
-        this.mapper = mapper;
+    private PropertyRangeQuery prq;
+    public PropertyRangeQueryBuilder(PropertyRangeQuery prq) {
+        this.prq = prq;
+         
     }
 
-    protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+    public Query buildQuery() throws QueryBuilderException {
+        
+        String from = this.prq.getFromTerm();
+        String to = this.prq.getToTerm();
+        PropertyTypeDefinition def = this.prq.getPropertyDefinition();
+        
+        String fromEncoded = FieldValueMapper.encodeIndexFieldValue(from, def.getType());
+        String toEncoded = FieldValueMapper.encodeIndexFieldValue(to, def.getType());
+        
+        String fieldName = DocumentMapper.getFieldName(def);
+        
+        ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(fieldName, 
+                fromEncoded, toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
+        
+        return csrq;
+        
+        
     }
 
 }

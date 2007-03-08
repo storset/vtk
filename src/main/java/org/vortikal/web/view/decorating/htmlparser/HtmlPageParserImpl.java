@@ -30,9 +30,9 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
+
 import java.io.InputStream;
 import java.util.Vector;
-
 import org.htmlparser.Attribute;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
@@ -114,6 +114,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return root;
     }
     
+
     private String findDoctype(NodeList nodeList) {
         for (int i = 0; i < nodeList.size(); i++) {
             Node node = nodeList.elementAt(i);
@@ -128,24 +129,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         }
         return null;
     }
-    
 
-
-    private void addAttributes(HtmlElementImpl element, Tag tag) {
-        String name = tag.getRawTagName();
-        Vector attrs = tag.getAttributesEx();
-        for (int i = 0; i < attrs.size(); i++) {
-            Attribute attr = (Attribute) attrs.get(i);
-            if (attr != null && !attr.isWhitespace()) {
-                String attrName = attr.getName();
-                if (attrName != null && !name.equals(attrName) && !"/".equals(attrName)) {
-                    String attrValue = attr.getValue();
-                    element.addAttribute(new HtmlAttributeImpl(attrName, attrValue));
-                }
-            }
-        }
-    }
-    
 
     private HtmlContent buildHtml(Node node, HtmlNodeFilter filter, boolean xhtml) {
 
@@ -154,7 +138,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         if (node instanceof Tag) {
             Tag tag = (Tag) node;
             String name = tag.getRawTagName();
-            boolean empty = tag.isEmptyXmlTag() || tag.getEndTag() == null;
+            boolean empty = tag.isEmptyXmlTag();
             HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml);
 
             if (tag.isEndTag()) {
@@ -170,39 +154,23 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
                     // Handle "flattened" nodes (tags that should be
                     // nested, but aren't):
+                    if (isFlattenedNode(children, i)) {
 
-                    if (i <= children.size() - 3) {
-                        Node firstSibling = children.elementAt(i + 1);
-                        Node nextSibling = children.elementAt(i + 2);
-
-                        if (childNode instanceof Tag
-                            && firstSibling != null
-                            && nextSibling != null
-                            && firstSibling instanceof Text
-                            && nextSibling instanceof Tag
-                            && ((Tag) nextSibling).isEndTag()
-                            && ((Tag) nextSibling).getTagName()
-                               .equals(((Tag)childNode).getTagName())) {
-
-                            HtmlElementImpl child = new HtmlElementImpl(
-                                ((Tag) childNode).getRawTagName(), false, xhtml);
-
-                            if (child != null) {
-                                HtmlText textNode = new HtmlTextImpl(
-                                    ((Text) firstSibling).getText());
-                                child.addContent(textNode);
-                                element.addContent(child);
-
-                                i+=2; // Skip the text node and end tag:
-                            }
-                            continue;
+                        Node unflattened = unflattenSiblings(children, i);
+                        HtmlContent child = buildHtml(unflattened, filter, xhtml);
+                        if (child != null) {
+                            element.addContent(child);
                         }
-                    } 
-                    HtmlContent child = buildHtml(children.elementAt(i), filter, xhtml);
-                    if (child != null) {
-                        element.addContent(child);
-                    }
+                        // Skip the following text node and end tag:
+                        i+=2;
 
+                    } else {
+                        
+                        HtmlContent child = buildHtml(children.elementAt(i), filter, xhtml);
+                        if (child != null) {
+                            element.addContent(child);
+                        }
+                    }
                 }
             }
             content = element;
@@ -224,4 +192,55 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
         return content;
     }
+
+
+    private void addAttributes(HtmlElementImpl element, Tag tag) {
+        String name = tag.getRawTagName();
+        Vector attrs = tag.getAttributesEx();
+        for (int i = 0; i < attrs.size(); i++) {
+            Attribute attr = (Attribute) attrs.get(i);
+            if (attr != null && !attr.isWhitespace()) {
+                String attrName = attr.getName();
+                if (attrName != null && !name.equals(attrName) && !"/".equals(attrName)) {
+                    String attrValue = attr.getValue();
+                    element.addAttribute(new HtmlAttributeImpl(attrName, attrValue));
+                }
+            }
+        }
+    }
+    
+
+
+    private boolean isFlattenedNode(NodeList nodeList, int index) {
+        Node childNode = nodeList.elementAt(index);
+        if (index <= nodeList.size() - 3) {
+            Node firstSibling = nodeList.elementAt(index + 1);
+            Node nextSibling = nodeList.elementAt(index + 2);
+
+            return (childNode instanceof Tag
+                    && firstSibling != null
+                    && nextSibling != null
+                    && firstSibling instanceof Text
+                    && nextSibling instanceof Tag
+                    && ((Tag) nextSibling).isEndTag()
+                    && ((Tag) nextSibling).getTagName()
+                    .equals(((Tag)childNode).getTagName()));
+            
+        }
+        return false;
+    }
+    
+
+    private Node unflattenSiblings(NodeList nodeList, int index) {
+        Tag node = (Tag) nodeList.elementAt(index);
+        Text child = (Text) nodeList.elementAt(index + 1);
+        Tag end = (Tag) nodeList.elementAt(index + 2);
+        NodeList children = new NodeList();
+        children.add(child);
+        node.setChildren(children);
+        node.setEmptyXmlTag(false);
+        node.setEndTag(end);
+        return node;
+    }
+
 }

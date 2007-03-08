@@ -52,7 +52,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
         + "    <object>foobar</object>\n"
         + "    <object>foobbar</object>"
         + "    <object>syt</object>"
-        + "    <object><miz><under>foo</under></miz></object>"
+        + "    <object><element><under>foo</under></element></object>"
         + "    <meta name=\"keywords\" content=\"My keywords\"/>\n"
         + "    <title>My title</title>\n"
         + "  </head>\n"
@@ -71,7 +71,6 @@ public class HtmlPageParserImplTestCase extends TestCase {
         assertEquals("bar", page.getRootElement().getChildElements()[0]
                      .getAttributes()[1].getValue());
     }
-
 
     public void testNodeFiltering() throws Exception {
         HtmlPage page = parse(SIMPLE_XHTML_PAGE, 
@@ -92,6 +91,53 @@ public class HtmlPageParserImplTestCase extends TestCase {
     }
     
     
+    private static final String SIMPLE_XHTML_PAGE_WITH_DIRECTIVES =
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+        + "<html>\n"
+        + "  <head attr1=\"foo\" attr2=\"bar\">\n"
+        + "    <object>foobar</object>\n"
+        + "    <meta name=\"keywords\" content=\"My keywords\"/>\n"
+        + "    <title>My title</title>\n"
+        + "  </head>\n"
+        + "  <body>"
+        + "    <div>"
+        + "      <span>Last modified"
+        + "        <b>${resource:property id=[lastModified]}</b>"
+        + "      </span>"
+        + "      ${resource:property id=[lastModified]}"
+        + "    </div>"
+        + "  </body>\n"
+        + "</html>\n";
+
+
+    public void testNestedTagFiltering() throws Exception {
+
+        final java.util.Map map = new java.util.HashMap();
+        HtmlPage page = parse(SIMPLE_XHTML_PAGE_WITH_DIRECTIVES, 
+             new HtmlNodeFilter() {
+                public HtmlContent filterNode(HtmlContent node) {
+                    if (node instanceof HtmlElement) {
+                        HtmlElement element = (HtmlElement) node;
+                        map.put(element.getName(), element);
+                    }
+                    return node;
+                }
+            });
+        
+        assertNotNull(map.get("html"));
+        assertNotNull(map.get("head"));
+        assertNotNull(map.get("object"));
+        assertNotNull(map.get("meta"));
+        assertNotNull(map.get("title"));
+        assertNotNull(map.get("body"));
+        assertNotNull(map.get("div"));
+        assertNotNull(map.get("span"));
+        assertNotNull(map.get("b"));
+        
+        print(page.getRootElement(), "");
+    }
+
+
     private static final String UNFORMATTED_STRING =
         "  body The div page div body";
     
@@ -270,7 +316,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
     }
     
     private void print(HtmlElement element, String indent) {
-        System.out.println(indent + element.getName());
+        System.out.println(indent + "el: " + element.getName());
         HtmlElement[] children = element.getChildElements();
         for (int i = 0; i < children.length; i++) {
             print(children[i], indent + "  ");

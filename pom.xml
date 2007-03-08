@@ -260,7 +260,7 @@
             </goals>
             <configuration>
 
-              <packageName>org.vortikal.repositoryimpl.query.parser</packageName>
+              <packageName>org.vortikal.repositoryimpl.search.query.parser</packageName>
 	      <!--              <sourceDirectory>src/main/generated-java/</sourceDirectory>
               <outputDirectory>src/main/generated-java</outputDirectory>
 	      -->

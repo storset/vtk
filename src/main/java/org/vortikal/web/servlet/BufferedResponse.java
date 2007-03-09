@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -55,6 +56,9 @@ import org.vortikal.util.web.HttpUtil;
  * headers. An optional limit can be set on the buffer size.
  */
 public class BufferedResponse implements HttpServletResponse {
+
+    private static final Pattern CONTENT_TYPE_HEADER_PATTERN
+                                    = Pattern.compile(".+/.+;.*charset.*=.+");
 
     private long maxBufferSize = -1;
     private int status = 200;
@@ -302,10 +306,9 @@ public class BufferedResponse implements HttpServletResponse {
             }
         }
     }
-
-
+    
     private void processContentTypeHeader(String value) {
-        if (value.matches(".+/.+;.*charset.*=.+")) {
+        if (CONTENT_TYPE_HEADER_PATTERN.matcher(value).matches()) {
 
             String contentType = value.substring(
                 0, value.indexOf(";")).trim();

@@ -20,65 +20,67 @@
   <style type="text/css">
     body {
        font-family: Arial, Helvetica, sans-serif;
+       padding-left: 1em;
+       padding-right: 1em;
     }
-    h1 {
-       font-size: 95%;
+
+    h2 {margin-bottom: 0px; margin-top:1.3em;}
+    h3 {margin-bottom:.6em; margin-top:1em;}
+
+
+    div.content {
+     padding: 1em;
+     border: 1px solid #aaa;
     }
-    tr.header {
-       text-align: left;
-       font-size: 95%;
+
+    div.content h2 {margin-top:0px;}
+
+    div.content ul {
+      list-style-type: square;
+      margin-bottom:0px;
     }
-    td {
-       border: 1px solid black;
+
+    div.content ul.content li {
+
     }
-    .componentName, .parameterName {
-       font-family: monospace;
+
+    dt {
+      font-family: monospace;
     }
+
+
   </style>
 </head>
 <body>
-  <h1>Decorator components</h1>
+  <h1>Available decorator components</h1>
   <#if componentList?exists>
 
-    <table>
-      <tr class="header"><th>Name</th><th>Description</th><th>Parameters</th></tr>
-      <#list componentList?sort_by('namespace') as component>
-      <tr>
-        <td class="componentName">${component.namespace?html}:${component.name?html}</td>
-        <td class="componentDescription">${(component.description?html)?if_exists}</td>
-        <td class="parameterDescriptions">
-            <#if (component.parameterDescriptions)?exists>
-              <table>
-                <#list component.parameterDescriptions?keys as paramName>
-                  <tr>
-                    <td class="parameterName">${paramName}</td><td>${component.parameterDescriptions[paramName]?html}</td>
-                  </tr>
-                </#list>
-              </table>
-            </#if>
-        </td>
-      </tr>
+  <#-- table of contents -->
+  <div class="content">                         
+  <h2>List of components</h2>                         
+  <ul>
+    <#list componentList?sort_by('namespace') as component>
+      <li><a href="#${component.namespace?html}:${component.name?html}">${component.namespace?html}:${component.name?html}</a></li>
       </#list>
-    </table>
-    <#--
-    <dl>
-      <#list componentList?sort_by('namespace') as component>
-        <dt class="componentName">${component.namespace?html}:${component.name?html}</dt>
-        <dd>
-          ${(component.description?html)?if_exists}
-            <#if (component.parameterDescriptions)?exists>
-              <dl>
-                Parameters:
-                <#list component.parameterDescriptions?keys as paramName>
-                  <dt>${paramName}</dt>
-                  <dd>${component.parameterDescriptions[paramName]}</dd>
-                </#list>
-              </dl>
-            </#if>
-        </dd>
-      </#list>
-    </dl>
-    -->
+  </ul>
+  </div>
+    <#list componentList?sort_by('namespace') as component>
+      <h2 id="${component.namespace?html}:${component.name?html}">
+        ${component.namespace?html}:${component.name?html}
+      </h2>
+      <h3>Description</h3>
+      <div class="componentDescription">${(component.description?html)?if_exists}</div>
+
+      <#if (component.parameterDescriptions)?exists>
+        <h3>Parameters</h3>
+        <#list component.parameterDescriptions?keys as paramName>
+          <dl class="parameters">
+            <dt>${paramName}</dt> 
+            <dd>${component.parameterDescriptions[paramName]?html}</dd>
+          </dl>
+        </#list>
+      </#if>
+   </#list>
   </#if>
 </body>
 </html>

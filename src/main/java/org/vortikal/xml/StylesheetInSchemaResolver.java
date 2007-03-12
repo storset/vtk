@@ -41,6 +41,19 @@ import org.vortikal.repository.PropertySet;
 
 
 /**
+ * Stylesheet resolver that looks in the xsd annotation element for
+ * <code>view/xsl</code> references
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>schemaRegistry</code> - the XML {@link
+ *   XmlSchemaRegistry schema registry} used to look up schema
+ *   references
+ *   <li><code>elementXPath</code> - the XPath expression used to look
+ *   for XSLT references inside the XML schema document. The default
+ *   expression is
+ *   <code>/xsd:schema/xsd:annotation/xsd:appinfo/view/xsl</code>.
+ * </ul>
  */
 public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
 
@@ -55,25 +68,16 @@ public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
     
     private XmlSchemaRegistry schemaRegistry = null;
     private String elementXPath = "/xsd:schema/xsd:annotation/xsd:appinfo/view/xsl";
+    
 
-
-
-    /**
-     * @param elementXPath The elementXPath to set.
-     */
     public void setElementXPath(String elementXPath) {
         this.elementXPath = elementXPath;
     }
-    
+
     public void setSchemaRegistry(XmlSchemaRegistry schemaRegistry) {
         this.schemaRegistry = schemaRegistry;
     }
     
-
-
-    /** 
-     * @see org.vortikal.xml.StylesheetReferenceResolver#getStylesheetIdentifier(org.vortikal.repository.PropertySet, org.jdom.Document)
-     */
     public String getStylesheetIdentifier(PropertySet resource, Document document) {
 
         String docType = document.getRootElement().getAttributeValue(

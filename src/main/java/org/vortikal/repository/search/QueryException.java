@@ -28,26 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.search;
 
-public class SimpleSortField extends AbstractSortField {
+import org.vortikal.repository.RepositoryException;
 
-    private String name;
-    
-    public SimpleSortField(String name) {
-        this.name = name;
+public class QueryException extends RepositoryException {
+
+    private static final long serialVersionUID = -3553997097236594602L;
+
+    public QueryException() {
+        super();
     }
-    
-    public SimpleSortField(String name, SortFieldDirection direction) {
-        super(direction);
-        this.name = name;
+
+    public QueryException(String message, Throwable cause) {
+        super(message, cause);
     }
-    
-    public String getName() {
-        return this.name;
+
+    public QueryException(String message) {
+        super(message);
     }
-    
-    public String toString() {
-        return this.name + " " + getDirection().toString();
+
+    public QueryException(Throwable cause) {
+        super(cause);
     }
+
+    
 }

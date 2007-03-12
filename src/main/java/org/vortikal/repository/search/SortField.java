@@ -28,29 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query.parser;
+package org.vortikal.repository.search;
 
-import org.vortikal.repository.RepositoryException;
-
-public class QueryException extends RepositoryException {
-
-    private static final long serialVersionUID = -3553997097236594602L;
-
-    public QueryException() {
-        super();
-    }
-
-    public QueryException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public QueryException(String message) {
-        super(message);
-    }
-
-    public QueryException(Throwable cause) {
-        super(cause);
-    }
-
+public interface SortField {
+    
+    public SortFieldDirection getDirection();
     
 }

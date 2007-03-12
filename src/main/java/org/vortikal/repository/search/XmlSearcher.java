@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.query.parser;
+package org.vortikal.repository.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,20 +56,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.repository.search.query.PropertySelect;
-import org.vortikal.repository.search.query.PropertySortField;
-import org.vortikal.repository.search.query.SimpleSortField;
-import org.vortikal.repository.search.query.SortField;
-import org.vortikal.repository.search.query.SortFieldDirection;
-import org.vortikal.repository.search.query.Sorting;
-import org.vortikal.repository.search.query.SortingImpl;
 import org.vortikal.repositoryimpl.PropertyManager;
-import org.vortikal.repositoryimpl.search.query.HashSetPropertySelect;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
-import org.vortikal.repositoryimpl.search.query.parser.QueryException;
-import org.vortikal.repositoryimpl.search.query.parser.QueryManager;
-import org.vortikal.repositoryimpl.search.query.parser.ResultSet;
-import org.vortikal.repositoryimpl.search.query.parser.Searcher;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -97,7 +84,7 @@ public class XmlSearcher implements InitializingBean {
     private static Log logger = LogFactory.getLog(XmlSearcher.class);
 
     private Searcher searcher;
-    private QueryManager queryManager;
+    private SearchFactory searchFactory;
     private PropertyManager propertyManager;
     private ResourceTypeTree resourceTypeTree;
     private int maxResults = 1000;
@@ -113,8 +100,8 @@ public class XmlSearcher implements InitializingBean {
         this.searcher = searcher;
     }
 
-    public void setQueryManager(QueryManager queryManager) {
-        this.queryManager = queryManager;
+    public void setSearchFactory(SearchFactory searchFactory) {
+        this.searchFactory = searchFactory;
     }
     
     public void setPropertyManager(PropertyManager propertyManager) {
@@ -139,9 +126,9 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'searcher' not set");
         }
-        if (this.queryManager == null) {
+        if (this.searchFactory == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'queryManager' not set");
+                "JavaBean property 'searchFactoryImpl' not set");
         }
         if (this.propertyManager == null) {
             throw new BeanInitializationException(
@@ -220,15 +207,12 @@ public class XmlSearcher implements InitializingBean {
         
         try {
             SearchEnvironment envir = new SearchEnvironment(sort, fields);
-            PropertySelect select = envir.getPropertySelect();
-            Sorting sorting = envir.getSorting();
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("About to execute query: " + query + ": sort = " + sorting
-                             + ", limit = " + limit + ", envir = " + envir);
-            }
-
-            ResultSet rs = this.queryManager.execute(token, query, sorting, limit, select);
+            Search search = this.searchFactory.createSearch(query);
+            search.setSorting(envir.getSorting());
+            search.setLimit(limit);
+            search.setPropertySelect(envir.getPropertySelect());
+            ResultSet rs = this.searcher.execute(token, search);
             
             addResultSetToDocument(rs, doc, envir);
         } catch (Exception e) {

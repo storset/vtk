@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query;
+package org.vortikal.repositoryimpl.search;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,15 +44,18 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.search.query.PropertySelect;
+import org.vortikal.repository.search.PropertySelect;
+import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.Sorting;
 import org.vortikal.repositoryimpl.index.LuceneIndexManager;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.parser.QueryException;
-import org.vortikal.repositoryimpl.search.query.parser.ResultSet;
-import org.vortikal.repositoryimpl.search.query.parser.ResultSetImpl;
-import org.vortikal.repositoryimpl.search.query.parser.Searcher;
+import org.vortikal.repositoryimpl.search.query.QueryBuilderFactory;
+import org.vortikal.repositoryimpl.search.query.SortBuilder;
+import org.vortikal.repositoryimpl.search.query.SortBuilderImpl;
 import org.vortikal.repositoryimpl.search.query.security.LuceneResultSecurityInfo;
 import org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizationManager;
 
@@ -122,42 +125,14 @@ public class SearcherImpl implements Searcher, InitializingBean {
         }
     }
     
-    public ResultSet execute(String token, Query query, Sorting sorting,
-        int maxResults) throws QueryException {
-    
-        return executeQuery(token, query, sorting, maxResults, 0,
-                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-        
-    }
-
-    public ResultSet execute(String token, Query query, Sorting sorting, 
-                             int maxResults,
-                             PropertySelect selectedProperties) throws QueryException {
-        return executeQuery(token, query, sorting, maxResults, 0, selectedProperties);
-    }
-    
-
-    public ResultSet execute(String token, Query query, Sorting sorting,
-        int maxResults, int cursor) throws QueryException {
-    
-        return executeQuery(token, query, sorting, maxResults, cursor,
-                            WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
-        
-    }
-
-    
-    public ResultSet execute(String token, Query query, Sorting sorting,
-                             int maxResults, int cursor,
-                             PropertySelect selectedProperties) throws QueryException {
-        return executeQuery(token, query, sorting, maxResults, cursor,
-                            selectedProperties);
-    }
-    
-
-    private ResultSet executeQuery(String token, Query query, Sorting sorting,
-                                   int maxResults, int cursor,
-                                   PropertySelect selectedProperties)
+    public ResultSet execute(String token, Search search)
         throws QueryException {
+
+        Query query = search.getQuery();
+        Sorting sorting = search.getSorting();
+        int maxResults = search.getLimit();
+        int cursor = search.getCursor();
+        PropertySelect selectedProperties = search.getPropertySelect();
         
         if (selectedProperties == null) {
             throw new IllegalArgumentException("Argument selectedProperties cannot be NULL");

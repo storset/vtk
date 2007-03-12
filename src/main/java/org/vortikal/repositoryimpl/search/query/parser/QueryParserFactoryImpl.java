@@ -3,6 +3,8 @@ package org.vortikal.repositoryimpl.search.query.parser;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.search.query.Parser;
+import org.vortikal.repository.search.query.QueryParserFactory;
 
 public class QueryParserFactoryImpl implements QueryParserFactory, InitializingBean {
 

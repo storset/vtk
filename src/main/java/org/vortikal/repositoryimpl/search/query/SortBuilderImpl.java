@@ -33,11 +33,11 @@ package org.vortikal.repositoryimpl.search.query;
 import java.util.Iterator;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySortField;
-import org.vortikal.repository.search.query.SimpleSortField;
-import org.vortikal.repository.search.query.SortField;
-import org.vortikal.repository.search.query.SortFieldDirection;
-import org.vortikal.repository.search.query.Sorting;
+import org.vortikal.repository.search.PropertySortField;
+import org.vortikal.repository.search.SimpleSortField;
+import org.vortikal.repository.search.SortField;
+import org.vortikal.repository.search.SortFieldDirection;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 
 /**

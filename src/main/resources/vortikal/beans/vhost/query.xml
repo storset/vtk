@@ -8,14 +8,13 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="queryManager" class="org.vortikal.repositoryimpl.search.query.parser.QueryManager">
+  <bean id="searchFactory" class="org.vortikal.repository.search.SearchFactoryImpl">
     <property name="parserFactory" ref="queryParserFactory" />
-    <property name="searcher" ref="systemIndexSearcher" />
-    <property name="queryStringProcessor" ref="queryStringProcessor" />
+    <property name="queryStringPreProcessor" ref="queryStringPreProcessor" />
   </bean>
 
-  <bean id="queryStringProcessor"
-        class="org.vortikal.repositoryimpl.search.query.parser.QueryStringProcessor">
+  <bean id="queryStringPreProcessor"
+        class="org.vortikal.repositoryimpl.search.query.parser.QueryStringPreProcessorImpl">
     <property name="expressionEvaluators">
       <list>
         <bean class="org.vortikal.repositoryimpl.search.query.parser.CurrentDepthExpressionEvaluator" />
@@ -75,7 +74,7 @@
 
   <!-- Searcher implementation -->
   <bean id="systemIndexSearcher"
-        class="org.vortikal.repositoryimpl.search.query.SearcherImpl">
+        class="org.vortikal.repositoryimpl.search.SearcherImpl">
     <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="queryBuilderFactory" ref="queryBuilderFactory"/>

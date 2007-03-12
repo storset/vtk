@@ -39,11 +39,11 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.SimpleSortField;
-import org.vortikal.repository.search.query.SortingImpl;
-import org.vortikal.repositoryimpl.search.query.HashSetPropertySelect;
-import org.vortikal.repositoryimpl.search.query.parser.QueryManager;
-import org.vortikal.repositoryimpl.search.query.parser.ResultSet;
+import org.vortikal.repository.search.HashSetPropertySelect;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.SearchFactory;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -61,13 +61,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static Log logger = LogFactory.getLog(IncludeComponent.class);
     
-    private QueryManager queryManager;
+    private SearchFactory searchFactory;
     private Service viewService;
     private PropertyTypeDefinition titlePropdef;
     private String modelName = "menu";
 
-    public void setQueryManager(QueryManager queryManager) {
-        this.queryManager = queryManager;
+    private Searcher searcher;
+
+    public void setSearchFactory(SearchFactory searchFactory) {
+        this.searchFactory = searchFactory;
     }
     
     public void setViewService(Service viewService) {
@@ -100,13 +102,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         String token = null;
         String query = "uri = " + uri + " OR (uri = " + uri + 
             "/* AND type IN collection AND depth = " + depth + ")";
-        SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(new SimpleSortField("uri"));
         
         HashSetPropertySelect select = new HashSetPropertySelect();
         
-        ResultSet rs = this.queryManager.execute(token, query, sorting, 10, select);
-
+        Search search = this.searchFactory.createSearch(query);
+        search.setLimit(10);
+        search.setPropertySelect(select);
+        
+        ResultSet rs = this.searcher.execute(token, search);
+        
         MenuItem activeItem = null;
         List items = new ArrayList();
         
@@ -138,6 +142,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         menu.setItems((MenuItem[]) items.toArray(new MenuItem[items.size()]));
         menu.setLabel(this.getName());
         model.put(this.modelName, menu);
+    }
+
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
     }
 
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,34 +28,72 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query;
+package org.vortikal.repositoryimpl.search;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.search.ResultSet;
 
-public class HashSetPropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
+
+
+/**
+ * Simple cached result set.  
+ * 
+ * @author oyviste
+ */
+public class ResultSetImpl implements ResultSet {
+
+    private List results;
+    private int totalHits;
     
-    public void addPropertyDefinition(PropertyTypeDefinition def) {
-        this.properties.add(def);
-    }
-
-    public boolean isEmpty() {
-        return this.properties.isEmpty();
-    }
-
-    public boolean isIncludedProperty(PropertyTypeDefinition def) {
-        return this.properties.contains(def);
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
-        return sb.toString();
+    public ResultSetImpl() {
+        this.results = new ArrayList();
+        this.totalHits = 0;
     }
     
+    public ResultSetImpl(int initialCapacity) {
+        this.results = new ArrayList(initialCapacity);
+    }
+    
+    public Object getResult(int index) {
+        return this.results.get(index);
+    }
+
+    public List getResults(int maxIndex) {
+        int max = Math.min(maxIndex, this.results.size());
+        
+        return this.results.subList(0, max);
+    }
+   
+    public List getResults(int fromIndex, int toIndex) {
+        return this.results.subList(fromIndex, toIndex);
+    }
+
+    public List getAllResults() {
+        return this.results;
+    }
+
+    public int getSize() {
+        return this.results.size();
+    }
+    
+    public void addResult(PropertySet propSet) {
+        this.results.add(propSet);
+    }
+    
+    public Iterator iterator() {
+        return this.results.iterator();
+    }
+    
+    public int getTotalHits() {
+        return this.totalHits;
+    }
+    
+    public void setTotalHits(int totalHits) {
+        this.totalHits = totalHits;
+    }
+
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2004, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,29 +28,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.search;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class PropertySortField extends AbstractSortField {
+/**
+ * Simple search interface
+ *
+ */
+public interface Searcher {
 
-    private PropertyTypeDefinition definition;
-    
-    public PropertySortField(PropertyTypeDefinition def) {
-        this.definition = def;
-    }
+    public ResultSet execute(String token, Search search) throws QueryException;
 
-    public PropertySortField(PropertyTypeDefinition def, SortFieldDirection direction) {
-        super(direction);
-        this.definition = def;
-    }
-    
-    public PropertyTypeDefinition getDefinition() {
-        return this.definition;
-    }
-
-    public String toString() {
-        return this.definition.getName() + " " + getDirection().toString();
-    }
-    
 }

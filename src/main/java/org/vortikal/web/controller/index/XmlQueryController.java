@@ -47,7 +47,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.query.parser.XmlSearcher;
+import org.vortikal.repository.search.XmlSearcher;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 

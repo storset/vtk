@@ -180,7 +180,8 @@
         class="org.vortikal.web.view.decorating.components.ListMenuComponent">
     <property name="namespace" value="menu" />
     <property name="name" value="listmenu" />
-    <property name="queryManager" ref="queryManager" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="searchFactory" ref="searchFactory" />
     <property name="view" ref="decorating.listMenuComponent.view" />
     <property name="titlePropdef" ref="titlePropDef" />
     <property name="viewService" ref="webService" />

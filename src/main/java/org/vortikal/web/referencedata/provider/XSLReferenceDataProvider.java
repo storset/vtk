@@ -47,6 +47,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.XmlSearcher;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -77,6 +78,9 @@ import org.w3c.dom.NodeList;
  *   <li><code>matchAdminServiceAssertions</code> - default 
  *     <code>false</code> - determines whether all assertions must
  *     match in order for the admin link to be constructed
+ *   <li><code>xmlSearcher</code> - the {@link XmlSearcher} to
+ *   provide to the XSLT transformation - provided under the key
+ *   <code>{http://www.uio.no/vortex/xsl-parameters}XMLSearcher</code>.
  * </ul>
  *
  * <p>Optionally model data:
@@ -110,6 +114,11 @@ import org.w3c.dom.NodeList;
 public class XSLReferenceDataProvider
   implements InitializingBean, ReferenceDataProvider {
 
+    private static String XML_SEARCHER_KEY = "{http://www.uio.no/vortex/xsl-parameters}XmlSearcher";
+    
+    private XmlSearcher xmlSearcher;
+
+    
     private static final String REQUEST_PARAMETERS = "requestParameters";
     private static final String ADMIN_URL = "ADMIN-URL";
     private static final String CURRENT_URL = "CURRENT-URL";
@@ -159,6 +168,9 @@ public class XSLReferenceDataProvider
 
     
     public void afterPropertiesSet() throws Exception {
+        if (this.xmlSearcher == null) {
+            throw new BeanInitializationException("Property 'xmlSearcher' not set.");
+        }
         if (this.modelName == null) {
             throw new BeanInitializationException(
                 "Bean property 'modelName' must be set");
@@ -223,7 +235,9 @@ public class XSLReferenceDataProvider
             if (this.supplyRequestParameters) {
                 subModel.put(REQUEST_PARAMETERS, getRequestParams(request));
             }
+            subModel.put(XML_SEARCHER_KEY, this.xmlSearcher);
 
+            
         } catch (Throwable t) {
             this.logger.warn("Unable to provide complete XSLT reference data", t);
         }
@@ -303,5 +317,10 @@ public class XSLReferenceDataProvider
     public void setBreadCrumbProvider(BreadCrumbProvider breadCrumbProvider) {
         this.breadCrumbProvider = breadCrumbProvider;
     }
-    
+
+
+    public void setXmlSearcher(XmlSearcher xmlSearcher) {
+        this.xmlSearcher = xmlSearcher;
+    }
+
 }

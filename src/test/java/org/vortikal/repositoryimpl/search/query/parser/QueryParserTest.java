@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
-import org.vortikal.repositoryimpl.search.query.parser.Parser;
+import org.vortikal.repository.search.query.Parser;
 
 public class QueryParserTest extends AbstractDependencyInjectionSpringContextTests {
 

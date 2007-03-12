@@ -28,12 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.search;
 
-import java.util.List;
+public class SortFieldDirection {
 
-public interface Sorting {
+    private String name;
 
-    public List getSortFields();
+    private SortFieldDirection(String name) {
+        this.name = name;
+    }
+    
 
+    /**
+     * Defines ascending sort order (smallest first).
+     */
+    public static final SortFieldDirection ASC = new SortFieldDirection("asc");
+    
+    /**
+     * Defines descending sort order (biggest first).
+     */
+    public static final SortFieldDirection DESC = new SortFieldDirection("desc");
+
+
+    public String toString() {
+        return this.name;
+    }
+    
 }

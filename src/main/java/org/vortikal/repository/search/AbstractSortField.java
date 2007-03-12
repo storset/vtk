@@ -28,71 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query.parser;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.vortikal.repository.PropertySet;
+package org.vortikal.repository.search;
 
 
+public abstract class AbstractSortField implements SortField {
 
-/**
- * Simple cached result set.  
- * 
- * @author oyviste
- */
-public class ResultSetImpl implements ResultSet {
-
-    private List results;
-    private int totalHits;
+    private SortFieldDirection direction = SortFieldDirection.ASC;
     
-    public ResultSetImpl() {
-        this.results = new ArrayList();
-        this.totalHits = 0;
+    public AbstractSortField(){}
+    
+    public AbstractSortField(SortFieldDirection direction) {
+        this.direction = direction;
     }
     
-    public ResultSetImpl(int initialCapacity) {
-        this.results = new ArrayList(initialCapacity);
+    public SortFieldDirection getDirection() {
+        return this.direction;
     }
     
-    public Object getResult(int index) {
-        return this.results.get(index);
-    }
-
-    public List getResults(int maxIndex) {
-        int max = Math.min(maxIndex, this.results.size());
-        
-        return this.results.subList(0, max);
-    }
-   
-    public List getResults(int fromIndex, int toIndex) {
-        return this.results.subList(fromIndex, toIndex);
-    }
-
-    public List getAllResults() {
-        return this.results;
-    }
-
-    public int getSize() {
-        return this.results.size();
-    }
-    
-    public void addResult(PropertySet propSet) {
-        this.results.add(propSet);
-    }
-    
-    public Iterator iterator() {
-        return this.results.iterator();
-    }
-    
-    public int getTotalHits() {
-        return this.totalHits;
-    }
-    
-    public void setTotalHits(int totalHits) {
-        this.totalHits = totalHits;
-    }
-
 }

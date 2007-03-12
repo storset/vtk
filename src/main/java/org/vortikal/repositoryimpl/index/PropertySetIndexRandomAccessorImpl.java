@@ -36,8 +36,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
 
 /**
  * Random accessor for property set index.

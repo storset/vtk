@@ -30,8 +30,11 @@
  */
 package org.vortikal.repositoryimpl.search.query.parser;
 
+import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.search.query.QueryStringPreProcessor;
 
-public class QueryStringProcessor {
+
+public class QueryStringPreProcessorImpl implements QueryStringPreProcessor {
 
     private String expressionStart = "{$";
     private String expressionEnd = "}";

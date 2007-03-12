@@ -150,7 +150,6 @@
     <property name="transformerManager" ref="rssTransformerManager" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="xsltSearchProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="viewService" />
@@ -167,7 +166,6 @@
     <property name="sourceList">
       <list>
         <ref bean="xslBeanProvider" />
-        <ref bean="xsltSearchProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
           parent="requestLocalRepositoryAware">
           <property name="service" ref="rssTransformService" />
@@ -182,22 +180,22 @@
   <bean id="xslBeanProvider"
         class="org.vortikal.web.referencedata.provider.XSLReferenceDataProvider"
         parent="requestLocalRepositoryAware">
-    <property name="service" ref="viewService" />
-    <property name="adminService" ref="manageService" />
-    <property name="principalManager" ref="principalManager" />
-    <property name="modelName" value="xsltParameters" />
-    <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />
     <description>
       This reference data provider adds some metadata to the model for use when transforming XML documents.
     </description>
+    <property name="service" ref="viewService" />
+    <property name="adminService" ref="manageService" />
+    <property name="modelName" value="xsltParameters" />
+    <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />
+    <property name="xmlSearcher" ref="xmlSearcher" />
   </bean>
 
 
   <bean id="xmlSearcher"
-        class="org.vortikal.repositoryimpl.query.parser.XmlSearcher"
+        class="org.vortikal.repository.search.XmlSearcher"
         parent="requestLocalRepositoryAware">
-    <property name="queryManager" ref="queryManager" />
     <property name="searcher" ref="systemIndexSearcher" />
+    <property name="searchFactory" ref="searchFactory" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="defaultLocale" value="${defaultLocale}" />
 
@@ -207,34 +205,6 @@
     <property name="collectionResourceTypeDef"
               ref="collectionResourceTypeDefinition" />
   </bean>
-
-  <bean id="xsltSearchProvider"
-    class="org.vortikal.web.referencedata.provider.XsltSearchProvider">
-    <property name="xmlSearcher" ref="xmlSearcher" />
-  </bean>
-
-
-  <!-- Add the XSL search provider to the central list: -->
-
-<!--   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"> -->
-<!--     <property name="targetObject" ref="transformXmlView" /> -->
-<!--     <property name="targetMethod" value="addReferenceDataProvider" /> -->
-<!--     <property name="arguments"> -->
-<!--       <list> -->
-<!--         <ref bean="xsltSearchProvider" /> -->
-<!--       </list> -->
-<!--     </property> -->
-<!--   </bean> -->
-
-<!--   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"> -->
-<!--     <property name="targetObject" ref="transformRssView" /> -->
-<!--     <property name="targetMethod" value="addReferenceDataProvider" /> -->
-<!--     <property name="arguments"> -->
-<!--       <list> -->
-<!--         <ref bean="xsltSearchProvider" /> -->
-<!--       </list> -->
-<!--     </property> -->
-<!--   </bean> -->
 
 
   <bean id="rawXmlQueryURLProvider"

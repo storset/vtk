@@ -34,6 +34,8 @@ import java.util.Calendar;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import org.vortikal.repository.search.QueryException;
+
 
 public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
     

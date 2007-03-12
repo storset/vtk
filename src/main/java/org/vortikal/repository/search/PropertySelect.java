@@ -28,10 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.search;
 
-public interface SortField {
-    
-    public SortFieldDirection getDirection();
-    
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+
+public interface PropertySelect {
+
+    public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition);
+
 }
+

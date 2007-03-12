@@ -28,10 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query;
+package org.vortikal.repository.search;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertySelect;
 
 
 /**

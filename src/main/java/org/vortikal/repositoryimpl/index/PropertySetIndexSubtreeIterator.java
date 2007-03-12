@@ -34,8 +34,8 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.search.query.WildcardPropertySelect;
 
 public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
 

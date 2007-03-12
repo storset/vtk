@@ -28,28 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index;
+package org.vortikal.repository.search;
 
-import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class IndexException extends QueryException {
+public class PropertySortField extends AbstractSortField {
 
-    private static final long serialVersionUID = 5567453327335222161L;
-
-    public IndexException() {
-        super();
+    private PropertyTypeDefinition definition;
+    
+    public PropertySortField(PropertyTypeDefinition def) {
+        this.definition = def;
     }
 
-    public IndexException(String message) {
-        super(message);
+    public PropertySortField(PropertyTypeDefinition def, SortFieldDirection direction) {
+        super(direction);
+        this.definition = def;
+    }
+    
+    public PropertyTypeDefinition getDefinition() {
+        return this.definition;
     }
 
-    public IndexException(String message, Throwable cause) {
-        super(message, cause);
+    public String toString() {
+        return this.definition.getName() + " " + getDirection().toString();
     }
-
-    public IndexException(Throwable cause) {
-        super(cause);
-    }
-
+    
 }

@@ -30,6 +30,8 @@
  */
 package org.vortikal.repositoryimpl.search.query.parser;
 
+import org.vortikal.repository.search.QueryException;
+
 public interface ExpressionEvaluator {
     
     public boolean matches(String token);

@@ -28,20 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.search;
 
-public abstract class AbstractSortField implements SortField {
+import java.util.List;
 
-    private SortFieldDirection direction = SortFieldDirection.ASC;
-    
-    public AbstractSortField(){}
-    
-    public AbstractSortField(SortFieldDirection direction) {
-        this.direction = direction;
-    }
-    
-    public SortFieldDirection getDirection() {
-        return this.direction;
-    }
-    
+public interface Sorting {
+
+    public List getSortFields();
+
 }

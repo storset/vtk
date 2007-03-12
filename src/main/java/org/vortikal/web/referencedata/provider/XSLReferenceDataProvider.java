@@ -30,10 +30,9 @@
  */
 package org.vortikal.web.referencedata.provider;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,9 +48,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.InvalidModelException;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.w3c.dom.NodeList;
@@ -67,17 +65,23 @@ import org.w3c.dom.NodeList;
  * <ul>
  *   <li>repository - the content repository
  *   <li>service - the {@link Service} for constructing path URLs
- *   <li>principalManager - a {@link PrincipalManager} instance
  *   <li><code>requireDocumentInModel</code> - whether to throw an
  *   exception when (normally required) <code>jdomDocument</code>
  *   model data is absent in the model. Default is <code>true</code>.
  *   <li>modelName - name to use for the provided (sub)model
+ *   <li><code>adminService</code> - The default admin mode service -
+ *   required
+ *   <li><code>supplyRequestParameters</code> - default
+ *     <code>true</code> - supply request parameters as a node list to
+ *     xsl processing
+ *   <li><code>matchAdminServiceAssertions</code> - default 
+ *     <code>false</code> - determines whether all assertions must
+ *     match in order for the admin link to be constructed
  * </ul>
  *
- * <p>Required model data:
+ * <p>Optionally model data:
  * <ul>
  *   <li>resource - a <code>org.vortikal.repository.Resource</code> object</li>
- *   <li>jdomDocument - a <code>org.jdom.Document</code> representation of the resource</li>
  * </ul>
  * 
  * <p>Model data provided:
@@ -85,14 +89,16 @@ import org.w3c.dom.NodeList;
  *   <li>a submodel having the bean property <code>modelName</code> of
  *   this class as its key. This submodel (map) in turn contains the following data:
  *   <ul>
- *     <li><code>uri</code>, <code>creationTime</code>,
- *     <code>lastModified</code>, <code>name</code>,
- *     <code>owner</code>, <code>modifiedBy</code>,
- *     <code>contentLength</code>, <code>displayName</code>,
- *     <code>currentUserPrivilegeSet</code>, <code>properties</code>:
- *     these are all {@link Resource} properties.
  *     <li><code>currentUser</code>: the currently logged in user
  *     <li><code>pathElements</code>: the breadcrumb path (see below)
+ *     <li><code>contentLanguage</code>
+ *     <li><code>PARENT-COLLECTION</code>
+ *     <li><code>CURRENT-URL</code>
+ *     <li><code>ADMIN-URL</code> 
+ *     <li>If the configuration property
+ *       <code>supplyRequestParameters</code> is <code>true</code> (default),
+ *       <code>requestParameters</code> is supplied, which is a node list with elements like:<br> 
+ *       <code>&lt;parameter name="requestParameterName"&gt;requestParameterValue&lt;/parameter&gt;</code>
  *   </ul>
  * </ul>
  *
@@ -103,23 +109,29 @@ import org.w3c.dom.NodeList;
  */
 public class XSLReferenceDataProvider
   implements InitializingBean, ReferenceDataProvider {
+
+    private static final String REQUEST_PARAMETERS = "requestParameters";
+    private static final String ADMIN_URL = "ADMIN-URL";
+    private static final String CURRENT_URL = "CURRENT-URL";
+    private static final String PARENT_COLLECTION = "PARENT-COLLECTION";
+    private static final String CONTENT_LANGUAGE = "contentLanguage";
+    private static final String PATH_ELEMENTS = "pathElements";
+    private static final String CURRENT_USER = "currentUser";
+    
     protected Log logger = LogFactory.getLog(this.getClass());
     
     private String modelName = null;
-    private PrincipalManager principalManager;
     private Repository repository; 
     private Service service; 
-    private boolean requireDocumentInModel = true;
+    private Service adminService;
+    private boolean supplyRequestParameters = true;
+    
+    private boolean matchAdminServiceAssertions = false;
     
     private BreadCrumbProvider breadCrumbProvider; 
         
     public void setModelName(String modelName) {
         this.modelName = modelName;
-    }
-
-
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
     }
 
 
@@ -132,19 +144,28 @@ public class XSLReferenceDataProvider
         this.service = service;
     }
     
-    public void setRequireDocumentInModel(boolean requireDocumentInModel) {
-        this.requireDocumentInModel = requireDocumentInModel;
+    public void setAdminService(Service adminService) {
+        this.adminService = adminService;
     }
     
+    public void setSupplyRequestParameters(boolean supplyRequestParameters) {
+        this.supplyRequestParameters = supplyRequestParameters;
+    }
 
+    public void setMatchAdminServiceAssertions(
+            boolean matchAdminServiceAssertions) {
+        this.matchAdminServiceAssertions = matchAdminServiceAssertions;
+    }
+
+    
     public void afterPropertiesSet() throws Exception {
         if (this.modelName == null) {
             throw new BeanInitializationException(
                 "Bean property 'modelName' must be set");
         }
-        if (this.principalManager == null) {
+        if (this.adminService == null) {
             throw new BeanInitializationException(
-                "Bean property 'principalStore' must be set");
+                "Bean property 'adminService' must be set");
         }
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -163,63 +184,77 @@ public class XSLReferenceDataProvider
 
     public void referenceData(Map model, HttpServletRequest request) {
         
-        Resource resource = (Resource) model.get("resource");
-        if (resource == null) {
-            throw new InvalidModelException(
-                "Expected object of name 'resource', class "
-                + Resource.class.getName() + " in model");
-        }
-
-        Document doc = (Document) model.get("jdomDocument");
-
-        if (doc == null && this.requireDocumentInModel) {
-            throw new InvalidModelException(
-                "Expected object of name 'jdomDocument', class "
-                + Document.class.getName() + " in model");
-        }
-
-        if (doc == null) {
-            return;
-        }
-
-        Map subModel = (Map) model.get(this.modelName);
-        if (subModel == null) {
-            subModel = new HashMap();
-            model.put(this.modelName, subModel);
-        }
-
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Principal principal = securityContext.getPrincipal();
+        String token = securityContext.getToken();
 
-        String uri = resource.getURI();
+        String uri = RequestContext.getRequestContext().getResourceURI();
 
-        /* setting variables */
-        subModel.put("uri", uri);       
-        subModel.put("creationTime", resource.getCreationTime());
-        subModel.put("lastModified", convertDate(resource.getLastModified()));
-        subModel.put("name", resource.getName());
-        subModel.put("owner", resource.getOwner().getQualifiedName());
-        subModel.put("modifiedBy", resource.getModifiedBy().getQualifiedName());
-        subModel.put("contentLength", new Long(resource.getContentLength()));
-        // XXX: remove?
-        subModel.put("displayName", resource.getName());
-        subModel.put("properties", resource.getProperties());
-        
-        /* this property is only set if the page requires authentication */
-        String currentUser = (principal != null) ? principal.getName() : null;
-        subModel.put("currentUser", currentUser);
-         
-        NodeList path = buildPaths(request);
-        subModel.put("pathElements", path);
+        Resource resource = (Resource) model.get("resource");
+
+        try {
+
+            if (resource == null) {
+                resource = this.repository.retrieve(token, uri, true);
+            }
+
+            Map subModel = (Map) model.get(this.modelName);
+            if (subModel == null) {
+                subModel = new HashMap();
+                model.put(this.modelName, subModel);
+            }
+
+            /* setting variables */
+
+            /* this property is only set if the page requires authentication */
+            String currentUser = (principal != null) ? principal.getName()
+                    : null;
+            subModel.put(CURRENT_USER, currentUser);
+
+            NodeList path = buildPaths(request);
+            subModel.put(PATH_ELEMENTS, path);
+
+            subModel.put(CONTENT_LANGUAGE, resource.getContentLanguage());
+            subModel.put(PARENT_COLLECTION, resource.getParent());
+            subModel.put(CURRENT_URL, request.getRequestURL());
+            subModel.put(ADMIN_URL, this.adminService.constructLink(resource,
+                    principal, this.matchAdminServiceAssertions));
+
+            if (this.supplyRequestParameters) {
+                subModel.put(REQUEST_PARAMETERS, getRequestParams(request));
+            }
+
+        } catch (Throwable t) {
+            this.logger.warn("Unable to provide complete XSLT reference data", t);
+        }
 
     }
 
+    private NodeList getRequestParams(HttpServletRequest request) throws JDOMException {
+        /* creating a nodeList with all request parameters */
+        Document doc = new Document(new Element("root"));
+        Element root = doc.getRootElement();
+        List children = root.getChildren();
 
-    
+        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
+            String parameterName = (String) e.nextElement();
+        
+            Element element = new Element("parameter");
+            element.setAttribute("name", parameterName);
+            element.setText(request.getParameter(parameterName));
+            children.add(element);
+        }
+            
+        DOMOutputter oupt = new DOMOutputter();
+        org.w3c.dom.Document domDoc = null;
+            
+        domDoc = oupt.output(doc);
+        return domDoc.getDocumentElement().getChildNodes();
+    }
     
     private NodeList buildPaths(HttpServletRequest request) {
 
-        Document doc = new Document(new Element("pathElements"));
+        Document doc = new Document(new Element(PATH_ELEMENTS));
         Element pathElements = doc.getRootElement();
 
         Map model = new HashMap();
@@ -264,14 +299,6 @@ public class XSLReferenceDataProvider
 
         return nodeList;
     }
-
-
-    private String convertDate(Date d) {
-
-        DateFormat stringDate = new SimpleDateFormat("dd.MM.yyyy");
-        return stringDate.format(d);
-    }
-
 
     public void setBreadCrumbProvider(BreadCrumbProvider breadCrumbProvider) {
         this.breadCrumbProvider = breadCrumbProvider;

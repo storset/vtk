@@ -162,43 +162,34 @@
   </bean>
 
 
-  <bean id="xslBeanProvider"
-        class="org.vortikal.web.referencedata.provider.XSLReferenceDataProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="viewService" />
-    <property name="principalManager" ref="principalManager" />
-    <property name="modelName" value="xsltParameters" />
-    <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />
-  </bean>
-
   <bean id="referenceDataProvidersForTransformXmlView"
         class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
-        <ref bean="xsltSearchProvider" />
         <ref bean="xslBeanProvider" />
+        <ref bean="xsltSearchProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
           parent="requestLocalRepositoryAware">
           <property name="service" ref="rssTransformService" />
           <property name="modelName" value="xsltParameters" />
           <property name="urlName" value="RSS-URL" />
         </bean>
-        <ref bean="viewXslParameterProvider" />
         <ref bean="resourceContextProvider" />
       </list>
     </property>
   </bean>
   
-
-  <bean id="viewXslParameterProvider"
-    class="org.vortikal.web.referencedata.provider.ViewXslProvider"
-    parent="requestLocalRepositoryAware">
-    <description>
-      This reference data provider adds commonly used resource
-      metadata to the model, such as creation time, last modified,
-      etc. for use when transforming XML documents.
-    </description>
+  <bean id="xslBeanProvider"
+        class="org.vortikal.web.referencedata.provider.XSLReferenceDataProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="viewService" />
     <property name="adminService" ref="manageService" />
+    <property name="principalManager" ref="principalManager" />
+    <property name="modelName" value="xsltParameters" />
+    <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />
+    <description>
+      This reference data provider adds some metadata to the model for use when transforming XML documents.
+    </description>
   </bean>
 
 

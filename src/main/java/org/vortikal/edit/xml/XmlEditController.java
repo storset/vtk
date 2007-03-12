@@ -134,43 +134,42 @@ public class XmlEditController implements Controller, InitializingBean {
     
     public ModelAndView handleRequest(HttpServletRequest request, 
             HttpServletResponse response) throws IOException, TransformerException {
-try {        
-        String action = request.getParameter(ACTION_PARAMETER_NAME);
+        try {
+            String action = request.getParameter(ACTION_PARAMETER_NAME);
 
-        Map sessionMap = getSessionMap(request);
+            Map sessionMap = getSessionMap(request);
 
-        
-        /* "Validate" and create web-editable resource session */
-        if (sessionMap == null) {
-            sessionMap = initEditSession(request);
-        } 
-        
-        EditDocument document = (EditDocument) 
-            sessionMap.get(EditDocument.class.getName());
-        SchemaDocumentDefinition documentDefinition = (SchemaDocumentDefinition)
-            sessionMap.get(SchemaDocumentDefinition.class.getName());
-        
-        if (FINISH_ACTION.equals(action)) {
-            finish(request, document);
-            return new ModelAndView(this.finishViewName);
+            /* "Validate" and create web-editable resource session */
+            if (sessionMap == null) {
+                sessionMap = initEditSession(request);
+            }
+
+            EditDocument document = 
+                (EditDocument) sessionMap.get(EditDocument.class.getName());
+            SchemaDocumentDefinition documentDefinition = (SchemaDocumentDefinition) 
+                sessionMap.get(SchemaDocumentDefinition.class.getName());
+
+            if (FINISH_ACTION.equals(action)) {
+                finish(request, document);
+                return new ModelAndView(this.finishViewName);
+            }
+
+            ActionHandler handler = (ActionHandler) this.actionMapping.get(action);
+            Map model = new HashMap();
+
+            if (handler != null)
+                model = handler.handle(request, document, documentDefinition);
+
+            if (model == null)
+                model = handleModeError(document, request);
+
+            referenceData(model, document);
+
+            return new ModelAndView(this.viewName, model);
+        } catch (RepositoryException e) {
+            logger.error("Rethrowing repo exception", e);
+            throw e;
         }
-
-        ActionHandler handler = (ActionHandler) this.actionMapping.get(action);
-        Map model = new HashMap();
-        
-        if (handler != null) 
-            model = handler.handle(request, document, documentDefinition);
-
-        if (model == null)
-            model = handleModeError(document, request);
-        
-        referenceData(model, document);
-
-        return new ModelAndView(this.viewName, model);
-}catch (RepositoryException e) {
-    logger.error("Rethrowing repo exception", e);
-    throw e;
-}   
     }
     
     private void finish(HttpServletRequest request, EditDocument document)
@@ -223,21 +222,18 @@ try {
         model.put("resource", document.getResource());
         model.put("jdomDocument", document);
 
-        Util.setXsltParameter(model, "pageTitle", "Du redigerer: " + resource.getName());
         Util.setXsltParameter(model, "DAY", date("dd"));
         Util.setXsltParameter(model, "MONTH", date("MM"));
         Util.setXsltParameter(model, "YEAR", date("yyyy"));
         Util.setXsltParameter(model, "TIMESTAMP", date("yyMMddHHmmss"));
         Util.setXsltParameter(model, "CMSURL", resource.getURI());
-        Util.setXsltParameter(model,"applicationMode", "edit");
         if (principal != null)
             Util.setXsltParameter(model, "USERNAME", principal.getName());
 
         // The Browse service is optional, must javadoc this
         if (this.browseService != null) {
             try {
-                Resource parentResource = this.repository.retrieve(token, resource
-                        .getParent(), false);
+                Resource parentResource = this.repository.retrieve(token, resource.getParent(), false);
                 Util.setXsltParameter(model, "BROWSEURL", this.browseService
                         .constructLink(parentResource, principal));
             } catch (AuthorizationException e) {

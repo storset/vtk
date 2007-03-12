@@ -30,13 +30,13 @@
  */
 package org.vortikal.web.referencedata.provider;
 
+
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
@@ -54,6 +54,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.w3c.dom.NodeList;
+import java.util.Iterator;
 
 
 /**
@@ -78,9 +79,6 @@ import org.w3c.dom.NodeList;
  *   <li><code>matchAdminServiceAssertions</code> - default 
  *     <code>false</code> - determines whether all assertions must
  *     match in order for the admin link to be constructed
- *   <li><code>xmlSearcher</code> - the {@link XmlSearcher} to
- *   provide to the XSLT transformation - provided under the key
- *   <code>{http://www.uio.no/vortex/xsl-parameters}XMLSearcher</code>.
  * </ul>
  *
  * <p>Optionally model data:
@@ -114,11 +112,6 @@ import org.w3c.dom.NodeList;
 public class XSLReferenceDataProvider
   implements InitializingBean, ReferenceDataProvider {
 
-    private static String XML_SEARCHER_KEY = "{http://www.uio.no/vortex/xsl-parameters}XmlSearcher";
-    
-    private XmlSearcher xmlSearcher;
-
-    
     private static final String REQUEST_PARAMETERS = "requestParameters";
     private static final String ADMIN_URL = "ADMIN-URL";
     private static final String CURRENT_URL = "CURRENT-URL";
@@ -139,10 +132,11 @@ public class XSLReferenceDataProvider
     
     private BreadCrumbProvider breadCrumbProvider; 
         
+    private Map staticAttributes = new HashMap();
+    
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
-
 
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -166,11 +160,16 @@ public class XSLReferenceDataProvider
         this.matchAdminServiceAssertions = matchAdminServiceAssertions;
     }
 
+    public void setBreadCrumbProvider(BreadCrumbProvider breadCrumbProvider) {
+        this.breadCrumbProvider = breadCrumbProvider;
+    }
+
+    public void setStaticAttributes(Map staticAttributes) {
+        this.staticAttributes = staticAttributes;
+    }
     
+
     public void afterPropertiesSet() throws Exception {
-        if (this.xmlSearcher == null) {
-            throw new BeanInitializationException("Property 'xmlSearcher' not set.");
-        }
         if (this.modelName == null) {
             throw new BeanInitializationException(
                 "Bean property 'modelName' must be set");
@@ -190,6 +189,10 @@ public class XSLReferenceDataProvider
         if (this.breadCrumbProvider == null) {
             throw new BeanInitializationException(
                 "Bean property 'breadCrumbProvider' must be set");
+        }
+        if (this.staticAttributes == null) {
+            throw new BeanInitializationException(
+                "Property 'staticAttributes' not set.");
         }
     }
 
@@ -235,9 +238,11 @@ public class XSLReferenceDataProvider
             if (this.supplyRequestParameters) {
                 subModel.put(REQUEST_PARAMETERS, getRequestParams(request));
             }
-            subModel.put(XML_SEARCHER_KEY, this.xmlSearcher);
+            for (Iterator i = this.staticAttributes.entrySet().iterator(); i.hasNext();) {
+                Map.Entry entry = (Map.Entry) i.next();
+                subModel.put(entry.getKey(), entry.getValue());
+            }
 
-            
         } catch (Throwable t) {
             this.logger.warn("Unable to provide complete XSLT reference data", t);
         }
@@ -314,13 +319,6 @@ public class XSLReferenceDataProvider
         return nodeList;
     }
 
-    public void setBreadCrumbProvider(BreadCrumbProvider breadCrumbProvider) {
-        this.breadCrumbProvider = breadCrumbProvider;
-    }
 
-
-    public void setXmlSearcher(XmlSearcher xmlSearcher) {
-        this.xmlSearcher = xmlSearcher;
-    }
 
 }

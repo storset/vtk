@@ -187,9 +187,17 @@
     <property name="adminService" ref="manageService" />
     <property name="modelName" value="xsltParameters" />
     <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />
-    <property name="xmlSearcher" ref="xmlSearcher" />
+    <property name="staticAttributes">
+      <map>
+        <entry key="{http://www.uio.no/vortex/xsl-parameters}XMLSearcher"
+               value-ref="legacyXmlSearcher" />
+      </map>
+    </property>
   </bean>
 
+  <bean id="legacyXmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
+    <property name="xmlSearcher" ref="xmlSearcher" />
+  </bean>
 
   <bean id="xmlSearcher"
         class="org.vortikal.repository.search.XmlSearcher"

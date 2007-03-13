@@ -393,7 +393,14 @@
    <!-- Freemarker config -->
 
    <bean id="freemarkerConfigurer"
-         class="org.vortikal.web.view.freemarker.MultiTemplateLocationsFreeMarkerConfigurer"/>
+         class="org.vortikal.web.view.freemarker.MultiTemplateLocationsFreeMarkerConfigurer">
+     <property name="sharedVariables">
+       <map>
+         <entry key="VRTX_VALUE_FACTORY" value-ref="valueFactory" />
+         <entry key="VRTX_VALUE_FORMATTER" value-ref="valueFormatter" />
+       </map>
+     </property>
+   </bean>
      
    <bean id="vortikalFreemarkerTemplateLocation" class="org.vortikal.web.view.freemarker.FreeMarkerTemplateLocationImpl">
      <property name="location" value="${templateLoaderPath}" />

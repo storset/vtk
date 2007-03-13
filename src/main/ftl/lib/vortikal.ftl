@@ -104,3 +104,27 @@
 	</#list>
 </#macro>
 
+
+<#--
+ * date
+ *
+ * Get a localized, formatted date string from a date object.
+ * Examples: <@vrtx.date value=my.date.object format='short' />
+ *           <@vrtx.date value=my.date.object format='yyyy-MM-dddd HH:mm:ss' />
+ *
+ * @param value the date object
+ * @param format a named format, or a java DateFormat
+ *        string. See org.vortikal.repository.resourcetype.ValueFormatter
+ *
+-->
+<#macro date value format>
+  <#compress>
+    <#if VRTX_VALUE_FORMATTER?exists && VRTX_VALUE_FACTORY?exists>
+      <#local val = VRTX_VALUE_FACTORY.createValue(value?string('yyyy-MM-dddd HH:mm:ss'), 3) />
+      <#local locale = springMacroRequestContext.getLocale() />
+      ${VRTX_VALUE_FORMATTER.valueToString(val, format, locale)}
+    <#else>
+      Undefined
+    </#if>
+  </#compress>
+</#macro>

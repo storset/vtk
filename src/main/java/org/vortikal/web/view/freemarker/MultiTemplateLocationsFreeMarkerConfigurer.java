@@ -90,22 +90,14 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
     
 
     private ApplicationContext applicationContext;
-    
     private Resource configLocation;
-
     private Properties freemarkerSettings;
-
     private Map freemarkerVariables;
-
     private ResourceLoader resourceLoader = new DefaultResourceLoader();
-
     private boolean preferFileSystemAccess = true;
-
     private Configuration configuration;
-
-
     private TaglibFactory taglibFactory;
-    
+    private Map sharedVariables;
 
     
     public Configuration getConfiguration() {
@@ -150,7 +142,8 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
             
             loaders.add(new ClassTemplateLoader(FreeMarkerConfigurer.class));
             
-            TemplateLoader[] templateLoaders = (TemplateLoader[]) loaders.toArray(new TemplateLoader[0]);
+            TemplateLoader[] templateLoaders = (TemplateLoader[]) loaders.toArray(
+                new TemplateLoader[0]);
             MultiTemplateLoader loader = new MultiTemplateLoader(templateLoaders);
 
             factory = new FreeMarkerConfigurationFactory();
@@ -167,6 +160,13 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
             Configuration configuration = factory.createConfiguration();
             configuration.setTemplateLoader(loader);
 
+            if (this.sharedVariables != null) {
+                for (Iterator i = this.sharedVariables.keySet().iterator(); i.hasNext();) {
+                    String name = (String) i.next();
+                    Object val = this.sharedVariables.get(name);
+                    configuration.setSharedVariable(name, val);
+                }
+            }
             return configuration;
 
         } catch (NoSuchBeanDefinitionException ex) {
@@ -203,6 +203,11 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
     public void setPreferFileSystemAccess(boolean preferFileSystemAccess) {
         this.preferFileSystemAccess = preferFileSystemAccess;
     }
+
+    public void setSharedVariables(Map sharedVariables) {
+        this.sharedVariables = sharedVariables;
+    }
+    
 
     /**
      * Initialize the {@link TaglibFactory} for the given ServletContext.

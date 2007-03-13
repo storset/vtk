@@ -31,7 +31,9 @@
           </div>
         </#if>
         <#if conf.publishedDate && entry.publishedDate?exists>
-          <span class="publishedDate">${entry.publishedDate?datetime?string.long_short}</span>
+          <span class="publishedDate">
+            <@vrtx.date value=entry.publishedDate format="long" />
+          </span>
         </#if>
       </li>
     </#list>

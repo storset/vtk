@@ -219,10 +219,14 @@ div#titleContainer {
 }
  
 div.resource-title {
-    	background: transparent url(file.png) no-repeat 0px 5px;
+        background: transparent url(file.png) no-repeat 0px 5px;
         height: 30px;
         padding-top: 8px;
 }
+
+/* IE7 Hack */
+
+html>body div.resource-title {*height:1%;}
 
 div.resource-title h1 {
         max-width: 50%; /* To prevent box from extending all the way and cause wrapping */

@@ -43,9 +43,11 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.web.context.ServletContextAware;
 
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
@@ -62,7 +64,12 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
     private static final String PARAMETER_VIRTUAL_DESC = "Either a complete URL, or a path starting with '/'";
     private static final String PARAMETER_FILE = "file";
     private static final String PARAMETER_FILE_DESC = "A relative path to a the file to include";
-
+    private static final String PARAMETER_AS_CURRENT_USER = "as-current-user";
+    private static final String PARAMETER_AS_CURRENT_USER_DESC = "The default is that only resources readable for everyone is included. " +
+            "If this is set to 'true', the include is done as the currently " +
+            "logged in user (if any). This should only be used when the same " +
+            "permissions apply to the resource including and the resource included." +
+            "<br/><b>Note</b>: this doesn't apply to virtual includes of full URLs.";
     
     private static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
@@ -119,14 +126,29 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
 
     private void handleDirectInclude(String address, DecoratorRequest request,
                                      DecoratorResponse response) throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
+        String token = null;
 
+        boolean asCurrentPrincipal = "true".equals(request.getStringParameter(PARAMETER_AS_CURRENT_USER));
+
+        if (asCurrentPrincipal) {
+            token = SecurityContext.getSecurityContext().getToken();
+        }
+        
         Resource r = null;
         try {
             r = this.repository.retrieve(token, address, false);
         } catch (ResourceNotFoundException e) {
             throw new DecoratorComponentException(
                     "Resource '" + address + "' not found");
+        } catch (AuthenticationException e) {
+            if (asCurrentPrincipal)
+                throw new DecoratorComponentException(
+                    "Resource '" + address + "' requires authentication");
+            throw new DecoratorComponentException(
+                    "Resource '" + address + "' not readable with anonymous access");
+        } catch (AuthorizationException e) {
+            throw new DecoratorComponentException(
+                    "Not authorized to read resource '" + address + "'");
         }
         
         if (r.isCollection() || !ContentTypeHelper.isTextContentType(r.getContentType())) {
@@ -220,6 +242,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         Map map = new HashMap();
         map.put(PARAMETER_FILE, PARAMETER_FILE_DESC);
         map.put(PARAMETER_VIRTUAL, PARAMETER_VIRTUAL_DESC);
+        map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         return map;
     }
 

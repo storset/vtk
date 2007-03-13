@@ -82,7 +82,7 @@ public class ConditionalDecorator implements Decorator {
         if (this.checkContentLengthOnly) {
             runDecorator = unprocessedContent.length() == length;
         } else if (unprocessedContent.length() == length) {
-            runDecorator = content.equals(unprocessedContent);
+            runDecorator = content.getContent().equals(unprocessedContent);
         } 
 
         if (runDecorator) {

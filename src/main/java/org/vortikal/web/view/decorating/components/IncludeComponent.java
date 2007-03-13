@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.web.context.ServletContextAware;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -64,12 +63,13 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
     private static final String PARAMETER_VIRTUAL_DESC = "Either a complete URL, or a path starting with '/'";
     private static final String PARAMETER_FILE = "file";
     private static final String PARAMETER_FILE_DESC = "A relative path to a the file to include";
-    private static final String PARAMETER_AS_CURRENT_USER = "as-current-user";
-    private static final String PARAMETER_AS_CURRENT_USER_DESC = "The default is that only resources readable for everyone is included. " +
+    private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
+    private static final String PARAMETER_AS_CURRENT_USER_DESC = 
+        "The default is that only resources readable for everyone is included. " +
             "If this is set to 'true', the include is done as the currently " +
             "logged in user (if any). This should only be used when the same " +
             "permissions apply to the resource including and the resource included." +
-            "<br/><b>Note</b>: this doesn't apply to virtual includes of full URLs.";
+            "Note that this doesn't apply to virtual includes of full URLs.";
     
     private static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";

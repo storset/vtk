@@ -61,32 +61,46 @@ public class TemplateDecorator implements Decorator {
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(request);
 
-        Template template = resolveTemplate(model, request, ctx.getLocale());
-            
-        if (template == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable to resolve template for request " + request);
-            }
-            return;
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Rendering using template '" + template + "'");
-        }
-
         HtmlPage html = parseHtml(content.getContent());
         if (logger.isDebugEnabled()) {
             logger.debug("Parsed document [root element: " + html.getRootElement() + " "
                          + ", doctype: "+ html.getDoctype() + "]");
         }
+
+        Template template = resolveTemplate(model, request, ctx.getLocale());
+            
+        if (template == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("No template resolved for request " + request);
+            }
+            replaceContentFromPage(content, html);
+            return;
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Rendering request for " + request.getRequestURI()
+                         + " using template '" + template + "'");
+        }
+
         HtmlElement rootElement = html.getRootElement();
         if (rootElement != null && "frameset".equals(rootElement.getName())) {
             // Framesets are not decorated:
+            replaceContentFromPage(content, html);
             return;
         } 
         content.setContent(template.render(model, html, request, ctx.getLocale()));
         tidyContent(content);
     }
+
+
+    protected void replaceContentFromPage(Content content, HtmlPage page) {
+        String newContent = content.getContent();
+        if (page.getRootElement() == null) {
+            return;
+        }
+        content.setContent(page.getRootElement().getEnclosedContent());
+    }
+    
 
     protected void tidyContent(Content content) throws Exception {
         java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(

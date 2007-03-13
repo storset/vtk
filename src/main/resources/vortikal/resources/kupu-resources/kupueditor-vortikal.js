@@ -772,12 +772,20 @@ Denne skriver direkte til alert-boksen (dvs ingen forandring gjort i beskjed-(in
     }
     this.escapeEntities = function(xml) {
         // XXX: temporarily disabled
+        /*
+         * Temporary local fix to avoid '&nbsp;' being replaced by ' ' (space).
+         * Same can be applied for other special code characters (however not best practice), see:
+         * http://codespeak.net/pipermail/kupu-dev/2007-February/002080.html 
+         */
+        xml = xml.split('\xa0').join('&nbsp;');
         return xml;
         // Escape non-ascii characters as entities.
+        /*
         return xml.replace(/[^\r\n -\177]/g,
             function(c) {
             return '&#'+c.charCodeAt(0)+';';
         });
+        */
     }
 
     this.getFullEditor = function() {

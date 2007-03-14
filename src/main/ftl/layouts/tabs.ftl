@@ -5,7 +5,7 @@
   - 
   - Required model data:
   -   tabs
-  -
+  - NOTE: this template wll be deprecated by list-menu.ftl
   -->
 <#if !tabs?exists>
   <#stop "Unable to render model: required submodel

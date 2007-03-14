@@ -61,27 +61,63 @@ import org.vortikal.repository.search.query.Query;
  * 
  * @see Query, ResultSet
  */
-public interface Search {
+public class Search {
 
-    public int getCursor();
+    public final static int MAX_LIMIT = 40000; 
+    
+    private PropertySelect propertySelect = new WildcardPropertySelect();
+    private Query query;
+    private Sorting sorting;
+    private int limit = MAX_LIMIT;
+    private int cursor = 0;
+    
+    public Search() {
+        SortingImpl defaultSorting = new SortingImpl();
+        defaultSorting.addSortField(new SimpleSortField("uri"));
+        this.sorting = defaultSorting;
+    }
 
-    public void setCursor(int cursor);
-
-    public int getLimit();
-
-    public void setLimit(int limit);
-
-    public PropertySelect getPropertySelect();
-
-    public void setPropertySelect(PropertySelect propertySelect);
-
-    public Query getQuery();
-
-    public void setQuery(Query query);
-
-    public Sorting getSorting();
-
-    public void setSorting(Sorting sorting);
-
+    public int getCursor() {
+        return cursor;
+    }
+    
+    public void setCursor(int cursor) {
+        this.cursor = cursor;
+    }
+    
+    public int getLimit() {
+        return limit;
+    }
+    
+    public void setLimit(int limit) {
+        if (limit > MAX_LIMIT)
+            this.limit = MAX_LIMIT;
+        else
+            this.limit = limit;
+    }
+    
+    public PropertySelect getPropertySelect() {
+        return propertySelect;
+    }
+    
+    public void setPropertySelect(PropertySelect propertySelect) {
+        this.propertySelect = propertySelect;
+    }
+    
+    public Query getQuery() {
+        return query;
+    }
+    
+    public void setQuery(Query query) {
+        this.query = query;
+    }
+    
+    public Sorting getSorting() {
+        return sorting;
+    }
+    
+    public void setSorting(Sorting sorting) {
+        this.sorting = sorting;
+    }
     
 }

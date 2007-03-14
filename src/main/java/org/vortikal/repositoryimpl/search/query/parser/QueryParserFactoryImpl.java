@@ -11,7 +11,7 @@ public class QueryParserFactoryImpl implements QueryParserFactory, InitializingB
     private ResourceTypeTree resourceTypeTree;
 
     public Parser getParser() {
-        // Generated from QueryParser.jj:
+        // Generated from PreprocessingQueryParser.jj:
         return new QueryParser(resourceTypeTree);
     }
 

@@ -39,15 +39,14 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.HashSetPropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.SearchFactory;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.query.Parser;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
@@ -78,60 +77,36 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         VALID_STYLES.add(STYLE_TABS);
     }
 
+    private static final String PARAMETER_INCLUDE_CHILDREN = "includeChildren";
+    private static final String PARAMETER_INCLUDE_PARENT = "includeParentFolder";
+    private static final String PARAMETER_INCLUDE_PARENT_DESC = 
+        "Defaults to 'false'";
+    private static final String PARAMETER_STYLE = "style";
+    private static final String PARAMETER_STYLE_DESC = 
+        "One of " + VALID_STYLES.toString() + ". Defaults to " + DEFAULT_STYLE;
+    private static final String PARAMETER_URI = "uri";
+    private static final String PARAMETER_URI_DESC = 
+        "What about it?";
+
     private static Log logger = LogFactory.getLog(IncludeComponent.class);
     
-    private SearchFactory searchFactory;
+    private Parser queryParser;
     private Service viewService;
     private PropertyTypeDefinition titlePropdef;
     private String modelName = "menu";
     private int searchLimit = 10;
     private Searcher searcher;
 
-    public void setSearchFactory(SearchFactory searchFactory) {
-        this.searchFactory = searchFactory;
-    }
-    
-    public void setViewService(Service viewService) {
-        this.viewService = viewService;
-    }
-    
-    public void setTitlePropdef(PropertyTypeDefinition titlePropdef) {
-        this.titlePropdef = titlePropdef;
-    }
-    
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-    
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
-    }
-
-    public void setSearchLimit(int searchLimit) {
-        this.searchLimit = searchLimit;
-    }
-    
-
-    protected String getDescriptionInternal() {
-        return null;
-    }
-
-
-    protected Map getParameterDescriptionsInternal() {
-        return null;
-    }
-
-
     public void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
 
         try {
-            String uri = request.getStringParameter("uri");
+            String uri = request.getStringParameter(PARAMETER_URI);
             if (uri == null) {
                 throw new DecoratorComponentException("Parameter 'uri' not specified");
             }
 
-            String style = request.getStringParameter("style");
+            String style = request.getStringParameter(PARAMETER_STYLE);
             if (style == null) {
                 style = DEFAULT_STYLE;
             } else {
@@ -143,9 +118,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
 
             boolean includeParent = "true".equals(request.getStringParameter(
-                                                      "includeParentFolder"));
+                                                      PARAMETER_INCLUDE_PARENT));
             String[] splitChildNames = null;
-            String includeChildrenParam = request.getStringParameter("includeChildren");
+            String includeChildrenParam = request.getStringParameter(PARAMETER_INCLUDE_CHILDREN);
             if (includeChildrenParam != null) {
                 splitChildNames = includeChildrenParam.split(",");
             }
@@ -203,7 +178,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         if (logger.isDebugEnabled()) {
             logger.debug("About to search using query: '" + query + "'");
         }
-        Search search = this.searchFactory.createSearch(query.toString());
+        Search search = new Search();
+        search.setQuery(this.queryParser.parse(query.toString()));
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
 
@@ -255,5 +231,46 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         menu.setLabel(label);
         return menu;
     }
+
+    public void setQueryParser(Parser queryParser) {
+        this.queryParser = queryParser;
+    }
+
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
+    }
     
+    public void setTitlePropdef(PropertyTypeDefinition titlePropdef) {
+        this.titlePropdef = titlePropdef;
+    }
+    
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+    
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
+    }
+
+    public void setSearchLimit(int searchLimit) {
+        this.searchLimit = searchLimit;
+    }
+    
+
+    protected String getDescriptionInternal() {
+        return null;
+    }
+
+
+    protected Map getParameterDescriptionsInternal() {
+        Map map = new HashMap();
+        map.put(PARAMETER_URI, PARAMETER_URI_DESC);
+        map.put(PARAMETER_STYLE, PARAMETER_STYLE_DESC);
+        map.put(PARAMETER_INCLUDE_PARENT, PARAMETER_INCLUDE_PARENT_DESC);
+        return map;
+                
+    }
+
+
+
 }

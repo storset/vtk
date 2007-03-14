@@ -8,7 +8,7 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="searchFactory" class="org.vortikal.repository.search.SearchFactoryImpl">
+  <bean id="queryParser" class="org.vortikal.repository.search.query.PreprocessingQueryParser">
     <property name="parserFactory" ref="queryParserFactory" />
     <property name="queryStringPreProcessor" ref="queryStringPreProcessor" />
   </bean>

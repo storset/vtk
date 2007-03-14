@@ -184,7 +184,7 @@
     <property name="namespace" value="menu" />
     <property name="name" value="static" />
     <property name="searcher" ref="systemIndexSearcher" />
-    <property name="searchFactory" ref="searchFactory" />
+    <property name="queryParser" ref="queryParser" />
     <property name="view" ref="decorating.listMenuComponent.view" />
     <property name="titlePropdef" ref="titlePropDef" />
     <property name="viewService" ref="webService" />

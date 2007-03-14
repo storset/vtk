@@ -1,4 +1,4 @@
-<#--
+2<#--
   - File: list-menu.ftl
   - 
   - Description: Simple list menu implementation
@@ -21,7 +21,7 @@
     <#if item.url?exists>
       <#if item.active>
         <#if item.label?exists>
-          <li class="active ${label}">
+          <li class="active ${item.label}">
             <a href="${item.url?html}">${item.title?html}</a>
           </li>
         <#else>
@@ -31,7 +31,7 @@
         </#if>
       <#else>
         <#if item.label?exists>
-          <li class="${label}"><a href="${item.url?html}">${item.title?html}</a></li>
+          <li class="${item.label}"><a href="${item.url?html}">${item.title?html}</a></li>
         <#else>
           <li><a href="${item.url?html}">${item.title?html}</a></li>
         </#if>

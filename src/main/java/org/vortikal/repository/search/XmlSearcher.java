@@ -56,6 +56,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.repository.search.query.Parser;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -84,7 +85,7 @@ public class XmlSearcher implements InitializingBean {
     private static Log logger = LogFactory.getLog(XmlSearcher.class);
 
     private Searcher searcher;
-    private SearchFactory searchFactory;
+    private Parser queryParser;
     private PropertyManager propertyManager;
     private ResourceTypeTree resourceTypeTree;
     private int maxResults = 1000;
@@ -100,10 +101,6 @@ public class XmlSearcher implements InitializingBean {
         this.searcher = searcher;
     }
 
-    public void setSearchFactory(SearchFactory searchFactory) {
-        this.searchFactory = searchFactory;
-    }
-    
     public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
@@ -126,9 +123,9 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'searcher' not set");
         }
-        if (this.searchFactory == null) {
+        if (this.queryParser == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'searchFactoryImpl' not set");
+                "JavaBean property 'queryParser' not set");
         }
         if (this.propertyManager == null) {
             throw new BeanInitializationException(
@@ -208,7 +205,8 @@ public class XmlSearcher implements InitializingBean {
         try {
             SearchEnvironment envir = new SearchEnvironment(sort, fields);
 
-            Search search = this.searchFactory.createSearch(query);
+            Search search = new Search();
+            search.setQuery(this.queryParser.parse(query));
             search.setSorting(envir.getSorting());
             search.setLimit(limit);
             search.setPropertySelect(envir.getPropertySelect());
@@ -640,6 +638,10 @@ public class XmlSearcher implements InitializingBean {
 
     public void setValueFormatter(ValueFormatter valueFormatter) {
         this.valueFormatter = valueFormatter;
+    }
+
+    public void setQueryParser(Parser queryParser) {
+        this.queryParser = queryParser;
     }
 
 }

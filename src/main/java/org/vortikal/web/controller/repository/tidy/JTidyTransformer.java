@@ -35,14 +35,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.controller.repository.copy.Filter;
 
 import org.w3c.dom.Document;
@@ -53,12 +50,24 @@ import org.w3c.dom.NodeList;
 import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
+
+/**
+ * Transformer using jTidy to tidy up HTML/xHTML on the provided input stream.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li> <code>generatedContentType</code> - content type to generate (default "text/html")
+ *   <li> <code>insertedCssReference</code> - URI (to compulsory CSS stylesheet to be added 
+ *        to tidy'ed document
+ * </ul>
+ */
 public class JTidyTransformer implements Filter { 
     
     private static Log logger = LogFactory.getLog(JTidyTransformer.class);
 
     private static boolean tidyMark = false;
     private static boolean makeClean = true;
+    private static boolean smartIndent = true;
     private static boolean showWarnings = false;
     private static boolean quiet = true;
     private static boolean xhtml = true;
@@ -75,9 +84,62 @@ public class JTidyTransformer implements Filter {
         this.insertedCssReference = insertedCssReference;
     }
     
+    
+    public InputStream transform(InputStream inStream, String characterEncoding) {
+        try {
+            Tidy tidy = new Tidy();
+            
+            // Setting up Tidy (default) output
+            tidy.setTidyMark(tidyMark);
+            tidy.setMakeClean(makeClean);
+            tidy.setSmartIndent(smartIndent);
+            tidy.setShowWarnings(showWarnings);
+            tidy.setQuiet(quiet);
+            tidy.setCharEncoding(Configuration.UTF8);
+            
+            Document document;
+                        
+            if (null == characterEncoding ) {
+                characterEncoding = "utf-8";
+            }
+            else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
+                characterEncoding = "utf-8";
+            }
+            
+            if ("utf-8".equals(characterEncoding)) {
+                tidy.setInputStreamName(inStream.getClass().getName());
+                document = tidy.parseDOM(inStream, null);
+            } else {
+                byte[] buffer = StreamUtil.readInputStream(inStream);
+                String s = new String(buffer, characterEncoding);
+                InputStream encodedStream = StreamUtil.stringToStream(s, "utf-8");
+                tidy.setInputStreamName(encodedStream.getClass().getName());
+                document = tidy.parseDOM(encodedStream, null);                
+            }
+            
+            // Handle (re)setting of doctype and encoding meta-tag
+            alterContentTypeMetaElement(document);
+            
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            
+            tidy.pprint(document, outputStream);
+            
+            byte[] byteArrayBuffer = outputStream.toByteArray();
+            ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
+            
+            outputStream.close();
+            bais.reset(); // must reset buffer pointer to [0]
 
+            return bais;
+
+        } catch (IOException e) {
+            logger.error("Caught exception", e);
+            return new ByteArrayInputStream(null);
+        }
+    }
+    
+    
     public InputStream transform(InputStream inStream, Resource resource) {
-        
         try {
             Tidy tidy = new Tidy();
                         
@@ -85,6 +147,7 @@ public class JTidyTransformer implements Filter {
             tidy.setInputStreamName(inStream.getClass().getName());
             tidy.setTidyMark(tidyMark);
             tidy.setMakeClean(makeClean);
+            tidy.setSmartIndent(smartIndent);
             tidy.setShowWarnings(showWarnings);
             // tidy.setOnlyErrors(onlyErrors); // If set TRUE, then only error
                                                // messages are written to the
@@ -172,6 +235,5 @@ public class JTidyTransformer implements Filter {
         meta.setAttribute("content", this.generatedContentType + ";charset=utf-8");
         head.appendChild(meta);
     }
-
-
+    
 }

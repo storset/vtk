@@ -42,7 +42,7 @@ import org.vortikal.security.Principal;
 public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
 
     private Pattern pattern = null;
-
+    private boolean invert = false;
 
     public void setPattern(String pattern) {
         if (pattern == null) throw new IllegalArgumentException(
@@ -55,6 +55,9 @@ public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourceURIAssertion) {
             Matcher m = this.pattern.matcher(((ResourceURIAssertion) assertion).getUri());
+            // XXX: validate this:
+            if (this.invert)
+                return m.matches();
             return ! m.matches();
         }
         return false;
@@ -75,7 +78,16 @@ public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
             return false;
         }
         Matcher m = this.pattern.matcher(resource.getURI());
+        
+        if (this.invert)
+            return !m.matches();
+        
         return m.matches();
+    }
+
+
+    public void setInvert(boolean invert) {
+        this.invert = invert;
     }
 
 }

@@ -33,9 +33,11 @@ package org.vortikal.web.view.decorating;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,16 +57,27 @@ public class BeanContextComponentResolver
     private boolean initialized;
     private ApplicationContext applicationContext;
     private Map components = new HashMap();
-    
+    private Set prohibitedComponentNamespaces = new HashSet();
+
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
     
+    public void setProhibitedComponentNamespaces(Set prohibitedComponentNamespaces) {
+        this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
+    }
+    
+
     public void afterPropertiesSet() {
         if (this.applicationContext == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'applicationContext' not specified");
         }
+        if (this.prohibitedComponentNamespaces == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'prohibitedComponentNamespaces' not specified");
+        }
+
     }
     
     public DecoratorComponent resolveComponent(String namespace, String name) {
@@ -104,6 +117,12 @@ public class BeanContextComponentResolver
                 throw new IllegalStateException("Component " + component
                                                 + " has invalid namespace (NULL)");
             }
+            if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Component " + component + " not added. It has a prohibited namespace.");
+                }
+                continue;
+            }
             if (name == null) {
                 throw new IllegalStateException("Component " + component
                                                 + " has invalid name (NULL)");
@@ -112,6 +131,8 @@ public class BeanContextComponentResolver
             logger.info("Registering decorator component " + component);
             this.components.put(key, component);
         }
+        
+        
         this.initialized = true;
     }
 }

@@ -37,6 +37,7 @@
     <property name="prohibitedComponentNamespaces">
       <set>
         <ref bean="decorating.documentNamespace" />
+        <ref bean="decorating.elementNamespace" />
       </set>
     </property>
     <property name="contentComponentParser" ref="decorating.defaultTemplateParser" />
@@ -85,7 +86,16 @@
   </bean>
 
   <bean name="decorating.defaultComponentResolver"
+        class="org.vortikal.web.view.decorating.BeanContextComponentResolver" />
+
+  <bean name="decorating.documentComponentResolver"
         class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
+    <property name="prohibitedComponentNamespaces">
+      <set>
+        <ref bean="decorating.documentNamespace" />
+        <ref bean="decorating.elementNamespace" />
+      </set>
+    </property>
   </bean>
 
 
@@ -99,6 +109,9 @@
     <property name="assertions">
       <list>
         <ref bean="webServiceAssertion" />
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+          <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+        </bean>
         <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
           <property name="pattern" value="^${decorating.templatesCollection}/.*" />
         </bean>
@@ -113,6 +126,34 @@
     </property>
   </bean>
 
+  <bean id="listDocumentsComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-200" />
+    <property name="categories">
+      <set>
+        <value>plaintextEditTooltipService</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="webServiceAssertion" />
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+          <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceURIRegexpAssertion">
+          <property name="pattern" value="^${decorating.templatesCollection}/.*" />
+          <property name="invert" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="list-decorator-components" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="listDocumentComponentsHandler" />
+    </property>
+  </bean>
+
   <bean name="listDecoratorComponentsHandler" class="org.vortikal.web.controller.MethodInvokingController">
     <property name="targetObject" ref="decorating.defaultComponentResolver" />
     <property name="targetMethod" value="listComponents" />
@@ -120,6 +161,12 @@
     <property name="viewName" value="listDecoratorComponents" />
   </bean>
 
+  <bean name="listDocumentComponentsHandler" class="org.vortikal.web.controller.MethodInvokingController">
+    <property name="targetObject" ref="decorating.documentComponentResolver" />
+    <property name="targetMethod" value="listComponents" />
+    <property name="modelName" value="componentList" />
+    <property name="viewName" value="listDecoratorComponents" />
+  </bean>
   
   <bean id="listDecoratorComponentsViewResolver"
         class="org.vortikal.web.view.decorating.MappingViewResolver">

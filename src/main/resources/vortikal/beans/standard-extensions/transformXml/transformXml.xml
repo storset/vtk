@@ -189,7 +189,7 @@
     <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />
     <property name="staticAttributes">
       <map>
-        <entry key="{http://www.uio.no/vortex/xsl-parameters}XMLSearcher"
+        <entry key="{http://www.uio.no/vortex/xsl-parameters}XmlSearcher"
                value-ref="legacyXmlSearcher" />
       </map>
     </property>

@@ -31,6 +31,7 @@
 package org.vortikal.repositoryimpl.search.query;
 
 import java.util.Iterator;
+import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
@@ -80,7 +81,7 @@ public class SortBuilderImpl implements SortBuilder {
         
         org.apache.lucene.search.SortField sortField = 
             new org.apache.lucene.search.SortField(ssf.getName(), 
-                    org.apache.lucene.search.SortField.STRING,
+                    ssf.getLocale(),
                     (ssf.getDirection() == SortFieldDirection.ASC ? false : true));
         
         return sortField;
@@ -97,7 +98,7 @@ public class SortBuilderImpl implements SortBuilder {
         // We do our own type->string encoding, and must use Lucene's generic string sorting type.
         org.apache.lucene.search.SortField sortField =
             new org.apache.lucene.search.SortField(fieldName,
-                    org.apache.lucene.search.SortField.STRING, 
+                    f.getLocale(),
                     (d == SortFieldDirection.ASC ? false : true));
                     
         return sortField;

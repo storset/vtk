@@ -30,10 +30,13 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.Locale;
+
 
 public abstract class AbstractSortField implements SortField {
 
     private SortFieldDirection direction = SortFieldDirection.ASC;
+    private Locale locale = new Locale("no");
     
     public AbstractSortField(){}
     
@@ -43,6 +46,10 @@ public abstract class AbstractSortField implements SortField {
     
     public SortFieldDirection getDirection() {
         return this.direction;
+    }
+
+    public Locale getLocale() {
+        return locale;
     }
     
 }

@@ -30,8 +30,11 @@
  */
 package org.vortikal.repository.search;
 
+import java.util.Locale;
+
 public interface SortField {
     
     public SortFieldDirection getDirection();
     
+    public Locale getLocale();
 }

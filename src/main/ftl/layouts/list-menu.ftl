@@ -1,4 +1,4 @@
-2<#--
+<#--
   - File: list-menu.ftl
   - 
   - Description: Simple list menu implementation

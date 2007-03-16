@@ -35,16 +35,27 @@ package org.vortikal.web.view.components.menu;
  * 
  * <p>Configurable JavaBean properties:
  * <ul>
- * <li><code>label</code> - string identifying the menu type
+ * <li><code>title</code> - the menu title
+ * <li><code>label</code> - identifies the menu type
  * <li><code>items</code> - array of the contained {@link MenuItem}s
  * <li><code>activeItem</code> - reference to the currently active item, if it's in this menu
+ * </ul>
  */
 public class ListMenu {
 
+    private String title;
     private String label;
     private MenuItem[] items;
     private MenuItem activeItem;
 
+    public String getTitle() {
+        return this.title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
     public String getLabel() {
         return this.label;
     }
@@ -69,4 +80,16 @@ public class ListMenu {
         this.items = items;
     }
         
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName()).append(": [");
+        sb.append("title=").append(this.title);
+        sb.append(", label=").append(this.label);
+        sb.append(", activeItem=").append(this.activeItem);
+        sb.append(", items=").append(this.items != null? this.items.length : 0);
+        sb.append("]");
+        return sb.toString();
+    }
+    
+
 }

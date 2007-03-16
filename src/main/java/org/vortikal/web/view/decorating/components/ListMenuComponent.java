@@ -30,15 +30,20 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -57,10 +62,6 @@ import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
-/**
- * XXX: How should we handle authorization?
- * TODO: sorting
- */
 public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final String STYLE_VERTICAL = "vertical";
@@ -78,17 +79,23 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
     private static final String PARAMETER_INCLUDE_CHILDREN = "includeChildren";
+    private static final String PARAMETER_INCLUDE_CHILDREN_DESC
+        = "An explicit listing of the child resources to include.";
+
     private static final String PARAMETER_INCLUDE_PARENT = "includeParentFolder";
     private static final String PARAMETER_INCLUDE_PARENT_DESC = 
-        "Defaults to 'false'";
+        "Whether or not to include the selected folder itself in the menu. Defaults to 'false'";
+
     private static final String PARAMETER_STYLE = "style";
     private static final String PARAMETER_STYLE_DESC = 
-        "One of " + VALID_STYLES.toString() + ". Defaults to " + DEFAULT_STYLE;
+        "Defines the style of the menu. Must be one of " + VALID_STYLES.toString()
+        + ". Defaults to " + DEFAULT_STYLE;
+
     private static final String PARAMETER_URI = "uri";
     private static final String PARAMETER_URI_DESC = 
-        "What about it?";
+        "The URI (path) to the selected folder";
 
-    private static Log logger = LogFactory.getLog(IncludeComponent.class);
+    private static Log logger = LogFactory.getLog(ListMenuComponent.class);
     
     private Parser queryParser;
     private Service viewService;
@@ -97,62 +104,34 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private int searchLimit = 10;
     private Searcher searcher;
 
+
     public void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-
-        try {
-            String uri = request.getStringParameter(PARAMETER_URI);
-            if (uri == null) {
-                throw new DecoratorComponentException("Parameter 'uri' not specified");
-            }
-
-            String style = request.getStringParameter(PARAMETER_STYLE);
-            if (style == null) {
-                style = DEFAULT_STYLE;
-            } else {
-                if (!VALID_STYLES.contains(style)) {
-                    throw new DecoratorComponentException(
-                        "Invalid value for parameter 'style': must be one of "
-                        + VALID_STYLES.toString());
-                }
-            }
-
-            boolean includeParent = "true".equals(request.getStringParameter(
-                                                      PARAMETER_INCLUDE_PARENT));
-            String[] splitChildNames = null;
-            String includeChildrenParam = request.getStringParameter(PARAMETER_INCLUDE_CHILDREN);
-            if (includeChildrenParam != null) {
-                splitChildNames = includeChildrenParam.split(",");
-            }
-
-            RequestContext requestContext = RequestContext.getRequestContext();
-            String currentURI = requestContext.getResourceURI();
-            String token = null;
-            Search search = buildSearch(uri, includeParent, splitChildNames);
-            ResultSet rs = this.searcher.execute(token, search);
-            ListMenu menu = buildListMenu(rs, currentURI, style);
-            
-            model.put(this.modelName, menu);
-        } catch (Throwable t) {
-            logger.warn("foo: ", t);
-            throw new RuntimeException(t);
-        }
+        MenuRequest menuRequest = new MenuRequest(request);
+        Search search = buildSearch(menuRequest);
+        String token = null;
+        ResultSet rs = this.searcher.execute(token, search);
+        ListMenu menu = buildListMenu(rs, menuRequest);
+        model.put(this.modelName, menu);
     }
+    
 
-
-    private Search buildSearch(String uri, boolean includeParent, String[] childList) {
+    private Search buildSearch(MenuRequest menuRequest) {
+        String uri = menuRequest.getURI();
+        boolean includeParent = menuRequest.isParentIncluded();
+        String[] childNames = menuRequest.getChildNames();
         int depth = URLUtil.splitUri(uri).length;
         StringBuffer query = new StringBuffer();
 
-        if (childList == null || childList.length == 0) {
+        if (childNames == null) {
             // List all children based on depth:
             query.append("(uri = ").append(uri).append("/*");
             query.append(" AND depth = ").append(depth).append(")");
 
         } else {
             // An explicit list of child names is provided
-            for (int i = 0; i < childList.length; i++) {
-                String name = childList[i];
+            for (int i = 0; i < childNames.length; i++) {
+                String name = childNames[i];
                 if (name.indexOf("/") != -1) {
                     throw new DecoratorComponentException("Invalid child name: '" + name + "'");
                 }
@@ -161,7 +140,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 //name = name.replaceAll(" ", "\\\\ ");
                 String childURI = URIUtil.makeAbsoluteURI(name, uri);
                 query.append("uri = ").append(childURI).append("");
-                if (i < childList.length - 1) {
+                if (i < childNames.length - 1) {
                     query.append(" OR ");
                 }
             }
@@ -187,10 +166,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
 
-    private ListMenu buildListMenu(ResultSet rs, String currentURI, String label) {
+    private ListMenu buildListMenu(ResultSet rs, MenuRequest menuRequest) {
         
+        String currentURI = menuRequest.getCurrentURI();        
+        String[] childNames = menuRequest.getChildNames();
+
+        MenuItem parent = null;
         List items = new ArrayList();
         Map activeMatches = new HashMap();
+        Map nameItemMap = new HashMap();
 
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = (PropertySet) rs.getResult(i);
@@ -208,8 +192,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             if (currentURI.startsWith(resource.getURI())) {
                 activeMatches.put(resource.getURI(), item);
             }
-
-            items.add(item);
+            if (resource.getURI().equals(menuRequest.getURI())) {
+                parent = item;
+            } else {
+                nameItemMap.put(resource.getName(), item);
+                items.add(item);
+            }
         }
 
         // Find the active menu item:
@@ -223,14 +211,141 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
         }
 
-        
-//         Collections.sort(items, new ItemComparator(parentURI, ..));
+        // Sort children:
+        if (childNames != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sorting items based on specified order: "
+                             + java.util.Arrays.asList(childNames));
+            }
+            items = sortSpecifiedOrder(childNames, nameItemMap);
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sorting items based on title");
+            }
+            items = sortRegularOrder(items, menuRequest.getLocale());
+        }
+
+        // Insert parent first in list if exists:
+        if (parent != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found parent item: " + parent);
+            }
+
+            items.add(0, parent);
+        }
 
         ListMenu menu = new ListMenu();
         menu.setItems((MenuItem[]) items.toArray(new MenuItem[items.size()]));
-        menu.setLabel(label);
+        menu.setLabel(menuRequest.getStyle());
         return menu;
     }
+
+
+    private List sortSpecifiedOrder(String[] childNames, Map nameItemMap) {
+        List result = new ArrayList();
+        for (int i = 0; i < childNames.length; i++) {
+            String name = childNames[i].trim();
+            MenuItem item = (MenuItem) nameItemMap.get(name);
+            if (item != null) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+    
+    private List sortRegularOrder(List items, Locale locale) {
+        Collections.sort(items, new ItemTitleComparator(locale));
+        return items;
+    }
+    
+
+    private class MenuRequest {
+        private String uri;
+        private String currentURI;
+        private boolean parentIncluded;
+        private String[] childNames;
+        private String style;
+        private Locale locale;
+        
+        public MenuRequest(DecoratorRequest request) {
+            String uri = request.getStringParameter(PARAMETER_URI);
+            if (uri == null) {
+                throw new DecoratorComponentException("Parameter 'uri' not specified");
+            }
+            this.uri = uri;
+
+            String style = request.getStringParameter(PARAMETER_STYLE);
+            if (style == null) {
+                style = DEFAULT_STYLE;
+            } else {
+                if (!VALID_STYLES.contains(style)) {
+                    throw new DecoratorComponentException(
+                        "Invalid value for parameter 'style': must be one of "
+                        + VALID_STYLES.toString());
+                }
+            }
+            this.style = style;
+
+            this.parentIncluded = "true".equals(request.getStringParameter(
+                                                    PARAMETER_INCLUDE_PARENT));
+            String[] splitChildNames = null;
+            String includeChildrenParam = request.getStringParameter(PARAMETER_INCLUDE_CHILDREN);
+            if (includeChildrenParam != null) {
+                splitChildNames = includeChildrenParam.split(",");
+                if (splitChildNames.length == 0) {
+                    throw new DecoratorComponentException(
+                        "Invalid value for parameter '" + PARAMETER_INCLUDE_CHILDREN
+                        + "': must provide at least one child name");
+                }
+            }
+            this.childNames = splitChildNames;
+            RequestContext requestContext = RequestContext.getRequestContext();
+            this.currentURI = requestContext.getResourceURI();
+            this.locale = request.getLocale();
+        }
+        
+        public String getURI() {
+            return this.uri;
+        }
+        
+        public String getCurrentURI() {
+            return this.currentURI;
+        }
+        
+        public boolean isParentIncluded() {
+            return this.parentIncluded;
+        }
+        
+        public String[] getChildNames() {
+            return this.childNames;
+        }
+        
+        public String getStyle() {
+            return this.style;
+        }
+
+        public Locale getLocale() {
+            return this.locale;
+        }
+    }
+
+
+    private class ItemTitleComparator implements Comparator {
+
+        private Collator collator;
+
+        public ItemTitleComparator(Locale locale) {
+            this.collator = Collator.getInstance(locale);
+        }
+        
+
+        public int compare(Object o1, Object o2) {
+            MenuItem i1 = (MenuItem) o1;
+            MenuItem i2 = (MenuItem) o2;
+            return this.collator.compare(i1.getTitle(), i2.getTitle());
+        }
+    }
+    
 
     public void setQueryParser(Parser queryParser) {
         this.queryParser = queryParser;
@@ -266,11 +381,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         Map map = new HashMap();
         map.put(PARAMETER_URI, PARAMETER_URI_DESC);
         map.put(PARAMETER_STYLE, PARAMETER_STYLE_DESC);
+        map.put(PARAMETER_INCLUDE_CHILDREN, PARAMETER_INCLUDE_CHILDREN_DESC);
         map.put(PARAMETER_INCLUDE_PARENT, PARAMETER_INCLUDE_PARENT_DESC);
         return map;
                 
     }
-
-
-
 }

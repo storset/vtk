@@ -80,4 +80,11 @@ public class MenuItem {
         this.url = url;
     }
     
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName()).append(":");
+        sb.append(this.title);
+        return sb.toString();
+    }
+    
 }

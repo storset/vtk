@@ -295,14 +295,9 @@
     <property name="handler" ref="displayIndexFileHandler" />
   </bean>
 
-  <bean id="hasIndexFileAssertion" class="org.vortikal.web.service.ResourceChildAssertion">
-    <property name="childNames" ref="indexFileList"/>
+  <bean id="hasIndexFileAssertion" class="org.vortikal.web.service.IndexFileAssertion">
   </bean>
 
-  <bean id="indexFileList" class="org.vortikal.context.CSVListFactoryBean">
-    <property name="csvList"
-              value="${indexFiles}" />
-  </bean>
 
 
   <bean id="displayResourceHandlerInterceptor"

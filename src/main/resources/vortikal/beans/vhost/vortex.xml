@@ -16,8 +16,13 @@
      </description>
       <property name="trustedToken" ref="trustedToken" />
       <property name="repository" ref="repository" />
+      <property name="indexFileList" ref="indexFileList" />
    </bean>
 
+  <bean id="indexFileList" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList"
+              value="${indexFiles}" />
+  </bean>
       
   <bean id="securityInitializer"
     class="org.vortikal.security.web.SecurityInitializer">
@@ -27,27 +32,6 @@
       repository token.
     </description>
     <property name="tokenManager" ref="tokenManager" />
-      <!--
-
-    <property name="authenticationHandlers">
-      <description>
-        This list is traversed on every request. Each authentication
-        handler must decide whether or not the request is recognized
-        as an authentication request, and in that case, an
-        authentication attempt will be made.
-      </description>
-      <list>
-        <ref bean="feideAuthenticationHandler" />
-        <ref bean="uioLDAPServiceAuthenticationHandler" />
-        <ref bean="httpDigestAuthenticationHandler" />
-        <ref bean="httpBasicAuthenticationHandler" />
--->
-<!--        <ref bean="uioLDAPAuthenticationHandler" />-->
-<!--
-        <ref bean="feideDirectAuthenticationHandler" />
-      </list>
-    </property>
--->
   </bean>
 
   <bean id="repositoryContextInitializer"
@@ -61,20 +45,6 @@
        service framework to function.
      </description>
    </bean>
-
-
-
-   <!--
-   <bean id="localeResolver"
-         class="org.vortikal.web.servlet.CookieLocaleResolver" >
-     <property name="cookieMaxAge" value="315360000" />
-     <property name="defaultLocale"> 
-       <bean class="java.util.Locale">
-         <constructor-arg value="${defaultLocale}" />
-       </bean>
-     </property>
-   </bean>
-   -->
 
    <bean id="messageSource"
          class="org.vortikal.web.context.ChildDelegatingMessageSource">

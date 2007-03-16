@@ -52,30 +52,12 @@
     <property name="uriCharacterEncoding" value="${indexFileHandlerURIEncoding}" />
   </bean>
 
-
   <bean id="collectionListingAsFeedHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="collectionListingAsFeed" />
   </bean>
   
-
-  <bean id="displayIndexHtmlHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="displayProcessed" value="true" />
-    <property name="childName" value="index.html" />
-    <property name="viewName" value="displayHTMLResource" />
-  </bean>
-
-  <bean id="displayIndexEngHtmlHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="displayProcessed" value="true" />
-    <property name="childName" value="index-eng.html" />
-    <property name="viewName" value="displayHTMLResource" />
-  </bean>
-
   <bean id="displayResourceHandler" 
     class="org.vortikal.web.controller.DisplayResourceController"
     parent="requestLocalRepositoryAware">

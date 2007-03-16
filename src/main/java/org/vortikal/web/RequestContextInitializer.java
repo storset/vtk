@@ -32,15 +32,17 @@ package org.vortikal.web;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -80,13 +82,15 @@ import org.vortikal.web.service.Service;
 public class RequestContextInitializer
   implements ContextInitializer, ApplicationContextAware, InitializingBean {
 
+
     private static Log logger = LogFactory.getLog(RequestContextInitializer.class);
     private ApplicationContext context = null;
     private List rootServices = null;
 
     private String trustedToken;
     private Repository repository;
-    
+    private String[] indexFileList = new String[0];
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -99,6 +103,11 @@ public class RequestContextInitializer
         this.context = context;
     }
     
+    public void setIndexFileList(String[] indexFileList) {
+        this.indexFileList = indexFileList;
+    }
+
+
     public void afterPropertiesSet() {
         if (this.trustedToken == null) {
             throw new BeanInitializationException(
@@ -157,12 +166,28 @@ public class RequestContextInitializer
             throw new ServletException(msg, e);
         }
 
+        String indexFileURI = null;
+
+        // XXX: optimize:
+        if (resource != null && resource.isCollection()) {
+            String[] childURIs = resource.getChildURIs();
+            for (int i = 0; i < this.indexFileList.length; i++) {
+                for (int j = 0; j < childURIs.length; j++) {
+                    String name = childURIs[j].substring(childURIs[j].lastIndexOf("/") + 1);
+                    if (this.indexFileList[i].equals(name)) {
+                        indexFileURI = childURIs[j];
+                        break;
+                    }
+                }
+            }
+        }
+
         for (Iterator iter = this.rootServices.iterator(); iter.hasNext();) {
             Service service = (Service) iter.next();
             // Set an initial request context (with the resource, but
             // without the matched service)
             RequestContext.setRequestContext(
-                new RequestContext(request, service, uri));
+                new RequestContext(request, service, resource, uri, indexFileURI));
             
             // Resolve the request to a service:
             if (resolveService(service, request, resource)) {
@@ -234,7 +259,9 @@ public class RequestContextInitializer
             }
         } catch (AuthenticationException e) {
             RequestContext.setRequestContext(
-                new RequestContext(request, service, requestContext.getResourceURI()));
+                new RequestContext(request, service, resource,
+                                   requestContext.getResourceURI(),
+                                   requestContext.getIndexFileURI()));
             throw(e);
         }
 
@@ -254,7 +281,9 @@ public class RequestContextInitializer
         }
 
         RequestContext.setRequestContext(
-            new RequestContext(request, service, requestContext.getResourceURI()));
+            new RequestContext(request, service, resource,
+                               requestContext.getResourceURI(),
+                               requestContext.getIndexFileURI()));
         return true;
     }
 

@@ -142,29 +142,19 @@ public class IndexFileController
             throw new IllegalStateException("Resource " + res + " is not a collection");
         }
         
+        String indexURI = requestContext.getIndexFileURI();
         Resource indexFile = null;
-        for (int i = 0; i < this.indexFiles.length; i++) {
-            String indexURI;
-            if ("/".equals(currentURI)) {
-                indexURI = currentURI + this.indexFiles[i];
-            } else {
-                indexURI = currentURI + "/" + this.indexFiles[i];                
-            }
-
-            try {
-                indexFile = this.repository.retrieve(token, indexURI, true);
-                break;
-            } catch (ResourceNotFoundException e) {
-                continue;
-            }
+        try {
+            indexFile = this.repository.retrieve(token, indexURI, true);
+        } catch (Throwable t) { 
+            throw new IllegalStateException("No index file found under " + res, t);
         }
-
-        if (indexFile == null) {
-            throw new IllegalStateException("No index file found under " + res);
+        if (indexFile.isCollection()) {
+            throw new IllegalStateException("Index file '" + indexFile.getURI()
+                                            + "' not a regular file");
         }
 
         long collectionLastMod = res.getLastModified().getTime();
-
         String encodedURI = new String(indexFile.getURI().getBytes("utf-8"),
                                        this.uriCharacterEncoding);
 
@@ -172,7 +162,6 @@ public class IndexFileController
                                                            collectionLastMod);
         String servletName = (String)request.getAttribute(
                 VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
-
         RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
         
         if (rd == null) {

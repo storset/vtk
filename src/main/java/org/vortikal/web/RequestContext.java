@@ -31,9 +31,10 @@
 package org.vortikal.web;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.vortikal.context.BaseContext;
+import org.vortikal.repository.Resource;
 import org.vortikal.web.service.Service;
+import org.vortikal.util.repository.URIUtil;
 
 
 /**
@@ -44,19 +45,43 @@ import org.vortikal.web.service.Service;
  *
  * <pre>RequestContext requestContext = RequestContext.getRequestContext();</pre>
  *
+ * XXX: should index file information be placed here as well?
+ *
  */
 public class RequestContext {
 
     private final HttpServletRequest servletRequest;
     private final Service service;
     private final String resourceURI;
+    private final String currentCollection;
+    private final String indexFileURI;
+//     private final boolean indexFileRequest = false;
     
-    
+    /**
+     * Creates a new request context.
+     *
+     * @param servletRequest the current servlet request
+     * @param service the resolved service
+     * @param resource the current resource (may be null)
+     * @param uri the URI of the current resource
+     */
     public RequestContext(HttpServletRequest servletRequest,
-                          Service service, String resourceURI) {
+                          Service service, Resource resource, String uri,
+                          String indexFileURI) {
         this.servletRequest = servletRequest;
+        this.indexFileURI = indexFileURI;
         this.service = service;
-        this.resourceURI = resourceURI;
+        if (resource != null) {
+            this.resourceURI = resource.getURI();
+            if (resource.isCollection()) {
+                this.currentCollection = resource.getURI();
+            } else {
+                this.currentCollection = URIUtil.getParentURI(resource.getURI());
+            }
+        } else {
+            this.resourceURI = uri;
+            this.currentCollection = null;
+        }
     }
     
     public static void setRequestContext(RequestContext requestContext) {
@@ -64,6 +89,11 @@ public class RequestContext {
         ctx.setAttribute(RequestContext.class.getName(), requestContext);
     }
     
+
+    /**
+     * Gets the current request context.
+     * 
+     */
     public static RequestContext getRequestContext() {
         BaseContext ctx = BaseContext.getContext();
         RequestContext requestContext = (RequestContext)
@@ -98,13 +128,35 @@ public class RequestContext {
      * Gets the {@link org.vortikal.repository.Resource#getURI URI}
      * that the current request maps to.
      * 
-     * @return Returns URI of the requested resource.
+     * @return the URI of the requested resource.
      */
     public String getResourceURI() {
         return this.resourceURI;
     }
     
+
+    /**
+     * Gets the URI of the current collection. If the request is for a
+     * collection, the current collection and {@link #getResourceURI
+     * resource URI} are the same, otherwise the current collection is
+     * the nearest collection towards the root.
+     */
+    public String getCurrentCollection() {
+        return this.currentCollection;
+    }
     
+
+    /**
+     * Gets the index file URI.
+     * @returns the index file URI, or <code>null</code> if this is
+     * not an index file request.
+     */
+    public String getIndexFileURI() {
+        return this.indexFileURI;
+    }
+    
+
+
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getName());
         sb.append(": [");

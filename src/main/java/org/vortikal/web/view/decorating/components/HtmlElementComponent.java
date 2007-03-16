@@ -53,12 +53,8 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
     private static final String PARAMETER_EXCLUDE = "exclude";
     private static final String PARAMETER_EXCLUDE_DESC = 
-        "Comma-separated list with names of child elements to exclude";// (takes presedence over includes)";
+        "Comma-separated list with names of child elements to exclude";
 
-//    private static final String PARAMETER_INCLUDE = "include";
-//    private static final String PARAMETER_INCLUDE_DESC = 
-//        "Comma-separated list of child element names to include";
-//
     private static final String PARAMETER_ENCLOSED = "enclosed";
     private static final String PARAMETER_ENCLOSED_DESC =
         "If the selected element tag should enclose the content, set this to 'true'";
@@ -86,10 +82,9 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                                 DecoratorResponse response) throws Exception {
 
         boolean enclosed = (this.enclosed != null) ?
-                this.enclosed.booleanValue() : "true".equals(request.getStringParameter(PARAMETER_ENCLOSED));
+                this.enclosed.booleanValue() : "true".equals(
+                    request.getStringParameter(PARAMETER_ENCLOSED));
 
-//        String include = (this.include != null) ?
-//            this.include : request.getStringParameter(PARAMETER_INCLUDE);
 
         Set includedElements = new HashSet();
         if (include != null) {
@@ -132,7 +127,6 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
         public ExcludeFilter(Set excluded) {
             this.excluded = excluded;
-//            this.included = included;
         }
 
         public HtmlContent filterNode(HtmlContent node) {
@@ -140,8 +134,6 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                 HtmlElement element = (HtmlElement) node;
                 if (excluded.contains(element.getName())) {
                     return null;
-//                } else if (included != null && !included.contains(element.getName())) {
-//                    return node;
                 }
             }
             return node;
@@ -156,8 +148,6 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         Map map = new HashMap();
         if (this.elementPath == null)
             map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
-//        if (this.include == null)
-//            map.put(PARAMETER_INCLUDE, PARAMETER_INCLUDE_DESC);
         if (this.exclude == null)
             map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
         if (this.enclosed == null)

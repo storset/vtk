@@ -96,23 +96,18 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     public void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        try {
-            MenuRequest menuRequest = new MenuRequest(request);
-            Search search = buildSearch(menuRequest);
-            String token = null;
-            ResultSet rs = this.searcher.execute(token, search);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
-            }
-            ListMenu menu = buildListMenu(rs, menuRequest);
-            Map menuModel = buildMenuModel(menu, menuRequest);
-            model.put(this.modelName, menuModel);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Built model: : " + model + " from menu: " + menu);
-            }
-
-        } catch (Throwable t) {
-            logger.warn("Hmm", t);
+        MenuRequest menuRequest = new MenuRequest(request);
+        Search search = buildSearch(menuRequest);
+        String token = null;
+        ResultSet rs = this.searcher.execute(token, search);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
+        }
+        ListMenu menu = buildListMenu(rs, menuRequest);
+        Map menuModel = buildMenuModel(menu, menuRequest);
+        model.put(this.modelName, menuModel);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Built model: : " + model + " from menu: " + menu);
         }
     }
     

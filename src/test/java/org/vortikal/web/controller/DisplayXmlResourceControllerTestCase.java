@@ -35,10 +35,6 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.BasicConfigurator;
-
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 
@@ -54,8 +50,6 @@ import org.vortikal.web.RequestContext;
 
 
 public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
-
-    private static Log logger = LogFactory.getLog(DisplayXmlResourceControllerTestCase.class);
 
     private String schemaPropertyName = "schema";
 
@@ -75,7 +69,6 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        BasicConfigurator.configure();
         this.request = new MockHttpServletRequest();
         this.controller = new DisplayXmlResourceController();
         BaseContext.pushContext();
@@ -105,12 +98,11 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
                 returnValue(false));
         mockResource.expects(atLeastOnce()).method("getLastModified").withNoArguments().will(
                 returnValue(lastModifiedExpected));
-//         mockResource.expects(atLeastOnce()).method("getProperty").with(eq(this.schemaNamespace),
-//                 eq(this.schemaPropertyName)).will(returnValue(schemaProperty));
         Resource resource = (Resource) mockResource.proxy();
 
         this.mockRepository = mock(Repository.class);
-        this.mockRepository.expects(atLeastOnce()).method("retrieve").with(eq(this.token), eq(this.uri), eq(true))
+        this.mockRepository.expects(atLeastOnce()).method("retrieve").
+            with(eq(this.token), eq(this.uri), eq(true))
                 .will(returnValue(resource));
 
         assertNotNull(this.mockRepository);
@@ -125,16 +117,6 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
 
         List schemaList = new ArrayList();
         schemaList.add(faqSchema);
-//        controller.setSchemasForHandleLastModified(schemaList);
-//        controller.setHandleLastModifiedForSchemasInList(true);
-//        lastModified = controller.getLastModified(request);
-//        assertEquals(lastModifiedExpected.getTime(), lastModified);
-//        
-//        controller.setSchemasForHandleLastModified(schemaList);
-//        controller.setHandleLastModifiedForSchemasInList(false);
-//        lastModified = controller.getLastModified(request);
-//        assertEquals(-1, lastModified);
-
     }
 }
 

@@ -207,7 +207,8 @@ public class XmlSearcher implements InitializingBean {
 
             Search search = new Search();
             search.setQuery(this.queryParser.parse(query));
-            search.setSorting(envir.getSorting());
+            if (envir.getSorting() != null)
+                search.setSorting(envir.getSorting());
             search.setLimit(limit);
             search.setPropertySelect(envir.getPropertySelect());
             ResultSet rs = this.searcher.execute(token, search);

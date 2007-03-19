@@ -119,5 +119,15 @@ public class Search {
     public void setSorting(Sorting sorting) {
         this.sorting = sorting;
     }
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getClass().getName()).append(": [");
+        sb.append("query=").append(this.query.dump(""));
+        sb.append(", propertySelect=").append(this.propertySelect);
+        sb.append(", sorting=").append(this.sorting);
+        sb.append(", limit=").append(this.limit);
+        sb.append(", cursor=").append(this.cursor).append("]");
+        return sb.toString();
+    }
     
 }

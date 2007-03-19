@@ -139,6 +139,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         Map model = new HashMap();
         model.put("resultSets", resultList);
+        model.put("size", Integer.valueOf(menu.getItems().length));
         model.put("title", menu.getTitle());
         return model;
     }

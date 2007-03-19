@@ -12,7 +12,7 @@
   <#stop "Unable to render model: required submodel
   'subFolderMenu' missing">
 </#if>
-<#if subFolderMenu.resultSets?exists && subFolderMenu.resultSets?size &gt; 0>
+<#if subFolderMenu.size &gt; 0>
   <#if subFolderMenu.resultSets?exists>
     <div class="vrtxSubFolderMenu">
       <#if subFolderMenu.title?exists>

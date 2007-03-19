@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -38,6 +39,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -57,6 +61,8 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     private static final Pattern SSI_PARAMETERS_REGEXP = Pattern.compile(
             "\\s*([a-zA-Z]*)\\s*=\\s*\"([^\"]+)\"",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    private static Log logger = LogFactory.getLog(ComponentHandlingNodeFilter.class);
 
     private Map ssiDirectiveComponentMap;
     private Set prohibitedComponentNamespaces = new HashSet();
@@ -186,7 +192,12 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
                     result = response.getContentAsString();
                 }
             } catch (Throwable t) {
-                result = "Error: " + t.getMessage();
+                logger.warn("Error invoking component: " + components[i], t);
+                String msg = t.getMessage();
+                if (msg == null) {
+                    msg = t.getClass().getName();
+                }
+                result = "Error: " + msg;
             }
             sb.append(result);
         }

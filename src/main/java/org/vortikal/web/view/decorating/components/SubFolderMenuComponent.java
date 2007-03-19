@@ -116,14 +116,21 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         List resultList = new ArrayList();
         int resultSets = menuRequest.getResultSets();
         List allItems = java.util.Arrays.asList(menu.getItems());
-        int itemsPerResultSet = allItems.size() / resultSets;
+        if (resultSets > allItems.size()) {
+            resultSets = allItems.size();
+        }
 
-        int startIdx = 0;
+        int itemsPerResultSet = Math.round((float) allItems.size() / (float) resultSets);
+        int remainder = allItems.size() - (resultSets * itemsPerResultSet);
+
         for (int i = 0; i < resultSets; i++) {
+            int startIdx = i * itemsPerResultSet;
             int endIdx = startIdx + itemsPerResultSet;
+
+            if (i == resultSets - 1 && remainder > 0) {
+                endIdx += remainder;
+            }
             if (endIdx > allItems.size()) {
-                endIdx = allItems.size();
-            } else if (allItems.size() - endIdx < itemsPerResultSet) {
                 endIdx = allItems.size();
             }
 
@@ -133,13 +140,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             m.setLabel(menu.getLabel());
             m.setItems((MenuItem[]) subList.toArray(new MenuItem[subList.size()]));
             resultList.add(m);
-
-            startIdx += itemsPerResultSet;
         }
 
         Map model = new HashMap();
         model.put("resultSets", resultList);
-        model.put("size", Integer.valueOf(menu.getItems().length));
+        model.put("size", new Integer(menu.getItems().length));
         model.put("title", menu.getTitle());
         return model;
     }

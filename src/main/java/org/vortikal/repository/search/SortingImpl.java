@@ -49,9 +49,6 @@ public class SortingImpl implements Sorting {
         this.sortFields.add(sortField);
     }
     
-    /* (non-Javadoc)
-     * @see org.vortikal.repository.query.SortingInt#getSortFields()
-     */
     public List getSortFields() {
         return this.sortFields;
     }

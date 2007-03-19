@@ -45,8 +45,6 @@ import org.vortikal.util.repository.URIUtil;
  *
  * <pre>RequestContext requestContext = RequestContext.getRequestContext();</pre>
  *
- * XXX: should index file information be placed here as well?
- *
  */
 public class RequestContext {
 
@@ -55,7 +53,6 @@ public class RequestContext {
     private final String resourceURI;
     private final String currentCollection;
     private final String indexFileURI;
-//     private final boolean indexFileRequest = false;
     
     /**
      * Creates a new request context.
@@ -64,6 +61,8 @@ public class RequestContext {
      * @param service the resolved service
      * @param resource the current resource (may be null)
      * @param uri the URI of the current resource
+     * @param indexFileURI the URI of the current index file
+     * (<code>null</code> if no index file exists)
      */
     public RequestContext(HttpServletRequest servletRequest,
                           Service service, Resource resource, String uri,
@@ -84,6 +83,22 @@ public class RequestContext {
         }
     }
     
+    /**
+     * Creates a new request context without an index file URI.
+     */
+    public RequestContext(HttpServletRequest servletRequest,
+                          Service service, Resource resource, String uri) {
+        this(servletRequest, service, resource, uri, null);
+    }
+
+    /**
+     * Creates a new request context without a resource object.
+     */
+    public RequestContext(HttpServletRequest servletRequest,
+                          Service service, String uri) {
+        this(servletRequest, service, null, uri, null);
+    }
+
     public static void setRequestContext(RequestContext requestContext) {
         BaseContext ctx = BaseContext.getContext();
         ctx.setAttribute(RequestContext.class.getName(), requestContext);

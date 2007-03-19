@@ -90,7 +90,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private Service viewService;
     private PropertyTypeDefinition titlePropdef;
     private String modelName = "menu";
-    private int searchLimit = 10;
+    private int searchLimit = 200;
     private Searcher searcher;
 
 
@@ -236,6 +236,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             if (sortFieldParam != null) {
                 SortFieldDirection direction;
                 String sortDirectionParam = request.getStringParameter(PARAMETER_SORT_DIRECTION);
+                if (sortDirectionParam == null) sortDirectionParam = "asc";
+
                 if ("asc".equals(sortDirectionParam)) {
                     direction = SortFieldDirection.ASC;
                 } else if ("desc".equals(sortDirectionParam)) {
@@ -267,7 +269,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                         + "': " + this.resultSets + ": must be a positive number between 1 and "
                         + PARAMETER_RESULT_SETS_MAX_VALUE);
                 }
-
             }
             this.locale = request.getLocale();
         }

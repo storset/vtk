@@ -52,13 +52,15 @@ import org.w3c.tidy.Tidy;
 
 
 /**
- * Transformer using jTidy to tidy up HTML/xHTML on the provided input stream.
+ * Transformer using jTidy to tidy up HTML/XHTML on the provided input
+ * stream. The HTML is transformed to XHTML 1.0 Transitional/utf-8.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li> <code>generatedContentType</code> - content type to generate (default "text/html")
- *   <li> <code>insertedCssReference</code> - URI (to compulsory CSS stylesheet to be added 
- *        to tidy'ed document
+ *   <li> <code>generatedContentType</code> - content type to generate
+ *        (default "text/html")</li>
+ *   <li> <code>insertedCssReference</code> - URI (to compulsory CSS
+ *        stylesheet to be added to tidy'ed document</li>
  * </ul>
  */
 public class JTidyTransformer implements Filter { 
@@ -94,6 +96,8 @@ public class JTidyTransformer implements Filter {
             tidy.setMakeClean(makeClean);
             tidy.setSmartIndent(smartIndent);
             tidy.setShowWarnings(showWarnings);
+            tidy.setXHTML(xhtml);
+            tidy.setDocType(doctype);
             tidy.setQuiet(quiet);
             tidy.setCharEncoding(Configuration.UTF8);
             
@@ -203,7 +207,6 @@ public class JTidyTransformer implements Filter {
     
 
     private void alterContentTypeMetaElement(Document doc) {
-        String encoding = null;
 
         NodeList headNodes = doc.getElementsByTagName("head");
         Node head = headNodes.item(0);

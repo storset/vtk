@@ -152,9 +152,7 @@ public class JTidyTransformerTest extends TestCase {
     private boolean parserTest(InputStream isOriginal) 
         throws FileNotFoundException, IOException {
 
-        // InputStream isParsed = this.jti.transform(isOriginal); 
-	// FIXME added this line to make the test compile
-        InputStream isParsed = null;
+        InputStream isParsed = this.jti.transform(isOriginal, "utf-8"); 
 	
         // throws FileNotFoundException for invalid input streams!
         
@@ -178,7 +176,7 @@ public class JTidyTransformerTest extends TestCase {
         String isParsedAsString = String.valueOf(baos);
         baos.close();
                      
-//        System.out.println(isParsedAsString); // debug helper
+        //System.out.println(isParsedAsString); // debug helper
           
         if (isParsedAsString.indexOf("XHTML 1.0 Transitional") != -1 &&
                 isParsedAsString.indexOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1" +

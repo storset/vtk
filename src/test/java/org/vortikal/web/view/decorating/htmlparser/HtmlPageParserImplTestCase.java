@@ -133,8 +133,6 @@ public class HtmlPageParserImplTestCase extends TestCase {
         assertNotNull(map.get("div"));
         assertNotNull(map.get("span"));
         assertNotNull(map.get("b"));
-        
-        print(page.getRootElement(), "");
     }
 
 

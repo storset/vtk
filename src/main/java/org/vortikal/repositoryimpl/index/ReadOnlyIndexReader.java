@@ -36,6 +36,7 @@ import java.util.Collection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -100,10 +101,10 @@ final class ReadOnlyIndexReader extends IndexReader {
                 LOG.debug("Closed reader; reference count was zero");
             }
             return true;
-        } else {
-            this.closeOnZeroReferences = true;
-            return false;
-        }
+        } 
+        
+        this.closeOnZeroReferences = true;
+        return false;
     }
     
     protected void doClose() throws IOException {
@@ -111,20 +112,19 @@ final class ReadOnlyIndexReader extends IndexReader {
         this.wrappedReader.close();
     }
 
-    protected void doCommit() throws IOException {
+    protected void doCommit() {
         // Does nothing, because this reader cannot physically modify an index.
     }
 
-    protected void doDelete(int docNum) throws IOException {
+    protected void doDelete(int docNum) {
         throw new IllegalOperationException("Writing operations are not supported by this reader instance");
     }
 
-    protected void doSetNorm(int doc, String field, byte value)
-            throws IOException {
+    protected void doSetNorm(int doc, String field, byte value) {
         throw new IllegalOperationException("Writing operations are not supported by this reader instance");
     }
 
-    protected void doUndeleteAll() throws IOException {
+    protected void doUndeleteAll() {
         throw new IllegalOperationException("Writing operations are not supported by this reader instance");
     }
 
@@ -134,6 +134,10 @@ final class ReadOnlyIndexReader extends IndexReader {
 
     public Document document(int n) throws IOException {
         return this.wrappedReader.document(n);
+    }
+
+    public Document document(int n, FieldSelector fieldSelector) throws IOException {
+        return this.wrappedReader.document(n, fieldSelector);
     }
 
     public Collection getFieldNames(IndexReader.FieldOption fldOption) {
@@ -202,4 +206,5 @@ final class ReadOnlyIndexReader extends IndexReader {
     public boolean hasNorms(String field) throws IOException {
         return wrappedReader.hasNorms(field);
     }
+
 }

@@ -65,6 +65,22 @@ div.vrtxFeed ul.items li span.publishedDate {
 
 /* END feed:include */
 
+/* START vrtxSubFolderMenu */
+
+div.vrtxSubFolderMenu {
+ border: 1px solid #666;
+ padding: 1em;
+}
+
+div.vrtxSubFolderMenu div.menuTitle {
+ font-size: 1.2em;
+}
+
+div.vrtxSubFolderMenu ul {
+ list-style-type: square;
+}
+
+/* END vrtxSubFolderMenu */
 
 /* START vrtxVerticalMenu */
 
@@ -145,22 +161,22 @@ ul.vrtxHorizontalMenu a:hover, ul.vrtxHorizontalMenu li.active a:hover {
 
 
 
-/* START vrtxTabMenu */
+/* START vrtxTabsMenu */
 
-ul.vrtxTabMenu {
+ul.vrtxTabsMenu {
   margin: 0px;
   padding: 4px 0px;
   border-bottom: 1px solid #666;
   white-space: nowrap;
 }
 
-ul.vrtxTabMenu li {
+ul.vrtxTabsMenu li {
   display: inline;
   list-style: none;
   margin: 0px;
 }
 
-ul.vrtxTabMenu li a {
+ul.vrtxTabsMenu li a {
   text-align: center;
   text-decoration: none;
   color: #333;
@@ -172,17 +188,17 @@ ul.vrtxTabMenu li a {
   border-bottom: none;
 }
 
-ul.vrtxTabMenu li.active a, ul.vrtxTabMenu li.active a:hover {
+ul.vrtxTabsMenu li.active a, ul.vrtxTabsMenu li.active a:hover {
   color: #000; 
   padding: 5px 15px; 
   background-color: #fff; 
 }
 
-ul.vrtxTabMenu li a:hover{
+ul.vrtxTabsMenu li a:hover{
   color: #000;
   padding-top: 5px; 
 }
 
-/* END vrtxTabMenu */
+/* END vrtxTabsMenu */
 
 

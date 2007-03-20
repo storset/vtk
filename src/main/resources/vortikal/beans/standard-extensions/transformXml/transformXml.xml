@@ -204,7 +204,7 @@
         parent="requestLocalRepositoryAware">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryParser" ref="queryParser" />
-    <property name="propertyManager" ref="propertyManager" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultLocale" value="${defaultLocale}" />
 
     <property name="valueFormatter" ref="valueFormatter" />

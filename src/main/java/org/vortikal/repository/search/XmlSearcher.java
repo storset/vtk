@@ -57,7 +57,6 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.search.query.Parser;
-import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -86,7 +85,6 @@ public class XmlSearcher implements InitializingBean {
 
     private Searcher searcher;
     private Parser queryParser;
-    private PropertyManager propertyManager;
     private ResourceTypeTree resourceTypeTree;
     private int maxResults = 1000;
     private Repository repository;
@@ -101,10 +99,6 @@ public class XmlSearcher implements InitializingBean {
         this.searcher = searcher;
     }
 
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-    
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
     }
@@ -127,10 +121,6 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'queryParser' not set");
         }
-        if (this.propertyManager == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'propertyManager' not set");
-        }
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'repository' not set");
@@ -147,8 +137,10 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'defaultLocale' not set");
         }
-
-        this.resourceTypeTree = this.propertyManager.getResourceTypeTree();
+        if (this.resourceTypeTree == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'resourceTypeTree' not set");
+        }
     }
     
 
@@ -645,4 +637,7 @@ public class XmlSearcher implements InitializingBean {
         this.queryParser = queryParser;
     }
 
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
 }

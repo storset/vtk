@@ -18,15 +18,15 @@
       <#if subFolderMenu.title?exists>
         <div class="menuTitle">${subFolderMenu.title?html}</div>
       </#if>
+      <#list subFolderMenu.resultSets as resultSet>
+        <#if resultSet.items?exists && resultSet.items?size &gt; 0>
+          <ul>
+            <#list resultSet.items as item>
+              <li><a href="${item.url?html}">${item.title?html}</a></li>
+            </#list>
+          </ul>
+        </#if>
+      </#list>
     </div>
-    <#list subFolderMenu.resultSets as resultSet>
-      <#if resultSet.items?exists && resultSet.items?size &gt; 0>
-        <ul class="vrtxSubFolderMenu">
-          <#list resultSet.items as item>
-            <li><a href="${item.url?html}">${item.title?html}</a></li>
-          </#list>
-        </ul>
-      </#if>
-    </#list>
   </#if>
 </#if>

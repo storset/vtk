@@ -66,76 +66,123 @@ div.vrtxFeed ul.items li span.publishedDate {
 /* END feed:include */
 
 
-/* START menu:listmenu */ /* Usikker på denne - Even */
+/* START vrtxVerticalMenu */
 
-div.tabs {
-  position: relative;
-  top: 0px;
-  left: 0px;
-  margin: 0px 10px 0px 0px;
-  font-size: 95%;
-  width: 47em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+ul.vrtxVerticalMenu {
+  margin-left: 0;
+  padding-left: 0;
+  list-style-type: none;
 }
 
-div.tabs ul {
+ul.vrtxVerticalMenu li {
+  border-top: 1px solid #666;
+  margin-bottom: -1px;
+  border-bottom: 1px solid #666;
+}
+
+ul.vrtxVerticalMenu li a {
+  display: block;
+  padding: .5em .5em .5em .2em;
+  border-left: .3em solid #fff;
+  color:black;
+  text-decoration: none;
+  height: 1%; /* triggers hasLayout in IE browsers */
+}
+
+ul.vrtxVerticalMenu li.active a {
+  border-left: .3em solid #000;
+  padding-left: .2em;
+}
+
+ul.vrtxVerticalMenu li a:hover, ul.vrtxVerticalMenu li.active a:hover {
+  background-color: #eee;
+  color: #666;
+  border-left: .3em solid #666;
+  padding-left: .2em;
+}
+
+/* END vrtxVerticalMenu */
+
+
+
+/* START vrtxHorizontalMenu */
+
+ul.vrtxHorizontalMenu {
+  white-space: nowrap;
+  background-color: #dfd2b0;
+  padding: .3em 0;
+  margin: 0;
+}
+
+ul.vrtxHorizontalMenu li {
+  display:inline;
+  list-type: none; 
   margin: 0px;
   padding: 0px;
-  position: absolute;
-  bottom: -1px;
-  left: 0px;
-  width: 47em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
-        /* Width is also required for IE 6.0. Can be reduced when we shorten some of the text on the tabs */
 }
 
-div.tabs ul li {
+ul.vrtxHorizontalMenu a {
+  margin: 0em;
+  padding: .3em .75em;
+  color: #000;
+  text-decoration: none;
+  height: 1%; /* triggers hasLayout in IE browsers */
+}
+
+ul.vrtxHorizontalMenu li.active a {
+  border-bottom: .2em solid #000;
+  padding-bottom: .1em;
+}
+
+
+ul.vrtxHorizontalMenu a:hover, ul.vrtxHorizontalMenu li.active a:hover {
+  color: #666;
+  border-bottom: .2em solid #666;
+  padding-bottom: .1em;
+}
+
+/* END vrtxHorizontalMenu */
+
+
+
+/* START vrtxTabMenu */
+
+ul.vrtxTabMenu {
+  margin: 0px;
+  padding: 4px 0px;
+  border-bottom: 1px solid #666;
+  white-space: nowrap;
+}
+
+ul.vrtxTabMenu li {
   display: inline;
   list-style: none;
+  margin: 0px;
 }
 
-div.tabs ul li a, div.tabs ul li.current a {
-  line-height: 1.25em;
-  display: block;
-  float: left;
-  padding: 4px 15px 4px 15px;
-  margin-top: 1px;
-  margin-right: 2px;
+ul.vrtxTabMenu li a {
   text-align: center;
-  font-size: 90%;
   text-decoration: none;
   color: #333;
-}
-
-div.tabs ul li.current a, div.tabs ul li.current a:hover {
-        /* border: 1px solid #999; */ 
-	font-weight: bold;   /* Causes strange space betw. tabs */
-        border-bottom: none;
-	background: #ffffff; 
-        padding-bottom: 6px;
-        margin-top: 0;
-}
-
-div.tabs ul li a {
-  border: 1px solid #999;
+  padding: 4px 15px;
+  margin: 0px 1px 0px 0px;
+  border: 1px solid #666; 
+  background-color: #eee;
+  border: 1px solid #666;
   border-bottom: none;
-  background-color: white;
 }
 
-div.tabs ul li a:hover {
-  margin-top: 0;
-  border-color: #999;
-  padding-bottom: 5px;
+ul.vrtxTabMenu li.active a, ul.vrtxTabMenu li.active a:hover {
+  color: #000; 
+  padding: 5px 15px; 
+  background-color: #fff; 
 }
 
-
-
-/* Override this class to get different colors and size on a specific tab */
-
-.activeTab { 
-	background-color: #ffffff; /* #efefef; */
+ul.vrtxTabMenu li a:hover{
+  color: #000;
+  padding-top: 5px; 
 }
 
-div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
-	background-color: #ffffff /* #efefef;; */
+/* END vrtxTabMenu */
 
-/* END menu:listmenu */
-}
+

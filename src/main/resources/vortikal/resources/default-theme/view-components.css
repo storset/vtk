@@ -68,16 +68,30 @@ div.vrtxFeed ul.items li span.publishedDate {
 /* START vrtxSubFolderMenu */
 
 div.vrtxSubFolderMenu {
- border: 1px solid #666;
+ border: 1px solid #aaa;
  padding: 1em;
+ height: 1%; /* Triggers hasLayout in IE browser */
 }
 
-div.vrtxSubFolderMenu div.menuTitle {
+div.vrtxSubFolderMenu:after {
+ content: "."; 
+ display: block; 
+ height: 0; 
+ clear: both; 
+ visibility: hidden;
+}
+
+div.menuTitle {
  font-size: 1.2em;
+ font-weight: bold;
+ margin-bottom: .5em;
 }
 
 div.vrtxSubFolderMenu ul {
+ float:left;
  list-style-type: square;
+ padding: 0 2em;
+ margin: 0;
 }
 
 /* END vrtxSubFolderMenu */

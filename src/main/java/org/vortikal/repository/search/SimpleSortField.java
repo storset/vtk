@@ -31,6 +31,9 @@
 package org.vortikal.repository.search;
 
 
+/**
+ * @deprecated
+ */
 public class SimpleSortField extends AbstractSortField {
 
     private String name;

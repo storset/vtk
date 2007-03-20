@@ -32,10 +32,11 @@ package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.web.servlet.View;
+
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
@@ -116,6 +117,15 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
 
     protected Map getParameterDescriptionsInternal() {
         return null;
+    }
+    
+
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        if (this.view == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'view' not set");
+        }
     }
     
 }

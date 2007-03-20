@@ -187,9 +187,10 @@
     <property name="queryParser" ref="queryParser" />
     <property name="view" ref="decorating.listMenuComponent.view" />
     <property name="titlePropdef" ref="titlePropDef" />
+    <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
     <property name="viewService" ref="webService" />
     <property name="modelName" value="menu" />
-    <property name="description" value="Inserts a menu component on the page, based on a folder " />
+    <property name="description" value="Displays a menu based on the subfolders of a specified folder (path)" />
   </bean>
 
   <bean name="decorating.listMenuComponent.view" parent="freemarkerView">
@@ -204,16 +205,17 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryParser" ref="queryParser" />
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
-    <property name="titlePropdef" ref="titlePropDef" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
     <property name="viewService" ref="webService" />
     <property name="modelName" value="subFolderMenu" />
-    <property name="description" value="Inserts a menu component on the page, based on a folder " />
+    <property name="description" value="Lists the subfolders of the current folder" />
   </bean>
 
   <bean name="decorating.subFolderMenuComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/subfolder-menu.ftl" />
   </bean>
-
 
 
   <bean id="decorating.includeComponent"

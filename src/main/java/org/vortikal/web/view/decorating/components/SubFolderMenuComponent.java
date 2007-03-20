@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,18 +43,23 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.BeanInitializationException;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.HashSetPropertySelect;
+import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.SimpleSortField;
 import org.vortikal.repository.search.SortField;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.Parser;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -84,21 +90,30 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         "The number of result sets to split the result into. The default value is '1'";
     private static final int PARAMETER_RESULT_SETS_MAX_VALUE = 30;
 
+    private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
+    private static final String PARAMETER_AS_CURRENT_USER_DESC = 
+        "The default is that only resources readable for everyone is listed. " +
+            "If this is set to 'true', the listing is done as the currently " +
+            "logged in user (if any)";
+
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
     
     private Parser queryParser;
     private Service viewService;
-    private PropertyTypeDefinition titlePropdef;
+    private PropertyTypeDefinition titlePropDef;
+    private ResourceTypeDefinition collectionResourceType;
     private String modelName = "menu";
     private int searchLimit = 200;
     private Searcher searcher;
+    private ResourceTypeTree resourceTypeTree;
+    
 
 
     public void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         Search search = buildSearch(menuRequest);
-        String token = null;
+        String token = menuRequest.getToken();
         ResultSet rs = this.searcher.execute(token, search);
         if (logger.isDebugEnabled()) {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
@@ -119,6 +134,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         if (resultSets > allItems.size()) {
             resultSets = allItems.size();
         }
+
 
         int itemsPerResultSet = Math.round((float) allItems.size() / (float) resultSets);
         int remainder = allItems.size() - (resultSets * itemsPerResultSet);
@@ -157,9 +173,10 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         
         query.append("uri = ").append(uri).append("/*");
         query.append(" AND depth = ").append(depth);
-        query.append(" AND type IN collection");
+        query.append(" AND type IN ").append(this.collectionResourceType.getName());
 
         HashSetPropertySelect select = new HashSetPropertySelect();
+        select.addPropertyDefinition(this.titlePropDef);
         Search search = new Search();
         search.setQuery(this.queryParser.parse(query.toString()));
         search.setLimit(this.searchLimit);
@@ -179,7 +196,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             PropertySet resource = (PropertySet) rs.getResult(i);
             
             String url = this.viewService.constructLink(resource.getURI());
-            Property titleProperty = resource.getProperty(this.titlePropdef);
+            Property titleProperty = resource.getProperty(this.titlePropDef);
             String title = titleProperty != null ?
                 titleProperty.getStringValue() : resource.getName();
 
@@ -192,7 +209,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         // Sort children (if not already sorted):
-        if (menuRequest.getSortField() == null) {
+        if (!menuRequest.isUserSpecifiedSorting()) {
             items = sortByTitleOrName(items, menuRequest.getLocale());
         }
 
@@ -215,15 +232,23 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private String uri;
         private String title;
         private SortField sortField;
+        private boolean userSpecifiedSorting = false;
         private int resultSets = 1;
         private Locale locale;
-        
+        private String token;
 
         public MenuRequest(DecoratorRequest request) {
 
             RequestContext requestContext = RequestContext.getRequestContext();            
             this.uri = requestContext.getResourceURI();
             this.uri = requestContext.getCurrentCollection();
+
+            boolean asCurrentUser = "true".equals(
+                request.getStringParameter(PARAMETER_AS_CURRENT_USER));
+            if (asCurrentUser) {
+                SecurityContext securityContext = SecurityContext.getSecurityContext();
+                this.token = securityContext.getToken();
+            }
 
             String title = request.getStringParameter(PARAMETER_TITLE);
             if (title == null || "".equals(title.trim())) {
@@ -232,28 +257,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             }
             this.title = title;
 
-            String sortFieldParam = request.getStringParameter(PARAMETER_SORT_BY);
-            if (sortFieldParam != null) {
-                SortFieldDirection direction;
-                String sortDirectionParam = request.getStringParameter(PARAMETER_SORT_DIRECTION);
-                if (sortDirectionParam == null) sortDirectionParam = "asc";
-
-                if ("asc".equals(sortDirectionParam)) {
-                    direction = SortFieldDirection.ASC;
-                } else if ("desc".equals(sortDirectionParam)) {
-                    direction = SortFieldDirection.DESC;
-                } else {
-                    throw new DecoratorComponentException(
-                        "Illegal value for parameter '" + PARAMETER_SORT_DIRECTION
-                        + "': '" + sortDirectionParam + "' (must be one of 'asc', 'desc')");
-                }
-                this.sortField = new SimpleSortField(sortFieldParam, direction);
-            }
-            if (this.sortField == null) {
-                this.sortField = new SimpleSortField(titlePropdef.getName(),
-                                                     SortFieldDirection.ASC);
-            }
-
+            initSortField(request);
+            
             if (request.getStringParameter(PARAMETER_RESULT_SETS) != null) {
                 try {
                     this.resultSets = Integer.parseInt(
@@ -284,6 +289,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         public SortField getSortField() {
             return this.sortField;
         }
+
+        public boolean isUserSpecifiedSorting() {
+            return this.userSpecifiedSorting;
+        }
+
         public int getResultSets() {
             return this.resultSets;
         }
@@ -292,6 +302,54 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             return this.locale;
         }
         
+        public String getToken() {
+            return this.token;
+        }
+        
+        private void initSortField(DecoratorRequest request) {
+            String sortFieldParam = request.getStringParameter(PARAMETER_SORT_BY);
+            if (sortFieldParam == null) {
+                this.sortField = new PropertySortField(titlePropDef, SortFieldDirection.ASC);
+                return;
+            }
+            String prefix;
+            String name;
+                
+            String[] splitValues = sortFieldParam.split(":");
+            if (splitValues.length == 2) {
+                prefix = splitValues[0];
+                name = splitValues[1];
+            } else if (splitValues.length == 1) {
+                prefix = null;
+                name = splitValues[0];
+            } else {
+                throw new DecoratorComponentException(
+                    "Invalid sort field: '" + sortFieldParam + "'");
+            }
+            PropertyTypeDefinition sortProperty =
+                resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+            if (sortProperty == null) {
+                throw new DecoratorComponentException("Invalid sort field: '" + sortFieldParam 
+                                                      + "': matches no property definition");
+            }
+            this.userSpecifiedSorting = true;
+
+            SortFieldDirection direction;
+            String sortDirectionParam = request.getStringParameter(PARAMETER_SORT_DIRECTION);
+            if (sortDirectionParam == null) {
+                sortDirectionParam = "asc";
+            }
+            if ("asc".equals(sortDirectionParam)) {
+                direction = SortFieldDirection.ASC;
+            } else if ("desc".equals(sortDirectionParam)) {
+                direction = SortFieldDirection.DESC;
+            } else {
+                throw new DecoratorComponentException(
+                    "Illegal value for parameter '" + PARAMETER_SORT_DIRECTION
+                    + "': '" + sortDirectionParam + "' (must be one of 'asc', 'desc')");
+            }
+            this.sortField = new PropertySortField(sortProperty, direction);
+        }
     }
 
 
@@ -314,12 +372,20 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         this.queryParser = queryParser;
     }
 
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
     
-    public void setTitlePropdef(PropertyTypeDefinition titlePropdef) {
-        this.titlePropdef = titlePropdef;
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
+    }
+    
+    public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
+        this.collectionResourceType = collectionResourceType;
     }
     
     public void setModelName(String modelName) {
@@ -341,12 +407,46 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
 
     protected Map getParameterDescriptionsInternal() {
-        Map map = new HashMap();
+        Map map = new LinkedHashMap();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
         map.put(PARAMETER_SORT_BY, PARAMETER_SORT_BY_DESC);
         map.put(PARAMETER_SORT_DIRECTION, PARAMETER_SORT_DIRECTION_DESC);
         map.put(PARAMETER_RESULT_SETS, PARAMETER_RESULT_SETS_DESC);
+        map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         return map;
     }
 
+
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        if (this.queryParser == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'queryParser' not set");
+        }
+        if (this.viewService == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'viewService set");
+        }
+        if (this.searcher == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'searcher' not set");
+        }
+        if (this.resourceTypeTree == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'resourceTypeTree' not set");
+        }
+        if (this.titlePropDef == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'titlePropDef' not set");
+        }
+        if (this.modelName == null) {
+            throw new BeanInitializationException(
+                    "JavaBean property 'modelName' not set");
+        }
+        if (this.searchLimit <= 0) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + searchLimit + "' must be a positive integer");
+        }
+    }
+    
 }

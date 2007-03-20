@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,14 +45,18 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.BeanInitializationException;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.HashSetPropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.Parser;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
@@ -95,11 +100,18 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_URI_DESC = 
         "The URI (path) to the selected folder";
 
+    private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
+    private static final String PARAMETER_AS_CURRENT_USER_DESC = 
+        "The default is that only resources readable for everyone is listed. " +
+            "If this is set to 'true', the listing is done as the currently " +
+            "logged in user (if any)";
+
     private static Log logger = LogFactory.getLog(ListMenuComponent.class);
     
     private Parser queryParser;
     private Service viewService;
     private PropertyTypeDefinition titlePropdef;
+    private ResourceTypeDefinition collectionResourceType;
     private String modelName = "menu";
     private int searchLimit = 10;
     private Searcher searcher;
@@ -150,7 +162,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             query.append(")");
             query.append(" OR uri = ").append(uri);
         }
-        query.insert(0, "type IN collection AND (");
+        query.insert(0, "type IN " + this.collectionResourceType.getName() + " AND (");
         query.append(")");
 
         HashSetPropertySelect select = new HashSetPropertySelect();
@@ -266,6 +278,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private String[] childNames;
         private String style;
         private Locale locale;
+        private String token;
         
         public MenuRequest(DecoratorRequest request) {
             String uri = request.getStringParameter(PARAMETER_URI);
@@ -273,6 +286,13 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 throw new DecoratorComponentException("Parameter 'uri' not specified");
             }
             this.uri = uri;
+
+            boolean asCurrentUser = "true".equals(
+                request.getStringParameter(PARAMETER_AS_CURRENT_USER));
+            if (asCurrentUser) {
+                SecurityContext securityContext = SecurityContext.getSecurityContext();
+                this.token = securityContext.getToken();
+            }
 
             String style = request.getStringParameter(PARAMETER_STYLE);
             if (style == null) {
@@ -359,6 +379,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         this.titlePropdef = titlePropdef;
     }
     
+    public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
+        this.collectionResourceType = collectionResourceType;
+    }
+    
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -377,12 +401,47 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        if (this.queryParser == null) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + queryParser + "' not set");
+        }
+        if (this.viewService == null) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + viewService + "' not set");
+        }
+        if (this.titlePropdef == null) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + titlePropdef + "' not set");
+        }
+        if (this.collectionResourceType == null) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + collectionResourceType + "' not set");
+        }
+        if (this.modelName == null) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + modelName + "' not set");
+        }
+        if (this.searcher == null) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + searcher + "' not set");
+        }
+        if (this.searchLimit <= 0) {
+            throw new BeanInitializationException(
+                "JavaBean property '" + searchLimit + "' must be a positive integer");
+        }
+
+    }
+    
+
     protected Map getParameterDescriptionsInternal() {
-        Map map = new HashMap();
+        Map map = new LinkedHashMap();
         map.put(PARAMETER_URI, PARAMETER_URI_DESC);
         map.put(PARAMETER_STYLE, PARAMETER_STYLE_DESC);
         map.put(PARAMETER_INCLUDE_CHILDREN, PARAMETER_INCLUDE_CHILDREN_DESC);
         map.put(PARAMETER_INCLUDE_PARENT, PARAMETER_INCLUDE_PARENT_DESC);
+        map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         return map;
                 
     }

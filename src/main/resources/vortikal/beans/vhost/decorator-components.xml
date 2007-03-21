@@ -184,7 +184,7 @@
     <property name="namespace" value="menu" />
     <property name="name" value="static" />
     <property name="searcher" ref="systemIndexSearcher" />
-    <property name="queryParser" ref="queryParser" />
+    <property name="queryParser" ref="searchParser" />
     <property name="view" ref="decorating.listMenuComponent.view" />
     <property name="titlePropdef" ref="titlePropDef" />
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
@@ -203,7 +203,7 @@
     <property name="namespace" value="menu" />
     <property name="name" value="subFolder" />
     <property name="searcher" ref="systemIndexSearcher" />
-    <property name="queryParser" ref="queryParser" />
+    <property name="queryParser" ref="searchParser" />
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="titlePropDef" ref="titlePropDef" />

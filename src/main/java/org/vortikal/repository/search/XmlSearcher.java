@@ -56,7 +56,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.repository.search.query.Parser;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -77,14 +76,11 @@ import org.w3c.dom.Text;
 public class XmlSearcher implements InitializingBean {
 
     private static final String URL_IDENTIFIER = "url";
-    private static final String NAME_IDENTIFIER = "name";
-    private static final String TYPE_IDENTIFIER = "type";
-    private static final String URI_IDENTIFIER = "uri";
     
     private static Log logger = LogFactory.getLog(XmlSearcher.class);
 
     private Searcher searcher;
-    private Parser queryParser;
+    private Parser parser;
     private ResourceTypeTree resourceTypeTree;
     private int maxResults = 1000;
     private Repository repository;
@@ -117,7 +113,7 @@ public class XmlSearcher implements InitializingBean {
             throw new BeanInitializationException(
                 "JavaBean property 'searcher' not set");
         }
-        if (this.queryParser == null) {
+        if (this.parser == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'queryParser' not set");
         }
@@ -198,7 +194,7 @@ public class XmlSearcher implements InitializingBean {
             SearchEnvironment envir = new SearchEnvironment(sort, fields);
 
             Search search = new Search();
-            search.setQuery(this.queryParser.parse(query));
+            search.setQuery(this.parser.parse(query));
             if (envir.getSorting() != null)
                 search.setSorting(envir.getSorting());
             search.setLimit(limit);
@@ -247,11 +243,11 @@ public class XmlSearcher implements InitializingBean {
         Element propertySetElement = doc.createElement("resource");
         resultsElement.appendChild(propertySetElement);
         if (envir.reportUri())
-            propertySetElement.setAttribute(URI_IDENTIFIER, propSet.getURI());
+            propertySetElement.setAttribute(PropertySet.URI_IDENTIFIER, propSet.getURI());
         if (envir.reportName())
-            propertySetElement.setAttribute(NAME_IDENTIFIER, propSet.getName());
+            propertySetElement.setAttribute(PropertySet.NAME_IDENTIFIER, propSet.getName());
         if (envir.reportType())
-            propertySetElement.setAttribute(TYPE_IDENTIFIER, propSet.getResourceType());
+            propertySetElement.setAttribute(PropertySet.TYPE_IDENTIFIER, propSet.getResourceType());
         if (envir.reportUrl())
             propertySetElement.setAttribute(URL_IDENTIFIER, getUrl(propSet));
 
@@ -264,9 +260,8 @@ public class XmlSearcher implements InitializingBean {
     
     private String getUrl(PropertySet propSet) {
         String uri = propSet.getURI();
-        if (collectionResourceTypeDef != null && !uri.equals("/") 
-                && resourceTypeTree.isContainedType(collectionResourceTypeDef,
-                        propSet.getResourceType()))
+        if (collectionResourceTypeDef != null &&
+                collectionResourceTypeDef.getQName().equals(propSet.getResourceType()))
             uri += "/";
                         
         return this.linkToService.constructLink(uri);
@@ -377,7 +372,7 @@ public class XmlSearcher implements InitializingBean {
         private boolean reportUrl = false;
         
         public SearchEnvironment(String sort, String fields) {
-            parseSortString(sort);
+            this.sort = parser.parseSortString(sort);
             parseFields(fields);
             resolveLocale();
         }
@@ -398,7 +393,6 @@ public class XmlSearcher implements InitializingBean {
             return this.locale;
         }
         
-
         public String toString() {
             StringBuffer sb = new StringBuffer(this.getClass().getName());
             sb.append(": select = ").append(this.select);
@@ -408,78 +402,6 @@ public class XmlSearcher implements InitializingBean {
             return sb.toString();
         }
         
-
-        /**
-         * Parses a sort specification of the syntax
-         * <code>field(:asc|:desc)?(,field(:asc|:desc)?)*</code> and
-         * produces a {@link Sorting} object.
-         *
-         * @param sortString the sort specification
-         * @return a sort object, or <code>null</code> if the string does
-         * not contain any valid sort fields.
-         */
-        public void parseSortString(String sortString) {
-            if (sortString == null || "".equals(sortString.trim())) {
-                return;
-            }
-        
-            String[] fields = sortString.split(",");
-            List result = new ArrayList();
-            Set referencedFields = new HashSet();
-        
-            for (int i = 0; i < fields.length; i++) {
-                String specifier = fields[i].trim();
-                String field = null;
-                SortFieldDirection direction = SortFieldDirection.ASC;
-                String[] pair = specifier.split("\\s+");
-                if (pair.length == 2) {
-                    field = pair[0];
-                    if ("descending".startsWith(pair[1])) {
-                        direction = SortFieldDirection.DESC;
-                    }
-                } else if (pair.length == 1) {
-                    field = pair[0];
-                } else {
-                    throw new QueryException("Invalid sort field: '" + specifier + "'");
-                }
-                SortField sortField = null;
-                sortField = new SimpleSortField(field, direction);
-                if (URI_IDENTIFIER.equals(field) || 
-                        TYPE_IDENTIFIER.equals(field) || 
-                        NAME_IDENTIFIER.equals(field) || 
-                        URL_IDENTIFIER.equals(field)) {
-
-                } else {
-                    String prefix = null;
-                    String name = null;
-
-                    String[] components = field.split(":");
-                    if (components.length == 2) {
-                        prefix = components[0];
-                        name = components[1];
-                    } else if (components.length == 1) {
-                        name = components[0];
-                    } else {
-                        throw new QueryException("Unknown sort field: '" + field + "'");
-                    }
-                    PropertyTypeDefinition def =
-                        resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
-                    sortField = new PropertySortField(def, direction);
-                }
-                if (referencedFields.contains(field)) {
-                    throw new QueryException(
-                        "Sort field '" + field + "' occurs more than once");
-                }
-                referencedFields.add(field);
-                result.add(sortField);
-            }
-
-            if (!result.isEmpty()) {
-                this.sort = new SortingImpl(result);
-            }
-        }
-
-
         private void parseFields(String fields) {
             if (fields == null || "".equals(fields.trim())) {
                 this.select = WildcardPropertySelect.WILDCARD_PROPERTY_SELECT;
@@ -502,13 +424,13 @@ public class XmlSearcher implements InitializingBean {
                 String prefix = null;
                 String name = fullyQualifiedName.trim();
 
-                if (URI_IDENTIFIER.equals(name)) {
+                if (PropertySet.URI_IDENTIFIER.equals(name)) {
                     this.reportUri = true;
                     continue;
-                } else if (NAME_IDENTIFIER.equals(name)) {
+                } else if (PropertySet.NAME_IDENTIFIER.equals(name)) {
                     this.reportName = true;
                     continue;
-                } else if (TYPE_IDENTIFIER.equals(name)) {
+                } else if (PropertySet.TYPE_IDENTIFIER.equals(name)) {
                     this.reportType = true;
                     continue;
                 } else if (URL_IDENTIFIER.equals(name)) {
@@ -633,8 +555,8 @@ public class XmlSearcher implements InitializingBean {
         this.valueFormatter = valueFormatter;
     }
 
-    public void setQueryParser(Parser queryParser) {
-        this.queryParser = queryParser;
+    public void setParser(Parser parser) {
+        this.parser = parser;
     }
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {

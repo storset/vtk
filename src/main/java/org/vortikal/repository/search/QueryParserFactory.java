@@ -28,11 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.search;
 
 
-public interface Parser {
 
-    public Query parse(String query);
+public interface QueryParserFactory {
+
+    public QueryParser getParser();
 
 }

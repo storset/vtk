@@ -52,10 +52,10 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.HashSetPropertySelect;
+import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.query.Parser;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -108,7 +108,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static Log logger = LogFactory.getLog(ListMenuComponent.class);
     
-    private Parser queryParser;
+    private QueryParser queryParser;
     private Service viewService;
     private PropertyTypeDefinition titlePropdef;
     private ResourceTypeDefinition collectionResourceType;
@@ -367,7 +367,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
 
-    public void setQueryParser(Parser queryParser) {
+    public void setQueryParser(QueryParser queryParser) {
         this.queryParser = queryParser;
     }
 

@@ -1,18 +1,16 @@
-package org.vortikal.repositoryimpl.search.query.parser;
+package org.vortikal.repository.search;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.search.query.Parser;
-import org.vortikal.repository.search.query.QueryParserFactory;
 
 public class QueryParserFactoryImpl implements QueryParserFactory, InitializingBean {
 
     private ResourceTypeTree resourceTypeTree;
 
-    public Parser getParser() {
-        // Generated from PreprocessingQueryParser.jj:
-        return new QueryParser(resourceTypeTree);
+    public QueryParser getParser() {
+        // Generated from QueryParserImpl.jj:
+        return new QueryParserImpl(resourceTypeTree);
     }
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {

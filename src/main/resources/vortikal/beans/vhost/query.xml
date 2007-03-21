@@ -4,23 +4,24 @@
 <beans>
 
   <bean id="queryParserFactory"
-        class="org.vortikal.repositoryimpl.search.query.parser.QueryParserFactoryImpl">
+        class="org.vortikal.repository.search.QueryParserFactoryImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="queryParser" class="org.vortikal.repository.search.query.PreprocessingQueryParser">
+  <bean id="searchParser" class="org.vortikal.repository.search.ParserImpl">
     <property name="parserFactory" ref="queryParserFactory" />
     <property name="queryStringPreProcessor" ref="queryStringPreProcessor" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="queryStringPreProcessor"
-        class="org.vortikal.repositoryimpl.search.query.parser.QueryStringPreProcessorImpl">
+        class="org.vortikal.repository.search.preprocessor.QueryStringPreProcessorImpl">
     <property name="expressionEvaluators">
       <list>
-        <bean class="org.vortikal.repositoryimpl.search.query.parser.CurrentDepthExpressionEvaluator" />
-        <bean class="org.vortikal.repositoryimpl.search.query.parser.CurrentFolderExpressionEvaluator"
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentDepthExpressionEvaluator" />
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
               parent="requestLocalRepositoryAware" />
-        <bean class="org.vortikal.repositoryimpl.search.query.parser.CurrentTimeExpressionEvaluator" />
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
       </list>
     </property>
   </bean>

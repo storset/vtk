@@ -203,7 +203,7 @@
         class="org.vortikal.repository.search.XmlSearcher"
         parent="requestLocalRepositoryAware">
     <property name="searcher" ref="systemIndexSearcher" />
-    <property name="queryParser" ref="queryParser" />
+    <property name="parser" ref="searchParser" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultLocale" value="${defaultLocale}" />
 

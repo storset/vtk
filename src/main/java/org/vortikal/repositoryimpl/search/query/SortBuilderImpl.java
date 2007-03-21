@@ -31,14 +31,13 @@
 package org.vortikal.repositoryimpl.search.query;
 
 import java.util.Iterator;
-import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
-import org.vortikal.repository.search.SimpleSortField;
 import org.vortikal.repository.search.SortField;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.Sorting;
+import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 
 /**
@@ -62,46 +61,23 @@ public class SortBuilderImpl implements SortBuilder {
         int j=0;
         for (Iterator i = sort.getSortFields().iterator(); i.hasNext(); j++) {
             SortField f = (SortField)i.next();
-            
-            if (f instanceof SimpleSortField) {
-                luceneSortFields[j]= buildSimpleSortField((SimpleSortField)f);
+            String fieldName = null;
+            boolean direction = (f.getDirection() == SortFieldDirection.ASC ? false : true);
+
+            if (f instanceof TypedSortField) {
+                fieldName = ((TypedSortField)f).getType();
             } else if (f instanceof PropertySortField) {
-                luceneSortFields[j] = buildPropertySortField((PropertySortField)f);
+                PropertyTypeDefinition def = ((PropertySortField)f).getDefinition();
+                fieldName = DocumentMapper.getFieldName(def);
             } else {
-                throw new SortBuilderException("Unknown sorting type");
+                throw new SortBuilderException("Unknown sorting type " + f.getClass().getName());
             }
+            
+            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
             
         }
         
         return new org.apache.lucene.search.Sort(luceneSortFields);
     }
     
-    private org.apache.lucene.search.SortField buildSimpleSortField(
-            SimpleSortField ssf) {
-        
-        org.apache.lucene.search.SortField sortField = 
-            new org.apache.lucene.search.SortField(ssf.getName(), 
-                    ssf.getLocale(),
-                    (ssf.getDirection() == SortFieldDirection.ASC ? false : true));
-        
-        return sortField;
-        
-    }
-    
-    private org.apache.lucene.search.SortField buildPropertySortField(
-            PropertySortField f) {
-     
-        PropertyTypeDefinition def = f.getDefinition();
-        SortFieldDirection d = f.getDirection();
-        String fieldName = DocumentMapper.getFieldName(def);
-        
-        // We do our own type->string encoding, and must use Lucene's generic string sorting type.
-        org.apache.lucene.search.SortField sortField =
-            new org.apache.lucene.search.SortField(fieldName,
-                    f.getLocale(),
-                    (d == SortFieldDirection.ASC ? false : true));
-                    
-        return sortField;
-    }
-
 }

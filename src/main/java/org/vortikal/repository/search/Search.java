@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search;
 
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.query.Query;
 
 /**
@@ -73,7 +74,7 @@ public class Search {
     
     public Search() {
         SortingImpl defaultSorting = new SortingImpl();
-        defaultSorting.addSortField(new SimpleSortField("uri"));
+        defaultSorting.addSortField(new TypedSortField(PropertySet.URI_IDENTIFIER));
         this.sorting = defaultSorting;
     }
 

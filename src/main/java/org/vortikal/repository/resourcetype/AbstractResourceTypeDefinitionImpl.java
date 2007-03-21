@@ -67,6 +67,13 @@ public abstract class AbstractResourceTypeDefinitionImpl
         }
     }
 
+    public String getQName() {
+        if (Namespace.DEFAULT_NAMESPACE.equals(this.namespace))
+            return this.name;
+        
+        return this.namespace.getPrefix() + ":" + this.name;
+    }
+    
     public String getName() {
         return this.name;
     }

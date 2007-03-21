@@ -28,15 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query.parser;
+package org.vortikal.repository.search;
 
-import org.vortikal.repository.search.QueryException;
+import org.vortikal.repository.search.query.Query;
 
-public interface ExpressionEvaluator {
-    
-    public boolean matches(String token);
 
-    public String evaluate(String token) throws QueryException;
+public interface QueryParser {
+
+    public Query parse(String query);
 
 }
-

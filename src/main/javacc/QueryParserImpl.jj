@@ -8,28 +8,40 @@ options {
   UNICODE_INPUT = true;
 }
 
-PARSER_BEGIN(QueryParser)
+PARSER_BEGIN(QueryParserImpl)
 
-package org.vortikal.repositoryimpl.search.query.parser;
+package org.vortikal.repository.search;
 
 import java.io.StringReader;
-import java.util.List;
-import java.util.Iterator;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.search.query.*;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.NameTermQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
+import org.vortikal.repository.search.query.PropertyPrefixQuery;
+import org.vortikal.repository.search.query.PropertyTermQuery;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
+import org.vortikal.repository.search.query.UriOperator;
+import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriTermQuery;
+
 
 /**
 * Partial implementation of a query parser based on javacc.
 * <p>Try the parser out with:
-* <p>java -cp target/classes org.vortikal.repositoryimpl.queryparser.QueryParser "((pre:post=c AND s:s=s) OR ff=2211)"
+* <p>java -cp target/classes org.vortikal.repository.search.QueryParserImpl "((pre:post=c AND s:s=s) OR ff=2211)"
 */
-public class QueryParser implements Parser {
+public class QueryParserImpl implements QueryParser {
 
     private ResourceTypeTree resourceTypeTree;
 
-    public QueryParser(ResourceTypeTree resourceTypeTree) {
+    public QueryParserImpl(ResourceTypeTree resourceTypeTree) {
         this(new StringReader(""));
         this.resourceTypeTree = resourceTypeTree;
     }
@@ -86,7 +98,7 @@ public class QueryParser implements Parser {
     }
 }
 
-PARSER_END(QueryParser)
+PARSER_END(QueryParserImpl)
 
 <DEFAULT, Value> SKIP : {" "}
 

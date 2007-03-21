@@ -1,23 +1,23 @@
-package org.vortikal.repositoryimpl.search.query.parser;
+package org.vortikal.repository.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
-import org.vortikal.repository.search.query.Parser;
+import org.vortikal.repository.search.QueryParser;
 
 public class QueryParserTest extends AbstractDependencyInjectionSpringContextTests {
 
     private static Log logger = LogFactory.getLog(QueryParserTest.class);
     
-    private Parser parser;
+    private QueryParser queryParser;
     
     static {
         BasicConfigurator.configure();
     }
     
 //    public void testSimplePropertyQuery() {
-//        Query node = parser.parse("a=b");
+//        Query node = queryParser.parse("a=b");
 //
 //        assertEquals("Query", node.getNodeName());
 //        List children = node.getChildren();
@@ -29,7 +29,7 @@ public class QueryParserTest extends AbstractDependencyInjectionSpringContextTes
 //    }
 //
 //    public void testExistsQuery() {
-//        Query node = parser.parse("p:r exists");
+//        Query node = queryParser.parse("p:r exists");
 //        
 //        assertEquals("Query", node.getNodeName());
 //        
@@ -42,7 +42,7 @@ public class QueryParserTest extends AbstractDependencyInjectionSpringContextTes
 //    }
 //
 //    public void testUriQuery() {
-//        Query node = parser.parse("uri = /uri/* AND uri != /uri/lala");
+//        Query node = queryParser.parse("uri = /uri/* AND uri != /uri/lala");
 //        
 //        assertEquals("Query", node.getNodeName());
 //        
@@ -69,7 +69,7 @@ public class QueryParserTest extends AbstractDependencyInjectionSpringContextTes
 //    }
 //    
 //    public void testNameOrTypeQuery() {
-//        Query node = parser.parse("name = la\\ * OR type != \"file\"");
+//        Query node = queryParser.parse("name = la\\ * OR type != \"file\"");
 //        
 //        assertEquals("Query", node.getNodeName());
 //        
@@ -96,7 +96,7 @@ public class QueryParserTest extends AbstractDependencyInjectionSpringContextTes
 //    }
 //
 //    public void testQuery() {
-//        Query node = parser.parse("(f:a!=\\ \\=122d3h AND (a=a || ee:e = value))");
+//        Query node = queryParser.parse("(f:a!=\\ \\=122d3h AND (a=a || ee:e = value))");
 //
 //        assertEquals("Query", node.getNodeName());
 //        
@@ -135,11 +135,11 @@ public class QueryParserTest extends AbstractDependencyInjectionSpringContextTes
 //
 //    
     protected String[] getConfigLocations() {
-        return new String[] {"classpath:org/vortikal/repositoryimpl/query/parser/context.xml"};
+        return new String[] {"classpath:org/vortikal/repositoryimpl/query/queryParser/context.xml"};
     }
 //
-//    public void setParser(Parser parser) {
-//        this.parser = parser;
+//    public void setParser(QueryParser queryParser) {
+//        this.parser = queryParser;
 //    }    
 //   
 //    private void orQuery(Query node) {

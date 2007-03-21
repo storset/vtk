@@ -28,10 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query.parser;
+package org.vortikal.repository.search.preprocessor;
 
 import org.vortikal.repository.search.QueryException;
-import org.vortikal.repository.search.query.QueryStringPreProcessor;
 
 
 public class QueryStringPreProcessorImpl implements QueryStringPreProcessor {
@@ -46,7 +45,7 @@ public class QueryStringPreProcessorImpl implements QueryStringPreProcessor {
     }
     
 
-    public String processQueryString(String queryString) throws QueryException {
+    public String process(String queryString) throws QueryException {
         StringBuffer result = new StringBuffer();
         int start = 0;
         int pos = 0;

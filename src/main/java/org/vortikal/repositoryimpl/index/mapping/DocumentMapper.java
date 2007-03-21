@@ -45,6 +45,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -73,8 +74,8 @@ public class DocumentMapper implements InitializingBean {
     private static Log logger = LogFactory.getLog(DocumentMapper.class);
     
     /* Special, reserved fields */
-    public static final String NAME_FIELD_NAME =               "name";
-    public static final String URI_FIELD_NAME =                "uri";
+    public static final String NAME_FIELD_NAME =               PropertySet.NAME_IDENTIFIER;
+    public static final String URI_FIELD_NAME =                PropertySet.URI_IDENTIFIER;
     public static final String URI_DEPTH_FIELD_NAME =          "uriDepth";
     public static final String RESOURCETYPE_FIELD_NAME =       "resourceType";
     public static final String ANCESTORIDS_FIELD_NAME =        "ANCESTORIDS";

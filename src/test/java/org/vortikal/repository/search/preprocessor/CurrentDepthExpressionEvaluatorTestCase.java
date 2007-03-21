@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.search.query.parser;
+package org.vortikal.repository.search.preprocessor;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.context.BaseContext;
+import org.vortikal.repository.search.preprocessor.CurrentDepthExpressionEvaluator;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceImpl;

@@ -36,18 +36,22 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface PropertySet {
 
-   public String getURI();
+    public static final String NAME_IDENTIFIER = "name";
+    public static final String TYPE_IDENTIFIER = "type";
+    public static final String URI_IDENTIFIER = "uri";
 
-   public String getName();
-   
-   public String getResourceType();
-   
-   public List getProperties();
+    public String getURI();
 
-   public Property getProperty(Namespace namespace, String name);
+    public String getName();
 
-   public Property getProperty(PropertyTypeDefinition type);
-   
-   public List getProperties(Namespace namespace);
+    public String getResourceType();
+
+    public List getProperties();
+
+    public Property getProperty(Namespace namespace, String name);
+
+    public Property getProperty(PropertyTypeDefinition type);
+
+    public List getProperties(Namespace namespace);
 
 }

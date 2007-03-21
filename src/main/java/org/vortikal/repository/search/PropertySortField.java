@@ -42,6 +42,9 @@ public class PropertySortField extends AbstractSortField {
 
     public PropertySortField(PropertyTypeDefinition def, SortFieldDirection direction) {
         super(direction);
+        if (def == null) {
+            throw new IllegalArgumentException("Argument def cannot be NULL");
+        }
         this.definition = def;
     }
     

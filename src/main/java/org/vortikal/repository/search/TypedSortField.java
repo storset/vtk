@@ -12,7 +12,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 
- *  * Neither the name of the University of Oslo nor the names of its
+ *  * Neither the type of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
  *      
@@ -30,28 +30,43 @@
  */
 package org.vortikal.repository.search;
 
+import org.vortikal.repository.PropertySet;
 
-/**
- * @deprecated
- */
-public class SimpleSortField extends AbstractSortField {
 
-    private String name;
+public class TypedSortField extends AbstractSortField {
+
+    private String type;
     
-    public SimpleSortField(String name) {
-        this.name = name;
+    public TypedSortField(String type) {
+        if (!(PropertySet.NAME_IDENTIFIER.equals(type) ||
+                PropertySet.URI_IDENTIFIER.equals(type) || 
+                PropertySet.TYPE_IDENTIFIER.equals(type)))
+            throw new IllegalArgumentException("Type must be one of " + 
+                PropertySet.NAME_IDENTIFIER + ", " +
+                PropertySet.URI_IDENTIFIER + ", " +
+                PropertySet.TYPE_IDENTIFIER);
+
+        this.type = type;
     }
     
-    public SimpleSortField(String name, SortFieldDirection direction) {
+    public TypedSortField(String type, SortFieldDirection direction) {
         super(direction);
-        this.name = name;
+        if (!(PropertySet.NAME_IDENTIFIER.equals(type) ||
+                PropertySet.URI_IDENTIFIER.equals(type) || 
+                PropertySet.TYPE_IDENTIFIER.equals(type)))
+            throw new IllegalArgumentException("Type must be one of " + 
+                PropertySet.NAME_IDENTIFIER + ", " +
+                PropertySet.URI_IDENTIFIER + ", " +
+                PropertySet.TYPE_IDENTIFIER);
+
+        this.type = type;
     }
     
-    public String getName() {
-        return this.name;
+    public String getType() {
+        return this.type;
     }
     
     public String toString() {
-        return this.name + " " + getDirection().toString();
+        return this.type + " " + getDirection().toString();
     }
 }

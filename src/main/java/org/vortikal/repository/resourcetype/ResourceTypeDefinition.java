@@ -35,6 +35,8 @@ import org.vortikal.repository.Namespace;
 
 public interface ResourceTypeDefinition {
 
+    public String getQName();
+    
     public String getName();
 
     public Namespace getNamespace();

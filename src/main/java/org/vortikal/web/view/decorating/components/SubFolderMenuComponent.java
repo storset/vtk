@@ -50,7 +50,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.search.HashSetPropertySelect;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
@@ -175,7 +175,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         query.append(" AND depth = ").append(depth);
         query.append(" AND type IN ").append(this.collectionResourceType.getName());
 
-        HashSetPropertySelect select = new HashSetPropertySelect();
+        ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         select.addPropertyDefinition(this.titlePropDef);
         Search search = new Search();
         search.setQuery(this.queryParser.parse(query.toString()));

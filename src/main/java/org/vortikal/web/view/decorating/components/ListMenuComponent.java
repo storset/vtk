@@ -51,7 +51,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.search.HashSetPropertySelect;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -165,7 +165,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         query.insert(0, "type IN " + this.collectionResourceType.getName() + " AND (");
         query.append(")");
 
-        HashSetPropertySelect select = new HashSetPropertySelect();
+        ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         if (logger.isDebugEnabled()) {
             logger.debug("About to search using query: '" + query + "'");
         }

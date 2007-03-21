@@ -35,7 +35,11 @@ import java.util.Set;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class HashSetPropertySelect implements PropertySelect {
+/**
+ * {@link PropertySelect} selecting based on a configured set of
+ * added {@link PropertyTypeDefinition property type definitions}.
+ */
+public class ConfigurablePropertySelect implements PropertySelect {
     private Set properties = new HashSet();
     
     public void addPropertyDefinition(PropertyTypeDefinition def) {
@@ -53,7 +57,7 @@ public class HashSetPropertySelect implements PropertySelect {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(":");
-        sb.append("propertiess = ").append(this.properties);
+        sb.append("properties = ").append(this.properties);
         return sb.toString();
     }
     

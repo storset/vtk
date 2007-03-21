@@ -412,7 +412,7 @@ public class XmlSearcher implements InitializingBean {
                 return;
             }
             String[] fieldsArray = splitFields(fields);
-            HashSetPropertySelect selectedFields = new HashSetPropertySelect();
+            ConfigurablePropertySelect selectedFields = new ConfigurablePropertySelect();
             this.select = selectedFields;
 
             for (int i = 0; i < fieldsArray.length; i++) {

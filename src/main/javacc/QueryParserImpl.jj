@@ -100,7 +100,7 @@ public class QueryParserImpl implements QueryParser {
 
 PARSER_END(QueryParserImpl)
 
-<DEFAULT, Value> SKIP : {" "}
+<DEFAULT, Value> SKIP : {" " | "\t" | "\n" | "\r" }
 
 TOKEN : {
     <URI: "uri">
@@ -134,7 +134,7 @@ TOKEN : { < COLON: ":"> }
 TOKEN : { < EXISTS: "exists"> }
 TOKEN : { < NOTEXISTS: "not exists" | "!exists"> }
 
-TOKEN : { < #ID: ~[" ", "\\", "\"", "=", "<", ">", "!", "(", ")", ":"] > }
+TOKEN : { < #ID: ~[" ", "\t", "\n", "\r", "\\", "\"", "=", "<", ">", "!", "(", ")", ":"] > }
 TOKEN : { < NAMEVALUE: (<ID> | <ESCAPED_CHAR>)+ > }
 
 <DEFAULT, Value> TOKEN : {
@@ -142,7 +142,7 @@ TOKEN : { < NAMEVALUE: (<ID> | <ESCAPED_CHAR>)+ > }
 }
 
 <Value> TOKEN : {
-    <#VALUE_CHAR: (<ESCAPED_CHAR> | ~["*", " ", ")"]) > 
+    <#VALUE_CHAR: (<ESCAPED_CHAR> | ~["*", " ", ")", "\t", "\n", "\r"]) > 
         | <VALUE: (<VALUE_CHAR>)+ > : DEFAULT
          | <WILDVALUE:  (<VALUE_CHAR> ((<VALUE_CHAR>)* ([ "*", "?" ])+ (<VALUE_CHAR>)*)+ <VALUE_CHAR>)> : DEFAULT
 }

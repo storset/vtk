@@ -81,6 +81,15 @@ public class HtmlElementImpl implements HtmlElement {
             new HtmlContent[this.contentList.size()]);
     }
     
+    public void setChildNodes(HtmlContent[] childNodes) {
+        this.namedChildMap = new HashMap();
+        this.contentList = new ArrayList();
+        this.childElements = new ArrayList();
+        for (int i = 0; i < childNodes.length; i++) {
+            addContent(childNodes[i]);
+        }
+    }
+
     public HtmlContent[] getChildNodes(HtmlNodeFilter filter) {
         List list = new ArrayList();
         for (int i = 0; i < this.contentList.size(); i++) {
@@ -152,9 +161,10 @@ public class HtmlElementImpl implements HtmlElement {
     public String getEnclosedContent() {
         StringBuffer sb = new StringBuffer();
         sb.append("<").append(this.name);
-        if (this.attributes.size() > 0) {
-            for (Iterator i = this.attributes.iterator(); i.hasNext();) {
-                HtmlAttributeImpl attr = (HtmlAttributeImpl) i.next();
+        HtmlAttribute[] attributes = getAttributes();
+        if (attributes.length > 0) {
+            for (int i = 0; i < attributes.length; i++) {
+                HtmlAttribute attr = attributes[i];
                 if (attr.hasValue()) {
                     sb.append(" ").append(attr.getName()).append("=\"");
                     sb.append(attr.getValue()).append("\"");
@@ -180,9 +190,10 @@ public class HtmlElementImpl implements HtmlElement {
     public String getEnclosedContent(HtmlNodeFilter filter) {
         StringBuffer sb = new StringBuffer();
         sb.append("<").append(this.name);
-        if (this.attributes.size() > 0) {
-            for (Iterator i = this.attributes.iterator(); i.hasNext();) {
-                HtmlAttributeImpl attr = (HtmlAttributeImpl) i.next();
+        HtmlAttribute[] attributes = getAttributes();
+        if (attributes.length > 0) {
+            for (int i = 0; i < attributes.length; i++) {
+                HtmlAttribute attr = attributes[i];
                 if (attr.hasValue()) {
                     sb.append(" ").append(attr.getName()).append("=\"");
                     sb.append(attr.getValue()).append("\"");

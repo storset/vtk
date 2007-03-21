@@ -46,12 +46,26 @@ public class HtmlAttributeImpl implements HtmlAttribute {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getValue() {
         return this.value;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
     public boolean hasValue() {
         return this.value != null;
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": name=").append(this.name).append(", value=").append(this.value);
+        return sb.toString();
     }
     
 }

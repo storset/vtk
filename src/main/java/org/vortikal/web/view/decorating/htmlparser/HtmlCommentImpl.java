@@ -32,16 +32,16 @@ package org.vortikal.web.view.decorating.htmlparser;
 
 import org.vortikal.web.view.decorating.html.HtmlComment;
 import org.vortikal.web.view.decorating.html.HtmlContent;
+import org.vortikal.web.view.decorating.html.HtmlText;
 
 public class HtmlCommentImpl implements HtmlComment {
 
-    private HtmlTextImpl content;
+    private HtmlText content;
     private String completeContent;
     private HtmlContent[] contentList;
 
-    public HtmlCommentImpl(HtmlTextImpl content, String completeContent) {
+    public HtmlCommentImpl(HtmlText content) {
         this.content = content;
-        this.completeContent = completeContent;
         this.contentList = new HtmlContent[] {this.content};
     }
 
@@ -50,7 +50,11 @@ public class HtmlCommentImpl implements HtmlComment {
     }
     
     public String getEnclosedContent() {
-        return this.completeContent;
+        return "<!--" + this.completeContent + "-->";
+    }
+    
+    public void setContent(HtmlText content) {
+        this.content = content;
     }
     
     public HtmlContent[] getChildNodes() {

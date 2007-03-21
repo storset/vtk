@@ -35,7 +35,11 @@ public interface HtmlAttribute {
 
     public String getName();
 
+    public void setName(String name);
+
     public String getValue();
+
+    public void setValue(String value);
 
     public boolean hasValue();
 }

@@ -69,6 +69,12 @@ public interface HtmlElement extends EnclosingHtmlContent {
 
 
     /**
+     * Sets the child nodes of this node.
+     */
+    public void setChildNodes(HtmlContent[] childNodes);
+    
+
+    /**
      * Gets the contents of this node as a string. A filter is applied
      * to decide inclusion of child content.
      *

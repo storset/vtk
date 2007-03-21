@@ -33,5 +33,6 @@ package org.vortikal.web.view.decorating.html;
 
 public interface HtmlComment extends EnclosingHtmlContent {
     
+    public void setContent(HtmlText content);
 
 }

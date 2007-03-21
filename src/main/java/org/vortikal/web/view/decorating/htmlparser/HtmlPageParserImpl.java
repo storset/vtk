@@ -30,9 +30,9 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-
 import java.io.InputStream;
 import java.util.Vector;
+
 import org.htmlparser.Attribute;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
@@ -43,13 +43,13 @@ import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.tags.DoctypeTag;
 import org.htmlparser.util.NodeList;
+
 import org.vortikal.web.view.decorating.html.HtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlPage;
 import org.vortikal.web.view.decorating.html.HtmlPageParser;
 import org.vortikal.web.view.decorating.html.HtmlPageParserException;
-import org.vortikal.web.view.decorating.html.HtmlText;
 
 
 public class HtmlPageParserImpl implements HtmlPageParser {
@@ -150,7 +150,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
             NodeList children = tag.getChildren();
             if (children != null) {
                 for (int i = 0; i < children.size(); i++) {
-                    Node childNode = children.elementAt(i);
 
                     // Handle "flattened" nodes (tags that should be
                     // nested, but aren't):
@@ -182,14 +181,16 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         } else if (node instanceof Remark) {
             Remark remark = (Remark) node;
             HtmlCommentImpl comment = new HtmlCommentImpl(
-                new HtmlTextImpl(remark.getText()), remark.toHtml());
+                new HtmlTextImpl(remark.getText()));
             content = comment;
         } 
         // Else unhandled node type:
         
-        if (content != null && filter != null)
-            return filter.filterNode(content);
-
+        if (content != null && filter != null) {
+            HtmlContent filteredContent = filter.filterNode(content);
+            return filteredContent;
+        }
+        
         return content;
     }
 

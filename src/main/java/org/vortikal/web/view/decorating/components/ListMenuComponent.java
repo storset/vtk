@@ -166,6 +166,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         query.append(")");
 
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
+        select.addPropertyDefinition(this.titlePropdef);
         if (logger.isDebugEnabled()) {
             logger.debug("About to search using query: '" + query + "'");
         }

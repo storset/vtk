@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -47,8 +46,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.view.decorating.html.HtmlAttribute;
 import org.vortikal.web.view.decorating.html.HtmlComment;
 import org.vortikal.web.view.decorating.html.HtmlContent;
+import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlText;
 
@@ -67,6 +68,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     private Map ssiDirectiveComponentMap;
     private Set prohibitedComponentNamespaces = new HashSet();
     private TemplateParser contentComponentParser;
+    private boolean parseAttributes = false;
     
 
     public void setSsiDirectiveComponentMap(Map ssiDirectiveComponentMap) {
@@ -82,6 +84,10 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         this.contentComponentParser = contentComponentParser;
     }
     
+    public void setParseAttributes(boolean parseAttributes) {
+        this.parseAttributes = parseAttributes;
+    }
+
     public void afterPropertiesSet() {
         if (this.ssiDirectiveComponentMap == null) {
             throw new BeanInitializationException(
@@ -101,10 +107,34 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             if (ssiInvocation == null) {
                 return node;
             }
-            HtmlContent filteredNode = invokeComponents(new ComponentInvocation[] {ssiInvocation});
+            HtmlContent filteredNode = invokeComponentsAsContent(new ComponentInvocation[] {ssiInvocation});
             return filteredNode;
 
+        } else if (node instanceof HtmlElement && this.parseAttributes) {
+            HtmlElement element = (HtmlElement) node;
+            HtmlAttribute[] attributes = element.getAttributes();
+            if (attributes.length > 0) {
+                for (int i = 0; i < attributes.length; i++) {
+                    String value = attributes[i].getValue();
+                    if (attributes[i].hasValue()) {
+                        try {
+                            ComponentInvocation[] parsedValue =
+                                this.contentComponentParser.parseTemplate(
+                                    new java.io.StringReader(value));
+                            value = invokeComponentsAsString(parsedValue);
+                        } catch (Exception e) {
+                            if (e.getMessage() == null) {
+                                value = e.getClass().getName();
+                            } else {
+                                value = e.getMessage();
+                            }
+                        }
+                    }
+                    attributes[i].setValue(value);
+                }
+            }
         } else if (node instanceof HtmlText) {
+        
             if (this.contentComponentParser == null) {
                 return node;
             }
@@ -112,7 +142,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             try {
                 ComponentInvocation[] parsedContent =
                     this.contentComponentParser.parseTemplate(new java.io.StringReader(content));
-                HtmlContent filteredNode = invokeComponents(parsedContent);
+                HtmlContent filteredNode = invokeComponentsAsContent(parsedContent);
                 return filteredNode;
             } catch (Exception e) {
                 return node;
@@ -165,7 +195,17 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     }
     
 
-    private HtmlContent invokeComponents(ComponentInvocation[] components) {
+    private HtmlContent invokeComponentsAsContent(ComponentInvocation[] components) {
+        final String text = invokeComponentsAsString(components);
+        return new HtmlText() {
+            public String getContent() {
+                return text;
+            }
+        };
+    }
+    
+
+    private String invokeComponentsAsString(ComponentInvocation[] components) {
         HttpServletRequest servletRequest = RequestContext.getRequestContext().getServletRequest();
         
         org.springframework.web.servlet.support.RequestContext ctx =
@@ -201,13 +241,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             }
             sb.append(result);
         }
-        final String text = sb.toString();
-        return new HtmlText() {
-            public String getContent() {
-                return text;
-            }
-        };
+        return sb.toString();
     }
     
-
 }

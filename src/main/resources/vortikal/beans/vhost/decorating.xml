@@ -41,6 +41,7 @@
       </set>
     </property>
     <property name="contentComponentParser" ref="decorating.defaultTemplateParser" />
+    <property name="parseAttributes" value="true" />
   </bean>
 
   <bean id="decorating.templateResolver"

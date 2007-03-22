@@ -33,7 +33,6 @@ package org.vortikal.web.view.decorating;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,12 +45,13 @@ import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
 
-public class PropertyConfigurableTemplateResolver implements TemplateResolver, InitializingBean {
+public class ConfigurableDecorationResolver implements DecorationResolver, InitializingBean {
 
-    private static Log logger = LogFactory.getLog(PropertyConfigurableTemplateResolver.class);
+    private static Log logger = LogFactory.getLog(
+        ConfigurableDecorationResolver.class);
 
     private TemplateManager templateManager;
-    private Properties templateConfiguration;
+    private Properties decorationConfiguration;
     
 
     public void setTemplateManager(TemplateManager templateManager) {
@@ -59,8 +59,8 @@ public class PropertyConfigurableTemplateResolver implements TemplateResolver, I
     }
     
     
-    public void setTemplateConfiguration(Properties templateConfiguration) {
-        this.templateConfiguration = templateConfiguration;
+    public void setDecorationConfiguration(Properties decorationConfiguration) {
+        this.decorationConfiguration = decorationConfiguration;
     }
 
 
@@ -70,14 +70,21 @@ public class PropertyConfigurableTemplateResolver implements TemplateResolver, I
                 "JavaBean property 'templateManager' not set");
         }
 
-        if (this.templateConfiguration == null) {
+        if (this.decorationConfiguration == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'templateConfiguration' not set");
+                "JavaBean property 'decorationConfiguration' not set");
         }
     }
-    
-    public Template resolveTemplate(Map model, HttpServletRequest request,
-                                    Locale locale) throws Exception {
+
+
+
+    public DecorationDescriptor resolve(HttpServletRequest request,
+                                        Locale locale) throws Exception {
+
+        boolean decorate = true;
+        boolean tidy = false;
+        boolean parse = true;
+        Template template = null;
 
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext == null) {
@@ -87,23 +94,58 @@ public class PropertyConfigurableTemplateResolver implements TemplateResolver, I
         String[] path = URLUtil.splitUriIncrementally(uri);
         for (int i = path.length - 1; i >= 0; i--) {
             String prefix = path[i];
-            String mapping = this.templateConfiguration.getProperty(prefix);
-            if ("NONE".equals(mapping)) {
-                return null;
-            }
-            if (mapping != null) {
-                Template template = resolveTemplateReference(locale, mapping);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Resolved request '" + uri
-                                 + "' to template '" + template + "'");
-                }
+            String value = this.decorationConfiguration.getProperty(prefix);
 
-                return template;
+            if (value != null) {
+                String[] params = value.split(",");
+                for (int j = 0; j < params.length; j++) {
+                    String param = params[j].trim();
+                    if ("NONE".equals(param)) {
+                        decorate = false;
+                        tidy = false;
+                        parse = false;
+                        template = null;
+                        break;
+                    } else if ("TIDY".equals(param)) {
+                        tidy = true;
+                    } else if ("NOPARSING".equals(param)) {
+                        parse = false;
+                    } else {
+                        template = resolveTemplateReference(locale, param);
+                    }
+                }
             }
         }
-        return null;
+        return new InternalDescriptor(decorate, tidy, parse, template);
     }
-    
+
+
+    private class InternalDescriptor implements DecorationDescriptor {
+        private boolean decorate, tidy, parse;
+        private Template template;
+
+        public InternalDescriptor(boolean decorate, boolean tidy,
+                                  boolean parse, Template template) {
+            this.decorate = decorate;
+            this.tidy = tidy;
+            this.parse = parse;
+            this.template = template;
+        }
+        
+        public boolean decorate() {
+            return this.decorate;
+        }
+        public boolean tidy() {
+            return this.tidy;
+        }
+        public boolean parse() {
+            return this.parse;
+        }
+        public Template getTemplate() {
+            return this.template;
+        }
+    }
+
 
     private Template resolveTemplateReference(Locale locale, String mapping)
         throws Exception {

@@ -20,7 +20,7 @@
   <bean id="decorating.templateDecorator"
     class="org.vortikal.web.view.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="templateResolver" ref="decorating.templateResolver" />
+    <property name="decorationResolver" ref="decorating.decorationResolver" />
     <property name="htmlNodeFilter" ref="decorating.ssiNodeFilter" />
   </bean>
 
@@ -44,13 +44,13 @@
     <property name="parseAttributes" value="true" />
   </bean>
 
-  <bean id="decorating.templateResolver"
-        class="org.vortikal.web.view.decorating.PropertyConfigurableTemplateResolver">
+  <bean id="decorating.decorationResolver"
+        class="org.vortikal.web.view.decorating.ConfigurableDecorationResolver">
     <property name="templateManager" ref="decorating.templateManager" />
-    <property name="templateConfiguration" ref="decorating.templateConfigurationPropertiesFile" />
+    <property name="decorationConfiguration" ref="decorating.decorationConfigurationPropertiesFile" />
   </bean>
 
-  <bean id="decorating.templateConfigurationPropertiesFile"
+  <bean id="decorating.decorationConfigurationPropertiesFile"
         class="org.vortikal.util.repository.PropertiesResource">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templateConfigFile}" />
@@ -61,7 +61,7 @@
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templateConfigFile}" />
-    <property name="targetObject" ref="decorating.templateConfigurationPropertiesFile" />
+    <property name="targetObject" ref="decorating.decorationConfigurationPropertiesFile" />
     <property name="method" value="load" />
   </bean>
 

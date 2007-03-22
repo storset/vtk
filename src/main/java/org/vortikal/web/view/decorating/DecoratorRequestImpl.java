@@ -42,8 +42,6 @@ import org.vortikal.web.view.decorating.html.HtmlPage;
 
 public class DecoratorRequestImpl implements DecoratorRequest {
 
-    private Map model;
-
     private HtmlPage html;
 
     private HttpServletRequest servletRequest;
@@ -54,11 +52,10 @@ public class DecoratorRequestImpl implements DecoratorRequest {
 
     private Locale locale;
     
-    public DecoratorRequestImpl(Map model, HtmlPage html,
+    public DecoratorRequestImpl(HtmlPage html,
                                 HttpServletRequest servletRequest,
                                 Map decoratorParameters,
                                 String doctype, Locale locale) {
-        this.model = model;
         this.html = html;
         this.servletRequest = servletRequest;
         this.decoratorParameters = decoratorParameters;
@@ -70,7 +67,6 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return this.html;
     }
     
-
     public HttpServletRequest getServletRequest() {
         return this.servletRequest;
     }
@@ -80,9 +76,6 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         if (this.decoratorParameters != null) {
             value = this.decoratorParameters.get(name);
         }
-        if (value == null && this.model != null) {
-            value = this.model.get(name);
-        }
         return value;
     }
     
@@ -91,7 +84,6 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return (String) value;
     }
     
-
     public String getDoctype() {
         return this.doctype;
     }
@@ -101,13 +93,9 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return this.locale;
     }
     
-
     public Iterator getRequestParameterNames() {
         Set s = new HashSet();
-        s.addAll(this.model.keySet());
         s.addAll(this.decoratorParameters.keySet());
         return s.iterator();
     }
-    
-
 }

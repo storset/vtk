@@ -31,51 +31,12 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.Locale;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Service;
 
+public interface DecorationResolver {
 
-public class ServiceAwareTemplateResolver implements TemplateResolver {
-
-    private TemplateManager templateManager;
-    private Map serviceTemplatesMap;
-    
-    public void setTemplateManager(TemplateManager templateManager) {
-        this.templateManager = templateManager;
-    }
-    
-
-    public void setServiceTemplatesMap(Map serviceTemplatesMap) {
-        this.serviceTemplatesMap = serviceTemplatesMap;
-    }
-    
-    
-    public Template resolveTemplate(Map model, HttpServletRequest request,
-                                    Locale locale) throws Exception {
-        Service currentService = RequestContext.getRequestContext().getService();
-
-        if (currentService == null) {
-            return null;
-        }
-
-        String templateName = null;
-
-        do {
-            templateName = (String) this.serviceTemplatesMap.get(currentService);
-        } while (templateName == null
-                 && (currentService = currentService.getParent()) != null);
-
-        if (templateName == null) {
-            throw new RuntimeException(
-                "Unable to resolve template for request: " + request);
-        }
-
-        return this.templateManager.getTemplate(templateName);
-    }
-    
+    public DecorationDescriptor resolve(HttpServletRequest request,
+                                        Locale locale) throws Exception;
     
 }

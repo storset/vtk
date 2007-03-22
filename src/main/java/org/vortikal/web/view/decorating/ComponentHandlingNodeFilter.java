@@ -206,7 +206,8 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     
 
     private String invokeComponentsAsString(ComponentInvocation[] components) {
-        HttpServletRequest servletRequest = RequestContext.getRequestContext().getServletRequest();
+        HttpServletRequest servletRequest =
+            RequestContext.getRequestContext().getServletRequest();
         
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(servletRequest);
@@ -219,8 +220,9 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
 
             Map parameters = components[i].getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                new HashMap(), null, servletRequest, parameters, doctype, locale);
-            DecoratorResponseImpl response = new DecoratorResponseImpl(doctype, locale, "utf-8");
+                null, servletRequest, parameters, doctype, locale);
+            DecoratorResponseImpl response = new DecoratorResponseImpl(
+                doctype, locale, "utf-8");
             String result = null;
             try {
                 DecoratorComponent component = components[i].getComponent();

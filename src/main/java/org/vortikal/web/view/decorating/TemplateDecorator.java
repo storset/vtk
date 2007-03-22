@@ -50,7 +50,7 @@ public class TemplateDecorator implements Decorator {
     private static Log logger = LogFactory.getLog(TemplateDecorator.class);
     
     private HtmlPageParser htmlParser;
-    private TemplateResolver templateResolver;
+    private DecorationResolver decorationResolver;
     
     private HtmlNodeFilter htmlNodeFilter;    
 
@@ -61,19 +61,25 @@ public class TemplateDecorator implements Decorator {
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(request);
 
-        HtmlPage html = parseHtml(content.getContent());
+        DecorationDescriptor descriptor = resolveDecorationDescriptor(request, ctx.getLocale());
+        if (!descriptor.decorate()) {
+            return;
+        }
+
+        boolean filter = descriptor.parse();
+
+        HtmlPage html = parseHtml(content.getContent(), filter);
         if (logger.isDebugEnabled()) {
             logger.debug("Parsed document [root element: " + html.getRootElement() + " "
                          + ", doctype: "+ html.getDoctype() + "]");
         }
 
-        Template template = resolveTemplate(model, request, ctx.getLocale());
-            
+        Template template = descriptor.getTemplate();
         if (template == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("No template resolved for request " + request);
             }
-            replaceContentFromPage(content, html);
+            replaceContentFromPage(content, html, descriptor.tidy());
             return;
         }
 
@@ -85,20 +91,26 @@ public class TemplateDecorator implements Decorator {
         HtmlElement rootElement = html.getRootElement();
         if (rootElement != null && "frameset".equals(rootElement.getName())) {
             // Framesets are not decorated:
-            replaceContentFromPage(content, html);
+            replaceContentFromPage(content, html, descriptor.tidy());
             return;
         } 
         content.setContent(template.render(model, html, request, ctx.getLocale()));
-        tidyContent(content);
+        if (descriptor.tidy()) {
+            tidyContent(content);
+        }
     }
 
 
-    protected void replaceContentFromPage(Content content, HtmlPage page) {
+    protected void replaceContentFromPage(Content content, HtmlPage page,
+                                          boolean tidy) throws Exception {
         String newContent = content.getContent();
         if (page.getRootElement() == null) {
             return;
         }
         content.setContent(page.getRootElement().getEnclosedContent());
+        if (tidy) {
+            tidyContent(content);
+        }
     }
     
 
@@ -123,20 +135,20 @@ public class TemplateDecorator implements Decorator {
     }
     
 
-    protected Template resolveTemplate(Map model, HttpServletRequest request,
-                                          Locale locale) throws Exception {
-        return this.templateResolver.resolveTemplate(model, request, locale);
+    protected DecorationDescriptor resolveDecorationDescriptor(
+        HttpServletRequest request, Locale locale) throws Exception {
+        return this.decorationResolver.resolve(request, locale);
     }
     
 
-    protected HtmlPage parseHtml(String content) throws Exception {
+    protected HtmlPage parseHtml(String content, boolean filter) throws Exception {
         long before = System.currentTimeMillis();
 
         // XXX: encoding
         String encoding = "utf-8";
         InputStream stream = new java.io.ByteArrayInputStream(content.getBytes(encoding));
         HtmlPage html = null;
-        if (this.htmlNodeFilter != null) {
+        if (filter && this.htmlNodeFilter != null) {
             html = this.htmlParser.parse(stream, encoding, this.htmlNodeFilter);
         } else {
             html = this.htmlParser.parse(stream, encoding);
@@ -154,8 +166,8 @@ public class TemplateDecorator implements Decorator {
         this.htmlNodeFilter = htmlNodeFilter;
     }
 
-    public void setTemplateResolver(TemplateResolver templateResolver) {
-        this.templateResolver = templateResolver;
+    public void setDecorationResolver(DecorationResolver decorationResolver) {
+        this.decorationResolver = decorationResolver;
     }
 
     public void setHtmlParser(HtmlPageParser htmlParser) {

@@ -85,6 +85,10 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  * </ul>
  * 
  * @see Decorator
+ * 
+ * XXX: Should be modified to use {@link DecorationResolver} at this
+ * level (before content buffering), instead of in {@link
+ * TemplateDecorator}.
  */
 public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProviding {
 
@@ -152,7 +156,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
 
         postRender(model, request, responseWrapper);
-
     }
 
 
@@ -203,6 +206,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             this.logger.debug("Reading buffered content using character encoding "
                     + characterEncoding);
         }
+
 
         Content content = new ContentImpl();
         content.setContent(new String(contentBuffer, characterEncoding));

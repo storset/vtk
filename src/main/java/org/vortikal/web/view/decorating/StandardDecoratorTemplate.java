@@ -85,7 +85,7 @@ public class StandardDecoratorTemplate implements Template {
                     doctype = DEFAULT_DOCTYPE;
                 }
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                    model, html, request, fragments[i].getParameters(), doctype, locale);
+                    html, request, fragments[i].getParameters(), doctype, locale);
 
                 String chunk = renderComponent(c, decoratorRequest);
                 if (logger.isDebugEnabled()) {

@@ -30,15 +30,13 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.util.Locale;
-import java.util.Map;
+public interface DecorationDescriptor {
 
-import javax.servlet.http.HttpServletRequest;
+    public boolean decorate();
 
+    public boolean tidy();
 
-public interface TemplateResolver {
+    public boolean parse();
 
-    public Template resolveTemplate(Map model, HttpServletRequest request,
-                                    Locale locale) throws Exception;
-    
+    public Template getTemplate();
 }

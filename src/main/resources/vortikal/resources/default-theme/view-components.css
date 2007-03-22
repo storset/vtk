@@ -11,10 +11,10 @@ a.vrtx-manage-url {
 /* START feed:include */
 
 div.vrtxFeed {
-  float:right;
-  width: 15em;
+/*  float:right;
+  width: 15em; */
   padding: 0.5em;
-  border: 1px solid #999;
+  border: 1px solid #ccc;
 }
 
 
@@ -68,7 +68,7 @@ div.vrtxFeed ul.items li span.publishedDate {
 /* START vrtxSubFolderMenu */
 
 div.vrtxSubFolderMenu {
- border: 1px solid #aaa;
+ border: 1px solid #ccc;
  padding: 1em;
  height: 1%; /* Triggers hasLayout in IE browser */
 }
@@ -105,9 +105,9 @@ ul.vrtxVerticalMenu {
 }
 
 ul.vrtxVerticalMenu li {
-  border-top: 1px solid #666;
+  border-top: 1px solid #ccc;
   margin-bottom: -1px;
-  border-bottom: 1px solid #666;
+  border-bottom: 1px solid #ccc;
 }
 
 ul.vrtxVerticalMenu li a {
@@ -127,7 +127,7 @@ ul.vrtxVerticalMenu li.active a {
 ul.vrtxVerticalMenu li a:hover, ul.vrtxVerticalMenu li.active a:hover {
   background-color: #eee;
   color: #666;
-  border-left: .3em solid #666;
+  border-left: .3em solid #ccc;
   padding-left: .2em;
 }
 
@@ -180,7 +180,7 @@ ul.vrtxHorizontalMenu a:hover, ul.vrtxHorizontalMenu li.active a:hover {
 ul.vrtxTabsMenu {
   margin: 0px;
   padding: 4px 0px;
-  border-bottom: 1px solid #666;
+  border-bottom: 1px solid #ccc;
   white-space: nowrap;
 }
 
@@ -196,9 +196,9 @@ ul.vrtxTabsMenu li a {
   color: #333;
   padding: 4px 15px;
   margin: 0px 1px 0px 0px;
-  border: 1px solid #666; 
+  border: 1px solid #ccc; 
   background-color: #eee;
-  border: 1px solid #666;
+  border: 1px solid #ccc;
   border-bottom: none;
 }
 

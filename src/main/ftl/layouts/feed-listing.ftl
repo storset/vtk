@@ -30,9 +30,9 @@
 	    </#list>
           </div>
         </#if>
-        <#if conf.publishedDate && entry.publishedDate?exists>
+        <#if conf.publishedDate?exists && entry.publishedDate?exists>
           <span class="publishedDate">
-            <@vrtx.date value=entry.publishedDate format="long" />
+            <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
           </span>
         </#if>
       </li>

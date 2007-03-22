@@ -83,11 +83,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         VALID_STYLES.add(STYLE_TABS);
     }
 
-    private static final String PARAMETER_INCLUDE_CHILDREN = "includeChildren";
+    private static final String PARAMETER_INCLUDE_CHILDREN = "include-children";
     private static final String PARAMETER_INCLUDE_CHILDREN_DESC
         = "An explicit listing of the child resources to include.";
 
-    private static final String PARAMETER_INCLUDE_PARENT = "includeParentFolder";
+    private static final String PARAMETER_INCLUDE_PARENT = "include-parent-folder";
     private static final String PARAMETER_INCLUDE_PARENT_DESC = 
         "Whether or not to include the selected folder itself in the menu. Defaults to 'false'";
 
@@ -100,8 +100,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_URI_DESC = 
         "The URI (path) to the selected folder";
 
-    private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
-    private static final String PARAMETER_AS_CURRENT_USER_DESC = 
+    private static final String PARAMETER_AUTENTICATED = "authenticated";
+    private static final String PARAMETER_AUTENTICATED_DESC = 
         "The default is that only resources readable for everyone is listed. " +
             "If this is set to 'true', the listing is done as the currently " +
             "logged in user (if any)";
@@ -121,8 +121,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         Search search = buildSearch(menuRequest);
-        String token = null;
-        ResultSet rs = this.searcher.execute(token, search);
+        ResultSet rs = this.searcher.execute(menuRequest.getToken(), search);
         ListMenu menu = buildListMenu(rs, menuRequest);
         model.put(this.modelName, menu);
     }
@@ -137,8 +136,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         if (childNames == null) {
             // List all children based on depth:
-            query.append("(uri = ").append(uri).append("/*");
-            query.append(" AND depth = ").append(depth).append(")");
+            query.append("(uri = ").append(uri);
+            if (!uri.equals("/")) {
+                query.append("/");
+            }
+            query.append("* AND depth = ").append(depth).append(")");
 
         } else {
             // An explicit list of child names is provided
@@ -162,7 +164,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             query.append(")");
             query.append(" OR uri = ").append(uri);
         }
-        query.insert(0, "type IN " + this.collectionResourceType.getName() + " AND (");
+        query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
         query.append(")");
 
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
@@ -288,38 +290,34 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
             this.uri = uri;
 
-            boolean asCurrentUser = "true".equals(
-                request.getStringParameter(PARAMETER_AS_CURRENT_USER));
-            if (asCurrentUser) {
+            boolean authenticated = "true".equals(
+                request.getStringParameter(PARAMETER_AUTENTICATED));
+            if (authenticated) {
                 SecurityContext securityContext = SecurityContext.getSecurityContext();
                 this.token = securityContext.getToken();
             }
 
-            String style = request.getStringParameter(PARAMETER_STYLE);
-            if (style == null) {
-                style = DEFAULT_STYLE;
-            } else {
-                if (!VALID_STYLES.contains(style)) {
-                    throw new DecoratorComponentException(
+            this.style = request.getStringParameter(PARAMETER_STYLE);
+            if (this.style == null) {
+                this.style = DEFAULT_STYLE;
+            } else if (!VALID_STYLES.contains(this.style)) {
+                throw new DecoratorComponentException(
                         "Invalid value for parameter 'style': must be one of "
                         + VALID_STYLES.toString());
-                }
             }
-            this.style = style;
 
             this.parentIncluded = "true".equals(request.getStringParameter(
                                                     PARAMETER_INCLUDE_PARENT));
-            String[] splitChildNames = null;
+
             String includeChildrenParam = request.getStringParameter(PARAMETER_INCLUDE_CHILDREN);
             if (includeChildrenParam != null) {
-                splitChildNames = includeChildrenParam.split(",");
-                if (splitChildNames.length == 0) {
+                childNames = includeChildrenParam.split(",");
+                if (childNames.length == 0) {
                     throw new DecoratorComponentException(
                         "Invalid value for parameter '" + PARAMETER_INCLUDE_CHILDREN
                         + "': must provide at least one child name");
                 }
             }
-            this.childNames = splitChildNames;
             RequestContext requestContext = RequestContext.getRequestContext();
             this.currentURI = requestContext.getResourceURI();
             this.locale = request.getLocale();
@@ -347,6 +345,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         public Locale getLocale() {
             return this.locale;
+        }
+
+        public String getToken() {
+            return token;
         }
     }
 
@@ -442,7 +444,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_STYLE, PARAMETER_STYLE_DESC);
         map.put(PARAMETER_INCLUDE_CHILDREN, PARAMETER_INCLUDE_CHILDREN_DESC);
         map.put(PARAMETER_INCLUDE_PARENT, PARAMETER_INCLUDE_PARENT_DESC);
-        map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
+        map.put(PARAMETER_AUTENTICATED, PARAMETER_AUTENTICATED_DESC);
         return map;
                 
     }

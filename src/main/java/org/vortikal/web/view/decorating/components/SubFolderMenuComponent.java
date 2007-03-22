@@ -77,15 +77,15 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_TITLE = "title";
     private static final String PARAMETER_TITLE_DESC = "The menu title";
 
-    private static final String PARAMETER_SORT_BY = "sortBy";
-    private static final String PARAMETER_SORT_BY_DESC =
+    private static final String PARAMETER_SORT = "sort";
+    private static final String PARAMETER_SORT_DESC =
         "The name of a property to sort results by. The default sort property is 'title'.";
 
     private static final String PARAMETER_SORT_DIRECTION = "direction";
     private static final String PARAMETER_SORT_DIRECTION_DESC =
         "The sort direction. Legal values are 'asc', 'desc'. The default value is 'asc' ";
 
-    private static final String PARAMETER_RESULT_SETS = "resultSets";
+    private static final String PARAMETER_RESULT_SETS = "result-sets";
     private static final String PARAMETER_RESULT_SETS_DESC =
         "The number of result sets to split the result into. The default value is '1'";
     private static final int PARAMETER_RESULT_SETS_MAX_VALUE = 30;
@@ -307,7 +307,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
         
         private void initSortField(DecoratorRequest request) {
-            String sortFieldParam = request.getStringParameter(PARAMETER_SORT_BY);
+            String sortFieldParam = request.getStringParameter(PARAMETER_SORT);
             if (sortFieldParam == null) {
                 this.sortField = new PropertySortField(titlePropDef, SortFieldDirection.ASC);
                 return;
@@ -409,7 +409,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     protected Map getParameterDescriptionsInternal() {
         Map map = new LinkedHashMap();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
-        map.put(PARAMETER_SORT_BY, PARAMETER_SORT_BY_DESC);
+        map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
         map.put(PARAMETER_SORT_DIRECTION, PARAMETER_SORT_DIRECTION_DESC);
         map.put(PARAMETER_RESULT_SETS, PARAMETER_RESULT_SETS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);

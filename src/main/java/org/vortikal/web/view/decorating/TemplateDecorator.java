@@ -58,10 +58,10 @@ public class TemplateDecorator implements Decorator {
     public void decorate(Map model, HttpServletRequest request, Content content)
         throws Exception, UnsupportedEncodingException, IOException {
 
-        org.springframework.web.servlet.support.RequestContext ctx =
-            new org.springframework.web.servlet.support.RequestContext(request);
-
-        DecorationDescriptor descriptor = resolveDecorationDescriptor(request, ctx.getLocale());
+        Locale locale = 
+            new org.springframework.web.servlet.support.RequestContext(request).getLocale();
+        
+        DecorationDescriptor descriptor = resolveDecorationDescriptor(request, locale);
         if (!descriptor.decorate()) {
             return;
         }
@@ -94,7 +94,7 @@ public class TemplateDecorator implements Decorator {
             replaceContentFromPage(content, html, descriptor.tidy());
             return;
         } 
-        content.setContent(template.render(model, html, request, ctx.getLocale()));
+        content.setContent(template.render(html, request, locale));
         if (descriptor.tidy()) {
             tidyContent(content);
         }
@@ -103,7 +103,6 @@ public class TemplateDecorator implements Decorator {
 
     protected void replaceContentFromPage(Content content, HtmlPage page,
                                           boolean tidy) throws Exception {
-        String newContent = content.getContent();
         if (page.getRootElement() == null) {
             return;
         }
@@ -134,7 +133,6 @@ public class TemplateDecorator implements Decorator {
         content.setContent(new String(outputStream.toByteArray(), "utf-8"));
     }
     
-
     protected DecorationDescriptor resolveDecorationDescriptor(
         HttpServletRequest request, Locale locale) throws Exception {
         return this.decorationResolver.resolve(request, locale);

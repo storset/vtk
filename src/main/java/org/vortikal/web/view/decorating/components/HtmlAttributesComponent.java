@@ -65,7 +65,7 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
             this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         Set excludedAttributes = new HashSet();
-        if (exclude != null) {
+        if (exclude != null && !exclude.trim().equals("")) {
             String[] splitValues = exclude.split(",");
             for (int i = 0; i < splitValues.length; i++) {
                 excludedAttributes.add(splitValues[i]);

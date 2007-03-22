@@ -31,7 +31,6 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -66,7 +65,7 @@ public class StandardDecoratorTemplate implements Template {
         compile();
     }
 
-    public String render(Map model, HtmlPage html, HttpServletRequest request,
+    public String render(HtmlPage html, HttpServletRequest request,
                        Locale locale) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {

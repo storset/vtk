@@ -36,7 +36,6 @@ import java.util.Map;
 /**
  * XXX: interface should be extended with the following concepts:
  * <ul>
- *   <li>List of supported parameters
  *   <li>Supported doctype(s) and possibly character encoding
  *   <li>Language
  *   <li>Cache model: dynamic/static/"private" (per-principal)

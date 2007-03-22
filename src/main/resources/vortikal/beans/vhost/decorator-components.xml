@@ -17,16 +17,13 @@
     <constructor-arg type="java.lang.String" value="document" />
   </bean>
 
-  <bean id="decorating.elementNamespace" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="element" />
-  </bean>
-
   <bean id="decorating.bodyComponent"
         class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="body" />
     <property name="select" value="html.body" />
     <property name="enclosed" value="false" />
+    <property name="exclude" value="" />
     <property name="description" value="Outputs the contents of the &lt;body&gt; tag of the original HTML document" />
   </bean>
 
@@ -36,8 +33,8 @@
     <property name="name" value="head" />
     <property name="select" value="html.head" />
     <property name="enclosed" value="false" />
-    <property name="exclude" value="title" />
-    <property name="description" value="Outputs the contents of the &lt;head&gt; tag of the original HTML document, but with the &lt;title&gt; tag removed" />
+    <property name="exclude" value="" />
+    <property name="description" value="Outputs the contents of the &lt;head&gt; tag of the original HTML document" />
   </bean>
 
   <bean id="decorating.titleComponent"
@@ -46,28 +43,29 @@
     <property name="name" value="title" />
     <property name="select" value="html.head.title" />
     <property name="enclosed" value="false" />
+    <property name="exclude" value="" />
     <property name="description" value="Outputs the contents of the &lt;title&gt; tag of the original HTML document" />
   </bean>
 
   <bean id="decorating.elementContentComponent"
         class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
-    <property name="namespace" ref="decorating.elementNamespace" />
-    <property name="name" value="content" />
+    <property name="namespace" ref="decorating.documentNamespace" />
+    <property name="name" value="element" />
     <property name="description" value="Outputs the contents of a specified element" />
   </bean>
 
   <bean id="decorating.elementAttributesComponent"
         class="org.vortikal.web.view.decorating.components.HtmlAttributesComponent">
-    <property name="namespace" ref="decorating.elementNamespace" />
-    <property name="name" value="attributes" />
+    <property name="namespace" ref="decorating.documentNamespace" />
+    <property name="name" value="element-attributes" />
     <property name="description" value="Outputs the attributes of a specified element" />
   </bean>
 
 
   <bean id="decorating.manageURLComponent"
         class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" value="manage" />
-    <property name="name" value="manageURL" />
+    <property name="namespace" value="resource" />
+    <property name="name" value="manage-url" />
     <property name="description" value="Inserts the admin URL of the current document" />
     <property name="view" ref="decorating.manageURLComponent.view" />
   </bean>
@@ -110,10 +108,10 @@
   <!-- To be moved to vortex -->
   <bean id="decorating.keywordsComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.view.decorating.components.PropertyLinkedValueDecoratorCompontent">
-    <property name="namespace" value="view" />
+    <property name="namespace" value="resource" />
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="keywordsPropDef" />
-    <property name="description" value="Inserts the the keywords with links to search" />
+    <property name="description" value="Inserts the resource keywords, linked to search" />
     <property name="urlPattern" value="http://www.uio.no/sok?type=query&amp;qt=keywords%3A%v" />
     <property name="view" ref="decorating.keywordsComponent.view" />
   </bean>
@@ -129,7 +127,7 @@
   </bean>
 
   <bean id="decorating.breadcrumbComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" value="view" />
+    <property name="namespace" value="resource" />
     <property name="name" value="breadcrumb" />
     <property name="view" ref="decorating.breadcrumbComponent.view" />
     <property name="description" value="Inserts a breadcrumb trail to the current document" />
@@ -152,8 +150,8 @@
 
   <bean id="decorating.feedComponent"
         class="org.vortikal.web.view.decorating.components.SyndicationFeedComponent">
-    <property name="namespace" value="feed" />
-    <property name="name" value="include" />
+    <property name="namespace" value="include" />
+    <property name="name" value="feed" />
     <property name="view" ref="decorating.feedComponent.view" />
     <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
@@ -181,8 +179,8 @@
 
   <bean id="decorating.listMenuComponent"
         class="org.vortikal.web.view.decorating.components.ListMenuComponent">
-    <property name="namespace" value="menu" />
-    <property name="name" value="static" />
+    <property name="namespace" value="include" />
+    <property name="name" value="uri-menu" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryParser" ref="searchParser" />
     <property name="view" ref="decorating.listMenuComponent.view" />
@@ -200,8 +198,8 @@
 
   <bean id="decorating.subFolderMenuComponent"
         class="org.vortikal.web.view.decorating.components.SubFolderMenuComponent">
-    <property name="namespace" value="menu" />
-    <property name="name" value="subFolder" />
+    <property name="namespace" value="resource" />
+    <property name="name" value="subfolder-menu" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryParser" ref="searchParser" />
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
@@ -221,8 +219,8 @@
   <bean id="decorating.includeComponent"
         class="org.vortikal.web.view.decorating.components.IncludeComponent"
         parent="requestLocalRepositoryAware">
-    <property name="namespace" value="file" />
-    <property name="name" value="include" />
+    <property name="namespace" value="include" />
+    <property name="name" value="file" />
     <property name="description" value="Includes the contents of another document in the page" />
     <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
   </bean>

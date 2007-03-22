@@ -6,10 +6,9 @@ public class SyndicationFeedConfig {
     boolean feedDescription = false;
     boolean itemDescription = false;
     int maxMsgs = 10;
-    boolean publishedDate = true;
+    private String publishedDate = "long";
     boolean bottomLinkToAllMessages = true;
     boolean sortByTitle = false;
-    private String format = "dd.MM.yyyy HH:mm";
     
     public boolean isBottomLinkToAllMessages() {
         return bottomLinkToAllMessages;
@@ -41,23 +40,17 @@ public class SyndicationFeedConfig {
     public void setMaxMsgs(int maxMsgs) {
         this.maxMsgs = maxMsgs;
     }
-    public boolean isPublishedDate() {
-        return publishedDate;
-    }
-    public void setPublishedDate(boolean publishedDate) {
-        this.publishedDate = publishedDate;
-    }
     public boolean isSortByTitle() {
         return sortByTitle;
     }
     public void setSortByTitle(boolean sortByTitle) {
         this.sortByTitle = sortByTitle;
     }
-    public String getFormat() {
-        return format;
+    public String getPublishedDate() {
+        return publishedDate;
     }
-    public void setFormat(String format) {
-        this.format = format;
+    public void setPublishedDate(String publishedDate) {
+        this.publishedDate = publishedDate;
     }
 
 }

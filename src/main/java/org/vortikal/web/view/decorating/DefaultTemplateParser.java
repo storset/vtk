@@ -113,9 +113,12 @@ public class DefaultTemplateParser implements TemplateParser {
     }
 
     private ComponentInvocation parseDirective(String s) {
-        if (s != null) {
-            s = s.trim();
+        if (s == null || s.trim().length() <= 1) {
+            return null;
         }
+
+        s = s.trim();
+
         // namespace:name param1=[value] param2=[value]
         String componentRef = parseComponentRef(s);
         if (componentRef == null) {
@@ -156,10 +159,6 @@ public class DefaultTemplateParser implements TemplateParser {
 
 
     private String parseComponentRef(String s) {
-        if (s == null || s.trim().length() <= 1) {
-            return null;
-        }
-        s = s.trim();
         // namespace:name
         int delimIdx = s.indexOf(":");
         if (delimIdx == -1) {
@@ -197,7 +196,7 @@ public class DefaultTemplateParser implements TemplateParser {
         if (name != null) {
             name = name.trim();
         }
-        if (!name.matches("[a-zA-Z]+")) {
+        if (!name.matches("[a-zA-Z]+(-[a-zA-Z]+)?")) {
             return null;
         }
         return name;

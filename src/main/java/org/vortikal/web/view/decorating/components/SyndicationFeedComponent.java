@@ -57,37 +57,35 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
 
     private static final String PARAMETER_SORT = "sort";
     private static final String PARAMETER_SORT_DESC = 
-        "Default sorted by published date. Set to 'itemTitle' to sort by this instead.";
+        "Default sorted by published date. Set to 'item-title' to sort by this instead.";
     
-    private static final String PARAMETER_BOTTOM_LINK_TO_ALL_MESSAGES = "bottomLinkToAllMessages";
-    private static final String PARAMETER_BOTTOM_LINK_TO_ALL_MESSAGES_DESC = 
+    private static final String PARAMETER_ALL_MESSAGES_LINK = "all-messages-link";
+    private static final String PARAMETER_ALL_MESSAGES_LINK_DESC = 
         "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";
     
-    private static final String PARAMETER_PUBLISHED_DATE = "publishedDate";
+    private static final String PARAMETER_PUBLISHED_DATE = "published-date";
     private static final String PARAMETER_PUBLISHED_DATE_DESC = 
         "How to display published date, defaults to date and time. Set to 'date' to only display the date, or 'none' to not show the date";
     
-    private static final String PARAMETER_MAX_MSGS = "maxMsgs";
-    private static final String PARAMETER_MAX_MSGS_DESC = "The max number of messages to display, defaults to 10";
+    private static final String PARAMETER_MAX_MESSAGES = "max-messages";
+    private static final String PARAMETER_MAX_MESSAGES_DESC = "The max number of messages to display, defaults to 10";
     
-    private static final String PARAMETER_ITEM_DESCRIPTION = "itemDescription";
+    private static final String PARAMETER_ITEM_DESCRIPTION = "item-description";
     private static final String PARAMETER_ITEM_DESCRIPTION_DESC = "Must be set to 'true' to show item descriptions";
 
-    private static final String PARAMETER_FEED_DESCRIPTION = "feedDescription";
+    private static final String PARAMETER_FEED_DESCRIPTION = "feed-description";
     private static final String PARAMETER_FEED_DESCRIPTION_DESC = "Must be set to 'true' to show feed description";
 
     private static final String PARAMETER_URL = "url";
     private static final String PARAMETER_URL_DESC = "The feed url";
 
-    private static final String PARAMETER_FEED_TITLE = "feedTitle";
+    private static final String PARAMETER_FEED_TITLE = "feed-title";
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
 
     private static Log logger = LogFactory.getLog(SyndicationFeedComponent.class);
     private ContentCache cache;
     private View view;
 
-    private String onlyDateDateFormat = "dd.MM.yyyy";
-    
     public void setView(View view) {
         this.view = view;
     }
@@ -122,7 +120,7 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
             conf.setItemDescription(true);
         }
 
-        String maxMsgsString = request.getStringParameter(PARAMETER_MAX_MSGS);
+        String maxMsgsString = request.getStringParameter(PARAMETER_MAX_MESSAGES);
         if (maxMsgsString != null) {
             try {
                 int tmpInt = Integer.parseInt(maxMsgsString);
@@ -134,21 +132,19 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
 
 
         String publishedDateString = request.getStringParameter(PARAMETER_PUBLISHED_DATE);
-        if (publishedDateString != null) {
-            if ("none".equals(publishedDateString)) {
-                conf.setPublishedDate(false);
-            } else if ("date".equals(publishedDateString)) {
-                conf.setFormat(this.onlyDateDateFormat);
-            }
+        if ("none".equals(publishedDateString)) {
+            conf.setPublishedDate(null);
+        } else if ("date".equals(publishedDateString)) {
+            conf.setPublishedDate("short");
         }
         
-        String bottomLinkToAllMessagesString = request.getStringParameter(PARAMETER_BOTTOM_LINK_TO_ALL_MESSAGES);
+        String bottomLinkToAllMessagesString = request.getStringParameter(PARAMETER_ALL_MESSAGES_LINK);
         if ("false".equals(bottomLinkToAllMessagesString)) {
             conf.setBottomLinkToAllMessages(false);
         }
 
         String sortString = request.getStringParameter(PARAMETER_SORT);
-        if ("itemTitle".equals(sortString)) {
+        if ("item-title".equals(sortString)) {
             conf.setSortByTitle(true);
         }
         
@@ -185,11 +181,11 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
     protected Map getParameterDescriptionsInternal() {
         Map map = new LinkedHashMap();
         map.put(PARAMETER_URL, PARAMETER_URL_DESC);
-        map.put(PARAMETER_MAX_MSGS, PARAMETER_MAX_MSGS_DESC);
+        map.put(PARAMETER_MAX_MESSAGES, PARAMETER_MAX_MESSAGES_DESC);
         map.put(PARAMETER_FEED_TITLE, PARAMETER_FEED_TITLE_DESC);
         map.put(PARAMETER_FEED_DESCRIPTION, PARAMETER_FEED_DESCRIPTION_DESC);
         map.put(PARAMETER_ITEM_DESCRIPTION, PARAMETER_ITEM_DESCRIPTION_DESC);
-        map.put(PARAMETER_BOTTOM_LINK_TO_ALL_MESSAGES, PARAMETER_BOTTOM_LINK_TO_ALL_MESSAGES_DESC);
+        map.put(PARAMETER_ALL_MESSAGES_LINK, PARAMETER_ALL_MESSAGES_LINK_DESC);
         map.put(PARAMETER_PUBLISHED_DATE, PARAMETER_PUBLISHED_DATE_DESC);
         map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
         return map;

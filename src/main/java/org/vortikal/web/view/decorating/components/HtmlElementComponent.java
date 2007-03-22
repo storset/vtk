@@ -37,9 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.web.view.decorating.html.HtmlContent;
@@ -48,8 +45,6 @@ import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 
 
 public class HtmlElementComponent extends AbstractHtmlSelectComponent {
-
-    private static Log logger = LogFactory.getLog(AbstractDecoratorComponent.class);
 
     private static final String PARAMETER_EXCLUDE = "exclude";
     private static final String PARAMETER_EXCLUDE_DESC = 
@@ -64,7 +59,6 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
     private static final String DESCRIPTION
         = "Outputs the contents of the element(s) identified by select";
     
-    private String include;
     private String exclude;
     private Boolean enclosed;
     
@@ -86,19 +80,11 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                     request.getStringParameter(PARAMETER_ENCLOSED));
 
 
-        Set includedElements = new HashSet();
-        if (include != null) {
-            String[] splitValues = exclude.split(",");
-            for (int i = 0; i < splitValues.length; i++) {
-                includedElements.add(splitValues[i]);
-            }
-        }
-
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         Set excludedElements = new HashSet();
-        if (exclude != null) {
+        if (exclude != null && !exclude.trim().equals("")) {
             String[] splitValues = exclude.split(",");
             for (int i = 0; i < splitValues.length; i++) {
                 excludedElements.add(splitValues[i]);

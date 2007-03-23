@@ -78,6 +78,10 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     public void processURL(URL url) {
         String uri = url.getPath();
         String[] path = URLUtil.splitUriIncrementally(uri);
+        if (this.configuration == null || this.configuration.isEmpty()) {
+            url.setProtocol(PROTO_HTTP);
+            return;
+        }
         for (int i = path.length - 1; i >= 0; i--) {
             String prefix = path[i];
             String value = this.configuration.getProperty(prefix);
@@ -89,6 +93,8 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
                 }
             }
         }
+        
+        url.setProtocol(PROTO_HTTP);
     }
 
 

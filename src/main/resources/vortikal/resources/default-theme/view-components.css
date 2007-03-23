@@ -1,116 +1,18 @@
-/* START manage:manageURL */
+/* START include:uri-menu style=[vrtx-vertical-menu] */
 
-a.vrtx-manage-url {
-  font-size: .8em;
-  float:right;
-} 
-
-/* END manage:manageURL */
-
-
-/* START feed:include */
-
-div.vrtxFeed {
-/*  float:right;
-  width: 15em; */
-  padding: 0.5em;
-  border: 1px solid #ccc;
-}
-
-
-div.vrtxFeed a.feedTitle {
-  display:block;
-  font-size: 1.2em;
-  font-weight: 900;
-  margin-bottom: 0.5em;
-  text-decoration: none;
-  color: black;
-}
-
-div.vrtxFeed a.feedTitle:hover {
-  color: #999;
-}
-
-div.vrtxFeed div.feedDescription {
-
-}
-
-div.vrtxFeed a.all-messages {
-
-}
-
-div.vrtxFeed ul.items {
-  margin: 1em 0px;
-  padding: 0px;
-  list-style: none;
-}
-
-div.vrtxFeed li {
-  margin: 0.75em 0px;
-}
-
-div.vrtxFeed ul.items li a.itemTitle {
-  display:block;
-  margin-bottom: .2em;
-}
-
-div.vrtxFeed ul.items li div.itemDescription {
-   margin-bottom: .2em;
-}
-
-div.vrtxFeed ul.items li span.publishedDate {
-  font-size: .9em;
-  white-space: nowrap;
-}
-
-/* END feed:include */
-
-/* START vrtxSubFolderMenu */
-
-div.vrtxSubFolderMenu {
- border: 1px solid #ccc;
- padding: 1em;
- height: 1%; /* Triggers hasLayout in IE browser */
-}
-
-div.vrtxSubFolderMenu:after {
- content: "."; 
- display: block; 
- height: 0; 
- clear: both; 
- visibility: hidden;
-}
-
-div.menuTitle {
- font-size: 1.2em;
- font-weight: bold;
- margin-bottom: .5em;
-}
-
-div.vrtxSubFolderMenu ul {
- float:left;
- list-style-type: square;
- padding: 0 2em;
- margin: 0;
-}
-
-/* END vrtxSubFolderMenu */
-
-/* START vrtxVerticalMenu */
-
-ul.vrtxVerticalMenu {
+ul.vrtx-vertical-menu {
   margin-left: 0;
   padding-left: 0;
   list-style-type: none;
 }
 
-ul.vrtxVerticalMenu li {
+ul.vrtx-vertical-menu li {
   border-top: 1px solid #ccc;
   margin-bottom: -1px;
   border-bottom: 1px solid #ccc;
 }
 
-ul.vrtxVerticalMenu li a {
+ul.vrtx-vertical-menu li a {
   display: block;
   padding: .5em .5em .5em .2em;
   border-left: .3em solid #fff;
@@ -119,39 +21,38 @@ ul.vrtxVerticalMenu li a {
   height: 1%; /* triggers hasLayout in IE browsers */
 }
 
-ul.vrtxVerticalMenu li.active a {
+ul.vrtx-vertical-menu li.vrtx-active-item a {
   border-left: .3em solid #000;
   padding-left: .2em;
 }
 
-ul.vrtxVerticalMenu li a:hover, ul.vrtxVerticalMenu li.active a:hover {
+ul.vrtx-vertical-menu li a:hover, ul.vrtx-vertical-menu li.vrtx-active-item a:hover {
   background-color: #eee;
   color: #666;
   border-left: .3em solid #ccc;
   padding-left: .2em;
 }
 
-/* END vrtxVerticalMenu */
+/* END include:uri-menu style=[vrtx-vertical-menu] */
 
 
+/* START include:uri-menu style=[vrtx-horizontal-menu] */
 
-/* START vrtxHorizontalMenu */
-
-ul.vrtxHorizontalMenu {
+ul.vrtx-horizontal-menu {
   white-space: nowrap;
   background-color: #dfd2b0;
   padding: .3em 0;
   margin: 0;
 }
 
-ul.vrtxHorizontalMenu li {
+ul.vrtx-horizontal-menu li {
   display:inline;
   list-type: none; 
   margin: 0px;
   padding: 0px;
 }
 
-ul.vrtxHorizontalMenu a {
+ul.vrtx-horizontal-menu a {
   margin: 0em;
   padding: .3em .75em;
   color: #000;
@@ -159,38 +60,36 @@ ul.vrtxHorizontalMenu a {
   height: 1%; /* triggers hasLayout in IE browsers */
 }
 
-ul.vrtxHorizontalMenu li.active a {
+ul.vrtx-horizontal-menu li.vrtx-active-item a {
   border-bottom: .2em solid #000;
   padding-bottom: .1em;
 }
 
-
-ul.vrtxHorizontalMenu a:hover, ul.vrtxHorizontalMenu li.active a:hover {
+ul.vrtx-horizontal-menu a:hover, ul.vrtx-horizontal-menu li.vrtx-active-item a:hover {
   color: #666;
   border-bottom: .2em solid #666;
   padding-bottom: .1em;
 }
 
-/* END vrtxHorizontalMenu */
+/* END include:uri-menu style=[vrtx-horizontal-menu] */
 
 
+/* START include:uri-menu style=[vrtx-tab-menu] */
 
-/* START vrtxTabsMenu */
-
-ul.vrtxTabsMenu {
+ul.vrtx-tab-menu {
   margin: 0px;
   padding: 4px 0px;
   border-bottom: 1px solid #ccc;
   white-space: nowrap;
 }
 
-ul.vrtxTabsMenu li {
+ul.vrtx-tab-menu li {
   display: inline;
   list-style: none;
   margin: 0px;
 }
 
-ul.vrtxTabsMenu li a {
+ul.vrtx-tab-menu li a {
   text-align: center;
   text-decoration: none;
   color: #333;
@@ -202,17 +101,131 @@ ul.vrtxTabsMenu li a {
   border-bottom: none;
 }
 
-ul.vrtxTabsMenu li.active a, ul.vrtxTabsMenu li.active a:hover {
+ul.vrtx-tab-menu li.vrtx-active-item a, ul.vrtx-tab-menu li.vrtx-active-item a:hover {
   color: #000; 
   padding: 5px 15px; 
   background-color: #fff; 
 }
 
-ul.vrtxTabsMenu li a:hover{
+ul.vrtx-tab-menu li a:hover{
   color: #000;
   padding-top: 5px; 
 }
 
-/* END vrtxTabsMenu */
+/* END include:uri-menu style=[vrtx-tab-menu] */
+
+
+/* START include:feed */
+
+div.vrtx-feed {
+  padding: 0.5em;
+  border: 1px solid #ccc;
+}
+
+div.vrtx-feed a.feed-title {
+  display:block;
+  font-size: 1.2em;
+  font-weight: 900;
+  margin-bottom: 0.5em;
+  text-decoration: none;
+  color: black;
+}
+
+div.vrtx-feed a.feed-title:hover {
+  color: #999;
+}
+
+div.vrtx-feed div.feed-description {
+
+}
+
+div.vrtx-feed a.all-messages {
+
+}
+
+div.vrtx-feed ul.items {
+  margin: 1em 0px;
+  padding: 0px;
+  list-style: none;
+}
+
+div.vrtx-feed li {
+  margin: 0.75em 0px;
+}
+
+div.vrtx-feed ul.items li a.item-title {
+  display:block;
+  margin-bottom: .2em;
+}
+
+div.vrtx-feed ul.items li div.item-description {
+   margin-bottom: .2em;
+}
+
+div.vrtx-feed ul.items li span.published-date {
+  font-size: .9em;
+  white-space: nowrap;
+}
+
+/* END include:feed */
+
+
+/* START resource:breadcrumb */
+
+div.breadcrumb {
+  font-size: .8em;
+} 
+
+/* END resource:breadcrumb */
+
+
+/* START resource:subfolder-menu */
+
+div.vrtx-subfolder-menu {
+  border: 1px solid #ccc;
+  padding: 1em;
+  height: 1%; /* Triggers hasLayout in IE browser */
+}
+
+div.vrtx-subfolder-menu:after {
+  content: "."; 
+  display: block; 
+  height: 0; 
+  clear: both; 
+  visibility: hidden;
+}
+
+div.vrtx-subfolder-menu div.menu-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: .5em;
+}
+
+div.vrtx-subfolder-menu ul {
+  float:left;
+  list-style-type: square;
+  padding: 0 2em;
+  margin: 0;
+}
+
+/* END resource:subfolder-menu */
+
+
+/* START resource:tags */
+span.tags { 
+  font-size: .8em;
+}
+
+/* END resource:tags */
+
+
+/* START resource:manage-url */
+
+a.vrtx-manage-url {
+  font-size: .8em;
+  float:right;
+} 
+
+/* END resource:manage-url */
 
 

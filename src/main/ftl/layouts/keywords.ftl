@@ -15,16 +15,15 @@
 
 <#import "/lib/vortikal.ftl" as vrtx/>
 
-<#if !value?exists && !values?exists>
-  <#stop "Unable to render model: required model data
-  'value' or 'values' missing">
-</#if>
-
-<#if value?exists>
-  <a href="${url}">${value}</a>
-<#else>
-  <ul>
-  <#list values as v>
-    <li><a href="${urls[v_index]}">${v}</a></li>
-  </#list>
+<#if value?exists || values?exists>
+<span class="tags">
+  <span class="title"><@vrtx.msg code="tags.title" default="Tags"/>:</span>
+  <#if value?exists>
+    <a href="${url?html}">${value}</a>
+  <#else>
+    <#list values as v>
+      <a href="${urls[v_index]?html}">${v}</a><#if v_index &lt; values?size - 1>,<#t/></#if>
+    </#list>
+  </#if>
+</span>
 </#if>

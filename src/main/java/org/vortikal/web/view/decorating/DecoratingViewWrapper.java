@@ -143,21 +143,35 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         
-        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
-        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
-
-        preRender(model, request, responseWrapper);
-
-        view.render(model, requestWrapper, responseWrapper);
+        List decoratorList = new ArrayList();
         
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("About to post process buffered content, content type: "
-                    + responseWrapper.getContentType()
-                    + ", character encoding: "
-                    + responseWrapper.getCharacterEncoding());
+        if (this.decorators != null) {
+            for (int i = 0; i < this.decorators.length; i++) {
+                if (this.decorators[i].match(request)) {
+                    decoratorList.add(this.decorators[i]);
+                }
+            }        
         }
 
-        postRender(model, request, responseWrapper);
+        if (decoratorList.size() == 0) {
+            view.render(model, request, response);
+        } else {
+
+            RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
+            BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
+
+            preRender(model, request, responseWrapper);
+
+            view.render(model, requestWrapper, responseWrapper);
+        
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("About to post process buffered content, content type: "
+                                  + responseWrapper.getContentType()
+                                  + ", character encoding: "
+                                  + responseWrapper.getCharacterEncoding());
+            }
+            postRender(model, request, decoratorList, responseWrapper);
+        }
     }
 
 
@@ -167,7 +181,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
 
     public void postRender(Map model, HttpServletRequest request,
-            BufferedResponseWrapper bufferedResponse) throws Exception {
+                           List decoratorList, BufferedResponseWrapper bufferedResponse)
+        throws Exception {
 
         byte[] contentBuffer = bufferedResponse.getContentBuffer();
 
@@ -214,14 +229,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         content.setContent(new String(contentBuffer, characterEncoding));
 
         if (this.decorators != null) {
-            List decoratorList = new ArrayList();
-        
-            for (int i = 0; i < this.decorators.length; i++) {
-                if (this.decorators[i].match(request)) {
-                    decoratorList.add(this.decorators[i]);
-                }
-            }        
-
             for (Iterator iter = decoratorList.iterator(); iter.hasNext();) {
                 Decorator decorator = (Decorator) iter.next();
                 

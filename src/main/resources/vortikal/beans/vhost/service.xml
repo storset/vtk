@@ -32,6 +32,28 @@
   </bean>
 
 
+   <bean id="redirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
+     <property name="order" value="-1" />
+     <property name="assertions">
+       <list>
+         <ref bean="webProtocolAssertion.inverted" />
+       </list>
+     </property>
+     <property name="handlerInterceptors">
+       <list>
+         <!-- Redirect to a different protocol: -->
+         <bean class="org.vortikal.web.controller.ProtocolInvertRedirectInterceptor" />
+       </list>
+     </property>
+     <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
+     <property name="handler">
+       <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+         <property name="viewName" value="HTTP_200_OK" />
+       </bean>
+     </property>
+   </bean>
+
+
   <!-- ************************** -->
   <!-- THE WEB SERVICE TREE       -->
   <!-- Web browser based services -->
@@ -397,10 +419,6 @@
     <property name="trustedToken" ref="trustedToken" />
   </bean>
 
-  <bean id="webProtocolAssertion"
-        class="org.vortikal.web.service.RequestProtocolAssertion">
-    <property name="protocol" value="${webProtocol}" />
-  </bean>
 
   <bean id="webPortAssertion"
         class="org.vortikal.web.service.RequestPortAssertion">
@@ -408,9 +426,36 @@
   </bean>
 
 
+  <bean id="webProtocolAssertion"
+        class="org.vortikal.web.service.ConfigurableRequestProtocolAssertion">
+    <property name="configuration" ref="ssl.configurationPropertiesFile" />
+  </bean>
+
+  <bean id="webProtocolAssertion.inverted"
+        class="org.vortikal.web.service.ConfigurableRequestProtocolAssertion">
+    <property name="configuration" ref="ssl.configurationPropertiesFile" />
+    <property name="invert" value="true" />
+  </bean>
+
 
   <bean id="resourceIsCollectionAssertion" 
         class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+
+
+  <bean id="ssl.configurationPropertiesFile"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${ssl.configFile}" />
+    <property name="lazyInit" value="false" />
+  </bean>
+
+  <bean id="ssl.templateConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${ssl.configFile}" />
+    <property name="targetObject" ref="ssl.configurationPropertiesFile" />
+    <property name="method" value="load" />
+  </bean>
 
   
 

@@ -109,11 +109,15 @@ public class RequestPortAssertion
         if (requestContext != null) {
 
             int requestPort = requestContext.getServletRequest().getServerPort();
-
-            for (int i = 0; i < this.ports.length; i++) {
-                if (this.ports[i] == requestPort) {
-                    url.setPort(new Integer(requestPort));
-                    break;
+            if (this.ports.length == 1 && this.ports[0] == PORT_ANY) {
+                // Handle special case of port = *:
+                url.setPort(new Integer(requestPort));
+            } else {
+                for (int i = 0; i < this.ports.length; i++) {
+                    if (this.ports[i] == requestPort) {
+                        url.setPort(new Integer(requestPort));
+                        break;
+                    }
                 }
             }
         }

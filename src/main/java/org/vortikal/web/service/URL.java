@@ -51,6 +51,7 @@ import org.vortikal.util.web.URLUtil;
  */
 public class URL {
 
+
     private String protocol = null;
     private String host = null;
     private Integer port = null;
@@ -64,9 +65,15 @@ public class URL {
 
     private String ref = null;
     
+    private static final Integer PORT_80 = new Integer(80);
+    private static final Integer PORT_443 = new Integer(443);
+    
+    private static final String PROTOCOL_HTTP = "http";
+    private static final String PROTOCOL_HTTPS = "https";
+    
 
     public URL(String protocol, String host, String path) {
-        if (!("http".equals(protocol) || "https".equals(protocol))) {
+        if (!(PROTOCOL_HTTP.equals(protocol) || PROTOCOL_HTTPS.equals(protocol))) {
             throw new IllegalArgumentException("Unknown protocol: '" + protocol + "'");
         }
         if (host == null || "".equals(host.trim())) {
@@ -88,10 +95,20 @@ public class URL {
     
 
     public void setProtocol(String protocol) {
-        if (!("http".equals(protocol) || "https".equals(protocol))) {
+        if (protocol != null) {
+            protocol = protocol.trim();
+        }
+        if (!(PROTOCOL_HTTP.equals(protocol) || PROTOCOL_HTTPS.equals(protocol))) {
             throw new IllegalArgumentException("Unknown protocol: '" + protocol + "'");
         }
+
         this.protocol = protocol.trim();
+
+        if (PROTOCOL_HTTP.equals(protocol) && PORT_443.equals(this.port)) {
+            this.port = PORT_80;
+        } else if (PROTOCOL_HTTPS.equals(protocol) && PORT_80.equals(this.port)) {
+            this.port = PORT_443;
+        }
     }
 
     
@@ -193,8 +210,8 @@ public class URL {
         url.append(this.protocol).append("://");
         url.append(this.host);
         if (this.port != null) {
-            if (!(this.port.intValue()  == 80 && "http".equals(this.protocol)
-                  || (this.port.intValue() == 443 && "https".equals(this.protocol)))) {
+            if (!(this.port.equals(PORT_80) && PROTOCOL_HTTP.equals(this.protocol)
+                  || (this.port.equals(PORT_443) && PROTOCOL_HTTPS.equals(this.protocol)))) {
                 url.append(":").append(this.port.intValue());
             }
         }
@@ -243,10 +260,10 @@ public class URL {
         String host = request.getServerName();
         int port = request.getServerPort();
 
-        URL url = new URL("http", host, path);
+        URL url = new URL(PROTOCOL_HTTP, host, path);
         url.setPort(new Integer(port));
         if (request.isSecure()) {
-            url.setProtocol("https");
+            url.setProtocol(PROTOCOL_HTTPS);
         }
 
         Map queryStringMap = URLUtil.splitQueryString(request);

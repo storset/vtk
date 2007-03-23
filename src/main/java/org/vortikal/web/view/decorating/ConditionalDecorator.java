@@ -90,4 +90,8 @@ public class ConditionalDecorator implements Decorator {
         }
     }
 
+    public boolean match(HttpServletRequest request) throws Exception {
+        return true;
+    }
+
 }

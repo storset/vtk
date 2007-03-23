@@ -74,6 +74,11 @@ public abstract class AbstractViewProcessingDecorator
         }
     }
     
+    
+
+    public boolean match(HttpServletRequest request) throws Exception {
+        return true;
+    }
 
 
     /**

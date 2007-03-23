@@ -54,7 +54,17 @@ public class TemplateDecorator implements Decorator {
     
     private HtmlNodeFilter htmlNodeFilter;    
 
+    public boolean match(HttpServletRequest request) throws Exception {
+        Locale locale = 
+            new org.springframework.web.servlet.support.RequestContext(request).getLocale();
+        
+        DecorationDescriptor descriptor;
 
+        descriptor = resolveDecorationDescriptor(request, locale);
+
+        return descriptor.decorate();
+    }
+    
     public void decorate(Map model, HttpServletRequest request, Content content)
         throws Exception, UnsupportedEncodingException, IOException {
 

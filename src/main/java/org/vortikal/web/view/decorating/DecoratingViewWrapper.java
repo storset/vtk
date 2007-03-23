@@ -31,9 +31,11 @@
 package org.vortikal.web.view.decorating;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -210,14 +212,22 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
         Content content = new ContentImpl();
         content.setContent(new String(contentBuffer, characterEncoding));
-        
-        
+
         if (this.decorators != null) {
+            List decoratorList = new ArrayList();
+        
             for (int i = 0; i < this.decorators.length; i++) {
-                this.decorators[i].decorate(model, request, content);
+                if (this.decorators[i].match(request)) {
+                    decoratorList.add(this.decorators[i]);
+                }
+            }        
+
+            for (Iterator iter = decoratorList.iterator(); iter.hasNext();) {
+                Decorator decorator = (Decorator) iter.next();
+                
+                decorator.decorate(model, request, content);
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Ran content filter " + this.decorators[i]
-                            + ", content length after = " + content.getContent().length());
+                    this.logger.debug("Ran content filter " + decorator);
                 }
             }
         }

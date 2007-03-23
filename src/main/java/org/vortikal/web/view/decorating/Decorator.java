@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface Decorator {
 
+    public boolean match(HttpServletRequest request) throws Exception;
+    
     /**
      * Decorate the content.
      *

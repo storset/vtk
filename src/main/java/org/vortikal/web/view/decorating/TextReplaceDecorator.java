@@ -88,4 +88,9 @@ public class TextReplaceDecorator implements Decorator, InitializingBean {
         matcher.appendTail(sb);
         content.setContent(sb.toString());
     }
+
+
+    public boolean match(HttpServletRequest request) throws Exception {
+        return true;
+    }
 }

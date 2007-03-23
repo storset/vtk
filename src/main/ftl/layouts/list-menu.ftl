@@ -21,11 +21,11 @@
     <#if item.url?exists>
       <#if item.active>
         <#if item.label?exists>
-          <li class="active ${item.label}">
+          <li class="vrtx-active-item ${item.label}">
             <a href="${item.url?html}">${item.title?html}</a>
           </li>
         <#else>
-          <li class="active">
+          <li class="vrtx-active-item">
             <a href="${item.url?html}">${item.title?html}</a>
           </li>
         </#if>

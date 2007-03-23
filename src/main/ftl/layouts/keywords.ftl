@@ -16,7 +16,7 @@
 <#import "/lib/vortikal.ftl" as vrtx/>
 
 <#if value?exists || values?exists>
-<span class="tags">
+<span class="vrtx-tags">
   <span class="title"><@vrtx.msg code="tags.title" default="Tags"/>:</span>
   <#if value?exists>
     <a href="${url?html}">${value}</a>

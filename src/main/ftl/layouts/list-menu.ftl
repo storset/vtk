@@ -8,9 +8,9 @@
   -
   -->
 <#assign cssClassMap = {
-         "vertical":"vrtxVerticalMenu",
-         "horizontal":"vrtxHorizontalMenu",
-         "tabs":"vrtxTabsMenu" } />
+         "vertical":"vrtx-vertical-menu",
+         "horizontal":"vrtx-horizontal-menu",
+         "tabs":"vrtx-tab-menu" } />
 
 <#if !menu?exists>
   <#stop "Unable to render model: required submodel

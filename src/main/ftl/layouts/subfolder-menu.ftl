@@ -14,9 +14,9 @@
 </#if>
 <#if subFolderMenu.size &gt; 0>
   <#if subFolderMenu.resultSets?exists>
-    <div class="vrtxSubFolderMenu">
+    <div class="vrtx-subfolder-menu">
       <#if subFolderMenu.title?exists>
-        <div class="menuTitle">${subFolderMenu.title?html}</div>
+        <div class="menu-title">${subFolderMenu.title?html}</div>
       </#if>
       <#list subFolderMenu.resultSets as resultSet>
         <#if resultSet.items?exists && resultSet.items?size &gt; 0>

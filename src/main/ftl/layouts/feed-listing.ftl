@@ -1,12 +1,12 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<div class="vrtxFeed">
+<div class="vrtx-feed">
   <#if conf.feedTitle>
-    <a class="feedTitle" href="${feed.link}">${feed.title?html}</a> 
+    <a class="feed-title" href="${feed.link}">${feed.title?html}</a> 
   </#if>
 
   <#if conf.feedDescription>
-    <div class="feedDescription">${feed.description?html}</div> 
+    <div class="feed-description">${feed.description?html}</div> 
   </#if>
 
   <#if feed.entries?exists>
@@ -21,17 +21,17 @@
      <ul class="items">
        <#list entries[0..maxMsgs-1] as entry>
          <li>
-          <a class="itemTitle" href="${entry.link?html}">${entry.title?html}</a>
+          <a class="item-title" href="${entry.link?html}">${entry.title?html}</a>
 	  <#-- description -->
 	  <#if conf.itemDescription>
-          <div class="itemDescription">
+          <div class="item-description">
             <#list entry.contents as content>
 	       ${content.value} <#--${content.value?html}-->
 	    </#list>
           </div>
         </#if>
         <#if conf.publishedDate?exists && entry.publishedDate?exists>
-          <span class="publishedDate">
+          <span class="published-date">
             <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
           </span>
         </#if>

@@ -8,9 +8,14 @@
 
   <body>
 
-    <release version="0.3.5-SNAPSHOT" date="In SVN" description="Release 0.3.4">
+    <release version="0.3.5-SNAPSHOT" date="In SVN" description="Release 0.3.5">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Added support for configuring HTTPS access in configuration
+        file in repository (default /vrtx/ssl-config.txt).
+      </action>
+
       <action type="add">
         Added support for extracting audio properties from MP3 files
         (currently requires external libraries to be installed).
@@ -19,7 +24,7 @@
       <action type="add">
         Introduced a new HTML decorating framework, making it possible
         to add modifications (e.g. add visual components) to plain
-        HTML output. implemented as a view wrapper.
+        HTML output.
       </action>
 
       <action type="update">

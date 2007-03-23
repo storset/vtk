@@ -150,6 +150,7 @@
     <property name="transformerManager" ref="rssTransformerManager" />
     <property name="referenceDataProviders">
       <list>
+        <ref bean="xslBeanProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="viewService" />

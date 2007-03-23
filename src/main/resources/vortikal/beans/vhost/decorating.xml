@@ -46,10 +46,10 @@
   <bean id="decorating.decorationResolver"
         class="org.vortikal.web.view.decorating.ConfigurableDecorationResolver">
     <property name="templateManager" ref="decorating.templateManager" />
-    <property name="decorationConfiguration" ref="decorating.decorationConfigurationPropertiesFile" />
+    <property name="decorationConfiguration" ref="decorating.configurationPropertiesFile" />
   </bean>
 
-  <bean id="decorating.decorationConfigurationPropertiesFile"
+  <bean id="decorating.configurationPropertiesFile"
         class="org.vortikal.util.repository.PropertiesResource">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templateConfigFile}" />
@@ -60,7 +60,7 @@
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templateConfigFile}" />
-    <property name="targetObject" ref="decorating.decorationConfigurationPropertiesFile" />
+    <property name="targetObject" ref="decorating.configurationPropertiesFile" />
     <property name="method" value="load" />
   </bean>
 

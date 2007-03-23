@@ -55,7 +55,6 @@ public class ProtocolInvertRedirectInterceptor implements HandlerInterceptor  {
         } else {
             url.setProtocol("http");
         }
-        System.out.println("___redir_url: " + url);
         response.sendRedirect(url.toString());
         return false;
     }

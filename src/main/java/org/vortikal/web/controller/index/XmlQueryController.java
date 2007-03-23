@@ -31,6 +31,7 @@
 package org.vortikal.web.controller.index;
 
 import java.io.OutputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Result;
@@ -44,13 +45,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.XmlSearcher;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-
 import org.w3c.dom.Document;
 
 
@@ -67,11 +65,11 @@ public class XmlQueryController implements Controller, InitializingBean {
     private String limitParameterName = "limit";
     private String sortParameterName = "sort";
     private String fieldsParameterName = "fields";
-    private String authorizeParameterName = "authorize";
+    private String authenticatedParameterName = "authenticated";
     private int defaultMaxLimit = 500;
     private XmlSearcher xmlSearcher;
     private Repository repository;
-    private boolean authorizeCurrentPrincipal = false;
+    private boolean defaultAuthenticated = false;
     
     public void setXmlSearcher(XmlSearcher xmlSearcher) {
         this.xmlSearcher = xmlSearcher;
@@ -122,7 +120,7 @@ public class XmlQueryController implements Controller, InitializingBean {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         String uri = requestContext.getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, true);
+        this.repository.retrieve(token, uri, true);
 
         String query = request.getParameter(this.expressionParameterName);
         if (query == null) 
@@ -138,14 +136,14 @@ public class XmlQueryController implements Controller, InitializingBean {
         String sortStr = request.getParameter(this.sortParameterName);
         String fields = request.getParameter(this.fieldsParameterName);
 
-        boolean authorize = this.authorizeCurrentPrincipal;
-        String authorizeParameter = request.getParameter(this.authorizeParameterName);
-        if (authorizeParameter != null) {
-            authorize = "true".equals(authorizeParameter);
+        boolean authenticated = this.defaultAuthenticated;
+        String authenticatedParameter = request.getParameter(this.authenticatedParameterName);
+        if (authenticatedParameter != null) {
+            authenticated = "true".equals(authenticatedParameter);
         }
 
         Document result = this.xmlSearcher.executeDocumentQuery(query, sortStr,
-                maxResults, fields, authorize);
+                maxResults, fields, authenticated);
 
         OutputStream outputStream = null;
         response.setContentType("text/xml");
@@ -161,8 +159,8 @@ public class XmlQueryController implements Controller, InitializingBean {
         return null;
     }
 
-    public void setAuthorizeCurrentPrincipal(boolean authorizeCurrentPrincipal) {
-        this.authorizeCurrentPrincipal = authorizeCurrentPrincipal;
+    public void setDefaultAuthenticated(boolean defaultAuthenticated) {
+        this.defaultAuthenticated = defaultAuthenticated;
     }
     
     

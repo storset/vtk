@@ -165,6 +165,11 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>kjemi</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>helseledelse</value>
           </constructor-arg>
         </bean>

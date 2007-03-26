@@ -35,11 +35,11 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlPage;
@@ -51,6 +51,7 @@ public class TemplateDecorator implements Decorator {
     
     private HtmlPageParser htmlParser;
     private DecorationResolver decorationResolver;
+    boolean tidyXhtml = true;
     
     private HtmlNodeFilter htmlNodeFilter;    
 
@@ -58,11 +59,7 @@ public class TemplateDecorator implements Decorator {
         Locale locale = 
             new org.springframework.web.servlet.support.RequestContext(request).getLocale();
         
-        DecorationDescriptor descriptor;
-
-        descriptor = resolveDecorationDescriptor(request, locale);
-
-        return descriptor.decorate();
+        return resolveDecorationDescriptor(request, locale).decorate();
     }
     
     public void decorate(Map model, HttpServletRequest request, Content content)
@@ -132,7 +129,7 @@ public class TemplateDecorator implements Decorator {
         tidy.setMakeClean(false);
         tidy.setShowWarnings(false);
         tidy.setQuiet(true);
-        tidy.setXHTML(true);
+        tidy.setXHTML(tidyXhtml);
         tidy.setDocType("transitional"); 
         tidy.setCharEncoding(org.w3c.tidy.Configuration.UTF8);
 
@@ -152,7 +149,6 @@ public class TemplateDecorator implements Decorator {
     protected HtmlPage parseHtml(String content, boolean filter) throws Exception {
         long before = System.currentTimeMillis();
 
-        // XXX: encoding
         String encoding = "utf-8";
         InputStream stream = new java.io.ByteArrayInputStream(content.getBytes(encoding));
         HtmlPage html = null;
@@ -182,8 +178,8 @@ public class TemplateDecorator implements Decorator {
         this.htmlParser = htmlParser;
     }
 
+    public void setTidyXhtml(boolean tidyXhtml) {
+        this.tidyXhtml = tidyXhtml;
+    }
 
-    
-
-    
 }

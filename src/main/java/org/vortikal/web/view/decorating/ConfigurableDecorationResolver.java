@@ -41,6 +41,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
@@ -52,8 +56,9 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
 
     private TemplateManager templateManager;
     private Properties decorationConfiguration;
+    private PropertyTypeDefinition parseableContentPropDef;
+    private Repository repository; 
     
-
     public void setTemplateManager(TemplateManager templateManager) {
         this.templateManager = templateManager;
     }
@@ -74,6 +79,12 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             throw new BeanInitializationException(
                 "JavaBean property 'decorationConfiguration' not set");
         }
+        
+        if (this.parseableContentPropDef != null && this.repository == null) {
+            throw new BeanInitializationException(
+            "JavaBean property 'repository' must be set when property " +
+            "'parseableContentPropDef' is set");
+        }
     }
 
 
@@ -81,16 +92,13 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     public DecorationDescriptor resolve(HttpServletRequest request,
                                         Locale locale) throws Exception {
 
-        boolean decorate = true;
         boolean tidy = false;
         boolean parse = true;
         Template template = null;
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        if (requestContext == null) {
-            return null;
-        }
         String uri = requestContext.getResourceURI();
+
         String[] path = URLUtil.splitUriIncrementally(uri);
         for (int i = path.length - 1; i >= 0; i--) {
             String prefix = path[i];
@@ -101,7 +109,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                 for (int j = 0; j < params.length; j++) {
                     String param = params[j].trim();
                     if ("NONE".equals(param)) {
-                        decorate = false;
                         tidy = false;
                         parse = false;
                         template = null;
@@ -116,25 +123,40 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                 }
             }
         }
-        return new InternalDescriptor(decorate, tidy, parse, template);
+        
+        // Checking if there is a reason to parse content
+        if (this.parseableContentPropDef != null && parse) {
+            Resource resource = null;
+            String token = SecurityContext.getSecurityContext().getToken();
+            try {
+                resource = this.repository.retrieve(token, uri, true);
+            } catch (Exception e) {
+                throw new RuntimeException("Unrecovrable error when decorating '" + uri + "'", e);
+            }
+            
+            if (resource.getProperty(this.parseableContentPropDef) == null) {
+                parse = false;
+            }
+        }
+        
+        return new InternalDescriptor(tidy, parse, template);
     }
 
 
     private class InternalDescriptor implements DecorationDescriptor {
-        private boolean decorate, tidy, parse;
+        private boolean tidy, parse;
         private Template template;
 
-        public InternalDescriptor(boolean decorate, boolean tidy,
-                                  boolean parse, Template template) {
-            this.decorate = decorate;
+        public InternalDescriptor(boolean tidy, boolean parse, Template template) {
             this.tidy = tidy;
             this.parse = parse;
             this.template = template;
         }
         
         public boolean decorate() {
-            return this.decorate;
+            return this.template != null || this.tidy || this.parse;
         }
+        
         public boolean tidy() {
             return this.tidy;
         }
@@ -190,6 +212,17 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                          + "sequence " + references);
         }
         return (String[]) references.toArray(new String[references.size()]);
+    }
+
+
+    public void setParseableContentPropDef(
+            PropertyTypeDefinition parseableContentPropDef) {
+        this.parseableContentPropDef = parseableContentPropDef;
+    }
+
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
     
     

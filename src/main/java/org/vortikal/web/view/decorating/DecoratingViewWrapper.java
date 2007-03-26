@@ -89,6 +89,7 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
  * </ul>
  * 
  * @see Decorator
+ * @see Decorator#match(HttpServletRequest)
  */
 public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProviding {
 
@@ -153,32 +154,25 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
         if (decoratorList.size() == 0) {
             view.render(model, request, response);
-        } else {
+            return;
+        } 
 
-            RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
-            BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
-
-            preRender(model, request, responseWrapper);
-
-            view.render(model, requestWrapper, responseWrapper);
+        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
+        BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
         
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("About to post process buffered content, content type: "
-                                  + responseWrapper.getContentType()
-                                  + ", character encoding: "
-                                  + responseWrapper.getCharacterEncoding());
-            }
-            postRender(model, request, decoratorList, responseWrapper);
+        view.render(model, requestWrapper, responseWrapper);
+            
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("About to post process buffered content, content type: "
+                    + responseWrapper.getContentType()
+                    + ", character encoding: "
+                    + responseWrapper.getCharacterEncoding());
         }
+        decorate(model, request, decoratorList, responseWrapper);
     }
 
 
-    public void preRender(Map model, HttpServletRequest request,
-            BufferedResponseWrapper bufferedResponse) throws Exception {
-    }
-
-
-    public void postRender(Map model, HttpServletRequest request,
+    private void decorate(Map model, HttpServletRequest request,
                            List decoratorList, BufferedResponseWrapper bufferedResponse)
         throws Exception {
 

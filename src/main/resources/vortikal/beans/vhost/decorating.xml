@@ -18,10 +18,11 @@
   </bean>
 
   <bean id="decorating.templateDecorator"
-    class="org.vortikal.web.view.decorating.TemplateDecorator">
+        class="org.vortikal.web.view.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="decorationResolver" ref="decorating.decorationResolver" />
     <property name="htmlNodeFilter" ref="decorating.ssiNodeFilter" />
+    <property name="tidyXhtml" value="${decorating.tidyXhtml}" />
   </bean>
 
   <bean id="decorating.htmlParser"
@@ -44,9 +45,11 @@
   </bean>
 
   <bean id="decorating.decorationResolver"
-        class="org.vortikal.web.view.decorating.ConfigurableDecorationResolver">
+        class="org.vortikal.web.view.decorating.ConfigurableDecorationResolver"
+        parent="requestLocalRepositoryAware">
     <property name="templateManager" ref="decorating.templateManager" />
     <property name="decorationConfiguration" ref="decorating.configurationPropertiesFile" />
+    <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
   </bean>
 
   <bean id="decorating.configurationPropertiesFile"

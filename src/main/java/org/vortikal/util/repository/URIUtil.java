@@ -156,7 +156,8 @@ public class URIUtil {
      * @return the expanded URI. If the provided URI or its parent is the 
      * root URI <code>/</code>, <code>null</code> is returned.
      * @throws IllegalArgumentException is thrown by envoked method getParentURI()
-    */
+     * @deprecated This method will be removed
+     */
     public static String getGrandparentURI(String uri) {
         return getParentURI(getParentURI(uri));
     }

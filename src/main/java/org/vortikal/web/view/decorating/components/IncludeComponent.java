@@ -104,7 +104,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
             String address = RequestContext.getRequestContext().getResourceURI();
             address = address.substring(0, address.lastIndexOf("/") + 1) + uri;
 
-            handleDirectInclude(uri, request, response);
+            handleDirectInclude(address, request, response);
             return;
         }
         uri = request.getStringParameter(PARAMETER_VIRTUAL);

@@ -70,7 +70,8 @@ import org.vortikal.web.StaticResourceLocation;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <lI><code>expiresSeconds</code> - optional integer, will be sent
- *   as the <code>Expires</code> HTTP header 
+ *   as the <code>Expires</code> HTTP header
+ *   XXX: expiresSec should be specified per location
  * </ul>
  */
 public class DisplayClassPathResourceController 

@@ -105,6 +105,10 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             String value = this.decorationConfiguration.getProperty(prefix);
 
             if (value != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found match for URI prefix '" + prefix
+                                 + "': descriptor: '" + value + "'");
+                }
                 String[] params = value.split(",");
                 for (int j = 0; j < params.length; j++) {
                     String param = params[j].trim();
@@ -121,6 +125,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                         template = resolveTemplateReference(locale, param);
                     }
                 }
+                break;
             }
         }
         

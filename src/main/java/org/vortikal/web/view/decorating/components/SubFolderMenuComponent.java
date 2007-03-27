@@ -250,12 +250,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 this.token = securityContext.getToken();
             }
 
-            String title = request.getStringParameter(PARAMETER_TITLE);
-            if (title == null || "".equals(title.trim())) {
-                throw new DecoratorComponentException(
-                    "Parameter '" + PARAMETER_TITLE + "' not specified");
-            }
-            this.title = title;
+            this.title = request.getStringParameter(PARAMETER_TITLE);
 
             initSortField(request);
             

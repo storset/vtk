@@ -285,19 +285,9 @@ public class URLUtil {
      */
     public static Map splitQueryString(HttpServletRequest request) {
         String queryString = request.getQueryString();
-        return splitQueryString(queryString);
-    }
-    
-    /**
-     * Splits a query string into a set of (name, value) pairs.
-     *
-     * @param queryString the query string
-     * @return the (name, value) map
-     */
-    public static Map splitQueryString(String queryString) {
         Map queryMap = new HashMap();
         if (queryString != null) {
-            if (queryString.indexOf("?") != -1) {                
+            if (queryString.indexOf("?") != -1) { 
                 queryString = queryString.substring(queryString.indexOf("?") + 1);
             }
             String[] pairs = queryString.split("&");
@@ -318,5 +308,4 @@ public class URLUtil {
         return queryMap;
     }
     
-
 }

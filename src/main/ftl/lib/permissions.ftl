@@ -337,12 +337,7 @@
       </#list>
       </ul>
       <#if spring.status.value?exists>
-        <#list spring.status.value as name>
-          <#assign value=value + name/>
-          <#if name_index+1 < spring.status.value?size>
-            <#assign value=value + ","/>
-          </#if>
-        </#list>
+        <#assign value = spring.status.value />
       </#if>
       </#if>
       <span class="addUser">

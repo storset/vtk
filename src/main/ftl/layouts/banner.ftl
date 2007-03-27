@@ -32,7 +32,7 @@
         <span class="principal">
           <span class="name">${resourceContext.principal.name}</span>
           <#if leaveAdmin?exists && leaveAdmin.url?exists && logout?exists && logout.url?exists>
-            &nbsp;(&nbsp;<a href="${logout.url}"><@vrtx.msg code="manage.logout" default="Log out" /></a>&nbsp;)
+            &nbsp;(&nbsp;<a href="${logout.url}" style="white-space:nowrap;"><@vrtx.msg code="manage.logout" default="Log out" /></a>&nbsp;)
           </#if>
         </span>
       </div>

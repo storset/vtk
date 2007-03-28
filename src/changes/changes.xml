@@ -28,7 +28,7 @@
       </action>
 
       <action type="update">
-        Updgraded to Spring 2.0
+        Library updates: Updgraded to Spring 2.0.3 and Lucene 2.1.0
       </action>
 
     </release>

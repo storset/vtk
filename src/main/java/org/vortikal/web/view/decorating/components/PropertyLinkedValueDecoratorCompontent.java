@@ -31,10 +31,12 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -46,9 +48,13 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
+
 public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecoratorComponent {
     private static final String DESCRIPTION = 
         "Display the value(s) of a string property, with link(s) to search";
+    private static final String PARAMETER_TITLE = "title";
+    private static final String PARAMETER_TITLE_DESC = "Optional title (default is 'Tags')";
+
     
     private String urlPattern;
     private Repository repository;
@@ -61,18 +67,21 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
         this.repository = repository;
     }
 
-    protected void processModel(Map model, DecoratorRequest request, DecoratorResponse response) throws Exception {
+    protected void processModel(Map model, DecoratorRequest request,
+                                DecoratorResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, this.forProcessing);
-
         Property prop = resource.getProperty(this.propertyTypeDefinition);
 
         if (prop == null) {
             return;
         }
+
+        String title = request.getStringParameter(PARAMETER_TITLE);
+        model.put("title", title);
 
         if (this.propertyTypeDefinition.isMultiple()) {
             List valueList = new ArrayList();
@@ -80,7 +89,6 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
 
             model.put("urls", urlList);
             model.put("values", valueList);
-            
             
             Value[] values = prop.getValues();
             for (int i = 0; i < values.length; i++) {
@@ -113,7 +121,8 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
         
         if (this.propertyTypeDefinition.getType() != PropertyType.TYPE_STRING) {
             throw new BeanInitializationException(
-            "JavaBean property 'propertyTypeDefinition' not of required type PropertyType.TYPE_STRING");
+                "JavaBean property 'propertyTypeDefinition' not of required type "
+                + "PropertyType.TYPE_STRING");
         }
         
         if (this.urlPattern == null) {
@@ -128,6 +137,12 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
 
     protected String getDescriptionInternal() {
         return DESCRIPTION;
+    }
+
+    protected Map getParameterDescriptionsInternal() {
+        Map map = new HashMap();
+        map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
+        return map;
     }
 
     public void setPropertyTypeDefinition(

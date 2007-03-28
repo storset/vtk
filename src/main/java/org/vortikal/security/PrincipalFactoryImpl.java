@@ -76,6 +76,7 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
         }
 
         id = id.trim();
+        id = id.toLowerCase();
         
         if (id.equals(""))
             throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");

@@ -34,7 +34,7 @@
       </set>            
     </property>
     <property name="readEverythingRole">
-      <set><value>trustedUser@localhost</value></set>
+      <set><value>trusteduser@localhost</value></set>
     </property>
   </bean>
 
@@ -180,7 +180,7 @@
         <prop key="user@localhost">${password.user@localhost}</prop>
         <prop key="super@localhost">${password.super@localhost}</prop>
         <!-- is not possible to authenticate as: -->
-        <prop key="trustedUser@localhost">NO_REAL_VALUE</prop>
+        <prop key="trusteduser@localhost">NO_REAL_VALUE</prop>
       </props>
     </constructor-arg>
   </bean>
@@ -220,7 +220,7 @@
     <property name="targetMethod" value="getUserPrincipal" />
     <property name="arguments">
       <list>
-        <value>trustedUser@localhost</value>
+        <value>trusteduser@localhost</value>
       </list>
     </property>
   </bean>

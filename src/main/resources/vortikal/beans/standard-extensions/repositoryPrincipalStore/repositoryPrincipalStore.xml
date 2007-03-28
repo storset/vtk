@@ -33,7 +33,7 @@
         <prop key="user@localhost">${password.user@localhost}</prop>
         <prop key="super@localhost">${password.super@localhost}</prop>
         <!-- is not possible to authenticate as: -->
-        <prop key="trustedUser@localhost">NO_REAL_VALUE</prop>
+        <prop key="trusteduser@localhost">NO_REAL_VALUE</prop>
       </props>
     </constructor-arg>
     <property name="lazyInit" value="true" />

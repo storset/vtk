@@ -55,7 +55,7 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
     private IndexDataAccessor indexDataAccessor;
     private PropertySetIndex targetIndex;
     private PropertySetIndex temporaryIndex;
-    private final Log LOG = LogFactory.getLog(IndirectReindexer.class);
+    private static final Log LOG = LogFactory.getLog(IndirectReindexer.class);
     
     public IndirectReindexer(PropertySetIndex targetIndex, 
                              PropertySetIndex temporaryIndex,
@@ -76,8 +76,10 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
         
         // Lock temporary index
         if (!this.temporaryIndex.lock()) {
+            this.targetIndex.unlock();
             throw new IndexException("Failed to acquire exclusive write lock on temporary index '" 
                     + this.temporaryIndex.getId() + "'");
+            
         }
         
         // Start re-indexing to provided temporary index
@@ -85,7 +87,7 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
                                             + this.targetIndex.getId() + "'");
         try {
             LOG.info("Initiating re-indexing to temporary index '" 
-                                                            + this.temporaryIndex.getId() + "'");
+                                            + this.temporaryIndex.getId() + "'");
             int count = 
                 new DirectReindexer(this.temporaryIndex, this.indexDataAccessor).runWithExternalLocking();
             

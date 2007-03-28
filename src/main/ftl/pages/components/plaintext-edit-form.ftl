@@ -28,7 +28,7 @@
 
         <#if plaintextEditForm.tooltips?exists>
           <#list plaintextEditForm.tooltips as tooltip>
-            <a href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">
+            <a class="contextual-help" href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">
               <@vrtx.msg code=tooltip.messageKey default=tooltip.messageKey/>
             </a>
           </#list>

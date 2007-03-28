@@ -343,7 +343,7 @@
       <span class="addUser">
         <input type="text" size="15"
                name="${spring.status.expression}"
-               value="${value?if_exists}">&nbsp;
+               value="${value}">&nbsp;
 	<input type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>
@@ -374,18 +374,13 @@
       </#list>
       </ul>
       <#if spring.status.value?exists>
-        <#list spring.status.value as name>
-          <#assign value=value + name/>
-          <#if name_index+1 < spring.status.value?size>
-            <#assign value=value + ","/>
-          </#if>
-        </#list>
+        <#assign value=spring.status.value />
       </#if>
       </#if>
       <span class="addGroup">
 	<input type="text" size="15"
                name="${spring.status.expression}"
-               value="${value?if_exists}">&nbsp;
+               value="${value}">&nbsp;
         <input type="submit" name="addGroupAction"
                value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
       </span>

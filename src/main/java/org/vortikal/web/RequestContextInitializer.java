@@ -179,6 +179,9 @@ public class RequestContextInitializer
                         break;
                     }
                 }
+                if (indexFileURI != null) {
+                    break;
+                }
             }
         }
 

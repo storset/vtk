@@ -139,8 +139,8 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             throw new IllegalArgumentException("Cache identifiers cannot be NULL");
         }
         if (this.cacheTimeout <= 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Returning uncached object: '" + identifier + "'");
+            if (logger.isTraceEnabled()) {
+                logger.trace("Returning uncached object: '" + identifier + "'");
             }
             return this.loader.load(identifier);
         }
@@ -165,8 +165,8 @@ public final class ContentCache implements InitializingBean, DisposableBean {
                 item = (Item) this.cache.get(identifier);
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning object '" + item + "' from cache");
+        if (logger.isTraceEnabled()) {
+            logger.trace("Returning object '" + item + "' from cache");
         }
         return item.getObject();
     }
@@ -259,6 +259,9 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             Object identifier = i.next();
             try {
                 cacheItem(identifier);
+                if (logger.isDebugEnabled()) {
+                    logger.info("Refreshed expired cache item: '" + identifier + "'");
+                }
             } catch (Throwable t) {
                 logger.warn("Unable to cache refresh cached object " + identifier, t);
             }

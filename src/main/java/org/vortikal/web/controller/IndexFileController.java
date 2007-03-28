@@ -57,10 +57,9 @@ import org.vortikal.web.servlet.VortikalServlet;
 
 
 /**
- * Index file controller. Searches a list of index file names, and
- * uses a request dispatcher to forward the request to the first child
- * resource that matches any of the names in that list. If the current
- * resource is not a collection, this controller will fail.
+ * Index file controller. Uses {@link RequestContext#indexFileURI} to
+ * retrieve the actual index file. If the current resource is not a
+ * collection, this controller will fail.
  *
  * <p>The controller gets the name of the servlet to
  *   dispatch requests to (a
@@ -69,7 +68,6 @@ import org.vortikal.web.servlet.VortikalServlet;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>indexFiles</code> - the list of index file names.
  *   <li><code>repository</code> - the content {@link Repository repository}
  * </ul>
  */
@@ -77,15 +75,10 @@ public class IndexFileController
   implements Controller, LastModified, InitializingBean, ServletContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
-    private String[] indexFiles;
     private Repository repository;
     private ServletContext servletContext;
     private String uriCharacterEncoding = "utf-8";
     
-
-    public void setIndexFiles(String[] indexFiles) {
-        this.indexFiles = indexFiles;
-    }
 
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -104,10 +97,6 @@ public class IndexFileController
     
 
     public void afterPropertiesSet() {
-        if (this.indexFiles == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'indexFiles' not set");
-        }
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'repository' not set");

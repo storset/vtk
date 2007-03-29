@@ -250,8 +250,8 @@ public final class ContentCache implements InitializingBean, DisposableBean {
                 refreshList.add(identifier);
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Checking expired items: " + refreshList.size()
+        if (logger.isTraceEnabled()) {
+            logger.trace("Checking expired items: " + refreshList.size()
                          + " expired items found (of total " + size + ")");
         }
 
@@ -260,7 +260,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             try {
                 cacheItem(identifier);
                 if (logger.isDebugEnabled()) {
-                    logger.info("Refreshed expired cache item: '" + identifier + "'");
+                    logger.debug("Refreshed expired cache item: '" + identifier + "'");
                 }
             } catch (Throwable t) {
                 logger.warn("Unable to cache refresh cached object " + identifier, t);

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <version>0.3.5</version>
+  <version>0.3.6-SNAPSHOT</version>
   <name>The Vortikal Web Framework</name>
   <url>http://vortikal.berlios.de</url>
   <organization>
@@ -51,9 +51,9 @@
     </notifiers>
   </ciManagement>
   <scm>
-    <connection>scm:svn:svn+ssh://xml.uio.no/svnroot/vortikal/tags/release-0.3.5</connection>
-    <developerConnection>scm:svn:svn+ssh://xml.uio.no/svnroot/vortikal/tags/release-0.3.5</developerConnection>
-    <url>svn+ssh://xml.uio.no/svnroot/vortikal/tags/release-0.3.5</url>
+    <connection>scm:svn:svn://xml.uio.no/svnroot/vortikal/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://xml.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <url>svn://xml.uio.no/svnroot/vortikal/trunk</url>
   </scm>
   <licenses>
     <license>

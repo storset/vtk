@@ -8,9 +8,12 @@
 
   <body>
 
-    <release version="0.3.5-SNAPSHOT" date="In SVN" description="Release 0.3.5">
+    <release version="0.3.6-SNAPSHOT" date="In SVN" description="Release 0.3.6">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.3.5" date="2007-03-29" description="Release 0.3.5">
       <action type="add">
         Added support for configuring HTTPS access in configuration
         file in repository (default /vrtx/ssl-config.txt).
@@ -30,7 +33,6 @@
       <action type="update">
         Library updates: Updgraded to Spring 2.0.3 and Lucene 2.1.0
       </action>
-
     </release>
 
     <release version="0.3.4.2" date="2007-02-15" description="Release 0.3.4.2">

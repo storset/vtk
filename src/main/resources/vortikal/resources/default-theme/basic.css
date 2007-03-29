@@ -862,9 +862,18 @@ p.xmlEditUnavailable {
 }
 
 /* help in plain-text edit */
-a.contextual-help {
+div.contextual-help { 
+        text-align:right; 
+        margin-top: -1em;
+}
+
+div.contextual-help a { 
+        font-size:80%;
+}
+
+/* a.contextual-help {
         text-align: right;
         display:block;
-        font-size:80%;
+
         margin-top: -1.2em;
-}
+} */

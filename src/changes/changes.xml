@@ -13,6 +13,16 @@
       <!-- type: update|fix|add|remove -->
     </release>
 
+    <release version="0.3.5.1" date="2007-03-30" description="Release 0.3.5.1">
+      <action type="fix">
+        Reverted lower-casing of principal names from principal factory
+      </action>
+      <action type="fix">
+        Kupu: Reverted tidying of HTML documents when storing (causing
+        some problems)
+      </action>
+    </release>
+
     <release version="0.3.5" date="2007-03-29" description="Release 0.3.5">
       <action type="add">
         Added support for configuring HTTPS access in configuration

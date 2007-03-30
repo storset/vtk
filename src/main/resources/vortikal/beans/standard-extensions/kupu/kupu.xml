@@ -228,11 +228,14 @@
                 </map>
               </property>
             </bean>
-            <bean class="org.vortikal.web.filter.TidyContentInputStreamFilter" />     
+            <!--
+            <bean class="org.vortikal.web.filter.TidyContentInputStreamFilter" />
+            -->
             <!-- 
             - (an equivalent replacement is now done within TidyContentInputStreamFilter,
               however the ForecedRequestHeaderValuesFilter is still needed to obtain correct 
               request-character-encoding) -
+            -->
             <bean class="org.vortikal.web.filter.TextReplaceInputStreamFilter">
               <property name="pattern">
                 <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
@@ -241,7 +244,6 @@
                 <value>&lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt;</value>
               </property>
             </bean>
-            -->
           </list>
         </property>
       </bean>

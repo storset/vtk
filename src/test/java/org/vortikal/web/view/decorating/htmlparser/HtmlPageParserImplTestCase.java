@@ -59,7 +59,16 @@ public class HtmlPageParserImplTestCase extends TestCase {
         + "  <body>The body</body>\n"
         + "</html>\n";
 
+    HtmlPage testDocument;
+    HtmlElement body;
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        testDocument = parseFile("test-2.html");
+        body = testDocument.getRootElement().getChildElements("body")[0];
+        
+    }
 
     public void testSimpleHtmlPage() throws Exception {
 
@@ -283,6 +292,23 @@ public class HtmlPageParserImplTestCase extends TestCase {
                      .getChildElements("div")[0]
                      .getChildElements("p")[2]
                      .getChildElements("span")[3].getContent());
+    }
+
+    private void outputDoc() {
+        System.out.println(testDocument.getRootElement().getEnclosedContent());
+    }
+    
+    public void testHtmlBr() throws Exception {
+        HtmlElement br = body.getChildElements("p")[0]
+                               .getChildElements("br")[0];
+        assertNotNull(br);
+        assertEquals(br.getEnclosedContent(), "<br>");
+    }
+    
+    public void testHtmlHr() throws Exception {
+        HtmlElement hr = body.getChildElements("hr")[0];
+        assertNotNull(hr);
+        assertEquals(hr.getEnclosedContent(), "<hr>");
     }
 
     private HtmlPage parse(String content) throws Exception {

@@ -245,39 +245,40 @@ public class XmlEditController implements Controller, InitializingBean {
             }
         }
 
+        String uri = resource.getURI();
         Service service = RequestContext.getRequestContext().getService();
-        Map actionParam = new HashMap();
+        Map<String,String> actionParam = new HashMap<String,String>();
 
         actionParam.put(ACTION_PARAMETER_NAME, EDIT_ACTION);
         Util.setXsltParameter(model, "editElementServiceURL", 
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, EDIT_DONE_ACTION);
         Util.setXsltParameter(model, "editElementDoneServiceURL", 
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, MOVE_ACTION);
         Util.setXsltParameter(model, "moveElementServiceURL", 
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, MOVE_DONE_ACTION);
         Util.setXsltParameter(model, "moveElementDoneServiceURL", 
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, DELETE_ELEMENT_ACTION);
         Util.setXsltParameter(model, "deleteElementServiceURL", 
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, NEW_AT_ACTION);
         Util.setXsltParameter(model, "newElementAtServiceURL", 
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, NEW_ACTION);
         Util.setXsltParameter(model, "newElementServiceURL", 
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, NEW_SUB_ELEMENT_AT_ACTION);
         Util.setXsltParameter(model, "newSubElementAtServiceURL",
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, DELETE_SUB_ELEMENT_AT_ACTION);
         Util.setXsltParameter(model, "deleteSubElementAtServiceURL",
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
         actionParam.put(ACTION_PARAMETER_NAME, FINISH_ACTION);
         Util.setXsltParameter(model, "finishEditingServiceURL",
-                service.constructLink(resource, principal, actionParam));
+                service.constructLink(uri, actionParam));
 
     }
 

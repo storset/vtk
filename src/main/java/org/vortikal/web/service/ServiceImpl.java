@@ -271,6 +271,32 @@ public class ServiceImpl
         return urlObject.toString();
     }
 
+    public String constructLink(String uri, Map parameters) {
+        List assertions = getAllAssertions(this);
+        URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
+        if (parameters != null) {
+            for (Iterator iter = parameters.entrySet().iterator(); iter
+                    .hasNext();) {
+                Map.Entry entry = (Map.Entry) iter.next();
+
+                String key = entry.getKey().toString();
+                String value = entry.getValue().toString();
+
+                urlObject.addParameter(key, value);
+            }
+        }
+
+        for (Iterator i = assertions.iterator(); i.hasNext();) {
+            Assertion assertion = (Assertion) i.next();
+            assertion.processURL(urlObject);
+        }
+       
+        postProcess(urlObject);
+        
+        return urlObject.toString();
+    }
+
+    
     
     public void afterPropertiesSet() throws Exception {
 

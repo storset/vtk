@@ -201,6 +201,8 @@ public interface Service extends  Ordered, Categorizable {
 	
     public String constructLink(String uri);
 
+    public String constructLink(String uri, Map parameters);
+
     /**
      * Gets the list of handler interceptors for this service, if any.
      *

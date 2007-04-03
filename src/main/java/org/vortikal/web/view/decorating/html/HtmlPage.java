@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.view.decorating.html;
 
-import java.util.Map;
-
 
 /**
  * Simple HTML page interface.

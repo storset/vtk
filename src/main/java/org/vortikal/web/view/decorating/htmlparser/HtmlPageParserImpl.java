@@ -31,11 +31,14 @@
 package org.vortikal.web.view.decorating.htmlparser;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.htmlparser.Attribute;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
+import org.htmlparser.PrototypicalNodeFactory;
 import org.htmlparser.Remark;
 import org.htmlparser.Tag;
 import org.htmlparser.Text;
@@ -65,17 +68,49 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
 
     public HtmlPage parse(InputStream in, String encoding) throws Exception {
-        return parse(in, encoding, null);
+        return parse(in, encoding, new ArrayList<HtmlNodeFilter>());
     }
     
 
     public HtmlPage parse(InputStream in, String encoding, HtmlNodeFilter filter)
+        throws Exception {
+        List<HtmlNodeFilter> filters = new ArrayList<HtmlNodeFilter>();
+        filters.add(filter);
+        return parse(in, encoding, filters);
+    }
+    
+
+    public HtmlPage parse(InputStream in, String encoding, List<HtmlNodeFilter> filters)
         throws Exception {
         Page page = new Page(in, encoding);
 
         Lexer lexer = new Lexer(page);
 
         Parser parser = new Parser(lexer);
+        PrototypicalNodeFactory factory = new PrototypicalNodeFactory();
+
+        factory.registerTag(new CompositeTag(new String[]{"pre"}));
+        factory.registerTag(new CompositeTag(new String[]{"b"}));
+        factory.registerTag(new CompositeTag(new String[]{"address"}));
+        factory.registerTag(new CompositeTag(new String[]{"map"}));
+        factory.registerTag(new CompositeTag(new String[]{"thead"}));
+        factory.registerTag(new CompositeTag(new String[]{"tfoot"}));
+        factory.registerTag(new CompositeTag(new String[]{"tbody"}));
+        factory.registerTag(new CompositeTag(new String[]{"fieldset"}));
+        factory.registerTag(new CompositeTag(new String[]{"optgroup"}));
+
+        factory.registerTag(new EmptyTag(new String[]{"br"}));
+        factory.registerTag(new EmptyTag(new String[]{"area"}));
+        factory.registerTag(new EmptyTag(new String[]{"link"}));
+        factory.registerTag(new EmptyTag(new String[]{"img"}));
+        factory.registerTag(new EmptyTag(new String[]{"param"}));
+        factory.registerTag(new EmptyTag(new String[]{"hr"}));
+        factory.registerTag(new EmptyTag(new String[]{"input"}));
+        factory.registerTag(new EmptyTag(new String[]{"col"}));
+        factory.registerTag(new EmptyTag(new String[]{"base"}));
+        factory.registerTag(new EmptyTag(new String[]{"meta"}));
+        parser.setNodeFactory(factory);
+
         NodeList nodeList = parser.parse(null);
 
         Node root = findRootNode(nodeList);
@@ -85,7 +120,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         }
         boolean xhtml = isXhtml(doctype);
 
-        HtmlElement rootElement = (HtmlElement) buildHtml(root, filter, xhtml);
+        HtmlElement rootElement = (HtmlElement) buildHtml(root, filters, xhtml);
         if (rootElement == null) {
             throw new HtmlPageParserException("Unable to parse input: no root element");
         }
@@ -131,14 +166,21 @@ public class HtmlPageParserImpl implements HtmlPageParser {
     }
 
 
-    private HtmlContent buildHtml(Node node, HtmlNodeFilter filter, boolean xhtml) {
+    
+
+    private HtmlContent buildHtml(Node node, List<HtmlNodeFilter> filters, boolean xhtml) {
 
         HtmlContent content = null;
         
         if (node instanceof Tag) {
             Tag tag = (Tag) node;
             String name = tag.getRawTagName();
-            boolean empty = tag.isEmptyXmlTag();
+            if (name != null && name.endsWith("/")) {
+                // Some node names have a trailing slash, remove it:
+                name = name.substring(0, name.length() - 1);
+            }
+
+            boolean empty = tag.isEmptyXmlTag() || (tag instanceof EmptyTag);
             HtmlElementImpl element = new HtmlElementImpl(name, empty, xhtml);
 
             if (tag.isEndTag()) {
@@ -156,7 +198,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
                     if (isFlattenedNode(children, i)) {
 
                         Node unflattened = unflattenSiblings(children, i);
-                        HtmlContent child = buildHtml(unflattened, filter, xhtml);
+                        HtmlContent child = buildHtml(unflattened, filters, xhtml);
                         if (child != null) {
                             element.addContent(child);
                         }
@@ -165,7 +207,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
                     } else {
                         
-                        HtmlContent child = buildHtml(children.elementAt(i), filter, xhtml);
+                        HtmlContent child = buildHtml(children.elementAt(i), filters, xhtml);
                         if (child != null) {
                             element.addContent(child);
                         }
@@ -186,11 +228,16 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         } 
         // Else unhandled node type:
         
-        if (content != null && filter != null) {
-            HtmlContent filteredContent = filter.filterNode(content);
+        if (content != null && filters.size() > 0) {
+            HtmlContent filteredContent = content;
+            for (HtmlNodeFilter filter: filters) {
+                if (filteredContent == null) {
+                    break;
+                }
+                filteredContent = filter.filterNode(filteredContent);
+            }
             return filteredContent;
         }
-        
         return content;
     }
 

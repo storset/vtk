@@ -31,6 +31,7 @@
 package org.vortikal.web.view.decorating.html;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Simple HTML parser interface.
@@ -49,7 +50,7 @@ public interface HtmlPageParser {
 
 
     /**
-     * Parses HTML from an input stream.
+     * Parses HTML from an input stream, applying a node filter.
      *
      * @param in the input stream
      * @param encoding the character encoding of the stream
@@ -57,5 +58,18 @@ public interface HtmlPageParser {
      * @exception Exception if an error occurs
      */
     public HtmlPage parse(InputStream in, String encoding, HtmlNodeFilter filter)
+        throws Exception;
+
+
+    /**
+     * Parses HTML from an input stream, applying a list of node
+     * filters.
+     *
+     * @param in the input stream
+     * @param encoding the character encoding of the stream
+     * @return a the parsed HTML page
+     * @exception Exception if an error occurs
+     */
+    public HtmlPage parse(InputStream in, String encoding, List<HtmlNodeFilter> filters)
         throws Exception;
 }

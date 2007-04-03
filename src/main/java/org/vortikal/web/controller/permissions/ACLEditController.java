@@ -233,7 +233,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
         Resource resource = editCommand.getResource();
-        String uri = resource.getURI();
         Acl acl = resource.getAcl();
         
         String token = securityContext.getToken();

@@ -79,32 +79,26 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
         try {
 
-            URL testXML = this.getClass().getClassLoader().getResource(
-                TEST_XML);
+            URL testXML = this.getClass().getResource(TEST_XML);
             this.testDocument = builder.build(testXML);
 
-            URL testIncludeXML = this.getClass().getClassLoader().getResource(
-            TEST_INCLUDE_XML);
+            URL testIncludeXML = this.getClass().getResource(TEST_INCLUDE_XML);
             this.testIncludeDocument = builder.build(testIncludeXML);
 
-            URL fritekstOnTopLevelXML = this.getClass().getClassLoader().getResource(
-            FRITEKST_XML);
+            URL fritekstOnTopLevelXML = this.getClass().getResource(FRITEKST_XML);
             this.fritekstOnTopLevelDocument = builder.build(fritekstOnTopLevelXML);
 
-            URL fritekst2OnTopLevelXML = this.getClass().getClassLoader().getResource(
-                    FRITEKST2_XML);
+            URL fritekst2OnTopLevelXML = this.getClass().getResource(FRITEKST2_XML);
                     this.fritekst2OnTopLevelDocument = builder.build(fritekst2OnTopLevelXML);
                     
-            URL testXSD = this.getClass().getClassLoader().getResource(
-               TEST_XSD);
+            URL testXSD = this.getClass().getResource(TEST_XSD);
             this.definition = new SchemaDocumentDefinition("test", testXSD);
 
             this.fritekstDefinition = new SchemaDocumentDefinition("onlyFritekst", testXSD);
             
             this.fritekst2Definition = new SchemaDocumentDefinition("onlyFritekst2", testXSD);
             
-            URL fritekst2newOnTopLevelXML = this.getClass().getClassLoader().getResource(
-                    FRITEKST2NEW_XML);
+            URL fritekst2newOnTopLevelXML = this.getClass().getResource(FRITEKST2NEW_XML);
             this.fritekst2newOnTopLevelDocument = builder.build(fritekst2newOnTopLevelXML); 
 
         } catch (Exception e) {

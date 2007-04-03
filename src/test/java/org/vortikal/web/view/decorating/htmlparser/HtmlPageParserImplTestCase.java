@@ -30,8 +30,8 @@
  */
 package org.vortikal.web.view.decorating.htmlparser;
 
-
-import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -59,16 +59,6 @@ public class HtmlPageParserImplTestCase extends TestCase {
         + "  <body>The body</body>\n"
         + "</html>\n";
 
-    HtmlPage testDocument;
-    HtmlElement body;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        testDocument = parseFile("test-2.html");
-        body = testDocument.getRootElement().getChildElements("body")[0];
-        
-    }
 
     public void testSimpleHtmlPage() throws Exception {
 
@@ -121,8 +111,8 @@ public class HtmlPageParserImplTestCase extends TestCase {
 
     public void testNestedTagFiltering() throws Exception {
 
-        final java.util.Map map = new java.util.HashMap();
-        HtmlPage page = parse(SIMPLE_XHTML_PAGE_WITH_DIRECTIVES, 
+        final Map<String, HtmlElement> map = new HashMap<String, HtmlElement>();
+        parse(SIMPLE_XHTML_PAGE_WITH_DIRECTIVES, 
              new HtmlNodeFilter() {
                 public HtmlContent filterNode(HtmlContent node) {
                     if (node instanceof HtmlElement) {
@@ -150,7 +140,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
     
     public void testUnformattedString() throws Exception {
         try {
-            HtmlPage page = parse(UNFORMATTED_STRING);
+            parse(UNFORMATTED_STRING);
         } catch (HtmlPageParserException e) {
             // Expected
         }
@@ -270,8 +260,65 @@ public class HtmlPageParserImplTestCase extends TestCase {
     }
 
 
+    public void testTables()  throws Exception {
+        HtmlPage page = parseFile("test-tables.html", "utf-8");
+        assertEquals("html", page.getRootElement().getName());
+        assertEquals("head", page.getRootElement().getChildElements()[0].getName());
+
+        HtmlElement body = page.getRootElement().getChildElements()[1];
+        HtmlElement table1 = body.getChildElements()[0];
+        assertEquals("table", table1.getName());
+        assertEquals(4, table1.getChildElements().length);
+        HtmlElement tr1 = table1.getChildElements()[0];
+        assertEquals("tr", tr1.getName());
+        HtmlElement th1 = tr1.getChildElements()[0];
+        assertEquals("th", th1.getName());
+        assertEquals("Heading 1", th1.getContent());
+        HtmlElement th2 = tr1.getChildElements()[1];
+        assertEquals("th", th2.getName());
+        assertEquals("Heading 2", th2.getContent());
+        assertEquals("Cell 4", table1.getChildElements()[2].getChildElements()[1].getContent());
+
+        HtmlElement table2 = body.getChildElements()[1];
+        assertEquals("table", table2.getName());
+        assertEquals(3, table2.getChildElements().length);
+        HtmlElement thead1 = table2.getChildElements()[0];
+        assertEquals("thead", thead1.getName());
+        HtmlElement tfoot1 = table2.getChildElements()[1];
+        assertEquals("tfoot", tfoot1.getName());
+
+        HtmlElement tbody1 = table2.getChildElements()[2];
+        assertEquals("tbody", tbody1.getName());
+    }
+
+
+    public void testHtml401Strict() throws Exception {
+        HtmlPage page = parseFile("test-html401strict.html", "utf-8");
+        assertEquals("html", page.getRootElement().getName());
+        assertEquals("head", page.getRootElement().getChildElements()[0].getName());
+
+        HtmlElement body = page.getRootElement().getChildElements()[1];
+        assertEquals("body", body.getName());
+        
+        HtmlElement[] h1 = body.getChildElements("h1");
+        assertEquals(1, h1.length);
+        assertEquals("h1", h1[0].getName());
+        
+        HtmlElement p1 = body.getChildElements("p")[0];
+        assertEquals("p", p1.getName());
+        HtmlElement abbr = p1.getChildElements()[0];
+        assertEquals("abbr", abbr.getName());
+        assertEquals(1, abbr.getAttributes().length);
+        assertEquals("html.", abbr.getContent());
+        assertEquals("title", abbr.getAttributes()[0].getName());
+        assertEquals("Hyper Text Markup Language", abbr.getAttributes()[0].getValue());
+
+        // TODO: verify the rest of the document content
+    }
+
+    
     public void testHtmlFile1() throws Exception {
-        HtmlPage page = parseFile("test-1.html");
+        HtmlPage page = parseFile("test-1.html", "utf-8");
         assertEquals("html", page.getRootElement().getName());
         assertEquals("head", page.getRootElement().getChildElements()[0].getName());
 
@@ -294,18 +341,21 @@ public class HtmlPageParserImplTestCase extends TestCase {
                      .getChildElements("span")[3].getContent());
     }
 
-    private void outputDoc() {
-        System.out.println(testDocument.getRootElement().getEnclosedContent());
-    }
-    
+
     public void testHtmlBr() throws Exception {
+        HtmlPage page = parseFile("test-2.html", "utf-8");
+        HtmlElement body = page.getRootElement().getChildElements()[1];
         HtmlElement br = body.getChildElements("p")[0]
                                .getChildElements("br")[0];
         assertNotNull(br);
+        System.out.println("---" + br.getEnclosedContent() + "---");
         assertEquals(br.getEnclosedContent(), "<br>");
     }
+
     
     public void testHtmlHr() throws Exception {
+        HtmlPage page = parseFile("test-2.html", "utf-8");
+        HtmlElement body = page.getRootElement().getChildElements()[1];
         HtmlElement hr = body.getChildElements("hr")[0];
         assertNotNull(hr);
         assertEquals(hr.getEnclosedContent(), "<hr>");
@@ -313,29 +363,24 @@ public class HtmlPageParserImplTestCase extends TestCase {
 
     private HtmlPage parse(String content) throws Exception {
         HtmlPageParser parser = new HtmlPageParserImpl();
-        long before = System.currentTimeMillis();
         HtmlPage page = parser.parse(new java.io.ByteArrayInputStream(
                                          content.getBytes("utf-8")), "utf-8");
-        long duration = System.currentTimeMillis() - before;
         return page;
     }
 
 
     private HtmlPage parse(String content, HtmlNodeFilter filter) throws Exception {
         HtmlPageParser parser = new HtmlPageParserImpl();
-        long before = System.currentTimeMillis();
         HtmlPage page = parser.parse(
             new java.io.ByteArrayInputStream(content.getBytes("utf-8")), "utf-8",
             filter);        
-        long duration = System.currentTimeMillis() - before;
         return page;
     }
     
-    private HtmlPage parseFile(String fileName) throws Exception {
+    private HtmlPage parseFile(String fileName, String encoding) throws Exception {
+        System.out.println("Parsing file '" + fileName + "'");
         HtmlPageParser parser = new HtmlPageParserImpl();
-        long before = System.currentTimeMillis();
-        HtmlPage page = parser.parse(getClass().getResourceAsStream(fileName), "utf-8");
-        long duration = System.currentTimeMillis() - before;
+        HtmlPage page = parser.parse(getClass().getResourceAsStream(fileName), encoding);
         return page;
     }
     

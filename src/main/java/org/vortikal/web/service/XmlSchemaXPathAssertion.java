@@ -30,20 +30,16 @@
  */
 package org.vortikal.web.service;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -61,7 +57,7 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
 
     private PropertyTypeDefinition schemaPropertyDefinition;
     private XmlSchemaRegistry schemaRegistry;
-    private XPath xpath;
+    private String xpath;
     private Pattern matchValue;
     
 
@@ -73,16 +69,16 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
         this.schemaRegistry = schemaRegistry;
     }
 
-    public void setXpath(String value) {
+    public void setXpath(String xpath) {
         try {
-            this.xpath = XPath.newInstance(value);
-            
+            XPath.newInstance(xpath);
         } catch (JDOMException e) {
             throw new IllegalArgumentException("Illegal XPath expression '"
-                    + value + "': " +  e.getMessage());
+                    + xpath + "': " + e.getMessage());
         }
+        this.xpath = xpath;
     }
-    
+
     public void setMatchValue(String matchValue) {
         this.matchValue = Pattern.compile(matchValue);
     }
@@ -116,28 +112,29 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
             return false;
         }
 
+        Property schemaProp = resource.getProperty(this.schemaPropertyDefinition);
+        if (schemaProp == null) {
+            return false;
+        }
+        String docType = schemaProp.getStringValue();
+        Document schema = null;
         try {
-            Property schemaProp = resource.getProperty(this.schemaPropertyDefinition);
-            if (schemaProp == null) {
-                return false;
-            }
-            String docType = schemaProp.getStringValue();
-            Document schema = null;
-            try {
-                schema = this.schemaRegistry.getXMLSchema(docType);
-            } catch (Exception e) {
-                // Unable to get schema
-                logger.warn("Unable to obtain XML schema from registry: " + docType, e);
-            }
+            schema = this.schemaRegistry.getXMLSchema(docType);
+        } catch (Exception e) {
+            // Unable to get schema
+            logger.warn("Unable to obtain XML schema from registry: " + docType, e);
+        }
             
-            if (schema == null) {
-                return false;
-            }
+        if (schema == null) {
+            return false;
+        }
 
-            String stringVal = this.xpath.valueOf(schema);
+        try {
+            String stringVal = XPath.newInstance(this.xpath).valueOf(schema);
             if (logger.isDebugEnabled()) {
-                logger.debug("Got string value '" + stringVal + "' from XPath evaluation "
-                             + "of expression on schema: '" + this.xpath + "'");
+                logger.debug("Got string value '" + stringVal
+                        + "' from XPath evaluation "
+                        + "of expression on schema: '" + this.xpath + "'");
             }
 
             if (stringVal == null || "".equals(stringVal)) {
@@ -149,7 +146,7 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
                 boolean match = m.matches();
                 if (logger.isDebugEnabled()) {
                     logger.debug("Got regular expression match: " + match
-                                 + " for string value '" + stringVal + "'");
+                            + " for string value '" + stringVal + "'");
                 }
                 return match;
             }
@@ -172,6 +169,5 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
         }
         return sb.toString();
     }
-
 
 }

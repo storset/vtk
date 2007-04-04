@@ -169,6 +169,53 @@ public class HttpUtil {
         }
         return (String) statusMessages.get(key);
     }
-    
+
+
+    /**
+     * Searches for <code>field1="value1",field2=value,...</code>
+     */
+    public static String extractHeaderField(String header, String name) {
+        
+        int pos = 0;
+        while (true) {
+            int equalsIdx = header.indexOf("=", pos);
+            if (equalsIdx == -1 || equalsIdx <= pos) {
+                break;
+            }
+
+            int valueStartIdx = equalsIdx;
+            int valueEndIdx = -1;
+
+            if (header.charAt(equalsIdx + 1) == '"') {
+                valueStartIdx++;
+                valueEndIdx = header.indexOf("\"", valueStartIdx + 1);
+                if (valueEndIdx == -1) {
+                    break;
+                }
+            } else {
+                valueEndIdx = header.indexOf(",", valueStartIdx + 1);
+                if (valueEndIdx == -1) {
+                    valueEndIdx = header.indexOf(" ", valueStartIdx + 1);
+                }
+                if (valueEndIdx == -1) {
+                    valueEndIdx = header.length();
+                }
+            }
+            
+            String fieldName = header.substring(pos, equalsIdx).trim();
+            String fieldValue = header.substring(valueStartIdx + 1, valueEndIdx);
+
+            if (fieldName.equals(name)) {
+                return fieldValue;
+            }
+            int commaIdx = header.indexOf(",", valueEndIdx + 1);
+            if (commaIdx == -1) {
+                pos = valueEndIdx + 1;
+            } else {
+                pos = commaIdx + 1;
+            } 
+        }
+        return null;
+    }
 
 }

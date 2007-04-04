@@ -59,13 +59,17 @@ import org.apache.commons.logging.LogFactory;
  * <ul>
  *   <li><code>port</code> - the port to listen on (default
  *   <code>9999</code>)
+ *   <li><code>listenAddress</code> - the host name to listen on
+ *   (default <code>localhost</code>)
  * </ul>
  */
 public class SocketHandlerThread extends ShellHandlerThread {
 
+    private static final int LISTEN_BACKLOG = 10;
     private Log logger = LogFactory.getLog(this.getClass());
     private boolean alive = true;
     private int port = 9999;
+    private String listenAddress = "localhost";
     private Set connections = new HashSet();
     
         
@@ -76,7 +80,10 @@ public class SocketHandlerThread extends ShellHandlerThread {
         this.port = port;
     }
     
-
+    public void setListenAddress(String listenAddress) {
+        this.listenAddress = listenAddress;
+    }
+    
     public void interrupt() {
         this.logger.info("Exiting");
         this.alive = false;
@@ -103,7 +110,12 @@ public class SocketHandlerThread extends ShellHandlerThread {
         long count = 0;
 
         try {
-            serverSocket = new ServerSocket(this.port);
+            if ("*".equals(this.listenAddress)) {
+                serverSocket = new ServerSocket(this.port, LISTEN_BACKLOG);
+            } else {
+                InetAddress address = InetAddress.getByName(this.listenAddress);
+                serverSocket = new ServerSocket(this.port, LISTEN_BACKLOG, address);
+            }
         } catch (IOException e) {
             this.logger.warn("Unable to listen to port " + this.port, e);
             return;

@@ -150,6 +150,13 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return getProperty(type.getNamespace(), type.getName());
     }
     
+    public Property getDefaultNamespaceProperty(String name) {
+        Map map = (Map) this.propertyMap.get(Namespace.DEFAULT_NAMESPACE);
+        if (map == null) return null;
+        
+        return (Property) map.get(name);
+    }
+    
     public Property getProperty(Namespace namespace, String name) {
         Map map = (Map) this.propertyMap.get(namespace);
         if (map == null) return null;

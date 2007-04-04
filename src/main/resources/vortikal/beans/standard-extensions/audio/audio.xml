@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="viewAudioService" class="org.vortikal.web.service.ServiceImpl">
+
+    <property name="parent" ref="viewService" />
+    <property name="order" value="0" />
+
+    <property name="assertions">
+      <list>
+        <ref bean="notPlainResource" />
+        <ref bean="resourceIsAudio" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="displayAudioResourceHandler" />
+    </property>
+
+  </bean>
+
+  <bean id="notPlainResource"
+        class="org.vortikal.web.service.RequestParameterExistsAssertion">
+    <property name="invert" value="true" />
+    <property name="parameterName" value="showresource" />
+  </bean>
+
+  <bean id="resourceIsAudio" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="audioResourceTypeDefinition" />
+  </bean>
+
+
+  <bean id="displayAudioResourceHandler"
+        class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+        parent="requestLocalRepositoryAware">
+    <description>This is used as parent for all similar handlers</description>
+    <property name="viewName" value="displayAudioResource"/>
+  </bean> 
+
+  <bean id="audioViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="displayAudioResource" value-ref="displayAudioResourceView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="decoratingViewWrapper" />
+  </bean>
+
+  <bean id="displayAudioResourceView" parent="freemarkerView">
+    <property name="url" value="pages/audio.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="adminCSSProvider" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

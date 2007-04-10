@@ -179,7 +179,7 @@ public class HttpUtil {
         int pos = 0;
         while (true) {
             int equalsIdx = header.indexOf("=", pos);
-            if (equalsIdx == -1 || equalsIdx <= pos) {
+            if (equalsIdx == -1 || equalsIdx == pos) {
                 break;
             }
 
@@ -208,7 +208,7 @@ public class HttpUtil {
             if (fieldName.equals(name)) {
                 return fieldValue;
             }
-            int commaIdx = header.indexOf(",", valueEndIdx + 1);
+            int commaIdx = header.indexOf(",", valueEndIdx);
             if (commaIdx == -1) {
                 pos = valueEndIdx + 1;
             } else {

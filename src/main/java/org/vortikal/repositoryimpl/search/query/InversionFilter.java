@@ -60,6 +60,8 @@ import org.apache.lucene.search.Filter;
  */
 public class InversionFilter extends Filter {
 
+    private static final long serialVersionUID = -8133303000593033686L;
+
     private Filter wrappedFilter;
     private BitSet bits;
     

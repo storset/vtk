@@ -31,10 +31,14 @@
 package org.vortikal.repositoryimpl.search.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
+import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriOperator;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
@@ -53,14 +57,22 @@ public class UriTermQueryBuilder implements QueryBuilder {
     public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
         String uri = this.query.getUri();
         
-        if (this.query.getOperator() == UriOperator.EQ) {
+        UriOperator operator = this.query.getOperator();
+
+        if (operator == UriOperator.EQ) {
             // URI equality
             return new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
-        }
-        // URI NOT equal
-        throw new QueryBuilderException("UriOperator 'NE' not yet implemented.");
-        
-        
+        } 
+
+        if (operator == UriOperator.NE) {
+            // URI NOT equal
+            TermQuery tq = 
+                new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            return new ConstantScoreQuery(new InversionFilter(new QueryFilter(tq)));
+            //            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
+        } 
+
+        throw new QueryBuilderException("Operator '" + operator + "' not legal for uri queries.");
     }
 
 }

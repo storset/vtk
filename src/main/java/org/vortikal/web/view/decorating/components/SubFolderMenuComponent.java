@@ -119,7 +119,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
         }
         ListMenu menu = buildListMenu(rs, menuRequest);
-        Map menuModel = buildMenuModel(menu, menuRequest);
+        Map<String, Object> menuModel = buildMenuModel(menu, menuRequest);
         model.put(this.modelName, menuModel);
         if (logger.isDebugEnabled()) {
             logger.debug("Built model: : " + model + " from menu: " + menu);
@@ -127,10 +127,10 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
 
-    private Map buildMenuModel(ListMenu menu, MenuRequest menuRequest) {
-        List resultList = new ArrayList();
+    private Map<String, Object> buildMenuModel(ListMenu menu, MenuRequest menuRequest) {
+        List<ListMenu> resultList = new ArrayList<ListMenu>();
         int resultSets = menuRequest.getResultSets();
-        List allItems = java.util.Arrays.asList(menu.getItems());
+        List<MenuItem> allItems = java.util.Arrays.asList(menu.getItems());
         if (resultSets > allItems.size()) {
             resultSets = allItems.size();
         }
@@ -150,15 +150,15 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 endIdx = allItems.size();
             }
 
-            List subList = allItems.subList(startIdx, endIdx);
+            List<MenuItem> subList = allItems.subList(startIdx, endIdx);
             ListMenu m = new ListMenu();
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
-            m.setItems((MenuItem[]) subList.toArray(new MenuItem[subList.size()]));
+            m.setItems(subList.toArray(new MenuItem[subList.size()]));
             resultList.add(m);
         }
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("resultSets", resultList);
         model.put("size", new Integer(menu.getItems().length));
         model.put("title", menu.getTitle());
@@ -190,7 +190,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private ListMenu buildListMenu(ResultSet rs, MenuRequest menuRequest) {
         
-        List items = new ArrayList();
+        List<MenuItem> items = new ArrayList<MenuItem>();
 
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = (PropertySet) rs.getResult(i);
@@ -214,7 +214,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         ListMenu menu = new ListMenu();
-        menu.setItems((MenuItem[]) items.toArray(new MenuItem[items.size()]));
+        menu.setItems(items.toArray(new MenuItem[items.size()]));
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
         return menu;
@@ -222,7 +222,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
 
     
-    private List sortByTitleOrName(List items, Locale locale) {
+    private List<MenuItem> sortByTitleOrName(List<MenuItem> items, Locale locale) {
         Collections.sort(items, new ItemTitleComparator(locale));
         return items;
     }
@@ -401,8 +401,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new LinkedHashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
         map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
         map.put(PARAMETER_SORT_DIRECTION, PARAMETER_SORT_DIRECTION_DESC);

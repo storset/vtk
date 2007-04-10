@@ -31,14 +31,17 @@
 package org.vortikal.repositoryimpl.search.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
+import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
@@ -68,6 +71,13 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
             return new TermQuery(new Term(fieldName, fieldValue));
         }
         
+        if (op == TermOperator.NE) {
+            TermQuery tq = 
+                new TermQuery(new Term(fieldName, fieldValue));
+            return new ConstantScoreQuery(new InversionFilter(new QueryFilter(tq)));
+            //            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
+        } 
+
         boolean includeLower = false;
         boolean includeUpper = false;
         String upperTerm = null;
@@ -87,8 +97,6 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         } else if (op == TermOperator.LT) {
             upperTerm = fieldValue;
             includeLower = true;
-        } else if (op == TermOperator.NE) {
-            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
         } else {
             throw new QueryBuilderException("Unknown term operator"); 
         }

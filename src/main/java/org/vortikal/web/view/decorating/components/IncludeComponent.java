@@ -71,7 +71,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
             "permissions apply to the resource including and the resource included." +
             "Note that this doesn't apply to virtual includes of full URLs.";
     
-    private static final String INCLUDE_ATTRIBUTE_NAME =
+    static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
 
     private ServletContext servletContext;
@@ -238,8 +238,8 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         return "Includes the contents of another document in the page";
     }
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new HashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_FILE, PARAMETER_FILE_DESC);
         map.put(PARAMETER_VIRTUAL, PARAMETER_VIRTUAL_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);

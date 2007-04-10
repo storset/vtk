@@ -64,7 +64,7 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
-        Set excludedAttributes = new HashSet();
+        Set<String> excludedAttributes = new HashSet<String>();
         if (exclude != null && !exclude.trim().equals("")) {
             String[] splitValues = exclude.split(",");
             for (int i = 0; i < splitValues.length; i++) {
@@ -91,8 +91,8 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         return "Outputs the attributes of a specified element";
     }
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new HashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
         map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
         return map;

@@ -88,7 +88,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         return this.parameterDescriptions;
     }
 
-    protected abstract Map getParameterDescriptionsInternal();
+    protected abstract Map<String, String> getParameterDescriptionsInternal();
 
     public void afterPropertiesSet() throws Exception {
         if (this.description == null)

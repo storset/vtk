@@ -115,7 +115,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     }
 
 
-    protected Map getParameterDescriptionsInternal() {
+    protected Map<String, String> getParameterDescriptionsInternal() {
         return null;
     }
     

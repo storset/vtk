@@ -30,21 +30,37 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.View;
 import org.vortikal.util.cache.ContentCache;
+import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.servlet.VortikalServlet;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
 import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 
 
 /**
@@ -53,7 +69,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
  * safe, its data has to be extracted to a custom bean after
  * fetching a feed.
  */
-public class SyndicationFeedComponent extends AbstractDecoratorComponent {
+public class SyndicationFeedComponent extends AbstractDecoratorComponent implements ServletContextAware {
 
     private static final String PARAMETER_SORT = "sort";
     private static final String PARAMETER_SORT_DESC = 
@@ -85,6 +101,9 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
     private static Log logger = LogFactory.getLog(SyndicationFeedComponent.class);
     private ContentCache cache;
     private View view;
+
+    private ServletContext servletContext;
+
 
     public void setView(View view) {
         this.view = view;
@@ -148,9 +167,13 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
             conf.setSortByTitle(true);
         }
         
-        SyndFeed feed = (SyndFeed) this.cache.get(url);
-
-        Map model = new HashMap();
+        SyndFeed feed = null;
+        
+        if (!url.startsWith("/"))
+            feed = (SyndFeed) this.cache.get(url);
+        else
+            feed = getLocalFeed(url, request);
+        Map<String, Object> model = new HashMap<String, Object>();
 
         model.put("feed", feed);
         model.put("conf", conf);
@@ -174,12 +197,57 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
         out.close();
     }
 
+    private SyndFeed getLocalFeed(String url, DecoratorRequest request) throws Exception {
+        
+        InputStream stream = retrieveLocalStream(url, request);
+        XmlReader xmlReader = new XmlReader(stream);
+        SyndFeedInput input = new SyndFeedInput();
+        SyndFeed feed = input.build(xmlReader);
+        return feed;
+
+    }
+
+    private InputStream retrieveLocalStream(String uri, DecoratorRequest request) throws Exception {
+
+        HttpServletRequest servletRequest = request.getServletRequest();
+        if (servletRequest.getAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME) != null) {
+            throw new DecoratorComponentException("Error including URI '" + uri
+                    + "': possible include loop detected ");
+        }
+
+        // XXX: encode URI?
+        RequestWrapper requestWrapper = new RequestWrapper(servletRequest, uri);
+        requestWrapper.setAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME, new Object());
+
+        String servletName = (String) servletRequest
+                .getAttribute(VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
+
+        RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
+
+        if (rd == null) {
+            throw new RuntimeException("No request dispatcher for name '"
+                    + servletName + "' available");
+        }
+
+        BufferedResponse servletResponse = new BufferedResponse();
+        rd.forward(requestWrapper, servletResponse);
+
+        requestWrapper.setAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME, null);
+
+//        if (!ContentTypeHelper.isXMLContentType(servletResponse.getContentType())) {
+//            throw new DecoratorComponentException(
+//                "Cannot include URI '" + uri + "': not an xml stream");
+//        }
+
+        return new ByteArrayInputStream(servletResponse.getContentBuffer());
+    }
+
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
     }
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new LinkedHashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_URL, PARAMETER_URL_DESC);
         map.put(PARAMETER_MAX_MESSAGES, PARAMETER_MAX_MESSAGES_DESC);
         map.put(PARAMETER_FEED_TITLE, PARAMETER_FEED_TITLE_DESC);
@@ -189,6 +257,72 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent {
         map.put(PARAMETER_PUBLISHED_DATE, PARAMETER_PUBLISHED_DATE_DESC);
         map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
         return map;
+    }
+
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
+    private class RequestWrapper extends HttpServletRequestWrapper {
+
+        private String requestUri;
+        private String queryString;
+        private Map<String, String> params = new HashMap<String, String>();
+        
+        public RequestWrapper(HttpServletRequest request, String uri) {
+            super(request);
+            if (uri.indexOf("?") == -1) {
+                this.requestUri = uri;
+            } else {
+                this.requestUri = uri.substring(0, uri.indexOf("?"));
+                this.queryString = uri.substring(uri.indexOf("?") + 1);
+                StringTokenizer tokenizer = new StringTokenizer(this.queryString, "&");
+                while (tokenizer.hasMoreTokens()) {
+                    String s = tokenizer.nextToken();
+                    if (s.indexOf("=") == -1) {
+                        params.put(s, null);
+                    } else {
+                        params.put(s.substring(0, s.indexOf("=")), s.substring(s.indexOf("=") + 1));
+                    }
+                }
+            }
+        }
+        
+        public String getRequestURI() {
+            return requestUri;
+        }
+
+        @Override
+        public String getQueryString() {
+            return this.queryString;
+        }
+
+        @Override
+        public String getParameter(String name) {
+            // XXX Auto-generated method stub
+            return this.params.get(name);
+        }
+
+        @Override
+        public Map getParameterMap() {
+            // XXX Auto-generated method stub
+            return Collections.unmodifiableMap(this.params);
+        }
+
+        @Override
+        public Enumeration getParameterNames() {
+            return Collections.enumeration(this.params.keySet());
+        }
+
+        @Override
+        public String[] getParameterValues(String name) {
+            String value = this.params.get(name);
+            if (value == null)
+                return null;
+            return new String[] {value};
+        }
+
+        
     }
 
 }

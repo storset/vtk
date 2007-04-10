@@ -44,7 +44,7 @@
 
 <#macro property name>
   <#compress>
-    ${resourceContext.currentResource.getDefaultNamespaceProperty(name).getStringValue()}
+    ${resourceContext.currentResource.getPropertyByPrefix(prefix, name).getStringValue()}
   </#compress>
 </#macro>
 

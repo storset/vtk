@@ -75,9 +75,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final String DEFAULT_STYLE = STYLE_VERTICAL;
 
-    private static final Set VALID_STYLES;
+    private static final Set<String> VALID_STYLES;
     static {
-        VALID_STYLES = new HashSet();
+        VALID_STYLES = new HashSet<String>();
         VALID_STYLES.add(STYLE_VERTICAL);
         VALID_STYLES.add(STYLE_HORIZONTAL);
         VALID_STYLES.add(STYLE_TABS);
@@ -86,6 +86,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_INCLUDE_CHILDREN = "include-children";
     private static final String PARAMETER_INCLUDE_CHILDREN_DESC
         = "An explicit listing of the child resources to include.";
+
+    private static final String PARAMETER_EXCLUDE_CHILDREN = "exclude-children";
+    private static final String PARAMETER_EXCLUDE_CHILDREN_DESC
+        = "A listing of child resources to exclude (cannot be used in conjunction with '" + PARAMETER_INCLUDE_CHILDREN + "')";
 
     private static final String PARAMETER_INCLUDE_PARENT = "include-parent-folder";
     private static final String PARAMETER_INCLUDE_PARENT_DESC = 
@@ -141,6 +145,22 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 query.append("/");
             }
             query.append("* AND depth = ").append(depth).append(")");
+            String[] excludedChildren = menuRequest.getExcludedChildren();
+            if (excludedChildren != null) {
+                // A list of excluded children is provided
+                for (int i = 0; i < excludedChildren.length; i++) {
+                    String name = excludedChildren[i];
+                    if (name.indexOf("/") != -1) {
+                        throw new DecoratorComponentException("Parameter '" +
+                                 PARAMETER_EXCLUDE_CHILDREN + 
+                                 "' has invalid child name: '" + name + "'");
+                    }
+                    name = name.trim();
+                    // XXX: need to escape white space in names:
+                    //name = name.replaceAll(" ", "\\\\ ");
+                    query.append(" AND name != ").append(name).append("");
+                }
+            }
 
         } else {
             // An explicit list of child names is provided
@@ -187,9 +207,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         String[] childNames = menuRequest.getChildNames();
 
         MenuItem parent = null;
-        List items = new ArrayList();
-        Map activeMatches = new HashMap();
-        Map nameItemMap = new HashMap();
+        List<MenuItem> items = new ArrayList<MenuItem>();
+        Map<String, MenuItem> activeMatches = new HashMap<String, MenuItem>();
+        Map<String, MenuItem> nameItemMap = new HashMap<String, MenuItem>();
 
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = (PropertySet) rs.getResult(i);
@@ -220,7 +240,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         for (int i = incrementalPath.length - 1; i >= 0; i--) {
             String uri = incrementalPath[i];
             if (activeMatches.containsKey(uri)) {
-                MenuItem activeItem = (MenuItem) activeMatches.get(uri);
+                MenuItem activeItem = activeMatches.get(uri);
                 activeItem.setActive(true);
                 break;
             }
@@ -250,14 +270,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         ListMenu menu = new ListMenu();
-        menu.setItems((MenuItem[]) items.toArray(new MenuItem[items.size()]));
+        menu.setItems(items.toArray(new MenuItem[items.size()]));
         menu.setLabel(menuRequest.getStyle());
         return menu;
     }
 
 
-    private List sortSpecifiedOrder(String[] childNames, Map nameItemMap) {
-        List result = new ArrayList();
+    private List<MenuItem> sortSpecifiedOrder(String[] childNames, Map nameItemMap) {
+        List<MenuItem> result = new ArrayList<MenuItem>();
         for (int i = 0; i < childNames.length; i++) {
             String name = childNames[i].trim();
             MenuItem item = (MenuItem) nameItemMap.get(name);
@@ -268,7 +288,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return result;
     }
     
-    private List sortRegularOrder(List items, Locale locale) {
+    private List<MenuItem> sortRegularOrder(List<MenuItem> items, Locale locale) {
         Collections.sort(items, new ItemTitleComparator(locale));
         return items;
     }
@@ -282,6 +302,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private String style;
         private Locale locale;
         private String token;
+        private String[] excludedChildren;
         
         public MenuRequest(DecoratorRequest request) {
             String uri = request.getStringParameter(PARAMETER_URI);
@@ -318,11 +339,29 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                         + "': must provide at least one child name");
                 }
             }
+            String excludeChildrenParam = request.getStringParameter(PARAMETER_EXCLUDE_CHILDREN);
+            if (excludeChildrenParam != null) {
+                if (this.childNames != null) {
+                    throw new DecoratorComponentException(
+                            "Cannot use both parameters '" + PARAMETER_INCLUDE_CHILDREN
+                            + "' and '" + PARAMETER_EXCLUDE_CHILDREN + "'");
+                }
+                this.excludedChildren = excludeChildrenParam.split(",");
+                if (this.excludedChildren.length == 0) {
+                    throw new DecoratorComponentException(
+                        "Invalid value for parameter '" + PARAMETER_EXCLUDE_CHILDREN
+                        + "': must provide at least one child name");
+                }
+            }
             RequestContext requestContext = RequestContext.getRequestContext();
             this.currentURI = requestContext.getResourceURI();
             this.locale = request.getLocale();
         }
         
+        public String[] getExcludedChildren() {
+            return this.excludedChildren;
+        }
+
         public String getURI() {
             return this.uri;
         }
@@ -438,11 +477,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new LinkedHashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_URI, PARAMETER_URI_DESC);
         map.put(PARAMETER_STYLE, PARAMETER_STYLE_DESC);
         map.put(PARAMETER_INCLUDE_CHILDREN, PARAMETER_INCLUDE_CHILDREN_DESC);
+        map.put(PARAMETER_EXCLUDE_CHILDREN, PARAMETER_EXCLUDE_CHILDREN_DESC);
         map.put(PARAMETER_INCLUDE_PARENT, PARAMETER_INCLUDE_PARENT_DESC);
         map.put(PARAMETER_AUTENTICATED, PARAMETER_AUTENTICATED_DESC);
         return map;

@@ -28,16 +28,16 @@
     Album: <@property "album" /><br>
 
     <p class="audio">
-      <object type="audio/mpeg" width="200" height="50" data="${resourceContext.currentResource.URI}?showresource">
-        <param name="src" value="${resourceContext.currentResource.URI}?showresource" />
-        <param name="filename" value="${resourceContext.currentResource.URI}?showresource" />
+      <object type="audio/mpeg" width="200" height="50" data="${resourceContext.currentResource.URI?html}?showresource">
+        <param name="src" value="${resourceContext.currentResource.URI?html}?showresource" />
+        <param name="filename" value="${resourceContext.currentResource.URI?html}?showresource" />
         <param name="type" value="audio/mpeg" />
         Audio File
       </object>
     </p>
     <p>
 
-      <a href="${resourceContext.currentResource.URI}?showresource">Last ned filen</a>
+      <a href="${resourceContext.currentResource.URI?html}?showresource">Last ned filen</a>
     </p>
   </body>
 </html>

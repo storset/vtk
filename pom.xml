@@ -86,10 +86,10 @@
       <url>http://xml.uio.no/vortex/maven2</url>
     </repository>
 
-    <repository>
+    <!--repository>
       <id>local-bundle</id>
       <url>file://${basedir}/bundled-repo</url>
-    </repository>
+    </repository-->
 
     <repository>
       <id>repo1.maven.org</id>
@@ -324,7 +324,7 @@
   <dependencies>
     <!-- MP3 support: these dependencies are not in any known Maven
          repository: -->
-    <dependency>
+    <!--dependency>
       <groupId>org.tritonus</groupId>
       <artifactId>tritonus_share</artifactId>
       <version>release</version>
@@ -338,7 +338,7 @@
       <groupId>mp3spi</groupId>
       <artifactId>mp3spi</artifactId>
       <version>1.9.4</version>
-    </dependency>
+    </dependency-->
 
     <dependency>
       <groupId>rome</groupId>

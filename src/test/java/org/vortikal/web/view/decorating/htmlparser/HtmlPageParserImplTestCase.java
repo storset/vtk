@@ -348,7 +348,6 @@ public class HtmlPageParserImplTestCase extends TestCase {
         HtmlElement br = body.getChildElements("p")[0]
                                .getChildElements("br")[0];
         assertNotNull(br);
-        System.out.println("---" + br.getEnclosedContent() + "---");
         assertEquals(br.getEnclosedContent(), "<br>");
     }
 

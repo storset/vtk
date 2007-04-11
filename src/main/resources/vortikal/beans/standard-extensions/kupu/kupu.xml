@@ -4,18 +4,18 @@
 
 <beans>
   
-  <bean id="kupuDistStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="${kupuBase}" />
+  <bean id="kupu.distStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="${kupu.base}" />
     <property name="resourceLocation" value="classpath:///vortikal/resources/kupu-resources" />
   </bean>
 
-  <bean id="kupuLocalStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="${kupuLocalBase}" />
+  <bean id="kupu.localStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="${kupu.localBase}" />
     <property name="resourceLocation" value="classpath:///vortikal/resources/kupu-resources" />
   </bean>
 
 <!--
-  <bean id="kupuDistStaticResourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="kupu.distStaticResourceService" class="org.vortikal.web.service.ServiceImpl">
     <description>
       Serving of static Kupu resources from the classpath.
     </description>
@@ -24,18 +24,18 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestURIRegexpAssertion">
-          <property name="pattern" value="^${kupuBase}/.*" />
+          <property name="pattern" value="^${kupu.base}/.*" />
         </bean>
       </list>
     </property>
     <property name="handler">
       <bean class="org.vortikal.web.controller.DisplayClassPathResourceController">
-        <property name="uriPrefix" value="${kupuBase}" />
+        <property name="uriPrefix" value="${kupu.base}" />
         <property name="basePath" value="/vortikal/resources/kupu-resources" />
       </bean>
     </property>
   </bean>
-  <bean id="kupuLocalStaticResourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="kupu.localStaticResourceService" class="org.vortikal.web.service.ServiceImpl">
     <description>
       Serving of static Kupu resources from the classpath.
     </description>
@@ -44,13 +44,13 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestURIRegexpAssertion">
-          <property name="pattern" value="^${kupuLocalBase}/.*" />
+          <property name="pattern" value="^${kupu.localBase}/.*" />
         </bean>
       </list>
     </property>
     <property name="handler">
       <bean class="org.vortikal.web.controller.DisplayClassPathResourceController">
-        <property name="uriPrefix" value="${kupuLocalBase}" />
+        <property name="uriPrefix" value="${kupu.localBase}" />
         <property name="basePath" value="/vortikal/resources/kupu-resources" />
       </bean>
     </property>
@@ -63,8 +63,8 @@
     <property name="order" value="-9800" />
     <property name="assertions">
       <list>
-        <ref bean="modeParameterEqualsKupu" />
-        <bean id="kupuBrowserCheck" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
+        <ref bean="kupu.modeParameterAssertion" />
+        <bean class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
           <property name="header" value="User-Agent" />
           <property name="patterns">
             <list>
@@ -119,7 +119,7 @@
       <list>
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="resourceTypeIsXhtmlTrans" />
-        <ref bean="kupuParameterEqualsEdit" />
+        <ref bean="kupu.parameterEqualsEdit" />
       </list>
     </property>
     <property name="categories">
@@ -130,14 +130,14 @@
     <property name="attributes">
       <map><entry key="tabOrder"><value type="java.lang.Integer">150</value></entry></map>
     </property>
-    <property name="handler" ref="kupuEditHandler" />
+    <property name="handler" ref="kupu.editHandler" />
   </bean>
 
   <bean id="kupuGetPutService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
         <ref bean="requiresWritePermissionAssertion" />
-        <ref bean="kupuParameterEqualsGetPut" />
+        <ref bean="kupu.parameterEqualsGetPut" />
       </list>
     </property>
     <property name="services">
@@ -148,7 +148,7 @@
     </property>
   </bean>
 
-  <bean id="kupuGetSourceHandlerInterceptor"
+  <bean id="kupu.getSourceHandlerInterceptor"
         class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
@@ -166,7 +166,7 @@
     </property>
     <property name="handlerInterceptors">
       <list>
-        <ref bean="kupuGetSourceHandlerInterceptor" />
+        <ref bean="kupu.getSourceHandlerInterceptor" />
       </list>
     </property>
     <property name="handler">
@@ -228,11 +228,19 @@
                 </map>
               </property>
             </bean>
-            <bean class="org.vortikal.web.filter.TidyContentInputStreamFilter" />     
+            <bean class="org.vortikal.web.filter.XSLTInputStreamFilter">
+              <property name="stylesheet" value="/vortikal/resources/kupu-resources/pretty-print.xsl" />
+              <property name="debug" value="${kupu.xslt.debug}" />
+            </bean>
+            <!--bean class="org.vortikal.web.filter.TidyContentInputStreamFilter" /-->
+            <!--
+            -->
             <!-- 
             - (an equivalent replacement is now done within TidyContentInputStreamFilter,
               however the ForecedRequestHeaderValuesFilter is still needed to obtain correct 
               request-character-encoding) -
+            -->
+            <!--
             <bean class="org.vortikal.web.filter.TextReplaceInputStreamFilter">
               <property name="pattern">
                 <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
@@ -249,11 +257,12 @@
   </bean>
 
 
+
   <bean id="kupuListImageLibrariesService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollectionAssertion" />
-        <ref bean="kupuParameterEqualsListImageLibraries" />
+        <ref bean="kupu.ParameterEqualsListImageLibraries" />
       </list>
     </property>
     <property name="handler">
@@ -268,7 +277,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollectionAssertion" />
-        <ref bean="kupuParameterEqualsListLinkLibraries" />
+        <ref bean="kupu.parameterEqualsListLinkLibraries" />
       </list>
     </property>
     <property name="handler">
@@ -283,7 +292,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollectionAssertion" />
-        <ref bean="kupuParameterEqualsImageLibrary" />
+        <ref bean="kupu.parameterEqualsImageLibrary" />
       </list>
     </property>
     <property name="handler">
@@ -298,7 +307,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollectionAssertion" />
-        <ref bean="kupuParameterEqualsLinkLibrary" />
+        <ref bean="kupu.ParameterEqualsLinkLibrary" />
       </list>
     </property>
     <property name="handler">
@@ -313,7 +322,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollectionAssertion" />
-        <ref bean="kupuParameterEqualsBrowseImages" />
+        <ref bean="kupu.parameterEqualsBrowseImages" />
       </list>
     </property>
     <property name="handler">
@@ -328,7 +337,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollectionAssertion" />
-        <ref bean="kupuParameterEqualsBrowseLinks" />
+        <ref bean="kupu.parameterEqualsBrowseLinks" />
       </list>
     </property>
     <property name="handler">
@@ -342,7 +351,7 @@
   <bean id="kupuDrawerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="assertions">
       <list>
-        <ref bean="kupuParameterEqualsDrawer" />
+        <ref bean="kupu.parameterEqualsDrawer" />
       </list>
     </property>
     <property name="handler">
@@ -357,73 +366,75 @@
     <property name="resourceTypeDefinition" ref="xhtml10TransResourceTypeDefinition" />
   </bean>
 
-  <bean id="modeParameterEqualsKupu"
+  <bean id="kupu.modeParameterAssertion"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="mode" />
     <property name="parameterValue" value="kupu" />
   </bean>
 
-  <bean id="kupuParameterEqualsEdit"
+  <bean id="kupu.parameterEqualsEdit"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="edit" />
   </bean>
 
-  <bean id="kupuParameterEqualsGetPut"
+  <bean id="kupu.parameterEqualsGetPut"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="get-put" />
   </bean>
 
-  <bean id="kupuParameterEqualsListImageLibraries"
+  <bean id="kupu.ParameterEqualsListImageLibraries"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="list-image-libraries" />
   </bean>
 
-  <bean id="kupuParameterEqualsListLinkLibraries"
+  <bean id="kupu.parameterEqualsListLinkLibraries"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="list-link-libraries" />
   </bean>
 
-  <bean id="kupuParameterEqualsImageLibrary"
+  <bean id="kupu.parameterEqualsImageLibrary"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="image-library" />
   </bean>
 
-  <bean id="kupuParameterEqualsLinkLibrary"
+  <bean id="kupu.ParameterEqualsLinkLibrary"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="link-library" />
   </bean>
 
-  <bean id="kupuParameterEqualsBrowseImages"
+  <bean id="kupu.parameterEqualsBrowseImages"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="browse-images" />
   </bean>
 
-  <bean id="kupuParameterEqualsBrowseLinks"
+  <bean id="kupu.parameterEqualsBrowseLinks"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="browse-links" />
   </bean>
 
-  <bean id="kupuParameterEqualsBrowseImageLibrary"
+  <!--
+  <bean id="kupu.parameterEqualsBrowseImageLibrary"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="browse-image-library" />
   </bean>
 
-  <bean id="kupuParameterEqualsBrowseLinkLibrary"
+  <bean id="kupu.ParameterEqualsBrowseLinkLibrary"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="browse-link-library" />
   </bean>
+  -->
 
-  <bean id="kupuParameterEqualsDrawer"
+  <bean id="kupu.parameterEqualsDrawer"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="kupu" />
     <property name="parameterValue" value="drawer" />
@@ -432,38 +443,38 @@
 
 
   <!--
-  <bean id="kupuRefreshParameterExists"
+  <bean id="kupu.refreshParameterExists"
         class="org.vortikal.web.service.RequestParameterExistsAssertion">
     <property name="parameterName" value="kupu-refresh" />
     <property name="generateParameterValue" value="true" />
   </bean>
   -->
 
-  <bean id="kupuWrappingViewResolver" parent="adminViewResolver">
+  <bean id="kupu.wrappingViewResolver" parent="adminViewResolver">
     <property name="views">
       <map>
-        <entry key="kupuEdit" value-ref="kupuEditView" />
+        <entry key="kupuEdit" value-ref="kupu.editView" />
       </map>
     </property>
   </bean>
 
-  <bean id="kupuNoWrappingViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="kupu.noWrappingViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <description>View resolver without view wrapping</description>
     <property name="views">
       <map>
-        <entry key="kupuListImageLibraries" value-ref="kupuListImageLibrariesView" />
-        <entry key="kupuListLinkLibraries" value-ref="kupuListLinkLibrariesView" />
-        <entry key="kupuImageLibrary" value-ref="kupuImageLibraryView" />
-        <entry key="kupuLinkLibrary" value-ref="kupuLinkLibraryView" />
-        <entry key="kupuBrowseImages" value-ref="kupuBrowseImagesView" />
-        <entry key="kupuBrowseLinks" value-ref="kupuBrowseLinksView" />
-        <entry key="kupuDrawer" value-ref="kupuDrawerView" />
+        <entry key="kupuListImageLibraries" value-ref="kupu.listImageLibrariesView" />
+        <entry key="kupuListLinkLibraries" value-ref="kupu.listLinkLibrariesView" />
+        <entry key="kupuImageLibrary" value-ref="kupu.imageLibraryView" />
+        <entry key="kupuLinkLibrary" value-ref="kupu.linkLibraryView" />
+        <entry key="kupuBrowseImages" value-ref="kupu.BrowseImagesView" />
+        <entry key="kupuBrowseLinks" value-ref="kupu.browseLinksView" />
+        <entry key="kupuDrawer" value-ref="kupu.drawerView" />
       </map>
     </property>
   </bean>
 
 
-  <bean id="kupuListImageLibrariesView" parent="freemarkerView">
+  <bean id="kupu.listImageLibrariesView" parent="freemarkerView">
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="url" value="kupu/kupu-list-libraries.ftl" />
     <property name="referenceDataProviders">
@@ -486,7 +497,7 @@
     </property>
   </bean>
 
-  <bean id="kupuListLinkLibrariesView" parent="freemarkerView">
+  <bean id="kupu.listLinkLibrariesView" parent="freemarkerView">
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="url" value="kupu/kupu-list-libraries.ftl" />
     <property name="referenceDataProviders">
@@ -516,7 +527,7 @@
     </property>
   </bean>
 
-  <bean id="kupuImageLibraryView" parent="freemarkerView">
+  <bean id="kupu.imageLibraryView" parent="freemarkerView">
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="url" value="kupu/kupu-library.ftl" />
     <property name="referenceDataProviders">
@@ -528,7 +539,7 @@
           <property name="modelName" value="viewService" />
           <property name="urlName" value="url" />
         </bean>
-        <ref bean="kupuBrowseImagesCollectionlistingProvider" />
+        <ref bean="kupu.browseImagesCollectionlistingProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="kupuBrowseImagesService" />
@@ -554,14 +565,14 @@
     </property>
   </bean>
 
-  <bean id="kupuLinkLibraryView" parent="freemarkerView">
+  <bean id="kupu.linkLibraryView" parent="freemarkerView">
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="url" value="kupu/kupu-library.ftl" />
     <property name="referenceDataProviders">
       <list>
         <!--
         <ref bean="resourceContextProvider" />
-        <ref bean="kupuBrowseLinksCollectionlistingProvider" />
+        <ref bean="kupu.browseLinksCollectionlistingProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="viewService" />
@@ -577,7 +588,7 @@
           <property name="modelName" value="viewService" />
           <property name="urlName" value="url" />
         </bean>
-        <ref bean="kupuBrowseLinksCollectionlistingProvider" />
+        <ref bean="kupu.browseLinksCollectionlistingProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="kupuBrowseLinksService" />
@@ -605,7 +616,7 @@
   </bean>
 
 
-  <bean id="kupuBrowseImagesView" parent="freemarkerView">
+  <bean id="kupu.BrowseImagesView" parent="freemarkerView">
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="url" value="kupu/kupu-browse.ftl" />
     <property name="referenceDataProviders">
@@ -617,7 +628,7 @@
           <property name="modelName" value="viewService" />
           <property name="urlName" value="url" />
         </bean>
-        <ref bean="kupuBrowseImagesCollectionlistingProvider" />
+        <ref bean="kupu.browseImagesCollectionlistingProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="kupuBrowseImagesService" />
@@ -643,7 +654,7 @@
     </property>
   </bean>
 
-  <bean id="kupuBrowseLinksView" parent="freemarkerView">
+  <bean id="kupu.browseLinksView" parent="freemarkerView">
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="url" value="kupu/kupu-browse.ftl" />
     <property name="referenceDataProviders">
@@ -655,7 +666,7 @@
           <property name="modelName" value="viewService" />
           <property name="urlName" value="url" />
         </bean>
-        <ref bean="kupuBrowseLinksCollectionlistingProvider" />
+        <ref bean="kupu.browseLinksCollectionlistingProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="kupuBrowseLinksService" />
@@ -683,7 +694,7 @@
 
 
 
-  <bean id="kupuDrawerView" parent="freemarkerView">
+  <bean id="kupu.drawerView" parent="freemarkerView">
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="url" value="kupu/kupu-drawer.xsl.ftl" />
     <property name="referenceDataProviders">
@@ -691,14 +702,14 @@
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="drawerStylesURL" value="${kupuLocalBase}/kupudrawerstyles.css" />
+              <entry key="drawerStylesURL" value="${kupu.localBase}/kupudrawerstyles.css" />
             </map>
           </property>
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="kupuBase" value="${kupuBase}" />
+              <entry key="kupuBase" value="${kupu.base}" />
             </map>
           </property>
         </bean>
@@ -707,7 +718,7 @@
   </bean>
 
 
-  <bean id="kupuEditView" parent="freemarkerView">
+  <bean id="kupu.editView" parent="freemarkerView">
     <property name="url" value="kupu/kupu-edit.ftl" />
     <property name="referenceDataProviders">
       <list>
@@ -718,24 +729,24 @@
           <property name="urlName" value="url" />
         </bean>
 
-        <!-- Hack for setting kupuBase as a fully qualified URL (including host and port) -->
+        <!-- Hack for setting kupu.base as a fully qualified URL (including host and port) -->
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="modelName" value="kupuBase" />
           <property name="service" ref="viewService" />
           <property name="uri" value="/" />
-          <property name="appendPath" value="${kupuBase}" />
+          <property name="appendPath" value="${kupu.base}" />
           <property name="urlName" value="url" />
         </bean>
 
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="kupuLocalBase" value="${kupuLocalBase}" />
+              <entry key="kupuLocalBase" value="${kupu.localBase}" />
               <entry key="cssBaseURL" value="${cssBaseURL}" />
-              <entry key="cssURLs" value-ref="kupuEditCSSURLs" />
-              <entry key="kupuLocalStylesheet" value="${kupuLocalBase}/kupustyles.css" />
-              <entry key="kupuLocalDrawerStylesheet" value="${kupuLocalBase}/kupudrawerstyles.css" />
+              <entry key="cssURLs" value-ref="kupu.editCSSURLs" />
+              <entry key="kupuLocalStylesheet" value="${kupu.localBase}/kupustyles.css" />
+              <entry key="kupuLocalDrawerStylesheet" value="${kupu.localBase}/kupudrawerstyles.css" />
             </map>
           </property>
         </bean>
@@ -770,7 +781,7 @@
     </property>
   </bean>
 
-  <bean id="kupuBrowseImagesCollectionlistingProvider" 
+  <bean id="kupu.browseImagesCollectionlistingProvider" 
         class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 
         parent="requestLocalRepositoryAware" >
     <property name="browsingService" ref="kupuBrowseImagesService" />
@@ -788,7 +799,7 @@
     <property name="retrieveForProcessing" value="true" />
   </bean>
 
-  <bean id="kupuBrowseLinksCollectionlistingProvider" 
+  <bean id="kupu.browseLinksCollectionlistingProvider" 
         class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 
         parent="requestLocalRepositoryAware" >
     <property name="browsingService" ref="kupuBrowseLinksService" />
@@ -801,7 +812,7 @@
   </bean>
 
 
-  <bean id="kupuEditCSSURLs" class="java.util.ArrayList">
+  <bean id="kupu.editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
         <value>${cssBaseURL}/basic.css</value>
@@ -813,7 +824,7 @@
 
   <!-- Kupu edit controller -->
   
-  <bean id="kupuEditHandler"
+  <bean id="kupu.editHandler"
         class="org.vortikal.edit.kupu.KupuEditController"
         parent="requestLocalRepositoryAware">
     <property name="lockTimeoutSeconds" value="1800" />

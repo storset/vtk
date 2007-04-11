@@ -45,6 +45,7 @@ import org.htmlparser.Text;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.tags.DoctypeTag;
+import org.htmlparser.tags.ProcessingInstructionTag;
 import org.htmlparser.util.NodeList;
 
 import org.vortikal.web.view.decorating.html.HtmlContent;
@@ -140,6 +141,8 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         for (int i = 0; i < nodeList.size(); i++) {
             Node node = nodeList.elementAt(i);
             if (node instanceof DoctypeTag) {
+                continue;
+            } else if (node instanceof ProcessingInstructionTag) {
                 continue;
             } else if (node instanceof Tag) {
                 root = node;

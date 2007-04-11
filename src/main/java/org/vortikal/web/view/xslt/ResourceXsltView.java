@@ -63,6 +63,7 @@ import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.view.LinkConstructor;
+import org.vortikal.web.view.PropertyAccessor;
 import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
@@ -122,6 +123,7 @@ public class ResourceXsltView extends AbstractView
     private TransformerManager transformerManager = null;
 
     private LinkConstructor linkConstructor;
+    private PropertyAccessor propertyAccessor;
     private ReferenceDataProvider[] referenceDataProviders;
     
     private boolean includeContentLanguageHeader = false;
@@ -207,6 +209,11 @@ public class ResourceXsltView extends AbstractView
             transformer.setParameter(
                     PARAMETER_NAMESPACE + "LinkConstructor",
                     this.linkConstructor);
+
+        if (this.propertyAccessor != null)
+            transformer.setParameter(
+                    PARAMETER_NAMESPACE + "PropertyAccessor",
+                    this.propertyAccessor);
 
         
         // Do the transformation
@@ -420,6 +427,10 @@ public class ResourceXsltView extends AbstractView
 
     public void setLinkConstructor(LinkConstructor linkConstructor) {
         this.linkConstructor = linkConstructor;
+    }
+
+    public void setPropertyAccessor(PropertyAccessor propertyAccessor) {
+        this.propertyAccessor = propertyAccessor;
     }
     
 }

@@ -137,9 +137,16 @@
 
   </bean>
 
+   <bean id="propertyAccessor" class="org.vortikal.web.view.PropertyAccessor"
+         parent="requestLocalRepositoryAware">
+     <property name="formatter" ref="valueFormatter" />
+     <property name="resourceTypeTree" ref="resourceTypeTree" />
+   </bean>
+
   <bean id="transformXmlView" 
         class="org.vortikal.web.view.xslt.ResourceXsltView">
     <property name="linkConstructor" ref="linkConstructor" />
+    <property name="propertyAccessor" ref="propertyAccessor" />
     <property name="transformerManager" ref="transformerManager" />
     <property name="includeContentLanguageHeader" value="true" />
     <property name="referenceDataProviders" ref="referenceDataProvidersForTransformXmlView" />

@@ -45,10 +45,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import org.vortikal.util.io.StreamUtil;
 
@@ -56,6 +58,8 @@ import org.vortikal.util.io.StreamUtil;
 /**
  */
 public class XSLTInputStreamFilter implements RequestFilter, InitializingBean {
+
+    private ResourceLoader loader = new DefaultResourceLoader();
 
     private static Log logger = LogFactory.getLog(XSLTInputStreamFilter.class);
     private String stylesheet;
@@ -107,9 +111,9 @@ public class XSLTInputStreamFilter implements RequestFilter, InitializingBean {
             logger.debug("Compiling stylesheet '" + this.stylesheet + "'");
         }
 
-
         TransformerFactory factory = TransformerFactory.newInstance();
-        Resource resource = new ClassPathResource(this.stylesheet);
+        
+        Resource resource = this.loader.getResource(this.stylesheet);
         Source source = new StreamSource(resource.getInputStream());
         this.templates = factory.newTemplates(source);
     }

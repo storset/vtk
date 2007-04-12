@@ -39,18 +39,18 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import org.vortikal.util.io.StreamUtil;
 
 
 /**
@@ -134,9 +134,7 @@ public class XSLTInputStreamFilter implements RequestFilter, InitializingBean {
             }
 
             ServletInputStream stream = this.request.getInputStream();
-            int length = stream.available();
-            byte[] buffer = new byte[length];
-            stream.read(buffer);
+            byte[] buffer = StreamUtil.readInputStream(stream);
             ByteArrayInputStream originalStream = new ByteArrayInputStream(buffer);
 
             StreamSource source = new StreamSource(originalStream);
@@ -150,7 +148,11 @@ public class XSLTInputStreamFilter implements RequestFilter, InitializingBean {
                                  + transformer.getOutputProperties());
                 }
                 transformer.transform(source, streamResult);
-            } catch (TransformerException e) {
+                ByteArrayInputStream result = new ByteArrayInputStream(out.toByteArray());
+                return new org.vortikal.util.io.ServletInputStream(result);
+            } catch (Exception e) {
+                logger.warn("Unable to transform document '" + request.getRequestURI()
+                            + "' using stylesheet '" + stylesheet + "'", e);
                 if (robust) {
                     // Return the original content
                     originalStream.reset();
@@ -158,12 +160,7 @@ public class XSLTInputStreamFilter implements RequestFilter, InitializingBean {
                 }
                 throw new IOException(e.getMessage());
             }
-            ByteArrayInputStream result = new ByteArrayInputStream(out.toByteArray());
-            return new org.vortikal.util.io.ServletInputStream(result);
         }
     }
-    
-
-
 
 }

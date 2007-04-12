@@ -34,14 +34,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 
 
 
@@ -52,50 +48,33 @@ import org.vortikal.web.RequestContext;
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>repository</code> - the {@link Repository}
  *   <li><code>assertions</code> - a list of {@link Assertion
  *       assertions} that are to be invoked on every request.
  * </ul>
  *
  */
-public class AssertionInvokingHandlerInterceptor
-  implements InitializingBean, HandlerInterceptor  {
+public class AssertionInvokingHandlerInterceptor extends ResourceRetrievingHandlerInterceptor
+  {
     
     private Assertion[] assertions;
-    private Repository repository;
 
-    
     public void setAssertions(Assertion[] assertions) {
         this.assertions = assertions;
     }
     
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-    
-
-
     public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+
         if (this.assertions == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'assersions' not specified");
         }                
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' not specified");
-        }                
     }
 
     
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                             Object handler) throws Exception {
-
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
-
-        Resource resource = this.repository.retrieve(token, requestContext.getResourceURI(), true);
+    @Override
+    protected boolean handleInternal(Resource resource, HttpServletRequest request) {
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         boolean proceed = true;
         

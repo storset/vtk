@@ -4,7 +4,7 @@
   <ingress>
     <avsnitt>Er Even like <fet>kul</fet> som tidligere?</avsnitt>
   </ingress>
-    <fritekst><avsnitt><sub>subscript</sub> og <sup>superscript</sup>
-escaped newline<linjeskift/><fet>fet * stjerne</fet> og <kursiv>kursiv _ underscore</kursiv><linjeskift/># escaped ol<linjeskift/>- escaped ul</avsnitt>
+    <fritekst><avsnitt><sub>subscript</sub> og <sup>superscript</sup>\
+escaped newline(not implemented)<linjeskift/><fet>fet * stjerne</fet> og <kursiv>kursiv _ underscore</kursiv><linjeskift/># escaped ol<linjeskift/>- escaped ul</avsnitt>
   </fritekst>
 </onlyFritekst2>

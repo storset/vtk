@@ -337,8 +337,7 @@ public class EditDocument extends Document {
             }
         }
 
-        for (Iterator iterator = modifiedElements.keySet().iterator(); iterator
-                .hasNext();) {
+        for (Iterator iterator = modifiedElements.keySet().iterator(); iterator.hasNext();) {
             Element e = (Element) iterator.next();
 
             documentDefinition.setElementContents(

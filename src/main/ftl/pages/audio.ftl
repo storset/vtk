@@ -28,12 +28,12 @@
     Album: <@property "album" /><br>
 
     <p class="audio">
-      <object type="audio/mpeg" width="200" height="50" data="${resourceContext.currentResource.URI?html}?showresource">
-        <param name="src" value="${resourceContext.currentResource.URI?html}?showresource" />
-        <param name="filename" value="${resourceContext.currentResource.URI?html}?showresource" />
-        <param name="type" value="audio/mpeg" />
-        Audio File
-      </object>
+      <embed src="/vrtx/mp3player.swf" 
+             flashvars="file=${resourceContext.currentResource.URI?html}%3Fshowresource&type=mp3" 
+             type="application/x-shockwave-flash" 
+             pluginspage="http://www.macromedia.com/go/getflashplayer" 
+             height="20" 
+             width="385" />
     </p>
     <p>
 

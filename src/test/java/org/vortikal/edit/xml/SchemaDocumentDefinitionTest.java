@@ -40,30 +40,15 @@ import org.jdom.input.SAXBuilder;
 
 public class SchemaDocumentDefinitionTest extends TestCase {
 
-    private static final String TEST_XML = 
-        "org/vortikal/edit/xml/test.xml";
-    private static final String TEST_INCLUDE_XML = 
-        "org/vortikal/edit/xml/testInclude.xml";
-    private static final String FRITEKST_XML = 
-        "org/vortikal/edit/xml/fritekst.xml";
-    private static final String FRITEKST2_XML = 
-        "org/vortikal/edit/xml/fritekst2.xml";
-    private static final String FRITEKST2NEW_XML = 
-        "org/vortikal/edit/xml/fritekst2new.xml";    
-    private static final String TEST_XSD = 
-        "org/vortikal/edit/xml/test.xsd";
-    private static final String CONFLICT_XSD = 
-        "org/vortikal/edit/xml/conflict.xsd";
-    
-    Document testDocument = null;
-    Document testIncludeDocument = null;
+    Document testDocument;
+    Document testIncludeDocument;
     Document fritekstOnTopLevelDocument;
     Document fritekst2OnTopLevelDocument;
     Document fritekst2newOnTopLevelDocument;
-    SchemaDocumentDefinition definition = null;
-    SchemaDocumentDefinition fritekstDefinition = null;
-    SchemaDocumentDefinition fritekst2Definition = null;
-    SchemaDocumentDefinition fritekstOnTopLevelDefinition = null;
+    SchemaDocumentDefinition definition;
+    SchemaDocumentDefinition fritekstDefinition;
+    SchemaDocumentDefinition fritekst2Definition;
+    SchemaDocumentDefinition fritekstOnTopLevelDefinition;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -79,27 +64,17 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
         try {
 
-            URL testXML = this.getClass().getResource(TEST_XML);
-            this.testDocument = builder.build(testXML);
-
-            URL testIncludeXML = this.getClass().getResource(TEST_INCLUDE_XML);
-            this.testIncludeDocument = builder.build(testIncludeXML);
-
-            URL fritekstOnTopLevelXML = this.getClass().getResource(FRITEKST_XML);
-            this.fritekstOnTopLevelDocument = builder.build(fritekstOnTopLevelXML);
-
-            URL fritekst2OnTopLevelXML = this.getClass().getResource(FRITEKST2_XML);
-                    this.fritekst2OnTopLevelDocument = builder.build(fritekst2OnTopLevelXML);
+            this.testDocument = builder.build(this.getClass().getResource("test.xml"));
+            this.testIncludeDocument = builder.build(this.getClass().getResource("testInclude.xml"));
+            this.fritekstOnTopLevelDocument = builder.build(this.getClass().getResource("fritekst.xml"));
+            this.fritekst2OnTopLevelDocument = builder.build(this.getClass().getResource("fritekst2.xml"));
                     
-            URL testXSD = this.getClass().getResource(TEST_XSD);
-            this.definition = new SchemaDocumentDefinition("test", testXSD);
-
-            this.fritekstDefinition = new SchemaDocumentDefinition("onlyFritekst", testXSD);
+            URL url = this.getClass().getResource("test.xsd");
+            this.definition = new SchemaDocumentDefinition("test", url);
+            this.fritekstDefinition = new SchemaDocumentDefinition("onlyFritekst", url);
+            this.fritekst2Definition = new SchemaDocumentDefinition("onlyFritekst2", url);
             
-            this.fritekst2Definition = new SchemaDocumentDefinition("onlyFritekst2", testXSD);
-            
-            URL fritekst2newOnTopLevelXML = this.getClass().getResource(FRITEKST2NEW_XML);
-            this.fritekst2newOnTopLevelDocument = builder.build(fritekst2newOnTopLevelXML); 
+            this.fritekst2newOnTopLevelDocument = builder.build(this.getClass().getResource("fritekst2new.xml")); 
 
         } catch (Exception e) {
             fail("Couldn't instantiate test schema" + e.getMessage());
@@ -113,9 +88,9 @@ public class SchemaDocumentDefinitionTest extends TestCase {
 
         
         try {
-            URL conflictXSD = this.getClass().getClassLoader().getResource(
-            CONFLICT_XSD);
-            new SchemaDocumentDefinition("test", conflictXSD);
+            new SchemaDocumentDefinition("test", 
+                    this.getClass().getClassLoader().getResource("conflict.xsd"));
+            
             fail("Should be conflict");
         } catch (RuntimeException re) {
             // probably OK, but should have a proper exception
@@ -262,12 +237,12 @@ public class SchemaDocumentDefinitionTest extends TestCase {
         Element fritekst = this.fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst");
         this.fritekst2Definition.translateToEditingElement(fritekst);
         
-        assertEquals("sub:\"subscript\" og super:\"superscript\"\\\nescaped newline\n*fet \\* stjerne* " +
-                        "og _kursiv \\_ underscore_\n# escaped ol\n- escaped ul",
+        assertEquals("[sub:subscript] og [super:superscript]\\\nescaped newline(not implemented)\n*fet \\* stjerne* " +
+                        "og _kursiv \\_ underscore_\n\\# escaped ol\n\\- escaped ul",
                 this.fritekst2newOnTopLevelDocument.getRootElement().getChild("fritekst").getText());
         
         this.fritekst2Definition.setElementContents(fritekst, "*escaped \\* bold* _escaped \\_ underscore_" +
-                        "super:\"superscript\" sub:\"subscript\"");
+                        "[super:superscript] [sub:subscript]");
         assertNotNull(fritekst.getChild("avsnitt"));
         
         assertEquals("escaped * bold", fritekst.getChild("avsnitt").getChild("fet").getText());

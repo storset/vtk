@@ -421,7 +421,7 @@ public class SchemaDocumentDefinition {
             element.setText(data);
 
         } else if (elementType(element).equals(OPTIONAL_STRING_ELEMENT)) {
-            if (data.trim().equals("")) {
+            if (data.trim().equals("") && !element.getParent().equals(element.getDocument().getRootElement())) {
                 element.detach();
             } else {
                 element.setText(data);
@@ -765,7 +765,7 @@ public class SchemaDocumentDefinition {
                  * recursivly
                  */
                 e = findInElementList(e.getAttributeValue("type"), rootElement
-                        .getChildren("complexType", this.XSD_NAMESPACE));
+                        .getChildren("complexType", XSD_NAMESPACE));
                 e = findElementRecursivly(elementName, e, rootElement);
                 if (e != null) {
                     /* We found the element */

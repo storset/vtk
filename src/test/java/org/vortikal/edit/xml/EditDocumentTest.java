@@ -44,15 +44,12 @@ import org.vortikal.repository.Resource;
 
 public class EditDocumentTest extends MockObjectTestCase {
 
-    private static final String TEST_XML = "org/vortikal/edit/xml/test.xml";
+    Document schemaDocument;
+    EditDocument testDocument;
+    SchemaDocumentDefinition definition;
 
-    private static final String TEST_XSD = "org/vortikal/edit/xml/test.xsd";
-
-    Document schemaDocument = null;
-
-    EditDocument testDocument = null;
-
-    SchemaDocumentDefinition definition = null;
+    SchemaDocumentDefinition optionalElementDefinition;
+    EditDocument optionalElementDocument;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -65,33 +62,47 @@ public class EditDocumentTest extends MockObjectTestCase {
         builder.setFeature("http://apache.org/xml/features/validation/schema",
                 true);
 
-        try {
-            URL testXML = 
-                this.getClass().getClassLoader().getResource(TEST_XML);
+        URL testXML = 
+            this.getClass().getResource("test.xml");
 
-            Document d = builder.build(testXML);
-            Element root = d.getRootElement();
-            root.detach();
+        Document d = builder.build(testXML);
+        Element root = d.getRootElement();
+        root.detach();
 
-            Mock mockResource = mock(Resource.class);
-            mockResource.expects(atLeastOnce()).method("getURI").withNoArguments().will(
+        Mock mockResource = mock(Resource.class);
+        mockResource.expects(atLeastOnce()).method("getURI").withNoArguments().will(
                 returnValue("/foo.xml"));
-            // XXX: will tests run without a resource?
-            this.testDocument = new EditDocument(root, d.getDocType(), 
-                    (Resource) mockResource.proxy(), null);
+        // XXX: will tests run without a resource?
+        this.testDocument = new EditDocument(root, d.getDocType(), 
+                (Resource) mockResource.proxy(), null);
 
-            URL testXSD = 
-                this.getClass().getClassLoader().getResource(TEST_XSD);
-            this.definition = new SchemaDocumentDefinition("test", testXSD);
+        URL testXSD = 
+            this.getClass().getResource("test.xsd");
+        this.definition = new SchemaDocumentDefinition("test", testXSD);
 
-        } catch (Exception e) {
-            System.out.println("Caught exception:");
-            e.printStackTrace();
-            fail("Couldn't instantiate test schema" + e.getMessage());
-        }
-
+        this.optionalElementDefinition = 
+            new SchemaDocumentDefinition("optionalElement", this.getClass().getResource("optionalelement.xsd")); 
+        d = builder.build(this.getClass().getResource("optionalElement.xml"));
+        root = d.getRootElement();
+        root.detach();
+        this.optionalElementDocument = new EditDocument(root, d.getDocType(), 
+                (Resource) mockResource.proxy(), null);
     }
 
+    public void testOptionalTopLevelElement() {
+        Element e = this.optionalElementDocument.getRootElement().getChild("optionalString");
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put("1.1", "lala");
+        this.optionalElementDocument.addContentsToElement(e, params, this.optionalElementDefinition);
+        assertEquals("lala", e.getText());
+
+        params.put("1.1", " ");
+        this.optionalElementDocument.addContentsToElement(e, params, this.optionalElementDefinition);
+        assertNotNull(this.optionalElementDocument.getRootElement().getChild("optionalString"));
+        
+}
+   
     public void testAddContentsToElement() {
         Map map = new HashMap();
         map.put("1.1:type", "1");

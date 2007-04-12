@@ -53,7 +53,7 @@ public class AuthorizationProviderImpl implements AuthorizationProvider {
 	    try {
 	        String token = SecurityContext.getSecurityContext().getToken();
 	        String uri = RequestContext.getRequestContext().getResourceURI();
-            this.repository.retrieve(token, uri, true);
+            this.repository.retrieve(token, uri, false);
         } catch (Exception e) {
             return false;
         }

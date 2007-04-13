@@ -190,7 +190,7 @@ public class HtmlHeadDecoratorTest extends TestCase {
         decorator.setRemoveTitles(removeTitles);
 
         decorator.afterPropertiesSet();
-        ContentImpl content = new ContentImpl(document);
+        ContentImpl content = new ContentImpl(document, request.getCharacterEncoding());
         decorator.decorate(new HashMap(), request, content);
         return content.getContent();
 

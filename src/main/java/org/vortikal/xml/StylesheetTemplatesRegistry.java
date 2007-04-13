@@ -56,7 +56,7 @@ import org.vortikal.security.AuthenticationException;
  */
 public class StylesheetTemplatesRegistry {
 
-    private Map cachedItems = new HashMap();
+    private Map<String, Item> cachedItems = new HashMap<String, Item>();
 
 
     public Templates compile(String stylesheetPath, URIResolver uriResolver,

@@ -222,6 +222,7 @@
         <property name="requestFilters">
           <list>
             <ref bean="kupu.translateHeadersSaveFilter" />
+            <ref bean="kupu.replaceContentTypeFilter" />
             <ref bean="${kupu.saveFilter}" />
           </list>
         </property>

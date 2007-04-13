@@ -6,17 +6,30 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
       omit-xml-declaration="yes"
       method="xml"
-      indent="yes"
+      indent="no"
       media-type="text/html"/>
+
+  <xsl:variable name="indent-increment" select="'  '" />
+
+  <xsl:strip-space elements="*" />
 
   <xsl:template match="/">
     <xsl:apply-templates />
   </xsl:template>
  
   <xsl:template match="*">
-   <xsl:copy>
+    <xsl:param name="indent" select="'&#xA;'" />
+    <xsl:if test="not(../text())">
+      <xsl:value-of select="$indent" /> 
+    </xsl:if>
+    <xsl:copy>
       <xsl:copy-of select="@*[name()!='xml:space' and name()!='xml:lang']"/>
-      <xsl:apply-templates /> 
+      <xsl:apply-templates>
+        <xsl:with-param name="indent" select="concat($indent, $indent-increment)"/> 
+      </xsl:apply-templates>
+      <xsl:if test="not(./text())">
+        <xsl:value-of select="$indent" />
+      </xsl:if>
     </xsl:copy>
   </xsl:template>
 

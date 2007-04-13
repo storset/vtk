@@ -52,7 +52,6 @@ import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.servlet.BufferedResponse;
-import org.vortikal.web.servlet.BufferedResponseWrapper;
 import org.vortikal.web.servlet.HeaderAwareResponseWrapper;
 
 /**
@@ -127,7 +126,7 @@ public class DebugController implements Controller, InitializingBean, ServletCon
         rd.forward(requestWrapper, responseWrapper);
         long duration = System.currentTimeMillis() - before;
 
-        Map responseInfo = new HashMap();
+        Map<String, Object> responseInfo = new HashMap<String, Object>();
         responseInfo.put("duration", new Long(duration));
         responseInfo.put("requestURL", url);
         responseInfo.put("requestParameters", parameters);

@@ -217,8 +217,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
 
 
-        Content content = new ContentImpl();
-        content.setContent(new String(contentBuffer, characterEncoding));
+        Content content = new ContentImpl(new String(contentBuffer, characterEncoding),
+                                          characterEncoding);
 
         if (this.decorators != null) {
             for (Iterator iter = decoratorList.iterator(); iter.hasNext();) {
@@ -240,7 +240,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
             contentType = contentType + ";charset=" + characterEncoding;
         }
-
 
         writeResponse(content.getContent().getBytes(characterEncoding), bufferedResponse,
                 contentType);

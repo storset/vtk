@@ -28,6 +28,7 @@
   <import resource="emnegruppe.xml" />
   <import resource="studieprogram.xml" />
   <import resource="studieretning.xml" />
+  <import resource="utvekslingsavtale.xml" />
 
   <!-- Tavle 2  -->
   <import resource="disputas.xml"/>

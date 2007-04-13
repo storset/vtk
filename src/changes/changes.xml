@@ -11,6 +11,19 @@
     <release version="0.3.6-SNAPSHOT" date="In SVN" description="Release 0.3.6">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="fix">
+        Fixed issue with HTTP Digest authentication: handle commas in
+        URIs
+      </action>
+      <action type="update">
+        Library updates: Updgraded to Spring 2.0.4
+      </action>
+    </release>
+
+    <release version="0.3.5.1" date="2007-03-30" description="Release 0.3.5.1">
+      <action type="fix">
+        Reverted lower-casing of principal names from principal factory
+      </action>
     </release>
 
     <release version="0.3.5" date="2007-03-29" description="Release 0.3.5">

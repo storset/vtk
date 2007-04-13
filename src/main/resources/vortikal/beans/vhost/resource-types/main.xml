@@ -30,11 +30,12 @@
   <import resource="studieretning.xml" />
   <import resource="utvekslingsavtale.xml" />
 
-  <!-- Tavle 2  -->
+  <!-- UiO  -->
   <import resource="disputas.xml"/>
   <import resource="proveforelesning.xml"/>
   <import resource="nyhet.xml"/>
   <import resource="arrangement.xml"/>
+  <import resource="publikasjon.xml"/>
 
   <!-- Sakskart -->
   <import resource="sakskart.xml" />

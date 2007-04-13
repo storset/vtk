@@ -14,6 +14,7 @@
             <list>
                 <ref bean="nyhetTittelPropDef" />
                 <ref bean="nyhetIngressPropDef" />
+                <ref bean="nyhetIngressbildePropDef" />
                 <ref bean="nyhetDatoPropDef" />
             </list>
         </property>
@@ -62,6 +63,19 @@
     
     <bean id="nyhetIngressEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/nyhet/ingress" />
+    </bean>
+
+    <bean id="nyhetIngressbildePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="ingressbilde" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="nyhetIngressbildeEvaluator" />
+    </bean>
+    
+    <bean id="nyhetIngressbildeEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/nyhet/ingressbilde" />
     </bean>
 
     <bean id="nyhetDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

@@ -122,6 +122,14 @@ public class HtmlElementImpl implements HtmlElement {
             new HtmlAttribute[this.attributes.size()]);
     }
 
+    public void setAttributes(HtmlAttribute[] attributes) {
+        this.attributes = new ArrayList();
+        for (int i = 0; i < attributes.length; i++) {
+            this.attributes.add(attributes[i]);
+        }
+    }
+    
+
     public void addAttribute(HtmlAttributeImpl attribute) {
         this.attributes.add(attribute);
     }

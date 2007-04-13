@@ -221,38 +221,45 @@
          <property name="removeUserSpecifiedCharacterEncoding" value="true" />
         <property name="requestFilters">
           <list>
-            <bean class="org.vortikal.web.filter.ForcedRequestHeaderValuesFilter">
-              <property name="headers">
-                <map>
-                  <entry key="Content-Type" value="text/html;charset=utf-8" />
-                </map>
-              </property>
-            </bean>
-            <bean class="org.vortikal.web.filter.JerichoHtmlInputStreamFilter" />
-            <!--bean class="org.vortikal.web.filter.TidyContentInputStreamFilter" /-->
-            <!--
-            -->
-            <!-- 
-            - (an equivalent replacement is now done within TidyContentInputStreamFilter,
-              however the ForecedRequestHeaderValuesFilter is still needed to obtain correct 
-              request-character-encoding) -
-            -->
-            <!--
-            <bean class="org.vortikal.web.filter.TextReplaceInputStreamFilter">
-              <property name="pattern">
-                <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
-              </property>
-              <property name="replacement">
-                <value>&lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt;</value>
-              </property>
-            </bean>
-            -->
+            <ref bean="kupu.translateHeadersSaveFilter" />
+            <ref bean="${kupu.saveFilter}" />
           </list>
         </property>
       </bean>
     </property>
   </bean>
 
+
+  <bean id="kupu.translateHeadersSaveFilter"
+        class="org.vortikal.web.filter.ForcedRequestHeaderValuesFilter">
+    <property name="headers">
+      <map>
+        <entry key="Content-Type" value="text/html;charset=utf-8" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="kupu.replaceContentTypeFilter"
+        class="org.vortikal.web.filter.TextReplaceInputStreamFilter">
+    <property name="pattern">
+      <value>(?i)&lt;(meta[^&gt;]*http-equiv="Content-Type"[^&gt;]*)&gt;</value>
+    </property>
+    <property name="replacement">
+      <value>&lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt;</value>
+    </property>
+  </bean>
+  
+  <bean id="kupu.jerichoSaveFilter"
+        class="org.vortikal.web.filter.JerichoHtmlInputStreamFilter" />
+
+  <bean id="kupu.tidySaveFilter"
+        class="org.vortikal.web.filter.TidyContentInputStreamFilter" />
+
+  <bean id="kupu.xsltSaveFilter"
+        class="org.vortikal.web.filter.XSLTInputStreamFilter">
+    <property name="stylesheet" value="${kupu.xsltSaveFilter.styleshet}" />
+    <property name="debug" value="${kupu.xsltSaveFilter.debug}" />
+  </bean>
 
 
   <bean id="kupuListImageLibrariesService" class="org.vortikal.web.service.ServiceImpl">

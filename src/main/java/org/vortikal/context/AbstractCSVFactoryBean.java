@@ -48,8 +48,11 @@ public abstract class AbstractCSVFactoryBean extends AbstractFactoryBean {
     
     public void setCsvList(String csvList) {
         if (csvList != null) {
+            if ("".equals(csvList.trim())) {
+                this.elements = new String[0];
+                return;
+            }
             this.elements = csvList.split(",");
-            
             if (this.trim) {
                 for (int i = 0; i < this.elements.length; i++) {
                     this.elements[i] = this.elements[i].trim();

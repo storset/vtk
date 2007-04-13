@@ -31,7 +31,6 @@
 package org.vortikal.util.cache;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -205,11 +204,9 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         int n = size - this.maxItems;
         if (n <= 0) return;
 
-        List sortedList = new ArrayList(this.cache.entrySet());
-        Collections.sort(sortedList, new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    Map.Entry entry1 = (Map.Entry) o1;
-                    Map.Entry entry2 = (Map.Entry) o2;
+        List<Map.Entry> sortedList = new ArrayList<Map.Entry>(this.cache.entrySet());
+        Collections.sort(sortedList, new Comparator<Map.Entry>() {
+                public int compare(Map.Entry entry1, Map.Entry entry2) {
                     Item i1 = (Item) entry1.getValue();
                     Item i2 = (Item) entry2.getValue();
 
@@ -239,7 +236,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             size = this.cache.size();
         }
 
-        List refreshList = new ArrayList();
+        List<Object> refreshList = new ArrayList<Object>();
 
         for (Iterator i = this.cache.keySet().iterator(); i.hasNext();) {
             Object identifier = i.next();
@@ -267,6 +264,11 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             }
         }
     }
+
+    public synchronized void clear() {
+        throw new IllegalStateException("clear() not implemented");
+    }
+    
 
     private class Item {
         private Object key;

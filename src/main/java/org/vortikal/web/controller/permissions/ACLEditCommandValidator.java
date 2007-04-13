@@ -67,12 +67,15 @@ public class ACLEditCommandValidator implements Validator, InitializingBean {
             
             for (int i = 0; i < userNames.length; i++) {
                 String userName = userNames[i];
-            if (userName == null || userName.trim().equals("")) {
-                errors.rejectValue("userNames", "permissions.user.missing.value",
-                                   "You must type a value");
-            } else {
-                try { 
-                    Principal principal = this.principalFactory.getUserPrincipal(userName);	
+                if (userName == null || userName.trim().equals("")) {
+                    errors.rejectValue("userNames", "permissions.user.missing.value",
+                         "You must type a value");
+                } else if (!userName.toLowerCase().equals(userName)) {
+                    errors.rejectValue("userNames", "permissions.user.uppercase.value",
+                    "You must use lower case characters");
+                } else {
+                    try { 
+                        Principal principal = this.principalFactory.getUserPrincipal(userName);	
 
                     if (!this.principalManager.validatePrincipal(principal))
                         errors.rejectValue("userNames", "permissions.user.wrong.value", 

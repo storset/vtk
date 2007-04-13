@@ -76,7 +76,7 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
         }
 
         List elements = new ArrayList();
-        elements.add(current) ;
+        elements.add(current);
 
         int i = 1;
         while (i < path.length && elements.size() > 0) {

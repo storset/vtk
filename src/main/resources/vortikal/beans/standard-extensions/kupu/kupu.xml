@@ -228,10 +228,7 @@
                 </map>
               </property>
             </bean>
-            <bean class="org.vortikal.web.filter.XSLTInputStreamFilter">
-              <property name="stylesheet" value="${kupu.xslt.stylesheet}" />
-              <property name="debug" value="${kupu.xslt.debug}" />
-            </bean>
+            <bean class="org.vortikal.web.filter.JerichoHtmlInputStreamFilter" />
             <!--bean class="org.vortikal.web.filter.TidyContentInputStreamFilter" /-->
             <!--
             -->

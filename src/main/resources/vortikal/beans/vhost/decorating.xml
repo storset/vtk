@@ -21,13 +21,41 @@
         class="org.vortikal.web.view.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="decorationResolver" ref="decorating.decorationResolver" />
-    <property name="htmlNodeFilter" ref="decorating.ssiNodeFilter" />
+    <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
     <property name="tidyXhtml" value="${decorating.tidyXhtml}" />
   </bean>
+
+  <bean id="decorating.nodeFilters"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <!--ref bean="decorating.nodeLabelFilter" /-->
+        <ref bean="decorating.ssiNodeFilter" />
+      </list>
+    </property>
+  </bean>
+
 
   <bean id="decorating.htmlParser"
         class="org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl">
   </bean>
+
+  <!--
+  <bean id="decorating.nodeLabelFilter"
+        class="org.vortikal.web.view.decorating.NodeLabellingFilter">
+    <property name="labelElements">
+      <set>
+        <value>h2</value>
+        <value>h3</value>
+        <value>h4</value>
+        <value>h5</value>
+        <value>h6</value>
+        <value>h7</value>
+        <value>h8</value>
+      </set>
+    </property>
+  </bean>
+  -->
 
   <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.view.decorating.ComponentHandlingNodeFilter">
     <property name="ssiDirectiveComponentMap">
@@ -125,6 +153,9 @@
     </property>
     <property name="handler">
       <ref bean="listDecoratorComponentsHandler" />
+    </property>
+    <property name="authenticationChallenge">
+      <ref bean="${webAuthenticationChallenge}" />
     </property>
   </bean>
 

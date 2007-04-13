@@ -35,15 +35,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlPage;
 import org.vortikal.web.view.decorating.html.HtmlPageParser;
+import java.util.List;
 
 public class TemplateDecorator implements Decorator {
 
@@ -53,7 +52,7 @@ public class TemplateDecorator implements Decorator {
     private DecorationResolver decorationResolver;
     boolean tidyXhtml = true;
     
-    private HtmlNodeFilter htmlNodeFilter;    
+    private List<HtmlNodeFilter> htmlNodeFilters;    
 
     public boolean match(HttpServletRequest request) throws Exception {
         Locale locale = 
@@ -74,8 +73,7 @@ public class TemplateDecorator implements Decorator {
         }
 
         boolean filter = descriptor.parse();
-
-        HtmlPage html = parseHtml(content.getContent(), filter);
+        HtmlPage html = parseHtml(content, filter);
         if (logger.isDebugEnabled()) {
             logger.debug("Parsed document [root element: " + html.getRootElement() + " "
                          + ", doctype: "+ html.getDoctype() + "]");
@@ -146,14 +144,14 @@ public class TemplateDecorator implements Decorator {
     }
     
 
-    protected HtmlPage parseHtml(String content, boolean filter) throws Exception {
+    protected HtmlPage parseHtml(Content content, boolean filter) throws Exception {
         long before = System.currentTimeMillis();
-
-        String encoding = "utf-8";
-        InputStream stream = new java.io.ByteArrayInputStream(content.getBytes(encoding));
+        String encoding = content.getOriginalCharacterEncoding();
+        InputStream stream = new java.io.ByteArrayInputStream(
+            content.getContent().getBytes(encoding));
         HtmlPage html = null;
-        if (filter && this.htmlNodeFilter != null) {
-            html = this.htmlParser.parse(stream, encoding, this.htmlNodeFilter);
+        if (filter && this.htmlNodeFilters != null) {
+            html = this.htmlParser.parse(stream, encoding, this.htmlNodeFilters);
         } else {
             html = this.htmlParser.parse(stream, encoding);
         }
@@ -166,8 +164,8 @@ public class TemplateDecorator implements Decorator {
     }
     
 
-    public void setHtmlNodeFilter(HtmlNodeFilter htmlNodeFilter) {
-        this.htmlNodeFilter = htmlNodeFilter;
+    public void setHtmlNodeFilters(List<HtmlNodeFilter> htmlNodeFilters) {
+        this.htmlNodeFilters = htmlNodeFilters;
     }
 
     public void setDecorationResolver(DecorationResolver decorationResolver) {

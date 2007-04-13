@@ -78,7 +78,7 @@ public class DisplayClassPathResourceController
   implements Controller, LastModified, InitializingBean, ApplicationContextAware {
 
     private Log logger = LogFactory.getLog(this.getClass());
-    private Map locationsMap;
+    private Map<String, String> locationsMap;
     private ApplicationContext applicationContext;
 
     private int expiresSeconds = -1;
@@ -97,7 +97,7 @@ public class DisplayClassPathResourceController
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, StaticResourceLocation.class, true, false);
         Collection allLocations = matchingBeans.values();
-        this.locationsMap = new HashMap();
+        this.locationsMap = new HashMap<String, String>();
 
         for (Iterator i = allLocations.iterator(); i.hasNext();) {
             StaticResourceLocation location = (StaticResourceLocation) i.next();
@@ -107,7 +107,6 @@ public class DisplayClassPathResourceController
             this.locationsMap.put(uri, resourceLocation);
             this.locationsMap.put(uri + "/", resourceLocation);
         }
-
     }
 
 
@@ -176,8 +175,6 @@ public class DisplayClassPathResourceController
 
 
     public long getLastModified(HttpServletRequest request) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        
         if (!"GET".equals(request.getMethod())) {
             return -1;
         }

@@ -30,7 +30,6 @@
  */
 package org.vortikal.util.cache.loaders;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -87,26 +86,11 @@ public abstract class URLConnectionCacheLoader implements ContentCacheLoader {
      * @param connection the URL connection 
      */
     protected void setConnectionProperties(URLConnection connection) {
-        // XXX: In Java 1.5 timeouts can (and should be) be specified
-        // on a URLConnection. Coding these using reflection until we
-        // are officially on 1.5:
-
-        try {
-            java.lang.reflect.Method setConnectTimeout = connection.getClass().getMethod(
-                "setConnectTimeout", new Class[]{int.class});
-            java.lang.reflect.Method setReadTimeout = connection.getClass().getMethod(
-                "setReadTimeout", new Class[]{int.class});
-            if (this.connectTimeout > 0) {
-                setConnectTimeout.invoke(connection, new java.lang.Object[]{
-                        new Integer(this.connectTimeout)});
-            }
-            if (this.readTimeout > 0) {
-                setReadTimeout.invoke(connection, new java.lang.Object[]{
-                        new Integer(this.readTimeout)});
-            }
-            
-        } catch (Throwable t) {
-            // Connection timeouts not available
+        if (this.connectTimeout > 0) {
+            connection.setConnectTimeout(this.connectTimeout);
+        }
+        if (this.readTimeout > 0) {
+            connection.setReadTimeout(this.readTimeout);
         }
         connection.setUseCaches(true);
     }

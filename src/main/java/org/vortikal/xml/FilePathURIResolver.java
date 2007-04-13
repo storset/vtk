@@ -39,15 +39,10 @@ import java.util.Date;
 
 public class FilePathURIResolver extends AbstractPathBasedURIResolver {
 
-    
-
-
     public Date getLastModifiedInternal(String path) {
         File f = new File(path);
         return new Date(f.lastModified());
     }
-    
-
     
     protected InputStream getInputStream(String path) throws IOException {
         if (this.logger.isDebugEnabled()) {

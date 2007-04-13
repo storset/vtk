@@ -13,6 +13,9 @@
     </property>
 
     <property name="handler" ref="displayClassPathResourceHandler" />
+    <property name="authenticationChallenge">
+      <ref bean="${webAuthenticationChallenge}" />
+    </property>
   </bean>
 
   <bean id="displayClassPathResourceHandler"

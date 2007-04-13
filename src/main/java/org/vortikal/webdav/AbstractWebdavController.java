@@ -30,11 +30,15 @@
  */
 package org.vortikal.webdav;
 
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Namespace;
@@ -43,6 +47,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.webdav.ifheader.IfHeader;
 
 
@@ -60,11 +65,9 @@ import org.vortikal.webdav.ifheader.IfHeader;
 public abstract class AbstractWebdavController implements Controller {
 
     protected Log logger = LogFactory.getLog(this.getClass());
-    
+    private List<Pattern> deniedFileNamePatterns = new ArrayList<Pattern>();
     protected boolean supportIfHeaders = true;
-    
     protected IfHeader ifHeader;
-
     protected Repository repository = null;
 
     public void setRepository(Repository repository) {
@@ -75,35 +78,45 @@ public abstract class AbstractWebdavController implements Controller {
         this.supportIfHeaders = supportIfHeaders;
     }
     
+    public void setDeniedFileNames(List<String> deniedFileNames) {
+        if (deniedFileNames == null) {
+            throw new IllegalArgumentException("Argument cannot be NULL");
+        }
+        this.deniedFileNamePatterns = new ArrayList<Pattern>();
+        for (String patternStr: deniedFileNames) {
+            Pattern p = Pattern.compile(patternStr);
+            this.deniedFileNamePatterns.add(p);
+        }
+    }
 
     
     /**
      * Maps WebDAV property names to resource property names
      */
-    public static final Map MAPPED_DAV_PROPERTIES;
+    public static final Map<String, String> MAPPED_DAV_PROPERTIES;
 
     /**
      * The set of WebDAV property names that do not map directly to
      * resource propery names
      */
-    public static final Set SPECIAL_DAV_PROPERTIES;
+    public static final Set<String> SPECIAL_DAV_PROPERTIES;
 
 
     /**
      * The set of all WebDAV property names
      */
-    public static final Set DAV_PROPERTIES;
+    public static final Set<String> DAV_PROPERTIES;
 
 
     static {
-        MAPPED_DAV_PROPERTIES = new HashMap();
+        MAPPED_DAV_PROPERTIES = new HashMap<String, String>();
         MAPPED_DAV_PROPERTIES.put("creationdate", PropertyType.CREATIONTIME_PROP_NAME);
         MAPPED_DAV_PROPERTIES.put("getcontentlanguage", PropertyType.CONTENTLOCALE_PROP_NAME);
         MAPPED_DAV_PROPERTIES.put("getcontentlength", PropertyType.CONTENTLENGTH_PROP_NAME);
         MAPPED_DAV_PROPERTIES.put("getcontenttype", PropertyType.CONTENTTYPE_PROP_NAME);
         MAPPED_DAV_PROPERTIES.put("getlastmodified", PropertyType.LASTMODIFIED_PROP_NAME);
 
-        SPECIAL_DAV_PROPERTIES = new HashSet();
+        SPECIAL_DAV_PROPERTIES = new HashSet<String>();
         SPECIAL_DAV_PROPERTIES.add("getetag");
         SPECIAL_DAV_PROPERTIES.add("lockdiscovery");
         SPECIAL_DAV_PROPERTIES.add("resourcetype");
@@ -111,7 +124,7 @@ public abstract class AbstractWebdavController implements Controller {
         SPECIAL_DAV_PROPERTIES.add("source");
         SPECIAL_DAV_PROPERTIES.add("supportedlock");
 
-        DAV_PROPERTIES = new HashSet();
+        DAV_PROPERTIES = new HashSet<String>();
         DAV_PROPERTIES.addAll(MAPPED_DAV_PROPERTIES.keySet());
         DAV_PROPERTIES.addAll(SPECIAL_DAV_PROPERTIES);
     }
@@ -202,5 +215,20 @@ public abstract class AbstractWebdavController implements Controller {
         return this.ifHeader.matches(resource, shouldMatchOnNoIfHeader);
     }
     
+    protected boolean allowedResourceName(String uri) {
+        String name = URIUtil.getResourceName(uri);
+        for (Pattern pattern: this.deniedFileNamePatterns) {
+            Matcher m = pattern.matcher(name);
+            if (m.find()) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Denying file name creation: '" + name + "'");
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+    
+
 }
 

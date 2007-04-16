@@ -244,6 +244,24 @@ public class VortikalServlet extends DispatcherServlet {
                     new RequestFilter[list.size()]);
                 this.logger.info("Request filters: " + list + " set up successfully");
             }
+        } else if (o != null && o instanceof Object[]) {
+            boolean filters = true;
+            Object[] list = (Object[]) o;
+            RequestFilter[] result = new RequestFilter[list.length];
+            int i = 0;
+            for (Object elem: list) {
+                if (!(elem instanceof RequestFilter)) {
+                    filters = false;
+                    break;
+                } else {
+                    result[i++] = (RequestFilter) elem;
+                }
+            }
+            if (filters) {
+                this.requestFilters = result;
+                this.logger.info("Request filters: " + java.util.Arrays.asList(list)
+                                 + " set up successfully");
+            }
         }
     }
     

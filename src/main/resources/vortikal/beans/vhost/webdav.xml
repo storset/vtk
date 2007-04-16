@@ -413,10 +413,18 @@
     <property name="maxUploadSize" value="-1" />
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}"/>
     <property name="obeyClientCharacterEncoding" value="false" />
+    <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
+  </bean>
+
+  <bean id="webdav.deniedFileNamePatterns" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${webdav.deniedFiles}" />
+    <property name="trim" value="true" />
   </bean>
 
   <bean id="webdavMkColHandler" class="org.vortikal.webdav.MkColController"
-    parent="requestLocalRepositoryAware" />
+    parent="requestLocalRepositoryAware">
+    <property name="deniedFileNames" ref="webdav.deniedFileNamePatterns" />
+  </bean>
 
   <bean id="webdavCopyHandler" class="org.vortikal.webdav.CopyController"
         parent="requestLocalRepositoryAware">

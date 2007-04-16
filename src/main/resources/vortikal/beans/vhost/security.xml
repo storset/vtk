@@ -97,6 +97,7 @@
     <property name="recognizedDomains">
       <set>
         <value>localhost</value>
+        <null />
       </set>
     </property>
     <property name="principalFactory" ref="principalFactory" />
@@ -115,6 +116,7 @@
     <property name="recognizedDomains">
       <set>
         <value>localhost</value>
+        <null />
       </set>
     </property>
     <property name="principalFactory" ref="principalFactory" />

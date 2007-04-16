@@ -51,21 +51,11 @@ import org.vortikal.web.controller.repository.tidy.JTidyTransformer;
  *   <!-- Example: <li><code>replacement</code> - the replacement text -->
  * </ul>
  */
-public class TidyContentInputStreamFilter implements RequestFilter, InitializingBean {
+public class TidyContentInputStreamFilter extends AbstractRequestFilter
+  implements InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    // compulsory value and method
-    private int order = Integer.MAX_VALUE;
-    
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    public int getOrder() {
-        return this.order;
-    }
-    
-    
     public void afterPropertiesSet() throws Exception {
         /*
         if (this.characterEncoding == null) {

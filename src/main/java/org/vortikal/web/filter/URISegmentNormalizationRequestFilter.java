@@ -53,11 +53,10 @@ import org.apache.commons.logging.LogFactory;
  * @author oyviste
  *
  */
-public class URISegmentNormalizationRequestFilter implements RequestFilter {
+public class URISegmentNormalizationRequestFilter extends AbstractRequestFilter {
 
     Log logger = LogFactory.getLog(URISegmentNormalizationRequestFilter.class);
     
-    private int order = Integer.MAX_VALUE;
     private boolean normalizeSlashes = false;
     
     public HttpServletRequest filterRequest(HttpServletRequest request) {
@@ -148,14 +147,6 @@ public class URISegmentNormalizationRequestFilter implements RequestFilter {
             }
         }  
         
-    }
-
-    public int getOrder() {
-        return this.order;
-    }
-    
-    public void setOrder(int order) {
-        this.order = order;
     }
 
     public boolean isNormalizeSlashes() {

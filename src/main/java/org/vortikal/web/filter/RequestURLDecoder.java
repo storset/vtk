@@ -50,27 +50,16 @@ import org.vortikal.util.web.URLUtil;
  *   <li><code>characterEncoding</code> - the encoding used when URL decoding
  * </ul>
  */
-public class RequestURLDecoder implements RequestFilter, InitializingBean {
+public class RequestURLDecoder extends AbstractRequestFilter implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(RequestURLDecoder.class);
 
     private String characterEncoding;
     
-    private int order = Integer.MAX_VALUE;
-    
 
     public void setCharacterEncoding(String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
 
     public void afterPropertiesSet() throws Exception {
         if (this.characterEncoding == null) {

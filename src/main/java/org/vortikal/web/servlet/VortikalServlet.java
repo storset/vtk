@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.servlet;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -48,9 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
-import org.springframework.core.OrderComparator;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.RequestHandledEvent;
 import org.springframework.web.context.support.ServletRequestHandledEvent;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
@@ -72,7 +67,6 @@ import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
 import org.vortikal.web.filter.RequestFilter;
-import org.vortikal.web.filter.StandardRequestFilter;
 import org.vortikal.web.service.Service;
 
 
@@ -133,6 +127,7 @@ public class VortikalServlet extends DispatcherServlet {
     private static final String SECURITY_INITIALIZER_BEAN_NAME = "securityInitializer";
     private static final String REQUEST_CONTEXT_INITIALIZER_BEAN_NAME = "requestContextInitializer";
     private static final String REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME = "repositoryContextInitializer";
+    private static final String REQUEST_FILTERS_BEAN_NAME = "defaultRequestFilters";
     
     public static final String INDEX_FILE_REQUEST_ATTRIBUTE =
         VortikalServlet.class.getName() + ".index_file_request";
@@ -234,16 +229,22 @@ public class VortikalServlet extends DispatcherServlet {
 
 
     private void initRequestFilters() {
-        Map matchingBeans = getWebApplicationContext().getBeansOfType(
-            RequestFilter.class, false, false);
-
-        List filters = new ArrayList(matchingBeans.values());
-        Collections.sort(filters, new OrderComparator());
-        
-        this.requestFilters = (RequestFilter[]) filters.toArray(
-            new RequestFilter[filters.size()]);
-
-        this.logger.info("Request filters: " + filters + " set up successfully");
+        Object o = getWebApplicationContext().getBean(REQUEST_FILTERS_BEAN_NAME);
+        if (o != null && o instanceof List) {
+            boolean filters = true;
+            List list = (List) o;
+            for (Object elem: list) {
+                if (!(elem instanceof RequestFilter)) {
+                    filters = false;
+                    break;
+                }
+            }
+            if (filters) {
+                this.requestFilters = (RequestFilter[]) list.toArray(
+                    new RequestFilter[list.size()]);
+                this.logger.info("Request filters: " + list + " set up successfully");
+            }
+        }
     }
     
 

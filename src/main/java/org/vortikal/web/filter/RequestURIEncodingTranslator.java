@@ -53,16 +53,14 @@ import org.vortikal.util.web.URLUtil;
  *   <li><code>toEncoding</code> - the encoding to translate to
  * </ul>
  */
-public class RequestURIEncodingTranslator implements RequestFilter, InitializingBean {
+public class RequestURIEncodingTranslator extends AbstractRequestFilter
+  implements InitializingBean {
 
     private String fromEncoding;
     private String toEncoding;
     private static Log logger = LogFactory.getLog(RequestURIEncodingTranslator.class);
     
 
-    private int order = Integer.MAX_VALUE;
-    
-    
     public void setFromEncoding(String fromEncoding) {
         this.fromEncoding = fromEncoding;
     }
@@ -70,15 +68,6 @@ public class RequestURIEncodingTranslator implements RequestFilter, Initializing
     public void setToEncoding(String toEncoding) {
         this.toEncoding = toEncoding;
     }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
 
     public void afterPropertiesSet() throws Exception {
         if (this.fromEncoding == null) {

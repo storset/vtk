@@ -49,21 +49,11 @@ import org.springframework.beans.factory.InitializingBean;
  *   <li><code>toEncoding</code> - the encoding to translate to
  * </ul>
  */
-public class ForcedRequestHeaderValuesFilter implements RequestFilter, InitializingBean {
-
-    private int order = Integer.MAX_VALUE;
+public class ForcedRequestHeaderValuesFilter extends AbstractRequestFilter
+  implements InitializingBean {
 
     private Map headers;
     
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
-
     public void setHeaders(Map headers) {
         this.headers = headers;
     }

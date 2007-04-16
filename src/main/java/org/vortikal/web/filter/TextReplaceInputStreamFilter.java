@@ -63,16 +63,14 @@ import org.vortikal.util.io.StreamUtil;
  *   using the same scheme. The default is <code>iso-8859-1</code>.
  * </ul>
  */
-public class TextReplaceInputStreamFilter implements RequestFilter, InitializingBean {
+public class TextReplaceInputStreamFilter extends AbstractRequestFilter
+  implements InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
     private String characterEncoding = Charset.forName("iso-8859-1").name();
     private Pattern pattern;
     private String replacement;
-    
-    private int order = Integer.MAX_VALUE;
-    
 
 
     public void setCharacterEncoding(String characterEncoding) {
@@ -87,15 +85,6 @@ public class TextReplaceInputStreamFilter implements RequestFilter, Initializing
         this.replacement = replacement;
     }
     
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
-
     public void afterPropertiesSet() throws Exception {
         if (this.characterEncoding == null) {
             throw new BeanInitializationException(

@@ -41,20 +41,9 @@ import org.apache.commons.logging.Log;
  * Standard request filter. Ensures that the URI is not empty or
  * <code>null</code>.
  */
-public class StandardRequestFilter implements RequestFilter {
+public class StandardRequestFilter extends AbstractRequestFilter {
 
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
-
-    private int order = Integer.MAX_VALUE;
-    
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
 
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new StandardRequestWrapper(request);

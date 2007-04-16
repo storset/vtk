@@ -57,25 +57,16 @@ import org.vortikal.util.io.StreamUtil;
 
 /**
  */
-public class XSLTInputStreamFilter implements RequestFilter, InitializingBean {
+public class XSLTInputStreamFilter extends AbstractRequestFilter
+  implements InitializingBean {
 
     private ResourceLoader loader = new DefaultResourceLoader();
 
     private static Log logger = LogFactory.getLog(XSLTInputStreamFilter.class);
     private String stylesheet;
     private Templates templates;
-    private int order = Integer.MAX_VALUE;
     private boolean debug = false;
     private boolean robust = true;
-    
-    
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public int getOrder() {
-        return this.order;
-    }
     
     
     public void setStylesheet(String stylesheet) {

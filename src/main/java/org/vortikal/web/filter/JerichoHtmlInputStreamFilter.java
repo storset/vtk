@@ -48,18 +48,9 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.io.StreamUtil;
 
 
-public class JerichoHtmlInputStreamFilter implements RequestFilter {
+public class JerichoHtmlInputStreamFilter extends AbstractRequestFilter {
 
     private Log logger = LogFactory.getLog(JerichoHtmlInputStreamFilter.class);
-    private int order = Integer.MAX_VALUE;
-    
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public int getOrder() {
-        return this.order;
-    }
     
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new JerichoContentRequestWrapper(request);

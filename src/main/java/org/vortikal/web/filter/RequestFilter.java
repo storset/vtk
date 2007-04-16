@@ -30,9 +30,12 @@
  */
 package org.vortikal.web.filter;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.Ordered;
+
+import org.vortikal.context.Categorizable;
 
 
 /**
@@ -40,7 +43,7 @@ import org.springframework.core.Ordered;
  * initialization time. Utilized by the {@link
  * RequestContextInitializer}.
  */
-public interface RequestFilter extends Ordered {
+public interface RequestFilter extends Categorizable, Ordered {
 
     /**
      * Perform filtering on the request.

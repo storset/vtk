@@ -43,24 +43,14 @@ import org.vortikal.security.SecurityContext;
 
 /**
  */
-public class RequestParameterSecurityTokenFilter implements RequestFilter, InitializingBean {
+public class RequestParameterSecurityTokenFilter
+  extends AbstractRequestFilter implements InitializingBean {
 
     private String requestParameter;
-    private int order = Integer.MAX_VALUE;
-    
 
     public void setRequestParameter(String requestParameter) {
         this.requestParameter = requestParameter;
     }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
 
     public void afterPropertiesSet() throws Exception {
         if (this.requestParameter == null) {

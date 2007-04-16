@@ -24,18 +24,19 @@
 
    <!-- Fix for resin 3.0 -->
 
-   <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter">
-     <property name="order" value="0" />
-   </bean>
+   <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter"
+         parent="defaultRequestFilterCategoryBean" />
 
    <bean id="reqURIEncodingTranslator"
-         class="org.vortikal.web.filter.RequestURIEncodingTranslator">
+         class="org.vortikal.web.filter.RequestURIEncodingTranslator"
+         parent="defaultRequestFilterCategoryBean">
      <property name="order" value="10" />
      <property name="fromEncoding" value="iso-8859-1" />
      <property name="toEncoding" value="utf-8" />
    </bean>
 
-   <bean id="reqURLDecoder" class="org.vortikal.web.filter.RequestURLDecoder">
+   <bean id="reqURLDecoder" class="org.vortikal.web.filter.RequestURLDecoder"
+         parent="defaultRequestFilterCategoryBean">
      <property name="order" value="10" />
      <property name="characterEncoding" value="utf-8" />
    </bean>

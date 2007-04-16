@@ -45,26 +45,17 @@ import org.springframework.beans.factory.InitializingBean;
  *   <li><code>uriPrefixes</code> - a list of prefixes to match and strip away
  * </ul>
  */
-public class URIPrefixRequestFilter implements RequestFilter, InitializingBean {
+public class URIPrefixRequestFilter extends AbstractRequestFilter
+  implements InitializingBean {
 
     private String[] uriPrefixes;
 
-    private int order = Integer.MAX_VALUE;
-    
-
+  
     public void setUriPrefixes(String[] uriPrefixes) {
         this.uriPrefixes = uriPrefixes;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
-
+  
     public void afterPropertiesSet() throws Exception {
         if (this.uriPrefixes == null) {
             throw new BeanInitializationException(

@@ -34,6 +34,22 @@
     <property name="tokenManager" ref="tokenManager" />
   </bean>
 
+  <bean id="defaultRequestFilters" 
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.filter.RequestFilter" />
+    <property name="category" value="defaultServletRequestFilter" />
+  </bean>
+
+  <bean id="defaultRequestFilterCategoryBean" abstract="true">
+    <property name="order" value="0" />
+    <property name="categories">
+      <set>
+        <value>defaultServletRequestFilter</value>
+      </set>
+    </property>
+  </bean>
+
+
   <bean id="repositoryContextInitializer"
         class="org.vortikal.web.RepositoryContextInitializer" />
 

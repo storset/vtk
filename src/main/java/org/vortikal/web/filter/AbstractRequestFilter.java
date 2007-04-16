@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,62 +30,36 @@
  */
 package org.vortikal.web.filter;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.vortikal.util.io.BoundedInputStream;
-
 
 /**
- * Filter that pipes the request input stream trough a {@link
- * BoundedInputStream} filter, providing a limit to upload sizes.
+ * Abstract request filter implementing the {@link
+ * org.vortikal.context.Categorizable} and {@link
+ * org.springframework.core.Ordered} parts of {@link RequestFilter}
+ * 
  */
-public class UploadLimitInputStreamFilter extends AbstractRequestFilter {
+public abstract class AbstractRequestFilter implements RequestFilter {
 
-    private Log logger = LogFactory.getLog(this.getClass());
-    private long uploadLimit = 0;
-    
-    
+    private int order = Integer.MAX_VALUE;
+    private Set categories = new HashSet();
 
-    public UploadLimitInputStreamFilter(long uploadLimit) {
-        this.uploadLimit = uploadLimit;
+    public void setOrder(int order) {
+        this.order = order;
     }
     
-
-    public HttpServletRequest filterRequest(HttpServletRequest request) {
-        return new UploadLimitRequestWrapper(request, this.uploadLimit);
+    public int getOrder() {
+        return this.order;
     }
     
-    private class UploadLimitRequestWrapper extends HttpServletRequestWrapper {
-
-        private HttpServletRequest request;
-        private long uploadLimit = 0;
-
-        public UploadLimitRequestWrapper(HttpServletRequest request,
-                                         long uploadLimit) {
-            
-            super(request);
-            this.request = request;
-            this.uploadLimit = uploadLimit;
-        }
-        
-        public ServletInputStream getInputStream() throws IOException {
-
-            InputStream inputStream = this.request.getInputStream();
-
-            return new org.vortikal.util.io.ServletInputStream(
-                new BoundedInputStream(inputStream, this.uploadLimit));
-        }
+    public void setCategories(Set categories) {
+        this.categories = categories;
     }
     
-
-
+    public Set getCategories() {
+        return this.categories;
+    }
 }
+
+
+

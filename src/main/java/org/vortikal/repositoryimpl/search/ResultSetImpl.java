@@ -46,33 +46,33 @@ import org.vortikal.repository.search.ResultSet;
  */
 public class ResultSetImpl implements ResultSet {
 
-    private List results;
+    private List<PropertySet> results;
     private int totalHits;
     
     public ResultSetImpl() {
-        this.results = new ArrayList();
+        this.results = new ArrayList<PropertySet>();
         this.totalHits = 0;
     }
     
     public ResultSetImpl(int initialCapacity) {
-        this.results = new ArrayList(initialCapacity);
+        this.results = new ArrayList<PropertySet>(initialCapacity);
     }
     
-    public Object getResult(int index) {
+    public PropertySet getResult(int index) {
         return this.results.get(index);
     }
 
-    public List getResults(int maxIndex) {
+    public List<PropertySet> getResults(int maxIndex) {
         int max = Math.min(maxIndex, this.results.size());
         
         return this.results.subList(0, max);
     }
    
-    public List getResults(int fromIndex, int toIndex) {
+    public List<PropertySet> getResults(int fromIndex, int toIndex) {
         return this.results.subList(fromIndex, toIndex);
     }
 
-    public List getAllResults() {
+    public List<PropertySet> getAllResults() {
         return this.results;
     }
 
@@ -84,7 +84,7 @@ public class ResultSetImpl implements ResultSet {
         this.results.add(propSet);
     }
     
-    public Iterator iterator() {
+    public Iterator<PropertySet> iterator() {
         return this.results.iterator();
     }
     

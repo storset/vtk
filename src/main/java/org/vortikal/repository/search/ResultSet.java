@@ -33,16 +33,12 @@ package org.vortikal.repository.search;
 import java.util.Iterator;
 import java.util.List;
 
+import org.vortikal.repository.PropertySet;
+
 /**
  * Contains the result set of a repository query.
  * 
  * FIXME: Not final, comitted for peer review.
- * 
- * TODO: Result object type should be 
- * <code>org.vortikal.repository.PropertySet</code>,
- * when it's ready.
- * 
- * @author oyviste
  *
  */
 public interface ResultSet {
@@ -57,7 +53,7 @@ public interface ResultSet {
      *        
      * @return The result object at the given position.
      */
-    public Object getResult(int index);
+    public PropertySet getResult(int index);
     
     /**
      * Get all the results up to, but not including, the result
@@ -69,7 +65,7 @@ public interface ResultSet {
      * @param maxIndex 
      * @return A <code>List</code> of the results 
      */
-    public List getResults(int maxIndex);
+    public List<PropertySet> getResults(int maxIndex);
     
     /**
      * Get a subset of the result-set (fromIndex inclusive, toIndex exclusive).
@@ -78,7 +74,7 @@ public interface ResultSet {
      * @return
      * @throws IndexOutOfBoundsException
      */
-    public List getResults(int fromIndex, int toIndex)
+    public List<PropertySet> getResults(int fromIndex, int toIndex)
         throws IndexOutOfBoundsException;
     
     /**
@@ -88,7 +84,7 @@ public interface ResultSet {
      * @return <code>List</code> with all the results in the
      *         result set.
      */
-    public List getAllResults();
+    public List<PropertySet> getAllResults();
     
     /**
      * Get the size of the result set (number of query hits).
@@ -101,7 +97,7 @@ public interface ResultSet {
      * Iterate over results.
      * @return
      */
-    public Iterator iterator();
+    public Iterator<PropertySet> iterator();
     
     /**
      * Get total number of hits the actual query produced, regardless of the result set size or

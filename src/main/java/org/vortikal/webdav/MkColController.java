@@ -65,7 +65,7 @@ public class MkColController extends AbstractWebdavController {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         try {
          
@@ -88,6 +88,10 @@ public class MkColController extends AbstractWebdavController {
                 return new ModelAndView("MKCOL", model);
             }
          
+            if (!allowedResourceName(uri)) {
+                throw new IllegalOperationException("Rejecting resource creation: '"
+                                                    + uri + "'");
+            }
             this.repository.createCollection(token, uri);
 
             Resource resource = this.repository.retrieve(token, uri, false);

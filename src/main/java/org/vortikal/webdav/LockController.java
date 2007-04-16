@@ -82,7 +82,7 @@ public class LockController extends AbstractWebdavController {
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         Resource resource;
         
         if (securityContext.getPrincipal() == null) {
@@ -134,6 +134,10 @@ public class LockController extends AbstractWebdavController {
                     }
                 }
             } else {
+                if (!allowedResourceName(uri)) {
+                    throw new IllegalOperationException("Rejecting resource creation: '"
+                                                        + uri + "'");
+                }
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Creating null resource");
                 }
@@ -149,7 +153,6 @@ public class LockController extends AbstractWebdavController {
                     }
                 }
             }
-
 
             if (this.logger.isDebugEnabled()) {
                 String msg = "Atttempting to lock " + uri + " with timeout: " + timeout

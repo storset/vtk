@@ -34,11 +34,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
+
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
@@ -51,6 +51,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.filter.RequestFilter;
 import org.vortikal.web.filter.UploadLimitInputStreamFilter;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
+
 
 /**
  * Handler for PUT requests.
@@ -71,8 +72,8 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  */
 public class PutController extends AbstractWebdavController {
 
-	//supportIfHeaders defaults to true since we are in the webdav package
-	private boolean supportIfHeaders = true;
+    //supportIfHeaders defaults to true since we are in the webdav package
+    private boolean supportIfHeaders = true;
     private long maxUploadSize = -1;
     private String viewName = "PUT";
     private RequestFilter[] requestFilters;
@@ -132,7 +133,7 @@ public class PutController extends AbstractWebdavController {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         try {
 
@@ -142,7 +143,7 @@ public class PutController extends AbstractWebdavController {
             boolean exists = this.repository.exists(token, uri);
 
             if (exists) {
-                this.logger.debug("Resource already exists");
+                this.logger.debug("Resource '" + uri + "' already exists");
                 resource = this.repository.retrieve(token, uri, false);
                 this.ifHeader = new IfHeaderImpl(request);
 
@@ -198,6 +199,12 @@ public class PutController extends AbstractWebdavController {
                     throw new WebdavConflictException(
                         "Trying to PUT to non-existing resource. PUT URI was `" +
                         uri + "', parent resource '" + parentURI + "' does not exist.");
+                }
+                if (!allowedResourceName(uri)) {
+                    model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                              new Integer(HttpServletResponse.SC_OK));
+                    throw new IllegalOperationException("Rejecting resource creation: '"
+                                                        + uri + "'");
                 }
 
                 if (this.logger.isDebugEnabled()) {
@@ -312,25 +319,5 @@ public class PutController extends AbstractWebdavController {
         }
         return contentType;
     }
-
-
-    /*
-    protected String getContentTypeOLD(HttpServletRequest request, Resource resource) {
-        String contentType = request.getHeader("Content-Type");
-
-        if (contentType == null || contentType.trim().equals("")) {
-            return null;
-        }
-        
-        if (contentType.indexOf(";") > 0) {
-            contentType = contentType.substring(0, contentType.indexOf(";") - 1);
-        }
-
-        if (contentType.equals(MimeHelper.DEFAULT_MIME_TYPE))
-            return MimeHelper.map(resource.getName());
-        
-        return contentType;
-    }
-    */
 
 }

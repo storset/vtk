@@ -212,7 +212,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         Map<String, MenuItem> nameItemMap = new HashMap<String, MenuItem>();
 
         for (int i = 0; i < rs.getSize(); i++) {
-            PropertySet resource = (PropertySet) rs.getResult(i);
+            PropertySet resource = rs.getResult(i);
             
             String url = this.viewService.constructLink(resource.getURI());
             Property titleProperty = resource.getProperty(this.titlePropdef);

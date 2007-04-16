@@ -193,7 +193,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         List<MenuItem> items = new ArrayList<MenuItem>();
 
         for (int i = 0; i < rs.getSize(); i++) {
-            PropertySet resource = (PropertySet) rs.getResult(i);
+            PropertySet resource = rs.getResult(i);
             
             String url = this.viewService.constructLink(resource.getURI());
             Property titleProperty = resource.getProperty(this.titlePropDef);

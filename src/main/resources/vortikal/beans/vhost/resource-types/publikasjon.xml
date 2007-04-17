@@ -89,7 +89,7 @@
     </bean>
     
     <bean id="publikasjonSammendragEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="concat(substring(/publikasjon/sammendrag,0,400),'...')" />
+        <property name="expression" value="concat(substring(/publikasjon/sammendrag,0,200),'...')" />
     </bean>
 
     <bean id="publikasjonFulltekstPropDef"

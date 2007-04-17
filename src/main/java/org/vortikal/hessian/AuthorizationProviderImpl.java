@@ -71,9 +71,9 @@ public class AuthorizationProviderImpl implements AuthorizationProvider {
 
             encodedScriptUri = URLUtil.urlDecode(encodedScriptUri);
             
-            Resource parentResource = this.repository.retrieve(token, encodedScriptUri, true);
-
-            if (!resource.getOwner().equals(parentResource.getOwner())) {
+            Resource scriptResource = this.repository.retrieve(token, encodedScriptUri, true);
+            
+            if (!resource.getOwner().equals(scriptResource.getOwner())) {
                 return false;
             }
         } catch (Exception e) {

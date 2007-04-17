@@ -33,15 +33,18 @@ package org.vortikal.web.view.decorating.components;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.context.ServletContextAware;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -51,18 +54,22 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
+import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.VortikalServlet;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
-public class IncludeComponent extends AbstractDecoratorComponent implements ServletContextAware {
+public class IncludeComponent extends AbstractDecoratorComponent
+  implements ServletContextAware {
 
     private static final String PARAMETER_VIRTUAL = "virtual";
-    private static final String PARAMETER_VIRTUAL_DESC = "Either a complete URL, or a path starting with '/'";
+    private static final String PARAMETER_VIRTUAL_DESC =
+        "Either a complete URL, or a path starting with '/'";
     private static final String PARAMETER_FILE = "file";
-    private static final String PARAMETER_FILE_DESC = "A relative path to a the file to include";
+    private static final String PARAMETER_FILE_DESC =
+        "A relative path to a the file to include";
     private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
     private static final String PARAMETER_AS_CURRENT_USER_DESC = 
         "The default is that only resources readable for everyone is included. " +
@@ -107,28 +114,32 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
             handleDirectInclude(address, request, response);
             return;
         }
-        uri = request.getStringParameter(PARAMETER_VIRTUAL);
 
+        uri = request.getStringParameter(PARAMETER_VIRTUAL);
         if (uri == null) {
             throw new DecoratorComponentException(
                 "One of parameters 'file' or 'virtual' must be specified");
         }
 
-        if (uri.startsWith("/")) {
-//            handleVirtualInclude(uri, request, response);
-            handleDirectInclude(uri, request, response);
-        } else if (uri.startsWith("http") || uri.startsWith("https")) {
+        if (uri.startsWith("http") || uri.startsWith("https")) {
             handleHttpInclude(uri, request, response);
-        } else {
-            throw new DecoratorComponentException("Invalid 'virtual' parameter: '" + uri + "'");
+            return;
+        } 
+
+        if (!uri.startsWith("/")) {
+            String requestURI = RequestContext.getRequestContext().getResourceURI();
+            uri = requestURI.substring(0, requestURI.lastIndexOf("/") + 1) + uri;
         }
+        handleVirtualInclude(uri, request, response);
     }
+
 
     private void handleDirectInclude(String address, DecoratorRequest request,
                                      DecoratorResponse response) throws Exception {
         String token = null;
 
-        boolean asCurrentPrincipal = "true".equals(request.getStringParameter(PARAMETER_AS_CURRENT_USER));
+        boolean asCurrentPrincipal = "true".equals(request.getStringParameter(
+                                                       PARAMETER_AS_CURRENT_USER));
 
         if (asCurrentPrincipal) {
             token = SecurityContext.getSecurityContext().getToken();
@@ -175,17 +186,27 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
                 "Error including URI '" + uri + "': possible include loop detected ");
         }
 
-        // XXX: encode URI?
-        String encodedURI = uri;
+        String decodedURI = uri;
 
-        RequestWrapper requestWrapper = new RequestWrapper(servletRequest, encodedURI);
-        requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, new Object());
+        Map<String, String[]> queryMap = new HashMap<String, String[]>();
+        String queryString = null;
         
+        if (uri.indexOf("?") != -1) {
+            queryString = uri.substring(uri.indexOf("?") + 1);
+            decodedURI = uri.substring(0, uri.indexOf("?"));
+            queryMap = URLUtil.splitQueryString(queryString);
+        }
+
+        decodedURI = URLUtil.urlDecode(decodedURI);
+        
+        RequestWrapper requestWrapper = new RequestWrapper(
+            servletRequest, decodedURI, queryMap, queryString);
+
+        requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, new Object());
         String servletName = (String) servletRequest.getAttribute(
                 VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
 
         RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
-        
         if (rd == null) {
             throw new RuntimeException(
                 "No request dispatcher for name '" + servletName + "' available");
@@ -194,6 +215,12 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         BufferedResponse servletResponse = new BufferedResponse();
         rd.forward(requestWrapper, servletResponse);
         
+        if (servletResponse.getStatus() != HttpServletResponse.SC_OK) {
+            throw new DecoratorComponentException(
+                "Included resource '" + uri + "' returned HTTP status code "
+                + servletResponse.getStatus());
+        }
+
         requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, null);
         
         if (!ContentTypeHelper.isTextContentType(servletResponse.getContentType())) {
@@ -208,6 +235,7 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
         out.close();
     }
     
+
     private void handleHttpInclude(String uri, DecoratorRequest request,
             DecoratorResponse response) throws Exception {
         String result = (String) this.httpIncludeCache.get(uri);
@@ -221,14 +249,43 @@ public class IncludeComponent extends AbstractDecoratorComponent implements Serv
     private class RequestWrapper extends HttpServletRequestWrapper {
 
         private String uri;
+        private Map<String, String[]> parameters;
+        private String queryString;
         
-        public RequestWrapper(HttpServletRequest request, String uri) {
+        public RequestWrapper(HttpServletRequest request, String uri,
+                              Map<String, String[]> parameters, String queryString) {
             super(request);
             this.uri = uri;
+            this.parameters = parameters;
+            this.queryString = queryString;
         }
         
         public String getRequestURI() {
             return this.uri;
+        }
+
+        public String getQueryString() {
+            return this.queryString;
+        }
+
+        public String getParameter(String name) {
+            String[] values = this.parameters.get(name);
+            if (values == null || values.length <= 0) {
+                return null;
+            }
+            return values[0];
+        }
+
+        public String[] getParameterValues(String name) {
+            return this.parameters.get(name);
+        }
+
+        public Map getParameterMap() {
+            return Collections.unmodifiableMap(this.parameters);
+        }
+        
+        public Enumeration getParameterNames() {
+            return Collections.enumeration(this.parameters.keySet());
         }
     }
 

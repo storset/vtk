@@ -78,7 +78,6 @@ public class URLUtil {
     }
 
 
-
     /**
      * Splits a URI into path elements. For example, the URI
      * <code>/foo/bar</code> would be split into the following
@@ -88,7 +87,7 @@ public class URLUtil {
      * @return an array consisting of the components
      */
     public static String[] splitUri(String uri) {
-         ArrayList list = new ArrayList();
+         ArrayList<String> list = new ArrayList<String>();
          StringTokenizer st = new StringTokenizer(uri, "/");
  
          while (st.hasMoreTokens()) {
@@ -99,6 +98,7 @@ public class URLUtil {
          list.add(0, "/");
          return (String[]) list.toArray(new String[0]);
      }
+
 
     /**
      * Splits a URI into incremental path elements. For example, the
@@ -114,8 +114,8 @@ public class URLUtil {
             return new String[] { "/" };
         }
         
-        ArrayList elements = new ArrayList();
-        ArrayList incremental = new ArrayList();
+        ArrayList<String> elements = new ArrayList<String>();
+        ArrayList<String> incremental = new ArrayList<String>();
         
         StringTokenizer tokenizer = new StringTokenizer(uri, "/");
 
@@ -135,9 +135,6 @@ public class URLUtil {
     }
 
 
-
-
-
     /**
      * This method is probably not needed
      *
@@ -155,7 +152,6 @@ public class URLUtil {
                 "Java doesn't seem to support utf-8. Not much to do about that.");
         }
     }
-    
 
 
     /**
@@ -188,8 +184,6 @@ public class URLUtil {
 
         return result.toString();
     }
-
-
     
 
     /**
@@ -210,8 +204,6 @@ public class URLUtil {
                 "Java doesn't seem to support utf-8. Not much to do about that.");
         }
     }
-    
-
 
 
     /**
@@ -254,7 +246,6 @@ public class URLUtil {
     }
 
 
-
     /**
      * Gets the host name from the HTTP request.
      *
@@ -274,18 +265,28 @@ public class URLUtil {
         return hostName;
     }
     
-    
-    
+
     /**
-     * Splits the request query string into a set of (name, value)
+     * Splits the request query string into a map of (name, value[])
      * pairs.
      *
      * @param request the servlet request
+     * @return the (name, value[]) map
+     */
+    public static Map<String, String[]> splitQueryString(HttpServletRequest request) {
+        String queryString = request.getQueryString();
+        return splitQueryString(queryString);
+    }
+    
+
+    /**
+     * Splits a query string into a map of (name, value[]) pairs.
+     *
+     * @param request the query string
      * @return the (name, value) map
      */
-    public static Map splitQueryString(HttpServletRequest request) {
-        String queryString = request.getQueryString();
-        Map queryMap = new HashMap();
+    public static Map<String, String[]> splitQueryString(String queryString) {
+        Map<String, String[]> queryMap = new HashMap<String, String[]>();
         if (queryString != null) {
             if (queryString.indexOf("?") != -1) { 
                 queryString = queryString.substring(queryString.indexOf("?") + 1);
@@ -297,15 +298,33 @@ public class URLUtil {
                 }
                 int equalsIdx = pairs[i].indexOf("=");
                 if (equalsIdx == -1) {
-                    queryMap.put(pairs[i], "");
+                    String[] existing = queryMap.get(pairs[i]);
+                    if (existing == null) {
+                        queryMap.put(pairs[i], new String[]{""});
+                    } else {
+                        String[] newVal = new String[existing.length + 1];
+                        System.arraycopy(existing, 0, newVal, 0, existing.length);
+                        newVal[existing.length] = "";
+                        queryMap.put(pairs[i], newVal);
+                    }
                 } else {
                     String key = pairs[i].substring(0, equalsIdx);
                     String value = pairs[i].substring(equalsIdx + 1);
-                    queryMap.put(key, value);
+                    String[] existing = queryMap.get(key);
+                    System.out.println("__key: " + key + ", existing: " + existing);
+                    if (existing == null) {
+                        queryMap.put(key, new String[]{value});
+                    } else {
+                        String[] newVal = new String[existing.length + 1];
+                        System.arraycopy(existing, 0, newVal, 0, existing.length);
+                        newVal[existing.length] = value;
+                        queryMap.put(key, newVal);
+                    }
                 }
             }
         }
         return queryMap;
     }
     
+
 }

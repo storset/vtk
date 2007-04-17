@@ -60,8 +60,8 @@ public class URL {
     private String path = null;
     private String characterEncoding = "utf-8";
 
-    private List parameterNames = new ArrayList();
-    private List parameterValues = new ArrayList();
+    private List<String> parameterNames = new ArrayList<String>();
+    private List<String> parameterValues = new ArrayList<String>();
 
     private String ref = null;
     
@@ -161,11 +161,11 @@ public class URL {
 
     public void removeParameter(String name) {
         int index = this.parameterNames.indexOf(name);
-        if (index == -1) {
-            return;
+        while (index != -1) {
+            this.parameterNames.remove(index);
+            this.parameterValues.remove(index);
+            index = this.parameterNames.indexOf(name);
         }
-        this.parameterNames.remove(index);
-        this.parameterValues.remove(index);
     }
     
 
@@ -222,7 +222,7 @@ public class URL {
         }
         
         if (!this.parameterNames.isEmpty()) {
-            Map parameters = new LinkedHashMap();
+            Map<String, String> parameters = new LinkedHashMap<String, String>();
             
             for (int i = 0; i < this.parameterNames.size(); i++) {
                 parameters.put(this.parameterNames.get(i), this.parameterValues.get(i));
@@ -266,12 +266,13 @@ public class URL {
             url.setProtocol(PROTOCOL_HTTPS);
         }
 
-        Map queryStringMap = URLUtil.splitQueryString(request);
+        Map<String, String[]> queryStringMap = URLUtil.splitQueryString(request);
 
-        for (Iterator iter = queryStringMap.keySet().iterator(); iter.hasNext();) {
-            String key = (String) iter.next();
-            String value = (String) queryStringMap.get(key);
-            url.addParameter(key, value);
+        for (String key: queryStringMap.keySet()) {
+            String[] values = queryStringMap.get(key);
+            for (String value: values) {
+                url.addParameter(key, value);
+            }
         }
         return url;
     }

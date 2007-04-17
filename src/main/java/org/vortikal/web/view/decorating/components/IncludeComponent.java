@@ -66,10 +66,11 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
     private static final String PARAMETER_VIRTUAL = "virtual";
     private static final String PARAMETER_VIRTUAL_DESC =
-        "Either a complete URL, or a path starting with '/'";
+        "Either a complete URL, or a path to the file to include. "
+        + "Both relative and absolute paths are interpreted.";
     private static final String PARAMETER_FILE = "file";
     private static final String PARAMETER_FILE_DESC =
-        "A relative path to a the file to include";
+        "A relative path to the file to include";
     private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
     private static final String PARAMETER_AS_CURRENT_USER_DESC = 
         "The default is that only resources readable for everyone is included. " +
@@ -140,11 +141,9 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
         boolean asCurrentPrincipal = "true".equals(request.getStringParameter(
                                                        PARAMETER_AS_CURRENT_USER));
-
         if (asCurrentPrincipal) {
             token = SecurityContext.getSecurityContext().getToken();
         }
-        
         Resource r = null;
         try {
             r = this.repository.retrieve(token, address, false);

@@ -31,7 +31,10 @@
 package org.vortikal.hessian;
 
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
+import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -60,4 +63,22 @@ public class AuthorizationProviderImpl implements AuthorizationProvider {
         return true;
     }
 
+    public boolean authorizeWithOwnership(String encodedScriptUri) {
+        try {
+            String token = SecurityContext.getSecurityContext().getToken();
+            String uri = RequestContext.getRequestContext().getResourceURI();
+            Resource resource = this.repository.retrieve(token, uri, true);
+
+            encodedScriptUri = URLUtil.urlDecode(encodedScriptUri);
+            
+            Resource parentResource = this.repository.retrieve(token, encodedScriptUri, true);
+
+            if (!resource.getOwner().equals(parentResource.getOwner())) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 }

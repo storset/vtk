@@ -40,4 +40,11 @@ public interface AuthorizationProvider {
      */
     public boolean authorize();
 	
+    /**
+     * @return <code>true</code> if client is authorized to read
+     * resource and the owner matches the script resource owner,
+     * <code>false</code> otherwise
+     */
+    public boolean authorizeWithOwnership(String encodedScriptUri);
+
 }

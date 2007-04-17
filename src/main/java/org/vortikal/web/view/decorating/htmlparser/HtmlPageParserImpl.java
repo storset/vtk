@@ -123,7 +123,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
         HtmlElement rootElement = (HtmlElement) buildHtml(root, filters, xhtml);
         if (rootElement == null) {
-            throw new HtmlPageParserException("Unable to parse input: no root element");
+            throw new HtmlPageParserException("Unable to parse HTML: no root element found");
         }
         return new HtmlPageImpl(rootElement, doctype);
     }

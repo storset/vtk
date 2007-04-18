@@ -2,6 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+
   <bean id="shortDateFormat"
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
@@ -13,6 +14,7 @@
       </list>
     </property>
   </bean>
+
   
   <bean id="shortDateFormat_no" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
@@ -24,6 +26,7 @@
       </list>
     </property>
   </bean>
+
 
   <bean id="longDateFormat" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
@@ -48,6 +51,33 @@
     </property>
   </bean>
 
+
+  <bean id="hoursMinutesDateFormat"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">hh:mm a</value>
+        <value type="java.util.Locale">en</value>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="hoursMinutesDateFormat_no"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
+    <property name="targetMethod" value="getInstance" />
+    <property name="arguments">
+      <list>
+        <value type="java.lang.String">HH:mm</value>
+        <value type="java.util.Locale">no</value>
+      </list>
+    </property>
+  </bean>
+
+
   <bean id="iso8601FullDateFormat"
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
@@ -59,6 +89,7 @@
       </list>
     </property>
   </bean>
+
 
   <bean id="iso8601ShortDateFormat"
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -72,6 +103,7 @@
     </property>
   </bean>
 
+
   <bean id="rfc822DateFormat"
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetClass" value="org.apache.commons.lang.time.FastDateFormat" />
@@ -83,6 +115,7 @@
       </list>
     </property>
   </bean>
+
 
   <bean id="valueFormatter"
         class="org.vortikal.repository.resourcetype.ValueFormatter">
@@ -98,6 +131,8 @@
        <entry key="short_no" value-ref="shortDateFormat_no" />
        <entry key="long" value-ref="longDateFormat" />
        <entry key="long_no" value-ref="longDateFormat_no" />
+       <entry key="hours-minutes" value-ref="hoursMinutesDateFormat" />
+       <entry key="hours-minutes_no" value-ref="hoursMinutesDateFormat_no" />
        <entry key="iso-8601" value-ref="iso8601FullDateFormat" />
        <entry key="iso-8601-short" value-ref="iso8601ShortDateFormat" />
        <entry key="rfc-822" value-ref="rfc822DateFormat" />

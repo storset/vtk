@@ -42,7 +42,7 @@
 
   <#if conf.bottomLinkToAllMessages>
   <a class="all-messages" href="${feed.link}">
-   <@vrtx.msg code="decorating.feedComponent.allMessages" default="All messages" />
+   <@vrtx.msg code="decorating.feedComponent.allMessages" default="More" />
   </a>
   </#if>
 </div>

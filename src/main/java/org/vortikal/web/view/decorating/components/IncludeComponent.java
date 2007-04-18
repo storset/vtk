@@ -70,7 +70,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
         + "Both relative and absolute paths are interpreted.";
     private static final String PARAMETER_FILE = "file";
     private static final String PARAMETER_FILE_DESC =
-        "A relative path to the file to include";
+        "The path to the file to include. "
+        + "Both relative and absolute paths are interpreted";
     private static final String PARAMETER_AS_CURRENT_USER = "authenticated";
     private static final String PARAMETER_AS_CURRENT_USER_DESC = 
         "The default is that only resources readable for everyone is included. " +
@@ -106,13 +107,11 @@ public class IncludeComponent extends AbstractDecoratorComponent
         String uri = request.getStringParameter(PARAMETER_FILE);
 
         if (uri != null) {
-            if (uri.startsWith("/"))
-                throw new DecoratorComponentException(
-                    "Include 'file' takes a relative path as argument");
-            String address = RequestContext.getRequestContext().getResourceURI();
-            address = address.substring(0, address.lastIndexOf("/") + 1) + uri;
-
-            handleDirectInclude(address, request, response);
+            if (!uri.startsWith("/")) {
+                String base = RequestContext.getRequestContext().getResourceURI();
+                uri = base.substring(0, base.lastIndexOf("/") + 1) + uri;
+            }
+            handleDirectInclude(uri, request, response);
             return;
         }
 

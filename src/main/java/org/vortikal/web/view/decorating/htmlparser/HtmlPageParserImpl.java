@@ -32,7 +32,9 @@ package org.vortikal.web.view.decorating.htmlparser;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.htmlparser.Attribute;
@@ -58,6 +60,10 @@ import org.vortikal.web.view.decorating.html.HtmlPageParserException;
 
 public class HtmlPageParserImpl implements HtmlPageParser {
 
+    private Set<String> compositeTags = new HashSet<String>();
+    private Set<String> emptyTags = new HashSet<String>();
+    
+
     private String defaultDoctype =
         "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
         + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
@@ -67,6 +73,15 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         this.defaultDoctype = defaultDoctype;
     }
 
+
+    public void setCompositeTags(Set<String> compositeTags) {
+        this.compositeTags = compositeTags;
+    }
+    
+    public void setEmptyTags(Set<String> emptyTags) {
+        this.emptyTags = emptyTags;
+    }
+    
 
     public HtmlPage parse(InputStream in, String encoding) throws Exception {
         return parse(in, encoding, new ArrayList<HtmlNodeFilter>());
@@ -90,26 +105,34 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         Parser parser = new Parser(lexer);
         PrototypicalNodeFactory factory = new PrototypicalNodeFactory();
 
-        factory.registerTag(new CompositeTag(new String[]{"pre"}));
-        factory.registerTag(new CompositeTag(new String[]{"b"}));
-        factory.registerTag(new CompositeTag(new String[]{"address"}));
-        factory.registerTag(new CompositeTag(new String[]{"map"}));
-        factory.registerTag(new CompositeTag(new String[]{"thead"}));
-        factory.registerTag(new CompositeTag(new String[]{"tfoot"}));
-        factory.registerTag(new CompositeTag(new String[]{"tbody"}));
-        factory.registerTag(new CompositeTag(new String[]{"fieldset"}));
-        factory.registerTag(new CompositeTag(new String[]{"optgroup"}));
+//         factory.registerTag(new CompositeTag(new String[]{"pre"}));
+//         factory.registerTag(new CompositeTag(new String[]{"b"}));
+//         factory.registerTag(new CompositeTag(new String[]{"address"}));
+//         factory.registerTag(new CompositeTag(new String[]{"map"}));
+//         factory.registerTag(new CompositeTag(new String[]{"thead"}));
+//         factory.registerTag(new CompositeTag(new String[]{"tfoot"}));
+//         factory.registerTag(new CompositeTag(new String[]{"tbody"}));
+//         factory.registerTag(new CompositeTag(new String[]{"fieldset"}));
+//         factory.registerTag(new CompositeTag(new String[]{"optgroup"}));
+//         factory.registerTag(new CompositeTag(new String[]{"small"}));
 
-        factory.registerTag(new EmptyTag(new String[]{"br"}));
-        factory.registerTag(new EmptyTag(new String[]{"area"}));
-        factory.registerTag(new EmptyTag(new String[]{"link"}));
-        factory.registerTag(new EmptyTag(new String[]{"img"}));
-        factory.registerTag(new EmptyTag(new String[]{"param"}));
-        factory.registerTag(new EmptyTag(new String[]{"hr"}));
-        factory.registerTag(new EmptyTag(new String[]{"input"}));
-        factory.registerTag(new EmptyTag(new String[]{"col"}));
-        factory.registerTag(new EmptyTag(new String[]{"base"}));
-        factory.registerTag(new EmptyTag(new String[]{"meta"}));
+//         factory.registerTag(new EmptyTag(new String[]{"br"}));
+//         factory.registerTag(new EmptyTag(new String[]{"area"}));
+//         factory.registerTag(new EmptyTag(new String[]{"link"}));
+//         factory.registerTag(new EmptyTag(new String[]{"img"}));
+//         factory.registerTag(new EmptyTag(new String[]{"param"}));
+//         factory.registerTag(new EmptyTag(new String[]{"hr"}));
+//         factory.registerTag(new EmptyTag(new String[]{"input"}));
+//         factory.registerTag(new EmptyTag(new String[]{"col"}));
+//         factory.registerTag(new EmptyTag(new String[]{"base"}));
+//         factory.registerTag(new EmptyTag(new String[]{"meta"}));
+
+        for (String tag: this.compositeTags) {
+            factory.registerTag(new CompositeTag(new String[]{tag}));
+        }
+        for (String tag: this.emptyTags) {
+            factory.registerTag(new EmptyTag(new String[]{tag}));
+        }
         parser.setNodeFactory(factory);
 
         NodeList nodeList = parser.parse(null);

@@ -31,7 +31,9 @@
 package org.vortikal.web.view.decorating.htmlparser;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -39,11 +41,47 @@ import org.vortikal.web.view.decorating.html.HtmlContent;
 import org.vortikal.web.view.decorating.html.HtmlElement;
 import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
 import org.vortikal.web.view.decorating.html.HtmlPage;
-import org.vortikal.web.view.decorating.html.HtmlPageParser;
 import org.vortikal.web.view.decorating.html.HtmlPageParserException;
 
 
 public class HtmlPageParserImplTestCase extends TestCase {
+
+    private static Set<String> compositeTags = new HashSet<String>();
+    private static Set<String> emptyTags = new HashSet<String>();
+    
+    static {
+        compositeTags.add("pre");
+        compositeTags.add("b");
+        compositeTags.add("address");
+        compositeTags.add("map");
+        compositeTags.add("thead");
+        compositeTags.add("tfoot");
+        compositeTags.add("tbody");
+        compositeTags.add("fieldset");
+        compositeTags.add("optgroup");
+        compositeTags.add("small");
+
+        emptyTags.add("br");
+        emptyTags.add("area");
+        emptyTags.add("link");
+        emptyTags.add("img");
+        emptyTags.add("param");
+        emptyTags.add("hr");
+        emptyTags.add("input");
+        emptyTags.add("col");
+        emptyTags.add("base");
+        emptyTags.add("meta");
+    }
+
+    private HtmlPageParserImpl parser;
+
+    public void setUp() {
+        this.parser =  new HtmlPageParserImpl();
+        this.parser.setCompositeTags(compositeTags);
+        this.parser.setEmptyTags(emptyTags);
+    }
+    
+
 
     private static final String SIMPLE_XHTML_PAGE =
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
@@ -313,6 +351,12 @@ public class HtmlPageParserImplTestCase extends TestCase {
         assertEquals("title", abbr.getAttributes()[0].getName());
         assertEquals("Hyper Text Markup Language", abbr.getAttributes()[0].getValue());
 
+        HtmlElement acronym = p1.getChildElements()[1];
+        assertEquals("Anything But Cheese", acronym.getAttributes()[0].getValue());
+        assertEquals("ABC", acronym.getContent());
+
+        HtmlElement small = p1.getChildElements()[2];
+        assertEquals("small <br>text", small.getContent());
         // TODO: verify the rest of the document content
     }
 
@@ -361,28 +405,25 @@ public class HtmlPageParserImplTestCase extends TestCase {
     }
 
     private HtmlPage parse(String content) throws Exception {
-        HtmlPageParser parser = new HtmlPageParserImpl();
-        HtmlPage page = parser.parse(new java.io.ByteArrayInputStream(
+        HtmlPage page = this.parser.parse(new java.io.ByteArrayInputStream(
                                          content.getBytes("utf-8")), "utf-8");
         return page;
     }
 
 
     private HtmlPage parse(String content, HtmlNodeFilter filter) throws Exception {
-        HtmlPageParser parser = new HtmlPageParserImpl();
-        HtmlPage page = parser.parse(
+        HtmlPage page = this.parser.parse(
             new java.io.ByteArrayInputStream(content.getBytes("utf-8")), "utf-8",
             filter);        
         return page;
     }
     
     private HtmlPage parseFile(String fileName, String encoding) throws Exception {
-        System.out.println("Parsing file '" + fileName + "'");
-        HtmlPageParser parser = new HtmlPageParserImpl();
-        HtmlPage page = parser.parse(getClass().getResourceAsStream(fileName), encoding);
+        HtmlPage page = this.parser.parse(getClass().getResourceAsStream(fileName), encoding);
         return page;
     }
     
+
     private void print(HtmlElement element, String indent) {
         System.out.println(indent + "el: " + element.getName());
         HtmlElement[] children = element.getChildElements();

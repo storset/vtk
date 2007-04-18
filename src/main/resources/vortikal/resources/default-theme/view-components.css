@@ -40,24 +40,33 @@ ul.vrtx-vertical-menu li a:hover, ul.vrtx-vertical-menu li.vrtx-active-item a:ho
 
 ul.vrtx-horizontal-menu {
   white-space: nowrap;
-  background-color: #dfd2b0;
-  padding: .3em 0;
+  padding: 0 0 0 .4em;
   margin: 0;
+  border: 1px solid #ccc;
+  list-style-type: none;
+  height: 1%; /* triggers hasLayout in IE browsers */
+}
+
+ul.vrtx-horizontal-menu:after {
+  display: block;
+  content: ".";
+  height: 0;
+  visibility: hidden;
+  clear: both;
 }
 
 ul.vrtx-horizontal-menu li {
-  display:inline;
-  list-type: none; 
-  margin: 0px;
-  padding: 0px;
+  float: left;
+  margin: 0 .5em 0 0;
+  padding: 0;
 }
 
-ul.vrtx-horizontal-menu a {
-  margin: 0em;
-  padding: .3em .75em;
+ul.vrtx-horizontal-menu a {                            
+  display: block;
+  margin: 0;
+  padding: .2em .5em .3em .5em;
   color: #000;
   text-decoration: none;
-  height: 1%; /* triggers hasLayout in IE browsers */
 }
 
 ul.vrtx-horizontal-menu li.vrtx-active-item a {
@@ -70,6 +79,41 @@ ul.vrtx-horizontal-menu a:hover, ul.vrtx-horizontal-menu li.vrtx-active-item a:h
   border-bottom: .2em solid #666;
   padding-bottom: .1em;
 }
+
+/* Same menu but with inline style - better scalability but IE7 won't handle it properly when text size is increased or decreased */
+
+/* ul.vrtx-horizontal-menu { */
+/*   white-space: nowrap; */
+/*   background-color: #dfd2b0; */
+/*   padding: .3em 0; */
+/*   margin: 0; */
+/* } */
+
+/* ul.vrtx-horizontal-menu li { */
+/*   display:inline; */
+/*   list-type: none;  */
+/*   margin: 0px; */
+/*   padding: 0px; */
+/* } */
+
+/* ul.vrtx-horizontal-menu a { */
+/*   margin: 0em; */
+/*   padding: .3em .75em; */
+/*   color: #000; */
+/*   text-decoration: none; */
+/*   height: 1%; /\* triggers hasLayout in IE browsers *\/ */
+/* } */
+
+/* ul.vrtx-horizontal-menu li.vrtx-active-item a { */
+/*   border-bottom: .2em solid #000; */
+/*   padding-bottom: .1em; */
+/* } */
+
+/* ul.vrtx-horizontal-menu a:hover, ul.vrtx-horizontal-menu li.vrtx-active-item a:hover { */
+/*   color: #666; */
+/*   border-bottom: .2em solid #666; */
+/*   padding-bottom: .1em; */
+/* } */
 
 /* END include:uri-menu style=[vrtx-horizontal-menu] */
 
@@ -120,6 +164,7 @@ ul.vrtx-tab-menu li a:hover{
 div.vrtx-feed {
   padding: 1em;
   border: 1px solid #ccc;
+  font-size: .9em;
 }
 
 div.vrtx-feed a.feed-title {
@@ -224,6 +269,7 @@ span.vrtx-tags {
 a.vrtx-manage-url {
   font-size: .8em;
   float:right;
+  clear:both; 
 } 
 
 /* END resource:manage-url */

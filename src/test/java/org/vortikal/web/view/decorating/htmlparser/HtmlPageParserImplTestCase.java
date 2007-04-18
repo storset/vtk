@@ -60,6 +60,16 @@ public class HtmlPageParserImplTestCase extends TestCase {
         compositeTags.add("fieldset");
         compositeTags.add("optgroup");
         compositeTags.add("small");
+        compositeTags.add("big");
+        compositeTags.add("i");
+        compositeTags.add("tt");
+        compositeTags.add("em");
+        compositeTags.add("acronym");
+        compositeTags.add("strong");
+        compositeTags.add("code");
+        compositeTags.add("samp");
+        compositeTags.add("kbd");
+        compositeTags.add("var");
 
         emptyTags.add("br");
         emptyTags.add("area");
@@ -357,6 +367,34 @@ public class HtmlPageParserImplTestCase extends TestCase {
 
         HtmlElement small = p1.getChildElements()[2];
         assertEquals("small <br>text", small.getContent());
+        
+        HtmlElement big = p1.getChildElements()[3];
+        assertEquals("big <br>text", big.getContent());
+
+        HtmlElement italic = p1.getChildElements()[4];
+        assertEquals("italic <br>text", italic.getContent());
+        
+        HtmlElement tt = p1.getChildElements()[5];
+        assertEquals("teletype <br>text", tt.getContent());
+
+        HtmlElement em = p1.getChildElements()[6];
+        assertEquals("emphasized <br>text", em.getContent());
+        
+        HtmlElement strong = p1.getChildElements()[7];
+        assertEquals("strong <br>text", strong.getContent());
+
+        HtmlElement code = p1.getChildElements()[8];
+        assertEquals("code <br>text", code.getContent());
+
+        HtmlElement samp = p1.getChildElements()[9];
+        assertEquals("samp <br>text", samp.getContent());
+
+        HtmlElement kbd = p1.getChildElements()[10];
+        assertEquals("kbd <br>text", kbd.getContent());
+
+        HtmlElement var = p1.getChildElements()[11];
+        assertEquals("var <br>text", var.getContent());
+
         // TODO: verify the rest of the document content
     }
 

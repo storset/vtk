@@ -105,28 +105,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         Parser parser = new Parser(lexer);
         PrototypicalNodeFactory factory = new PrototypicalNodeFactory();
 
-//         factory.registerTag(new CompositeTag(new String[]{"pre"}));
-//         factory.registerTag(new CompositeTag(new String[]{"b"}));
-//         factory.registerTag(new CompositeTag(new String[]{"address"}));
-//         factory.registerTag(new CompositeTag(new String[]{"map"}));
-//         factory.registerTag(new CompositeTag(new String[]{"thead"}));
-//         factory.registerTag(new CompositeTag(new String[]{"tfoot"}));
-//         factory.registerTag(new CompositeTag(new String[]{"tbody"}));
-//         factory.registerTag(new CompositeTag(new String[]{"fieldset"}));
-//         factory.registerTag(new CompositeTag(new String[]{"optgroup"}));
-//         factory.registerTag(new CompositeTag(new String[]{"small"}));
-
-//         factory.registerTag(new EmptyTag(new String[]{"br"}));
-//         factory.registerTag(new EmptyTag(new String[]{"area"}));
-//         factory.registerTag(new EmptyTag(new String[]{"link"}));
-//         factory.registerTag(new EmptyTag(new String[]{"img"}));
-//         factory.registerTag(new EmptyTag(new String[]{"param"}));
-//         factory.registerTag(new EmptyTag(new String[]{"hr"}));
-//         factory.registerTag(new EmptyTag(new String[]{"input"}));
-//         factory.registerTag(new EmptyTag(new String[]{"col"}));
-//         factory.registerTag(new EmptyTag(new String[]{"base"}));
-//         factory.registerTag(new EmptyTag(new String[]{"meta"}));
-
         for (String tag: this.compositeTags) {
             factory.registerTag(new CompositeTag(new String[]{tag}));
         }

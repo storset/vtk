@@ -56,6 +56,16 @@
         <value>fieldset</value>
         <value>optgroup</value>
         <value>small</value>
+        <value>big</value>
+        <value>i</value>
+        <value>tt</value>
+        <value>em</value>
+        <value>acronym</value>
+        <value>strong</value>
+        <value>code</value>
+        <value>samp</value>
+        <value>kbd</value>
+        <value>var</value>
       </set>
     </property>
   </bean>

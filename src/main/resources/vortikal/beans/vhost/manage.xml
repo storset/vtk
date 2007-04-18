@@ -1745,10 +1745,10 @@
          class="org.vortikal.web.servlet.ServiceDelegatingLocaleResolver">
      <property name="serviceLocaleResolverMap">
        <map>
-         <entry key-ref="manageService" value-ref="manageLocaleResolver" />
+         <entry key-ref="viewService" value-ref="viewLocaleResolver" />
        </map>
      </property>
-     <property name="defaultLocaleResolver" ref="viewLocaleResolver" />
+     <property name="defaultLocaleResolver" ref="manageLocaleResolver" />
    </bean>
 
    <bean id="viewLocaleResolver"

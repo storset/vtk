@@ -11,12 +11,27 @@
     <release version="0.3.6-SNAPSHOT" date="In SVN" description="Release 0.3.6">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Decorating: Implemented virtual ("transformed") includes in
+        the include component.
+      </action>
       <action type="fix">
         Fixed issue with HTTP Digest authentication: handle commas in
         URIs
       </action>
+      <action type="fix">
+        Decorating: Fixed various HTML parser issues (mostly with tags
+        interpreted as empty)
+      </action>
+      <action type="fix">
+        Fixed crashes in XML edit caused by non thread-safe libraries
+      </action>
       <action type="update">
-        Library updates: Updgraded to Spring 2.0.4
+        Library update: Updgraded to Spring 2.0.4
+      </action>
+      <action type="update">
+        Kupu: Use Jericho HTML parser for pretty-printing HTML when
+        saving (http://jerichohtml.sourceforge.net)
       </action>
     </release>
 

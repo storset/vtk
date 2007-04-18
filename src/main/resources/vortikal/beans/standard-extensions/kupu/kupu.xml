@@ -212,24 +212,25 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <bean class="org.vortikal.webdav.PutController"
-            parent="requestLocalRepositoryAware">
-        <property name="maxUploadSize" value="1000000" />
-        <property name="supportIfHeaders" value="false" />
-        <property name="obeyClientCharacterEncoding" value="false" />
-         <property name="removeUserSpecifiedCharacterEncoding" value="true" />
-        <property name="requestFilters">
-          <list>
-            <ref bean="kupu.translateHeadersSaveFilter" />
-            <ref bean="kupu.replaceContentTypeFilter" />
-            <ref bean="${kupu.saveFilter}" />
-          </list>
-        </property>
-      </bean>
-    </property>
+    <property name="handler" ref="kupu.putController" />
   </bean>
 
+
+  <bean id="kupu.putController"
+        class="org.vortikal.webdav.PutController"
+        parent="requestLocalRepositoryAware">
+    <property name="maxUploadSize" value="1000000" />
+    <property name="supportIfHeaders" value="false" />
+    <property name="obeyClientCharacterEncoding" value="false" />
+    <property name="removeUserSpecifiedCharacterEncoding" value="true" />
+    <property name="requestFilters">
+      <list>
+        <ref bean="kupu.translateHeadersSaveFilter" />
+        <ref bean="kupu.replaceContentTypeFilter" />
+        <ref bean="${kupu.saveFilter}" />
+      </list>
+    </property>
+  </bean>
 
   <bean id="kupu.translateHeadersSaveFilter"
         class="org.vortikal.web.filter.ForcedRequestHeaderValuesFilter">

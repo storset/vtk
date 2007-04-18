@@ -81,6 +81,8 @@ public class JerichoHtmlInputStreamFilter extends AbstractRequestFilter {
                 boolean collapseWhiteSpace = true;
                 boolean indentAllElements = false;
 
+                String encoding = source.getEncoding();
+
                 CharStreamSource cs = source.indent(
                     indentText, tidyTags, collapseWhiteSpace, indentAllElements);
 
@@ -90,7 +92,7 @@ public class JerichoHtmlInputStreamFilter extends AbstractRequestFilter {
                 }
 
                 ByteArrayOutputStream result = new ByteArrayOutputStream();
-                cs.writeTo(new OutputStreamWriter(result));
+                cs.writeTo(new OutputStreamWriter(result, encoding));
                 
                 return new org.vortikal.util.io.ServletInputStream(
                     new ByteArrayInputStream(result.toByteArray()));

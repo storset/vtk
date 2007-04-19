@@ -199,6 +199,8 @@
       <map>
         <entry key="{http://www.uio.no/vortex/xsl-parameters}XmlSearcher"
                value-ref="legacyXmlSearcher" />
+        <entry key="{http://www.uio.no/vortex/xsl-parameters}Searcher"
+               value-ref="xmlSearcher" />
       </map>
     </property>
   </bean>

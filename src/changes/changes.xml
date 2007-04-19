@@ -8,9 +8,12 @@
 
   <body>
 
-    <release version="0.3.6-SNAPSHOT" date="In SVN" description="Release 0.3.6">
+    <release version="0.3.7-SNAPSHOT" date="In SVN" description="Release 0.3.7">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.3.6" date="2007-04-19" description="Release 0.3.6">
       <action type="add">
         Decorating: Implemented virtual ("transformed") includes in
         the include component.

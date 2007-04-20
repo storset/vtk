@@ -9,15 +9,16 @@
     <div class="feed-description">${feed.description?html}</div> 
   </#if>
 
-  <#if feed.entries?exists>
+  <#if feed.entries?exists && feed.entries?size gt 0>
     <#assign entries = feed.entries />
       <#if conf.sortByTitle>
         <#assign entries = entries?sort_by("title") />
       </#if>
-      <#assign maxMsgs = feed.entries?size />
-      <#if maxMsgs gt conf.maxMsgs>
-        <#assign maxMsgs = conf.maxMsgs />
-      </#if>      
+      <#assign maxMsgs = conf.maxMsgs />
+      <#if entries?size lt maxMsgs>
+        <#assign maxMsgs = entries?size />
+      </#if>
+
      <ul class="items">
        <#list entries[0..maxMsgs-1] as entry>
          <li>
@@ -29,15 +30,15 @@
 	       ${content.value} <#--${content.value?html}-->
 	    </#list>
           </div>
-        </#if>
-        <#if conf.publishedDate?exists && entry.publishedDate?exists>
+          </#if>
+          <#if conf.publishedDate?exists && entry.publishedDate?exists>
           <span class="published-date">
             <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
           </span>
-        </#if>
-      </li>
-    </#list>
-  </ul>
+          </#if>
+         </li>
+      </#list>
+    </ul>
   </#if>
 
   <#if conf.bottomLinkToAllMessages>

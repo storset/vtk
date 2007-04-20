@@ -311,7 +311,6 @@ public class URLUtil {
                     String key = pairs[i].substring(0, equalsIdx);
                     String value = pairs[i].substring(equalsIdx + 1);
                     String[] existing = queryMap.get(key);
-                    System.out.println("__key: " + key + ", existing: " + existing);
                     if (existing == null) {
                         queryMap.put(key, new String[]{value});
                     } else {

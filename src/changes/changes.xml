@@ -8,6 +8,12 @@
 
   <body>
 
+    <release version="0.3.6.1" date="2007-04-20" description="Release 0.3.6.1">
+      <action type="fix">
+        Decorating: feed component now handles empty feeds without crashing.
+      </action>
+    </release>
+
     <release version="0.3.6" date="2007-04-19" description="Release 0.3.6">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->

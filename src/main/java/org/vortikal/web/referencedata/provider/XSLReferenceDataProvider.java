@@ -36,7 +36,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
@@ -47,14 +49,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.search.XmlSearcher;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.w3c.dom.NodeList;
-import java.util.Iterator;
 
 
 /**
@@ -132,8 +132,6 @@ public class XSLReferenceDataProvider
     
     private BreadCrumbProvider breadCrumbProvider; 
         
-    private Map staticAttributes = new HashMap();
-    
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -164,11 +162,6 @@ public class XSLReferenceDataProvider
         this.breadCrumbProvider = breadCrumbProvider;
     }
 
-    public void setStaticAttributes(Map staticAttributes) {
-        this.staticAttributes = staticAttributes;
-    }
-    
-
     public void afterPropertiesSet() throws Exception {
         if (this.modelName == null) {
             throw new BeanInitializationException(
@@ -189,10 +182,6 @@ public class XSLReferenceDataProvider
         if (this.breadCrumbProvider == null) {
             throw new BeanInitializationException(
                 "Bean property 'breadCrumbProvider' must be set");
-        }
-        if (this.staticAttributes == null) {
-            throw new BeanInitializationException(
-                "Property 'staticAttributes' not set.");
         }
     }
 
@@ -237,10 +226,6 @@ public class XSLReferenceDataProvider
 
             if (this.supplyRequestParameters) {
                 subModel.put(REQUEST_PARAMETERS, getRequestParams(request));
-            }
-            for (Iterator i = this.staticAttributes.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                subModel.put(entry.getKey(), entry.getValue());
             }
 
         } catch (Throwable t) {

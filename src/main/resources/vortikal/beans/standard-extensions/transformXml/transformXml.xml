@@ -145,16 +145,38 @@
 
   <bean id="transformXmlView" 
         class="org.vortikal.web.view.xslt.ResourceXsltView">
-    <property name="linkConstructor" ref="linkConstructor" />
-    <property name="propertyAccessor" ref="propertyAccessor" />
     <property name="transformerManager" ref="transformerManager" />
     <property name="includeContentLanguageHeader" value="true" />
-    <property name="referenceDataProviders" ref="referenceDataProvidersForTransformXmlView" />
+    <property name="staticAttributes">
+      <map>
+        <entry key="Searcher" value-ref="xmlSearcher" />
+        <entry key="LinkConstructor" value-ref="linkConstructor" />
+        <entry key="PropertyAccessor" value-ref="propertyAccessor" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="xslBeanProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+          parent="requestLocalRepositoryAware">
+          <property name="service" ref="rssTransformService" />
+          <property name="modelName" value="xsltParameters" />
+          <property name="urlName" value="RSS-URL" />
+        </bean>
+        <ref bean="resourceContextProvider" />
+      </list>
+  </property>
   </bean>
 
   <bean id="transformRssView" class="org.vortikal.web.view.xslt.ResourceXsltView">
-    <property name="linkConstructor" ref="linkConstructor" />
     <property name="transformerManager" ref="rssTransformerManager" />
+    <property name="staticAttributes">
+      <map>
+        <entry key="Searcher" value-ref="xmlSearcher" />
+        <entry key="LinkConstructor" value-ref="linkConstructor" />
+        <entry key="PropertyAccessor" value-ref="propertyAccessor" />
+      </map>
+    </property>
     <property name="referenceDataProviders">
       <list>
         <ref bean="xslBeanProvider" />
@@ -169,22 +191,6 @@
   </bean>
 
 
-  <bean id="referenceDataProvidersForTransformXmlView"
-        class="org.springframework.beans.factory.config.ListFactoryBean">
-    <property name="sourceList">
-      <list>
-        <ref bean="xslBeanProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-          parent="requestLocalRepositoryAware">
-          <property name="service" ref="rssTransformService" />
-          <property name="modelName" value="xsltParameters" />
-          <property name="urlName" value="RSS-URL" />
-        </bean>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-  </bean>
-  
   <bean id="xslBeanProvider"
         class="org.vortikal.web.referencedata.provider.XSLReferenceDataProvider"
         parent="requestLocalRepositoryAware">
@@ -195,18 +201,6 @@
     <property name="adminService" ref="manageService" />
     <property name="modelName" value="xsltParameters" />
     <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />
-    <property name="staticAttributes">
-      <map>
-        <entry key="{http://www.uio.no/vortex/xsl-parameters}XmlSearcher"
-               value-ref="legacyXmlSearcher" />
-        <entry key="{http://www.uio.no/vortex/xsl-parameters}Searcher"
-               value-ref="xmlSearcher" />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="legacyXmlSearcher" class="org.vortikal.repositoryimpl.query.parser.XmlSearcher">
-    <property name="xmlSearcher" ref="xmlSearcher" />
   </bean>
 
   <bean id="xmlSearcher"
@@ -332,7 +326,7 @@
      <property name="size" value="${xslMaxSimultaneousTransformations}" />
    </bean>
 
-   <bean id="rssTransformerManager" class="org.vortikal.xml.TransformerManager">
+   <bean id="rssTransformerManager" parent="transformerManager">
      <description>
        XSLT Transformer manager for RSS-generation
      </description>
@@ -344,13 +338,6 @@
          </bean>
        </list>
      </property>
-     <property name="compilationURIResolvers" ref="standardXslCompilationResolvers" />
-     <property name="transformationURIResolvers">
-       <list>
-         <ref bean="xsltTransformationRepositoryURIResolver" />
-       </list>
-     </property>
-     <property name="transformationThrottle" ref="xmlTransformationThrottle" />
    </bean>
 
 

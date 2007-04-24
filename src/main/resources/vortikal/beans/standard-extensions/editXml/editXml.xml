@@ -98,6 +98,13 @@
   <!-- XML edit view -->
 
   <bean id="editView" class="org.vortikal.web.view.xslt.ResourceXsltView">
+    <property name="staticAttributes">
+      <map>
+        <entry key="Searcher" value-ref="xmlSearcher" />
+        <entry key="LinkConstructor" value-ref="linkConstructor" />
+        <entry key="PropertyAccessor" value-ref="propertyAccessor" />
+      </map>
+    </property>
     <property name="referenceDataProviders">
       <list>
         <ref bean="rawXmlQueryURLProvider" />
@@ -113,10 +120,9 @@
         </bean>
       </list>
     </property>
-    <property name="linkConstructor" ref="linkConstructor" />
     <property name="transformerManager" ref="editTransformerManager" />
   </bean>
-
+  
   <bean id="editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
@@ -126,7 +132,7 @@
       </list>
     </constructor-arg>
   </bean>
-
+  
   <bean id="editJSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
@@ -135,8 +141,8 @@
       </list>
     </constructor-arg>
   </bean>
-
-
+  
+  
   <bean id="xmlEditMessageSource"
         class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">

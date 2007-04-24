@@ -62,8 +62,6 @@ import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
-import org.vortikal.web.view.LinkConstructor;
-import org.vortikal.web.view.PropertyAccessor;
 import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
@@ -120,10 +118,11 @@ public class ResourceXsltView extends AbstractView
     private static Log processingLogger = LogFactory.getLog(ResourceXsltView.class.getName() + ".PROCESSING");
 
     private static String PARAMETER_NAMESPACE = "{http://www.uio.no/vortex/xsl-parameters}";
+
+    private Map<String, Object> staticAttributes = null;
+
     private TransformerManager transformerManager = null;
 
-    private LinkConstructor linkConstructor;
-    private PropertyAccessor propertyAccessor;
     private ReferenceDataProvider[] referenceDataProviders;
     
     private boolean includeContentLanguageHeader = false;
@@ -136,6 +135,10 @@ public class ResourceXsltView extends AbstractView
     public void setReferenceDataProviders(
         ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
+    }
+    
+    public void setStaticAttributes(Map<String, Object> staticAttributes) {
+        this.staticAttributes = staticAttributes;
     }
     
     public void setTransformerManager(TransformerManager transformerManager)  {
@@ -205,17 +208,13 @@ public class ResourceXsltView extends AbstractView
             PARAMETER_NAMESPACE + "RequestContext",
             new org.springframework.web.servlet.support.RequestContext(request));
 
-        if (this.linkConstructor != null)
-            transformer.setParameter(
-                    PARAMETER_NAMESPACE + "LinkConstructor",
-                    this.linkConstructor);
+        if (this.staticAttributes != null) {
+            for (Iterator<String> i = this.staticAttributes.keySet().iterator(); i.hasNext();) {
+                String key = i.next();
+                transformer.setParameter(PARAMETER_NAMESPACE + key, this.staticAttributes.get(key));
+            }
+        }
 
-        if (this.propertyAccessor != null)
-            transformer.setParameter(
-                    PARAMETER_NAMESPACE + "PropertyAccessor",
-                    this.propertyAccessor);
-
-        
         // Do the transformation
         JDOMSource source = new JDOMSource(document);
         source.setSystemId(AbstractPathBasedURIResolver.PROTOCOL_PREFIX 
@@ -423,14 +422,4 @@ public class ResourceXsltView extends AbstractView
         }
     }
 
-
-
-    public void setLinkConstructor(LinkConstructor linkConstructor) {
-        this.linkConstructor = linkConstructor;
-    }
-
-    public void setPropertyAccessor(PropertyAccessor propertyAccessor) {
-        this.propertyAccessor = propertyAccessor;
-    }
-    
 }

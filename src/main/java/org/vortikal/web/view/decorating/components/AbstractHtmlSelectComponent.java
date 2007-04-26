@@ -75,16 +75,16 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
             return;
         }
 
-        List elements = new ArrayList();
+        List<HtmlElement> elements = new ArrayList<HtmlElement>();
         elements.add(current);
 
         int i = 1;
         while (i < path.length && elements.size() > 0) {
             String name = path[i];
-            List list = new ArrayList();
+            List<HtmlElement> list = new ArrayList<HtmlElement>();
             
             for (int j = 0; j < elements.size(); j++) {
-                HtmlElement e = (HtmlElement)elements.get(j);
+                HtmlElement e = elements.get(j);
                 HtmlElement[] m = e.getChildElements(name);
                 list.addAll(Arrays.asList(m));
             }

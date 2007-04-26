@@ -113,7 +113,7 @@ public class TemplateDecorator implements Decorator {
         if (page.getRootElement() == null) {
             return;
         }
-        content.setContent(page.getRootElement().getEnclosedContent());
+        content.setContent(page.getStringRepresentation());
         if (tidy) {
             tidyContent(content);
         }

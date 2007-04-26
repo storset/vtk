@@ -226,7 +226,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
         
         if (!ContentTypeHelper.isTextContentType(servletResponse.getContentType())) {
             throw new DecoratorComponentException(
-                "Cannot include URI '" + uri + "': not a textual resource");
+                "Cannot include URI '" + uri + "': not a textual resource. " +
+                "Reported content type is '" + servletResponse.getContentType() + "'");
         }
 
         byte[] bytes = servletResponse.getContentBuffer();

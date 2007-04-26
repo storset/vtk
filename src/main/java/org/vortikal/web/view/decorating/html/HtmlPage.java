@@ -41,4 +41,5 @@ public interface HtmlPage {
     
     public HtmlElement getRootElement();
     
+    public String getStringRepresentation();
 }

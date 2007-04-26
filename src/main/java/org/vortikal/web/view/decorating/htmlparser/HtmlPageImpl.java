@@ -52,5 +52,9 @@ public class HtmlPageImpl implements HtmlPage {
     public String getDoctype() {
         return this.doctype;
     }
+
+    public String getStringRepresentation() {
+        return "<" + this.getDoctype() + ">\n" + this.root.getEnclosedContent();
+    }
     
 }

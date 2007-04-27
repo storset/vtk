@@ -48,10 +48,10 @@ public class HtmlElementImpl implements HtmlElement {
     private boolean xhtml;
 
     private String name;
-    private List attributes = new ArrayList();
-    private List contentList = new ArrayList();
-    private List childElements = new ArrayList();
-    private Map namedChildMap = new HashMap();
+    private List<HtmlAttribute> attributes = new ArrayList<HtmlAttribute>();
+    private List<HtmlContent> contentList = new ArrayList<HtmlContent>();
+    private List<HtmlElement> childElements = new ArrayList<HtmlElement>();
+    private Map<String, List<HtmlElement>> namedChildMap = new HashMap<String, List<HtmlElement>>();
         
     public HtmlElementImpl(String name, boolean empty, boolean xhtml) {
         this.name = name;
@@ -64,42 +64,42 @@ public class HtmlElementImpl implements HtmlElement {
     }
         
     public HtmlElement[] getChildElements() {
-        return (HtmlElement[]) this.childElements.toArray(
+        return this.childElements.toArray(
             new HtmlElement[this.childElements.size()]);
     }
         
     public HtmlElement[] getChildElements(String name) {
-        List list = (List) this.namedChildMap.get(name);
+        List<HtmlElement> list = this.namedChildMap.get(name.toLowerCase());
         if (list == null) {
-            list = new ArrayList();
+            list = new ArrayList<HtmlElement>();
         }
-        return (HtmlElement[]) list.toArray(new HtmlElement[list.size()]);
+        return list.toArray(new HtmlElement[list.size()]);
     }
 
     public HtmlContent[] getChildNodes() {
-        return (HtmlContent[]) this.contentList.toArray(
+        return this.contentList.toArray(
             new HtmlContent[this.contentList.size()]);
     }
     
     public void setChildNodes(HtmlContent[] childNodes) {
-        this.namedChildMap = new HashMap();
-        this.contentList = new ArrayList();
-        this.childElements = new ArrayList();
+        this.namedChildMap = new HashMap<String, List<HtmlElement>>();
+        this.contentList = new ArrayList<HtmlContent>();
+        this.childElements = new ArrayList<HtmlElement>();
         for (int i = 0; i < childNodes.length; i++) {
             addContent(childNodes[i]);
         }
     }
 
     public HtmlContent[] getChildNodes(HtmlNodeFilter filter) {
-        List list = new ArrayList();
+        List<HtmlContent> list = new ArrayList<HtmlContent>();
         for (int i = 0; i < this.contentList.size(); i++) {
-            HtmlContent content = (HtmlContent) this.contentList.get(i);
+            HtmlContent content = this.contentList.get(i);
             content = filter.filterNode(content);
             if (content != null) {
                 list.add(content);
             }
         }
-        return (HtmlContent[]) list.toArray(new HtmlContent[list.size()]);
+        return list.toArray(new HtmlContent[list.size()]);
     }
     
 
@@ -108,22 +108,22 @@ public class HtmlElementImpl implements HtmlElement {
         if (child instanceof HtmlElement) {
             HtmlElement theChild = (HtmlElement) child;
             this.childElements.add(theChild);
-            List childList = (List) this.namedChildMap.get(theChild.getName());
+            List<HtmlElement> childList = this.namedChildMap.get(theChild.getName().toLowerCase());
             if (childList == null) {
-                childList = new ArrayList();
-                this.namedChildMap.put(theChild.getName(), childList);
+                childList = new ArrayList<HtmlElement>();
+                this.namedChildMap.put(theChild.getName().toLowerCase(), childList);
             }
-            childList.add(child);
+            childList.add(theChild);
         }
     }
 
     public HtmlAttribute[] getAttributes() {
-        return (HtmlAttribute[]) this.attributes.toArray(
+        return this.attributes.toArray(
             new HtmlAttribute[this.attributes.size()]);
     }
 
     public void setAttributes(HtmlAttribute[] attributes) {
-        this.attributes = new ArrayList();
+        this.attributes = new ArrayList<HtmlAttribute>();
         for (int i = 0; i < attributes.length; i++) {
             this.attributes.add(attributes[i]);
         }

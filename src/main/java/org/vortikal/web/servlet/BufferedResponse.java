@@ -31,7 +31,6 @@
 package org.vortikal.web.servlet;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -54,8 +53,15 @@ import org.vortikal.util.web.HttpUtil;
 /**
  * A HttpServletResponse implementation that buffers the content and
  * headers. An optional limit can be set on the buffer size.
+ * 
+ * <p>FIXME: What to do with statusMessage?
+ * <br>FIXME: Allow several headers having the same name?
  */
 public class BufferedResponse implements HttpServletResponse {
+
+    private static final String DEFAULT_CHAR_ENCODING = "utf-8";
+    private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String CONTENT_TYPE = "Content-Type";
 
     private static final Pattern CONTENT_TYPE_HEADER_PATTERN
                                     = Pattern.compile(".+/.+;.*charset.*=.+");
@@ -64,9 +70,8 @@ public class BufferedResponse implements HttpServletResponse {
     private int status = 200;
     private String statusMessage = "OK";
     private ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
-    // FIXME: allow several headers having the same name?
-    private Map headers = new HashMap(); 
-    private List cookies = new ArrayList();
+    private Map<String, Object> headers = new HashMap<String, Object>(); 
+    private List<Cookie> cookies = new ArrayList<Cookie>();
     private int bufferSize = 1000;
     private String contentType = null;
     private int contentLength = -1;
@@ -109,7 +114,7 @@ public class BufferedResponse implements HttpServletResponse {
             return new String(this.bufferStream.toByteArray(), this.characterEncoding);
         }
 
-        return new String(this.bufferStream.toByteArray(), "utf-8");
+        return new String(this.bufferStream.toByteArray(), DEFAULT_CHAR_ENCODING);
     }
 
     public int getStatus() {
@@ -226,7 +231,7 @@ public class BufferedResponse implements HttpServletResponse {
         return url;
     }
 
-    public void sendError(int status, String statusMessage) throws IOException {
+    public void sendError(int status, String statusMessage) {
         this.status = status;
         this.statusMessage = statusMessage;
         this.committed = true;
@@ -295,9 +300,9 @@ public class BufferedResponse implements HttpServletResponse {
 
     private void applyHeaderSideEffects(String header, String value) {
 
-        if ("Content-Type".equals(header)) {
+        if (CONTENT_TYPE.equalsIgnoreCase(header)) {
             processContentTypeHeader(value);
-        } else if ("Content-Length".equals(header)) {
+        } else if (CONTENT_LENGTH.equalsIgnoreCase(header)) {
             try {
                 int intValue = Integer.parseInt(value);
                 this.contentLength = intValue;
@@ -323,10 +328,10 @@ public class BufferedResponse implements HttpServletResponse {
             }
             this.contentType = contentType;
             this.characterEncoding = characterEncoding;
-            this.headers.put("Content-Type", contentType);
+            this.headers.put(CONTENT_TYPE, contentType);
         } else {
             this.contentType = value;
-            this.headers.put("Content-Type", value);
+            this.headers.put(CONTENT_TYPE, value);
         }
     }
     

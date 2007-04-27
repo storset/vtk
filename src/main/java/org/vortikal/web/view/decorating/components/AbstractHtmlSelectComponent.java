@@ -68,7 +68,7 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
         HtmlPage page = request.getHtmlPage();
         HtmlElement current = page.getRootElement();
 
-        if (current == null || !current.getName().equals(path[0])) {
+        if (current == null || !current.getName().equalsIgnoreCase(path[0])) {
             if (logger.isDebugEnabled()) {
                 logger.debug("No node match for expression '" + expression + "'");
             }

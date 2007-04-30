@@ -33,7 +33,9 @@ package org.vortikal.repositoryimpl.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -46,11 +48,29 @@ import org.vortikal.security.PrincipalFactory;
 
 class SqlDaoUtils {
 
-    public static String getUriSqlWildcard(String uri) {
+    private static final Set<Character> WILDCARDS = new HashSet<Character>();
+    
+    static {
+        WILDCARDS.add('_');
+        WILDCARDS.add('%');
+    }
+
+    public static String getUriSqlWildcard(String uri, char escape) {
         if ("/".equals(uri)) {
             return "/%";
         }
-        return uri + "/%";
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < uri.length(); i++) {
+            char c = uri.charAt(i);
+            if (c == escape) {
+                result.append(escape);
+            } else if (WILDCARDS.contains(c)) {
+                result.append(escape);
+            }
+            result.append(c);
+        }
+        result.append("/%");
+        return result.toString();
     }
     
 

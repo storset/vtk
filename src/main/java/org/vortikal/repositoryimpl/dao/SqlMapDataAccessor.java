@@ -77,6 +77,8 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  */
 public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
+    public static final char SQL_ESCAPE_CHAR = '@';
+
     private Map sqlMaps;
 
     private Log logger = LogFactory.getLog(this.getClass());
@@ -232,7 +234,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 throw new IOException(e.getMessage());
             }
         }
-
     }
 
     
@@ -244,7 +245,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         try {
             this.sqlMapClient.startTransaction();
 
-            Map parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("loggerId", new Integer(loggerId));
             parameters.put("loggerType", new Integer(loggerType));
             parameters.put("uri", uri);
@@ -253,7 +254,8 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             parameters.put("collection", collection ? "Y" : "N");
             parameters.put("timestamp", timestamp);
             parameters.put("uri", uri);
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri));
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               uri, SQL_ESCAPE_CHAR));
 
             String sqlMap = null;
             if (collection && recurse) {
@@ -282,8 +284,9 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         try {
             this.sqlMapClient.startTransaction();
 
-            Map parameters = new HashMap();
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri));
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               uri, SQL_ESCAPE_CHAR));
             parameters.put("timestamp", new Date());
 
             String sqlMap = getSqlMap("discoverLocks");
@@ -315,8 +318,9 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         try {
             this.sqlMapClient.startTransaction();
 
-            Map parameters = new HashMap();
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI(),
+                                                                        SQL_ESCAPE_CHAR));
             String sqlMap = getSqlMap("listSubTree");
             List list = this.sqlMapClient.queryForList(sqlMap, parameters);
             String[] uris = new String[list.size()];
@@ -357,7 +361,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 throw new IOException(e.getMessage());
             }
         }
-
     }
     
 
@@ -376,18 +379,19 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             int oldInheritedFrom = findNearestACL(r.getURI());
             insertAcl(r);
                 
-            Map parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("resourceId", new Integer(r.getID()));
             parameters.put("inheritedFrom", null);
 
             String sqlMap = getSqlMap("updateAclInheritedFromByResourceId");
             this.sqlMapClient.update(sqlMap, parameters);
 
-            parameters = new HashMap();
+            parameters = new HashMap<String, Object>();
             parameters.put("previouslyInheritedFrom", new Integer(oldInheritedFrom));
             parameters.put("inheritedFrom", new Integer(r.getID()));
             parameters.put("uri", r.getURI());
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(r.getURI()));
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               r.getURI(), SQL_ESCAPE_CHAR));
             
             sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
             this.sqlMapClient.update(sqlMap, parameters);
@@ -408,7 +412,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             // previously "nearest" ACL node:
             int nearest = findNearestACL(r.getURI());
             
-            Map parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("inheritedFrom", new Integer(nearest));
             parameters.put("resourceId", new Integer(r.getID()));
             parameters.put("previouslyInheritedFrom", new Integer(r.getID()));
@@ -416,7 +420,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             sqlMap = getSqlMap("updateAclInheritedFromByResourceIdOrPreviousInheritedFrom");
             this.sqlMapClient.update(sqlMap, parameters);
         }
-
     }
     
     
@@ -428,7 +431,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             String sqlMap = getSqlMap("loadResourceByUri");
             boolean existed = this.sqlMapClient.queryForObject(sqlMap, r.getURI()) != null;
 
-            Map parameters = getResourceAsMap(r);
+            Map<String, Object> parameters = getResourceAsMap(r);
             if (!existed) {
                 parameters.put("aclInheritedFrom", new Integer(findNearestACL(r.getURI())));
             }
@@ -475,10 +478,11 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         try {
             this.sqlMapClient.startTransaction();
 
-            Map parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("uri", resource.getURI());
             parameters.put("uriWildcard",
-                           SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
+                           SqlDaoUtils.getUriSqlWildcard(resource.getURI(),
+                                                         SQL_ESCAPE_CHAR));
             
             String sqlMap = getSqlMap("deleteAclEntriesByUri");
             this.sqlMapClient.update(sqlMap, parameters);
@@ -514,13 +518,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         try {
             this.sqlMapClient.startTransaction();
 
-            Map parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                               parent.getURI()));
+                               parent.getURI(), SQL_ESCAPE_CHAR));
             parameters.put("depth", new Integer(SqlDaoUtils.getUriDepth(
                                                     parent.getURI()) + 1));
 
-            List children = new ArrayList();
+            List<ResourceImpl> children = new ArrayList<ResourceImpl>();
             String sqlMap = getSqlMap("loadChildren");
             List resources = this.sqlMapClient.queryForList(sqlMap, parameters);
             Map locks = loadLocksForChildren(parent);
@@ -542,8 +546,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 children.add(resource);
             }
 
-            ResourceImpl[] result = (ResourceImpl[]) children.toArray(
-                new ResourceImpl[children.size()]);
+            ResourceImpl[] result = children.toArray(new ResourceImpl[children.size()]);
             loadChildUrisForChildren(parent, result);
             loadACLs(result);
             loadPropertiesForChildren(parent, result);
@@ -569,8 +572,8 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         try {
             this.sqlMapClient.startTransaction();
 
-            Map parameters = new HashMap();
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri));
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri, SQL_ESCAPE_CHAR));
 
             String sqlMap = getSqlMap("discoverAcls");
             List uris = this.sqlMapClient.queryForList(sqlMap, parameters);
@@ -597,7 +600,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
     }
     
-    private void supplyFixedProperties(Map parameters, PropertySet properties) {
+    private void supplyFixedProperties(Map<String, Object> parameters, PropertySet properties) {
         List propertyList = properties.getProperties(Namespace.DEFAULT_NAMESPACE);
         for (Iterator i = propertyList.iterator(); i.hasNext();) {
             Property property = (Property) i.next();
@@ -624,11 +627,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             int depthDiff = SqlDaoUtils.getUriDepth(destURI)
                 - SqlDaoUtils.getUriDepth(resource.getURI());
     
-            Map parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("uri", resource.getURI());
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resource.getURI()));
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               resource.getURI(), SQL_ESCAPE_CHAR));
             parameters.put("destUri", destURI);
-            parameters.put("destUriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI));
+            parameters.put("destUriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               destURI, SQL_ESCAPE_CHAR));
             parameters.put("depthDiff", new Integer(depthDiff));
 
             if (fixedProperties != null) {
@@ -650,9 +655,10 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 int srcNearestACL = findNearestACL(resource.getURI());
                 int destNearestACL = findNearestACL(destURI);
 
-                parameters = new HashMap();
+                parameters = new HashMap<String, Object>();
                 parameters.put("uri", destURI);
-                parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI));
+                parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                                   destURI, SQL_ESCAPE_CHAR));
                 parameters.put("inheritedFrom", new Integer(destNearestACL));
                 parameters.put("previouslyInheritedFrom", new Integer(srcNearestACL));
 
@@ -676,18 +682,20 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
             } else {
                 Integer nearestAclNode = new Integer(findNearestACL(destURI));
-                parameters = new HashMap();
+                parameters = new HashMap<String, Object>();
                 parameters.put("uri", destURI);
-                parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI));
+                parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                                   destURI, SQL_ESCAPE_CHAR));
                 parameters.put("inheritedFrom", nearestAclNode);
 
                 sqlMap = getSqlMap("updateAclInheritedFromByUri");
                 this.sqlMapClient.update(sqlMap, parameters);
             }
 
-            parameters = new HashMap();
+            parameters = new HashMap<String, Object>();
             parameters.put("uri", destURI);
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI));
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               destURI, SQL_ESCAPE_CHAR));
             sqlMap = getSqlMap("clearPrevResourceIdByUri");
             this.sqlMapClient.update(sqlMap, parameters);
 
@@ -714,9 +722,9 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
 
     private void loadChildUris(ResourceImpl parent) throws SQLException {
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard",
-                       SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+                       SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("depth", new Integer(SqlDaoUtils.getUriDepth(
                                                 parent.getURI()) + 1));
 
@@ -738,14 +746,14 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         throws SQLException {
         
         // Initialize a map from child.URI to the set of grandchildren's URIs:
-        Map childMap = new HashMap();
+        Map<String, Set<String>> childMap = new HashMap<String, Set<String>>();
         for (int i = 0; i < children.length; i++) {
-            childMap.put(children[i].getURI(), new HashSet());
+            childMap.put(children[i].getURI(), new HashSet<String>());
         }
 
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard",
-                       SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+                       SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("depth", new Integer(SqlDaoUtils.getUriDepth(
                                                 parent.getURI()) + 2));
 
@@ -756,14 +764,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             Map map = (Map) i.next();
             String uri = (String) map.get("uri");
             String parentUri = URIUtil.getParentURI(uri);
-            ((Set) childMap.get(parentUri)).add(uri);
+            childMap.get(parentUri).add(uri);
         }
 
         for (int i = 0; i < children.length; i++) {
             if (!children[i].isCollection()) continue;
-            Set childURIs = (Set) childMap.get(children[i].getURI());
-            children[i].setChildURIs((String[]) childURIs.toArray(
-                                         new String[childURIs.size()]));
+            Set<String> childURIs = childMap.get(children[i].getURI());
+            children[i].setChildURIs(childURIs.toArray(new String[childURIs.size()]));
         }
     }
     
@@ -774,15 +781,15 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             return;
         }
 
-        Map resourceMap = new HashMap();
+        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
 
         for (int i = 0; i < resources.length; i++) {
-            resourceMap.put(new Integer(resources[i].getID()), resources[i]);
+            resourceMap.put(resources[i].getID(), resources[i]);
         }
         
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard",
-                       SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+                       SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("depth", new Integer(SqlDaoUtils.getUriDepth(
                                                 parent.getURI()) + 1));
 
@@ -794,14 +801,14 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
 
 
-    private Map loadLocks(String[] uris) throws SQLException {
-        if (uris.length == 0) return new HashMap();
-        Map parameters = new HashMap();
+    private Map<String, Lock> loadLocks(String[] uris) throws SQLException {
+        if (uris.length == 0) return new HashMap<String, Lock>();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uris", java.util.Arrays.asList(uris));
         parameters.put("timestamp", new Date());
         String sqlMap = getSqlMap("loadLocksByUris");
         List locks = this.sqlMapClient.queryForList(sqlMap, parameters);
-        Map result = new HashMap();
+        Map<String, Lock> result = new HashMap<String, Lock>();
 
         for (Iterator i = locks.iterator(); i.hasNext();) {
             Map map = (Map) i.next();
@@ -812,23 +819,24 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 (String) map.get("depth"),
                 (Date) map.get("timeout"));
             
-            result.put(map.get("uri"), lock);
+            result.put((String) map.get("uri"), lock);
         }
         return result;
     }
     
 
-    private Map loadLocksForChildren(ResourceImpl parent) throws SQLException {
+    private Map<String, Lock> loadLocksForChildren(ResourceImpl parent) throws SQLException {
 
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("timestamp", new Date());
-        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI()));
+        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                           parent.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("depth", new Integer(SqlDaoUtils.getUriDepth(
                                                 parent.getURI()) + 1));
         
         String sqlMap = getSqlMap("loadLocksForChildren");
         List locks = this.sqlMapClient.queryForList(sqlMap, parameters);
-        Map result = new HashMap();
+        Map<String, Lock> result = new HashMap<String, Lock>();
 
         for (Iterator i = locks.iterator(); i.hasNext();) {
             Map map = (Map) i.next();
@@ -839,7 +847,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 (String) map.get("depth"),
                 (Date) map.get("timeout"));
             
-            result.put(map.get("uri"), lock);
+            result.put((String) map.get("uri"), lock);
         }
         return result;
     }
@@ -872,7 +880,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                                            + "find id for action '" + action + "'");
                 }
 
-                Map parameters = new HashMap();
+                Map<String, Object> parameters = new HashMap<String, Object>();
                 parameters.put("actionId", actionID);
                 parameters.put("resourceId", new Integer(r.getID()));
                 parameters.put("principal", p.getQualifiedName());
@@ -891,14 +899,14 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
 
 
-    private Map loadActionTypes() throws SQLException {
-        Map actionTypes = new HashMap();
+    private Map<String, Integer> loadActionTypes() throws SQLException {
+        Map<String, Integer> actionTypes = new HashMap<String, Integer>();
 
         String sqlMap = getSqlMap("loadActionTypes");
         List list = this.sqlMapClient.queryForList(sqlMap, null);
         for (Iterator i = list.iterator(); i.hasNext();) {
             Map map = (Map) i.next();
-            actionTypes.put(map.get("name"), map.get("id"));
+            actionTypes.put((String) map.get("name"), (Integer) map.get("id"));
         }
         return actionTypes;
     }
@@ -922,14 +930,14 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         // Reverse list to get deepest URI first
         Collections.reverse(path);
         
-        Map parameters = new HashMap();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("path", path);
         String sqlMap = getSqlMap("findNearestAclResourceId");
         List list = this.sqlMapClient.queryForList(sqlMap, parameters);
-        Map uris = new HashMap();
+        Map<String, Integer> uris = new HashMap<String, Integer>();
         for (Iterator i = list.iterator(); i.hasNext();) {
              Map map = (Map) i.next();
-             uris.put(map.get("uri"), map.get("resourceId"));
+             uris.put((String) map.get("uri"), (Integer) map.get("resourceId"));
         }
 
         int nearestResourceId = -1;
@@ -952,7 +960,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
         if (resources.length == 0) return; 
 
-        Set resourceIds = new HashSet();
+        Set<Integer> resourceIds = new HashSet<Integer>();
         for (int i = 0; i < resources.length; i++) {
 
             Integer id = new Integer(
@@ -962,7 +970,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
             resourceIds.add(id);
         }
-        Map map = loadAclMap(new ArrayList(resourceIds));
+        Map<Integer, AclImpl> map = loadAclMap(new ArrayList<Integer>(resourceIds));
 
         if (map.isEmpty()) {
             throw new SQLException(
@@ -992,14 +1000,14 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     
 
 
-    private Map loadAclMap(List resourceIds) throws SQLException {
+    private Map<Integer, AclImpl> loadAclMap(List<Integer> resourceIds) throws SQLException {
 
-        Map resultMap = new HashMap();
+        Map<Integer, AclImpl> resultMap = new HashMap<Integer, AclImpl>();
         if (resourceIds.isEmpty()) {
             return resultMap;
         }
 
-        Map parameterMap = new HashMap();
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
         parameterMap.put("resourceIds", resourceIds);
 
         String sqlMap = getSqlMap("loadAclEntriesByResourceIds");
@@ -1050,7 +1058,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             boolean exists = this.sqlMapClient.queryForObject(
                 sqlMap, lock.getLockToken()) != null;
 
-            Map parameters = new HashMap();
+            Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("lockToken", lock.getLockToken());
             parameters.put("timeout", lock.getTimeout());
             parameters.put("owner", lock.getPrincipal().getQualifiedName());
@@ -1082,7 +1090,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 Property property = (Property) iter.next();
 
                 if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
-                    Map parameters = new HashMap();
+                    Map<String, Object> parameters = new HashMap<String, Object>();
                     parameters.put("namespaceUri", property.getNamespace().getUri());
                     parameters.put("name", property.getName());
                     parameters.put("resourceId", new Integer(r.getID()));
@@ -1116,12 +1124,14 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
     private void populateCustomProperties(ResourceImpl[] resources, List propertyList) {
 
-        Map resourceMap = new HashMap();
+        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
         for (int i = 0; i < resources.length; i++) {
             resourceMap.put(new Integer(resources[i].getID()), resources[i]);
         }
 
-        Map propMap = new HashMap();
+        Map<SqlDaoUtils.PropHolder, List<String>> propMap =
+            new HashMap<SqlDaoUtils.PropHolder, List<String>>();
+
         for (Iterator i = propertyList.iterator(); i.hasNext();) {
             Map propEntry = (Map) i.next();
 
@@ -1130,14 +1140,14 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             prop.name = (String) propEntry.get("name");
             prop.resourceId = ((Integer) propEntry.get("resourceId")).intValue();
             
-            List values = (List) propMap.get(prop);
+            List<String> values = propMap.get(prop);
             if (values == null) {
-                values = new ArrayList();
+                values = new ArrayList<String>();
                 prop.type = ((Integer) propEntry.get("typeId")).intValue();
                 prop.values = values;
                 propMap.put(prop, values);
             }
-            values.add(propEntry.get("value"));
+            values.add((String) propEntry.get("value"));
         }
 
         for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
@@ -1285,8 +1295,8 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
 
     
-    private Map getResourceAsMap(ResourceImpl r) {
-        Map map = new HashMap();
+    private Map<String, Object> getResourceAsMap(ResourceImpl r) {
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("parent", r.getParent());
         // XXX: use Integer (not int) as aclInheritedFrom field:
         map.put("aclInheritedFrom", r.getAclInheritedFrom() == PropertySetImpl.NULL_RESOURCE_ID
@@ -1325,7 +1335,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         return statementId;
     }
     
-    public Set discoverGroups() throws IOException {
+    public Set<Principal> discoverGroups() throws IOException {
         
         try {
             this.sqlMapClient.startTransaction();
@@ -1333,7 +1343,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             String sqlMap = getSqlMap("discoverGroups");
             List groupNames = this.sqlMapClient.queryForList(sqlMap, null);
         
-            Set groups = new HashSet();
+            Set<Principal> groups = new HashSet<Principal>();
             for (Iterator i = groupNames.iterator(); i.hasNext();) {
                 String groupName = (String)i.next();
                 Principal group = this.principalFactory.getGroupPrincipal(groupName);
@@ -1351,7 +1361,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
                 throw new IOException(e.getMessage());
             }
         }
-        
     }
     
 }

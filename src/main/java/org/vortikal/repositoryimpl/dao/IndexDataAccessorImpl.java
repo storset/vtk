@@ -132,10 +132,13 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
                 + "p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r "
                 + "left outer join extra_prop_entry p  on r.resource_id = p.resource_id "
-                + "where r.uri = ? or r.uri like ? order by r.uri, p.extra_prop_entry_id";
+                + "where r.uri = ? or r.uri like ? "
+                + "escape '" + SqlMapDataAccessor.SQL_ESCAPE_CHAR
+                + "' order by r.uri, p.extra_prop_entry_id";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, startURI);
-            stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(startURI));
+            stmt.setString(2, SqlDaoUtils.getUriSqlWildcard(
+                               startURI, SqlMapDataAccessor.SQL_ESCAPE_CHAR));
             ResultSet rs = stmt.executeQuery();
             
             return new ResultSetIteratorImpl(this.propertyManager, this.principalFactory,

@@ -166,7 +166,7 @@
           resultMap="ResourceAndExtraPropertiesWithAncestorIds">
     select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, p.* from vortex_resource r
     left outer join extra_prop_entry p  on r.resource_id = p.resource_id
-    where r.uri = #uri# or r.uri like #uriWildcard# order by r.uri, p.extra_prop_entry_id
+    where r.uri = #uri# or r.uri like #uriWildcard# escape '@' order by r.uri, p.extra_prop_entry_id
   </select>
   
   <select id="loadResourceAndExtraPropertiesByUri" 
@@ -344,24 +344,24 @@
       <isPropertyAvailable property="lastModified">#lastModified#</isPropertyAvailable>
       <isNotPropertyAvailable property="lastModified">last_modified</isNotPropertyAvailable>
     from vortex_resource
-    where uri = #uri# or uri like #uriWildcard#
+    where uri = #uri# or uri like #uriWildcard# escape '@'
   </insert>
 
 
   <delete id="deleteResourceByUri" parameterClass="java.util.Map">
-    delete from VORTEX_RESOURCE where uri = #uri# or uri like #uriWildcard#    
+    delete from VORTEX_RESOURCE where uri = #uri# or uri like #uriWildcard# escape '@'
   </delete>
 
 
   <select id="loadChildren" parameterClass="java.util.Map"
           resultMap="Resource">
-    select * from vortex_resource where uri like #uriWildcard# and depth = #depth#
+    select * from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth#
   </select>
 
 
   <select id="loadChildUrisForChildren" parameterClass="java.util.Map"
           resultMap="Uri">
-    select uri from vortex_resource where uri like #uriWildcard# and depth = #depth#
+    select uri from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth# 
   </select>
 
   <update id="updateAclInheritedFromByResourceId" parameterClass="java.util.Map">
@@ -374,14 +374,14 @@
   <update id="updateAclInheritedFromByUri" parameterClass="java.util.Map">
     update vortex_resource
       set acl_inherited_from = #inheritedFrom#
-      where uri = #uri# or uri like #uriWildcard#  
+      where uri = #uri# or uri like #uriWildcard# escape '@'
   </update>
 
 
   <update id="updateAclInheritedFromByPreviousInheritedFromAndUri" parameterClass="java.util.Map">
     update vortex_resource
       set acl_inherited_from = #inheritedFrom#
-      where (uri = #uri# or uri like #uriWildcard#)
+      where (uri = #uri# or uri like #uriWildcard# escape '@')
              and acl_inherited_from = #previouslyInheritedFrom#
   </update>
 
@@ -400,7 +400,7 @@
       r1.resource_id,
       r2.resource_id as inherited_from 
     from vortex_resource r1, vortex_resource r2 
-    where (r1.uri = #uri# or r1.uri like #uriWildcard#)
+    where (r1.uri = #uri# or r1.uri like #uriWildcard# escape '@')
            and r2.prev_resource_id = r1.acl_inherited_from
   </select>
 
@@ -408,7 +408,7 @@
   <update id="clearPrevResourceIdByUri" parameterClass="java.util.Map">
     update vortex_resource
       set prev_resource_id = null
-      where uri = #uri# or uri like #uriWildcard#  
+      where uri = #uri# or uri like #uriWildcard# escape '@'
   </update>
 
 
@@ -437,7 +437,7 @@
       inner join prop_type t on p.prop_type_id = t.prop_type_id
     where p.resource_id in
       (select resource_id from vortex_resource
-        where uri like #uriWildcard# and depth = #depth#)
+        where uri like #uriWildcard# escape '@' and depth = #depth#)
     order by p.resource_id, p.extra_prop_entry_id
   </select>
 
@@ -468,7 +468,7 @@
           p.value
         from vortex_resource r inner join extra_prop_entry p 
              on r.prev_resource_id = p.resource_id
-        where (r.uri = #destUri# or r.uri like #destUriWildcard#)
+        where (r.uri = #destUri# or r.uri like #destUriWildcard# escape '@')
           and r.prev_resource_id is not null
           order by p.extra_prop_entry_id) t
   </insert>    
@@ -482,7 +482,7 @@
   <delete id="deletePropertiesByUri" parameterClass="java.util.Map">
     delete from extra_prop_entry where resource_id in
       (select resource_id from vortex_resource
-       where uri = #uri# or uri like #uriWildcard#)
+       where uri = #uri# or uri like #uriWildcard# escape '@')
   </delete>
 
 
@@ -530,7 +530,7 @@
        a.granted_date
      from vortex_resource r inner join acl_entry a
        on r.prev_resource_id = a.resource_id 
-     where (r.uri = #destUri#  or r.uri like #destUriWildcard#)
+     where (r.uri = #destUri#  or r.uri like #destUriWildcard# escape '@')
             and r.prev_resource_id is not null    
   </insert>
   
@@ -540,14 +540,14 @@
       r.uri as uri
     from acl_entry a inner join vortex_resource r on a.resource_id = r.resource_id
     where r.acl_inherited_from is null and r.resource_id in
-      (select resource_id from vortex_resource where uri like #uriWildcard#)
+      (select resource_id from vortex_resource where uri like #uriWildcard# escape '@')
   </select>
 
 
   <delete id="deleteAclEntriesByUri" parameterClass="java.util.Map">
     delete from acl_entry where resource_id in
       (select resource_id from vortex_resource
-       where uri = #uri# or uri like #uriWildcard#)
+       where uri = #uri# or uri like #uriWildcard# escape '@')
   </delete>
 
 
@@ -583,7 +583,7 @@
     from vortex_resource r
       inner join vortex_lock l on r.resource_id = l.resource_id
       where l.timeout >= #timestamp# and r.resource_id in (select resource_id 
-        from vortex_resource where uri like #uriWildcard# and depth = #depth#)
+        from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth#)
   </select>
 
 
@@ -637,7 +637,7 @@
   <delete id="deleteLocksByUri" parameterClass="java.util.Map">
     delete from vortex_lock where resource_id in
       (select resource_id from vortex_resource
-       where uri = #uri# or uri like #uriWildcard#)
+       where uri = #uri# or uri like #uriWildcard# escape '@')
   </delete>
 
 
@@ -650,7 +650,7 @@
     select
       r.uri from vortex_resource r
         inner join vortex_lock l on r.resource_id = l.resource_id
-    where l.timeout &gt; #timestamp# and r.uri like #uriWildcard#
+    where l.timeout &gt; #timestamp# and r.uri like #uriWildcard# escape '@'
   </select>
   
   <select id="discoverGroups" resultMap="UserOrGroupName">
@@ -659,7 +659,7 @@
   
   
   <select id="listSubTree" parameterClass="java.util.Map" resultMap="Uri">
-    select uri from vortex_resource where uri like #uriWildcard#
+    select uri from vortex_resource where uri like #uriWildcard# escape '@'
   </select>
   
   
@@ -670,7 +670,7 @@
     select <include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
       #operation#, #timestamp#, uri, resource_id, is_collection 
     from vortex_resource 
-    where uri = #uri# or uri like #uriWildcard#
+    where uri = #uri# or uri like #uriWildcard# escape '@'
   </insert>
 
 

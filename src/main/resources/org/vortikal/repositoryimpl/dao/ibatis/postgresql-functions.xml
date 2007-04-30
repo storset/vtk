@@ -7,7 +7,7 @@
     update vortex_resource
       set acl_inherited_from = r.resource_id
         from vortex_resource r
-          where (vortex_resource.uri = #uri# or vortex_resource.uri like #uriWildcard#)
+          where (vortex_resource.uri = #uri# or vortex_resource.uri like #uriWildcard# escape '@')
                  and r.prev_resource_id = vortex_resource.acl_inherited_from
   </update>
 

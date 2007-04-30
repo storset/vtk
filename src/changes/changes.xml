@@ -11,6 +11,17 @@
     <release version="0.3.7-SNAPSHOT" date="In SVN" description="Release 0.3.7">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="fix">
+        Database: escape special SQL wildcard characters causing
+        problems when copying or moving resources with names
+        containing such characters.
+      </action>
+    </release>
+
+    <release version="0.3.6.1" date="2007-04-20" description="Release 0.3.6.1">
+      <action type="fix">
+        Decorating: feed component now handles empty feeds without crashing.
+      </action>
     </release>
 
     <release version="0.3.6" date="2007-04-19" description="Release 0.3.6">
@@ -647,7 +658,7 @@ specified service.
       services to 'hook into' another service trough a new
       category-based lookup system, avoiding the need to explicitly
       refer to child services from an existing service. (As a
-        consequence, services may now belong tomore than one category.)
+      consequence, services may now belong to more than one category.)
       </action>
       <action dev="gormap" type="update">Added refresh functionality
       to the document templates listing component for creating new

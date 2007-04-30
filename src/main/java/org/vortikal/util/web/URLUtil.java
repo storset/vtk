@@ -122,7 +122,7 @@ public class URLUtil {
         while (tokenizer.hasMoreTokens()) {
             String s = tokenizer.nextToken();
             elements.add(s);
-            StringBuffer path = new StringBuffer();
+            StringBuilder path = new StringBuilder();
             for (Iterator i = elements.iterator(); i.hasNext();) {
                 path.append("/").append((String) i.next());
             }
@@ -174,7 +174,7 @@ public class URLUtil {
         }
 
         String[] path = splitUri(uri);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         
         for (int i = 1; i < path.length; i++) {
 
@@ -227,7 +227,7 @@ public class URLUtil {
         }        
 
         String[] path = splitUri(uri);
-        StringBuffer result = new StringBuffer("");
+        StringBuilder result = new StringBuilder();
         
         for (int i = 1; i < path.length; i++) {
 

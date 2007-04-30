@@ -164,7 +164,7 @@ public class DefaultTemplateParser implements TemplateParser {
         if (delimIdx == -1) {
             return null;
         }
-        int endIdx = s.indexOf(" ");
+        int endIdx = nextWhitespaceIdx(s, 0);
         if (endIdx == -1) {
             endIdx = s.length();
         }

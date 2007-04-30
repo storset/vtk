@@ -100,6 +100,7 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
         Reader reader = new StringReader(NESTED_DIRECTIVES);
         ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
         assertEquals(3, parsedTemplate.length);
+        assertEquals(DummyComponent.class, parsedTemplate[1].getComponent().getClass());
         String begin = renderComponent(parsedTemplate[0].getComponent(),
                                        new HashMap());
         String end = renderComponent(parsedTemplate[2].getComponent(),
@@ -108,12 +109,12 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
         assertEquals("}", end);
     }
 
-    private static final String COMPLEX_EXAMPLE =
-        "${<html>${namespace:name\n var1 = [20] \r\nvar2=\r\n[30\\]] \rvar3=[400]}</html>}";
+    private static final String COMPLEX_TEMPLATE =
+        "${<html>${namespace:name\nvar1 = [20] \r\nvar2=\r\n[30\\]] \rvar3=[400]}</html>}";
 
-    public void testTemplateWithNewlines() throws Exception {
+    public void testComplexTemplate() throws Exception {
         DefaultTemplateParser parser = createParser();
-        Reader reader = new StringReader(COMPLEX_EXAMPLE);
+        Reader reader = new StringReader(COMPLEX_TEMPLATE);
         ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
         assertEquals(3, parsedTemplate.length);
         ComponentInvocation c = parsedTemplate[1];

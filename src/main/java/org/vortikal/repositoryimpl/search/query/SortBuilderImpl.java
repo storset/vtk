@@ -91,8 +91,8 @@ public class SortBuilderImpl implements SortBuilder {
                         + f.getClass().getName());
             }
 
-            // luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
-            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
+            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
+            //luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
 
         }
 

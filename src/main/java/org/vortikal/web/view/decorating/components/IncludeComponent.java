@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +45,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.context.ServletContextAware;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -265,6 +265,31 @@ public class IncludeComponent extends AbstractDecoratorComponent
         
         public String getRequestURI() {
             return this.uri;
+        }
+        
+        @Override
+        public String getContextPath() {
+            return "";
+        }
+
+        @Override
+        public String getPathInfo() {
+            return this.uri;
+        }
+
+        @Override
+        public String getServletPath() {
+            return "";
+        }
+
+        @Override
+        public String getPathTranslated() {
+            return null;
+        }
+
+        @Override
+        public String getRealPath(String arg0) {
+            return null;
         }
 
         public String getQueryString() {

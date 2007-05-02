@@ -28,6 +28,7 @@
         <ref bean="audioAuthorPropDef" />
         <ref bean="audioAlbumPropDef" />
         <ref bean="audioTitlePropDef" />
+        <ref bean="audioTrackPropDef" />
         <ref bean="audioGenrePropDef" />
       </list>
     </property>
@@ -75,6 +76,18 @@
   <bean id="audioTitlePropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
     <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.title}" />
+  </bean>
+
+  <bean id="audioTrackPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="track" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="audioTrackPropertyEvaluator" />
+  </bean>
+  <bean id="audioTrackPropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
+    <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.track}" />
   </bean>
 
   <bean id="audioGenrePropDef"

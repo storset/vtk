@@ -14,7 +14,17 @@
       <action type="fix">
         Database: escape special SQL wildcard characters causing
         problems when copying or moving resources with names
-        containing such characters.
+        containing such characters
+      </action>
+      <action type="fix">
+        Decorating: fix bug that caused DOCTYPE to be stripped from
+        HTML documents containing decorator component syntax
+      </action>
+      <action type="fix">
+        Decorating: handle upper-case tags in HTML documents
+      </action>
+      <action type="fix">
+        Decorating: syntax parsing fixes
       </action>
     </release>
 

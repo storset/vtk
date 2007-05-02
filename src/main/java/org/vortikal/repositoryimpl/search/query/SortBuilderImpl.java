@@ -50,17 +50,17 @@ import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
  */
 public class SortBuilderImpl implements SortBuilder {
 
-    private SortComparatorSource sortComparatorSource = null; 
+//    private SortComparatorSource sortComparatorSource = null; 
     
-    public SortBuilderImpl() throws SortBuilderException {
-        try {
-            sortComparatorSource = new CustomSortComparatorSource();
-        } catch (IOException e) {
-            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-        } catch (ParseException e) {
-            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-        }
-    }
+//    public SortBuilderImpl() throws SortBuilderException {
+//        try {
+//            sortComparatorSource = new CustomSortComparatorSource();
+//        } catch (IOException e) {
+//            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+//        } catch (ParseException e) {
+//            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+//        }
+//    }
 
     public org.apache.lucene.search.Sort buildSort(Sorting sort)
             throws SortBuilderException {

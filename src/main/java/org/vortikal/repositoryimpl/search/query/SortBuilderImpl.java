@@ -30,8 +30,19 @@
  */
 package org.vortikal.repositoryimpl.search.query;
 
+import java.io.IOException;
+import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.util.Iterator;
+import java.util.Locale;
 
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.FieldCache;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.ScoreDocComparator;
+import org.apache.lucene.search.SortComparatorSource;
+import org.python.parser.ParseError;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
@@ -43,41 +54,52 @@ import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 /**
  * 
  * @author oyviste
- *
+ * 
  */
 public class SortBuilderImpl implements SortBuilder {
 
-    public org.apache.lucene.search.Sort buildSort(Sorting sort) 
-        throws SortBuilderException {
+    public org.apache.lucene.search.Sort buildSort(Sorting sort)
+            throws SortBuilderException {
 
         if (sort == null) {
             return new org.apache.lucene.search.Sort(
-                new org.apache.lucene.search.SortField[0]);
+                    new org.apache.lucene.search.SortField[0]);
         }
 
-        org.apache.lucene.search.SortField[] luceneSortFields =
-            new org.apache.lucene.search.SortField[sort.getSortFields().size()];
-        
-        int j=0;
+        org.apache.lucene.search.SortField[] luceneSortFields = new org.apache.lucene.search.SortField[sort
+                .getSortFields().size()];
+
+        int j = 0;
         for (Iterator i = sort.getSortFields().iterator(); i.hasNext(); j++) {
-            SortField f = (SortField)i.next();
+            SortField f = (SortField) i.next();
             String fieldName = null;
-            boolean direction = (f.getDirection() == SortFieldDirection.ASC ? false : true);
+            boolean direction = (f.getDirection() == SortFieldDirection.ASC ? false
+                    : true);
 
             if (f instanceof TypedSortField) {
-                fieldName = ((TypedSortField)f).getType();
+                fieldName = ((TypedSortField) f).getType();
             } else if (f instanceof PropertySortField) {
-                PropertyTypeDefinition def = ((PropertySortField)f).getDefinition();
+                PropertyTypeDefinition def = ((PropertySortField) f)
+                        .getDefinition();
                 fieldName = DocumentMapper.getFieldName(def);
             } else {
-                throw new SortBuilderException("Unknown sorting type " + f.getClass().getName());
+                throw new SortBuilderException("Unknown sorting type "
+                        + f.getClass().getName());
             }
-            
-            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
-            
+
+            SortComparatorSource scs = null;
+            try {
+                scs = new CustomSortComparatorSource();
+            } catch (IOException e) {
+                throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+            } catch (ParseException e) {
+                throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+            }
+            // luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
+            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, scs, direction);
+
         }
-        
+
         return new org.apache.lucene.search.Sort(luceneSortFields);
     }
-    
-}
+    }

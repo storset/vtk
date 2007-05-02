@@ -72,4 +72,8 @@ public class CustomSortComparatorSource implements SortComparatorSource {
             }
         };
     }
+
+    public Collator getCollator() {
+        return collator;
+    }
 }

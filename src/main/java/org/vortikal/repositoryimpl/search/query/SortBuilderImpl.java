@@ -31,18 +31,10 @@
 package org.vortikal.repositoryimpl.search.query;
 
 import java.io.IOException;
-import java.text.Collator;
 import java.text.ParseException;
-import java.text.RuleBasedCollator;
 import java.util.Iterator;
-import java.util.Locale;
 
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.FieldCache;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.ScoreDocComparator;
 import org.apache.lucene.search.SortComparatorSource;
-import org.python.parser.ParseError;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
@@ -57,6 +49,18 @@ import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
  * 
  */
 public class SortBuilderImpl implements SortBuilder {
+
+    private SortComparatorSource sortComparatorSource = null; 
+    
+    public SortBuilderImpl() throws SortBuilderException {
+        try {
+            sortComparatorSource = new CustomSortComparatorSource();
+        } catch (IOException e) {
+            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+        } catch (ParseException e) {
+            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+        }
+    }
 
     public org.apache.lucene.search.Sort buildSort(Sorting sort)
             throws SortBuilderException {
@@ -87,16 +91,8 @@ public class SortBuilderImpl implements SortBuilder {
                         + f.getClass().getName());
             }
 
-            SortComparatorSource scs = null;
-            try {
-                scs = new CustomSortComparatorSource();
-            } catch (IOException e) {
-                throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-            } catch (ParseException e) {
-                throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-            }
             // luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
-            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, scs, direction);
+            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
 
         }
 

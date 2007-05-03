@@ -11,6 +11,9 @@
     <release version="0.3.8-SNAPSHOT" date="In SVN" description="Release 0.3.8">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="update">
+        Library update: Updgraded iBATIS to version 2.3.0
+      </action>
     </release>
 
     <release version="0.3.7" date="2007-05-03" description="Release 0.3.7">

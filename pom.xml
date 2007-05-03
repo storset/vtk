@@ -509,10 +509,10 @@
     </dependency>
 
     <dependency>
-      <groupId>com.ibatis</groupId>
-      <artifactId>ibatis2-sqlmap</artifactId>
-      <version>2.1.6.589</version>
-    </dependency>
+      <groupId>org.apache.ibatis</groupId>
+      <artifactId>ibatis-sqlmap</artifactId>
+      <version>2.3.0</version>
+    </dependency> 
 
     <dependency>
       <groupId>jug</groupId>

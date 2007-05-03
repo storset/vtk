@@ -30,8 +30,6 @@
  */
 package org.vortikal.repositoryimpl.content;
 
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,8 +38,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -63,7 +63,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
     private Log logger = LogFactory.getLog(this.getClass());
 
     private ApplicationContext applicationContext;
-    private Map contentFactories;
+    private Map<Class, ContentFactory> contentFactories;
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -72,7 +72,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
 
     public void afterPropertiesSet() {
         
-        this.contentFactories = new HashMap();
+        this.contentFactories = new HashMap<Class, ContentFactory>();
         
         Collection contentFactoryBeans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 

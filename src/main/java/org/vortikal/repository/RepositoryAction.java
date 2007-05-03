@@ -86,8 +86,8 @@ public final class RepositoryAction {
     /**
      * The list of defined repository actions
      */
-    public final static Set REPOSITORY_ACTION_SET = 
-        new HashSet(Arrays.asList(REPOSITORY_ACTIONS));
+    public final static Set<RepositoryAction> REPOSITORY_ACTION_SET = 
+        new HashSet<RepositoryAction>(Arrays.asList(REPOSITORY_ACTIONS));
     
 
     

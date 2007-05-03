@@ -58,11 +58,11 @@ public class ContentImpl implements Content {
     private ContentStore contentStore;
     private String uri;
     private ContentRepresentationRegistry contentRegistry;
-    private Map representations;
+    private Map<Class, Object> representations;
     
     public ContentImpl(String uri, ContentStore contentStore,
                        ContentRepresentationRegistry contentRegistry) {
-        this.representations = new HashMap();
+        this.representations = new HashMap<Class, Object>();
         this.contentStore = contentStore;
         this.contentRegistry = contentRegistry;
         this.uri = uri;

@@ -86,7 +86,8 @@ public class RepositoryResourceHelperImpl
     
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
 
-        ResourceImpl resource = new ResourceImpl(uri, this.propertyManager, this.authorizationManager);
+        ResourceImpl resource = new ResourceImpl(uri, this.propertyManager,
+                                                 this.authorizationManager);
         create(principal, resource, 
                 new Date(), collection, this.resourceTypeTree.getRoot());
 
@@ -106,7 +107,7 @@ public class RepositoryResourceHelperImpl
         
         newResource.setResourceType(rt.getName());
         
-        List newProps = new ArrayList();
+        List<Property> newProps = new ArrayList<Property>();
 
         // Evaluating resource type properties
         PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
@@ -133,7 +134,9 @@ public class RepositoryResourceHelperImpl
         // Checking child resource types by delegating
         List children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
         for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-            PrimaryResourceTypeDefinition child = (PrimaryResourceTypeDefinition) iterator.next();
+            PrimaryResourceTypeDefinition child =
+                (PrimaryResourceTypeDefinition) iterator.next();
+
             if (create(principal, newResource, time, isCollection, child))
                 break;
         }
@@ -142,7 +145,7 @@ public class RepositoryResourceHelperImpl
     
     private void evalCreateProperty(Principal principal, ResourceImpl newResource,
                             Date time, boolean isCollection, ResourceTypeDefinition rt,
-                            PropertyTypeDefinition[] definitions, List newProps) {
+                            PropertyTypeDefinition[] definitions, List<Property> newProps) {
         for (int i = 0; i < definitions.length; i++) {
             PropertyTypeDefinition propertyDef = definitions[i];
             
@@ -168,11 +171,13 @@ public class RepositoryResourceHelperImpl
             if (prop == null && propertyDef.isMandatory()) {
                 Value defaultValue = propertyDef.getDefaultValue();
                 if (defaultValue == null) {
-                    throw new InternalRepositoryException("Property " + propertyDef + "is " +
-                            "mandatory and evaluator returned false, but no default value is set." +
-                            "Resource " + newResource + " not evaluated.");
+                    throw new InternalRepositoryException(
+                        "Property " + propertyDef + "is " +
+                        "mandatory and evaluator returned false, but no default value is set." +
+                        "Resource " + newResource + " not evaluated.");
                 }
-                prop = this.propertyManager.createProperty(propertyDef.getNamespace(), propertyDef.getName());
+                prop = this.propertyManager.createProperty(
+                    propertyDef.getNamespace(), propertyDef.getName());
                 prop.setValue(defaultValue);
             } 
 
@@ -184,12 +189,12 @@ public class RepositoryResourceHelperImpl
     
 
     public ResourceImpl storeProperties(ResourceImpl originalResource, Principal principal,
-            Resource suppliedResource)
-    throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
+                                        Resource suppliedResource)
+        throws AuthenticationException, AuthorizationException,
+               InternalRepositoryException, IOException {
 
         return (ResourceImpl) evaluateChange(originalResource, 
                 (ResourceImpl)suppliedResource, principal, false, new Date());
-
     }    
     
     public ResourceImpl contentModification(ResourceImpl resource,
@@ -266,15 +271,18 @@ public class RepositoryResourceHelperImpl
         return fixedProps;
     }
 
-    private Resource evaluateChange(ResourceImpl originalResource, ResourceImpl suppliedResource,
-                                   Principal principal, boolean isContentChange, Date time) throws IOException {
+    private Resource evaluateChange(ResourceImpl originalResource,
+                                    ResourceImpl suppliedResource,
+                                    Principal principal,
+                                    boolean isContentChange,
+                                    Date time) throws IOException {
 
-        EvaluationContext ctx = new EvaluationContext(originalResource, suppliedResource, principal);
+        EvaluationContext ctx = new EvaluationContext(
+            originalResource, suppliedResource, principal);
 
-        recursiveTreeEvaluation(ctx, isContentChange, this.resourceTypeTree.getRoot(), time);
-        
+        recursiveTreeEvaluation(ctx, isContentChange,
+                                this.resourceTypeTree.getRoot(), time);
         checkForDeadAndZombieProperties(ctx);
-
         return ctx.getNewResource();
     }
     
@@ -314,8 +322,10 @@ public class RepositoryResourceHelperImpl
 
     }
     
-    private boolean recursiveTreeEvaluation(EvaluationContext ctx, boolean isContentChange,
-                                            PrimaryResourceTypeDefinition rt, Date time) throws IOException {
+    private boolean recursiveTreeEvaluation(EvaluationContext ctx,
+                                            boolean isContentChange,
+                                            PrimaryResourceTypeDefinition rt,
+                                            Date time) throws IOException {
 
         // Check resource type assertions
         if (!checkAssertions(rt, ctx.getNewResource(), ctx.getPrincipal())) {
@@ -369,11 +379,13 @@ public class RepositoryResourceHelperImpl
         if (evaluatedProp == null && propDef.isMandatory()) {
             Value defaultValue = propDef.getDefaultValue();
             if (defaultValue == null) {
-                throw new InternalRepositoryException("Property " + propDef + "is " +
-                        "mandatory and evaluator returned false, but no default value is set." +
-                        "Resource " + newResource + " not evaluated.");
+                throw new InternalRepositoryException(
+                    "Property " + propDef + "is " +
+                    "mandatory and evaluator returned false, but no default value is set." +
+                    "Resource " + newResource + " not evaluated.");
             }
-            evaluatedProp = this.propertyManager.createProperty(propDef.getNamespace(), propDef.getName());
+            evaluatedProp = this.propertyManager.createProperty(
+                propDef.getNamespace(), propDef.getName());
             evaluatedProp.setValue(defaultValue);
         } 
 
@@ -381,6 +393,8 @@ public class RepositoryResourceHelperImpl
             newResource.addProperty(evaluatedProp);
         }
     }
+
+
     /**
      * The evaluator will be given a clone of the original property as input if it 
      * previously existed, or an uninitialized property otherwise.
@@ -427,14 +441,16 @@ public class RepositoryResourceHelperImpl
             } 
             
             if (!prop.isValueInitialized()) {
-                throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
-                        + newResource.getURI() + "' returned not value initialized property " + 
-                        propDef);
+                throw new InternalRepositoryException(
+                    "Evaluator " + evaluator + " on resource '"
+                    + newResource.getURI() + "' returned not value initialized property " + 
+                    propDef);
             }
         } 
         
         return prop;
     }
+
 
     private Property evaluatePropertiesChange(EvaluationContext ctx, 
             PropertyTypeDefinition propDef, Date time) {
@@ -475,9 +491,10 @@ public class RepositoryResourceHelperImpl
             } 
             
             if (!property.isValueInitialized()) {
-                throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
-                        + newResource.getURI() + "' returned not value initialized property " + 
-                        propDef);
+                throw new InternalRepositoryException(
+                    "Evaluator " + evaluator + " on resource '"
+                    + newResource.getURI() + "' returned not value initialized property " + 
+                    propDef);
             } 
         } else if (property == null) {
             // On propchange we have to do contentchange on all props not having a 
@@ -501,7 +518,8 @@ public class RepositoryResourceHelperImpl
     }
 
 
-    private Property checkForUserAdditionOrChange(EvaluationContext ctx, PropertyTypeDefinition propDef) {
+    private Property checkForUserAdditionOrChange(EvaluationContext ctx,
+                                                  PropertyTypeDefinition propDef) {
         Property originalProp = ctx.getOriginalResource().getProperty(propDef);
         Property suppliedProp = ctx.getSuppliedResource().getProperty(propDef);
      
@@ -563,19 +581,24 @@ public class RepositoryResourceHelperImpl
     
     public void afterPropertiesSet() throws Exception {
         if (this.propertyManager == null) {
-            throw new BeanInitializationException("Property 'propertyManager' not set.");
+            throw new BeanInitializationException(
+                "Property 'propertyManager' not set.");
         } 
         if (this.contentStore == null) {
-            throw new BeanInitializationException("Property 'contentStore' not set.");
+            throw new BeanInitializationException(
+                "Property 'contentStore' not set.");
         }
         if (this.contentRepresentationRegistry == null) {
-            throw new BeanInitializationException("Property 'contentRepresentationRegistry' not set.");
+            throw new BeanInitializationException(
+                "Property 'contentRepresentationRegistry' not set.");
         }
         if (this.resourceTypeTree == null) {
-            throw new BeanInitializationException("Property 'resourceTypeTree' not set.");
+            throw new BeanInitializationException(
+                "Property 'resourceTypeTree' not set.");
         }
         if (this.authorizationManager == null) {
-            throw new BeanInitializationException("Property 'authorizationManager' not set.");
+            throw new BeanInitializationException(
+                "Property 'authorizationManager' not set.");
         }
         
     }

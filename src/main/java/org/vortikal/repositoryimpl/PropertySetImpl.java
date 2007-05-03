@@ -57,7 +57,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     
     protected String uri;
     protected String resourceType;
-    protected Map propertyMap;
+    protected Map<Namespace, Map<String, Property>> propertyMap;
     
     // Numeric ID used by database 
     protected int id = NULL_RESOURCE_ID;
@@ -72,7 +72,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
    
     public PropertySetImpl(String uri) {
         this.uri = uri;
-        this.propertyMap = new HashMap();
+        this.propertyMap = new HashMap<Namespace, Map<String, Property>>();
     }
  
     public int getID() {
@@ -125,22 +125,21 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     
 
     public boolean isInheritedAcl() {
-//         return this.aclInheritedFrom != NULL_RESOURCE_ID;
         return this.aclInherited;
     }
 
 
     public void addProperty(Property property) {
-        Map map = (Map) this.propertyMap.get(property.getNamespace());
+        Map<String, Property> map = this.propertyMap.get(property.getNamespace());
         if (map == null) {
-            map = new HashMap();
+            map = new HashMap<String, Property>();
             this.propertyMap.put(property.getNamespace(), map);
         }
         map.put(property.getName(), property);
     }
  
     public void removeProperty(Namespace namespace, String name) {
-        Map map = (Map) this.propertyMap.get(namespace);
+        Map<String, Property> map = this.propertyMap.get(namespace);
         if (map != null) {
             map.remove(name);
         }
@@ -152,29 +151,26 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     
     public Property getPropertyByPrefix(String prefix, String name) {
         Namespace namespace = Namespace.getNamespaceFromPrefix(prefix);
-        Map map = (Map) this.propertyMap.get(namespace);
+        Map<String, Property> map = this.propertyMap.get(namespace);
         if (map == null) return null;
-        
-        return (Property) map.get(name);
+        return map.get(name);
     }
 
     public Property getProperty(Namespace namespace, String name) {
-        Map map = (Map) this.propertyMap.get(namespace);
+        Map<String, Property> map = this.propertyMap.get(namespace);
         if (map == null) return null;
-        
-        return (Property) map.get(name);
+        return map.get(name);
     }
 
-    public List getProperties(Namespace namespace) {
-        Map map = (Map) this.propertyMap.get(namespace);
-        if (map == null) return new ArrayList();
-        return new ArrayList(map.values());
+    public List<Property> getProperties(Namespace namespace) {
+        Map<String, Property> map = this.propertyMap.get(namespace);
+        if (map == null) return new ArrayList<Property>();
+        return new ArrayList<Property>(map.values());
     }
 
-    public List getProperties() {
-        List props = new ArrayList();
-        for (Iterator iter = this.propertyMap.values().iterator(); iter.hasNext();) {
-            Map map = (Map) iter.next();
+    public List<Property> getProperties() {
+        List<Property> props = new ArrayList<Property>();
+        for (Map<String, Property> map: this.propertyMap.values()) {
             props.addAll(map.values());
         }
         return props;

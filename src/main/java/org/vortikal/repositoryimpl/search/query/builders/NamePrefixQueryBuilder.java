@@ -36,6 +36,7 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.vortikal.repository.search.query.NamePrefixQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.PrefixTermFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -64,6 +65,12 @@ public class NamePrefixQueryBuilder implements QueryBuilder {
                                                         this.query.getTerm());
         
         Filter filter = new PrefixTermFilter(prefixTerm);
+        
+        if (query.isInverted()) {
+            filter = new InversionFilter(filter);
+        }
+        
+
         
         ConstantScoreQuery csq = new ConstantScoreQuery(filter);
         

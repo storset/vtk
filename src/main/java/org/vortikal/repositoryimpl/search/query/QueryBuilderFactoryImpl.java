@@ -118,8 +118,9 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
        
         else if (query instanceof UriPrefixQuery) {
             String uri = ((UriPrefixQuery)query).getUri();
+            boolean inverted = ((UriPrefixQuery)query).isInverted();
             Term idTerm = getPropertySetIdTermFromIndex(uri);
-            builder =  new UriPrefixQueryBuilder(uri, idTerm);
+            builder =  new UriPrefixQueryBuilder(uri, idTerm, inverted);
         }
         
         else if (query instanceof UriDepthQuery) {

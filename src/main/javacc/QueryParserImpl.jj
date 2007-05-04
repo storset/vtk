@@ -17,6 +17,7 @@ import java.io.StringReader;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.NamePrefixQuery;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
@@ -76,13 +77,13 @@ public class QueryParserImpl implements QueryParser {
         return new PropertyTermQuery(def, value, operator);
     }
 
-    private Query getPropPrefixQuery(String prefix, String name, String value) {
+    private Query getPropPrefixQuery(String prefix, String name, String value, boolean inverted) {
         PropertyTypeDefinition def = 
             resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
         if (def == null)
             throw new RuntimeException("Unknown property " + prefix + ":" + name);
 
-        return new PropertyPrefixQuery(def, value);
+        return new PropertyPrefixQuery(def, value, inverted);
     }
 
     private String unescape(String escaped) {
@@ -258,20 +259,23 @@ Query UriQuery() :
 
 Query UriPrefixQuery() : 
 {
-    Token t;
+    Token t, eq = null;
 }
 {
-    <URI> <EQ> t=<VALUE> <ASTERISK>
-        { return new UriPrefixQuery(t.image); }
+    <URI> (eq=<EQ> | <NE>) t=<VALUE> <ASTERISK>
+        { 
+            boolean inverted = (eq == null); 
+            return new UriPrefixQuery(t.image, inverted); 
+        }
 }
 
 Query UriTermQuery() : 
 {
-    Token t, eq = null, ne = null;
+    Token t, eq = null;
     UriOperator o;
 }
 {
-    <URI> (eq=<EQ> | ne=<NE>) t=<VALUE>
+    <URI> (eq=<EQ> | <NE>) t=<VALUE>
         {  
             if (eq != null) 
                 o = UriOperator.EQ;
@@ -317,11 +321,14 @@ Query NameQuery() :
 
 Query NamePrefixQuery() : 
 {
-    Token t;
+    Token t, eq=null;
 }
 {
-    <NAME> <EQ> t=<VALUE> <ASTERISK>
-        { return new UriPrefixQuery(t.image); }
+    <NAME> (<NE> | eq=<EQ>) t=<VALUE> <ASTERISK>
+        { 
+            boolean inverted = (eq == null); 
+            return new NamePrefixQuery(t.image, inverted); 
+        }
 }
 
 Query NameTermQuery() : 
@@ -385,11 +392,11 @@ Query PropertyExistsQuery() : {
 
 Query PropertyPrefixQuery() : 
 {
-    Token p=null, n, v;
+    Token p=null, n, v, eq=null;
 }
 {
     [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> 
-        <EQ>
+        (eq=<EQ> | <NE>)
         //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
         v=<VALUE> <ASTERISK>
         { 
@@ -398,8 +405,8 @@ Query PropertyPrefixQuery() :
             String name = n.image;
             
             String value = unescape(v.image);
-
-            return getPropPrefixQuery(prefix, name, value); 
+            boolean inverted = (eq == null);
+            return getPropPrefixQuery(prefix, name, value, inverted); 
         }
 }
 

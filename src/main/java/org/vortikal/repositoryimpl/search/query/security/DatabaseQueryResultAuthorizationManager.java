@@ -80,7 +80,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
         
     }
 
-    public void authorizeQueryResults(String token, List rsiList) 
+    public void authorizeQueryResults(String token, List<ResultSecurityInfo> rsiList) 
         throws QueryAuthorizationException {
         Principal principal = this.tokenManager.getPrincipal(token);
         
@@ -91,15 +91,14 @@ public final class DatabaseQueryResultAuthorizationManager implements
             this.logger.info("Unconditionally authorizing all results for principal '" + 
                     principal + "'");
             
-            for (Iterator i = rsiList.iterator(); i.hasNext();) {
-                ResultSecurityInfo rsi = (ResultSecurityInfo) i.next();
-                rsi.setAuthorized(true);
+            for (Iterator<ResultSecurityInfo> i = rsiList.iterator(); i.hasNext();) {
+                i.next().setAuthorized(true);
             }
             
             return;
         }
         
-        Set principalNames = new HashSet();
+        Set<String> principalNames = new HashSet<String>();
         if (principal != null) {
             principalNames.add(principal.getQualifiedName());
             

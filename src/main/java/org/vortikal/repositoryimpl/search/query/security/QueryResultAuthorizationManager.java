@@ -40,7 +40,7 @@ import java.util.List;
  */
 public interface QueryResultAuthorizationManager {
     
-    public void authorizeQueryResults(String token, List queryResultSecurityInfo)   
+    public void authorizeQueryResults(String token, List<ResultSecurityInfo> queryResultSecurityInfo)   
         throws QueryAuthorizationException;
     
     

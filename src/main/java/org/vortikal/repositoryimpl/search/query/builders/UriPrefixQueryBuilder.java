@@ -33,9 +33,14 @@ package org.vortikal.repositoryimpl.search.query.builders;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
@@ -47,38 +52,44 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
 
     private Term idTerm;
     private String uri;
+    private final boolean inverted;
     
     /**
      * 
      * @param idTerm The <code>Term</code> containing the special id of the property set
      *        that represents the URI prefix (the ancestor).
      */
-    public UriPrefixQueryBuilder(String uri, Term idTerm) {
+    public UriPrefixQueryBuilder(String uri, Term idTerm, boolean inverted) {
         this.idTerm = idTerm;
         this.uri = uri;
+        this.inverted = inverted;
     }
     
     public Query buildQuery() throws QueryBuilderException {
         // Use ancestor ids field from index to get all descendants
-        TermQuery uriDescendants = 
+        Query query = 
             new TermQuery(
                     new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, this.idTerm.text()));
 
-        if (this.uri.endsWith("/")) {
-            // Don't include parent
+        if (!this.uri.endsWith("/")) {
+            // Include parent
             // XXX: Note that the root URI '/' is a special case, it will not be included
             //      as part of URI prefix query results (only the children).
             //      If we need to differentiate between the "include-self or not"-case
             //      for the root resource, this info has to be explicitly available in query class.
-            return uriDescendants;
+            BooleanQuery bq = new BooleanQuery();
+            TermQuery uriTermq = new TermQuery(this.idTerm);
+            bq.add(uriTermq, BooleanClause.Occur.SHOULD);
+            bq.add(query, BooleanClause.Occur.SHOULD);
+            query = bq;
         }
-        // Include the parent URI as well
-        BooleanQuery bq = new BooleanQuery();
-        TermQuery uriTermq = new TermQuery(this.idTerm);
-        bq.add(uriTermq, BooleanClause.Occur.SHOULD);
-        bq.add(uriDescendants, BooleanClause.Occur.SHOULD);
         
-        return bq;
+        if (this.inverted) {
+            Filter filter = new InversionFilter(new QueryFilter(query));
+            return new ConstantScoreQuery(filter);
+        }
+        
+        return query;
     }
 
 }

@@ -35,9 +35,12 @@ package org.vortikal.repository.search.query;
 public class NamePrefixQuery implements NameQuery {
 
     private final String term;
-
-    public NamePrefixQuery(String term) {
+    private boolean inverted;
+    
+    
+    public NamePrefixQuery(String term, boolean inverted) {
         this.term = term;
+        this.inverted = inverted;
     }
 
     public String getTerm() {
@@ -51,6 +54,10 @@ public class NamePrefixQuery implements NameQuery {
         buf.append(prefix).append("Term = ").append(this.term).append("\n");
 
         return buf.toString();
+    }
+
+    public boolean isInverted() {
+        return inverted;
     }
     
 }

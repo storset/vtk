@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,8 +39,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.InternalRepositoryException;

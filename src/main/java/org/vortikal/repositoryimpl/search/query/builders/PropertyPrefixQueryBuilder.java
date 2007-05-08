@@ -38,6 +38,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.PrefixTermFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -69,6 +70,10 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
         
         Filter filter = new PrefixTermFilter(
                                 new Term(DocumentMapper.getFieldName(def), term));
+        
+        if (ppq.isInverted()) {
+            filter = new InversionFilter(filter);
+        }
         
         return new ConstantScoreQuery(filter);
         

@@ -412,18 +412,19 @@ public class ServiceImpl
     }
   
     
-    private List getUnknownServiceChildren() {
-        // find all services, and sort out those of category 'category';
+    private List<Service> getUnknownServiceChildren() {
+        // find all services, and sort out those who declare this
+        // service as their parent:
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, Service.class, true, false);
-    
-        List allServices = new ArrayList(matchingBeans.values());
-        List list = new ArrayList(allServices);
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
-            if (service.getParent() != this) 
-                allServices.remove(service);
 
+        List<Service> allServices = new ArrayList<Service>();
+        for (Object key: matchingBeans.keySet()) {
+            Object o = matchingBeans.get(key);
+            Service service = (Service) o;
+            if (service.getParent() == this) {
+                allServices.add(service);
+            }
         }
         Collections.sort(allServices, new OrderComparator());
         return allServices;

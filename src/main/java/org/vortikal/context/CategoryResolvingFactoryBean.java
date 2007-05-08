@@ -30,19 +30,17 @@
  */
 package org.vortikal.context;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
 
@@ -53,7 +51,6 @@ import org.springframework.core.Ordered;
  * Configurable JavaBean properties:
  * 
  * <ul>
- * 
  *   <li><code>category</code> - required {@link String} describing
  *   the category of the objects
  *   <li><code>clazz</code> - required bean {@link Class type}. Must
@@ -64,57 +61,50 @@ import org.springframework.core.Ordered;
  *   of the default {@link OrderComparator}.
  * </ul>
  */
-public class CategoryResolvingFactoryBean
-  implements ApplicationContextAware, FactoryBean, InitializingBean {
-
-    private ApplicationContext applicationContext;
+public class CategoryResolvingFactoryBean extends AbstractFactoryBean {
+    
     private String category;
     private Class clazz;
     private boolean ordered;
     private Comparator comparator;
     
-
     /**
-     * Gets a list of obkects declared to belong to a certain category
-     * (this.category).
+     * Gets a list of objects declared to belong to a certain category
+     * (this.category). The return value is an array of object with
+     * type <code>this.clazz</code>
      *
      * @return a list of objects belonging to the category in
      * question. If no such objects exist, an empty list is returned.
      */
-    private List getObjectsOfCategory() {
-        // find all objects of the given class and sort out those of
-        // category 'category';
+    protected Object createInstance() {
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-            this.applicationContext, this.clazz, true, false);
+            (ListableBeanFactory) getBeanFactory(), this.clazz, true, false);
     
-        List objects = new ArrayList(matchingBeans.values());
-        List list = new ArrayList(objects);
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            Categorizable categorizable = (Categorizable) iter.next();
-            if (categorizable.getCategories() == null 
-                || !categorizable.getCategories().contains(this.category)) 
-                objects.remove(categorizable);
+        List result = new ArrayList();
+        for (Object o: matchingBeans.values()) {
+            Categorizable categorizable = (Categorizable) o;
+            if (categorizable.getCategories() != null
+                && categorizable.getCategories().contains(this.category)) {
+                result.add(categorizable);
+            }
         }
-        
+
         if (this.comparator != null) {
-            Collections.sort(objects, this.comparator);
+            Collections.sort(result, this.comparator);
         } else if (this.ordered) {
-            Collections.sort(objects, new OrderComparator());
+            Collections.sort(result, new OrderComparator());
         }
-        
-        return objects;
+        Object array = Array.newInstance(this.clazz, result.size());
+        int n = 0;
+        for (Object o: result) {
+            Array.set(array, n++, o);
+        }
+        return array;
     }
-
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
-    public Object getObject() throws Exception {
-        return getObjectsOfCategory().toArray(new Object[0]);
-    }
+    
 
     public Class getObjectType() {
-        return this.clazz;
+        return Array.newInstance(this.clazz, 0).getClass();
     }
 
     public boolean isSingleton() {
@@ -135,15 +125,14 @@ public class CategoryResolvingFactoryBean
     
 
     public void afterPropertiesSet() throws Exception {
-        if (this.category == null) 
+        super.afterPropertiesSet();
+       if (this.category == null) 
             throw new BeanInitializationException("Property 'category' must be specified");
         if (this.clazz == null)
             throw new BeanInitializationException("Property 'clazz' must be specified");
         if (! Categorizable.class.isAssignableFrom(this.clazz))
             throw new BeanInitializationException(
                 "Property 'clazz' must be a class implementing Categorizable");
-
         this.ordered = Ordered.class.isAssignableFrom(this.clazz);
-        
     }
 }

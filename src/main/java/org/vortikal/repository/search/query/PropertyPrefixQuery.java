@@ -35,14 +35,20 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class PropertyPrefixQuery extends AbstractPropertyQuery {
 
     private final String term;
+    private final boolean inverted;
 
-    public PropertyPrefixQuery(PropertyTypeDefinition propertyDefinition, String term) {
+    public PropertyPrefixQuery(PropertyTypeDefinition propertyDefinition, String term, boolean inverted) {
         super(propertyDefinition);
         this.term = term;
+        this.inverted = inverted;
     }
 
     public String getTerm() {
         return this.term;
+    }
+
+    public boolean isInverted() {
+        return this.inverted;
     }
 
     public String dump(String prefix) {

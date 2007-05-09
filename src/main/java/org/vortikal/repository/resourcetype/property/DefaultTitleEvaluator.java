@@ -28,49 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype;
+package org.vortikal.repository.resourcetype.property;
 
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.RepositoryAction;
+import java.util.Date;
 
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.NameChangePropertyEvaluator;
+import org.vortikal.security.Principal;
 
 /**
- * if (isMandatory() && hasDefaultValue() && evaluator.returnsFalse()) {
- *   propValue = default
- * }
+ * Evaluate name....
  */
-public interface PropertyTypeDefinition {
-    
-    public Namespace getNamespace();
-    
-    public String getName();
+public class DefaultTitleEvaluator implements NameChangePropertyEvaluator, CreatePropertyEvaluator {
 
-    public int getType();
-    
-    public boolean isMultiple();
+    public boolean nameModification(Principal principal, Property property, Resource newResource, Date time) {
+        property.setStringValue(newResource.getName());
+        return true;
+    }
 
-    public RepositoryAction getProtectionLevel();
-    
-    public boolean isMandatory();
+    public boolean create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+        property.setStringValue(ancestorPropertySet.getName());
+        return true;
+    }
 
-    public Value getDefaultValue();
-
-    public Constraint getConstraint();
-
-    public CreatePropertyEvaluator getCreateEvaluator();
-
-    public ContentModificationPropertyEvaluator getContentModificationEvaluator();
-
-    public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator();
-
-    public NameChangePropertyEvaluator getNameModificationEvaluator();
-
-    public PropertyValidator getValidator();
-    
-    public Value[] getAllowedValues();
 
 }
-
-
-
-

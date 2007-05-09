@@ -16,6 +16,7 @@
     </property>    
     <property name="propertyTypeDefinitions">
       <list>
+        <!--ref bean="titlePropDef" /-->
         <ref bean="ownerPropDef" />
         <ref bean="createdByPropDef" />
         <ref bean="collectionPropDef" />
@@ -44,6 +45,17 @@
   </bean>
 
   
+  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="newTitle" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="true" />
+    <property name="createEvaluator" ref="titleEvaluator" />
+    <property name="nameModificationEvaluator" ref="titleEvaluator" />
+  </bean>
+
+  <bean id="titleEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultTitleEvaluator" />
+
   <bean id="createdByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="createdBy" />
     <property name="type" ref="TYPE_PRINCIPAL" />

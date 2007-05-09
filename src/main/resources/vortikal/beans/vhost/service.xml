@@ -5,24 +5,17 @@
 
   <bean id="staticResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-97000" />
-    
     <property name="assertions">
-      <list>
         <bean class="org.vortikal.web.service.StaticResourceLocationsAssertion" />
-      </list>
     </property>
-
     <property name="handler" ref="displayClassPathResourceHandler" />
-    <property name="authenticationChallenge">
-      <ref bean="${webAuthenticationChallenge}" />
-    </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <bean id="displayClassPathResourceHandler"
         class="org.vortikal.web.controller.DisplayClassPathResourceController">
     <property name="expiresSeconds" value="${staticResourcesCacheSeconds}" />
   </bean>
-
 
   <bean id="webServiceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
@@ -33,7 +26,6 @@
       </list>
     </property>
   </bean>
-
 
    <bean id="redirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
      <property name="order" value="-1" />
@@ -64,11 +56,7 @@
 
   <bean id="webService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="0" />
-    <property name="assertions">
-      <list>
-        <ref bean="webServiceAssertion" />
-      </list>
-    </property>
+    <property name="assertions" ref="webServiceAssertion" />
     <property name="urlPostProcessors" ref="webServiceUrlPostProcessors" />
     <property name="handlerInterceptors">
       <list>
@@ -108,14 +96,11 @@
         <!--         <ref bean="searchService" /> -->
       </list>
     </property>
-    <property name="authenticationChallenge">
-      <ref bean="${webAuthenticationChallenge}" />
-    </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <!--
-  <bean name="webAuthenticationChallenge"
-        parent="httpDigestAuthenticationHandler" />
+  <bean name="webAuthenticationChallenge" parent="httpDigestAuthenticationHandler" />
   -->
 
   <bean id="webServiceUrlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
@@ -137,7 +122,6 @@
     </property>
     <property name="handler" ref="redirectHandler" />
   </bean>
-
 
 
   <!-- WEB assertions -->
@@ -214,16 +198,13 @@
   <!-- Explicit HTTP Digest authentication over unsecured connection -->
   <bean id="authenticateDigestService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="200" />
-
     <property name="authenticationChallenge" 
               ref="httpDigestAuthenticationChallenge" />
     <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
-          <property name="invert" value="true" />
-          <property name="requiresAuthentication" value="true" />
-        </bean>
-      </list>
+      <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+        <property name="invert" value="true" />
+        <property name="requiresAuthentication" value="true" />
+      </bean>
     </property>
   </bean>
   

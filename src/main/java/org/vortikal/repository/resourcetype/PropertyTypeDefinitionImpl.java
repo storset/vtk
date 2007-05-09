@@ -50,6 +50,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private CreatePropertyEvaluator createEvaluator;
     private ContentModificationPropertyEvaluator contentModificationEvaluator;
     private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
+    private NameChangePropertyEvaluator nameModificationEvaluator;
     private PropertyValidator validator;
     private Value[] allowedValues;
 
@@ -172,6 +173,15 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append(": [name=").append(this.name).append("]");
         return sb.toString();
+    }
+
+    public NameChangePropertyEvaluator getNameModificationEvaluator() {
+        return nameModificationEvaluator;
+    }
+
+    public void setNameModificationEvaluator(
+            NameChangePropertyEvaluator nameModificationEvaluator) {
+        this.nameModificationEvaluator = nameModificationEvaluator;
     }
 
 }

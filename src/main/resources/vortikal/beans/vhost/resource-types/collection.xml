@@ -23,7 +23,7 @@
       <list>
         <ref bean="skipInPathPropDef"/>
         <ref bean="typePropDef" />
-        <ref bean="titlePropDef" />
+        <ref bean="collectionTitlePropDef" />
       </list>
     </property>
   </bean>
@@ -56,7 +56,7 @@
     </property>
   </bean>
   
-  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="collectionTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="title"/>
     <property name="type" ref="TYPE_STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>

@@ -43,8 +43,6 @@ public interface RepositoryResourceHelper {
     public ResourceImpl create(Principal principal, String uri,
             boolean collection);
 
-    public ResourceImpl createCopy(ResourceImpl src, String destUri);
-
     /**
      * Evaluates and validates properties on a resource before
      * storing.

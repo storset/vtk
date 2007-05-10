@@ -44,15 +44,16 @@ import org.vortikal.security.Principal;
  */
 public class DefaultTitleEvaluator implements NameChangePropertyEvaluator, CreatePropertyEvaluator {
 
-    public boolean nameModification(Principal principal, Property property, Resource newResource, Date time) {
+    public boolean nameModification(Principal principal, Property property,
+                                    Resource newResource, Date time) {
         property.setStringValue(newResource.getName());
         return true;
     }
 
-    public boolean create(Principal principal, Property property, PropertySet ancestorPropertySet, boolean isCollection, Date time) throws PropertyEvaluationException {
+    public boolean create(Principal principal, Property property,
+                          PropertySet ancestorPropertySet, boolean isCollection,
+                          Date time) throws PropertyEvaluationException {
         property.setStringValue(ancestorPropertySet.getName());
         return true;
     }
-
-
 }
